@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "referenceViewport": {
+      "device": "iPhone 13/14",
+      "width": 390,
+      "frameWidth": 375
+    },
+    "defaultThreshold": 0.02
+  },
+  "screens": [
+    {
+      "id": "onboarding",
+      "reference": "docs/design/onboarding/onboarding.png",
+      "actual": "artifacts/parity/current/onboarding.png",
+      "threshold": 0.02,
+      "states": ["step-1", "step-3", "step-5"]
+    },
+    {
+      "id": "home",
+      "reference": "docs/design/home/home.png",
+      "actual": "artifacts/parity/current/home.png"
+    },
+    {
+      "id": "ai-rehber",
+      "reference": "docs/design/ai-rehber/ai-rehber.png",
+      "actual": "artifacts/parity/current/ai-rehber.png"
+    },
+    {
+      "id": "focus",
+      "reference": "docs/design/zikirmatik-focus-mode/odak-modu.png",
+      "actual": "artifacts/parity/current/focus.png",
+      "states": ["active"]
+    },
+    {
+      "id": "special-days",
+      "reference": "docs/design/ozel-gunler/ozel-gunler.png",
+      "actual": "artifacts/parity/current/special-days.png",
+      "states": ["passive", "active-night"]
+    },
+    {
+      "id": "stats",
+      "reference": "docs/design/istatistik/istatistik.png",
+      "actual": "artifacts/parity/current/stats.png"
+    },
+    {
+      "id": "profile",
+      "reference": "docs/design/profil/profil.png",
+      "actual": "artifacts/parity/current/profile.png"
+    },
+    {
+      "id": "theme-selector",
+      "reference": "docs/design/tema-seçici/tema-seçici.png",
+      "actual": "artifacts/parity/current/theme-selector.png"
+    },
+    {
+      "id": "components",
+      "reference": "docs/design/components/components.png",
+      "actual": "artifacts/parity/current/components.png"
+    }
+  ]
+}

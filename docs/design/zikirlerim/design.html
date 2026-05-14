@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zikirlerim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0F1B2D',
+                            card: '#162236',
+                            gold: '#C8972A',
+                            emerald: '#2E7D5E',
+                            textPrimary: '#F0EDE6',
+                            textMuted: '#9A9080',
+                            success: '#4CAF7D',
+                            cream: '#F5F0E8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.15)',
+                        'glow': '0 0 20px rgba(200, 151, 42, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0F1B2D;
+            color: #F0EDE6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+
+        .zikir-card {
+            transition: all 0.2s ease;
+        }
+
+        .zikir-card:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body class="min-h-[100dvh] flex flex-col mx-auto w-full max-w-[375px] relative overflow-x-hidden" id="app-container">
+
+    <header id="header" class="px-5 pt-12 pb-4 flex justify-between items-center z-10 relative border-b border-white/5">
+        <div class="flex items-center gap-3">
+            <button class="w-9 h-9 rounded-full bg-brand-card flex items-center justify-center active:scale-95 transition-transform">
+                <i class="fa-solid fa-arrow-left text-brand-textPrimary text-sm"></i>
+            </button>
+            <h1 class="text-xl font-semibold">Zikirlerim</h1>
+        </div>
+        
+        <button class="w-9 h-9 rounded-full bg-brand-gold flex items-center justify-center active:scale-95 transition-transform shadow-soft">
+            <i class="fa-solid fa-plus text-brand-navy text-sm font-bold"></i>
+        </button>
+    </header>
+
+    <main class="flex-1 flex flex-col pb-24 z-10 relative overflow-y-auto">
+        
+        <section id="stats_overview" class="px-5 py-6">
+            <div class="grid grid-cols-3 gap-3">
+                
+                <div class="bg-brand-card rounded-2xl p-4 flex flex-col items-center justify-center border border-white/5">
+                    <div class="w-10 h-10 rounded-full bg-brand-gold/10 flex items-center justify-center mb-2">
+                        <i class="fa-solid fa-list-check text-brand-gold text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold mb-0.5">12</span>
+                    <span class="text-[10px] text-brand-textMuted">Toplam Zikir</span>
+                </div>
+
+                <div class="bg-brand-card rounded-2xl p-4 flex flex-col items-center justify-center border border-white/5">
+                    <div class="w-10 h-10 rounded-full bg-brand-emerald/10 flex items-center justify-center mb-2">
+                        <i class="fa-solid fa-check-double text-brand-emerald text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold mb-0.5">3.4K</span>
+                    <span class="text-[10px] text-brand-textMuted">Bu Ay</span>
+                </div>
+
+                <div class="bg-brand-card rounded-2xl p-4 flex flex-col items-center justify-center border border-white/5">
+                    <div class="w-10 h-10 rounded-full bg-brand-success/10 flex items-center justify-center mb-2">
+                        <i class="fa-solid fa-fire text-brand-success text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-bold mb-0.5">12</span>
+                    <span class="text-[10px] text-brand-textMuted">Gün Serisi</span>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="filter_tabs" class="px-5 mb-4">
+            <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2">
+                <button class="flex-shrink-0 bg-brand-gold text-brand-navy px-4 py-2 rounded-full text-xs font-semibold shadow-md">
+                    Tümü
+                </button>
+                <button class="flex-shrink-0 bg-brand-card text-brand-textPrimary px-4 py-2 rounded-full text-xs font-medium border border-white/5">
+                    Aktif
+                </button>
+                <button class="flex-shrink-0 bg-brand-card text-brand-textPrimary px-4 py-2 rounded-full text-xs font-medium border border-white/5">
+                    Tamamlanan
+                </button>
+                <button class="flex-shrink-0 bg-brand-card text-brand-textPrimary px-4 py-2 rounded-full text-xs font-medium border border-white/5">
+                    Favoriler
+                </button>
+            </div>
+        </section>
+
+        <section id="zikir_list" class="px-5 space-y-3 pb-6">
+            
+            <div class="zikir-card bg-brand-card rounded-2xl p-4 border-l-4 border-l-brand-gold shadow-soft">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                        <h3 class="font-arabic text-2xl text-brand-textPrimary mb-1" dir="rtl">أَسْتَغْفِرُ اللَّهَ</h3>
+                        <p class="text-sm font-medium text-brand-textPrimary mb-0.5">Estağfirullah</p>
+                        <p class="text-xs text-brand-textMuted">Allah'tan bağışlanma dilerim</p>
+                    </div>
+                    <button class="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
+                        <i class="fa-solid fa-star text-brand-gold text-sm"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex-1">
+                        <div class="w-full h-2 bg-brand-navy rounded-full overflow-hidden">
+                            <div class="progress-bar h-full bg-brand-gold rounded-full" style="width: 34%"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-gold">34/100</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-brand-textMuted">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        Bugün 08:24
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-brand-success"></i>
+                        5 gün
+                    </span>
+                </div>
+            </div>
+
+            <div class="zikir-card bg-brand-card rounded-2xl p-4 border-l-4 border-l-brand-emerald shadow-soft">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                        <h3 class="font-arabic text-2xl text-brand-textPrimary mb-1" dir="rtl">سُبْحَانَ اللَّهِ</h3>
+                        <p class="text-sm font-medium text-brand-textPrimary mb-0.5">Sübhanallah</p>
+                        <p class="text-xs text-brand-textMuted">Allah noksan sıfatlardan münezzehtir</p>
+                    </div>
+                    <button class="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
+                        <i class="fa-regular fa-star text-brand-textMuted text-sm"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex-1">
+                        <div class="w-full h-2 bg-brand-navy rounded-full overflow-hidden">
+                            <div class="progress-bar h-full bg-brand-emerald rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-success flex items-center gap-1">
+                        <i class="fa-solid fa-check"></i>
+                        100/100
+                    </span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-brand-textMuted">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        Dün 22:15
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-brand-success"></i>
+                        12 gün
+                    </span>
+                </div>
+            </div>
+
+            <div class="zikir-card bg-brand-card rounded-2xl p-4 border-l-4 border-l-brand-textMuted/30 shadow-soft">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                        <h3 class="font-arabic text-2xl text-brand-textPrimary mb-1" dir="rtl">الْحَمْدُ لِلَّهِ</h3>
+                        <p class="text-sm font-medium text-brand-textPrimary mb-0.5">Elhamdülillah</p>
+                        <p class="text-xs text-brand-textMuted">Her türlü hamd ve övgü Allah'a mahsustur</p>
+                    </div>
+                    <button class="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
+                        <i class="fa-solid fa-star text-brand-gold text-sm"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex-1">
+                        <div class="w-full h-2 bg-brand-navy rounded-full overflow-hidden">
+                            <div class="progress-bar h-full bg-brand-textMuted rounded-full" style="width: 67%"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-textPrimary">67/100</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-brand-textMuted">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        Bugün 14:32
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-brand-success"></i>
+                        8 gün
+                    </span>
+                </div>
+            </div>
+
+            <div class="zikir-card bg-brand-card rounded-2xl p-4 border-l-4 border-l-brand-textMuted/30 shadow-soft">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                        <h3 class="font-arabic text-2xl text-brand-textPrimary mb-1" dir="rtl">اللَّهُ أَكْبَرُ</h3>
+                        <p class="text-sm font-medium text-brand-textPrimary mb-0.5">Allahu Ekber</p>
+                        <p class="text-xs text-brand-textMuted">Allah en büyüktür</p>
+                    </div>
+                    <button class="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
+                        <i class="fa-regular fa-star text-brand-textMuted text-sm"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex-1">
+                        <div class="w-full h-2 bg-brand-navy rounded-full overflow-hidden">
+                            <div class="progress-bar h-full bg-brand-textMuted rounded-full" style="width: 23%"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-textPrimary">23/100</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-brand-textMuted">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        Bugün 11:18
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-brand-success"></i>
+                        3 gün
+                    </span>
+                </div>
+            </div>
+
+            <div class="zikir-card bg-brand-card rounded-2xl p-4 border-l-4 border-l-brand-emerald shadow-soft">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                        <h3 class="font-arabic text-2xl text-brand-textPrimary mb-1" dir="rtl">لَا إِلَٰهَ إِلَّا اللَّهُ</h3>
+                        <p class="text-sm font-medium text-brand-textPrimary mb-0.5">La ilahe illallah</p>
+                        <p class="text-xs text-brand-textMuted">Allah'tan başka ilah yoktur</p>
+                    </div>
+                    <button class="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
+                        <i class="fa-regular fa-star text-brand-textMuted text-sm"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex-1">
+                        <div class="w-full h-2 bg-brand-navy rounded-full overflow-hidden">
+                            <div class="progress-bar h-full bg-brand-emerald rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-success flex items-center gap-1">
+                        <i class="fa-solid fa-check"></i>
+                        100/100
+                    </span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-brand-textMuted">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        2 gün önce
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-brand-success"></i>
+                        15 gün
+                    </span>
+                </div>
+            </div>
+
+            <div class="zikir-card bg-brand-card rounded-2xl p-4 border-l-4 border-l-brand-textMuted/30 shadow-soft">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                        <h3 class="font-arabic text-2xl text-brand-textPrimary mb-1" dir="rtl">لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ</h3>
+                        <p class="text-sm font-medium text-brand-textPrimary mb-0.5">La havle vela kuvvete illa billah</p>
+                        <p class="text-xs text-brand-textMuted">Güç ve kuvvet ancak Allah'tandır</p>
+                    </div>
+                    <button class="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
+                        <i class="fa-regular fa-star text-brand-textMuted text-sm"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex-1">
+                        <div class="w-full h-2 bg-brand-navy rounded-full overflow-hidden">
+                            <div class="progress-bar h-full bg-brand-textMuted rounded-full" style="width: 45%"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-textPrimary">45/100</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-brand-textMuted">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        Bugün 16:42
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-brand-success"></i>
+                        6 gün
+                    </span>
+                </div>
+            </div>
+
+            <div class="zikir-card bg-brand-card rounded-2xl p-4 border-l-4 border-l-brand-textMuted/30 shadow-soft">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                        <h3 class="font-arabic text-2xl text-brand-textPrimary mb-1" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</h3>
+                        <p class="text-sm font-medium text-brand-textPrimary mb-0.5">Bismillahirrahmanirrahim</p>
+                        <p class="text-xs text-brand-textMuted">Rahman ve Rahim olan Allah'ın adıyla</p>
+                    </div>
+                    <button class="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
+                        <i class="fa-solid fa-star text-brand-gold text-sm"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex-1">
+                        <div class="w-full h-2 bg-brand-navy rounded-full overflow-hidden">
+                            <div class="progress-bar h-full bg-brand-textMuted rounded-full" style="width: 12%"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-textPrimary">12/100</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-brand-textMuted">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        Bugün 09:05
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-brand-success"></i>
+                        2 gün
+                    </span>
+                </div>
+            </div>
+
+            <div class="zikir-card bg-brand-card rounded-2xl p-4 border-l-4 border-l-brand-textMuted/30 shadow-soft">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1">
+                        <h3 class="font-arabic text-2xl text-brand-textPrimary mb-1" dir="rtl">سُبْحَانَ اللَّهِ وَبِحَمْدِهِ</h3>
+                        <p class="text-sm font-medium text-brand-textPrimary mb-0.5">Sübhanallahi ve bihamdihi</p>
+                        <p class="text-xs text-brand-textMuted">Allah'ı hamd ile tesbih ederim</p>
+                    </div>
+                    <button class="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
+                        <i class="fa-regular fa-star text-brand-textMuted text-sm"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="flex-1">
+                        <div class="w-full h-2 bg-brand-navy rounded-full overflow-hidden">
+                            <div class="progress-bar h-full bg-brand-textMuted rounded-full" style="width: 89%"></div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-textPrimary">89/100</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-brand-textMuted">
+                    <span class="flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i>
+                        Dün 20:34
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-brand-success"></i>
+                        7 gün
+                    </span>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <nav id="bottom_nav" class="bottom-nav fixed bottom-0 left-0 right-0 w-full max-w-[375px] mx-auto bg-brand-navy/95 backdrop-blur-lg border-t border-white/5 pb-safe pt-2 px-2 z-50">
+        <div class="flex justify-around items-center h-16 pb-2">
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-house text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Ana Sayfa</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1">
+                <i class="fa-solid fa-list-ul text-brand-gold text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-gold">Zikirlerim</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-sparkles text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">AI Rehber</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-moon text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Kandil</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-regular fa-user text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Profil</span>
+            </button>
+
+        </div>
+    </nav>
+
+</body>
+</html>

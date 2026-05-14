@@ -1,0 +1,50 @@
+import type { HeroCardViewModel, UpcomingDayViewModel } from "../types/view-model";
+
+export const HERO_CARD: HeroCardViewModel = {
+  id: "fallback-hero",
+  badge: "Yaklaşıyor 🌙",
+  title: "Mevlid Kandili",
+  dateLabel: "13 Eylül 2025, Perşembe",
+  countdown: [
+    { value: "03", label: "Gün" },
+    { value: "14", label: "Sa" },
+    { value: "22", label: "Dk" }
+  ],
+  remaining: "3 gün",
+  isLocked: false,
+};
+
+export const UPCOMING_DAYS: UpcomingDayViewModel[] = [
+  {
+    id: "fallback-mevlid",
+    icon: "moon",
+    title: "Mevlid Kandili",
+    dateLabel: "13 Eylül",
+    remaining: "3 gün",
+    isLocked: false,
+  },
+  {
+    id: "fallback-ramazan",
+    icon: "star",
+    title: "Ramazan Başlangıcı",
+    dateLabel: "11 Mart",
+    remaining: "18 gün",
+    isLocked: false,
+  },
+  {
+    id: "fallback-kadir",
+    icon: "moon",
+    title: "Kadir Gecesi",
+    dateLabel: "5 Nisan",
+    remaining: "43 gün",
+    isLocked: false,
+  },
+  {
+    id: "fallback-kurban",
+    icon: "mosque",
+    title: "Kurban Bayramı",
+    dateLabel: "16 Haziran",
+    remaining: "115 gün",
+    isLocked: false,
+  }
+];

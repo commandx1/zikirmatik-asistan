@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0F1B2D',
+                            card: '#162236',
+                            gold: '#C8972A',
+                            emerald: '#2E7D5E',
+                            textPrimary: '#F0EDE6',
+                            textMuted: '#9A9080',
+                            success: '#4CAF7D',
+                            cream: '#F5F0E8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.15)',
+                        'glow': '0 0 20px rgba(200, 151, 42, 0.3)',
+                        'glow-active': '0 0 40px rgba(200, 151, 42, 0.5)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0F1B2D;
+            color: #F0EDE6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8972A' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .islamic-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8972A' fill-opacity='0.08'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm0-40h2l-2 2V0zm0 4l4-4h2l-6 6V4zm0 4l8-8h2L40 10V8zm0 4L52 0h2L40 14v-2zm0 4L56 0h2L40 18v-2zm0 4L60 0h2L40 22v-2zm0 4L64 0h2L40 26v-2zm0 4L68 0h2L40 30v-2zm0 4L72 0h2L40 34v-2zm0 4L76 0h2L40 38v-2zm0 4L80 0v2L42 40h-2zm4 0L80 4v2L46 40h-2zm4 0L80 8v2L50 40h-2zm4 0l28-28v2L54 40h-2zm4 0l24-24v2L58 40h-2zm4 0l20-20v2L62 40h-2zm4 0l16-16v2L66 40h-2zm4 0l12-12v2L70 40h-2zm4 0l8-8v2l-6 6h-2zm4 0l4-4v2l-2 2h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(200, 151, 42, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(200, 151, 42, 0.5);
+            }
+        }
+
+        .onboarding-screen {
+            min-height: 840px;
+        }
+
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background: #C8972A;
+        }
+    </style>
+</head>
+<body class="overflow-x-auto hide-scrollbar">
+
+    <div class="flex flex-nowrap" style="width: max-content;">
+
+        <div id="screen_1_splash" class="onboarding-screen w-[375px] flex-shrink-0 bg-brand-navy relative overflow-hidden flex flex-col">
+            <div class="absolute inset-0 islamic-pattern opacity-50"></div>
+            <div class="absolute top-10 right-10 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-20 left-10 w-48 h-48 bg-brand-gold/5 rounded-full blur-2xl"></div>
+            
+            <div class="absolute top-8 right-6 z-20">
+                <button class="text-brand-textMuted text-[13px] font-medium hover:text-brand-textPrimary transition-colors">
+                    Atla
+                </button>
+            </div>
+
+            <div class="flex-1 flex flex-col items-center justify-center px-8 relative z-10">
+                <div class="w-28 h-28 mb-8 rounded-full bg-gradient-to-br from-brand-gold to-[#E8B84B] flex items-center justify-center shadow-glow-active pulse-glow">
+                    <i class="fa-solid fa-hands-praying text-brand-navy text-5xl"></i>
+                </div>
+
+                <h1 class="text-[32px] font-bold text-brand-textPrimary mb-3 text-center leading-tight">
+                    Zikirmatik<br/>Rehber
+                </h1>
+
+                <p class="text-[15px] text-brand-textMuted text-center font-medium mb-16">
+                    Akıllı Tesbihat Asistanın
+                </p>
+
+                <div class="w-full space-y-3 px-4">
+                    <button class="w-full py-4 rounded-full bg-brand-gold text-brand-navy font-bold text-[16px] shadow-glow hover:opacity-90 transition-opacity">
+                        Başla
+                    </button>
+                </div>
+            </div>
+
+            <div class="pb-12 text-center relative z-10">
+                <p class="text-[11px] text-brand-textMuted opacity-50">v1.0.0</p>
+            </div>
+
+            <div class="absolute right-[-50px] top-1/2 -translate-y-1/2 z-30">
+                <i class="fa-solid fa-arrow-right text-brand-gold text-2xl opacity-30"></i>
+            </div>
+        </div>
+
+        <div id="screen_2_purpose" class="onboarding-screen w-[375px] flex-shrink-0 bg-brand-navy relative overflow-hidden flex flex-col">
+            <div class="absolute inset-0 bg-pattern"></div>
+            
+            <div class="pt-12 pb-6 px-6 relative z-10">
+                <div class="flex items-center justify-center gap-2 mb-8">
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                </div>
+
+                <h2 class="text-[26px] font-bold text-brand-textPrimary mb-2 text-center">
+                    Amacın nedir?
+                </h2>
+                <p class="text-[13px] text-brand-textMuted text-center">
+                    Sana daha iyi rehberlik edebilmek için
+                </p>
+            </div>
+
+            <div class="flex-1 px-6 pb-32 overflow-y-auto hide-scrollbar relative z-10">
+                <div class="space-y-3">
+                    <button class="w-full p-5 rounded-2xl bg-brand-card border-2 border-brand-gold/50 hover:border-brand-gold transition-all flex items-center gap-4 shadow-soft">
+                        <div class="w-14 h-14 rounded-full bg-brand-gold/20 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-hands-praying text-brand-gold text-2xl"></i>
+                        </div>
+                        <div class="text-left flex-1">
+                            <h3 class="text-[15px] font-semibold text-brand-textPrimary mb-1">Günlük ibadet alışkanlığı</h3>
+                            <p class="text-[11px] text-brand-textMuted">Düzenli zikir rutini oluştur</p>
+                        </div>
+                    </button>
+
+                    <button class="w-full p-5 rounded-2xl bg-brand-card border-2 border-white/5 hover:border-brand-gold/30 transition-all flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-spa text-brand-textPrimary text-2xl"></i>
+                        </div>
+                        <div class="text-left flex-1">
+                            <h3 class="text-[15px] font-semibold text-brand-textPrimary mb-1">Huzur & sakinleşmek</h3>
+                            <p class="text-[11px] text-brand-textMuted">Ruhsal dinginlik bul</p>
+                        </div>
+                    </button>
+
+                    <button class="w-full p-5 rounded-2xl bg-brand-card border-2 border-white/5 hover:border-brand-gold/30 transition-all flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-dharmachakra text-brand-textPrimary text-2xl"></i>
+                        </div>
+                        <div class="text-left flex-1">
+                            <h3 class="text-[15px] font-semibold text-brand-textPrimary mb-1">Belirli zikirleri düzenli çekmek</h3>
+                            <p class="text-[11px] text-brand-textMuted">Özel tesbihat takibi</p>
+                        </div>
+                    </button>
+
+                    <button class="w-full p-5 rounded-2xl bg-brand-card border-2 border-white/5 hover:border-brand-gold/30 transition-all flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-moon text-brand-textPrimary text-2xl"></i>
+                        </div>
+                        <div class="text-left flex-1">
+                            <h3 class="text-[15px] font-semibold text-brand-textPrimary mb-1">Özel günlerde daha aktif olmak</h3>
+                            <p class="text-[11px] text-brand-textMuted">Kandil ve mübarek geceler</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="fixed bottom-0 left-0 right-0 w-full max-w-[375px] bg-gradient-to-t from-brand-navy via-brand-navy to-transparent pt-8 pb-8 px-6 z-20">
+                <button class="w-full py-4 rounded-full bg-brand-gold text-brand-navy font-bold text-[16px] shadow-glow hover:opacity-90 transition-opacity">
+                    Devam
+                </button>
+            </div>
+
+            <div class="absolute right-[-50px] top-1/2 -translate-y-1/2 z-30">
+                <i class="fa-solid fa-arrow-right text-brand-gold text-2xl opacity-30"></i>
+            </div>
+        </div>
+
+        <div id="screen_3_mood" class="onboarding-screen w-[375px] flex-shrink-0 bg-brand-navy relative overflow-hidden flex flex-col">
+            <div class="absolute inset-0 bg-pattern"></div>
+            
+            <div class="pt-12 pb-6 px-6 relative z-10">
+                <div class="flex items-center justify-center gap-2 mb-8">
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                </div>
+
+                <h2 class="text-[26px] font-bold text-brand-textPrimary mb-2 text-center">
+                    Şu an nasıl hissediyorsun?
+                </h2>
+                <p class="text-[13px] text-brand-textMuted text-center">
+                    AI önerilerin buna göre şekillenecek
+                </p>
+            </div>
+
+            <div class="flex-1 px-6 pb-32 relative z-10 flex flex-col justify-center">
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                    <button class="flex flex-col items-center gap-3 p-4 rounded-2xl bg-brand-card border-2 border-white/5 hover:border-brand-gold/50 transition-all">
+                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-4xl">
+                            😔
+                        </div>
+                        <span class="text-[12px] font-medium text-brand-textPrimary">Üzgün</span>
+                    </button>
+
+                    <button class="flex flex-col items-center gap-3 p-4 rounded-2xl bg-brand-card border-2 border-white/5 hover:border-brand-gold/50 transition-all">
+                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-4xl">
+                            😰
+                        </div>
+                        <span class="text-[12px] font-medium text-brand-textPrimary">Stresli</span>
+                    </button>
+
+                    <button class="flex flex-col items-center gap-3 p-4 rounded-2xl bg-brand-card border-2 border-white/5 hover:border-brand-gold/50 transition-all">
+                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-4xl">
+                            😐
+                        </div>
+                        <span class="text-[12px] font-medium text-brand-textPrimary">Nötr</span>
+                    </button>
+
+                    <button class="flex flex-col items-center gap-3 p-4 rounded-2xl bg-brand-card border-2 border-brand-gold/50 shadow-glow transition-all">
+                        <div class="w-16 h-16 rounded-full bg-brand-gold/20 flex items-center justify-center text-4xl ring-2 ring-brand-gold/50">
+                            😌
+                        </div>
+                        <span class="text-[12px] font-semibold text-brand-gold">Huzurlu</span>
+                    </button>
+
+                    <button class="flex flex-col items-center gap-3 p-4 rounded-2xl bg-brand-card border-2 border-white/5 hover:border-brand-gold/50 transition-all">
+                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-4xl">
+                            🙏
+                        </div>
+                        <span class="text-[12px] font-medium text-brand-textPrimary">Minnettar</span>
+                    </button>
+
+                    <button class="flex flex-col items-center gap-3 p-4 rounded-2xl bg-brand-card border-2 border-white/5 hover:border-brand-gold/50 transition-all">
+                        <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-4xl">
+                            😓
+                        </div>
+                        <span class="text-[12px] font-medium text-brand-textPrimary">Yorgun</span>
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <input type="text" placeholder="Veya yaz..." class="w-full px-4 py-3.5 rounded-xl bg-brand-card border border-white/10 text-brand-textPrimary placeholder-brand-textMuted text-[14px] focus:outline-none focus:border-brand-gold/50 transition-colors">
+                </div>
+            </div>
+
+            <div class="fixed bottom-0 left-0 right-0 w-full max-w-[375px] bg-gradient-to-t from-brand-navy via-brand-navy to-transparent pt-8 pb-8 px-6 z-20">
+                <button class="w-full py-4 rounded-full bg-brand-gold text-brand-navy font-bold text-[16px] shadow-glow hover:opacity-90 transition-opacity">
+                    Devam
+                </button>
+            </div>
+
+            <div class="absolute right-[-50px] top-1/2 -translate-y-1/2 z-30">
+                <i class="fa-solid fa-arrow-right text-brand-gold text-2xl opacity-30"></i>
+            </div>
+        </div>
+
+        <div id="screen_4_location" class="onboarding-screen w-[375px] flex-shrink-0 bg-brand-navy relative overflow-hidden flex flex-col">
+            <div class="absolute inset-0 bg-pattern"></div>
+            
+            <div class="pt-12 pb-6 px-6 relative z-10">
+                <div class="flex items-center justify-center gap-2 mb-8">
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                </div>
+
+                <h2 class="text-[26px] font-bold text-brand-textPrimary mb-2 text-center leading-tight">
+                    Namaz vakitleri için<br/>şehrini seç
+                </h2>
+                <p class="text-[13px] text-brand-textMuted text-center">
+                    Ezan bildirimleri ve özel gün hatırlatmaları için
+                </p>
+            </div>
+
+            <div class="flex-1 px-6 pb-32 relative z-10">
+                <div class="mb-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Şehir ara..." class="w-full px-4 py-3.5 pl-12 rounded-xl bg-brand-card border border-white/10 text-brand-textPrimary placeholder-brand-textMuted text-[14px] focus:outline-none focus:border-brand-gold/50 transition-colors">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-brand-textMuted"></i>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <p class="text-[11px] text-brand-textMuted uppercase tracking-wider mb-3 font-semibold">Popüler Şehirler</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-4 py-2.5 rounded-full bg-brand-card border border-white/10 text-brand-textPrimary text-[13px] font-medium hover:border-brand-gold/50 hover:bg-brand-gold/5 transition-all">
+                            İstanbul
+                        </button>
+                        <button class="px-4 py-2.5 rounded-full bg-brand-card border border-white/10 text-brand-textPrimary text-[13px] font-medium hover:border-brand-gold/50 hover:bg-brand-gold/5 transition-all">
+                            Ankara
+                        </button>
+                        <button class="px-4 py-2.5 rounded-full bg-brand-card border border-white/10 text-brand-textPrimary text-[13px] font-medium hover:border-brand-gold/50 hover:bg-brand-gold/5 transition-all">
+                            İzmir
+                        </button>
+                        <button class="px-4 py-2.5 rounded-full bg-brand-card border border-white/10 text-brand-textPrimary text-[13px] font-medium hover:border-brand-gold/50 hover:bg-brand-gold/5 transition-all">
+                            Bursa
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-brand-card rounded-2xl p-4 border border-white/5">
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-brand-gold/10 flex items-center justify-center">
+                                <i class="fa-solid fa-location-dot text-brand-gold text-lg"></i>
+                            </div>
+                            <span class="text-[14px] font-medium text-brand-textPrimary">Konumumu otomatik algıla</span>
+                        </div>
+                        <div class="relative w-12 h-7 bg-white/10 rounded-full transition-colors">
+                            <input type="checkbox" class="sr-only peer">
+                            <div class="absolute top-1 left-1 w-5 h-5 bg-brand-textMuted rounded-full transition-all peer-checked:translate-x-5 peer-checked:bg-brand-gold"></div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="fixed bottom-0 left-0 right-0 w-full max-w-[375px] bg-gradient-to-t from-brand-navy via-brand-navy to-transparent pt-8 pb-8 px-6 z-20">
+                <button class="w-full py-4 rounded-full bg-brand-gold text-brand-navy font-bold text-[16px] shadow-glow hover:opacity-90 transition-opacity">
+                    Devam
+                </button>
+            </div>
+
+            <div class="absolute right-[-50px] top-1/2 -translate-y-1/2 z-30">
+                <i class="fa-solid fa-arrow-right text-brand-gold text-2xl opacity-30"></i>
+            </div>
+        </div>
+
+        <div id="screen_5_mode" class="onboarding-screen w-[375px] flex-shrink-0 bg-brand-navy relative overflow-hidden flex flex-col">
+            <div class="absolute inset-0 bg-pattern"></div>
+            <div class="absolute top-20 left-10 w-48 h-48 bg-brand-gold/10 rounded-full blur-3xl"></div>
+            
+            <div class="pt-12 pb-6 px-6 relative z-10">
+                <div class="flex items-center justify-center gap-2 mb-8">
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot active"></div>
+                </div>
+
+                <h2 class="text-[26px] font-bold text-brand-textPrimary mb-2 text-center">
+                    Nasıl kullanmak istersin?
+                </h2>
+            </div>
+
+            <div class="flex-1 px-6 pb-32 relative z-10 flex flex-col justify-center">
+                <div class="space-y-4 mb-6">
+                    <button class="w-full p-6 rounded-2xl bg-brand-card border-2 border-white/10 hover:border-brand-gold/30 transition-all text-left">
+                        <div class="flex items-start gap-4 mb-3">
+                            <div class="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-dharmachakra text-brand-textPrimary text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-[17px] font-bold text-brand-textPrimary mb-1">Klasik Mod</h3>
+                            </div>
+                        </div>
+                        <p class="text-[13px] text-brand-textMuted leading-relaxed">
+                            Sade zikirmatik. AI yok, sadece sen ve zikirler.
+                        </p>
+                    </button>
+
+                    <button class="w-full p-6 rounded-2xl bg-gradient-to-br from-brand-card to-brand-gold/5 border-2 border-brand-gold/50 shadow-glow transition-all text-left relative overflow-hidden">
+                        <div class="absolute top-4 right-4">
+                            <span class="px-3 py-1 rounded-full bg-brand-gold text-brand-navy text-[10px] font-bold uppercase tracking-wider">
+                                Önerilen
+                            </span>
+                        </div>
+                        <div class="flex items-start gap-4 mb-3">
+                            <div class="w-14 h-14 rounded-full bg-brand-gold/20 flex items-center justify-center flex-shrink-0 ring-2 ring-brand-gold/50">
+                                <i class="fa-solid fa-sparkles text-brand-gold text-2xl"></i>
+                            </div>
+                            <div class="flex-1 pr-16">
+                                <h3 class="text-[17px] font-bold text-brand-textPrimary mb-1">Akıllı Mod</h3>
+                            </div>
+                        </div>
+                        <p class="text-[13px] text-brand-textMuted leading-relaxed mb-3">
+                            AI destekli öneri sistemi. Ruh haline göre zikir önerileri.
+                        </p>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-gold/20 border border-brand-gold/30">
+                            <i class="fa-solid fa-crown text-brand-gold text-[10px]"></i>
+                            <span class="text-[10px] font-bold text-brand-gold uppercase tracking-wider">Premium</span>
+                        </div>
+                    </button>
+                </div>
+
+                <p class="text-[12px] text-brand-textMuted text-center">
+                    Modu istediğin zaman değiştirebilirsin
+                </p>
+            </div>
+
+            <div class="fixed bottom-0 left-0 right-0 w-full max-w-[375px] bg-gradient-to-t from-brand-navy via-brand-navy to-transparent pt-8 pb-8 px-6 z-20">
+                <button class="w-full py-4 rounded-full bg-brand-gold text-brand-navy font-bold text-[16px] shadow-glow hover:opacity-90 transition-opacity">
+                    Hadi Başlayalım
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

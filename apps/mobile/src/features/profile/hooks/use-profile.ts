@@ -1,0 +1,507 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "expo-router";
+import { Linking, Platform } from "react-native";
+import { listDhikrLogsByUser } from "../../dhikrs/services/dhikr-logs-api-client";
+import { getUserStreak } from "../../stats/services/streaks-api-client";
+import {
+  getUserById,
+  saveUserOnboarding,
+  type BackendUser,
+  UsersApiError
+} from "../../users/services/users-api-client";
+import {
+  isRevenueCatConfigured,
+  purchasePremiumWithRevenueCat,
+  restorePremiumWithRevenueCat,
+  syncPremiumStatusWithRevenueCat,
+  toRevenueCatMessage
+} from "../../subscriptions/services/revenuecat-client";
+import { useThemePreferences } from "../../../hooks/use-theme-preferences";
+import { useAuthStore } from "../../../store/auth-store";
+import { useOnboardingStore } from "../../../store/onboarding-store";
+import { useProfileStore } from "../../../store/profile-store";
+import { FONT_LABELS } from "../../../theme/fonts";
+import { THEME_LABELS } from "../../../theme/labels";
+import { MOOD_OPTIONS, PURPOSE_OPTIONS } from "../../onboarding/onboarding-data";
+
+type PremiumPlan = "monthly" | "annual";
+
+export function useProfile() {
+  const router = useRouter();
+  const { themeName, fontFamily, hydrateAppearance } = useThemePreferences();
+
+  const fallbackDisplayName = useProfileStore((s) => s.displayName);
+  const memberSinceLabel = useProfileStore((s) => s.memberSinceLabel);
+  const totalDhikr = useProfileStore((s) => s.totalDhikr);
+  const streakDays = useProfileStore((s) => s.streakDays);
+  const activeDays = useProfileStore((s) => s.activeDays);
+  const isPremium = useProfileStore((s) => s.isPremium);
+  const city = useProfileStore((s) => s.city);
+  const language = useProfileStore((s) => s.language);
+  const reminderTime = useProfileStore((s) => s.reminderTime);
+  const dailyReminderEnabled = useProfileStore((s) => s.dailyReminderEnabled);
+  const kandilNotificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
+  const adhanNotificationsEnabled = useProfileStore((s) => s.adhanNotificationsEnabled);
+  const setDailyReminderEnabled = useProfileStore((s) => s.setDailyReminderEnabled);
+  const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
+  const setAdhanNotificationsEnabled = useProfileStore((s) => s.setAdhanNotificationsEnabled);
+  const hydrateFromBackend = useProfileStore((s) => s.hydrateFromBackend);
+  const authStatus = useAuthStore((s) => s.status);
+  const session = useAuthStore((s) => s.session);
+  const authDisplayName = useAuthStore((s) => s.session?.displayName);
+  const signOut = useAuthStore((s) => s.signOut);
+  const resetOnboarding = useOnboardingStore((s) => s.resetOnboarding);
+  const onboardingPurpose = useOnboardingStore((s) => s.purpose);
+  const onboardingMood = useOnboardingStore((s) => s.mood);
+  const onboardingCity = useOnboardingStore((s) => s.city);
+  const setOnboardingPurpose = useOnboardingStore((s) => s.setPurpose);
+  const setOnboardingMood = useOnboardingStore((s) => s.setMood);
+  const setOnboardingCity = useOnboardingStore((s) => s.setCity);
+
+  const [isPremiumSheetOpen, setPremiumSheetOpen] = useState(false);
+  const [backendUser, setBackendUser] = useState<BackendUser>();
+  const [backendQuickStats, setBackendQuickStats] = useState<{
+    totalDhikr: number;
+    streakDays: number;
+    activeDays: number;
+  }>();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isActivatingPremium, setIsActivatingPremium] = useState(false);
+  const [isRestoringPremium, setIsRestoringPremium] = useState(false);
+  const [premiumPlan, setPremiumPlan] = useState<PremiumPlan>("annual");
+  const [premiumError, setPremiumError] = useState<string>();
+  const [isPersonalInfoModalOpen, setIsPersonalInfoModalOpen] = useState(false);
+  const [draftPurpose, setDraftPurpose] = useState(onboardingPurpose);
+  const [draftMood, setDraftMood] = useState(onboardingMood);
+  const [draftCity, setDraftCity] = useState(onboardingCity || city || "");
+  const [isSavingPersonalInfo, setIsSavingPersonalInfo] = useState(false);
+  const [personalInfoError, setPersonalInfoError] = useState<string>();
+
+  const syncBackendUser = useCallback(async () => {
+    if (authStatus !== "authenticated" || !session?.userId) {
+      setBackendUser(undefined);
+      return;
+    }
+
+    const user = await getUserById(session.userId, session.accessToken);
+
+    setBackendUser(user);
+    hydrateFromBackend({
+      displayName: user.displayName,
+      city: user.city,
+      isPremium: user.isPremium,
+      reminderTime: user.notifSettings?.reminderTime,
+      dailyReminderEnabled: user.notifSettings?.dailyReminder,
+      kandilNotificationsEnabled: user.notifSettings?.kandilNotifications,
+      adhanNotificationsEnabled: user.notifSettings?.azanNotifications
+    });
+    hydrateAppearance({
+      themeName:
+        typeof user.theme === "string" && user.theme in THEME_LABELS
+          ? (user.theme as keyof typeof THEME_LABELS)
+          : undefined,
+          fontFamily:
+            user.fontFamily === "default" ||
+            user.fontFamily === "merriweather" ||
+            user.fontFamily === "intel-one-mono"
+              ? user.fontFamily
+              : undefined
+        });
+  }, [authStatus, hydrateAppearance, hydrateFromBackend, session?.accessToken, session?.userId]);
+
+  const syncBackendQuickStats = useCallback(async () => {
+    if (authStatus !== "authenticated" || !session?.userId) {
+      setBackendQuickStats(undefined);
+      return;
+    }
+
+    const [logs, streak] = await Promise.all([
+      listDhikrLogsByUser(session.userId),
+      getUserStreak(session.userId)
+    ]);
+
+    const completedLogCount = logs.reduce(
+      (sum, item) => sum + (item.isCompleted ? 1 : 0),
+      0
+    );
+
+    setBackendQuickStats({
+      totalDhikr: completedLogCount,
+      streakDays: Math.max(0, streak.currentStreak ?? 0),
+      activeDays: Math.max(0, streak.totalDaysActive ?? 0)
+    });
+  }, [authStatus, session?.userId]);
+
+  const refresh = useCallback(async () => {
+    if (authStatus !== "authenticated" || !session?.userId) {
+      return;
+    }
+
+    setIsRefreshing(true);
+    try {
+      await Promise.all([syncBackendUser(), syncBackendQuickStats()]);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [authStatus, session?.userId, syncBackendQuickStats, syncBackendUser]);
+
+  useEffect(() => {
+    if (authStatus !== "authenticated" || !session?.userId) {
+      setBackendUser(undefined);
+      return;
+    }
+
+    let isCancelled = false;
+    const run = async () => {
+      try {
+        await syncBackendUser();
+        if (isCancelled) {
+          return;
+        }
+      } catch {
+        if (!isCancelled) {
+          setBackendUser(undefined);
+        }
+      }
+    };
+
+    void run();
+    return () => {
+      isCancelled = true;
+    };
+  }, [authStatus, session?.userId, syncBackendUser]);
+
+  useEffect(() => {
+    if (authStatus !== "authenticated" || !session?.userId) {
+      setBackendQuickStats(undefined);
+      return;
+    }
+
+    let isCancelled = false;
+
+    const run = async () => {
+      try {
+        await syncBackendQuickStats();
+        if (isCancelled) {
+          return;
+        }
+      } catch {
+        if (!isCancelled) {
+          setBackendQuickStats(undefined);
+        }
+      }
+    };
+
+    void run();
+    return () => {
+      isCancelled = true;
+    };
+  }, [authStatus, session?.userId, syncBackendQuickStats]);
+
+  const quickStats = useMemo(
+    () => [
+      {
+        id: "total-dhikr",
+        value: (backendQuickStats?.totalDhikr ?? totalDhikr).toLocaleString("tr-TR"),
+        label: "Toplam Zikir"
+      },
+      { id: "streak-days", value: String(backendQuickStats?.streakDays ?? streakDays), label: "Gün Seri" },
+      { id: "active-days", value: String(backendQuickStats?.activeDays ?? activeDays), label: "Gün Aktif" }
+    ],
+    [activeDays, backendQuickStats?.activeDays, backendQuickStats?.streakDays, backendQuickStats?.totalDhikr, streakDays, totalDhikr]
+  );
+
+  const openPremiumSheet = () => setPremiumSheetOpen(true);
+  const closePremiumSheet = () => {
+    setPremiumError(undefined);
+    setPremiumSheetOpen(false);
+  };
+  const goThemeSelector = () => router.push("/theme-selector");
+  const goFontSelector = () => router.push("/font-selector");
+  const onLogout = () => {
+    signOut();
+    router.replace("/auth");
+  };
+  const onRestartOnboarding = () => {
+    resetOnboarding();
+    router.replace("/onboarding");
+  };
+  const manageSubscription = async () => {
+    const url =
+      Platform.OS === "android"
+        ? "https://play.google.com/store/account/subscriptions?package=com.zikirmatik_asistan.app"
+        : "https://apps.apple.com/account/subscriptions";
+
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (!canOpen) {
+        setPremiumError("Abonelik yönetim ekranı açılamadı.");
+        return;
+      }
+
+      await Linking.openURL(url);
+    } catch {
+      setPremiumError("Abonelik yönetim ekranı açılamadı.");
+    }
+  };
+  const rateApp = async () => {
+    const androidPackage = "com.zikirmatik_asistan.app";
+    const androidNativeUrl = `market://details?id=${androidPackage}`;
+    const androidWebUrl = `https://play.google.com/store/apps/details?id=${androidPackage}`;
+    const iosUrl = "https://apps.apple.com/tr/search?term=zikirmatik%20rehber";
+
+    try {
+      if (Platform.OS === "android") {
+        const canOpenNative = await Linking.canOpenURL(androidNativeUrl);
+        if (canOpenNative) {
+          await Linking.openURL(androidNativeUrl);
+          return;
+        }
+        await Linking.openURL(androidWebUrl);
+        return;
+      }
+
+      await Linking.openURL(iosUrl);
+    } catch {
+      setPremiumError("Mağaza sayfası açılamadı.");
+    }
+  };
+  const sendFeedback = async () => {
+    const subject = encodeURIComponent("Zikirmatik Rehber Geri Bildirimi");
+    const body = encodeURIComponent(
+      "Merhaba,\n\nGeri bildirimim:\n\n\n---\nCihaz:\nUygulama sürümü:\n"
+    );
+    const mailUrl = `mailto:support@zikirmatik.app?subject=${subject}&body=${body}`;
+
+    try {
+      const canOpen = await Linking.canOpenURL(mailUrl);
+      if (!canOpen) {
+        setPremiumError("E-posta uygulaması açılamadı.");
+        return;
+      }
+      await Linking.openURL(mailUrl);
+    } catch {
+      setPremiumError("E-posta uygulaması açılamadı.");
+    }
+  };
+
+  const activatePremium = async () => {
+    if (authStatus !== "authenticated" || !session?.userId) {
+      setPremiumError("Premium aktivasyonu için önce giriş yapmalısın.");
+      return;
+    }
+
+    setIsActivatingPremium(true);
+    setPremiumError(undefined);
+    try {
+      const synced = await purchasePremiumWithRevenueCat(session.userId, session.accessToken, premiumPlan);
+      hydrateFromBackend({ isPremium: synced.isPremium });
+      setBackendUser((current) => (current ? { ...current, isPremium: synced.isPremium } : current));
+      if (synced.isPremium) {
+        closePremiumSheet();
+      }
+    } catch (error) {
+      setPremiumError(toRevenueCatMessage(error));
+    } finally {
+      setIsActivatingPremium(false);
+    }
+  };
+
+  const restorePremium = async () => {
+    if (authStatus !== "authenticated" || !session?.userId) {
+      setPremiumError("Satın alma geri yükleme için önce giriş yapmalısın.");
+      return;
+    }
+
+    setIsRestoringPremium(true);
+    setPremiumError(undefined);
+    try {
+      const synced = await restorePremiumWithRevenueCat(session.userId, session.accessToken);
+      hydrateFromBackend({ isPremium: synced.isPremium });
+      setBackendUser((current) => (current ? { ...current, isPremium: synced.isPremium } : current));
+      if (synced.isPremium) {
+        closePremiumSheet();
+      } else {
+        setPremiumError("Aktif abonelik bulunamadı.");
+      }
+    } catch (error) {
+      setPremiumError(toRevenueCatMessage(error));
+    } finally {
+      setIsRestoringPremium(false);
+    }
+  };
+
+  useEffect(() => {
+    if (authStatus !== "authenticated" || !session?.userId || !isRevenueCatConfigured()) {
+      return;
+    }
+
+    let isCancelled = false;
+    const run = async () => {
+      try {
+        const synced = await syncPremiumStatusWithRevenueCat(session.userId, session.accessToken);
+        if (!isCancelled) {
+          if (synced.isPremium) {
+            hydrateFromBackend({ isPremium: true });
+            setBackendUser((current) => (current ? { ...current, isPremium: true } : current));
+          }
+        }
+      } catch {
+        // Keep existing backend premium status when RevenueCat sync fails.
+      }
+    };
+
+    void run();
+    return () => {
+      isCancelled = true;
+    };
+  }, [authStatus, hydrateFromBackend, session?.accessToken, session?.userId]);
+
+  const purposeValue = backendUser?.onboarding?.purpose ?? onboardingPurpose;
+  const moodValue = backendUser?.onboarding?.mood ?? onboardingMood;
+  const personalCityValue =
+    backendUser?.onboarding?.city ??
+    backendUser?.city ??
+    (onboardingCity || city);
+  const purposeLabel = getPurposeLabel(purposeValue);
+  const moodLabel = getMoodLabel(moodValue);
+  const hasPersonalInfoChanges =
+    draftPurpose !== purposeValue ||
+    draftMood !== moodValue ||
+    draftCity.trim() !== personalCityValue.trim();
+  const canSavePersonalInfo = draftCity.trim().length > 0 && hasPersonalInfoChanges && !isSavingPersonalInfo;
+
+  const openPersonalInfoModal = () => {
+    setDraftPurpose(purposeValue);
+    setDraftMood(moodValue);
+    setDraftCity(personalCityValue);
+    setPersonalInfoError(undefined);
+    setIsPersonalInfoModalOpen(true);
+  };
+
+  const closePersonalInfoModal = () => {
+    if (isSavingPersonalInfo) {
+      return;
+    }
+    setPersonalInfoError(undefined);
+    setIsPersonalInfoModalOpen(false);
+  };
+
+  const savePersonalInfo = async () => {
+    const trimmedCity = draftCity.trim();
+    if (!trimmedCity) {
+      setPersonalInfoError("Lütfen şehir seç.");
+      return;
+    }
+
+    setPersonalInfoError(undefined);
+    setIsSavingPersonalInfo(true);
+
+    try {
+      if (authStatus === "authenticated" && session?.userId) {
+        const updatedUser = await saveUserOnboarding(
+          session.userId,
+          {
+            purpose: draftPurpose,
+            mood: draftMood,
+            city: trimmedCity
+          },
+          session.accessToken
+        );
+        setBackendUser(updatedUser);
+      }
+
+      setOnboardingPurpose(draftPurpose);
+      setOnboardingMood(draftMood);
+      setOnboardingCity(trimmedCity);
+      hydrateFromBackend({ city: trimmedCity });
+      setIsPersonalInfoModalOpen(false);
+    } catch (error) {
+      if (error instanceof UsersApiError) {
+        setPersonalInfoError(error.message);
+      } else {
+        setPersonalInfoError("Kişisel bilgiler güncellenemedi. Lütfen tekrar dene.");
+      }
+    } finally {
+      setIsSavingPersonalInfo(false);
+    }
+  };
+
+  return {
+    displayName: backendUser?.displayName ?? authDisplayName ?? fallbackDisplayName,
+    profileImageUrl: backendUser?.profileImageUrl,
+    memberSinceLabel:
+      backendUser?.createdAt
+        ? toMemberSinceLabel(backendUser.createdAt)
+        : memberSinceLabel,
+    isPremium: backendUser?.isPremium ?? isPremium,
+    city: backendUser?.city ?? city,
+    purposeLabel,
+    moodLabel,
+    personalCityLabel: personalCityValue,
+    isPersonalInfoModalOpen,
+    draftPurpose,
+    draftMood,
+    draftCity,
+    isSavingPersonalInfo,
+    personalInfoError,
+    canSavePersonalInfo,
+    language,
+    reminderTime,
+    dailyReminderEnabled,
+    kandilNotificationsEnabled,
+    adhanNotificationsEnabled,
+    themeLabel: THEME_LABELS[themeName],
+    fontLabel: FONT_LABELS[fontFamily],
+    quickStats,
+    isPremiumSheetOpen,
+    isActivatingPremium,
+    isRestoringPremium,
+    premiumPlan,
+    isRefreshing,
+    premiumError,
+    refresh,
+    setDailyReminderEnabled,
+    setKandilNotificationsEnabled,
+    setAdhanNotificationsEnabled,
+    goThemeSelector,
+    goFontSelector,
+    openPersonalInfoModal,
+    closePersonalInfoModal,
+    setDraftPurpose,
+    setDraftMood,
+    setDraftCity,
+    savePersonalInfo,
+    manageSubscription,
+    rateApp,
+    sendFeedback,
+    openPremiumSheet,
+    closePremiumSheet,
+    setPremiumPlan,
+    activatePremium,
+    restorePremium,
+    onRestartOnboarding,
+    onLogout
+  };
+}
+
+function getPurposeLabel(value: string) {
+  return PURPOSE_OPTIONS.find((item) => item.id === value)?.title ?? "Belirtilmedi";
+}
+
+function getMoodLabel(value: string) {
+  const matched = MOOD_OPTIONS.find((item) => item.id === value);
+  return matched ? `${matched.emoji} ${matched.label}` : "Belirtilmedi";
+}
+
+function toMemberSinceLabel(isoDate: string) {
+  const createdAt = new Date(isoDate);
+  if (Number.isNaN(createdAt.getTime())) {
+    return "Yeni üye";
+  }
+
+  const formatter = new Intl.DateTimeFormat("tr-TR", { month: "long", year: "numeric" });
+  const formatted = formatter.format(createdAt);
+  const withCapitalizedMonth = `${formatted.charAt(0).toUpperCase()}${formatted.slice(1)}`;
+  return `${withCapitalizedMonth}'ten beri`;
+}

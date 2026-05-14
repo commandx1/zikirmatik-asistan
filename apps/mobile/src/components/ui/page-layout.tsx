@@ -1,0 +1,84 @@
+import type { PropsWithChildren, ReactNode } from "react";
+import {
+  ImageBackground,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+  type ScrollViewProps,
+  type StyleProp,
+  type ViewStyle
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useThemeTokens } from "@zikirmatik/ui";
+import { resolveThemeBackgroundImage } from "../../theme/background-image";
+
+type PageLayoutProps = PropsWithChildren<{
+  backgroundClassName?: string;
+  frameClassName?: string;
+}>;
+
+type PageScrollViewProps = Omit<ScrollViewProps, "contentContainerStyle" | "refreshControl"> & {
+  children: ReactNode;
+  contentInnerClassName?: string;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  bottomPadding?: number;
+  onRefresh?: () => void | Promise<void>;
+  refreshing?: boolean;
+};
+
+export function PageLayout({
+  children,
+  backgroundClassName = "bg-[--bg]",
+  frameClassName = "relative flex-1 w-full max-w-[375px]"
+}: PageLayoutProps) {
+  const { tokens, themeName } = useThemeTokens();
+  const gradient = tokens.bgGradient;
+  const backgroundImage = resolveThemeBackgroundImage(themeName);
+  const showGradient = !backgroundImage && gradient && gradient.colors.length >= 2;
+
+  return (
+    <View className={`flex-1 items-center ${backgroundClassName}`}>
+      {backgroundImage ? (
+        <ImageBackground source={backgroundImage} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
+      ) : null}
+      {showGradient ? (
+        <LinearGradient
+          colors={gradient.colors}
+          start={gradient.start}
+          end={gradient.end}
+          style={StyleSheet.absoluteFillObject}
+          pointerEvents="none"
+        />
+      ) : null}
+      <View className={frameClassName}>{children}</View>
+    </View>
+  );
+}
+
+export function PageScrollView({
+  children,
+  contentInnerClassName = "w-full",
+  contentContainerStyle,
+  bottomPadding = 32,
+  onRefresh,
+  refreshing = false,
+  ...props
+}: PageScrollViewProps) {
+  return (
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      showsVerticalScrollIndicator={false}
+      className="flex-1 w-full"
+      contentContainerStyle={[{ paddingBottom: bottomPadding }, contentContainerStyle]}
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        ) : undefined
+      }
+      {...props}
+    >
+      <View className={contentInnerClassName}>{children}</View>
+    </ScrollView>
+  );
+}

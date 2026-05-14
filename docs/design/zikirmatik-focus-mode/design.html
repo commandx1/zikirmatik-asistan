@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zikirmatik Odak Modu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0F1B2D',
+                            card: '#162236',
+                            gold: '#C8972A',
+                            emerald: '#2E7D5E',
+                            textPrimary: '#F0EDE6',
+                            textMuted: '#9A9080',
+                            success: '#4CAF7D',
+                            cream: '#F5F0E8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.15)',
+                        'glow': '0 0 20px rgba(200, 151, 42, 0.3)',
+                        'glow-active': '0 0 40px rgba(200, 151, 42, 0.5)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0F1B2D; /* Default background */
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Ambient Geometric Pattern */
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8972A' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-size: 60px 60px;
+        }
+
+        /* Tap Zone Ripple Animation */
+        @keyframes ripple-effect {
+            0% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(200, 151, 42, 0.3); /* brand-gold with opacity */
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+            pointer-events: none;
+        }
+
+        /* Completion Glow */
+        .glow-effect {
+            filter: drop-shadow(0 0 20px rgba(200, 151, 42, 0.4));
+        }
+
+        /* Calligraphy Pattern for Completion */
+        .bg-calligraphy {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' opacity='0.05'%3E%3Cpath fill='%23C8972A' d='M50,10 C27.9,10 10,27.9 10,50 C10,72.1 27.9,90 50,90 C72.1,90 90,72.1 90,50 C90,27.9 72.1,10 50,10 Z M50,85 C30.7,85 15,69.3 15,50 C15,30.7 30.7,15 50,15 C69.3,15 85,30.7 85,50 C85,69.3 69.3,85 50,85 Z'/%3E%3Cpath fill='%23C8972A' d='M45,30 L55,30 L55,70 L45,70 Z'/%3E%3C/svg%3E");
+            background-size: 150px;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Frame container for side-by-side display */
+        .frames-container {
+            display: flex;
+            gap: 24px;
+            padding: 24px;
+            overflow-x: auto;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #000; /* Dark background for presentation */
+        }
+
+        .iphone-frame {
+            width: 375px;
+            height: 840px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px; /* iPhone corner radius */
+            border: 8px solid #333; /* Mockup border */
+            background-color: #0F1B2D; /* App background */
+        }
+
+        .light-mode-frame {
+            background-color: #F5F0E8;
+        }
+
+        /* Top Bar Fade */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            pointer-events: none;
+        }
+        
+        .fade-in {
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* Circular Progress */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="m-0 p-0 font-sans text-brand-textPrimary bg-black">
+
+    <div class="frames-container hide-scrollbar" id="main_container">
+
+        <!-- Frame 1: Active State -->
+        <div class="iphone-frame bg-pattern flex flex-col relative" id="frame_1_active">
+            
+            <!-- Top Bar -->
+            <header class="px-5 pt-14 pb-4 flex justify-between items-center z-20 relative" id="top_bar_1">
+                <button class="text-[13px] font-medium text-brand-textMuted hover:text-brand-textPrimary transition-colors flex items-center gap-1">
+                    <i class="fa-solid fa-xmark text-[10px]"></i> Kapat
+                </button>
+                <button class="w-8 h-8 flex items-center justify-center text-brand-textMuted hover:text-brand-textPrimary transition-colors">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </header>
+
+            <!-- Dhikr Info -->
+            <section class="flex flex-col items-center justify-center pt-8 pb-12 px-6 z-10 relative" id="dhikr_info_1">
+                <h2 class="font-arabic text-[40px] leading-tight text-brand-textPrimary text-center mb-4">أَسْتَغْفِرُ اللَّهَ</h2>
+                <p class="text-[18px] font-medium text-brand-textPrimary mb-1">Estağfirullah</p>
+                <p class="text-[13px] text-brand-textMuted text-center">Allah'tan bağışlanma dilerim</p>
+            </section>
+
+            <!-- Counter Area (Dominant) -->
+            <section class="flex-1 flex flex-col items-center justify-center relative z-10 pointer-events-none" id="counter_area_1">
+                <div class="relative flex items-center justify-center w-64 h-64">
+                    <!-- SVG Progress Ring -->
+                    <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+                        <!-- Background ring -->
+                        <circle class="text-white/5" stroke-width="2" stroke="currentColor" fill="transparent" r="48" cx="50" cy="50" />
+                        <!-- Progress ring (47%) -->
+                        <circle class="text-brand-gold progress-ring__circle" stroke-width="2" stroke-linecap="round" stroke="currentColor" fill="transparent" r="48" cx="50" cy="50" style="stroke-dasharray: 301.59; stroke-dashoffset: 159.84;" />
+                    </svg>
+                    
+                    <div class="flex flex-col items-center justify-center mt-4">
+                        <span class="text-[80px] font-bold text-brand-textPrimary leading-none tracking-tighter" id="count_display_1">47</span>
+                        <span class="text-[14px] text-brand-textMuted mt-2">/ 100</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tap Zone (Lower Half) -->
+            <div class="absolute bottom-0 left-0 right-0 h-[50%] z-0 cursor-pointer tap-zone flex flex-col items-center justify-start pt-20" id="tap_zone_1" onclick="createRipple(event, this)">
+                <div class="absolute inset-0 bg-brand-card/10 transition-colors duration-200" id="tap_bg_1"></div>
+                <span class="text-[13px] text-brand-textMuted opacity-60 transition-opacity duration-500" id="tap_hint_1">Saymak için dokun</span>
+                
+                <!-- Haptic indicator -->
+                <div class="absolute bottom-32 right-6 opacity-30">
+                    <i class="fa-solid fa-mobile-screen-button text-brand-textMuted text-[10px]"></i>
+                </div>
+            </div>
+
+            <!-- Bottom Controls -->
+            <nav class="absolute bottom-8 left-0 right-0 px-6 z-20 flex justify-center" id="bottom_controls_1">
+                <div class="flex items-center gap-8 bg-brand-card/50 backdrop-blur-md rounded-full px-6 py-3 border border-white/5">
+                    <button class="flex flex-col items-center gap-1 text-brand-textMuted hover:text-brand-textPrimary transition-colors w-12">
+                        <i class="fa-solid fa-arrow-rotate-left text-[14px]"></i>
+                        <span class="text-[9px] font-medium">Sıfırla</span>
+                    </button>
+                    
+                    <button class="flex flex-col items-center gap-1 text-brand-textMuted hover:text-brand-textPrimary transition-colors w-16">
+                        <i class="fa-solid fa-shuffle text-[14px]"></i>
+                        <span class="text-[9px] font-medium">Değiştir</span>
+                    </button>
+                    
+                    <div class="flex flex-col items-center gap-1 text-brand-textMuted w-12">
+                        <span class="text-[12px] font-medium text-brand-textPrimary">8:42</span>
+                        <span class="text-[9px] font-medium">Süre</span>
+                    </div>
+                </div>
+            </nav>
+
+        </div>
+
+        <!-- Frame 2: Immersive State (Top bar faded) -->
+        <div class="iphone-frame bg-pattern flex flex-col relative" id="frame_2_immersive">
+            
+            <!-- Top Bar (Faded) -->
+            <header class="px-5 pt-14 pb-4 flex justify-between items-center z-20 relative fade-out" id="top_bar_2">
+                <button class="text-[13px] font-medium text-brand-textMuted flex items-center gap-1">
+                    <i class="fa-solid fa-xmark text-[10px]"></i> Kapat
+                </button>
+                <button class="w-8 h-8 flex items-center justify-center text-brand-textMuted">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </header>
+
+            <!-- Dhikr Info -->
+            <section class="flex flex-col items-center justify-center pt-8 pb-12 px-6 z-10 relative" id="dhikr_info_2">
+                <h2 class="font-arabic text-[40px] leading-tight text-brand-textPrimary text-center mb-4">أَسْتَغْفِرُ اللَّهَ</h2>
+                <p class="text-[18px] font-medium text-brand-textPrimary mb-1">Estağfirullah</p>
+                <p class="text-[13px] text-brand-textMuted text-center">Allah'tan bağışlanma dilerim</p>
+            </section>
+
+            <!-- Counter Area -->
+            <section class="flex-1 flex flex-col items-center justify-center relative z-10 pointer-events-none" id="counter_area_2">
+                <div class="relative flex items-center justify-center w-64 h-64">
+                    <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+                        <circle class="text-white/5" stroke-width="2" stroke="currentColor" fill="transparent" r="48" cx="50" cy="50" />
+                        <!-- Progress ring (75%) -->
+                        <circle class="text-brand-gold progress-ring__circle" stroke-width="2" stroke-linecap="round" stroke="currentColor" fill="transparent" r="48" cx="50" cy="50" style="stroke-dasharray: 301.59; stroke-dashoffset: 75.39;" />
+                    </svg>
+                    
+                    <div class="flex flex-col items-center justify-center mt-4">
+                        <span class="text-[80px] font-bold text-brand-textPrimary leading-none tracking-tighter" id="count_display_2">75</span>
+                        <span class="text-[14px] text-brand-textMuted mt-2">/ 100</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tap Zone -->
+            <div class="absolute bottom-0 left-0 right-0 h-[50%] z-0 cursor-pointer tap-zone flex flex-col items-center justify-start pt-20" id="tap_zone_2" onclick="createRipple(event, this)">
+                <div class="absolute inset-0 bg-brand-card/10 transition-colors duration-200"></div>
+                <!-- Hint text faded out -->
+            </div>
+
+            <!-- Bottom Controls -->
+            <nav class="absolute bottom-8 left-0 right-0 px-6 z-20 flex justify-center" id="bottom_controls_2">
+                <div class="flex items-center gap-8 bg-brand-card/50 backdrop-blur-md rounded-full px-6 py-3 border border-white/5">
+                    <button class="flex flex-col items-center gap-1 text-brand-textMuted hover:text-brand-textPrimary transition-colors w-12">
+                        <i class="fa-solid fa-arrow-rotate-left text-[14px]"></i>
+                        <span class="text-[9px] font-medium">Sıfırla</span>
+                    </button>
+                    <button class="flex flex-col items-center gap-1 text-brand-textMuted hover:text-brand-textPrimary transition-colors w-16">
+                        <i class="fa-solid fa-shuffle text-[14px]"></i>
+                        <span class="text-[9px] font-medium">Değiştir</span>
+                    </button>
+                    <div class="flex flex-col items-center gap-1 text-brand-textMuted w-12">
+                        <span class="text-[12px] font-medium text-brand-textPrimary">12:15</span>
+                        <span class="text-[9px] font-medium">Süre</span>
+                    </div>
+                </div>
+            </nav>
+
+        </div>
+
+        <!-- Frame 3: Completion State -->
+        <div class="iphone-frame bg-pattern flex flex-col relative overflow-hidden" id="frame_3_completion">
+            
+            <!-- Calligraphy Background Element -->
+            <div class="absolute inset-0 bg-calligraphy z-0"></div>
+
+            <!-- Top Bar -->
+            <header class="px-5 pt-14 pb-4 flex justify-between items-center z-20 relative" id="top_bar_3">
+                <button class="text-[13px] font-medium text-brand-textMuted hover:text-brand-textPrimary transition-colors flex items-center gap-1">
+                    <i class="fa-solid fa-xmark text-[10px]"></i> Kapat
+                </button>
+                <button class="w-8 h-8 flex items-center justify-center text-brand-textMuted hover:text-brand-textPrimary transition-colors">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </header>
+
+            <!-- Dhikr Info -->
+            <section class="flex flex-col items-center justify-center pt-8 pb-8 px-6 z-10 relative" id="dhikr_info_3">
+                <h2 class="font-arabic text-[40px] leading-tight text-brand-textPrimary text-center mb-4">أَسْتَغْفِرُ اللَّهَ</h2>
+                <p class="text-[18px] font-medium text-brand-textPrimary mb-1">Estağfirullah</p>
+                <p class="text-[13px] text-brand-textMuted text-center">Allah'tan bağışlanma dilerim</p>
+            </section>
+
+            <!-- Counter Area (Completed) -->
+            <section class="flex-1 flex flex-col items-center justify-center relative z-10" id="counter_area_3">
+                <div class="relative flex items-center justify-center w-64 h-64 mb-6">
+                    <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+                        <circle class="text-brand-gold/20" stroke-width="2" stroke="currentColor" fill="transparent" r="48" cx="50" cy="50" />
+                        <!-- Full Progress ring -->
+                        <circle class="text-brand-gold progress-ring__circle" stroke-width="2" stroke-linecap="round" stroke="currentColor" fill="transparent" r="48" cx="50" cy="50" style="stroke-dasharray: 301.59; stroke-dashoffset: 0;" />
+                    </svg>
+                    
+                    <div class="flex flex-col items-center justify-center mt-4">
+                        <span class="text-[80px] font-bold text-brand-gold leading-none tracking-tighter glow-effect" id="count_display_3">100</span>
+                    </div>
+                </div>
+
+                <div class="text-center z-20 fade-in">
+                    <p class="text-[16px] font-medium text-brand-textPrimary mb-1">Maşallah. Hedefe ulaştın.</p>
+                    <p class="text-[13px] text-brand-textMuted">Oturum süresi: 15:30</p>
+                </div>
+            </section>
+
+            <!-- Completion Actions -->
+            <div class="absolute bottom-12 left-0 right-0 px-6 z-20 flex flex-col gap-3" id="completion_actions">
+                <button class="w-full py-4 rounded-xl bg-brand-gold text-brand-navy font-bold text-[16px] shadow-glow hover:bg-[#E8B84B] transition-colors">
+                    Tamamla
+                </button>
+                <button class="w-full py-4 rounded-xl bg-transparent border border-brand-gold text-brand-gold font-bold text-[16px] hover:bg-brand-gold/10 transition-colors">
+                    Tekrarla
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Ripple effect for Tap Zone
+        function createRipple(event, element) {
+            const circle = document.createElement('span');
+            const diameter = Math.max(element.clientWidth, element.clientHeight);
+            const radius = diameter / 2;
+
+            const rect = element.getBoundingClientRect();
+            
+            // Calculate click coordinates relative to the element
+            const x = event.clientX - rect.left - radius;
+            const y = event.clientY - rect.top - radius;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${x}px`;
+            circle.style.top = `${y}px`;
+            circle.classList.add('ripple');
+
+            // Remove existing ripples to prevent buildup
+            const existingRipple = element.querySelector('.ripple');
+            if (existingRipple) {
+                existingRipple.remove();
+            }
+
+            element.appendChild(circle);
+
+            // Hide hint text on first tap
+            const hint = element.querySelector('span');
+            if(hint) hint.style.opacity = '0';
+        }
+    </script>
+</body>
+</html>

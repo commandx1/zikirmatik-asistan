@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kandil & Özel Günler - Zikirmatik Rehber</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0F1B2D',
+                            card: '#162236',
+                            gold: '#C8972A',
+                            emerald: '#2E7D5E',
+                            textPrimary: '#F0EDE6',
+                            textMuted: '#9A9080',
+                            success: '#4CAF7D',
+                            cream: '#F5F0E8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.15)',
+                        'glow': '0 0 20px rgba(200, 151, 42, 0.3)',
+                        'glow-active': '0 0 40px rgba(200, 151, 42, 0.5)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0F1B2D;
+            color: #F0EDE6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .light-mode {
+            background-color: #F5F0E8;
+            color: #0F1B2D;
+        }
+        .light-mode .card-bg {
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-color: #E5E7EB;
+        }
+        .light-mode .text-brand-textPrimary {
+            color: #0F1B2D;
+        }
+        .light-mode .text-brand-textMuted {
+            color: #6B7280;
+        }
+        .light-mode .bottom-nav {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid #E5E7EB;
+        }
+
+        /* Geometric Pattern Overlay */
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8972A' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #2E7D5E;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #2E7D5E;
+        }
+        
+        /* Segmented Timer Font (approximating with mono or tracking) */
+        .timer-text {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="min-h-[100dvh] flex flex-col mx-auto w-full max-w-[375px] relative overflow-x-hidden" id="app-container">
+
+    <!-- Header -->
+    <header id="top_bar" class="px-5 pt-12 pb-4 flex justify-between items-center z-10 relative">
+        <button class="w-10 h-10 rounded-full bg-brand-card flex items-center justify-center border border-white/5 text-brand-textPrimary hover:bg-white/5 transition-colors">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div class="flex-1 flex flex-col items-center">
+            <h1 class="text-lg font-bold text-brand-textPrimary">Kandil & Özel Günler</h1>
+            <p class="text-xs text-brand-textMuted font-medium">Kutsal gecelere hazırlan</p>
+        </div>
+        <button id="info_btn" class="w-10 h-10 rounded-full bg-brand-card flex items-center justify-center border border-white/5 text-brand-textMuted hover:text-brand-gold transition-colors">
+            <i class="fa-solid fa-circle-info"></i>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col px-5 pb-24 z-10 relative space-y-6">
+        
+        <!-- Next Kandil Hero Card (Normal State) -->
+        <section id="hero_normal" class="relative">
+            <div class="card-bg bg-brand-card rounded-[24px] p-6 border border-white/5 shadow-soft relative overflow-hidden bg-pattern">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-1.5 bg-brand-navy border border-brand-gold/20 px-3 py-1.5 rounded-full mb-4 relative z-10">
+                    <span class="text-xs font-semibold text-brand-gold">Yaklaşıyor 🌙</span>
+                </div>
+
+                <div class="relative z-10 mb-6">
+                    <h2 class="text-2xl font-bold text-brand-textPrimary mb-1 tracking-tight">Mevlid Kandili</h2>
+                    <p class="text-sm text-brand-textMuted">13 Eylül 2025, Perşembe</p>
+                </div>
+
+                <!-- Segmented Countdown -->
+                <div class="flex justify-between items-center bg-brand-navy/50 rounded-2xl p-4 mb-6 border border-white/5 relative z-10 backdrop-blur-sm">
+                    <div class="flex flex-col items-center">
+                        <span class="timer-text text-2xl font-bold text-brand-textPrimary">03</span>
+                        <span class="text-[10px] text-brand-textMuted uppercase font-medium mt-1">Gün</span>
+                    </div>
+                    <span class="text-brand-gold/50 font-bold">:</span>
+                    <div class="flex flex-col items-center">
+                        <span class="timer-text text-2xl font-bold text-brand-textPrimary">14</span>
+                        <span class="text-[10px] text-brand-textMuted uppercase font-medium mt-1">Sa</span>
+                    </div>
+                    <span class="text-brand-gold/50 font-bold">:</span>
+                    <div class="flex flex-col items-center">
+                        <span class="timer-text text-2xl font-bold text-brand-textPrimary">22</span>
+                        <span class="text-[10px] text-brand-textMuted uppercase font-medium mt-1">Dk</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3 relative z-10">
+                    <button class="w-full border border-brand-emerald text-brand-emerald font-semibold py-3.5 rounded-full text-sm hover:bg-brand-emerald/10 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-heart"></i>
+                        Hazırlık modunu başlat
+                    </button>
+                    <button class="w-full text-brand-gold font-medium py-2 text-sm hover:opacity-80 transition-opacity">
+                        Kandil zikirlerine bak
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Night Hero Card (Hidden by default, shown via JS demo) -->
+        <section id="hero_active" class="relative hidden">
+            <div class="card-bg bg-brand-card rounded-[24px] p-6 border border-brand-gold/40 shadow-glow-active relative overflow-hidden bg-pattern">
+                <!-- Glowing Orb Background -->
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-brand-gold/20 rounded-full blur-[60px] pointer-events-none"></div>
+
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-1.5 bg-brand-gold/10 border border-brand-gold/50 px-3 py-1.5 rounded-full mb-4 relative z-10 animate-pulse">
+                    <span class="text-xs font-bold text-brand-gold">Bu Gece! ✨</span>
+                </div>
+
+                <div class="relative z-10 mb-6 text-center">
+                    <h2 class="text-[28px] font-bold text-brand-textPrimary mb-1 tracking-tight">Kadir Gecesi</h2>
+                    <p class="text-sm text-brand-gold font-medium">Bin aydan daha hayırlı gece</p>
+                </div>
+
+                <div class="flex flex-col gap-3 relative z-10">
+                    <button class="w-full bg-brand-gold text-brand-navy font-bold py-4 rounded-full text-[15px] shadow-glow hover:bg-brand-gold/90 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-sparkles"></i>
+                        Bu Gece İçin Özel Akış
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ramazan Special Section -->
+        <section id="ramazan_special">
+            <div class="card-bg bg-[#11241C] rounded-[20px] p-5 border border-brand-emerald/30 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-brand-emerald/10 text-[100px] leading-none pointer-events-none">
+                    <i class="fa-solid fa-moon"></i>
+                </div>
+                
+                <div class="flex justify-between items-center mb-4 relative z-10">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-moon text-brand-emerald text-lg"></i>
+                        <h3 class="text-base font-bold text-brand-textPrimary">Ramazan Modu</h3>
+                    </div>
+                    
+                    <!-- Toggle -->
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="toggle" id="ramazan_toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-[#1A2E24] appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out"/>
+                        <label for="ramazan_toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-[#1A2E24] cursor-pointer transition-colors duration-200 ease-in-out"></label>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 bg-black/20 rounded-xl p-3 relative z-10 border border-white/5">
+                    <div class="flex-1 text-center border-r border-white/10">
+                        <span class="text-[10px] text-brand-textMuted uppercase tracking-wider block mb-1">Sahur</span>
+                        <span class="text-lg font-semibold text-brand-textPrimary">04:23</span>
+                    </div>
+                    <div class="flex-1 text-center">
+                        <span class="text-[10px] text-brand-textMuted uppercase tracking-wider block mb-1">İftar</span>
+                        <span class="text-lg font-semibold text-brand-textPrimary">19:45</span>
+                    </div>
+                </div>
+
+                <!-- Hidden flow shown when active -->
+                <div id="ramazan_active_flow" class="hidden mt-4 pt-4 border-t border-white/10 relative z-10">
+                    <button class="w-full bg-brand-emerald text-white font-medium py-2.5 rounded-full text-sm hover:bg-brand-emerald/90 transition-colors">
+                        Ramazan Zikirlerine Git
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upcoming Kandils List -->
+        <section id="upcoming_list">
+            <h3 class="text-sm font-semibold text-brand-textPrimary mb-3 px-1">Yaklaşan Günler</h3>
+            
+            <div class="space-y-3">
+                <!-- Card 1 -->
+                <div class="card-bg bg-brand-card rounded-[16px] p-4 border border-white/5 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-navy border border-brand-gold/20 flex items-center justify-center text-brand-gold">
+                            <i class="fa-solid fa-moon text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-brand-textPrimary">Mevlid Kandili</h4>
+                            <p class="text-[11px] text-brand-textMuted mt-0.5">13 Eylül</p>
+                        </div>
+                    </div>
+                    <div class="bg-brand-navy border border-white/10 px-3 py-1 rounded-full">
+                        <span class="text-[11px] font-medium text-brand-textMuted">3 gün</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card-bg bg-brand-card rounded-[16px] p-4 border border-white/5 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-navy border border-brand-gold/20 flex items-center justify-center text-brand-gold">
+                            <i class="fa-solid fa-star text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-brand-textPrimary">Ramazan Başlangıcı</h4>
+                            <p class="text-[11px] text-brand-textMuted mt-0.5">11 Mart</p>
+                        </div>
+                    </div>
+                    <div class="bg-brand-navy border border-white/10 px-3 py-1 rounded-full">
+                        <span class="text-[11px] font-medium text-brand-textMuted">18 gün</span>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card-bg bg-brand-card rounded-[16px] p-4 border border-white/5 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-navy border border-brand-gold/20 flex items-center justify-center text-brand-gold">
+                            <i class="fa-solid fa-moon text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-brand-textPrimary">Kadir Gecesi</h4>
+                            <p class="text-[11px] text-brand-textMuted mt-0.5">5 Nisan</p>
+                        </div>
+                    </div>
+                    <div class="bg-brand-navy border border-white/10 px-3 py-1 rounded-full">
+                        <span class="text-[11px] font-medium text-brand-textMuted">43 gün</span>
+                    </div>
+                </div>
+
+                 <!-- Card 4 -->
+                 <div class="card-bg bg-brand-card rounded-[16px] p-4 border border-white/5 flex items-center justify-between active:scale-[0.98] transition-transform">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-navy border border-brand-gold/20 flex items-center justify-center text-brand-gold">
+                            <i class="fa-solid fa-mosque text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-brand-textPrimary">Kurban Bayramı</h4>
+                            <p class="text-[11px] text-brand-textMuted mt-0.5">16 Haziran</p>
+                        </div>
+                    </div>
+                    <div class="bg-brand-navy border border-white/10 px-3 py-1 rounded-full">
+                        <span class="text-[11px] font-medium text-brand-textMuted">115 gün</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notification Settings -->
+        <section id="notification_settings" class="mt-2">
+            <div class="card-bg bg-brand-card rounded-[16px] p-4 border border-white/5 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-brand-navy border border-white/10 flex items-center justify-center text-brand-textMuted">
+                        <i class="fa-regular fa-bell text-xs"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium text-brand-textPrimary">Kandil bildirimlerini al</h4>
+                        <p class="text-[10px] text-brand-textMuted mt-0.5">Kandilden 1 gün ve 1 saat önce bildirim</p>
+                    </div>
+                </div>
+                
+                <!-- Toggle -->
+                <div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="notif_toggle" id="notif_toggle" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-[#1A2E24] appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out"/>
+                    <label for="notif_toggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-brand-gold cursor-pointer transition-colors duration-200 ease-in-out"></label>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation Shell (Verbatim from Prior HTML) -->
+    <nav id="bottom_nav" class="bottom-nav fixed bottom-0 left-0 right-0 w-full max-w-[375px] mx-auto bg-brand-navy/95 backdrop-blur-lg border-t border-white/5 pb-safe pt-2 px-2 z-50">
+        <div class="flex justify-around items-center h-16 pb-2">
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-house text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Ana Sayfa</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-list-ul text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Zikirlerim</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-sparkles text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">AI Rehber</span>
+            </button>
+            
+            <!-- Active Tab -->
+            <button class="flex flex-col items-center justify-center w-16 gap-1">
+                <i class="fa-solid fa-moon text-brand-gold text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-gold">Kandil</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-regular fa-user text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Profil</span>
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- Demo Controls -->
+    <div class="fixed top-4 right-4 z-[100] flex gap-2 opacity-20 hover:opacity-100 transition-opacity">
+        <button id="toggle-theme" class="bg-white text-black p-2 rounded text-xs border border-gray-300">Tema</button>
+        <button id="demo-active-night" class="bg-brand-gold text-black p-2 rounded text-xs">Bu Gece Modu</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle Logic
+            const btnTheme = document.getElementById('toggle-theme');
+            const appContainer = document.getElementById('app-container');
+            
+            btnTheme.addEventListener('click', () => {
+                appContainer.classList.toggle('light-mode');
+            });
+
+            // Active Night Demo Logic
+            const btnActiveNight = document.getElementById('demo-active-night');
+            const heroNormal = document.getElementById('hero_normal');
+            const heroActive = document.getElementById('hero_active');
+            
+            let isActiveNight = false;
+
+            btnActiveNight.addEventListener('click', () => {
+                isActiveNight = !isActiveNight;
+                
+                if(isActiveNight) {
+                    heroNormal.classList.add('hidden');
+                    heroActive.classList.remove('hidden');
+                    btnActiveNight.innerText = 'Normal Mod';
+                } else {
+                    heroActive.classList.add('hidden');
+                    heroNormal.classList.remove('hidden');
+                    btnActiveNight.innerText = 'Bu Gece Modu';
+                }
+            });
+
+            // Ramazan Toggle Logic
+            const ramazanToggle = document.getElementById('ramazan_toggle');
+            const ramazanFlow = document.getElementById('ramazan_active_flow');
+
+            ramazanToggle.addEventListener('change', (e) => {
+                if(e.target.checked) {
+                    ramazanFlow.classList.remove('hidden');
+                } else {
+                    ramazanFlow.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

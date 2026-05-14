@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>İstatistik & Seri - Zikirmatik Rehber</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0F1B2D',
+                            card: '#162236',
+                            gold: '#C8972A',
+                            emerald: '#2E7D5E',
+                            textPrimary: '#F0EDE6',
+                            textMuted: '#9A9080',
+                            success: '#4CAF7D',
+                            cream: '#F5F0E8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.15)',
+                        'glow': '0 0 20px rgba(200, 151, 42, 0.3)',
+                        'glow-active': '0 0 40px rgba(200, 151, 42, 0.5)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0F1B2D;
+            color: #F0EDE6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .light-mode {
+            background-color: #F5F0E8;
+            color: #0F1B2D;
+        }
+        .light-mode .card-bg {
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-color: #E5E7EB;
+        }
+        .light-mode .text-brand-textPrimary {
+            color: #0F1B2D;
+        }
+        .light-mode .text-brand-textMuted {
+            color: #6B7280;
+        }
+        .light-mode .bottom-nav {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid #E5E7EB;
+        }
+
+        /* Geometric Pattern Overlay */
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8972A' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        /* Custom styles for progress bars */
+        .progress-bar-track {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .light-mode .progress-bar-track {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-[100dvh] flex flex-col mx-auto w-full max-w-[375px] relative overflow-x-hidden" id="app-container">
+
+    <!-- Header & Period Tabs -->
+    <header id="top_bar" class="px-5 pt-12 pb-4 flex flex-col z-10 relative">
+        <div class="flex justify-between items-center mb-6">
+            <button class="w-10 h-10 rounded-full bg-brand-card flex items-center justify-center border border-white/5 text-brand-textPrimary hover:bg-white/5 transition-colors">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h1 class="text-lg font-bold text-brand-textPrimary">Manevi Takip</h1>
+            <button class="w-10 h-10 rounded-full bg-brand-card flex items-center justify-center border border-white/5 text-brand-textMuted hover:text-brand-gold transition-colors">
+                <i class="fa-solid fa-share-nodes"></i>
+            </button>
+        </div>
+
+        <!-- Period Selector Tabs -->
+        <div class="flex bg-brand-card rounded-full p-1 border border-white/5 relative">
+            <button class="flex-1 py-2 text-[13px] font-semibold text-brand-navy bg-brand-gold rounded-full transition-all shadow-sm">Bu Hafta</button>
+            <button class="flex-1 py-2 text-[13px] font-medium text-brand-textMuted hover:text-brand-textPrimary transition-colors">Bu Ay</button>
+            <button class="flex-1 py-2 text-[13px] font-medium text-brand-textMuted hover:text-brand-textPrimary transition-colors">Tüm Zamanlar</button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col px-5 pb-24 z-10 relative space-y-6">
+        
+        <!-- Streak Hero Card -->
+        <section id="streak_hero">
+            <div class="card-bg bg-brand-card rounded-[24px] p-6 border border-white/5 shadow-soft relative overflow-hidden bg-pattern">
+                <div class="flex items-start justify-between">
+                    <!-- Left Side -->
+                    <div class="flex flex-col">
+                        <div class="text-brand-gold text-[40px] leading-none mb-2 filter drop-shadow-[0_0_8px_rgba(200,151,42,0.4)]">
+                            <i class="fa-solid fa-fire"></i>
+                        </div>
+                        <h2 class="text-[28px] font-bold text-brand-textPrimary tracking-tight leading-tight">12 Günlük<br>Seri</h2>
+                        <p class="text-[13px] text-brand-textMuted mt-2 max-w-[140px]">Bugün de zikrederek serine devam et</p>
+                    </div>
+
+                    <!-- Right Side: Mini Calendar Dots -->
+                    <div class="flex flex-col items-end gap-1.5 mt-2">
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-brand-gold shadow-[0_0_5px_rgba(200,151,42,0.5)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-brand-gold shadow-[0_0_5px_rgba(200,151,42,0.5)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-brand-gold shadow-[0_0_5px_rgba(200,151,42,0.5)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-brand-gold shadow-[0_0_5px_rgba(200,151,42,0.5)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-brand-gold shadow-[0_0_5px_rgba(200,151,42,0.5)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-brand-gold shadow-[0_0_5px_rgba(200,151,42,0.5)]"></div>
+                            <div class="w-2.5 h-2.5 rounded-full border border-brand-gold/30"></div>
+                        </div>
+                        <span class="text-[10px] text-brand-textMuted font-medium uppercase tracking-wider">Son 7 Gün</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2">
+                    <i class="fa-solid fa-award text-brand-textMuted text-xs"></i>
+                    <span class="text-[11px] text-brand-textMuted">En uzun seriniz: <strong class="text-brand-textPrimary font-semibold">21 gün</strong></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Today's Stat Row -->
+        <section id="today_stats">
+            <div class="flex gap-3">
+                <!-- Stat 1 -->
+                <div class="flex-1 card-bg bg-brand-card rounded-[16px] p-4 border border-white/5 flex flex-col justify-center">
+                    <span class="text-[11px] text-brand-textMuted mb-1 font-medium">Bugün</span>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-[22px] font-bold text-brand-textPrimary">847</span>
+                    </div>
+                    <span class="text-[10px] text-brand-textMuted">zikir</span>
+                </div>
+                <!-- Stat 2 -->
+                <div class="flex-1 card-bg bg-brand-card rounded-[16px] p-4 border border-white/5 flex flex-col justify-center">
+                    <span class="text-[11px] text-brand-textMuted mb-1 font-medium">Hedef</span>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-[22px] font-bold text-brand-success">%84</span>
+                    </div>
+                    <span class="text-[10px] text-brand-textMuted">tamamlandı</span>
+                </div>
+                <!-- Stat 3 -->
+                <div class="flex-1 card-bg bg-brand-card rounded-[16px] p-4 border border-white/5 flex flex-col justify-center">
+                    <span class="text-[11px] text-brand-textMuted mb-1 font-medium">Süre</span>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-[22px] font-bold text-brand-textPrimary">12</span>
+                        <span class="text-[12px] text-brand-textPrimary font-medium">dk</span>
+                    </div>
+                    <span class="text-[10px] text-brand-textMuted">ibadet</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Weekly Dhikr Bar Chart -->
+        <section id="weekly_chart" class="card-bg bg-brand-card rounded-[20px] p-5 border border-white/5">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-[15px] font-semibold text-brand-textPrimary">Bu Haftalık Zikir</h3>
+                <span class="text-[11px] font-medium text-brand-textMuted bg-white/5 px-2.5 py-1 rounded-md">Toplam: 4,280</span>
+            </div>
+            <!-- Plotly Container -->
+            <div id="weekly_bar_chart" class="w-full h-[180px]"></div>
+        </section>
+
+        <!-- Mood-Zikir Insight Card -->
+        <section id="ai_insight">
+            <div class="card-bg bg-[#1a2118] rounded-[16px] p-4 border border-brand-emerald/20 flex gap-3 items-start relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 text-brand-emerald/10 text-[80px] leading-none pointer-events-none">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-brand-emerald/20 flex items-center justify-center text-brand-emerald shrink-0 relative z-10">
+                    <i class="fa-solid fa-sparkles text-sm"></i>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-[13px] text-brand-textPrimary leading-relaxed">
+                        "Stresli hissettiğin günlerde <span class="font-semibold text-brand-emerald">La ilahe illallah</span>'a yöneliyorsun. Bu güzel bir alışkanlık."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dhikr Breakdown (Horizontal Bars) -->
+        <section id="dhikr_breakdown">
+            <h3 class="text-[15px] font-semibold text-brand-textPrimary mb-4 px-1">Zikir Dağılımı</h3>
+            <div class="card-bg bg-brand-card rounded-[20px] p-5 border border-white/5 space-y-5">
+                
+                <!-- Item 1 -->
+                <div>
+                    <div class="flex justify-between items-end mb-1.5">
+                        <span class="text-[13px] font-medium text-brand-textPrimary">Estağfirullah</span>
+                        <span class="text-[12px] text-brand-textMuted">340 kez</span>
+                    </div>
+                    <div class="h-1.5 w-full progress-bar-track rounded-full overflow-hidden">
+                        <div class="h-full bg-brand-gold rounded-full" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div>
+                    <div class="flex justify-between items-end mb-1.5">
+                        <span class="text-[13px] font-medium text-brand-textPrimary">Sübhanallah</span>
+                        <span class="text-[12px] text-brand-textMuted">255 kez</span>
+                    </div>
+                    <div class="h-1.5 w-full progress-bar-track rounded-full overflow-hidden">
+                        <div class="h-full bg-brand-emerald rounded-full" style="width: 55%"></div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div>
+                    <div class="flex justify-between items-end mb-1.5">
+                        <span class="text-[13px] font-medium text-brand-textPrimary">La ilahe illallah</span>
+                        <span class="text-[12px] text-brand-textMuted">180 kez</span>
+                    </div>
+                    <div class="h-1.5 w-full progress-bar-track rounded-full overflow-hidden">
+                        <div class="h-full bg-brand-gold rounded-full" style="width: 40%"></div>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div>
+                    <div class="flex justify-between items-end mb-1.5">
+                        <span class="text-[13px] font-medium text-brand-textPrimary">Diğer</span>
+                        <span class="text-[12px] text-brand-textMuted">72 kez</span>
+                    </div>
+                    <div class="h-1.5 w-full progress-bar-track rounded-full overflow-hidden">
+                        <div class="h-full bg-brand-textMuted rounded-full" style="width: 15%"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Monthly Calendar Heatmap -->
+        <section id="monthly_heatmap" class="card-bg bg-brand-card rounded-[20px] p-5 border border-white/5">
+            <h3 class="text-[15px] font-semibold text-brand-textPrimary mb-4">Aylık Görünüm</h3>
+            
+            <!-- Plotly Heatmap Container -->
+            <div id="calendar_heatmap" class="w-full h-[160px] mb-2"></div>
+            
+            <!-- Simple Legend -->
+            <div class="flex items-center justify-end gap-2 text-[10px] text-brand-textMuted font-medium">
+                <span>Az</span>
+                <div class="w-2.5 h-2.5 rounded-sm bg-brand-navy border border-white/5"></div>
+                <div class="w-2.5 h-2.5 rounded-sm bg-brand-gold/30"></div>
+                <div class="w-2.5 h-2.5 rounded-sm bg-brand-gold/70"></div>
+                <div class="w-2.5 h-2.5 rounded-sm bg-brand-gold shadow-[0_0_4px_rgba(200,151,42,0.5)]"></div>
+                <span>Hedef</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation Shell (Verbatim from Prior HTML) -->
+    <nav id="bottom_nav" class="bottom-nav fixed bottom-0 left-0 right-0 w-full max-w-[375px] mx-auto bg-brand-navy/95 backdrop-blur-lg border-t border-white/5 pb-safe pt-2 px-2 z-50">
+        <div class="flex justify-around items-center h-16 pb-2">
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-house text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Ana Sayfa</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-list-ul text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Zikirlerim</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-sparkles text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">AI Rehber</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-moon text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Kandil</span>
+            </button>
+            
+            <!-- Active Tab (Changed for this screen context, assuming Profile/Stats) -->
+            <button class="flex flex-col items-center justify-center w-16 gap-1">
+                <i class="fa-solid fa-chart-simple text-brand-gold text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-gold">İstatistik</span>
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- Demo Controls -->
+    <div class="fixed top-4 right-4 z-[100] flex gap-2 opacity-20 hover:opacity-100 transition-opacity">
+        <button id="toggle-theme" class="bg-white text-black p-2 rounded text-xs border border-gray-300">Tema</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle Logic
+            const btnTheme = document.getElementById('toggle-theme');
+            const appContainer = document.getElementById('app-container');
+            
+            btnTheme.addEventListener('click', () => {
+                appContainer.classList.toggle('light-mode');
+                // Re-render charts for light mode colors if needed (simplified here)
+                setTimeout(initializeCharts, 100);
+            });
+        });
+
+        function initializeCharts() {
+            try {
+                const isLightMode = document.getElementById('app-container').classList.contains('light-mode');
+                const textColor = isLightMode ? '#6B7280' : '#9A9080';
+                const gridColor = isLightMode ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+                const paperBg = 'rgba(0,0,0,0)';
+                const plotBg = 'rgba(0,0,0,0)';
+
+                // 1. Weekly Bar Chart
+                const barData = [{
+                    type: 'bar',
+                    x: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+                    y: [450, 620, 380, 850, 920, 510, 550],
+                    marker: {
+                        color: ['#C8972A', '#C8972A', '#C8972A', '#C8972A', '#E8B84B', '#C8972A', '#C8972A'], // Friday (Cum) is today, slightly brighter
+                        corner_radius: 4 // Requires newer plotly or custom SVG, fallback is fine
+                    },
+                    width: 0.4,
+                    hoverinfo: 'y',
+                    hoverlabel: { bgcolor: '#162236', font: { color: '#F0EDE6' } }
+                }];
+
+                const barLayout = {
+                    margin: { t: 10, r: 0, b: 30, l: 0 },
+                    paper_bgcolor: paperBg,
+                    plot_bgcolor: plotBg,
+                    showlegend: false,
+                    xaxis: {
+                        showgrid: false,
+                        zeroline: false,
+                        tickfont: { color: textColor, size: 10, family: 'Inter' },
+                        fixedrange: true
+                    },
+                    yaxis: {
+                        showgrid: true,
+                        gridcolor: gridColor,
+                        zeroline: false,
+                        showticklabels: false,
+                        fixedrange: true
+                    },
+                    barmode: 'group',
+                    dragmode: false
+                };
+
+                Plotly.newPlot('weekly_bar_chart', barData, barLayout, {displayModeBar: false, responsive: true});
+
+                // 2. Monthly Heatmap (Simplified representation of a calendar)
+                // 4 weeks, 7 days
+                const zData = [
+                    [0, 0.2, 0.5, 0.8, 1.0, 0.3, 0.1], // Week 1
+                    [0.4, 0.6, 0.9, 1.0, 1.0, 0.5, 0.2], // Week 2
+                    [0.1, 0.3, 0.7, 0.8, 0.9, 0.4, 0.0], // Week 3
+                    [0.5, 0.8, 1.0, null, null, null, null] // Week 4 (current)
+                ];
+
+                const heatmapData = [{
+                    type: 'heatmap',
+                    z: zData,
+                    x: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+                    y: ['H1', 'H2', 'H3', 'H4'],
+                    colorscale: [
+                        [0, isLightMode ? '#F3F4F6' : '#0F1B2D'], // Empty
+                        [0.3, 'rgba(200, 151, 42, 0.3)'], // Light
+                        [0.7, 'rgba(200, 151, 42, 0.7)'], // Medium
+                        [1, '#C8972A'] // Goal
+                    ],
+                    showscale: false,
+                    xgap: 4,
+                    ygap: 4,
+                    hoverinfo: 'none'
+                }];
+
+                const heatmapLayout = {
+                    margin: { t: 0, r: 0, b: 20, l: 0 },
+                    paper_bgcolor: paperBg,
+                    plot_bgcolor: plotBg,
+                    xaxis: {
+                        showgrid: false,
+                        zeroline: false,
+                        tickfont: { color: textColor, size: 10, family: 'Inter' },
+                        fixedrange: true,
+                        side: 'bottom'
+                    },
+                    yaxis: {
+                        showgrid: false,
+                        zeroline: false,
+                        showticklabels: false,
+                        fixedrange: true,
+                        autorange: 'reversed'
+                    },
+                    dragmode: false
+                };
+
+                Plotly.newPlot('calendar_heatmap', heatmapData, heatmapLayout, {displayModeBar: false, responsive: true});
+
+            } catch(e) {
+                console.error("Chart initialization failed:", e);
+            }
+        }
+
+        window.addEventListener('load', initializeCharts);
+        setTimeout(initializeCharts, 1200);
+    </script>
+</body>
+</html>

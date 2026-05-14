@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Zikirmatik Rehber",
+    "slug": "zikirmatik-rehber",
+    "scheme": [
+      "zikirmatik",
+      "zikirmatikasistan"
+    ],
+    "orientation": "portrait",
+    "plugins": [
+      "expo-router",
+      "expo-apple-authentication",
+      "@react-native-google-signin/google-signin",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-8425288851880393~6135324235",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.zikirmatik_asistan.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0B1423"
+      },
+      "package": "com.zikirmatik_asistan.app"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "92c9a554-6e71-4839-a779-35da89710140"
+      }
+    }
+  }
+}

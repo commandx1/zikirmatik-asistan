@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tema Seçimi - Zikirmatik Rehber</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0F1B2D',
+                            card: '#162236',
+                            gold: '#C8972A',
+                            emerald: '#2E7D5E',
+                            textPrimary: '#F0EDE6',
+                            textMuted: '#9A9080',
+                            success: '#4CAF7D',
+                            cream: '#F5F0E8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.15)',
+                        'glow': '0 0 20px rgba(200, 151, 42, 0.3)',
+                        'glow-active': '0 0 40px rgba(200, 151, 42, 0.5)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0F1B2D;
+            color: #F0EDE6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .light-mode {
+            background-color: #F5F0E8;
+            color: #0F1B2D;
+        }
+        .light-mode .card-bg {
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-color: #E5E7EB;
+        }
+        .light-mode .text-brand-textPrimary {
+            color: #0F1B2D;
+        }
+        .light-mode .text-brand-textMuted {
+            color: #6B7280;
+        }
+        .light-mode .bottom-nav {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid #E5E7EB;
+        }
+        .light-mode .list-row-border {
+            border-color: #F3F4F6;
+        }
+
+        /* Geometric Pattern Overlay */
+        .bg-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8972A' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .list-row-border {
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Live Preview Animation */
+        @keyframes pulse-border {
+            0% { border-color: rgba(200, 151, 42, 0.2); }
+            50% { border-color: rgba(200, 151, 42, 0.8); }
+            100% { border-color: rgba(200, 151, 42, 0.2); }
+        }
+        .preview-border-pulse {
+            animation: pulse-border 2s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-[100dvh] flex flex-col mx-auto w-full max-w-[375px] relative overflow-x-hidden" id="app-container">
+
+    <!-- Header -->
+    <header id="top_bar" class="px-5 pt-12 pb-4 flex flex-col z-10 relative">
+        <div class="flex justify-between items-center">
+            <button class="w-10 h-10 rounded-full bg-brand-card flex items-center justify-center border border-white/5 text-brand-textPrimary hover:bg-white/5 transition-colors">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="flex flex-col items-center">
+                <h1 class="text-lg font-bold text-brand-textPrimary">Tema Seçimi</h1>
+                <span class="text-[11px] text-brand-textMuted mt-0.5">Uygulamanın görünümünü kişiselleştir</span>
+            </div>
+            <div class="w-10 h-10"></div> <!-- Spacer for centering -->
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col px-5 pb-32 z-10 relative space-y-8">
+        
+        <!-- Live Preview Card -->
+        <section id="live_preview" class="flex flex-col items-center">
+            <span class="text-[11px] font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Önizleme</span>
+            
+            <div class="w-full card-bg bg-brand-card rounded-[24px] border-2 border-dashed border-brand-gold/30 preview-border-pulse p-6 relative overflow-hidden shadow-soft transition-colors duration-500" id="preview_container">
+                <!-- Preview Content (Gece Koyu default) -->
+                <div class="flex flex-col items-center justify-center space-y-6">
+                    <div class="text-center">
+                        <h3 class="font-arabic text-3xl text-brand-textPrimary mb-2" id="preview_arabic">سُبْحَانَ اللَّهِ</h3>
+                        <p class="text-[14px] text-brand-textMuted" id="preview_turkish">Sübhanallah</p>
+                    </div>
+                    
+                    <div class="w-32 h-32 rounded-full border-4 border-brand-gold/20 flex items-center justify-center relative">
+                        <div class="absolute inset-0 rounded-full bg-brand-gold/5"></div>
+                        <span class="text-4xl font-bold text-brand-textPrimary tracking-tight" id="preview_counter">33</span>
+                    </div>
+                    
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[#C8972A] to-[#E8B84B] flex items-center justify-center shadow-glow">
+                        <i class="fa-solid fa-fingerprint text-brand-navy text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Theme Grid -->
+        <section id="theme_grid">
+            <h3 class="text-[13px] font-semibold text-brand-textMuted mb-3 px-1 uppercase tracking-wider">Hazır Temalar</h3>
+            <div class="grid grid-cols-2 gap-3">
+                
+                <!-- Gece Koyu (Selected) -->
+                <button class="relative card-bg bg-brand-card rounded-[16px] p-3 border border-brand-gold shadow-glow flex flex-col items-center gap-2 transition-all group">
+                    <div class="absolute top-2 right-2 w-5 h-5 rounded-full bg-brand-gold flex items-center justify-center z-10">
+                        <i class="fa-solid fa-check text-[10px] text-brand-navy"></i>
+                    </div>
+                    <div class="w-full h-16 rounded-[10px] bg-[#0F1B2D] border border-white/10 flex items-center justify-center overflow-hidden relative">
+                        <div class="w-8 h-8 rounded-full bg-[#162236] flex items-center justify-center border border-[#C8972A]/30">
+                            <div class="w-3 h-3 rounded-full bg-[#C8972A]"></div>
+                        </div>
+                    </div>
+                    <span class="text-[13px] font-medium text-brand-textPrimary">Gece Koyu</span>
+                </button>
+
+                <!-- Cami Yeşili -->
+                <button class="relative card-bg bg-brand-card rounded-[16px] p-3 border border-white/5 hover:border-white/20 flex flex-col items-center gap-2 transition-all group">
+                    <div class="w-full h-16 rounded-[10px] bg-[#0A1A14] border border-white/10 flex items-center justify-center overflow-hidden relative">
+                        <div class="w-8 h-8 rounded-full bg-[#112A20] flex items-center justify-center border border-[#C8972A]/30">
+                            <div class="w-3 h-3 rounded-full bg-[#C8972A]/80"></div>
+                        </div>
+                    </div>
+                    <span class="text-[13px] font-medium text-brand-textPrimary">Cami Yeşili</span>
+                </button>
+
+                <!-- Çöl Kumulu -->
+                <button class="relative card-bg bg-brand-card rounded-[16px] p-3 border border-white/5 hover:border-white/20 flex flex-col items-center gap-2 transition-all group">
+                    <div class="w-full h-16 rounded-[10px] bg-[#E8DECC] border border-black/5 flex items-center justify-center overflow-hidden relative">
+                        <div class="w-8 h-8 rounded-full bg-[#DBCBB3] flex items-center justify-center border border-[#B37B22]/30">
+                            <div class="w-3 h-3 rounded-full bg-[#B37B22]"></div>
+                        </div>
+                    </div>
+                    <span class="text-[13px] font-medium text-brand-textPrimary">Çöl Kumulu</span>
+                </button>
+
+                <!-- Klasik Bej -->
+                <button class="relative card-bg bg-brand-card rounded-[16px] p-3 border border-white/5 hover:border-white/20 flex flex-col items-center gap-2 transition-all group">
+                    <div class="w-full h-16 rounded-[10px] bg-[#F5F0E8] border border-black/5 flex items-center justify-center overflow-hidden relative">
+                        <div class="w-8 h-8 rounded-full bg-[#FFFFFF] flex items-center justify-center border border-[#8B7355]/30">
+                            <div class="w-3 h-3 rounded-full bg-[#8B7355]"></div>
+                        </div>
+                    </div>
+                    <span class="text-[13px] font-medium text-brand-textPrimary">Klasik Bej</span>
+                </button>
+
+                <!-- Derin Mavi -->
+                <button class="relative card-bg bg-brand-card rounded-[16px] p-3 border border-white/5 hover:border-white/20 flex flex-col items-center gap-2 transition-all group">
+                    <div class="w-full h-16 rounded-[10px] bg-[#0A1128] border border-white/10 flex items-center justify-center overflow-hidden relative">
+                        <div class="w-8 h-8 rounded-full bg-[#141F3D] flex items-center justify-center border border-[#94A3B8]/30">
+                            <div class="w-3 h-3 rounded-full bg-[#94A3B8]"></div>
+                        </div>
+                    </div>
+                    <span class="text-[13px] font-medium text-brand-textPrimary">Derin Mavi</span>
+                </button>
+
+                <!-- Gül Bahçesi -->
+                <button class="relative card-bg bg-brand-card rounded-[16px] p-3 border border-white/5 hover:border-white/20 flex flex-col items-center gap-2 transition-all group">
+                    <div class="w-full h-16 rounded-[10px] bg-[#2A1116] border border-white/10 flex items-center justify-center overflow-hidden relative">
+                        <div class="w-8 h-8 rounded-full bg-[#3D1A22] flex items-center justify-center border border-[#C8972A]/30">
+                            <div class="w-3 h-3 rounded-full bg-[#C8972A]"></div>
+                        </div>
+                    </div>
+                    <span class="text-[13px] font-medium text-brand-textPrimary">Gül Bahçesi</span>
+                </button>
+
+                <!-- Saf Siyah -->
+                <button class="relative card-bg bg-brand-card rounded-[16px] p-3 border border-white/5 hover:border-white/20 flex flex-col items-center gap-2 transition-all group">
+                    <div class="w-full h-16 rounded-[10px] bg-[#000000] border border-white/10 flex items-center justify-center overflow-hidden relative">
+                        <div class="w-8 h-8 rounded-full bg-[#111111] flex items-center justify-center border border-[#C8972A]/30">
+                            <div class="w-3 h-3 rounded-full bg-[#C8972A]"></div>
+                        </div>
+                    </div>
+                    <span class="text-[13px] font-medium text-brand-textPrimary">Saf Siyah</span>
+                </button>
+
+                <!-- Açık Mod -->
+                <button class="relative card-bg bg-brand-card rounded-[16px] p-3 border border-white/5 hover:border-white/20 flex flex-col items-center gap-2 transition-all group">
+                    <div class="w-full h-16 rounded-[10px] bg-[#FFFFFF] border border-black/5 flex items-center justify-center overflow-hidden relative">
+                        <div class="w-8 h-8 rounded-full bg-[#F3F4F6] flex items-center justify-center border border-[#0F1B2D]/30">
+                            <div class="w-3 h-3 rounded-full bg-[#0F1B2D]"></div>
+                        </div>
+                    </div>
+                    <span class="text-[13px] font-medium text-brand-textPrimary">Açık Mod</span>
+                </button>
+
+            </div>
+        </section>
+
+        <!-- Font Size Section -->
+        <section id="font_size">
+            <h3 class="text-[13px] font-semibold text-brand-textMuted mb-3 px-1 uppercase tracking-wider">Yazı Boyutu</h3>
+            <div class="card-bg bg-brand-card rounded-[16px] border border-white/5 p-4">
+                
+                <div class="flex bg-brand-navy rounded-xl p-1 mb-6 border border-white/5">
+                    <button class="flex-1 py-2.5 text-[13px] font-medium text-brand-textMuted hover:text-brand-textPrimary transition-colors rounded-lg">Küçük</button>
+                    <button class="flex-1 py-2.5 text-[13px] font-bold text-brand-navy bg-brand-gold rounded-lg shadow-sm flex items-center justify-center gap-1">
+                        Orta <i class="fa-solid fa-check text-[10px]"></i>
+                    </button>
+                    <button class="flex-1 py-2.5 text-[13px] font-medium text-brand-textMuted hover:text-brand-textPrimary transition-colors rounded-lg">Büyük</button>
+                </div>
+                
+                <div class="text-center py-2">
+                    <p class="font-arabic text-2xl text-brand-textPrimary mb-2">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+                    <p class="text-[14px] text-brand-textMuted">Rahmân ve Rahîm olan Allah'ın adıyla</p>
+                </div>
+                <p class="text-center mt-4 text-[11px] text-brand-textMuted opacity-70">"Büyük" seçeneği görme güçlüğü için önerilir.</p>
+            </div>
+        </section>
+
+        <!-- Arabic Font Selector -->
+        <section id="arabic_font">
+            <h3 class="text-[13px] font-semibold text-brand-textMuted mb-3 px-1 uppercase tracking-wider">Arapça Yazı Tipi</h3>
+            <div class="card-bg bg-brand-card rounded-[16px] border border-white/5 overflow-hidden">
+                
+                <!-- Uthmanic Hafs (Selected) -->
+                <button class="w-full flex items-center justify-between p-4 border-b list-row-border bg-white/5 relative border-l-4 border-l-brand-gold transition-colors">
+                    <div class="flex flex-col items-start gap-1">
+                        <span class="text-[14px] font-medium text-brand-textPrimary">Uthmanic Hafs</span>
+                        <span class="text-[11px] text-brand-textMuted">Klasik Kur'an hattı</span>
+                    </div>
+                    <span class="font-arabic text-2xl text-brand-textPrimary">بِسْمِ اللَّهِ</span>
+                </button>
+
+                <!-- Naskh Modern -->
+                <button class="w-full flex items-center justify-between p-4 border-b list-row-border border-l-4 border-l-transparent hover:bg-white/5 transition-colors">
+                    <div class="flex flex-col items-start gap-1">
+                        <span class="text-[14px] font-medium text-brand-textPrimary">Naskh Modern</span>
+                        <span class="text-[11px] text-brand-textMuted">Okunaklı, modern hat</span>
+                    </div>
+                    <span class="font-arabic text-2xl text-brand-textPrimary" style="font-family: serif;">بِسْمِ اللَّهِ</span>
+                </button>
+
+                <!-- Kufi Style -->
+                <button class="w-full flex items-center justify-between p-4 border-l-4 border-l-transparent hover:bg-white/5 transition-colors">
+                    <div class="flex flex-col items-start gap-1">
+                        <span class="text-[14px] font-medium text-brand-textPrimary">Kufi Style</span>
+                        <span class="text-[11px] text-brand-textMuted">Geometrik, köşeli hat</span>
+                    </div>
+                    <span class="font-arabic text-2xl text-brand-textPrimary" style="font-family: sans-serif;">بِسْمِ اللَّهِ</span>
+                </button>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Fixed Bottom Action Area -->
+    <div class="fixed bottom-[72px] left-0 right-0 w-full max-w-[375px] mx-auto px-5 py-4 bg-brand-navy/95 backdrop-blur-lg border-t border-white/5 z-30">
+        <button class="w-full py-4 rounded-xl bg-gradient-to-r from-[#C8972A] to-[#E8B84B] text-brand-navy font-bold text-[16px] shadow-glow-active hover:opacity-90 transition-opacity">
+            Temayı Uygula
+        </button>
+        <p class="text-center text-[11px] text-brand-textMuted mt-3">Değişiklikler anında uygulanır</p>
+    </div>
+
+    <!-- Bottom Navigation Shell (Verbatim from Prior HTML) -->
+    <nav id="bottom_nav" class="bottom-nav fixed bottom-0 left-0 right-0 w-full max-w-[375px] mx-auto bg-brand-navy/95 backdrop-blur-lg border-t border-white/5 pb-safe pt-2 px-2 z-40">
+        <div class="flex justify-around items-center h-16 pb-2">
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-house text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Ana Sayfa</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-list-ul text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Zikirlerim</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-sparkles text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">AI Rehber</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-moon text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Kandil</span>
+            </button>
+            
+            <!-- Active Tab: Profil -->
+            <button class="flex flex-col items-center justify-center w-16 gap-1">
+                <i class="fa-solid fa-user text-brand-gold text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-gold">Profil</span>
+            </button>
+
+        </div>
+    </nav>
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+import { Platform } from "react-native";
+
+export type CreateAiRecommendationPayload = {
+  userId: string;
+  mood: string;
+  freeText?: string;
+  timeContext?: {
+    hour: number;
+    dayOfWeek: number;
+    isSpecialDay: boolean;
+    specialDayName?: string;
+  };
+  maxRecommendations?: number;
+};
+
+export type CreateAiRecommendationResponse = {
+  recommendationId: string;
+  recommendedIds: string[];
+  inferredMood: string;
+  reasoning: string;
+  items: Array<{
+    id: string;
+    nameTurkish: string;
+    nameArabic: string;
+    transliteration: string;
+    meaning: string;
+  }>;
+  usedModel: "openai" | "fallback";
+};
+
+export class AiApiError extends Error {
+  constructor(
+    public readonly kind: "transient" | "terminal",
+    message: string,
+    public readonly status?: number
+  ) {
+    super(message);
+    this.name = "AiApiError";
+  }
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
+
+export async function createAiRecommendation(payload: CreateAiRecommendationPayload): Promise<CreateAiRecommendationResponse> {
+  return requestJson<CreateAiRecommendationResponse>("/v1/ai/recommendations", {
+    method: "POST",
+    body: payload
+  });
+}
+
+export async function selectAiRecommendation(recommendationId: string, selectedDhikrId: string) {
+  return requestJson(`/v1/ai/recommendations/${recommendationId}/select`, {
+    method: "PATCH",
+    body: { selectedDhikrId }
+  });
+}
+
+function resolveApiBaseUrl() {
+  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
+  if (configured) {
+    return configured.replace(/\/+$/, "");
+  }
+
+  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
+  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
+  return `http://${host}:${port}`;
+}
+
+async function requestJson<TResponse>(
+  path: string,
+  options: { method: "POST" | "PATCH"; body: unknown }
+): Promise<TResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: options.method,
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify(options.body)
+    });
+
+    const rawResponse = await response.text();
+    const parsed = safeParseJson(rawResponse);
+    const data = unwrapDataEnvelope(parsed);
+
+    if (!response.ok) {
+      const message = extractErrorMessage(data, "Asistan servisi şu anda yanıt veremiyor.");
+      throw new AiApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
+    }
+
+    return (data ?? {}) as TResponse;
+  } catch (error) {
+    if (error instanceof AiApiError) {
+      throw error;
+    }
+
+    throw new AiApiError("transient", "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin.");
+  }
+}
+
+function safeParseJson(payload: string): unknown {
+  if (!payload) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(payload);
+  } catch {
+    return payload;
+  }
+}
+
+function unwrapDataEnvelope(payload: unknown) {
+  if (!payload || typeof payload !== "object" || !("data" in payload)) {
+    return payload;
+  }
+
+  return (payload as { data: unknown }).data;
+}
+
+function extractErrorMessage(payload: unknown, fallback: string) {
+  if (typeof payload === "string" && payload.trim()) {
+    return payload;
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return fallback;
+  }
+
+  const candidate = payload as { message?: unknown; error?: unknown };
+  if (typeof candidate.message === "string" && candidate.message.trim()) {
+    return candidate.message;
+  }
+
+  if (typeof candidate.error === "string" && candidate.error.trim()) {
+    return candidate.error;
+  }
+
+  return fallback;
+}

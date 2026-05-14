@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zikirmatik Rehber - AI Rehber</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0F1B2D',
+                            card: '#162236',
+                            gold: '#C8972A',
+                            emerald: '#2E7D5E',
+                            textPrimary: '#F0EDE6',
+                            textMuted: '#9A9080',
+                            success: '#4CAF7D',
+                            cream: '#F5F0E8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px rgba(0, 0, 0, 0.15)',
+                        'glow': '0 0 20px rgba(200, 151, 42, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0F1B2D;
+            color: #F0EDE6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .light-mode {
+            background-color: #F5F0E8;
+            color: #0F1B2D;
+        }
+        .light-mode .card-bg {
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-color: #E5E7EB;
+        }
+        .light-mode .text-brand-textPrimary {
+            color: #0F1B2D;
+        }
+        .light-mode .text-brand-textMuted {
+            color: #6B7280;
+        }
+        .light-mode .input-bg {
+            background-color: #F3F4F6;
+            border-color: #E5E7EB;
+            color: #0F1B2D;
+        }
+        .light-mode .chip-bg {
+            background-color: #F3F4F6;
+            border-color: #E5E7EB;
+            color: #4B5563;
+        }
+        .light-mode .bottom-nav {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid #E5E7EB;
+        }
+
+        /* Shimmer Animation for Loading State */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+        .animate-shimmer {
+            animation: shimmer 2s infinite linear;
+            background: linear-gradient(to right, rgba(255,255,255,0) 4%, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0) 36%);
+            background-size: 1000px 100%;
+        }
+        .light-mode .animate-shimmer {
+            background: linear-gradient(to right, rgba(0,0,0,0) 4%, rgba(0,0,0,0.03) 25%, rgba(0,0,0,0) 36%);
+            background-size: 1000px 100%;
+        }
+    </style>
+</head>
+<body class="min-h-[100dvh] flex flex-col mx-auto w-full max-w-[375px] relative overflow-x-hidden" id="app-container">
+
+    <!-- Header -->
+    <header id="top_bar" class="px-5 pt-12 pb-4 flex justify-between items-center z-10 relative">
+        <div class="flex-1 flex flex-col items-center">
+            <h1 class="text-lg font-bold text-brand-textPrimary">AI Rehber</h1>
+            <p class="text-xs text-brand-textMuted font-medium">Ruh haline göre zikirler</p>
+        </div>
+        <button id="info_btn" class="absolute right-5 top-14 text-brand-textMuted hover:text-brand-gold transition-colors">
+            <i class="fa-solid fa-circle-info text-lg"></i>
+        </button>
+    </header>
+
+    <!-- Info Tooltip (Hidden by default) -->
+    <div id="info_tooltip" class="hidden absolute top-24 right-5 left-5 bg-brand-card card-bg border border-brand-gold/20 rounded-xl p-4 shadow-soft z-50">
+        <div class="flex items-start gap-3">
+            <i class="fa-solid fa-shield-halved text-brand-gold mt-0.5"></i>
+            <p class="text-sm text-brand-textPrimary leading-relaxed">AI yeni içerik üretmez. Yalnızca doğrulanmış zikirler önerilir.</p>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col px-5 pb-24 z-10 relative">
+        
+        <!-- Current State Card -->
+        <section id="current_state" class="mb-6">
+            <div class="card-bg bg-brand-card rounded-[24px] p-5 border border-white/5 shadow-soft">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Şu anki durumun</span>
+                    <button class="text-xs font-medium text-brand-gold border border-brand-gold/30 px-3 py-1 rounded-full hover:bg-brand-gold/10 transition-colors">
+                        Güncelle
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 rounded-full bg-brand-navy flex items-center justify-center text-2xl border border-white/5">
+                        😰
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-brand-textPrimary">Stresli</h2>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mt-4 pt-4 border-t border-white/5">
+                    <div class="flex items-center gap-1.5 text-xs text-brand-textMuted">
+                        <i class="fa-regular fa-clock text-brand-gold/70"></i>
+                        <span>İkindi vakti</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs text-brand-textMuted">
+                        <i class="fa-regular fa-calendar text-brand-gold/70"></i>
+                        <span>Cuma günü</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Free Text Input -->
+        <section id="mood_input" class="mb-8">
+            <div class="relative">
+                <input type="text" placeholder="Ne hissediyorsun? Yaz..." class="input-bg w-full bg-brand-card border border-white/10 rounded-full py-4 pl-5 pr-12 text-sm text-brand-textPrimary placeholder-brand-textMuted/70 focus:outline-none focus:border-brand-gold/50 transition-colors">
+                <button class="absolute right-2 top-2 bottom-2 w-10 h-10 rounded-full bg-brand-navy flex items-center justify-center text-brand-gold hover:bg-brand-gold/10 transition-colors">
+                    <i class="fa-solid fa-paper-plane text-sm"></i>
+                </button>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 mt-3 px-1">
+                <button class="chip-bg text-[11px] font-medium text-brand-textMuted border border-white/10 px-3 py-1.5 rounded-full hover:text-brand-textPrimary transition-colors">
+                    İçim sıkıldı
+                </button>
+                <button class="chip-bg text-[11px] font-medium text-brand-textMuted border border-white/10 px-3 py-1.5 rounded-full hover:text-brand-textPrimary transition-colors">
+                    Endişeliyim
+                </button>
+                <button class="chip-bg text-[11px] font-medium text-brand-textMuted border border-white/10 px-3 py-1.5 rounded-full hover:text-brand-textPrimary transition-colors">
+                    Şükretmek istiyorum
+                </button>
+            </div>
+        </section>
+
+        <!-- Loading State (Hidden by default, shown via JS) -->
+        <section id="loading_state" class="hidden mb-8">
+            <div class="flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-sparkles text-brand-gold text-sm animate-pulse"></i>
+                <h3 class="text-sm font-semibold text-brand-textPrimary">Senin için seçiliyor...</h3>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Skeleton Card 1 -->
+                <div class="card-bg bg-brand-card rounded-[20px] p-5 border-l-[4px] border-l-brand-gold/30 border-y border-r border-white/5 relative overflow-hidden">
+                    <div class="absolute inset-0 animate-shimmer"></div>
+                    <div class="w-1/3 h-4 bg-white/5 rounded mb-4"></div>
+                    <div class="w-3/4 h-8 bg-white/5 rounded mb-2"></div>
+                    <div class="w-1/2 h-4 bg-white/5 rounded mb-4"></div>
+                    <div class="w-full h-10 bg-white/5 rounded-full mt-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Recommendations List -->
+        <section id="recommendations" class="mb-6">
+            <div class="flex items-center gap-2 mb-4 px-1">
+                <i class="fa-solid fa-sparkles text-brand-gold text-sm"></i>
+                <h3 class="text-sm font-semibold text-brand-textPrimary">Sana Özel Öneriler</h3>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Card 1 (Primary) -->
+                <div class="card-bg bg-brand-card rounded-[20px] p-5 border-l-[4px] border-l-brand-gold border-y border-r border-white/5 shadow-soft relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-brand-gold/5 rounded-full blur-2xl"></div>
+                    
+                    <div class="flex justify-between items-start mb-3 relative z-10">
+                        <div class="bg-brand-navy border border-brand-gold/20 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="text-[10px]">💆</span>
+                            <span class="text-[10px] font-medium text-brand-gold">Huzur & stres için</span>
+                        </div>
+                        <span class="text-xs font-semibold text-brand-textMuted">100 kez</span>
+                    </div>
+
+                    <div class="text-right mb-2 relative z-10">
+                        <h4 class="font-arabic text-[32px] leading-tight text-brand-textPrimary" dir="rtl">لَا إِلَٰهَ إِلَّا ٱللَّٰهُ</h4>
+                    </div>
+
+                    <div class="mb-4 relative z-10">
+                        <h5 class="text-base font-semibold text-brand-textPrimary mb-1">La ilahe illallah</h5>
+                        <p class="text-xs text-brand-textMuted mb-2">Allah'tan başka ilah yoktur</p>
+                        <p class="text-[11px] text-brand-textMuted italic border-l-2 border-brand-gold/30 pl-2 py-0.5">En faziletli zikir. Kalplere huzur verir.</p>
+                    </div>
+
+                    <button class="w-full bg-brand-gold text-brand-navy font-semibold py-3 rounded-full text-sm shadow-md hover:bg-brand-gold/90 transition-colors relative z-10">
+                        Başla
+                    </button>
+                </div>
+
+                <!-- Card 2 (Secondary) -->
+                <div class="card-bg bg-brand-card rounded-[20px] p-4 border border-white/5 relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="bg-brand-navy border border-white/10 px-2 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="text-[10px]">🧹</span>
+                            <span class="text-[10px] font-medium text-brand-textPrimary">Arınma için</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h5 class="text-sm font-semibold text-brand-textPrimary mb-0.5">Estağfirullah</h5>
+                            <p class="text-[11px] text-brand-textMuted">Allah'tan bağışlanma dilerim</p>
+                        </div>
+                        <h4 class="font-arabic text-[24px] text-brand-textPrimary" dir="rtl">أَسْتَغْفِرُ اللَّهَ</h4>
+                    </div>
+
+                    <button class="w-full border border-brand-gold/40 text-brand-gold font-medium py-2.5 rounded-full text-sm hover:bg-brand-gold/10 transition-colors">
+                        Başla
+                    </button>
+                </div>
+
+                <!-- Card 3 (Secondary) -->
+                <div class="card-bg bg-brand-card rounded-[20px] p-4 border border-white/5 relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="bg-brand-navy border border-white/10 px-2 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="text-[10px]">☀️</span>
+                            <span class="text-[10px] font-medium text-brand-textPrimary">Cuma için</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h5 class="text-sm font-semibold text-brand-textPrimary mb-0.5">Sübhanallah</h5>
+                            <p class="text-[11px] text-brand-textMuted">Allah her türlü eksiklikten münezzehtir</p>
+                        </div>
+                        <h4 class="font-arabic text-[24px] text-brand-textPrimary" dir="rtl">سُبْحَانَ اللَّهِ</h4>
+                    </div>
+
+                    <button class="w-full border border-brand-gold/40 text-brand-gold font-medium py-2.5 rounded-full text-sm hover:bg-brand-gold/10 transition-colors">
+                        Başla
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Verification Footer -->
+        <section id="verification_footer" class="mt-4 mb-8 flex items-center justify-center gap-2 opacity-60">
+            <i class="fa-solid fa-shield-check text-brand-gold text-xs"></i>
+            <p class="text-[10px] text-brand-textMuted text-center">Tüm içerikler güvenilir dini kaynaklardan alınmıştır.</p>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation Shell (Verbatim from Prior HTML) -->
+    <nav id="bottom_nav" class="bottom-nav fixed bottom-0 left-0 right-0 w-full max-w-[375px] mx-auto bg-brand-navy/95 backdrop-blur-lg border-t border-white/5 pb-safe pt-2 px-2 z-50">
+        <div class="flex justify-around items-center h-16 pb-2">
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-house text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Ana Sayfa</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-list-ul text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Zikirlerim</span>
+            </button>
+            
+            <!-- Active Tab -->
+            <button class="flex flex-col items-center justify-center w-16 gap-1">
+                <i class="fa-solid fa-sparkles text-brand-gold text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-gold">AI Rehber</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-moon text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Kandil</span>
+            </button>
+            
+            <button class="flex flex-col items-center justify-center w-16 gap-1 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fa-regular fa-user text-brand-textPrimary text-xl mb-0.5"></i>
+                <span class="text-[10px] font-medium text-brand-textPrimary">Profil</span>
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- Demo Controls -->
+    <div class="fixed top-4 right-4 z-[100] flex gap-2 opacity-10 hover:opacity-100 transition-opacity">
+        <button id="toggle-theme" class="bg-gray-800 text-white p-2 rounded text-xs">Tema</button>
+        <button id="demo-loading" class="bg-brand-gold text-black p-2 rounded text-xs">Yükleniyor</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle Logic
+            const btnTheme = document.getElementById('toggle-theme');
+            const appContainer = document.getElementById('app-container');
+            
+            btnTheme.addEventListener('click', () => {
+                appContainer.classList.toggle('light-mode');
+            });
+
+            // Info Tooltip Logic
+            const infoBtn = document.getElementById('info_btn');
+            const infoTooltip = document.getElementById('info_tooltip');
+
+            infoBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                infoTooltip.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!infoTooltip.contains(e.target) && e.target !== infoBtn) {
+                    infoTooltip.classList.add('hidden');
+                }
+            });
+
+            // Loading State Demo
+            const btnLoading = document.getElementById('demo-loading');
+            const recommendationsSection = document.getElementById('recommendations');
+            const loadingSection = document.getElementById('loading_state');
+            
+            let isLoading = false;
+
+            btnLoading.addEventListener('click', () => {
+                isLoading = !isLoading;
+                
+                if(isLoading) {
+                    recommendationsSection.classList.add('hidden');
+                    loadingSection.classList.remove('hidden');
+                    btnLoading.innerText = 'Göster';
+                } else {
+                    loadingSection.classList.add('hidden');
+                    recommendationsSection.classList.remove('hidden');
+                    btnLoading.innerText = 'Yükleniyor';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
