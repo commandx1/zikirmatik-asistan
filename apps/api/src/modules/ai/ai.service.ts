@@ -593,7 +593,10 @@ function tokenizeIntent(value: string) {
     return [];
   }
 
-  return normalized.split(' ').map(normalizeToken).filter((item) => item.length >= 2);
+  return normalized
+    .split(' ')
+    .map(normalizeToken)
+    .filter((item) => item.length >= 2);
 }
 
 function normalizeToken(value: string) {
