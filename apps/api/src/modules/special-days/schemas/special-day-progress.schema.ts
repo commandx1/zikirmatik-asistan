@@ -6,7 +6,11 @@ import { SpecialDay } from './special-day.schema';
 
 export type SpecialDayProgressDocument = HydratedDocument<SpecialDayProgress>;
 
-@Schema({ collection: 'special_day_progress', timestamps: true, versionKey: false })
+@Schema({
+  collection: 'special_day_progress',
+  timestamps: true,
+  versionKey: false,
+})
 export class SpecialDayProgress {
   @Prop({ type: Types.ObjectId, ref: User.name, required: true, index: true })
   userId!: Types.ObjectId;

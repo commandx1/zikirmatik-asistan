@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DhikrLog, DhikrLogSchema } from '../dhikr-logs/schemas/dhikr-log.schema';
+import {
+  DhikrLog,
+  DhikrLogSchema,
+} from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Dhikr, DhikrSchema } from '../dhikrs/schemas/dhikr.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { SpecialDaysController } from './special-days.controller';

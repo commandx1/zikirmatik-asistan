@@ -36,10 +36,7 @@ export class SpecialDaysController {
   }
 
   @Get(':id/detail')
-  getDetail(
-    @Param('id') id: string,
-    @Query() query: QuerySpecialDayDetailDto,
-  ) {
+  getDetail(@Param('id') id: string, @Query() query: QuerySpecialDayDetailDto) {
     return this.specialDaysService.getDetail(id, query.userId);
   }
 

@@ -10,7 +10,13 @@ type PrayerTimeEntry = {
 
 @Schema({ collection: 'prayer_times', timestamps: true, versionKey: false })
 export class PrayerTime {
-  @Prop({ type: String, required: true, trim: true, lowercase: true, index: true })
+  @Prop({
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true,
+    index: true,
+  })
   city!: string;
 
   @Prop({

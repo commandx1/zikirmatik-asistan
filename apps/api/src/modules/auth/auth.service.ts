@@ -64,9 +64,14 @@ export class AuthService {
   ): Promise<AuthProviderVerifyResponse> {
     this.validatePlatformProviderPair(payload.platform, payload.provider);
 
-    const claims = await this.verifyProviderToken(payload.provider, payload.idToken);
+    const claims = await this.verifyProviderToken(
+      payload.provider,
+      payload.idToken,
+    );
     if (!claims.sub) {
-      throw new UnauthorizedException('Sağlayıcı kimlik doğrulaması başarısız oldu.');
+      throw new UnauthorizedException(
+        'Sağlayıcı kimlik doğrulaması başarısız oldu.',
+      );
     }
 
     const identity = await this.authIdentityModel
@@ -76,7 +81,11 @@ export class AuthService {
 
     const verifiedClaims = claims as ProviderClaims & { sub: string };
     const user = identity
-      ? await this.resolveIdentityUser(payload.provider, verifiedClaims, identity)
+      ? await this.resolveIdentityUser(
+          payload.provider,
+          verifiedClaims,
+          identity,
+        )
       : await this.createUserAndLinkIdentity(payload.provider, verifiedClaims);
 
     if (identity) {
@@ -111,14 +120,10 @@ export class AuthService {
     identity: Pick<AuthIdentity, 'userId'>,
   ) {
     try {
-      return await this.usersService.touchAuthUser(
-        identity.userId.toString(),
-        {
-          displayName: claims.name,
-          profileImageUrl:
-            provider === 'google' ? claims.picture : undefined,
-        },
-      );
+      return await this.usersService.touchAuthUser(identity.userId.toString(), {
+        displayName: claims.name,
+        profileImageUrl: provider === 'google' ? claims.picture : undefined,
+      });
     } catch (error) {
       // If the linked user document was deleted manually, recover by recreating
       // and relinking the provider identity instead of breaking login.
@@ -235,7 +240,9 @@ export class AuthService {
   }
 
   private allowInsecureLocalTokens() {
-    return this.configService.get<string>('AUTH_ALLOW_INSECURE_TEST_TOKENS') === '1';
+    return (
+      this.configService.get<string>('AUTH_ALLOW_INSECURE_TEST_TOKENS') === '1'
+    );
   }
 
   private parseJsonClaims(rawToken: string): ProviderClaims {
@@ -259,7 +266,9 @@ export class AuthService {
 
     const response = await fetch(endpoint.toString());
     if (!response.ok) {
-      throw new UnauthorizedException('Google kimlik doğrulaması başarısız oldu.');
+      throw new UnauthorizedException(
+        'Google kimlik doğrulaması başarısız oldu.',
+      );
     }
 
     const payload = (await response.json()) as Record<string, unknown>;

@@ -3,7 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { AuthIdentity, AuthIdentitySchema } from './schemas/auth-identity.schema';
+import {
+  AuthIdentity,
+  AuthIdentitySchema,
+} from './schemas/auth-identity.schema';
 
 @Module({
   imports: [

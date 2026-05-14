@@ -56,12 +56,24 @@ const MOOD_LEXICON: Array<{
   { mood: 'Yorgun', hints: ['yorgun', 'bitkin', 'uykusuz', 'tukenmis'] },
   { mood: 'Üzgün', hints: ['uzgun', 'huzun', 'keder', 'mutsuz'] },
   { mood: 'Mahzun', hints: ['mahzun', 'mahcub', 'boynu bukuk'] },
-  { mood: 'Bunalmış', hints: ['bunalmis', 'daraldim', 'sikistim', 'boguluyorum'] },
+  {
+    mood: 'Bunalmış',
+    hints: ['bunalmis', 'daraldim', 'sikistim', 'boguluyorum'],
+  },
   { mood: 'Öfkeli', hints: ['ofke', 'kizgin', 'sinir', 'asabi'] },
-  { mood: 'Kararsız', hints: ['kararsiz', 'belirsiz', 'ikilem', 'ne yapacagimi bilmiyorum'] },
+  {
+    mood: 'Kararsız',
+    hints: ['kararsiz', 'belirsiz', 'ikilem', 'ne yapacagimi bilmiyorum'],
+  },
   { mood: 'Yalnız', hints: ['yalniz', 'tek basima', 'kimsem yok'] },
-  { mood: 'Umutsuz', hints: ['umutsuz', 'cikis yok', 'issizlik', 'acilmiyor', 'nasibim kapali'] },
-  { mood: 'Umutlu', hints: ['umutlu', 'umudum var', 'iyi olacak', 'acilmasini istiyorum'] },
+  {
+    mood: 'Umutsuz',
+    hints: ['umutsuz', 'cikis yok', 'issizlik', 'acilmiyor', 'nasibim kapali'],
+  },
+  {
+    mood: 'Umutlu',
+    hints: ['umutlu', 'umudum var', 'iyi olacak', 'acilmasini istiyorum'],
+  },
   { mood: 'Kırgın', hints: ['kirgin', 'incindim', 'kalbim kirik'] },
   { mood: 'Tevbekar', hints: ['tevbe', 'pismanim', 'bagislanma', 'affet'] },
   { mood: 'Minnettar', hints: ['sukur', 'minnettar', 'hamdolsun'] },

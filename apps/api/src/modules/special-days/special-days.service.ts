@@ -128,10 +128,8 @@ export class SpecialDaysService {
 
     return {
       referenceDate: date,
-      hero: hero
-        ? this.mapHero(hero as SpecialDayLean, heroSource, isPremiumUser)
-        : null,
-      action: hero ? this.mapAction(hero as SpecialDayLean, isPremiumUser) : null,
+      hero: hero ? this.mapHero(hero, heroSource, isPremiumUser) : null,
+      action: hero ? this.mapAction(hero, isPremiumUser) : null,
       upcoming,
     };
   }
@@ -245,9 +243,7 @@ export class SpecialDaysService {
       })
       .filter((item) => Boolean(item));
 
-    const completedTargetCount = this.getProgressTargetCount(
-      specialDay as SpecialDayLean,
-    );
+    const completedTargetCount = this.getProgressTargetCount(specialDay);
     const completedRawCount = recommendedDhikrs.filter(
       (item) => item?.isCompleted,
     ).length;
@@ -255,7 +251,7 @@ export class SpecialDaysService {
     const totalCount = completedTargetCount;
 
     return {
-      ...this.mapSpecialDayBase(specialDay as SpecialDayLean, true),
+      ...this.mapSpecialDayBase(specialDay, true),
       recommendedDhikrs,
       progress: {
         completedCount,
@@ -310,9 +306,7 @@ export class SpecialDaysService {
     const completedSet = new Set(
       (updated?.completedDhikrIds ?? []).map((item) => item.toString()),
     );
-    const progressTargetCount = this.getProgressTargetCount(
-      specialDay as SpecialDayLean,
-    );
+    const progressTargetCount = this.getProgressTargetCount(specialDay);
     const completedRawCount = Array.from(completedSet).filter((id) =>
       recommendedDhikrIdSet.has(id),
     ).length;
@@ -338,7 +332,10 @@ export class SpecialDaysService {
     const normalizedCompletedCountRaw = (
       normalized?.completedDhikrIds ?? []
     ).filter((item) => recommendedDhikrIdSet.has(item.toString())).length;
-    const completedCount = Math.min(normalizedCompletedCountRaw, progressTargetCount);
+    const completedCount = Math.min(
+      normalizedCompletedCountRaw,
+      progressTargetCount,
+    );
     return {
       userId: userId.toString(),
       specialDayId: specialDayId.toString(),
@@ -440,7 +437,8 @@ export class SpecialDaysService {
         { value: pad2(Math.max(diff.minutes, 0)), label: 'Dk' },
       ],
       isLocked,
-      remainingLabel: source === 'today' ? 'Bugün' : `${Math.max(diff.days, 0)} gün`,
+      remainingLabel:
+        source === 'today' ? 'Bugün' : `${Math.max(diff.days, 0)} gün`,
     };
   }
 
@@ -449,11 +447,10 @@ export class SpecialDaysService {
     return {
       specialDayId: item._id.toString(),
       title: 'Bugün Ne Yapabilirim?',
-      subtitle:
-        isLocked
-          ? `${item.name} içeriği Premium üyelik ile açılır.`
-          : item.description?.trim() ||
-            `${item.name} için önerilen zikir ve hazırlıkları inceleyebilirsin.`,
+      subtitle: isLocked
+        ? `${item.name} içeriği Premium üyelik ile açılır.`
+        : item.description?.trim() ||
+          `${item.name} için önerilen zikir ve hazırlıkları inceleyebilirsin.`,
       ctaLabel: isLocked ? 'Premium ile Aç' : 'Detaya git',
       isLocked,
     };
@@ -465,7 +462,8 @@ export class SpecialDaysService {
     return {
       ...this.mapSpecialDayBase(item, isPremiumUser),
       isLocked,
-      remainingLabel: diff.totalMs <= 0 ? 'Bugün' : `${Math.max(diff.days, 0)} gün`,
+      remainingLabel:
+        diff.totalMs <= 0 ? 'Bugün' : `${Math.max(diff.days, 0)} gün`,
     };
   }
 
@@ -570,10 +568,7 @@ function normalizeEventKey(value?: string) {
     return undefined;
   }
 
-  return value
-    .trim()
-    .toLocaleLowerCase('tr-TR')
-    .replace(/\s+/g, '-');
+  return value.trim().toLocaleLowerCase('tr-TR').replace(/\s+/g, '-');
 }
 
 function toDateKey(value: Date) {
@@ -641,7 +636,8 @@ function resolveSpecialDayTheme(item: SpecialDayLean) {
     if (item.name.toLocaleLowerCase('tr-TR').includes('arefe')) {
       return {
         title: 'Arefe Hazırlığı',
-        summary: 'Tevbe, istiğfar ve yoğun tefekkür ile bayrama kalbi hazırlama günü.',
+        summary:
+          'Tevbe, istiğfar ve yoğun tefekkür ile bayrama kalbi hazırlama günü.',
       };
     }
 
@@ -666,7 +662,8 @@ function resolveSpecialDayTheme(item: SpecialDayLean) {
     if (item.dayIndex === 4) {
       return {
         title: 'Kapanış ve Sabitleme',
-        summary: 'Bayram ritmini tamamlayıp kazanımları günlük hayata taşıma günü.',
+        summary:
+          'Bayram ritmini tamamlayıp kazanımları günlük hayata taşıma günü.',
       };
     }
   }

@@ -85,7 +85,9 @@ export class UsersService {
         this.asObjectId(userId),
         {
           $set: {
-            ...(typeof payload.theme === 'string' ? { theme: payload.theme } : {}),
+            ...(typeof payload.theme === 'string'
+              ? { theme: payload.theme }
+              : {}),
             ...(payload.fontFamily ? { fontFamily: payload.fontFamily } : {}),
             lastSeenAt: now,
           },
