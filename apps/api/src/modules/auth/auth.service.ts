@@ -441,7 +441,7 @@ export class AuthService {
 
   private parseJsonRecord(raw: string) {
     try {
-      const parsed = JSON.parse(raw);
+      const parsed: unknown = JSON.parse(raw);
       if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
         throw new Error();
       }

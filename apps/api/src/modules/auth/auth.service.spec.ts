@@ -32,13 +32,13 @@ describe('AuthService', () => {
     authIdentityModel.updateOne.mockReset();
 
     authIdentityModel.findOne.mockImplementation(() => ({
-      lean: () => ({ exec: async () => null }),
+      lean: () => ({ exec: () => null }),
     }));
     authIdentityModel.findOneAndUpdate.mockImplementation(() => ({
-      lean: () => ({ exec: async () => null }),
+      lean: () => ({ exec: () => null }),
     }));
     authIdentityModel.updateOne.mockImplementation(() => ({
-      exec: async () => null,
+      exec: () => null,
     }));
 
     authService = new AuthService(
@@ -102,7 +102,7 @@ describe('AuthService', () => {
   it('recreates and relinks user when identity is stale', async () => {
     authIdentityModel.findOne.mockImplementationOnce(() => ({
       lean: () => ({
-        exec: async () => ({
+        exec: () => ({
           _id: 'identity-1',
           userId: { toString: () => '507f1f77bcf86cd799439055' },
           provider: 'google',
@@ -140,7 +140,7 @@ describe('AuthService', () => {
   it('updates Google profile image on each login for linked identities', async () => {
     authIdentityModel.findOne.mockImplementationOnce(() => ({
       lean: () => ({
-        exec: async () => ({
+        exec: () => ({
           _id: 'identity-photo-1',
           userId: { toString: () => '507f1f77bcf86cd799439066' },
           provider: 'google',
