@@ -4,18 +4,11 @@ import { ThemedCard } from "../../../components/ui/themed-card";
 import { AI_GUIDE_CURRENT_STATE } from "../data";
 
 type CurrentStateCardProps = {
-  moodTitle: string;
-  moodEmoji: string;
   prayerTimeLabel: string;
   weekdayLabel: string;
 };
 
-export function CurrentStateCard({
-  moodTitle,
-  moodEmoji,
-  prayerTimeLabel,
-  weekdayLabel,
-}: CurrentStateCardProps) {
+export function CurrentStateCard({ prayerTimeLabel, weekdayLabel }: CurrentStateCardProps) {
   return (
     <ThemedCard className="mb-6 rounded-[24px] p-5" elevated>
       <View className="mb-4 flex-row items-start justify-between">
@@ -24,10 +17,10 @@ export function CurrentStateCard({
 
       <View className="mb-3 flex-row items-center gap-3">
         <View className="h-12 w-12 items-center justify-center rounded-full border border-white/5 bg-[--bg]">
-          <Text className="text-2xl">{moodEmoji}</Text>
+          <Text className="text-2xl">🫶</Text>
         </View>
         <Text className="flex-1 text-sm leading-[30px] font-semibold text-[--text-primary]" numberOfLines={2}>
-          {moodTitle}
+          Niyetini yaz, önerileri sadece metnine göre hazırlayalım.
         </Text>
       </View>
 

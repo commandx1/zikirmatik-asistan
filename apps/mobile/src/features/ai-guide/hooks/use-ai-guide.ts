@@ -11,9 +11,8 @@ import { getUserById } from "../../users/services/users-api-client";
 import { getPrayerTimesByCity } from "../../prayer-times/services/prayer-times-api-client";
 import { formatCurrentPrayerLabel, formatWeekdayLabel } from "../../../lib/prayer-time";
 
-export function useAiGuide(initialMood = "Dengede") {
-  const [selectedMood, setSelectedMood] = useState(initialMood);
-  const [moodInput, setMoodInput] = useState("");
+export function useAiGuide() {
+  const [intentInput, setIntentInput] = useState("");
   const [showInfo, setShowInfo] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -24,7 +23,7 @@ export function useAiGuide(initialMood = "Dengede") {
   const [recommendations, setRecommendations] = useState<AiGuideRecommendation[]>(AI_GUIDE_RECOMMENDATIONS);
   const [prayerTimeLabel, setPrayerTimeLabel] = useState("Vakit bilgisi yok");
   const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
-  const [pendingRequest, setPendingRequest] = useState<{ mood: string; freeText?: string } | null>(null);
+  const [pendingRequest, setPendingRequest] = useState<{ freeText?: string } | null>(null);
   const [isPremiumVerified, setIsPremiumVerified] = useState(false);
 
   const authStatus = useAuthStore((s) => s.status);
@@ -41,23 +40,16 @@ export function useAiGuide(initialMood = "Dengede") {
     setWeekdayLabel(formatWeekdayLabel());
 
     let city = profileCity?.trim() ?? "";
-    let userMood: string | undefined;
-
     if (authStatus === "authenticated" && userId) {
       try {
         const user = await getUserById(userId, accessToken);
         city = user.city?.trim() || city;
-        userMood = normalizeMoodTitle(user.onboarding?.mood);
         setIsPremiumVerified(Boolean(user.isPremium));
       } catch {
         // Use local profile fallback when user document cannot be fetched.
       }
     } else {
       setIsPremiumVerified(false);
-    }
-
-    if (userMood) {
-      setSelectedMood(userMood);
     }
 
     if (!city) {
@@ -97,29 +89,28 @@ export function useAiGuide(initialMood = "Dengede") {
   }, [accessToken, authStatus, isPremium, isPremiumVerified, userId]);
 
   const applyPrompt = (value: string) => {
-    setMoodInput(value);
+    setIntentInput(value);
   };
 
-  const onMoodInputChange = (value: string) => {
-    setMoodInput(value);
+  const onIntentInputChange = (value: string) => {
+    setIntentInput(value);
   };
 
   const executeRecommendationRequest = useCallback(
-    async (request: { mood: string; freeText?: string }) => {
+    async (request: { freeText?: string }) => {
       setIsLoading(true);
       setError(undefined);
 
       try {
         if (authStatus !== "authenticated" || !userId) {
           setRecommendations(markFirstPrimary([...AI_GUIDE_RECOMMENDATIONS], "Misafir modunda varsayılan öneriler gösteriliyor."));
-          setMoodInput("");
+          setIntentInput("");
           return;
         }
 
         const now = new Date();
         const response = await createAiRecommendation({
           userId,
-          mood: request.mood,
           freeText: request.freeText,
           maxRecommendations: 3,
           timeContext: {
@@ -130,10 +121,6 @@ export function useAiGuide(initialMood = "Dengede") {
         });
 
         setRecommendationId(response.recommendationId);
-        const nextMood = response.inferredMood?.trim();
-        if (nextMood) {
-          setSelectedMood(normalizeMoodTitle(nextMood) ?? nextMood);
-        }
         setRecommendations(
           markFirstPrimary(
             response.items.map((item, index) => ({
@@ -148,7 +135,7 @@ export function useAiGuide(initialMood = "Dengede") {
             response.reasoning
           )
         );
-        setMoodInput("");
+        setIntentInput("");
       } catch (error) {
         if (error instanceof AiApiError) {
           setError(error.message);
@@ -162,16 +149,14 @@ export function useAiGuide(initialMood = "Dengede") {
     [authStatus, userId]
   );
 
-  const submitMood = async () => {
-    const normalizedInput = moodInput.trim();
-    const mood = selectedMood.trim() || normalizeMoodTitle(normalizedInput) || "Dengede";
-
-    if (!mood || isLoading || isRewardedRunning) {
+  const submitIntent = async () => {
+    const normalizedInput = intentInput.trim();
+    if (isLoading || isRewardedRunning) {
       return;
     }
 
     Keyboard.dismiss();
-    const request = { mood, freeText: normalizedInput || undefined };
+    const request = { freeText: normalizedInput || undefined };
 
     if (await shouldBypassRewardGate()) {
       await executeRecommendationRequest(request);
@@ -239,12 +224,9 @@ export function useAiGuide(initialMood = "Dengede") {
   };
 
   return {
-    selectedMood,
-    moodEmoji: toMoodEmoji(selectedMood),
     prayerTimeLabel,
     weekdayLabel,
-    setSelectedMood,
-    moodInput,
+    intentInput,
     showInfo,
     isLoading,
     isRewardedSheetOpen,
@@ -255,48 +237,13 @@ export function useAiGuide(initialMood = "Dengede") {
     closeInfo,
     toggleInfo,
     applyPrompt,
-    onMoodInputChange,
-    submitMood,
+    onIntentInputChange,
+    submitIntent,
     closeRewardedSheet,
     confirmRewardedAndSubmit,
     refresh,
     selectRecommendation
   };
-}
-
-function normalizeMoodTitle(value: string | undefined) {
-  if (!value?.trim()) {
-    return undefined;
-  }
-
-  const cleaned = value.trim().replace(/\s+/g, " ");
-  return `${cleaned.charAt(0).toLocaleUpperCase("tr-TR")}${cleaned.slice(1).toLocaleLowerCase("tr-TR")}`;
-}
-
-function toMoodEmoji(mood: string) {
-  const normalized = mood.toLocaleLowerCase("tr-TR");
-  if (/(endiş|kayg|stres|gergin|panik|kork)/.test(normalized)) {
-    return "😰";
-  }
-  if (/(yorgun|bitkin|uykusuz|tüken)/.test(normalized)) {
-    return "🥱";
-  }
-  if (/(üzgün|hüzün|keder|mutsuz)/.test(normalized)) {
-    return "😔";
-  }
-  if (/(öfke|kızgın|sinir)/.test(normalized)) {
-    return "😤";
-  }
-  if (/(kararsız|belirsiz|dağınık)/.test(normalized)) {
-    return "🤔";
-  }
-  if (/(mutlu|neşeli|şük|heyecan)/.test(normalized)) {
-    return "😊";
-  }
-  if (/(huzur|sakin|dingin|rahat)/.test(normalized)) {
-    return "😌";
-  }
-  return "🫶";
 }
 
 function markFirstPrimary(items: AiGuideRecommendation[], primaryNote?: string) {

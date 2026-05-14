@@ -8,13 +8,11 @@ type OnboardingState = {
   isCompleted: boolean;
   hasHydrated: boolean;
   purpose: string;
-  mood: string;
   city: string;
   setStep: (step: number) => void;
   completeOnboarding: () => void;
   resetOnboarding: () => void;
   setPurpose: (purpose: string) => void;
-  setMood: (mood: string) => void;
   setCity: (city: string) => void;
   markHydrated: () => void;
 };
@@ -50,20 +48,17 @@ export const useOnboardingStore = create<OnboardingState>()(
       isCompleted: false,
       hasHydrated: false,
       purpose: "habit",
-      mood: "huzurlu",
       city: "",
       setStep: (step) => set({ step }),
-      completeOnboarding: () => set({ isCompleted: true, step: 4 }),
+      completeOnboarding: () => set({ isCompleted: true, step: 3 }),
       resetOnboarding: () =>
         set({
           step: 1,
           isCompleted: false,
           purpose: "habit",
-          mood: "huzurlu",
           city: ""
         }),
       setPurpose: (purpose) => set({ purpose }),
-      setMood: (mood) => set({ mood }),
       setCity: (city) => {
         const nextCity = city.trim();
         set({ city: nextCity });
@@ -72,13 +67,12 @@ export const useOnboardingStore = create<OnboardingState>()(
       markHydrated: () => set({ hasHydrated: true })
     }),
     {
-      name: "onboarding-store-v3",
+      name: "onboarding-store-v4",
       storage: createJSONStorage(() => safeAsyncStorage),
       partialize: (state) => ({
         step: state.step,
         isCompleted: state.isCompleted,
         purpose: state.purpose,
-        mood: state.mood,
         city: state.city
       }),
       onRehydrateStorage: () => (state) => {

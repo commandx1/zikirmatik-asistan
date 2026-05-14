@@ -1,10 +1,10 @@
 import type { AiGuideRecommendation } from "./types";
 
 export const AI_GUIDE_CURRENT_STATE = {
-  label: "ŞU ANKİ DURUMUN",
+  label: "ASİSTAN BAĞLAMI",
 } as const;
 
-export const AI_GUIDE_INPUT_PLACEHOLDER = "Ne hissediyorsun? Yaz...";
+export const AI_GUIDE_INPUT_PLACEHOLDER = "Niyetini ve ihtiyacını yaz...";
 
 export const AI_GUIDE_PROMPT_CHIPS = ["İçim sıkıldı", "Endişeliyim", "Şükretmek istiyorum"] as const;
 

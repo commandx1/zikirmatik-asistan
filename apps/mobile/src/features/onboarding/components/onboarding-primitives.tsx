@@ -102,36 +102,6 @@ export function CardOption({ icon, title, subtitle, active = false, onPress }: C
   );
 }
 
-type MoodTileProps = {
-  emoji: string;
-  label: string;
-  active?: boolean;
-  onPress?: () => void;
-};
-
-export function MoodTile({ emoji, label, active = false, onPress }: MoodTileProps) {
-  return (
-    <Pressable
-      onPress={onPress}
-      className={cx(
-        "w-[31%] items-center rounded-2xl border-2 bg-[#162236] px-2 py-4",
-        active ? "border-[#C8972A]/60" : "border-white/5"
-      )}
-      style={active ? { boxShadow: "0 0 20px rgba(200,151,42,0.25)" } : undefined}
-    >
-      <View
-        className={cx(
-          "mb-3 h-16 w-16 items-center justify-center rounded-full",
-          active ? "bg-[#C8972A]/20" : "bg-white/5"
-        )}
-      >
-        <Text className="text-[34px]">{emoji}</Text>
-      </View>
-      <Text className={cx("text-[12px]", active ? "font-semibold text-[#C8972A]" : "font-medium text-[#F0EDE6]")}>{label}</Text>
-    </Pressable>
-  );
-}
-
 type OutlinedInputProps = {
   value?: string;
   placeholder: string;

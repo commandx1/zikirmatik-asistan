@@ -14,9 +14,6 @@ export class AiRecommendation {
   @Prop({ type: Types.ObjectId, ref: User.name, required: true, index: true })
   userId!: Types.ObjectId;
 
-  @Prop({ type: String, required: true })
-  mood!: string;
-
   @Prop({ type: String })
   freeText?: string;
 

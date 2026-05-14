@@ -16,7 +16,7 @@ export function PurposeStep() {
     <>
       <BackgroundPattern />
       <View className="px-6 pb-6 pt-12">
-        <ProgressDots activeIndex={0} count={4} />
+        <ProgressDots activeIndex={0} count={3} />
         <StepHeading title="Amacın nedir?" subtitle="Sana daha iyi rehberlik edebilmek için" />
       </View>
 

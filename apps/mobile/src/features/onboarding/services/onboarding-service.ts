@@ -1,7 +1,7 @@
 import type { OnboardingStep } from "../types";
 
 export function nextStep(step: OnboardingStep): OnboardingStep {
-  return (step >= 4 ? 4 : (step + 1)) as OnboardingStep;
+  return (step >= 3 ? 3 : (step + 1)) as OnboardingStep;
 }
 
 export function previousStep(step: OnboardingStep): OnboardingStep {

@@ -3,7 +3,6 @@ import { useAuthStore } from "../../store/auth-store";
 import { MAX_DHIKR_TARGET, useDhikrStore } from "../../store/dhikr-store";
 import type { ZikirSource } from "../focus/types";
 import { createDhikrLog, listDhikrLogsByUser, type BackendDhikrLog } from "../dhikrs/services/dhikr-logs-api-client";
-import { useHomeRecommendation } from "./hooks/use-home-recommendation";
 
 type HomeDhikr = {
   id: string;
@@ -24,8 +23,6 @@ type HomeDhikrOption = {
 type HomeContextValue = {
   greeting: string;
   streakLabel: string;
-  recommendation: string;
-  hasApplicableRecommendation: boolean;
   isSavingLog: boolean;
   isRefreshing: boolean;
   syncError?: string;
@@ -36,7 +33,6 @@ type HomeContextValue = {
   quickDhikrs: string[];
   activeQuickDhikr: string;
   selectedSourceLabel: string;
-  isRecommendationVisible: boolean;
   demoCompleted: boolean;
   isEditingTarget: boolean;
   targetDraft: string;
@@ -61,8 +57,6 @@ type HomeContextValue = {
   onSelectDhikr: (id: string) => void;
   onToggleDemoComplete: () => void;
   onQuickDhikrSelect: (label: string) => void;
-  onRecommendationOpen: () => void;
-  onApplyRecommendation: () => void;
   onSavePress: () => void;
   onOpenCreateDhikr: () => void;
   onCloseCreateDhikr: () => void;
@@ -90,7 +84,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const authDisplayName = useAuthStore((state) => state.session?.displayName);
   const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
-  const { recommendation, requestRecommendation } = useHomeRecommendation();
 
   const selectedDhikr = useMemo(() => {
     return items.find((item) => item.id === selectedDhikrId) ?? items[0];
@@ -266,10 +259,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     return {
       greeting: `Selam, ${authDisplayName?.trim() || "Dostum"}`,
       streakLabel: `${streakDays} gün`,
-      recommendation: recommendation.text,
-      hasApplicableRecommendation: Boolean(
-        recommendation.recommendedDhikrId || recommendation.recommendedDhikrName
-      ),
       isSavingLog,
       isRefreshing,
       syncError,
@@ -286,7 +275,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       quickDhikrs,
       activeQuickDhikr,
       selectedSourceLabel: selectedDhikr?.source === "personal" ? "Kaynak: Zikirlerim" : "Kaynak: Hazır",
-      isRecommendationVisible: selectedDhikr?.source === "ready",
       demoCompleted,
       isEditingTarget,
       targetDraft,
@@ -354,30 +342,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           selectDhikr(matched.id);
         }
       },
-      onRecommendationOpen: () => {
-        void requestRecommendation();
-      },
-      onApplyRecommendation: () => {
-        const recommendationName = recommendation.recommendedDhikrName?.toLocaleLowerCase("tr-TR");
-        const byId = recommendation.recommendedDhikrId
-          ? items.find((item) => item.id === recommendation.recommendedDhikrId)
-          : undefined;
-        const byName = recommendationName
-          ? items.find((item) =>
-              item.transliteration
-                .toLocaleLowerCase("tr-TR")
-                .includes(recommendationName)
-            )
-          : undefined;
-
-        const target = byId ?? byName;
-        if (!target) {
-          return;
-        }
-
-        selectDhikr(target.id);
-        setActiveQuickDhikr(target.transliteration);
-      },
       onSavePress: () => {
         persistSelectedDhikrLog();
       },
@@ -430,10 +394,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     personalDhikrs,
     quickDhikrs,
     readyDhikrs,
-    recommendation.recommendedDhikrId,
-    recommendation.recommendedDhikrName,
-    recommendation.text,
-    requestRecommendation,
     refresh,
     resetSelected,
     syncError,

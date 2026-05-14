@@ -37,10 +37,6 @@ export class CreateDhikrLogDto {
   sessionDuration?: number;
 
   @IsOptional()
-  @IsString()
-  mood?: string;
-
-  @IsOptional()
   @IsEnum(LOG_SOURCE)
   source?: 'manual' | 'ai' | 'kandil' | 'notification';
 

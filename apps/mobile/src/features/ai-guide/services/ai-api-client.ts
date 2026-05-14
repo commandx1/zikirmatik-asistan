@@ -2,7 +2,6 @@ import { Platform } from "react-native";
 
 export type CreateAiRecommendationPayload = {
   userId: string;
-  mood: string;
   freeText?: string;
   timeContext?: {
     hour: number;
@@ -16,7 +15,6 @@ export type CreateAiRecommendationPayload = {
 export type CreateAiRecommendationResponse = {
   recommendationId: string;
   recommendedIds: string[];
-  inferredMood: string;
   reasoning: string;
   items: Array<{
     id: string;

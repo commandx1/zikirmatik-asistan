@@ -10,7 +10,7 @@ import { BottomActionFooter } from "../../components/ui/bottom-action-footer";
 import { PageHeader } from "../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { PrimaryCtaButton } from "../../components/ui/primary-cta-button";
-import { MOOD_OPTIONS, PURPOSE_OPTIONS } from "../onboarding/onboarding-data";
+import { PURPOSE_OPTIONS } from "../onboarding/onboarding-data";
 import { UsersApiError, saveUserOnboarding } from "../users/services/users-api-client";
 
 export function OnboardingPreferencesScreen() {
@@ -18,16 +18,13 @@ export function OnboardingPreferencesScreen() {
   const authStatus = useAuthStore((s) => s.status);
   const session = useAuthStore((s) => s.session);
   const storePurpose = useOnboardingStore((s) => s.purpose);
-  const storeMood = useOnboardingStore((s) => s.mood);
   const storeCity = useOnboardingStore((s) => s.city);
   const profileCity = useProfileStore((s) => s.city);
   const setPurpose = useOnboardingStore((s) => s.setPurpose);
-  const setMood = useOnboardingStore((s) => s.setMood);
   const setCity = useOnboardingStore((s) => s.setCity);
   const hydrateProfile = useProfileStore((s) => s.hydrateFromBackend);
 
   const [draftPurpose, setDraftPurpose] = useState(storePurpose);
-  const [draftMood, setDraftMood] = useState(storeMood);
   const [draftCity, setDraftCity] = useState(storeCity || profileCity || "");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string>();
@@ -35,10 +32,6 @@ export function OnboardingPreferencesScreen() {
 
   const purposeOptions = useMemo(
     () => PURPOSE_OPTIONS.map((item) => ({ label: item.title, value: item.id })),
-    []
-  );
-  const moodOptions = useMemo(
-    () => MOOD_OPTIONS.map((item) => ({ label: `${item.emoji} ${item.label}`, value: item.id })),
     []
   );
   const cityOptions = useMemo(
@@ -50,7 +43,7 @@ export function OnboardingPreferencesScreen() {
     []
   );
 
-  const hasChanges = draftPurpose !== storePurpose || draftMood !== storeMood || draftCity !== (storeCity || profileCity || "");
+  const hasChanges = draftPurpose !== storePurpose || draftCity !== (storeCity || profileCity || "");
   const canSave = draftCity.trim().length > 0 && !isSaving;
 
   const onSave = async () => {
@@ -70,7 +63,6 @@ export function OnboardingPreferencesScreen() {
           session.userId,
           {
             purpose: draftPurpose,
-            mood: draftMood,
             city: trimmedCity
           },
           session.accessToken
@@ -78,7 +70,6 @@ export function OnboardingPreferencesScreen() {
       }
 
       setPurpose(draftPurpose);
-      setMood(draftMood);
       setCity(trimmedCity);
       hydrateProfile({ city: trimmedCity });
       setSuccess("Onboarding tercihlerin güncellendi.");
@@ -96,7 +87,7 @@ export function OnboardingPreferencesScreen() {
   return (
     <PageLayout>
       <View className="flex-1 w-full">
-        <PageHeader title="Onboarding Tercihleri" subtitle="Amaç, ruh hali ve şehir bilgini güncelle" />
+        <PageHeader title="Onboarding Tercihleri" subtitle="Amaç ve şehir bilgini güncelle" />
         <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={24}>
           <View className="gap-4">
             <AppSelectBox
@@ -106,17 +97,6 @@ export function OnboardingPreferencesScreen() {
               options={purposeOptions}
               onChange={(value) => {
                 setDraftPurpose(value);
-                setError(undefined);
-                setSuccess(undefined);
-              }}
-            />
-            <AppSelectBox
-              value={draftMood}
-              placeholder="Ruh hali seç..."
-              title="Ruh Hali"
-              options={moodOptions}
-              onChange={(value) => {
-                setDraftMood(value);
                 setError(undefined);
                 setSuccess(undefined);
               }}
@@ -133,7 +113,7 @@ export function OnboardingPreferencesScreen() {
               }}
             />
             <Text className="text-xs leading-5" style={{ color: tokens.textMuted }}>
-              Bu tercihler Asistan rehber önerilerini ve namaz vakti verilerini kişiselleştirmek için kullanılır.
+              Bu tercihler asistan önerilerini ve namaz vakti verilerini kişiselleştirmek için kullanılır.
             </Text>
             {error ? (
               <View className="rounded-xl border border-[#f97316]/40 bg-[#f97316]/12 px-3 py-2">

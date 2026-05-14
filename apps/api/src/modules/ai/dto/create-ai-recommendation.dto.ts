@@ -32,9 +32,6 @@ export class CreateAiRecommendationDto {
   @IsMongoId()
   userId!: string;
 
-  @IsString()
-  mood!: string;
-
   @IsOptional()
   @IsString()
   freeText?: string;

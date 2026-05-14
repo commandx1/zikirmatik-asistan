@@ -3,7 +3,6 @@ import { fallbackRecommend } from './fallback-recommender';
 describe('fallbackRecommend', () => {
   it('prioritizes tag and diversity match', () => {
     const result = fallbackRecommend({
-      mood: 'huzur',
       freeText: 'stresli hissediyorum',
       timeContext: {
         hour: 9,

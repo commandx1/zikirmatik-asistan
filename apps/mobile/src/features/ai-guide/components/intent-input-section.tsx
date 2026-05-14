@@ -5,7 +5,7 @@ import { ThemedInput } from "../../../components/ui/themed-input";
 import { ThemedTag } from "../../../components/ui/themed-tag";
 import { AI_GUIDE_INPUT_PLACEHOLDER, AI_GUIDE_PROMPT_CHIPS } from "../data";
 
-type MoodInputSectionProps = {
+type IntentInputSectionProps = {
   value: string;
   isLoading: boolean;
   onChangeValue: (value: string) => void;
@@ -13,7 +13,7 @@ type MoodInputSectionProps = {
   onSelectPrompt: (value: string) => void;
 };
 
-export function MoodInputSection({ value, isLoading, onChangeValue, onSend, onSelectPrompt }: MoodInputSectionProps) {
+export function IntentInputSection({ value, isLoading, onChangeValue, onSend, onSelectPrompt }: IntentInputSectionProps) {
   const { tokens } = useThemeTokens();
 
   return (

@@ -6,7 +6,7 @@ export const HOME_VM = {
 };
 
 export const AI_GUIDE_VM = {
-  moods: ["Stresli", "Huzurlu", "Yorgun", "Mutlu", "Kararsız"],
+  prompts: ["İçim daraldı", "İş için hayırlı bir kapı istiyorum", "Şükretmek istiyorum"],
   recommendation: AI_RECOMMENDATION_MOCKS[0]
 };
 

@@ -7,9 +7,5 @@ export class UpdateOnboardingDto {
 
   @IsOptional()
   @IsString()
-  mood?: string;
-
-  @IsOptional()
-  @IsString()
   city?: string;
 }

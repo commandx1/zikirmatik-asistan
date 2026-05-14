@@ -3,8 +3,8 @@ import { useRouter } from "expo-router";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { CurrentStateCard } from "./components/current-state-card";
 import { InfoTooltip } from "./components/info-tooltip";
+import { IntentInputSection } from "./components/intent-input-section";
 import { LoadingSection } from "./components/loading-section";
-import { MoodInputSection } from "./components/mood-input-section";
 import { RecommendationsSection } from "./components/recommendations-section";
 import { RewardedGateSheet } from "./components/rewarded-gate-sheet";
 import { TopBar } from "./components/top-bar";
@@ -30,16 +30,14 @@ export function AiGuideScreen() {
           onScrollBeginDrag={guide.closeInfo}
         >
           <CurrentStateCard
-            moodTitle={guide.selectedMood}
-            moodEmoji={guide.moodEmoji}
             prayerTimeLabel={guide.prayerTimeLabel}
             weekdayLabel={guide.weekdayLabel}
           />
-          <MoodInputSection
-            value={guide.moodInput}
+          <IntentInputSection
+            value={guide.intentInput}
             isLoading={guide.isLoading}
-            onChangeValue={guide.onMoodInputChange}
-            onSend={guide.submitMood}
+            onChangeValue={guide.onIntentInputChange}
+            onSend={guide.submitIntent}
             onSelectPrompt={guide.applyPrompt}
           />
           {guide.error ? (

@@ -26,9 +26,6 @@ export class DhikrLog {
   @Prop({ type: Number, required: true, min: 0, default: 0 })
   sessionDuration!: number;
 
-  @Prop({ type: String })
-  mood?: string;
-
   @Prop({
     type: String,
     enum: ['manual', 'ai', 'kandil', 'notification'],

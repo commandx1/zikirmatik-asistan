@@ -1,15 +1,11 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
-import { useState } from 'react'
 import { useThemeTokens } from '@zikirmatik/ui'
-import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
 import { useHomeContext } from './home-context'
 import { AppleWatch } from './components/apple-watch'
-import { StyleSheet } from 'react-native-css-interop'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 function TopBar() {
   const home = useHomeContext()
@@ -29,139 +25,6 @@ function TopBar() {
         </Pressable>
       }
     />
-  )
-}
-
-function RecommendationCard() {
-  const home = useHomeContext()
-  const { tokens } = useThemeTokens()
-  const insets = useSafeAreaInsets()
-  const [isOpen, setIsOpen] = useState(false)
-  const HIDDEN_TRANSLATE_Y = -520
-
-  const translateY = useSharedValue(HIDDEN_TRANSLATE_Y)
-  const overlayOpacity = useSharedValue(0)
-
-  const open = () => {
-    setIsOpen(true)
-    home.onRecommendationOpen()
-    translateY.value = withTiming(0, { duration: 420, easing: Easing.out(Easing.cubic) })
-    overlayOpacity.value = withTiming(1, { duration: 300 })
-  }
-
-  const close = () => {
-    translateY.value = withTiming(HIDDEN_TRANSLATE_Y, { duration: 320, easing: Easing.in(Easing.cubic) }, finished => {
-      if (finished) runOnJS(setIsOpen)(false)
-    })
-    overlayOpacity.value = withTiming(0, { duration: 280 })
-  }
-
-  const cardStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }]
-  }))
-
-  const overlayStyle = useAnimatedStyle(() => ({
-    opacity: overlayOpacity.value
-  }))
-
-  return (
-    <>
-      {/* Bubble — her zaman görünür, absolute */}
-      <Pressable
-        onPress={open}
-        className='animate-pulse'
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 20,
-          width: 44,
-          height: 44,
-          borderRadius: 22,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: tokens.card,
-          borderWidth: 1,
-          borderColor: withAlpha(tokens.accent, 0.35),
-          boxShadow: '0 4px 16px rgba(0,0,0,0.18)'
-        }}
-      >
-        <FontAwesome6 name='circle-question' size={16} color={tokens.accent} />
-      </Pressable>
-
-      <Modal visible={isOpen} transparent animationType='none' onRequestClose={close}>
-        <View style={{ flex: 1 }}>
-          <Animated.View
-            pointerEvents='none'
-            style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.45)' }, overlayStyle]}
-          />
-          <Pressable style={StyleSheet.absoluteFillObject} onPress={close} />
-
-          {/* Kart — üstten iner */}
-          <Animated.View
-            style={[cardStyle, { position: 'absolute', top: insets.top + 48, left: 20, right: 20 }]}
-            pointerEvents='box-none'
-          >
-            <View
-              style={{
-                borderRadius: 20,
-                padding: 16,
-                backgroundColor: tokens.card,
-                borderLeftWidth: 3,
-                borderLeftColor: tokens.accent,
-                overflow: 'hidden'
-              }}
-            >
-              {/* Dekoratif daire */}
-              <View
-                className='absolute -left-16 -bottom-16 h-32 w-32 rounded-full'
-                style={{ backgroundColor: withAlpha(tokens.accent, 0.08) }}
-              />
-              <View
-                className='absolute -right-16 -top-16 h-32 w-32 rounded-full'
-                style={{ backgroundColor: withAlpha(tokens.accent, 0.08) }}
-              />
-
-              <View className='flex-row items-start gap-3'>
-                <View className='mt-1'>
-                  <FontAwesome6 name='sparkles' iconStyle='solid' size={12} color={tokens.accent} />
-                </View>
-                <View className='flex-1'>
-                  <Text className='mb-3 pr-2 text-sm leading-relaxed' style={{ color: tokens.textPrimary }}>
-                    {home.recommendation}
-                  </Text>
-                    <View className='items-end'>
-                      <View className='flex-row items-center gap-2'>
-                        <Pressable
-                          onPress={close}
-                          className='rounded-full px-4 py-1.5'
-                          style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.2) }}
-                        >
-                          <Text className='text-xs font-semibold' style={{ color: tokens.textMuted }}>
-                            Kapat
-                          </Text>
-                        </Pressable>
-                      <Pressable
-                        onPress={() => {
-                          home.onApplyRecommendation()
-                          close()
-                        }}
-                        disabled={!home.hasApplicableRecommendation}
-                        className={`rounded-full px-4 py-1.5 ${!home.hasApplicableRecommendation ? 'opacity-50' : ''}`}
-                        style={{ borderWidth: 1, borderColor: withAlpha(tokens.accent, 0.4) }}
-                      >
-                        <Text className='text-xs font-semibold' style={{ color: tokens.accent }}>
-                          {home.hasApplicableRecommendation ? 'Uygula' : 'Hazırlanıyor'}
-                        </Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </Animated.View>
-        </View>
-      </Modal>
-    </>
   )
 }
 
@@ -310,7 +173,6 @@ export function HomeView() {
         onRefresh={home.refresh}
         refreshing={home.isRefreshing}
       >
-        {home.isRecommendationVisible ? <RecommendationCard /> : null}
         <AppleWatch />
         <SelectedDhikrMeaning />
         <QuickAccessList />

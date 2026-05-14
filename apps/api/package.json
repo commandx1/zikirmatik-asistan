@@ -21,7 +21,8 @@
     "seed:special-days": "node scripts/seed-special-days.mjs",
     "seed:special-days:kurban-2026": "node scripts/seed-special-days.mjs --event kurban-bayrami-2026",
     "seed:special-days:zilhicce-2026": "node scripts/seed-special-days.mjs --event zilhicce-ilk-on-2026",
-    "seed:special-days:mevlid-2026": "node scripts/seed-special-days.mjs --event mevlid-kandili-2026"
+    "seed:special-days:mevlid-2026": "node scripts/seed-special-days.mjs --event mevlid-kandili-2026",
+    "seed:special-days:muharrem-2026": "node scripts/seed-special-days.mjs --event muharrem-ilk-on-2026"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

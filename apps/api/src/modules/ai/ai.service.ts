@@ -25,64 +25,6 @@ type TimeContext = {
   specialDayName?: string;
 };
 
-const SUPPORTED_MOODS = [
-  'Üzgün',
-  'Stresli',
-  'Dengede',
-  'Kararsız',
-  'Huzurlu',
-  'Minnettar',
-  'Yorgun',
-  'Kaygılı',
-  'Mutlu',
-  'Yalnız',
-  'Öfkeli',
-  'Umutsuz',
-  'Heyecanlı',
-  'Mahzun',
-  'Bunalmış',
-  'Kırgın',
-  'Umutlu',
-  'Tevbekar',
-  'Odaklı',
-] as const;
-
-const MOOD_LEXICON: Array<{
-  mood: (typeof SUPPORTED_MOODS)[number];
-  hints: string[];
-}> = [
-  { mood: 'Kaygılı', hints: ['kaygi', 'endise', 'panik', 'tedirgin', 'korku'] },
-  { mood: 'Stresli', hints: ['stres', 'gergin', 'baski', 'yogunluk'] },
-  { mood: 'Yorgun', hints: ['yorgun', 'bitkin', 'uykusuz', 'tukenmis'] },
-  { mood: 'Üzgün', hints: ['uzgun', 'huzun', 'keder', 'mutsuz'] },
-  { mood: 'Mahzun', hints: ['mahzun', 'mahcub', 'boynu bukuk'] },
-  {
-    mood: 'Bunalmış',
-    hints: ['bunalmis', 'daraldim', 'sikistim', 'boguluyorum'],
-  },
-  { mood: 'Öfkeli', hints: ['ofke', 'kizgin', 'sinir', 'asabi'] },
-  {
-    mood: 'Kararsız',
-    hints: ['kararsiz', 'belirsiz', 'ikilem', 'ne yapacagimi bilmiyorum'],
-  },
-  { mood: 'Yalnız', hints: ['yalniz', 'tek basima', 'kimsem yok'] },
-  {
-    mood: 'Umutsuz',
-    hints: ['umutsuz', 'cikis yok', 'issizlik', 'acilmiyor', 'nasibim kapali'],
-  },
-  {
-    mood: 'Umutlu',
-    hints: ['umutlu', 'umudum var', 'iyi olacak', 'acilmasini istiyorum'],
-  },
-  { mood: 'Kırgın', hints: ['kirgin', 'incindim', 'kalbim kirik'] },
-  { mood: 'Tevbekar', hints: ['tevbe', 'pismanim', 'bagislanma', 'affet'] },
-  { mood: 'Minnettar', hints: ['sukur', 'minnettar', 'hamdolsun'] },
-  { mood: 'Huzurlu', hints: ['huzur', 'sakin', 'dingin', 'rahat'] },
-  { mood: 'Mutlu', hints: ['mutlu', 'neseli', 'sevinc', 'keyifli'] },
-  { mood: 'Heyecanlı', hints: ['heyecanli', 'coskulu', 'hevesli'] },
-  { mood: 'Odaklı', hints: ['odak', 'konsantre', 'disiplin', 'duzen'] },
-];
-
 @Injectable()
 export class AiService {
   constructor(
@@ -106,10 +48,7 @@ export class AiService {
 
     const maxRecommendations = payload.maxRecommendations ?? 5;
     const timeContext = payload.timeContext ?? this.defaultTimeContext();
-    const effectiveMood = await this.resolveEffectiveMood(
-      payload.mood,
-      payload.freeText,
-    );
+    const freeText = payload.freeText?.trim() || undefined;
 
     const availableDhikrs = await this.dhikrModel
       .find({ isVerified: true, isActive: true })
@@ -131,52 +70,49 @@ export class AiService {
       availableDhikrs.map((item) => [item._id.toString(), item]),
     );
 
-    const fallbackPoolSize = Math.min(
-      availableDhikrs.length,
-      Math.max(maxRecommendations, maxRecommendations * 3),
-    );
+    const catalog = availableDhikrs.map((item) => ({
+      id: item._id.toString(),
+      nameTurkish: item.nameTurkish,
+      meaning: item.meaning,
+      tags: item.tags,
+      categories: item.categories,
+      timeOfDay: item.timeOfDay,
+      suitableFor: item.suitableFor,
+    }));
 
-    const fallback = fallbackRecommend({
-      mood: effectiveMood,
-      freeText: payload.freeText,
-      timeContext,
+    const intent = await this.extractIntentTags(freeText);
+    const candidatePoolSize = Math.min(
+      availableDhikrs.length,
+      Math.max(maxRecommendations * 4, 20),
+    );
+    const candidateIds = rankCandidateIds({
+      freeText,
+      intentTags: intent.tags,
       recentDhikrIds,
-      availableDhikrs: availableDhikrs.map((item) => ({
-        _id: item._id.toString(),
+      timeContext,
+      catalog,
+      poolSize: candidatePoolSize,
+    });
+    const candidateIdSet = new Set(candidateIds);
+    const candidateDhikrs = candidateIds
+      .map((id) => dhikrMapById.get(id))
+      .filter((item): item is (typeof availableDhikrs)[number] => Boolean(item))
+      .map((item) => ({
+        id: item._id.toString(),
         nameTurkish: item.nameTurkish,
+        meaning: item.meaning,
         tags: item.tags,
         categories: item.categories,
         timeOfDay: item.timeOfDay,
         suitableFor: item.suitableFor,
-      })),
-      maxRecommendations: fallbackPoolSize,
-    });
-
-    const fallbackRankedIds = dedupeIds(fallback.recommendedIds).filter((id) =>
-      availableIdSet.has(id),
-    );
-    const candidateIds = fallbackRankedIds.slice(0, fallbackPoolSize);
-    const candidateIdSet = new Set(candidateIds);
+      }));
 
     const openAiResult = await this.generateViaOpenAi({
-      mood: effectiveMood,
-      freeText: payload.freeText,
+      freeText,
+      intentTags: intent.tags,
       timeContext,
       recentDhikrIds,
-      candidateDhikrs: candidateIds
-        .map((id) => dhikrMapById.get(id))
-        .filter((item): item is (typeof availableDhikrs)[number] =>
-          Boolean(item),
-        )
-        .map((item) => ({
-          id: item._id.toString(),
-          nameTurkish: item.nameTurkish,
-          meaning: item.meaning,
-          tags: item.tags,
-          categories: item.categories,
-          timeOfDay: item.timeOfDay,
-          suitableFor: item.suitableFor,
-        })),
+      candidateDhikrs,
       maxRecommendations,
     });
 
@@ -184,24 +120,43 @@ export class AiService {
       .filter((id) => candidateIdSet.has(id))
       .slice(0, maxRecommendations);
 
-    const safeRecommendedIds = dedupeIds([
+    let safeRecommendedIds = dedupeIds([
       ...openAiRankedIds,
-      ...fallbackRankedIds,
+      ...candidateIds,
     ]).slice(0, maxRecommendations);
-
-    const reasoning =
+    let reasoning =
       openAiResult?.reasoning?.trim() ||
-      fallback.reasoning ||
-      'Sana uygun, günün akışına ve ruh haline yakın bir zikir seçtim.';
-    const inferredMood =
-      normalizeAndConstrainMood(openAiResult?.inferredMood) ?? effectiveMood;
+      'Niyet metnine uygun bir zikir listesi hazırladım.';
+    let usedModel: 'openai' | 'fallback' = 'openai';
+
+    if (openAiRankedIds.length === 0 || safeRecommendedIds.length === 0) {
+      const fallback = fallbackRecommend({
+        freeText,
+        timeContext,
+        recentDhikrIds,
+        availableDhikrs: availableDhikrs.map((item) => ({
+          _id: item._id.toString(),
+          nameTurkish: item.nameTurkish,
+          tags: item.tags,
+          categories: item.categories,
+          timeOfDay: item.timeOfDay,
+          suitableFor: item.suitableFor,
+        })),
+        maxRecommendations,
+      });
+
+      safeRecommendedIds = dedupeIds(fallback.recommendedIds)
+        .filter((id) => availableIdSet.has(id))
+        .slice(0, maxRecommendations);
+      reasoning = fallback.reasoning || reasoning;
+      usedModel = 'fallback';
+    }
 
     await this.userModel
       .updateOne(
         { _id: userId },
         {
           $set: {
-            'onboarding.mood': inferredMood,
             lastSeenAt: new Date(),
           },
         },
@@ -210,8 +165,7 @@ export class AiService {
 
     const created = await this.aiRecommendationModel.create({
       userId,
-      mood: inferredMood,
-      freeText: payload.freeText,
+      freeText,
       timeContext,
       recommendedDhikrIds: safeRecommendedIds.map(
         (id) => new Types.ObjectId(id),
@@ -232,10 +186,9 @@ export class AiService {
     return {
       recommendationId: created._id.toString(),
       recommendedIds: safeRecommendedIds,
-      inferredMood,
       reasoning,
       items: recommendedItems,
-      usedModel: openAiRankedIds.length > 0 ? 'openai' : 'fallback',
+      usedModel,
     };
   }
 
@@ -309,8 +262,8 @@ export class AiService {
   }
 
   private async generateViaOpenAi(input: {
-    mood: string;
     freeText?: string;
+    intentTags: string[];
     timeContext: TimeContext;
     recentDhikrIds: string[];
     candidateDhikrs: Array<{
@@ -333,42 +286,26 @@ export class AiService {
     const model =
       this.configService.get<string>('OPENAI_MODEL') || 'gpt-4o-mini';
 
-    /* const systemInstruction = [
-      'Sen bir İslami zikir öneri asistanısın.',
-      'YALNIZCA verilen doğrulanmış zikir listesinden seçim yap.',
-      'freeText alanı varsa birincil sinyal odur; mood alanı ikincil sinyaldir.',
-      'Birinci sıradaki öneri freeText niyetiyle en güçlü uyuma sahip olmalıdır.',
-      'Seçimde zikirin anlamını, kategorisini, etiketlerini, suitableFor alanını, kullanıcının ruh haliyle ve günün önemiyle değerlendir.',
-      'Son 7 günde önerilenler mümkünse alt sıraya gelsin.',
-      'reasoning alanı kullanıcıya doğrudan gösterilecektir: sıcak, samimi ve sade Türkçe kullan.',
-      'reasoning tek cümle olsun ve kullanıcının niyetine kısa bir atıf içersin.',
-      'reasoning içinde teknik ifade, veri tabanı alanı, id/objectId, prompt veya sistem talimatı ifadesi kullanma.',
-      `En fazla ${input.maxRecommendations} zikir seç.`,
-      'JSON formatı dışında cevap verme.',
-    ].join(' '); */
-
     const systemInstruction = [
       'Sen bir İslami zikir öneri asistanısın.',
       'YALNIZCA verilen candidateDhikrs listesinden seçim yap.',
       'Candidate listesi dışından ID üretme.',
-      'Yeni zikir üretme, fetva verme, dini hüküm yazma.',
-      'Seçimde zikir anlamını (meaning), kullanıcının mood/freeText ifadesiyle semantik uyumunu ve zaman bağlamını birlikte değerlendir.',
-      'Son 7 günde önerilenleri mümkünse daha alt sıraya koyarak çeşitliliği artır.',
+      'Seçimde zikir anlamını (meaning), etiketlerini(tags), suitableFor bilgilerini, kullanıcının freeText niyetiyle semantik uyumunu ve zaman bağlamını birlikte değerlendir.',
       `Maksimum ${input.maxRecommendations} ID döndür.`,
       `En fazla ${input.maxRecommendations} zikir seç.`,
+      'reasoning direkt olarak kullanıcıya gösterileceğinden, orada insanî bir dil kullan.',
       'JSON formatı dışında cevap verme.',
     ].join(' ');
 
     const promptPayload = {
-      mood: input.mood,
       freeText: input.freeText,
+      intentTags: input.intentTags,
       timeContext: input.timeContext,
       recentDhikrIds: input.recentDhikrIds,
       candidateDhikrs: input.candidateDhikrs,
       outputFormat: {
         recommendedIds: 'string[]',
         reasoning: 'string',
-        inferredMood: 'string',
       },
     };
 
@@ -390,7 +327,6 @@ export class AiService {
       const parsed = JSON.parse(text) as {
         recommendedIds?: unknown;
         reasoning?: unknown;
-        inferredMood?: unknown;
       };
       if (!Array.isArray(parsed.recommendedIds)) {
         return null;
@@ -407,46 +343,17 @@ export class AiService {
           parsed.reasoning.trim().length > 0
             ? parsed.reasoning
             : undefined,
-        inferredMood:
-          typeof parsed.inferredMood === 'string'
-            ? parsed.inferredMood
-            : undefined,
       };
     } catch {
       return null;
     }
   }
 
-  private async resolveEffectiveMood(inputMood: string, freeText?: string) {
-    const normalizedInputMood =
-      normalizeAndConstrainMood(inputMood) ?? 'Dengede';
-    const trimmedText = freeText?.trim();
-
-    if (!trimmedText) {
-      return normalizedInputMood;
-    }
-
-    const aiMood = await this.classifyMoodViaOpenAi({
-      inputMood: normalizedInputMood,
-      freeText: trimmedText,
-    });
-    if (aiMood) {
-      return aiMood;
-    }
-
-    return (
-      normalizeAndConstrainMood(inferMoodFromText(trimmedText)) ??
-      normalizedInputMood
-    );
-  }
-
-  private async classifyMoodViaOpenAi(input: {
-    inputMood: string;
-    freeText: string;
-  }) {
+  private async extractIntentTags(freeText?: string) {
+    const inferred = inferIntentTagsFromText(freeText);
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    if (!apiKey) {
-      return null;
+    if (!apiKey || !freeText) {
+      return { tags: inferred, confidence: 0.4 };
     }
 
     const client = new OpenAI({ apiKey });
@@ -454,19 +361,17 @@ export class AiService {
       this.configService.get<string>('OPENAI_MODEL') || 'gpt-4o-mini';
 
     const systemInstruction = [
-      'Sen bir duygu sınıflandırma yardımcısısın.',
-      'YALNIZCA verilen mood seçeneklerinden birini seç.',
-      'Öncelik freeText içeriğidir; inputMood yalnızca ikincil sinyaldir.',
+      'Sen bir intent etiketleme yardımcısısın.',
+      'Verilen metinden 3-8 kısa intent etiketi çıkar.',
+      'Etiketler Türkçe, küçük harfli ve kısa olmalı.',
       'JSON dışında cevap verme.',
     ].join(' ');
 
     const promptPayload = {
-      inputMood: input.inputMood,
-      freeText: input.freeText,
-      allowedMoods: [...SUPPORTED_MOODS],
-      moodHintDictionary: MOOD_LEXICON,
+      freeText,
       outputFormat: {
-        inferredMood: 'string',
+        intentTags: 'string[]',
+        confidence: 'number',
       },
     };
 
@@ -482,13 +387,26 @@ export class AiService {
 
       const text = response.choices?.[0]?.message?.content;
       if (!text) {
-        return null;
+        return { tags: inferred, confidence: 0.4 };
       }
 
-      const parsed = JSON.parse(text) as { inferredMood?: unknown };
-      return normalizeAndConstrainMood(parsed.inferredMood);
+      const parsed = JSON.parse(text) as {
+        intentTags?: unknown;
+        confidence?: unknown;
+      };
+
+      const parsedTags = normalizeIntentTags(
+        Array.isArray(parsed.intentTags) ? parsed.intentTags : [],
+      );
+      const tags = parsedTags.length > 0 ? parsedTags : inferred;
+      const confidence =
+        typeof parsed.confidence === 'number'
+          ? Math.max(0, Math.min(1, parsed.confidence))
+          : 0.5;
+
+      return { tags, confidence };
     } catch {
-      return null;
+      return { tags: inferred, confidence: 0.4 };
     }
   }
 
@@ -529,108 +447,137 @@ function dedupeIds(ids: string[]) {
   return [...new Set(ids)];
 }
 
-function normalizeAndConstrainMood(value: unknown) {
-  const normalized = normalizeMoodLabel(value);
-  if (!normalized) {
-    return undefined;
+function inferIntentTagsFromText(freeText?: string) {
+  const tokens = tokenizeIntent(freeText ?? '');
+  if (tokens.length === 0) {
+    return ['huzur', 'şükür', 'teslimiyet'];
   }
 
-  const canonical = canonicalizeMood(normalized);
-
-  return isSupportedMood(canonical) ? canonical : undefined;
+  return dedupeIds(tokens).slice(0, 8);
 }
 
-function isSupportedMood(
-  value: string,
-): value is (typeof SUPPORTED_MOODS)[number] {
-  return SUPPORTED_MOODS.includes(value as (typeof SUPPORTED_MOODS)[number]);
+function normalizeIntentTags(values: unknown[]) {
+  return dedupeIds(
+    values
+      .map((item) => (typeof item === 'string' ? item : ''))
+      .map((item) => normalizeToken(item))
+      .filter((item) => item.length >= 2),
+  ).slice(0, 8);
 }
 
-function canonicalizeMood(value: string) {
-  const lowered = normalizeForSearch(value);
+function rankCandidateIds(input: {
+  freeText?: string;
+  intentTags: string[];
+  recentDhikrIds: string[];
+  timeContext: TimeContext;
+  catalog: Array<{
+    id: string;
+    nameTurkish: string;
+    meaning?: string;
+    tags: string[];
+    categories: string[];
+    timeOfDay: string;
+    suitableFor: string[];
+  }>;
+  poolSize: number;
+}) {
+  const intentTokens = dedupeIds([
+    ...input.intentTags.map((item) => normalizeToken(item)),
+    ...tokenizeIntent(input.freeText ?? ''),
+  ]);
+  const recentSet = new Set(input.recentDhikrIds);
 
-  if (lowered === 'notr' || lowered === 'notur') {
-    return 'Dengede';
-  }
-  if (lowered === 'kaygili') {
-    return 'Kaygılı';
-  }
-  if (lowered === 'ofkeli') {
-    return 'Öfkeli';
-  }
-  if (lowered === 'yalniz') {
-    return 'Yalnız';
-  }
-  if (lowered === 'uzgun') {
-    return 'Üzgün';
-  }
-  if (lowered === 'heyecanli') {
-    return 'Heyecanlı';
-  }
-  if (lowered === 'mahzun') {
-    return 'Mahzun';
-  }
-  if (lowered === 'bunalmis') {
-    return 'Bunalmış';
-  }
-  if (lowered === 'kirgin') {
-    return 'Kırgın';
-  }
-  if (lowered === 'umutlu') {
-    return 'Umutlu';
-  }
-  if (lowered === 'tevbekar' || lowered === 'tovbekar') {
-    return 'Tevbekar';
-  }
-  if (lowered === 'odakli') {
-    return 'Odaklı';
-  }
+  const ranked = input.catalog.map((item) => {
+    const spaceTokens = tokenizeIntent(
+      [
+        item.nameTurkish,
+        item.meaning ?? '',
+        item.tags.join(' '),
+        item.categories.join(' '),
+        item.suitableFor.join(' '),
+      ].join(' '),
+    );
 
-  return value;
+    const intentScore = overlapRatio(intentTokens, spaceTokens);
+    const timeScore = scoreTimeMatch(input.timeContext.hour, item.timeOfDay);
+    const specialScore = scoreSpecialDayMatch(
+      input.timeContext.isSpecialDay,
+      input.timeContext.specialDayName,
+      item.suitableFor,
+    );
+    const diversityBonus = recentSet.has(item.id) ? 0 : 1;
+
+    const score =
+      intentScore * 0.6 +
+      timeScore * 0.15 +
+      specialScore * 0.15 +
+      diversityBonus * 0.1;
+
+    return { id: item.id, score };
+  });
+
+  ranked.sort((a, b) => b.score - a.score);
+  return ranked.slice(0, input.poolSize).map((item) => item.id);
 }
 
-function normalizeMoodLabel(value: unknown) {
-  if (typeof value !== 'string') {
-    return undefined;
+function overlapRatio(a: string[], b: string[]) {
+  if (a.length === 0 || b.length === 0) {
+    return 0;
   }
 
-  const normalized = value.trim().replace(/\s+/g, ' ');
-
-  return normalized;
+  const bSet = new Set(b);
+  const hitCount = a.filter((token) => bSet.has(token)).length;
+  return hitCount / a.length;
 }
 
-function inferMoodFromText(value?: string) {
-  const text = normalizeForSearch(value ?? '');
-  if (!text.trim()) {
-    return 'Dengede';
+function scoreTimeMatch(hour: number, timeOfDay: string) {
+  if (timeOfDay === 'any') {
+    return 0.7;
   }
 
-  let bestMood: (typeof SUPPORTED_MOODS)[number] | null = null;
-  let bestScore = 0;
-
-  for (const entry of MOOD_LEXICON) {
-    let score = 0;
-    for (const hint of entry.hints) {
-      if (text.includes(hint)) {
-        score += hint.includes(' ') ? 2 : 1;
-      }
-    }
-
-    if (score > bestScore) {
-      bestScore = score;
-      bestMood = entry.mood;
-    }
+  if (hour >= 5 && hour < 12 && timeOfDay === 'morning') {
+    return 1;
   }
 
-  if (bestMood && bestScore > 0) {
-    return bestMood;
+  if (hour >= 12 && hour < 19 && timeOfDay === 'evening') {
+    return 1;
   }
 
-  return normalizeMoodLabel(value) ?? 'Dengede';
+  if ((hour >= 19 || hour < 5) && timeOfDay === 'night') {
+    return 1;
+  }
+
+  return 0.2;
 }
 
-function normalizeForSearch(value: string) {
-  return value
+function scoreSpecialDayMatch(
+  isSpecialDay: boolean,
+  specialDayName: string | undefined,
+  suitableFor: string[],
+) {
+  if (!isSpecialDay) {
+    return 0.6;
+  }
+
+  const lowered = normalizeToken(specialDayName ?? '');
+  const suitable = suitableFor.map((item) => normalizeToken(item));
+
+  if (suitable.length === 0) {
+    return 0.2;
+  }
+
+  if (
+    lowered &&
+    suitable.some((item) => lowered.includes(item) || item.includes(lowered))
+  ) {
+    return 1;
+  }
+
+  return 0.4;
+}
+
+function tokenizeIntent(value: string) {
+  const normalized = value
     .toLocaleLowerCase('tr-TR')
     .replace(/ı/g, 'i')
     .replace(/ğ/g, 'g')
@@ -640,5 +587,24 @@ function normalizeForSearch(value: string) {
     .replace(/ç/g, 'c')
     .replace(/[^\p{L}\p{N}\s]/gu, ' ')
     .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!normalized) {
+    return [];
+  }
+
+  return normalized.split(' ').map(normalizeToken).filter((item) => item.length >= 2);
+}
+
+function normalizeToken(value: string) {
+  return value
+    .toLocaleLowerCase('tr-TR')
+    .replace(/ı/g, 'i')
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
     .trim();
 }

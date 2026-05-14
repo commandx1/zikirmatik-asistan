@@ -1,18 +1,16 @@
 import { Pressable, Text, View } from "react-native";
 import { AppSelectBox } from "../../../components/ui/app-selectbox";
 import { cities } from "../../../lib/cities";
-import { MOOD_OPTIONS, PURPOSE_OPTIONS } from "../../onboarding/onboarding-data";
+import { PURPOSE_OPTIONS } from "../../onboarding/onboarding-data";
 
 type ProfilePersonalInfoModalProps = {
   visible: boolean;
   purpose: string;
-  mood: string;
   city: string;
   isSaving: boolean;
   error?: string;
   canSave: boolean;
   onChangePurpose: (value: string) => void;
-  onChangeMood: (value: string) => void;
   onChangeCity: (value: string) => void;
   onSave: () => void;
   onClose: () => void;
@@ -21,13 +19,11 @@ type ProfilePersonalInfoModalProps = {
 export function ProfilePersonalInfoModal({
   visible,
   purpose,
-  mood,
   city,
   isSaving,
   error,
   canSave,
   onChangePurpose,
-  onChangeMood,
   onChangeCity,
   onSave,
   onClose
@@ -43,7 +39,7 @@ export function ProfilePersonalInfoModal({
         <View className="mb-5 h-1.5 w-12 self-center rounded-full bg-white/20" />
         <Text className="text-[20px] font-semibold text-[--text-primary]">Kişisel Bilgiler</Text>
         <Text className="mt-1 text-[13px] text-[--text-muted]">
-          Amaç, ruh hali ve şehir bilgini güncelleyebilirsin.
+          Amaç ve şehir bilgini güncelleyebilirsin.
         </Text>
 
         <View className="mt-4 gap-3">
@@ -53,14 +49,6 @@ export function ProfilePersonalInfoModal({
             title="Amaç"
             options={PURPOSE_OPTIONS.map((item) => ({ label: item.title, value: item.id }))}
             onChange={onChangePurpose}
-            disabled={isSaving}
-          />
-          <AppSelectBox
-            value={mood}
-            placeholder="Ruh hali seç..."
-            title="Ruh Hali"
-            options={MOOD_OPTIONS.map((item) => ({ label: `${item.emoji} ${item.label}`, value: item.id }))}
-            onChange={onChangeMood}
             disabled={isSaving}
           />
           <AppSelectBox

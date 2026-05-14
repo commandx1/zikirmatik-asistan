@@ -15,7 +15,6 @@ type TimeContext = {
 };
 
 type FallbackInput = {
-  mood: string;
   freeText?: string;
   timeContext: TimeContext;
   recentDhikrIds: string[];
@@ -29,14 +28,14 @@ export type FallbackResult = {
 };
 
 export function fallbackRecommend(input: FallbackInput): FallbackResult {
-  const moodTokens = tokenize(`${input.mood} ${input.freeText ?? ''}`);
+  const intentTokens = tokenize(input.freeText ?? '');
   const recentSet = new Set(input.recentDhikrIds);
 
   const scored = input.availableDhikrs.map((dhikr) => {
     const tokenSpace = tokenize(
       `${dhikr.tags.join(' ')} ${dhikr.categories.join(' ')}`,
     );
-    const tagOverlap = overlapRatio(moodTokens, tokenSpace);
+    const tagOverlap = overlapRatio(intentTokens, tokenSpace);
 
     const timeScore = scoreTimeMatch(input.timeContext.hour, dhikr.timeOfDay);
     const specialScore = scoreSpecialDayMatch(
@@ -159,7 +158,7 @@ function buildReasoningSummary(
   const reasons: string[] = [];
 
   if (top.tagOverlap > 0) {
-    reasons.push('ruh haline uygun etiket eşleşmesi');
+    reasons.push('niyet metniyle uyumlu etiket eşleşmesi');
   }
 
   if (top.timeScore >= 0.7) {

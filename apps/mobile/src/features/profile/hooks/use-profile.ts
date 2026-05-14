@@ -22,7 +22,7 @@ import { useOnboardingStore } from "../../../store/onboarding-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { FONT_LABELS } from "../../../theme/fonts";
 import { THEME_LABELS } from "../../../theme/labels";
-import { MOOD_OPTIONS, PURPOSE_OPTIONS } from "../../onboarding/onboarding-data";
+import { PURPOSE_OPTIONS } from "../../onboarding/onboarding-data";
 
 type PremiumPlan = "monthly" | "annual";
 
@@ -52,10 +52,8 @@ export function useProfile() {
   const signOut = useAuthStore((s) => s.signOut);
   const resetOnboarding = useOnboardingStore((s) => s.resetOnboarding);
   const onboardingPurpose = useOnboardingStore((s) => s.purpose);
-  const onboardingMood = useOnboardingStore((s) => s.mood);
   const onboardingCity = useOnboardingStore((s) => s.city);
   const setOnboardingPurpose = useOnboardingStore((s) => s.setPurpose);
-  const setOnboardingMood = useOnboardingStore((s) => s.setMood);
   const setOnboardingCity = useOnboardingStore((s) => s.setCity);
 
   const [isPremiumSheetOpen, setPremiumSheetOpen] = useState(false);
@@ -72,7 +70,6 @@ export function useProfile() {
   const [premiumError, setPremiumError] = useState<string>();
   const [isPersonalInfoModalOpen, setIsPersonalInfoModalOpen] = useState(false);
   const [draftPurpose, setDraftPurpose] = useState(onboardingPurpose);
-  const [draftMood, setDraftMood] = useState(onboardingMood);
   const [draftCity, setDraftCity] = useState(onboardingCity || city || "");
   const [isSavingPersonalInfo, setIsSavingPersonalInfo] = useState(false);
   const [personalInfoError, setPersonalInfoError] = useState<string>();
@@ -358,22 +355,18 @@ export function useProfile() {
   }, [authStatus, hydrateFromBackend, session?.accessToken, session?.userId]);
 
   const purposeValue = backendUser?.onboarding?.purpose ?? onboardingPurpose;
-  const moodValue = backendUser?.onboarding?.mood ?? onboardingMood;
   const personalCityValue =
     backendUser?.onboarding?.city ??
     backendUser?.city ??
     (onboardingCity || city);
   const purposeLabel = getPurposeLabel(purposeValue);
-  const moodLabel = getMoodLabel(moodValue);
   const hasPersonalInfoChanges =
     draftPurpose !== purposeValue ||
-    draftMood !== moodValue ||
     draftCity.trim() !== personalCityValue.trim();
   const canSavePersonalInfo = draftCity.trim().length > 0 && hasPersonalInfoChanges && !isSavingPersonalInfo;
 
   const openPersonalInfoModal = () => {
     setDraftPurpose(purposeValue);
-    setDraftMood(moodValue);
     setDraftCity(personalCityValue);
     setPersonalInfoError(undefined);
     setIsPersonalInfoModalOpen(true);
@@ -403,7 +396,6 @@ export function useProfile() {
           session.userId,
           {
             purpose: draftPurpose,
-            mood: draftMood,
             city: trimmedCity
           },
           session.accessToken
@@ -412,7 +404,6 @@ export function useProfile() {
       }
 
       setOnboardingPurpose(draftPurpose);
-      setOnboardingMood(draftMood);
       setOnboardingCity(trimmedCity);
       hydrateFromBackend({ city: trimmedCity });
       setIsPersonalInfoModalOpen(false);
@@ -437,11 +428,9 @@ export function useProfile() {
     isPremium: backendUser?.isPremium ?? isPremium,
     city: backendUser?.city ?? city,
     purposeLabel,
-    moodLabel,
     personalCityLabel: personalCityValue,
     isPersonalInfoModalOpen,
     draftPurpose,
-    draftMood,
     draftCity,
     isSavingPersonalInfo,
     personalInfoError,
@@ -469,7 +458,6 @@ export function useProfile() {
     openPersonalInfoModal,
     closePersonalInfoModal,
     setDraftPurpose,
-    setDraftMood,
     setDraftCity,
     savePersonalInfo,
     manageSubscription,
@@ -487,11 +475,6 @@ export function useProfile() {
 
 function getPurposeLabel(value: string) {
   return PURPOSE_OPTIONS.find((item) => item.id === value)?.title ?? "Belirtilmedi";
-}
-
-function getMoodLabel(value: string) {
-  const matched = MOOD_OPTIONS.find((item) => item.id === value);
-  return matched ? `${matched.emoji} ${matched.label}` : "Belirtilmedi";
 }
 
 function toMemberSinceLabel(isoDate: string) {

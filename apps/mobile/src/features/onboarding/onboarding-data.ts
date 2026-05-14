@@ -5,12 +5,6 @@ export type PurposeOption = {
   icon: string;
 };
 
-export type MoodOption = {
-  id: string;
-  label: string;
-  emoji: string;
-};
-
 export const PURPOSE_OPTIONS: PurposeOption[] = [
   {
     id: "habit",
@@ -36,19 +30,4 @@ export const PURPOSE_OPTIONS: PurposeOption[] = [
     subtitle: "Kandil ve mübarek geceler",
     icon: "☪️"
   }
-];
-
-export const MOOD_OPTIONS: MoodOption[] = [
-  { id: "uzgun", label: "Üzgün", emoji: "😔" },
-  { id: "stresli", label: "Stresli", emoji: "😰" },
-  { id: "notr", label: "Nötr", emoji: "😐" },
-  { id: "huzurlu", label: "Huzurlu", emoji: "😌" },
-  { id: "minnettar", label: "Minnettar", emoji: "🙏" },
-  { id: "yorgun", label: "Yorgun", emoji: "😓" },
-  { id: "kaygili", label: "Kaygılı", emoji: "😟" },
-  { id: "mutlu", label: "Mutlu", emoji: "😊" },
-  { id: "yalniz", label: "Yalnız", emoji: "🥺" },
-  { id: "ofkeli", label: "Öfkeli", emoji: "😠" },
-  { id: "umutsuz", label: "Umutsuz", emoji: "😞" },
-  { id: "heyecanli", label: "Heyecanlı", emoji: "🤩" }
 ];

@@ -10,19 +10,17 @@ export function useOnboardingFlow() {
   const router = useRouter();
   const step = useOnboardingStore((s) => s.step as OnboardingStep);
   const purpose = useOnboardingStore((s) => s.purpose);
-  const mood = useOnboardingStore((s) => s.mood);
   const city = useOnboardingStore((s) => s.city);
   const setStep = useOnboardingStore((s) => s.setStep);
   const completeOnboarding = useOnboardingStore((s) => s.completeOnboarding);
   const setPurpose = useOnboardingStore((s) => s.setPurpose);
-  const setMood = useOnboardingStore((s) => s.setMood);
   const setCity = useOnboardingStore((s) => s.setCity);
   const authStatus = useAuthStore((s) => s.status);
   const session = useAuthStore((s) => s.session);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string>();
 
-  const progress = useMemo(() => Math.round((step / 4) * 100), [step]);
+  const progress = useMemo(() => Math.round((step / 3) * 100), [step]);
 
   const submitFinalStep = async () => {
     if (authStatus !== "authenticated" || !session?.userId) {
@@ -38,7 +36,6 @@ export function useOnboardingFlow() {
         session.userId,
         {
           purpose,
-          mood,
           city
         },
         session.accessToken
@@ -61,13 +58,11 @@ export function useOnboardingFlow() {
     step,
     progress,
     purpose,
-    mood,
     city,
     isSubmitting,
     submitError,
     setStep,
     setPurpose,
-    setMood,
     setCity: (value: string) => {
       setSubmitError(undefined);
       setCity(value);
@@ -77,12 +72,12 @@ export function useOnboardingFlow() {
         return;
       }
 
-      if (step === 4 && city.trim().length === 0) {
+      if (step === 3 && city.trim().length === 0) {
         setSubmitError("Lütfen şehir seç ya da yaz.");
         return;
       }
 
-      if (step === 4) {
+      if (step === 3) {
         void submitFinalStep();
         return;
       }

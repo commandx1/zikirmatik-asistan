@@ -68,14 +68,12 @@ export class User {
   @Prop(
     raw({
       purpose: { type: String },
-      mood: { type: String },
       city: { type: String },
       completedAt: { type: Date },
     }),
   )
   onboarding?: {
     purpose?: string;
-    mood?: string;
     city?: string;
     completedAt?: Date;
   };

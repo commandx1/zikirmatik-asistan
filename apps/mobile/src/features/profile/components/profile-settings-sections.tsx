@@ -8,7 +8,6 @@ import { ProfileToggleRow } from "./profile-toggle-row";
 
 type ProfileSettingsSectionsProps = {
   purposeLabel: string;
-  moodLabel: string;
   personalCityLabel: string;
   themeLabel: string;
   fontLabel: string;
@@ -30,7 +29,6 @@ type ProfileSettingsSectionsProps = {
 
 export function ProfileSettingsSections({
   purposeLabel,
-  moodLabel,
   personalCityLabel,
   themeLabel,
   fontLabel,
@@ -58,13 +56,6 @@ export function ProfileSettingsSections({
             label="Amaç"
             iconName="bullseye"
             value={purposeLabel}
-            onPress={onPressPersonalInfo}
-            bottomBorder
-          />
-          <ProfileLinkRow
-            label="Ruh Hali"
-            iconName="face-smile"
-            value={moodLabel}
             onPress={onPressPersonalInfo}
             bottomBorder
           />

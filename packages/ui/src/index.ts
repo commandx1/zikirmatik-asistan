@@ -11,5 +11,4 @@ export * from "./components/navigation/bottom-nav";
 
 export * from "./components/composites/dhikr-card";
 export * from "./components/composites/counter-button";
-export * from "./components/composites/mood-selector";
 export * from "./components/composites/kandil-countdown-card";

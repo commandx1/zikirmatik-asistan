@@ -1,18 +1,15 @@
 import { runSpecialDaySeed } from './lib/special-day-seed.mjs';
-import { SPECIAL_DAY_DATASET as KURBAN_2026 } from './seed-kurban-bayrami-2026.mjs';
-import { SPECIAL_DAY_DATASET as ZILHICCE_2026 } from './seed-zilhicce-ilk-on-2026.mjs';
-import { SPECIAL_DAY_DATASET as MEVLID_2026 } from './seed-mevlid-kandili-2026.mjs';
-
-const DATASETS = [KURBAN_2026, ZILHICCE_2026, MEVLID_2026];
-const DATASET_MAP = new Map(DATASETS.map((dataset) => [dataset.key, dataset]));
+import {
+  SPECIAL_DAY_DATASET as MASTER_DATASET,
+  buildEventDataset,
+  getAvailableEventKeys,
+} from './seed-special-days-master-2026.mjs';
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
   if (args.all) {
-    for (const dataset of DATASETS) {
-      await runSpecialDaySeed(dataset);
-    }
+    await runSpecialDaySeed(MASTER_DATASET);
     return;
   }
 
@@ -22,7 +19,7 @@ async function main() {
     return;
   }
 
-  const dataset = DATASET_MAP.get(args.event);
+  const dataset = buildEventDataset(args.event);
   if (!dataset) {
     console.error(`Bilinmeyen event key: ${args.event}`);
     printUsage();
@@ -56,7 +53,9 @@ function parseArgs(args) {
 }
 
 function printUsage() {
-  const available = DATASETS.map((item) => `- ${item.key}`).join('\n');
+  const available = getAvailableEventKeys()
+    .map((item) => `- ${item}`)
+    .join('\n');
   console.log(
     `Kullanım:\n  node scripts/seed-special-days.mjs --event <event-key>\n  node scripts/seed-special-days.mjs --all\n\nMevcut event keyler:\n${available}`,
   );

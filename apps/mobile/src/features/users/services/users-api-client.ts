@@ -18,7 +18,6 @@ export type BackendUser = {
   createdAt?: string;
   onboarding?: {
     purpose?: string;
-    mood?: string;
     city?: string;
     completedAt?: string;
   };
@@ -27,7 +26,6 @@ export type BackendUser = {
 
 export type UpdateOnboardingPayload = {
   purpose?: string;
-  mood?: string;
   city?: string;
 };
 

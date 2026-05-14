@@ -26,7 +26,6 @@ export const DHIKR_MOCKS: Dhikr[] = [
 export const AI_RECOMMENDATION_MOCKS: AiRecommendation[] = [
   {
     id: "rec-1",
-    mood: "stresli",
     reason: "Kısa ve ritmik tekrar ile zihni sakinleştirir.",
     dhikrId: "dhikr-astagfirullah",
     confidence: 0.91

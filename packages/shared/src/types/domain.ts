@@ -21,7 +21,6 @@ export type DhikrLog = {
 
 export type AiRecommendation = {
   id: string;
-  mood: string;
   reason: string;
   dhikrId: string;
   confidence: number;

@@ -32,7 +32,6 @@ export function ProfileScreen() {
             <ProfileQuickStatsCard stats={profile.quickStats} />
             <ProfileSettingsSections
               purposeLabel={profile.purposeLabel}
-              moodLabel={profile.moodLabel}
               personalCityLabel={profile.personalCityLabel}
               themeLabel={profile.themeLabel}
               fontLabel={profile.fontLabel}
@@ -57,13 +56,11 @@ export function ProfileScreen() {
         <ProfilePersonalInfoModal
           visible={profile.isPersonalInfoModalOpen}
           purpose={profile.draftPurpose}
-          mood={profile.draftMood}
           city={profile.draftCity}
           isSaving={profile.isSavingPersonalInfo}
           error={profile.personalInfoError}
           canSave={profile.canSavePersonalInfo}
           onChangePurpose={profile.setDraftPurpose}
-          onChangeMood={profile.setDraftMood}
           onChangeCity={profile.setDraftCity}
           onSave={profile.savePersonalInfo}
           onClose={profile.closePersonalInfoModal}
