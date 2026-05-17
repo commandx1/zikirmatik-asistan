@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { BottomCta } from "../onboarding-primitives";
 import { useOnboardingFlowContext } from "../../context/onboarding-flow-context";
 
@@ -17,12 +17,6 @@ export function SplashStep() {
             />
           ))}
         </View>
-      </View>
-
-      <View className="absolute right-6 top-8 z-20">
-        <Pressable onPress={() => flow.setStep(2)}>
-          <Text className="text-[13px] font-medium text-[#9A9080]">Atla</Text>
-        </Pressable>
       </View>
 
       <View className="flex-1 items-center justify-center px-8">

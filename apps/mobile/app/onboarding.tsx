@@ -1,18 +1,15 @@
 import { Redirect } from "expo-router";
 import { OnboardingScreen } from "../src/features/onboarding/screen";
-import { useAuthStore } from "../src/store/auth-store";
-import { useOnboardingStore } from "../src/store/onboarding-store";
+import { useOnboardingGate } from "../src/features/onboarding/hooks/use-onboarding-gate";
 
 export default function OnboardingRoute() {
-  const authStatus = useAuthStore((s) => s.status);
-  const isCompleted = useOnboardingStore((s) => s.isCompleted);
-  const onboardingHydrated = useOnboardingStore((s) => s.hasHydrated);
+  const { isReady, authStatus, isCompleted } = useOnboardingGate();
 
   if (authStatus !== "authenticated") {
     return <Redirect href="/auth" />;
   }
 
-  if (!onboardingHydrated) {
+  if (!isReady) {
     return null;
   }
 
