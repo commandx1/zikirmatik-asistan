@@ -65,9 +65,16 @@ export class SubscriptionsService {
       .exec();
   }
 
-  async findById(id: string) {
+  async findById(id: string, userId?: string) {
+    const filter: Record<string, unknown> = {
+      _id: this.asObjectId(id, 'Geçersiz abonelik kimliği.'),
+    };
+    if (userId) {
+      filter.userId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
+    }
+
     const subscription = await this.subscriptionModel
-      .findById(this.asObjectId(id, 'Geçersiz abonelik kimliği.'))
+      .findOne(filter)
       .lean()
       .exec();
 
@@ -78,7 +85,7 @@ export class SubscriptionsService {
     return subscription;
   }
 
-  async update(id: string, payload: UpdateSubscriptionDto) {
+  async update(id: string, payload: UpdateSubscriptionDto, userId?: string) {
     let nextUserId: Types.ObjectId | undefined;
 
     if (payload.userId) {
@@ -89,8 +96,13 @@ export class SubscriptionsService {
       await this.ensureUserExists(nextUserId);
     }
 
+    const targetSubscriptionId = this.asObjectId(id, 'Geçersiz abonelik kimliği.');
+    const ownerFilter = userId
+      ? { _id: targetSubscriptionId, userId: this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.') }
+      : { _id: targetSubscriptionId };
+
     const existing = await this.subscriptionModel
-      .findById(this.asObjectId(id, 'Geçersiz abonelik kimliği.'))
+      .findOne(ownerFilter)
       .lean()
       .exec();
     if (!existing) {
@@ -99,7 +111,7 @@ export class SubscriptionsService {
 
     const subscription = await this.subscriptionModel
       .findByIdAndUpdate(
-        this.asObjectId(id, 'Geçersiz abonelik kimliği.'),
+        targetSubscriptionId,
         {
           $set: {
             ...payload,
@@ -123,9 +135,21 @@ export class SubscriptionsService {
     return subscription;
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId?: string) {
+    const targetSubscriptionId = this.asObjectId(id, 'Geçersiz abonelik kimliği.');
+    if (userId) {
+      const ownerId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
+      const existing = await this.subscriptionModel
+        .findOne({ _id: targetSubscriptionId, userId: ownerId }, { _id: 1 })
+        .lean()
+        .exec();
+      if (!existing) {
+        throw new NotFoundException('Silinecek abonelik kaydı bulunamadı.');
+      }
+    }
+
     const deleted = await this.subscriptionModel
-      .findByIdAndDelete(this.asObjectId(id, 'Geçersiz abonelik kimliği.'))
+      .findByIdAndDelete(targetSubscriptionId)
       .lean()
       .exec();
 
