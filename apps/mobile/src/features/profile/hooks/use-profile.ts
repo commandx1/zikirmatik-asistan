@@ -113,8 +113,8 @@ export function useProfile() {
     }
 
     const [logs, streak] = await Promise.all([
-      listDhikrLogsByUser(session.userId),
-      getUserStreak(session.userId)
+      listDhikrLogsByUser(session.userId, undefined, undefined, session.accessToken),
+      getUserStreak(session.userId, session.accessToken)
     ]);
 
     const completedLogCount = logs.reduce(
@@ -215,8 +215,8 @@ export function useProfile() {
   };
   const goThemeSelector = () => router.push("/theme-selector");
   const goFontSelector = () => router.push("/font-selector");
-  const onLogout = () => {
-    signOut();
+  const onLogout = async () => {
+    await signOut();
     router.replace("/auth");
   };
   const onRestartOnboarding = () => {
