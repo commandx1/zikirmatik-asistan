@@ -47,6 +47,8 @@ export class UsersController {
 
 function assertSelfUser(targetUserId: string, currentUserId: string) {
   if (targetUserId !== currentUserId) {
-    throw new ForbiddenException('Sadece kendi kullanıcı kaydını yönetebilirsin.');
+    throw new ForbiddenException(
+      'Sadece kendi kullanıcı kaydını yönetebilirsin.',
+    );
   }
 }
