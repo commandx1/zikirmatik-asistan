@@ -94,7 +94,11 @@ export class SpecialDaysApiError extends Error {
 
 const API_BASE_URL = resolveApiBaseUrl();
 
-export async function getSpecialDaysHome(date?: string, userId?: string): Promise<BackendSpecialDayHomeResponse> {
+export async function getSpecialDaysHome(
+  date?: string,
+  userId?: string,
+  accessToken?: string
+): Promise<BackendSpecialDayHomeResponse> {
   const params = new URLSearchParams();
   if (date) {
     params.set("date", date);
@@ -107,10 +111,15 @@ export async function getSpecialDaysHome(date?: string, userId?: string): Promis
   const path = query ? `/v1/special-days/home?${query}` : "/v1/special-days/home";
   return requestJson<BackendSpecialDayHomeResponse>(path, {
     method: "GET",
+    accessToken,
   });
 }
 
-export async function getSpecialDayDetail(id: string, userId?: string): Promise<BackendSpecialDayDetail> {
+export async function getSpecialDayDetail(
+  id: string,
+  userId?: string,
+  accessToken?: string
+): Promise<BackendSpecialDayDetail> {
   const params = new URLSearchParams();
   if (userId) {
     params.set("userId", userId);
@@ -120,16 +129,19 @@ export async function getSpecialDayDetail(id: string, userId?: string): Promise<
   const path = query ? `/v1/special-days/${id}/detail?${query}` : `/v1/special-days/${id}/detail`;
   return requestJson<BackendSpecialDayDetail>(path, {
     method: "GET",
+    accessToken,
   });
 }
 
 export async function updateSpecialDayProgress(
   id: string,
   payload: UpdateSpecialDayProgressPayload,
+  accessToken?: string
 ): Promise<UpdateSpecialDayProgressResponse> {
   return requestJson<UpdateSpecialDayProgressResponse>(`/v1/special-days/${id}/progress`, {
     method: "PATCH",
     body: payload,
+    accessToken,
   });
 }
 
@@ -146,14 +158,19 @@ function resolveApiBaseUrl() {
 
 async function requestJson<TResponse>(
   path: string,
-  options: { method: "GET" | "PATCH"; body?: unknown },
+  options: { method: "GET" | "PATCH"; body?: unknown; accessToken?: string },
 ): Promise<TResponse> {
   try {
+    const headers: Record<string, string> = {
+      "content-type": "application/json",
+    };
+    if (options.accessToken?.trim()) {
+      headers.authorization = `Bearer ${options.accessToken.trim()}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: options.method,
-      headers: {
-        "content-type": "application/json",
-      },
+      headers,
       ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
     });
 
