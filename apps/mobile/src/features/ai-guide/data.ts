@@ -1,7 +1,7 @@
 import type { AiGuideRecommendation } from "./types";
 
 export const AI_GUIDE_CURRENT_STATE = {
-  label: "ASİSTAN BAĞLAMI",
+  label: "ASİSTAN",
 } as const;
 
 export const AI_GUIDE_INPUT_PLACEHOLDER = "Niyetini ve ihtiyacını yaz...";
