@@ -1,4 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
 import { useEffect, useMemo, useRef } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
@@ -76,10 +77,11 @@ function ProgressRing({ progress, accent, trackColor }: { progress: number; acce
 }
 
 export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
+  const router = useRouter();
   const { tokens: activeTokens } = useThemeTokens();
   const tokens = previewTokens ?? activeTokens;
   const home = useHomeContext();
-  const isComplete = home.count >= home.target && home.target > 0;
+  const isComplete = home.isTargetMode && home.count >= home.target && home.target > 0;
   const prevCountRef = useRef(home.count);
   const prevCompleteRef = useRef(isComplete);
   const tapScale = useSharedValue(1);
@@ -225,7 +227,11 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
                     <Animated.Text style={counterAnimatedStyle} className="text-[40px] font-bold leading-[42px]">
                       {counterText}
                     </Animated.Text>
-                    {!isComplete ? (
+                    {!home.isTargetMode ? (
+                      <Text className="mt-1 text-[10px] font-semibold tracking-[0.6px]" style={{ color: withAlpha(tokens.textPrimary, 0.6) }}>
+                        Serbest · ∞
+                      </Text>
+                    ) : !isComplete ? (
                       <Text className="mt-1 text-[10px]" style={{ color: withAlpha(tokens.textPrimary, 0.4) }}>
                         / {compactTarget}
                       </Text>
@@ -240,7 +246,7 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
 
               <View className="mt-3 flex-row gap-3">
                 <Pressable
-                  onPress={home.onChangeDhikrPress}
+                  onPress={() => router.push("/(tabs)/focus")}
                   className="h-9 w-9 items-center justify-center rounded-full border"
                   style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
                 >
@@ -248,10 +254,19 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
                 </Pressable>
                 <Pressable
                   onPress={home.onTargetPress}
+                  disabled={!home.isTargetMode}
                   className="h-9 w-9 items-center justify-center rounded-full border"
-                  style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
+                  style={{
+                    borderColor: controlButtonBorder,
+                    backgroundColor: controlButtonBg,
+                    opacity: home.isTargetMode ? 1 : 0.45
+                  }}
                 >
-                  <FontAwesome6 name="bullseye" size={12} color={tokens.textPrimary} />
+                  <FontAwesome6
+                    name="bullseye"
+                    size={12}
+                    color={home.isTargetMode ? tokens.textPrimary : withAlpha(tokens.textPrimary, 0.55)}
+                  />
                 </Pressable>
                 <Pressable
                   onPress={home.onResetPress}

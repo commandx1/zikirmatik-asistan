@@ -1,4 +1,3 @@
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
@@ -9,23 +8,8 @@ import { AppleWatch } from './components/apple-watch'
 
 function TopBar() {
   const home = useHomeContext()
-  const { tokens } = useThemeTokens()
 
-  return (
-    <PageHeader
-      title='Ana Sayfa'
-      subtitle={`${home.greeting} • Seri ${home.streakLabel}`}
-      rightAccessory={
-        <Pressable className='h-8 w-8 items-center justify-center'>
-          <FontAwesome6 name='bell' size={16} color={tokens.textMuted} iconStyle='regular' />
-          <View
-            className='absolute right-[6px] top-[4px] h-2 w-2 rounded-full border bg-[#ef4444]'
-            style={{ borderColor: tokens.bg }}
-          />
-        </Pressable>
-      }
-    />
-  )
+  return <PageHeader title='Zikirmatik Asistan' subtitle={`${home.greeting} • Seri ${home.streakLabel}`} />
 }
 
 function QuickAccessList() {
@@ -161,6 +145,67 @@ function TargetModal() {
   )
 }
 
+function FreeSaveNameModal() {
+  const home = useHomeContext()
+  const { tokens } = useThemeTokens()
+
+  return (
+    <Modal visible={home.isFreeSaveNameModalOpen} transparent animationType='fade' onRequestClose={home.onFreeSaveNameCancel}>
+      <View className='flex-1 items-center justify-center bg-black/50 px-6'>
+        <View
+          className='w-full max-w-[320px] rounded-2xl p-5'
+          style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.1), backgroundColor: tokens.card }}
+        >
+          <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
+            Zikir Kaydet
+          </Text>
+          <Text className='mb-3 text-xs' style={{ color: tokens.textMuted }}>
+            Serbest çektiğin zikri kaydetmek için bir isim yaz.
+          </Text>
+          <TextInput
+            value={home.freeSaveNameDraft}
+            onChangeText={home.onFreeSaveNameChange}
+            autoFocus
+            placeholder='Örn. Sessiz tesbih'
+            placeholderTextColor={tokens.textMuted}
+            className='mb-2 rounded-xl px-3 py-3 text-sm'
+            style={{
+              borderWidth: 1,
+              borderColor: withAlpha(tokens.accent, 0.4),
+              backgroundColor: withAlpha(tokens.bg, 0.9),
+              color: tokens.textPrimary
+            }}
+            onSubmitEditing={home.onFreeSaveNameSubmit}
+          />
+          {home.freeSaveNameError ? (
+            <Text className='mb-3 text-xs text-[#F97373]'>{home.freeSaveNameError}</Text>
+          ) : null}
+          <View className='flex-row justify-end gap-2'>
+            <Pressable
+              onPress={home.onFreeSaveNameCancel}
+              className='rounded-full px-4 py-2'
+              style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.2) }}
+            >
+              <Text className='text-sm font-medium' style={{ color: tokens.textPrimary }}>
+                İptal
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={home.onFreeSaveNameSubmit}
+              className='rounded-full px-4 py-2'
+              style={{ backgroundColor: tokens.accent }}
+            >
+              <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
+                Kaydet
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
 export function HomeView() {
   const home = useHomeContext()
 
@@ -178,6 +223,7 @@ export function HomeView() {
         <QuickAccessList />
       </PageScrollView>
       <TargetModal />
+      <FreeSaveNameModal />
     </PageLayout>
   )
 }
