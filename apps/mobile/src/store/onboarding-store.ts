@@ -14,6 +14,7 @@ type OnboardingState = {
   resetOnboarding: () => void;
   setPurpose: (purpose: string) => void;
   setCity: (city: string) => void;
+  applyBackendSnapshot: (payload: { purpose?: string; city?: string; isCompleted?: boolean }) => void;
   markHydrated: () => void;
 };
 
@@ -64,6 +65,17 @@ export const useOnboardingStore = create<OnboardingState>()(
         set({ city: nextCity });
         useProfileStore.getState().setCity(nextCity);
       },
+      applyBackendSnapshot: ({ purpose, city, isCompleted }) =>
+        set((state) => {
+          const nextPurpose = purpose?.trim() || state.purpose || "habit";
+          const nextCity = city?.trim() ?? state.city;
+          return {
+            purpose: nextPurpose,
+            city: nextCity,
+            isCompleted: Boolean(isCompleted),
+            step: isCompleted ? 3 : 1
+          };
+        }),
       markHydrated: () => set({ hasHydrated: true })
     }),
     {

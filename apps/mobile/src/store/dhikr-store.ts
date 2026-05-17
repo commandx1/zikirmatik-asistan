@@ -7,6 +7,7 @@ type CreateCustomDhikrInput = {
   name: string;
   arabicOrPronunciation?: string;
   target?: number;
+  initialCount?: number;
 };
 
 type DhikrStore = {
@@ -16,6 +17,7 @@ type DhikrStore = {
   lastSavedBackendLog?: BackendDhikrLog;
   syncError?: string;
   selectDhikr: (id: string) => void;
+  clearSelectedDhikr: () => void;
   toggleFavorite: (id: string) => void;
   addCustomDhikr: (input: CreateCustomDhikrInput) => string;
   incrementSelected: () => void;
@@ -36,6 +38,7 @@ type DhikrStore = {
   ) => void;
   applySavedBackendLog: (log: BackendDhikrLog) => void;
   setSyncError: (message?: string) => void;
+  resetSessionScoped: () => void;
 };
 
 export const MAX_DHIKR_TARGET = 999_999_999;
@@ -72,7 +75,7 @@ const INITIAL_ITEMS = ZIKIR_ITEMS;
 
 export const useDhikrStore = create<DhikrStore>((set, get) => ({
   items: INITIAL_ITEMS,
-  selectedDhikrId: INITIAL_ITEMS[0]?.id ?? "",
+  selectedDhikrId: "",
   isHydratedFromBackend: false,
   lastSavedBackendLog: undefined,
   selectDhikr: (id) => {
@@ -82,6 +85,7 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
 
     set({ selectedDhikrId: id });
   },
+  clearSelectedDhikr: () => set({ selectedDhikrId: "" }),
   toggleFavorite: (id) =>
     set((state) => ({
       items: state.items.map((item) => (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item))
@@ -99,9 +103,9 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
       transliteration: name,
       arabic: input.arabicOrPronunciation?.trim() || undefined,
       meaning: undefined,
-      current: 0,
+      current: Math.max(0, Math.floor(input.initialCount ?? 0)),
       target: normalizeTarget(input.target),
-      lastActivityLabel: "Henüz başlanmadı",
+      lastActivityLabel: Math.max(0, Math.floor(input.initialCount ?? 0)) > 0 ? formatLastActivityLabel() : "Henüz başlanmadı",
       streakDays: 0,
       isFavorite: false
     };
@@ -199,11 +203,19 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
 
       return {
         items: nextItems,
-        selectedDhikrId: hasCurrentSelection ? state.selectedDhikrId : nextItems[0]?.id ?? "",
+        selectedDhikrId: hasCurrentSelection ? state.selectedDhikrId : "",
         isHydratedFromBackend: true,
         syncError: undefined
       };
     }),
   applySavedBackendLog: (log) => set({ lastSavedBackendLog: log }),
-  setSyncError: (message) => set({ syncError: message })
+  setSyncError: (message) => set({ syncError: message }),
+  resetSessionScoped: () =>
+    set({
+      items: INITIAL_ITEMS,
+      selectedDhikrId: "",
+      isHydratedFromBackend: false,
+      lastSavedBackendLog: undefined,
+      syncError: undefined
+    })
 }));

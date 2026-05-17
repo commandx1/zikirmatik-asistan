@@ -18,6 +18,7 @@ type ProfileState = {
   setDailyReminderEnabled: (enabled: boolean) => void;
   setKandilNotificationsEnabled: (enabled: boolean) => void;
   setAdhanNotificationsEnabled: (enabled: boolean) => void;
+  resetSessionScoped: () => void;
   hydrateFromBackend: (payload: {
     displayName?: string;
     city?: string;
@@ -57,6 +58,20 @@ export const useProfileStore = create<ProfileState>((set) => ({
   },
   setAdhanNotificationsEnabled: (enabled) => {
     set({ adhanNotificationsEnabled: enabled });
+  },
+  resetSessionScoped: () => {
+    set({
+      displayName: "Ahmet Yılmaz",
+      totalDhikr: 1240,
+      streakDays: 12,
+      activeDays: 28,
+      isPremium: false,
+      city: "Ankara",
+      reminderTime: "08:00",
+      dailyReminderEnabled: true,
+      kandilNotificationsEnabled: true,
+      adhanNotificationsEnabled: false
+    });
   },
   hydrateFromBackend: (payload) => {
     set((state) => ({

@@ -8,7 +8,8 @@ import type {
   ClientPlatform
 } from "@zikirmatik/shared";
 import { AuthApiError, refreshSession, verifyProvider } from "../features/auth/services/auth-api-client";
-import { ProviderAuthError, requestProviderIdToken } from "../features/auth/services/mock-provider-auth";
+import { clearProviderSession, ProviderAuthError, requestProviderIdToken } from "../features/auth/services/mock-provider-auth";
+import { resetSessionScopedStores } from "./session-boundary";
 
 type AuthStatus = "signed_out" | "authenticating" | "authenticated";
 
@@ -19,9 +20,10 @@ type AuthStore = {
   authError?: string;
   isSessionRefreshing: boolean;
   lastSessionRefreshAt?: string;
+  lastAuthenticatedUserId?: string;
   signInWithRequiredProvider: () => Promise<void>;
   refreshAuthenticatedSession: () => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
   markHydrated: () => void;
 };
 
@@ -55,9 +57,16 @@ export const useAuthStore = create<AuthStore>()(
       status: "signed_out",
       hasHydrated: false,
       isSessionRefreshing: false,
+      lastAuthenticatedUserId: undefined,
       signInWithRequiredProvider: async () => {
+        const currentStatus = get().status;
+        if (currentStatus === "authenticating") {
+          return;
+        }
+
         const provider = resolveRequiredProvider();
         const platform = resolveClientPlatform();
+        const previousUserId = get().lastAuthenticatedUserId;
 
         set({
           status: "authenticating",
@@ -74,12 +83,17 @@ export const useAuthStore = create<AuthStore>()(
             idToken
           });
 
+          if (previousUserId && previousUserId !== session.userId) {
+            resetSessionScopedStores();
+          }
+
           set({
             status: "authenticated",
             session,
             authError: undefined,
             isSessionRefreshing: false,
-            lastSessionRefreshAt: new Date().toISOString()
+            lastSessionRefreshAt: new Date().toISOString(),
+            lastAuthenticatedUserId: session.userId
           });
         } catch (error) {
           const message = toUserFacingAuthMessage(error);
@@ -87,7 +101,8 @@ export const useAuthStore = create<AuthStore>()(
           set({
             status: "signed_out",
             authError: message,
-            isSessionRefreshing: false
+            isSessionRefreshing: false,
+            session: undefined
           });
         }
       },
@@ -113,7 +128,8 @@ export const useAuthStore = create<AuthStore>()(
               },
               authError: undefined,
               isSessionRefreshing: false,
-              lastSessionRefreshAt: new Date().toISOString()
+              lastSessionRefreshAt: new Date().toISOString(),
+              lastAuthenticatedUserId: refreshed.userId
             };
           });
         } catch (error) {
@@ -131,7 +147,9 @@ export const useAuthStore = create<AuthStore>()(
           });
         }
       },
-      signOut: () => {
+      signOut: async () => {
+        const provider = resolveRequiredProvider();
+        resetSessionScopedStores();
         set({
           status: "signed_out",
           session: undefined,
@@ -139,6 +157,8 @@ export const useAuthStore = create<AuthStore>()(
           isSessionRefreshing: false,
           lastSessionRefreshAt: undefined
         });
+
+        await clearProviderSession(provider);
       },
       markHydrated: () => set({ hasHydrated: true })
     }),
@@ -148,7 +168,8 @@ export const useAuthStore = create<AuthStore>()(
       partialize: (state) => ({
         status: state.status,
         session: state.session,
-        lastSessionRefreshAt: state.lastSessionRefreshAt
+        lastSessionRefreshAt: state.lastSessionRefreshAt,
+        lastAuthenticatedUserId: state.lastAuthenticatedUserId
       }),
       onRehydrateStorage: () => (state) => {
         state?.markHydrated();
