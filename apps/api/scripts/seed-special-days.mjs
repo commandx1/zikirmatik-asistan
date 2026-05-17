@@ -1,3 +1,4 @@
+/* global console, process */
 import { runSpecialDaySeed } from './lib/special-day-seed.mjs';
 import {
   SPECIAL_DAY_DATASET as MASTER_DATASET,
@@ -65,3 +66,7 @@ main().catch((error) => {
   console.error(error instanceof Error ? error.message : error);
   process.exitCode = 1;
 });
+
+/*
+pnpm --filter api seed:special-days -- --all
+*/
