@@ -6,6 +6,11 @@ export type AccessTokenClaims = {
   exp: number;
 };
 
+type AccessTokenHeader = {
+  alg: 'HS256';
+  typ: 'JWT';
+};
+
 export function createAccessToken(input: {
   userId: string;
   secret: string;
@@ -51,19 +56,15 @@ export function verifyAccessToken(input: {
   }
 
   const header = decodeSegment(headerSegment);
-  if (!header || header.alg !== 'HS256' || header.typ !== 'JWT') {
+  if (!isAccessTokenHeader(header)) {
     return null;
   }
 
-  const payload = decodeSegment(payloadSegment) as AccessTokenClaims | null;
-  if (!payload || typeof payload.sub !== 'string') {
+  const payload = decodeSegment(payloadSegment);
+  if (!isAccessTokenClaims(payload)) {
     return null;
   }
-  if (
-    !Number.isFinite(payload.iat) ||
-    !Number.isFinite(payload.exp) ||
-    payload.exp <= Math.floor(Date.now() / 1000)
-  ) {
+  if (payload.exp <= Math.floor(Date.now() / 1000)) {
     return null;
   }
 
@@ -74,12 +75,12 @@ function encodeSegment(value: unknown) {
   return Buffer.from(JSON.stringify(value), 'utf-8').toString('base64url');
 }
 
-function decodeSegment(value: string) {
+function decodeSegment(value: string): Record<string, unknown> | null {
   try {
-    const parsed = JSON.parse(
+    const parsed: unknown = JSON.parse(
       Buffer.from(value, 'base64url').toString('utf-8'),
     );
-    return parsed && typeof parsed === 'object' ? parsed : null;
+    return isRecord(parsed) ? parsed : null;
   } catch {
     return null;
   }
@@ -96,4 +97,30 @@ function safeTimingEqual(a: string, b: string) {
     return false;
   }
   return timingSafeEqual(left, right);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isAccessTokenHeader(value: unknown): value is AccessTokenHeader {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return value.alg === 'HS256' && value.typ === 'JWT';
+}
+
+function isAccessTokenClaims(value: unknown): value is AccessTokenClaims {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.sub === 'string' &&
+    typeof value.iat === 'number' &&
+    Number.isFinite(value.iat) &&
+    typeof value.exp === 'number' &&
+    Number.isFinite(value.exp)
+  );
 }
