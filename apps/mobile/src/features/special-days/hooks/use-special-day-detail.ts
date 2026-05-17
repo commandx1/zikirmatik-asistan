@@ -10,6 +10,7 @@ import {
 export function useSpecialDayDetail(id: string) {
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
+  const accessToken = useAuthStore((s) => s.session?.accessToken);
 
   const [detail, setDetail] = useState<BackendSpecialDayDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,14 +24,18 @@ export function useSpecialDayDetail(id: string) {
     setIsLoading(true);
     setError(undefined);
     try {
-      const next = await getSpecialDayDetail(id, authStatus === "authenticated" ? userId : undefined);
+      const next = await getSpecialDayDetail(
+        id,
+        authStatus === "authenticated" ? userId : undefined,
+        accessToken
+      );
       setDetail(next);
     } catch (error) {
       setError(error instanceof SpecialDaysApiError ? error.message : "Özel gün detayı alınamadı.");
     } finally {
       setIsLoading(false);
     }
-  }, [authStatus, id, userId]);
+  }, [accessToken, authStatus, id, userId]);
 
   useEffect(() => {
     void refresh();
