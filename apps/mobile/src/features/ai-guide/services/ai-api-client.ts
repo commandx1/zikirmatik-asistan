@@ -39,17 +39,26 @@ export class AiApiError extends Error {
 
 const API_BASE_URL = resolveApiBaseUrl();
 
-export async function createAiRecommendation(payload: CreateAiRecommendationPayload): Promise<CreateAiRecommendationResponse> {
+export async function createAiRecommendation(
+  payload: CreateAiRecommendationPayload,
+  accessToken?: string
+): Promise<CreateAiRecommendationResponse> {
   return requestJson<CreateAiRecommendationResponse>("/v1/ai/recommendations", {
     method: "POST",
-    body: payload
+    body: payload,
+    accessToken
   });
 }
 
-export async function selectAiRecommendation(recommendationId: string, selectedDhikrId: string) {
+export async function selectAiRecommendation(
+  recommendationId: string,
+  selectedDhikrId: string,
+  accessToken?: string
+) {
   return requestJson(`/v1/ai/recommendations/${recommendationId}/select`, {
     method: "PATCH",
-    body: { selectedDhikrId }
+    body: { selectedDhikrId },
+    accessToken
   });
 }
 
@@ -66,14 +75,19 @@ function resolveApiBaseUrl() {
 
 async function requestJson<TResponse>(
   path: string,
-  options: { method: "POST" | "PATCH"; body: unknown }
+  options: { method: "POST" | "PATCH"; body: unknown; accessToken?: string }
 ): Promise<TResponse> {
   try {
+    const headers: Record<string, string> = {
+      "content-type": "application/json"
+    };
+    if (options.accessToken?.trim()) {
+      headers.authorization = `Bearer ${options.accessToken.trim()}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: options.method,
-      headers: {
-        "content-type": "application/json"
-      },
+      headers,
       body: JSON.stringify(options.body)
     });
 

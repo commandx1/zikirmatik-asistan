@@ -118,7 +118,7 @@ export function useAiGuide() {
             dayOfWeek: now.getDay(),
             isSpecialDay: false
           }
-        });
+        }, accessToken);
 
         setRecommendationId(response.recommendationId);
         setRecommendations(
@@ -146,7 +146,7 @@ export function useAiGuide() {
         setIsLoading(false);
       }
     },
-    [authStatus, userId]
+    [accessToken, authStatus, userId]
   );
 
   const submitIntent = async () => {
@@ -200,13 +200,16 @@ export function useAiGuide() {
   };
 
   const selectRecommendation = (recommendation: AiGuideRecommendation) => {
-    selectDhikr(recommendation.id);
+    const matchedDhikrId = resolveDhikrIdForSelection(recommendation);
+    if (matchedDhikrId) {
+      selectDhikr(matchedDhikrId);
+    }
 
     if (authStatus !== "authenticated" || !recommendationId) {
       return;
     }
 
-    void selectAiRecommendation(recommendationId, recommendation.id).catch((error) => {
+    void selectAiRecommendation(recommendationId, recommendation.id, accessToken).catch((error) => {
       if (error instanceof AiApiError) {
         setError(error.message);
       }
@@ -244,6 +247,35 @@ export function useAiGuide() {
     refresh,
     selectRecommendation
   };
+}
+
+function resolveDhikrIdForSelection(recommendation: AiGuideRecommendation) {
+  const { items } = useDhikrStore.getState();
+
+  if (items.some((item) => item.id === recommendation.id)) {
+    return recommendation.id;
+  }
+
+  const normalizedRecommendationTransliteration = normalizeLookupText(recommendation.transliteration);
+  const normalizedRecommendationArabic = normalizeLookupText(recommendation.arabic);
+
+  const fallback = items.find((item) => {
+    const normalizedItemTransliteration = normalizeLookupText(item.transliteration);
+    const normalizedItemArabic = normalizeLookupText(item.arabic);
+
+    return (
+      (normalizedRecommendationTransliteration.length > 0 &&
+        normalizedRecommendationTransliteration === normalizedItemTransliteration) ||
+      (normalizedRecommendationArabic.length > 0 &&
+        normalizedRecommendationArabic === normalizedItemArabic)
+    );
+  });
+
+  return fallback?.id;
+}
+
+function normalizeLookupText(value: string | undefined) {
+  return (value ?? "").trim().toLocaleLowerCase("tr-TR");
 }
 
 function markFirstPrimary(items: AiGuideRecommendation[], primaryNote?: string) {
