@@ -4,7 +4,10 @@ import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api
 import type { ZikirItem } from "../features/focus/types";
 
 type CreateCustomDhikrInput = {
+  id?: string;
   name: string;
+  transliteration?: string;
+  meaning?: string;
   arabicOrPronunciation?: string;
   target?: number;
   initialCount?: number;
@@ -18,8 +21,20 @@ type DhikrStore = {
   syncError?: string;
   selectDhikr: (id: string) => void;
   clearSelectedDhikr: () => void;
+  upsertPersonalDhikr: (item: {
+    id: string;
+    transliteration: string;
+    arabic?: string;
+    meaning?: string;
+    current: number;
+    target: number;
+    lastActivityLabel?: string;
+    isFavorite?: boolean;
+  }) => void;
   toggleFavorite: (id: string) => void;
   addCustomDhikr: (input: CreateCustomDhikrInput) => string;
+  removePersonalDhikr: (id: string) => void;
+  clearDhikrProgress: (id: string) => void;
   incrementSelected: () => void;
   resetSelected: () => void;
   setSelectedCount: (count: number) => void;
@@ -33,6 +48,16 @@ type DhikrStore = {
       target: number;
       current?: number;
       lastActivityLabel?: string;
+      isFavorite?: boolean;
+    }>
+  ) => void;
+  hydratePersonalItems: (
+    items: Array<{
+      id: string;
+      transliteration: string;
+      arabic?: string;
+      meaning?: string;
+      target: number;
       isFavorite?: boolean;
     }>
   ) => void;
@@ -71,6 +96,14 @@ function normalizeTarget(target: number | undefined) {
   return Math.max(1, Math.min(MAX_DHIKR_TARGET, Math.floor(target)));
 }
 
+function resolveCustomTarget(target: number | undefined) {
+  if (typeof target !== "number" || Number.isNaN(target)) {
+    return 0;
+  }
+
+  return normalizeTarget(target);
+}
+
 const INITIAL_ITEMS = ZIKIR_ITEMS;
 
 export const useDhikrStore = create<DhikrStore>((set, get) => ({
@@ -86,6 +119,49 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
     set({ selectedDhikrId: id });
   },
   clearSelectedDhikr: () => set({ selectedDhikrId: "" }),
+  upsertPersonalDhikr: (item) =>
+    set((state) => {
+      const existing = state.items.find((value) => value.id === item.id);
+      const normalizedTarget = item.target > 0 ? normalizeTarget(item.target) : 0;
+      const normalizedCurrent = Math.max(0, Math.floor(item.current));
+
+      if (existing) {
+        return {
+          items: state.items.map((value) =>
+            value.id === item.id
+              ? {
+                  ...value,
+                  source: "personal",
+                  transliteration: item.transliteration,
+                  arabic: item.arabic,
+                  meaning: item.meaning,
+                  current: normalizedTarget > 0 ? Math.min(normalizedCurrent, normalizedTarget) : normalizedCurrent,
+                  target: normalizedTarget,
+                  lastActivityLabel: item.lastActivityLabel ?? value.lastActivityLabel,
+                  isFavorite: item.isFavorite ?? value.isFavorite
+                }
+              : value
+          )
+        };
+      }
+
+      const nextPersonal: ZikirItem = {
+        id: item.id,
+        source: "personal",
+        transliteration: item.transliteration,
+        arabic: item.arabic,
+        meaning: item.meaning,
+        current: normalizedTarget > 0 ? Math.min(normalizedCurrent, normalizedTarget) : normalizedCurrent,
+        target: normalizedTarget,
+        lastActivityLabel: item.lastActivityLabel ?? "Kayıtlı",
+        streakDays: 0,
+        isFavorite: Boolean(item.isFavorite)
+      };
+
+      return {
+        items: [nextPersonal, ...state.items]
+      };
+    }),
   toggleFavorite: (id) =>
     set((state) => ({
       items: state.items.map((item) => (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item))
@@ -95,16 +171,18 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
     if (!name) {
       return get().selectedDhikrId;
     }
+    const transliteration = input.transliteration?.trim() || name;
+    const meaning = input.meaning?.trim() || undefined;
 
-    const id = `personal-${slugify(name)}-${Date.now().toString(36)}`;
+    const id = input.id?.trim() || `personal-${slugify(name)}-${Date.now().toString(36)}`;
     const custom: ZikirItem = {
       id,
       source: "personal",
-      transliteration: name,
+      transliteration,
       arabic: input.arabicOrPronunciation?.trim() || undefined,
-      meaning: undefined,
+      meaning,
       current: Math.max(0, Math.floor(input.initialCount ?? 0)),
-      target: normalizeTarget(input.target),
+      target: resolveCustomTarget(input.target),
       lastActivityLabel: Math.max(0, Math.floor(input.initialCount ?? 0)) > 0 ? formatLastActivityLabel() : "Henüz başlanmadı",
       streakDays: 0,
       isFavorite: false
@@ -117,6 +195,31 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
 
     return id;
   },
+  removePersonalDhikr: (id) =>
+    set((state) => {
+      const item = state.items.find((value) => value.id === id);
+      if (!item || item.source !== "personal") {
+        return {};
+      }
+
+      return {
+        items: state.items.filter((value) => value.id !== id),
+        selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId
+      };
+    }),
+  clearDhikrProgress: (id) =>
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              current: 0,
+              lastActivityLabel: "Henüz başlanmadı"
+            }
+          : item
+      ),
+      selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId
+    })),
   incrementSelected: () =>
     set((state) => ({
       items: state.items.map((item) => {
@@ -124,7 +227,7 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
           return item;
         }
 
-        const nextCount = Math.min(item.target, item.current + 1);
+        const nextCount = item.target > 0 ? Math.min(item.target, item.current + 1) : item.current + 1;
         if (nextCount === item.current) {
           return item;
         }
@@ -153,7 +256,9 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
           return item;
         }
 
-        const safeCount = Math.max(0, Math.min(item.target, Math.floor(count)));
+        const safeCount = item.target > 0
+          ? Math.max(0, Math.min(item.target, Math.floor(count)))
+          : Math.max(0, Math.floor(count));
         return {
           ...item,
           current: safeCount,
@@ -206,6 +311,30 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
         selectedDhikrId: hasCurrentSelection ? state.selectedDhikrId : "",
         isHydratedFromBackend: true,
         syncError: undefined
+      };
+    }),
+  hydratePersonalItems: (personalItems) =>
+    set((state) => {
+      const readyItems = state.items.filter((item) => item.source === "ready");
+      const normalizedPersonal: ZikirItem[] = personalItems.map((item) => ({
+        id: item.id,
+        source: "personal",
+        arabic: item.arabic?.trim() || undefined,
+        transliteration: item.transliteration.trim(),
+        meaning: item.meaning?.trim() || undefined,
+        current: 0,
+        target: resolveCustomTarget(item.target),
+        lastActivityLabel: "Henüz başlanmadı",
+        streakDays: 0,
+        isFavorite: Boolean(item.isFavorite)
+      }));
+
+      const nextItems = [...normalizedPersonal, ...readyItems];
+      const hasCurrentSelection = nextItems.some((item) => item.id === state.selectedDhikrId);
+
+      return {
+        items: nextItems,
+        selectedDhikrId: hasCurrentSelection ? state.selectedDhikrId : ""
       };
     }),
   applySavedBackendLog: (log) => set({ lastSavedBackendLog: log }),
