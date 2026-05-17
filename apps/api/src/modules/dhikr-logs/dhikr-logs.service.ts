@@ -127,9 +127,16 @@ export class DhikrLogsService {
       .exec();
   }
 
-  async findById(id: string) {
+  async findById(id: string, userId?: string) {
+    const filter: Record<string, unknown> = {
+      _id: this.asObjectId(id),
+    };
+    if (userId) {
+      filter.userId = this.asObjectId(userId);
+    }
+
     const log = await this.dhikrLogModel
-      .findById(this.asObjectId(id))
+      .findOne(filter)
       .lean()
       .exec();
     if (!log) {
