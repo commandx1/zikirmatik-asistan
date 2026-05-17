@@ -21,8 +21,11 @@ export class StreaksApiError extends Error {
 
 const API_BASE_URL = resolveApiBaseUrl();
 
-export async function getUserStreak(userId: string): Promise<BackendStreak> {
-  return requestJson<BackendStreak>(`/v1/streaks/${userId}`);
+export async function getUserStreak(
+  userId: string,
+  accessToken?: string
+): Promise<BackendStreak> {
+  return requestJson<BackendStreak>(`/v1/streaks/${userId}`, accessToken);
 }
 
 function resolveApiBaseUrl() {
@@ -36,13 +39,21 @@ function resolveApiBaseUrl() {
   return `http://${host}:${port}`;
 }
 
-async function requestJson<TResponse>(path: string): Promise<TResponse> {
+async function requestJson<TResponse>(
+  path: string,
+  accessToken?: string
+): Promise<TResponse> {
   try {
+    const headers: Record<string, string> = {
+      "content-type": "application/json"
+    };
+    if (accessToken?.trim()) {
+      headers.authorization = `Bearer ${accessToken.trim()}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: "GET",
-      headers: {
-        "content-type": "application/json"
-      }
+      headers
     });
 
     const rawResponse = await response.text();
