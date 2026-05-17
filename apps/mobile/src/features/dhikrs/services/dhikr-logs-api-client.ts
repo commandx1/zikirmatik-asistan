@@ -34,7 +34,12 @@ export class DhikrLogsApiError extends Error {
 
 const API_BASE_URL = resolveApiBaseUrl();
 
-export async function listDhikrLogsByUser(userId: string, dateFrom?: string, dateTo?: string): Promise<BackendDhikrLog[]> {
+export async function listDhikrLogsByUser(
+  userId: string,
+  dateFrom?: string,
+  dateTo?: string,
+  accessToken?: string
+): Promise<BackendDhikrLog[]> {
   const params = new URLSearchParams({ userId });
   if (dateFrom) {
     params.set("dateFrom", dateFrom);
@@ -44,14 +49,19 @@ export async function listDhikrLogsByUser(userId: string, dateFrom?: string, dat
   }
 
   return requestJson<BackendDhikrLog[]>(`/v1/dhikr-logs?${params.toString()}`, {
-    method: "GET"
+    method: "GET",
+    accessToken
   });
 }
 
-export async function createDhikrLog(payload: CreateDhikrLogPayload): Promise<BackendDhikrLog> {
+export async function createDhikrLog(
+  payload: CreateDhikrLogPayload,
+  accessToken?: string
+): Promise<BackendDhikrLog> {
   return requestJson<BackendDhikrLog>("/v1/dhikr-logs", {
     method: "POST",
-    body: payload
+    body: payload,
+    accessToken
   });
 }
 
@@ -68,14 +78,19 @@ function resolveApiBaseUrl() {
 
 async function requestJson<TResponse>(
   path: string,
-  options: { method: "GET" | "POST"; body?: unknown }
+  options: { method: "GET" | "POST"; body?: unknown; accessToken?: string }
 ): Promise<TResponse> {
   try {
+    const headers: Record<string, string> = {
+      "content-type": "application/json"
+    };
+    if (options.accessToken?.trim()) {
+      headers.authorization = `Bearer ${options.accessToken.trim()}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: options.method,
-      headers: {
-        "content-type": "application/json"
-      },
+      headers,
       ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {})
     });
 

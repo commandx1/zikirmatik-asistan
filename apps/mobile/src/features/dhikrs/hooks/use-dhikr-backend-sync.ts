@@ -7,6 +7,7 @@ import { DhikrsApiError, listVerifiedActiveDhikrs } from "../services/dhikrs-api
 export function useDhikrBackendSync() {
   const authStatus = useAuthStore((s) => s.status);
   const sessionUserId = useAuthStore((s) => s.session?.userId);
+  const sessionAccessToken = useAuthStore((s) => s.session?.accessToken);
   const hydrateReadyItems = useDhikrStore((s) => s.hydrateReadyItems);
   const setSyncError = useDhikrStore((s) => s.setSyncError);
 
@@ -24,7 +25,12 @@ export function useDhikrBackendSync() {
         const dhikrs = await listVerifiedActiveDhikrs();
         const today = toDateKey(new Date());
         const logs = sessionUserId
-          ? await listDhikrLogsByUser(sessionUserId, today, today)
+          ? await listDhikrLogsByUser(
+              sessionUserId,
+              today,
+              today,
+              sessionAccessToken
+            )
           : [];
 
         if (isCancelled) {
@@ -82,7 +88,7 @@ export function useDhikrBackendSync() {
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, hydrateReadyItems, sessionUserId, setSyncError]);
+  }, [authStatus, hydrateReadyItems, sessionAccessToken, sessionUserId, setSyncError]);
 }
 
 function toDateKey(value: Date) {
