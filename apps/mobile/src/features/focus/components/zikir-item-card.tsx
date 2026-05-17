@@ -1,6 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useRouter } from 'expo-router'
-import { Pressable, Text, View } from 'react-native'
+import { Alert, Pressable, Text, View } from 'react-native'
 import { ThemedCard } from '../../../components/ui/themed-card'
 import { useZikirlerim } from '../context/zikirlerim-context'
 import type { ZikirItem } from '../types'
@@ -10,7 +10,7 @@ type ZikirItemCardProps = {
 }
 
 function resolveAccent(item: ZikirItem) {
-  if (item.current >= item.target) {
+  if (item.target > 0 && item.current >= item.target) {
     return {
       cardAccent: 'success' as const,
       progressColor: '#2E7D5E',
@@ -47,10 +47,12 @@ function resolveAccent(item: ZikirItem) {
 
 export function ZikirItemCard({ item }: ZikirItemCardProps) {
   const router = useRouter()
-  const { toggleFavorite, selectDhikr, selectedDhikrId } = useZikirlerim()
+  const { toggleFavorite, selectDhikr, selectedDhikrId, deleteDhikr, deletingDhikrId } = useZikirlerim()
   const progressPct = item.target === 0 ? 0 : Math.min(100, Math.round((item.current / item.target) * 100))
   const accent = resolveAccent(item)
   const isSelected = selectedDhikrId === item.id
+  const isDeleting = deletingDhikrId === item.id
+  const targetLabel = item.target > 0 ? String(item.target) : '∞'
 
   return (
     <ThemedCard
@@ -90,12 +92,12 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
           <View className='flex-row items-center gap-1'>
             <FontAwesome6 name='check' size={11} color='#4CAF7D' />
             <Text className={`text-xs font-semibold ${accent.countClassName}`}>
-              {item.current}/{item.target}
+              {item.current}/{targetLabel}
             </Text>
           </View>
         ) : (
           <Text className={`text-xs font-semibold ${accent.countClassName}`}>
-            {item.current}/{item.target}
+            {item.current}/{targetLabel}
           </Text>
         )}
       </View>
@@ -112,22 +114,51 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
       </View>
 
       <View className='flex-row items-center justify-between gap-2'>
-        <Pressable
-          onPress={() => selectDhikr(item.id)}
-          className={
-            isSelected
-              ? 'rounded-full border border-[--accent]/35 bg-[--accent]/20 px-3 py-2'
-              : 'rounded-full border border-white/10 bg-[--bg] px-3 py-2'
-          }
-        >
-          <Text
+        <View className='flex-row items-center gap-2'>
+          <Pressable
+            disabled={isDeleting}
+            onPress={() => {
+              Alert.alert(
+                'Zikri Sil',
+                'Bu zikri Zikirlerim listesinden kaldırmak istediğine emin misin?',
+                [
+                  { text: 'Vazgeç', style: 'cancel' },
+                  {
+                    text: 'Sil',
+                    style: 'destructive',
+                    onPress: () => {
+                      void deleteDhikr(item)
+                    }
+                  }
+                ]
+              )
+            }}
             className={
-              isSelected ? 'text-xs font-semibold text-[--accent]' : 'text-xs font-medium text-[--text-primary]'
+              isDeleting
+                ? 'rounded-full border border-red-400/20 bg-red-500/10 px-3 py-2 opacity-60'
+                : 'rounded-full border border-red-400/30 bg-red-500/10 px-3 py-2'
             }
           >
-            {isSelected ? 'Seçili' : 'Seç'}
-          </Text>
-        </Pressable>
+            <Text className='text-xs font-semibold text-red-300'>{isDeleting ? 'Siliniyor' : 'Sil'}</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => selectDhikr(item.id)}
+            className={
+              isSelected
+                ? 'rounded-full border border-[--accent]/35 bg-[--accent]/20 px-3 py-2'
+                : 'rounded-full border border-white/10 bg-[--bg] px-3 py-2'
+            }
+          >
+            <Text
+              className={
+                isSelected ? 'text-xs font-semibold text-[--accent]' : 'text-xs font-medium text-[--text-primary]'
+              }
+            >
+              {isSelected ? 'Seçili' : 'Seç'}
+            </Text>
+          </Pressable>
+        </View>
 
         <Pressable
           onPress={() => {
