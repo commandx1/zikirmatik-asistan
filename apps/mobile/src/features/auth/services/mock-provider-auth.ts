@@ -27,6 +27,50 @@ export async function requestProviderIdToken(provider: AuthProvider) {
   return requestGoogleIdentityToken();
 }
 
+export async function clearProviderSession(provider: AuthProvider) {
+  if (provider !== 'google' || Platform.OS !== 'android') {
+    return;
+  }
+
+  const webClientId = resolveGoogleWebClientId();
+  if (!webClientId) {
+    return;
+  }
+
+  const google = await loadGoogleSignInModule();
+  if (!google) {
+    return;
+  }
+
+  const { GoogleSignin } = google;
+
+  GoogleSignin.configure({
+    webClientId,
+    offlineAccess: false,
+  });
+
+  try {
+    const hasPreviousSignIn = GoogleSignin.hasPreviousSignIn();
+    if (!hasPreviousSignIn) {
+      return;
+    }
+  } catch {
+    return;
+  }
+
+  try {
+    await GoogleSignin.revokeAccess();
+  } catch {
+    // Best effort only: logout should continue even if revoke fails.
+  }
+
+  try {
+    await GoogleSignin.signOut();
+  } catch {
+    // Best effort only: local session is already cleared by auth store.
+  }
+}
+
 async function requestAppleIdentityToken() {
   if (Platform.OS !== 'ios') {
     throw new ProviderAuthError('terminal', 'Apple girişi sadece iOS için kullanılabilir.');
