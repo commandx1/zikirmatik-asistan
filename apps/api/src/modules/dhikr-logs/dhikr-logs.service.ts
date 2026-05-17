@@ -135,10 +135,7 @@ export class DhikrLogsService {
       filter.userId = this.asObjectId(userId);
     }
 
-    const log = await this.dhikrLogModel
-      .findOne(filter)
-      .lean()
-      .exec();
+    const log = await this.dhikrLogModel.findOne(filter).lean().exec();
     if (!log) {
       throw new NotFoundException('Zikir kaydı bulunamadı.');
     }
