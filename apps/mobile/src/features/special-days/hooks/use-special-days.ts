@@ -24,6 +24,7 @@ export function useSpecialDays() {
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
+  const accessToken = useAuthStore((s) => s.session?.accessToken);
 
   const refresh = useCallback(async () => {
     setIsLoading(true);
@@ -32,6 +33,7 @@ export function useSpecialDays() {
       const response = await getSpecialDaysHome(
         toDateKey(new Date()),
         authStatus === "authenticated" ? userId : undefined,
+        accessToken,
       );
       if (response.hero) {
         setHeroCard({
@@ -52,7 +54,7 @@ export function useSpecialDays() {
     } finally {
       setIsLoading(false);
     }
-  }, [authStatus, userId]);
+  }, [accessToken, authStatus, userId]);
 
   useEffect(() => {
     void refresh();
