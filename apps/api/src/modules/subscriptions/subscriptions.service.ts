@@ -96,9 +96,15 @@ export class SubscriptionsService {
       await this.ensureUserExists(nextUserId);
     }
 
-    const targetSubscriptionId = this.asObjectId(id, 'Geçersiz abonelik kimliği.');
+    const targetSubscriptionId = this.asObjectId(
+      id,
+      'Geçersiz abonelik kimliği.',
+    );
     const ownerFilter = userId
-      ? { _id: targetSubscriptionId, userId: this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.') }
+      ? {
+          _id: targetSubscriptionId,
+          userId: this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.'),
+        }
       : { _id: targetSubscriptionId };
 
     const existing = await this.subscriptionModel
@@ -136,7 +142,10 @@ export class SubscriptionsService {
   }
 
   async remove(id: string, userId?: string) {
-    const targetSubscriptionId = this.asObjectId(id, 'Geçersiz abonelik kimliği.');
+    const targetSubscriptionId = this.asObjectId(
+      id,
+      'Geçersiz abonelik kimliği.',
+    );
     if (userId) {
       const ownerId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
       const existing = await this.subscriptionModel
