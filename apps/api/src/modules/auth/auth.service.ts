@@ -481,7 +481,10 @@ export class AuthService {
     }
 
     const expectedSignature = this.signRefreshPayload(payloadSegment);
-    const isValidSignature = safeTimingEqual(signatureSegment, expectedSignature);
+    const isValidSignature = safeTimingEqual(
+      signatureSegment,
+      expectedSignature,
+    );
     if (!isValidSignature) {
       return null;
     }
@@ -573,5 +576,7 @@ function safeTimingEqual(a: string, b: string) {
 }
 
 function signRefreshPayload(payloadSegment: string, secret: string) {
-  return createHmac('sha256', secret).update(payloadSegment).digest('base64url');
+  return createHmac('sha256', secret)
+    .update(payloadSegment)
+    .digest('base64url');
 }
