@@ -76,7 +76,9 @@ function encodeSegment(value: unknown) {
 
 function decodeSegment(value: string) {
   try {
-    const parsed = JSON.parse(Buffer.from(value, 'base64url').toString('utf-8'));
+    const parsed = JSON.parse(
+      Buffer.from(value, 'base64url').toString('utf-8'),
+    );
     return parsed && typeof parsed === 'object' ? parsed : null;
   } catch {
     return null;
