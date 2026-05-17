@@ -1,5 +1,5 @@
 import { useThemeTokens } from '@zikirmatik/ui'
-import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { Modal, Pressable, Text, TextInput, View } from 'react-native'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
@@ -12,53 +12,13 @@ function TopBar() {
   return <PageHeader title='Zikirmatik Asistan' subtitle={`${home.greeting} • Seri ${home.streakLabel}`} />
 }
 
-function QuickAccessList() {
-  const home = useHomeContext()
-  const { tokens } = useThemeTokens()
-
-  return (
-    <View className='mb-1 w-full'>
-      <Text className='mb-3 px-6 text-xs font-semibold uppercase tracking-[1.3px]' style={{ color: tokens.textMuted }}>
-        Bugünkü Zikirler
-      </Text>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 8 }}
-      >
-        <View className='flex-row gap-2.5'>
-          {home.quickDhikrs.map(item => {
-            const active = item === home.activeQuickDhikr
-            return (
-              <Pressable
-                key={item}
-                onPress={() => home.onQuickDhikrSelect(item)}
-                className={active ? 'rounded-full px-4 py-2.5' : 'rounded-full border px-4 py-2.5'}
-                style={
-                  active
-                    ? { backgroundColor: tokens.accent }
-                    : { borderColor: withAlpha(tokens.textPrimary, 0.08), backgroundColor: tokens.card }
-                }
-              >
-                <Text className='text-sm font-medium' style={{ color: active ? tokens.bg : tokens.textPrimary }}>
-                  {item}
-                </Text>
-              </Pressable>
-            )
-          })}
-        </View>
-      </ScrollView>
-    </View>
-  )
-}
-
 function SelectedDhikrMeaning() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
   const transliteration = home.mainDhikr.turkish?.trim()
   const arabic = home.mainDhikr.arabic?.trim()
   const meaning = home.mainDhikr.meaning?.trim()
+  const shouldShowTitleOnly = home.mainDhikr.source === 'personal' && !arabic && !meaning && Boolean(transliteration)
 
   if (!transliteration && !meaning && !arabic) {
     return null
@@ -77,13 +37,43 @@ function SelectedDhikrMeaning() {
         <Text className='mb-1 text-[11px] font-semibold uppercase tracking-[1.1px]' style={{ color: tokens.textMuted }}>
           Zikir Detayı
         </Text>
-        <DhikrContentStack
-          arabic={arabic}
-          transliteration={transliteration}
-          meaning={meaning}
-          order={['transliteration', 'meaning', 'arabic']}
-        />
+        {shouldShowTitleOnly ? (
+          <View className='mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2'>
+            <Text className='mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]'>Başlık</Text>
+            <Text className='text-sm leading-5 text-[--text-primary]'>{transliteration}</Text>
+          </View>
+        ) : (
+          <DhikrContentStack
+            arabic={arabic}
+            transliteration={transliteration}
+            meaning={meaning}
+            order={['transliteration', 'meaning', 'arabic']}
+          />
+        )}
       </View>
+    </View>
+  )
+}
+
+function FreeModeButton() {
+  const home = useHomeContext()
+  const { tokens } = useThemeTokens()
+
+  if (!home.selectedDhikrId) {
+    return null
+  }
+
+  return (
+    <View className='mb-4 px-5'>
+      <Pressable
+        onPress={home.onStartFreeMode}
+        className='rounded-full border px-4 py-3'
+        style={{ borderColor: withAlpha(tokens.textPrimary, 0.2), backgroundColor: withAlpha(tokens.card, 0.72) }}
+      >
+        <Text className='text-center text-sm font-semibold' style={{ color: tokens.textPrimary }}>
+          Serbest Moda Geç
+        </Text>
+      </Pressable>
     </View>
   )
 }
@@ -177,6 +167,24 @@ function FreeSaveNameModal() {
             }}
             onSubmitEditing={home.onFreeSaveNameSubmit}
           />
+          <Text className='mb-1 mt-1 text-xs font-medium' style={{ color: tokens.textPrimary }}>
+            Hedef (opsiyonel)
+          </Text>
+          <TextInput
+            value={home.freeSaveTargetDraft}
+            onChangeText={home.onFreeSaveTargetChange}
+            keyboardType='number-pad'
+            placeholder='Boş bırakırsan sonsuz'
+            placeholderTextColor={tokens.textMuted}
+            className='mb-2 rounded-xl px-3 py-3 text-sm'
+            style={{
+              borderWidth: 1,
+              borderColor: withAlpha(tokens.textPrimary, 0.2),
+              backgroundColor: withAlpha(tokens.bg, 0.9),
+              color: tokens.textPrimary
+            }}
+            onSubmitEditing={home.onFreeSaveNameSubmit}
+          />
           {home.freeSaveNameError ? (
             <Text className='mb-3 text-xs text-[#F97373]'>{home.freeSaveNameError}</Text>
           ) : null}
@@ -208,24 +216,30 @@ function FreeSaveNameModal() {
 
 export function HomeView() {
   const home = useHomeContext()
+  const hasDhikrDetail = hasContent(home.mainDhikr.turkish) || hasContent(home.mainDhikr.meaning) || hasContent(home.mainDhikr.arabic)
 
   return (
     <PageLayout frameClassName='relative flex-1 w-full max-w-[375px]'>
       <TopBar />
       <PageScrollView
         contentInnerClassName='w-full'
-        bottomPadding={32}
+        contentContainerStyle={!hasDhikrDetail ? { flexGrow: 1, justifyContent: 'center' } : undefined}
+        bottomPadding={hasDhikrDetail ? 32 : 0}
         onRefresh={home.refresh}
         refreshing={home.isRefreshing}
       >
         <AppleWatch />
         <SelectedDhikrMeaning />
-        <QuickAccessList />
+        <FreeModeButton />
       </PageScrollView>
       <TargetModal />
       <FreeSaveNameModal />
     </PageLayout>
   )
+}
+
+function hasContent(value: string | undefined) {
+  return Boolean(value?.trim())
 }
 
 function withAlpha(hex: string, alpha: number) {

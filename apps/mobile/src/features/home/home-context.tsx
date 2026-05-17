@@ -3,6 +3,7 @@ import { useAuthStore } from "../../store/auth-store";
 import { MAX_DHIKR_TARGET, useDhikrStore } from "../../store/dhikr-store";
 import type { ZikirSource } from "../focus/types";
 import { createDhikrLog, listDhikrLogsByUser, type BackendDhikrLog } from "../dhikrs/services/dhikr-logs-api-client";
+import { createUserDhikr } from "../dhikrs/services/user-dhikrs-api-client";
 
 type HomeDhikr = {
   id: string;
@@ -51,6 +52,7 @@ type HomeContextValue = {
   isFreeSaveNameModalOpen: boolean;
   freeSaveNameDraft: string;
   freeSaveNameError: string | null;
+  freeSaveTargetDraft: string;
   refresh: () => Promise<void>;
   onCountPress: () => void;
   onResetPress: () => void;
@@ -73,6 +75,8 @@ type HomeContextValue = {
   onFreeSaveNameChange: (value: string) => void;
   onFreeSaveNameCancel: () => void;
   onFreeSaveNameSubmit: () => void;
+  onFreeSaveTargetChange: (value: string) => void;
+  onStartFreeMode: () => void;
 };
 
 const HomeContext = createContext<HomeContextValue | null>(null);
@@ -115,6 +119,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [isFreeSaveNameModalOpen, setFreeSaveNameModalOpen] = useState(false);
   const [freeSaveNameDraft, setFreeSaveNameDraft] = useState("");
   const [freeSaveNameError, setFreeSaveNameError] = useState<string | null>(null);
+  const [freeSaveTargetDraft, setFreeSaveTargetDraft] = useState("");
   const [isSavingLog, setIsSavingLog] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [streakDays, setStreakDays] = useState(0);
@@ -139,10 +144,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   }, [authStatus, sessionAccessToken, sessionUserId]);
 
   useEffect(() => {
-    clearSelectedDhikr();
-  }, [clearSelectedDhikr]);
-
-  useEffect(() => {
     if (!selectedDhikr) {
       setActiveQuickDhikr(FREE_MODE_LABEL);
       setIsEditingTarget(false);
@@ -150,7 +151,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
 
     setActiveQuickDhikr(selectedDhikr.transliteration);
-    setTargetDraft(String(selectedDhikr.target));
+    setTargetDraft(String(selectedDhikr.target > 0 ? selectedDhikr.target : 100));
   }, [selectedDhikr?.id, selectedDhikr?.target, selectedDhikr?.transliteration]);
 
   useEffect(() => {
@@ -213,7 +214,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   }, [fetchStreakDays]);
 
   const value = useMemo<HomeContextValue>(() => {
-    const isTargetMode = Boolean(selectedDhikr);
+    const isTargetMode = Boolean(selectedDhikr && selectedDhikr.target > 0);
 
     const submitTarget = () => {
       if (!selectedDhikr) {
@@ -241,47 +242,56 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       setFreeSaveNameModalOpen(false);
       setFreeSaveNameDraft("");
       setFreeSaveNameError(null);
+      setFreeSaveTargetDraft("");
     };
 
     const persistSelectedDhikrLog = ({
       countOverride,
-      auto
     }: {
       countOverride?: number;
-      auto?: boolean;
     } = {}) => {
       if (!selectedDhikr) {
         return;
       }
 
-      const safeCount = Math.max(
-        0,
-        Math.min(selectedDhikr.target, Math.floor(countOverride ?? selectedDhikr.current))
-      );
-      const isCompleted = safeCount >= selectedDhikr.target;
+      const rawCount = Math.max(0, Math.floor(countOverride ?? selectedDhikr.current));
+      const safeCount = selectedDhikr.target > 0
+        ? Math.min(selectedDhikr.target, rawCount)
+        : rawCount;
+      const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target;
 
       if (authStatus !== "authenticated" || !sessionUserId) {
         setSyncError("Kaydetmek için giriş yapmalısın.");
         return;
       }
 
-      if (!isObjectId(selectedDhikr.id)) {
-        if (!auto) {
-          setSyncError("Kişisel zikirler backend'e kaydedilemez.");
-        }
-        return;
-      }
-
       setIsSavingLog(true);
       setSyncError(undefined);
+      const payload = isObjectId(selectedDhikr.id)
+        ? {
+            userId: sessionUserId,
+            dhikrId: selectedDhikr.id,
+            count: safeCount,
+            targetCount: selectedDhikr.target,
+            date: toDateKey(new Date()),
+            source: "manual" as const,
+            isCompleted,
+            isFavorite: selectedDhikr.isFavorite
+          }
+        : {
+            userId: sessionUserId,
+            customDhikrId: selectedDhikr.id,
+            customDhikrName: selectedDhikr.transliteration,
+            customDhikrArabic: selectedDhikr.arabic,
+            count: safeCount,
+            targetCount: selectedDhikr.target,
+            date: toDateKey(new Date()),
+            source: "manual" as const,
+            isCompleted: false,
+            isFavorite: selectedDhikr.isFavorite
+          };
       void createDhikrLog({
-        userId: sessionUserId,
-        dhikrId: selectedDhikr.id,
-        count: safeCount,
-        targetCount: selectedDhikr.target,
-        date: toDateKey(new Date()),
-        source: "manual",
-        isCompleted
+        ...payload
       }, sessionAccessToken)
         .then((savedLog) => {
           applySavedBackendLog(savedLog);
@@ -334,6 +344,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       isFreeSaveNameModalOpen,
       freeSaveNameDraft,
       freeSaveNameError,
+      freeSaveTargetDraft,
       refresh,
       onCountPress: () => {
         if (demoCompleted) {
@@ -355,7 +366,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         if (willCompleteToday) {
           persistSelectedDhikrLog({
             countOverride: selectedDhikr.target,
-            auto: true
           });
         }
       },
@@ -372,7 +382,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        setTargetDraft(String(selectedDhikr?.target ?? 33));
+        setTargetDraft(String(selectedDhikr.target > 0 ? selectedDhikr.target : 100));
         setIsEditingTarget(true);
       },
       onTargetDraftChange: (next) => {
@@ -381,7 +391,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         setTargetDraft(trimmed);
       },
       onTargetCancel: () => {
-        setTargetDraft(String(selectedDhikr?.target ?? 100));
+        setTargetDraft(String(selectedDhikr && selectedDhikr.target > 0 ? selectedDhikr.target : 100));
         setIsEditingTarget(false);
       },
       onTargetSubmit: submitTarget,
@@ -446,16 +456,37 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         }
 
         const parsedTarget = Number.parseInt(createTargetDraft, 10);
-        addCustomDhikr({
+        const createdId = addCustomDhikr({
           name: trimmed,
           arabicOrPronunciation: createArabicDraft,
           target: Number.isNaN(parsedTarget) ? 33 : parsedTarget
         });
+        if (authStatus === "authenticated") {
+          void createUserDhikr(
+            {
+              clientId: createdId,
+              name: trimmed,
+              transliteration: createArabicDraft.trim() || undefined,
+              target: Number.isNaN(parsedTarget) ? 33 : parsedTarget
+            },
+            sessionAccessToken
+          ).catch(() => {
+            setSyncError("Zikir kaydı senkronize edilemedi.");
+          });
+        }
         closeCreate();
         setIsSelectingDhikr(false);
       },
       onFreeSaveNameChange: (next) => {
         setFreeSaveNameDraft(next);
+        if (freeSaveNameError) {
+          setFreeSaveNameError(null);
+        }
+      },
+      onFreeSaveTargetChange: (next) => {
+        const digits = next.replace(/\D+/g, "");
+        const trimmed = digits.slice(0, String(MAX_DHIKR_TARGET).length);
+        setFreeSaveTargetDraft(trimmed);
         if (freeSaveNameError) {
           setFreeSaveNameError(null);
         }
@@ -467,16 +498,65 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           setFreeSaveNameError("Zikir adı zorunlu.");
           return;
         }
+        const parsedTarget = freeSaveTargetDraft.trim().length > 0
+          ? Number.parseInt(freeSaveTargetDraft, 10)
+          : undefined;
+        if (parsedTarget !== undefined && (!Number.isFinite(parsedTarget) || parsedTarget <= 0)) {
+          setFreeSaveNameError("Hedef girilecekse 1 veya daha büyük olmalı.");
+          return;
+        }
 
-        const target = Math.max(33, freeCount);
-        addCustomDhikr({
+        const createdId = addCustomDhikr({
           name: trimmed,
-          target,
+          target: parsedTarget,
           initialCount: freeCount
         });
         closeFreeSaveName();
+        if (authStatus !== "authenticated" || !sessionUserId) {
+          setSyncError("Kalıcı kaydetmek için giriş yapmalısın.");
+          setFreeCount(0);
+          return;
+        }
+
+        setIsSavingLog(true);
+        setSyncError(undefined);
+        void createUserDhikr(
+          {
+            clientId: createdId,
+            name: trimmed,
+            target: parsedTarget ?? 0
+          },
+          sessionAccessToken
+        )
+          .then(() =>
+            createDhikrLog({
+              userId: sessionUserId,
+              customDhikrId: createdId,
+              customDhikrName: trimmed,
+              count: freeCount,
+              targetCount: parsedTarget ?? 0,
+              date: toDateKey(new Date()),
+              source: "manual",
+              isCompleted: false
+            }, sessionAccessToken)
+          )
+          .then((savedLog) => {
+            applySavedBackendLog(savedLog);
+            setFreeCount(0);
+          })
+          .catch((error: unknown) => {
+            const message = error instanceof Error ? error.message : "Zikir kaydı kaydedilemedi.";
+            setSyncError(message);
+          })
+          .finally(() => {
+            setIsSavingLog(false);
+          });
+      },
+      onStartFreeMode: () => {
+        clearSelectedDhikr();
         setFreeCount(0);
-      }
+        setSyncError(undefined);
+      },
     };
   }, [
     activeQuickDhikr,
@@ -490,6 +570,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     freeCount,
     freeSaveNameDraft,
     freeSaveNameError,
+    freeSaveTargetDraft,
     incrementSelected,
     isSavingLog,
     isRefreshing,
@@ -502,7 +583,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     quickDhikrs,
     readyDhikrs,
     refresh,
-    clearSelectedDhikr,
     resetSelected,
     syncError,
     selectDhikr,
