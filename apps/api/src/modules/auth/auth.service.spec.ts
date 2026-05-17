@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 describe('AuthService', () => {
   const usersService = {
@@ -69,7 +69,7 @@ describe('AuthService', () => {
 
     expect(response.userId).toBe('507f1f77bcf86cd799439011');
     expect(response.displayName).toBe('Demo User');
-    expect(response.accessToken.startsWith('at.')).toBe(true);
+    expect(response.accessToken.split('.')).toHaveLength(3);
     expect(response.refreshToken.startsWith('rt.')).toBe(true);
     expect(usersService.findOrCreateFromAuth).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -203,5 +203,13 @@ describe('AuthService', () => {
     const refreshed = await authService.refresh(session.refreshToken);
     expect(refreshed.userId).toBe('507f1f77bcf86cd799439022');
     expect(refreshed.displayName).toBe('Persisted User');
+  });
+
+  it('rejects forged refresh tokens', async () => {
+    await expect(
+      authService.refresh(
+        'rt.NTA3ZjFmNzdiY2Y4NmNkNzk5NDM5MDIyLjQxMDI0NDQ4MDAwMDAuZmFrZQ.invalid-signature',
+      ),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 });

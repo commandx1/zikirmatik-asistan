@@ -13,6 +13,7 @@ import { StreaksModule } from './modules/streaks/streaks.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrayerTimesModule } from './modules/prayer-times/prayer-times.module';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -40,5 +41,6 @@ import { PrayerTimesModule } from './modules/prayer-times/prayer-times.module';
     PrayerTimesModule,
   ],
   controllers: [AppController],
+  providers: [JwtAuthGuard],
 })
 export class AppModule {}

@@ -7,7 +7,13 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { createPublicKey, createVerify, randomBytes } from 'node:crypto';
+import {
+  createHmac,
+  createPublicKey,
+  createVerify,
+  randomBytes,
+  timingSafeEqual,
+} from 'node:crypto';
 import { type Model, Types } from 'mongoose';
 import { UsersService } from '../users/users.service';
 import type {
@@ -20,6 +26,7 @@ import {
   AuthIdentity,
   type AuthIdentityDocument,
 } from './schemas/auth-identity.schema';
+import { createAccessToken } from '../../common/auth/access-token';
 
 type ProviderClaims = {
   sub?: string;
@@ -97,8 +104,8 @@ export class AuthService {
         .exec();
     }
 
-    const accessToken = this.createToken('at', user.id);
-    const refreshToken = this.createToken('rt', user.id);
+    const accessToken = this.createAccessToken(user.id);
+    const refreshToken = this.createRefreshToken(user.id);
 
     this.sessionByRefreshToken.set(refreshToken, {
       userId: user.id,
@@ -144,8 +151,8 @@ export class AuthService {
     if (existing) {
       this.sessionByRefreshToken.delete(refreshToken);
 
-      const nextRefreshToken = this.createToken('rt', existing.userId);
-      const accessToken = this.createToken('at', existing.userId);
+      const nextRefreshToken = this.createRefreshToken(existing.userId);
+      const accessToken = this.createAccessToken(existing.userId);
       this.sessionByRefreshToken.set(nextRefreshToken, existing);
 
       return {
@@ -164,8 +171,8 @@ export class AuthService {
     }
 
     const user = await this.usersService.touchAuthUser(userId);
-    const accessToken = this.createToken('at', user.id);
-    const nextRefreshToken = this.createToken('rt', user.id);
+    const accessToken = this.createAccessToken(user.id);
+    const nextRefreshToken = this.createRefreshToken(user.id);
     this.sessionByRefreshToken.set(nextRefreshToken, {
       userId: user.id,
       displayName: user.displayName,
@@ -425,8 +432,40 @@ export class AuthService {
     }
   }
 
-  private createToken(prefix: 'at' | 'rt', userId: string) {
-    return `${prefix}.${userId}.${randomBytes(8).toString('hex')}`;
+  private createAccessToken(userId: string) {
+    return createAccessToken({
+      userId,
+      secret: this.getAccessTokenSecret(),
+      ttlSeconds: this.getAccessTokenTtlSeconds(),
+    });
+  }
+
+  private createRefreshToken(userId: string) {
+    const expiresAtMs = Date.now() + this.getRefreshTokenTtlMs();
+    const nonce = randomBytes(12).toString('base64url');
+    const payload = `${userId}.${expiresAtMs}.${nonce}`;
+    const payloadEncoded = Buffer.from(payload, 'utf-8').toString('base64url');
+    const signature = this.signRefreshPayload(payloadEncoded);
+    return `rt.${payloadEncoded}.${signature}`;
+  }
+
+  private getAccessTokenSecret() {
+    const configured = this.configService
+      .get<string>('AUTH_ACCESS_TOKEN_SECRET')
+      ?.trim();
+    if (configured) {
+      return configured;
+    }
+
+    // Local/dev fallback. Production should provide AUTH_ACCESS_TOKEN_SECRET.
+    return 'local-dev-access-secret';
+  }
+
+  private getAccessTokenTtlSeconds() {
+    const raw = this.configService.get<string>('AUTH_ACCESS_TOKEN_TTL_MINUTES');
+    const parsed = Number.parseInt(raw ?? '', 10);
+    const ttlMinutes = Number.isFinite(parsed) && parsed > 0 ? parsed : 15;
+    return ttlMinutes * 60;
   }
 
   private parseRefreshTokenUserId(refreshToken: string) {
@@ -435,8 +474,61 @@ export class AuthService {
       return null;
     }
 
-    const userId = segments[1]?.trim();
-    return Types.ObjectId.isValid(userId) ? userId : null;
+    const payloadSegment = segments[1];
+    const signatureSegment = segments[2];
+    if (!payloadSegment || !signatureSegment) {
+      return null;
+    }
+
+    const expectedSignature = this.signRefreshPayload(payloadSegment);
+    const isValidSignature = safeTimingEqual(signatureSegment, expectedSignature);
+    if (!isValidSignature) {
+      return null;
+    }
+
+    let payload = '';
+    try {
+      payload = Buffer.from(payloadSegment, 'base64url').toString('utf-8');
+    } catch {
+      return null;
+    }
+
+    const [rawUserId, rawExpiresAt] = payload.split('.');
+    const userId = rawUserId?.trim();
+    const expiresAt = Number.parseInt(rawExpiresAt ?? '', 10);
+
+    if (!userId || !Types.ObjectId.isValid(userId)) {
+      return null;
+    }
+
+    if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+      return null;
+    }
+
+    return userId;
+  }
+
+  private getRefreshTokenSecret() {
+    const configured = this.configService
+      .get<string>('AUTH_REFRESH_TOKEN_SECRET')
+      ?.trim();
+    if (configured) {
+      return configured;
+    }
+
+    // Local/dev fallback. Production should provide AUTH_REFRESH_TOKEN_SECRET.
+    return 'local-dev-refresh-secret';
+  }
+
+  private getRefreshTokenTtlMs() {
+    const raw = this.configService.get<string>('AUTH_REFRESH_TOKEN_TTL_DAYS');
+    const parsed = Number.parseInt(raw ?? '', 10);
+    const ttlDays = Number.isFinite(parsed) && parsed > 0 ? parsed : 30;
+    return ttlDays * 24 * 60 * 60 * 1000;
+  }
+
+  private signRefreshPayload(payloadSegment: string) {
+    return signRefreshPayload(payloadSegment, this.getRefreshTokenSecret());
   }
 
   private parseJsonRecord(raw: string) {
@@ -469,4 +561,17 @@ function asEpochNumber(value: unknown) {
   }
 
   return undefined;
+}
+
+function safeTimingEqual(a: string, b: string) {
+  const left = Buffer.from(a);
+  const right = Buffer.from(b);
+  if (left.length !== right.length) {
+    return false;
+  }
+  return timingSafeEqual(left, right);
+}
+
+function signRefreshPayload(payloadSegment: string, secret: string) {
+  return createHmac('sha256', secret).update(payloadSegment).digest('base64url');
 }

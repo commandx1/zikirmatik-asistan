@@ -104,6 +104,7 @@ export class AiService {
         tags: item.tags,
         categories: item.categories,
         timeOfDay: item.timeOfDay,
+        virtue: item.virtue,
         suitableFor: item.suitableFor,
       }));
 
@@ -210,15 +211,20 @@ export class AiService {
       .exec();
   }
 
-  async selectRecommendation(id: string, payload: SelectAiRecommendationDto) {
+  async selectRecommendation(
+    id: string,
+    payload: SelectAiRecommendationDto,
+    userId: string,
+  ) {
     const recommendationId = this.asObjectId(id, 'Geçersiz öneri kimliği.');
     const selectedDhikrId = this.asObjectId(
       payload.selectedDhikrId,
       'Geçersiz zikir kimliği.',
     );
+    const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
 
     const existing = await this.aiRecommendationModel
-      .findById(recommendationId)
+      .findOne({ _id: recommendationId, userId: userObjectId })
       .lean()
       .exec();
 
@@ -274,6 +280,7 @@ export class AiService {
       categories: string[];
       timeOfDay: string;
       suitableFor: string[];
+      virtue: string;
     }>;
     maxRecommendations: number;
   }) {
@@ -290,7 +297,7 @@ export class AiService {
       'Sen bir İslami zikir öneri asistanısın.',
       'YALNIZCA verilen candidateDhikrs listesinden seçim yap.',
       'Candidate listesi dışından ID üretme.',
-      'Seçimde zikir anlamını (meaning), etiketlerini(tags), suitableFor bilgilerini, kullanıcının freeText niyetiyle semantik uyumunu ve zaman bağlamını birlikte değerlendir.',
+      'Seçimde zikir anlamını (meaning), etiketlerini(tags), suitableFor, fazilet(virtue) bilgilerini, kullanıcının freeText niyetiyle semantik uyumunu ve zaman bağlamını birlikte değerlendir.',
       `Maksimum ${input.maxRecommendations} ID döndür.`,
       `En fazla ${input.maxRecommendations} zikir seç.`,
       'reasoning direkt olarak kullanıcıya gösterileceğinden, orada insanî bir dil kullan.',
