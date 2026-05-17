@@ -1,10 +1,21 @@
+const keyMap = {
+  VAHDEHU_LA: 'VAHDEHU_LA',
+  TESRIK_TEKBIRI: 'TESRIK_TEKBIRI',
+  HASBIYE: 'HASBIYE',
+  LEKEL_HAMD: 'LEKEL_HAMD',
+  IHLAS: 'IHLAS',
+  SALAVAT_SERIF: 'SALAVAT-I ŞERİFE',
+  ISTIGFAR: 'ISTIGFAR',
+  YA_HAYYU_YA_KAYYUM: 'YA_HAYYU_YA_KAYYUM',
+};
+
 const SOURCE_DATASETS = [
   {
-    key: 'vahdehu-lâ',
+    key: 'zilhicce-ilk-10',
     label: 'Zilhicce İlk 10 Gün 2026',
     dhikrItems: [
       {
-        key: 'zilhicce-tevhid-1',
+        key: keyMap.VAHDEHU_LA,
         nameArabic:
           'لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيكَ لَهُ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ بِيَدِهِ الْخَيْرُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
         nameTurkish: 'Lâ ilâhe illallâhu vahdehû lâ...',
@@ -29,59 +40,34 @@ const SOURCE_DATASETS = [
         ],
       },
       {
-        key: 'zilhicce-hasbiye',
+        key: keyMap.LEKEL_HAMD,
         nameArabic:
-          'حَسْبِيَ اللّٰهُ وَكَفَى سَمِعَ اللّٰهُ لِمَنْ دَعَا لَيْسَ وَرَاءَ اللّٰهِ مُنْتَهَى',
-        nameTurkish: 'Hasbiyallâhu ve kefâ...',
-        transliteration:
-          'Hasbiyallâhu ve kefâ. Semiallâhu limen deâ. Leyse verâallâhi müntehâ.',
-        meaning:
-          "Allah bana yeter ve kafidir. Allah dua edeni işitir. Allah'tan öte varılacak bir son yoktur.",
-        virtue: 'Tevekkül ve ilahi himaye bilincini güçlendirir.',
-        source: 'Zilhicce fazileti rivayetleri',
-        tags: ['zilhicce', 'hasbiye', 'tevekkul'],
-        categories: ['zilhicce', 'ozel-gun'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['tevekkul', 'korunma', 'sukunet'],
-      },
-      {
-        key: 'zilhicce-kapsamli-dua',
-        nameArabic:
-          'اللّٰهُمَّ لَكَ الْحَمْدُ كَالَّذِي نَقُولُ وَخَيْرًا مِمَّا نَقُولُ اللّٰهُمَّ لَكَ صَلَاتِي وَنُسُكِي وَمَحْيَايَ وَمَمَاتِي وَلَكَ رَبِّ تُرَاثِي اللّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ وَمِنْ شَتَاتِ الْأَمْرِ',
+          'اللّٰهُمَّ لَكَ الْحَمْدُ كَالَّذِي نَقُولُ وَخَيْرًا مِمَّا نَقُولُ اللّٰهُمَّ لَكَ صَلَاتِي وَنُسُكِي وَمَحْيَايَ وَمَمَاتِي وَإِلَيْكَ مَآبِي وَلَكَ رَبِّ تُرَاثِي اللّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ وَوَسْوَسَةِ الصَّدْرِ وَشَتَاتِ الْأَمْرِ اللّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ شَرِّ مَا تَجِيءُ بِهِ الرِّيحُ',
         nameTurkish: 'Allâhümme lekel hamdü Duası',
         transliteration:
-          'Allâhümme lekel hamdü kellezî nekûl ve hayran mimmâ nekûl. Allâhümme leke salâtî ve nüsükî ve mahyâye ve memâtî. Allâhümme innî eûzü bike min azâbil kabr.',
+          'Allahümme lekel hamdü kellezî nekûlü ve hayran mimmâ nekûl. Allahümme leke salâtî ve nüsükî ve mahyâye ve memâtî ve ileyke meâbî ve leke rabbî türâsî. Allahümme innî eûzü bike min azâbi’l-kabri ve vesveseti’s-sadri ve şetâti’l-emri. Allahümme innî eûzü bike min şerri mâ tecîü bihi’r-rîhu.',
         meaning:
-          "Allah'ım, hamd Sana aittir. Namazım, kurbanım, hayatım ve ölümüm Sanadır. Kabir azabından Sana sığınırım.",
-        virtue: 'Kulluğun tamamını Allah’a adama bilincini diri tutar.',
-        source: 'Zilhicce fazileti rivayetleri',
-        tags: ['zilhicce', 'dua', 'teslimiyet'],
-        categories: ['zilhicce', 'ozel-gun'],
-        timeOfDay: 'any',
-        recommendedCount: 33,
-        suitableFor: ['dua', 'teslimiyet', 'huzur'],
-      },
-      {
-        key: 'tekbir-tahmid',
-        nameArabic:
-          'اللّٰهُ أَكْبَرُ اللّٰهُ أَكْبَرُ لَا إِلٰهَ إِلَّا اللّٰهُ وَاللّٰهُ أَكْبَرُ اللّٰهُ أَكْبَرُ وَلِلّٰهِ الْحَمْدُ',
-        nameTurkish: 'Tekbir ve Tahmid',
-        transliteration:
-          'Allâhu ekber Allâhu ekber. Lâ ilâhe illallâhü vallâhu ekber. Allâhu ekber ve lillâhil hamd.',
-        meaning:
-          "Allah en büyüktür. Allah'tan başka ilah yoktur. Hamd Allah'adır.",
+          "Allah'ım! Senin buyurduğun gibi ve bizim söylediğimizden daha hayırlı biçimde sana hamdolsun. Allah'ım namazım, tüm ibadetlerim, hayatım ve ölümüm senin içindir. Dönüşüm sanadır. Her türlü varlığım (mirasım) sana kalacaktır. Allah'ım kabir azabından, kalbimin vesvesesinden ve işlerimin dağınıklığından sana sığınırım. Allah'ım rüzgarın getireceği afetlerin şerrinden sana sığınırım.",
         virtue:
-          'Namaz sonrası zikir disiplinini artırır, kalbi sürekli zikre bağlar.',
-        source: 'Teşrik ve zilhicce zikir geleneği',
-        tags: ['zilhicce', 'tekbir', 'tahmid'],
+          '“Allahümme lekel hamd” zikri, insanın kendi sınırlılığını fark ederek tüm övgünün Allah’a ait olduğunu kabul etmesini öğretir. Bu dua, hayatın merkezini dağınık arzular yerine ilahi bir hedef etrafında toplamayı amaçlar. Kişiye, namazının, emeğinin, hayatının ve hatta ölümünün bile anlamlı bir bütünün parçası olduğunu hatırlatır. Vesvese, iç sıkışması ve zihinsel karmaşa karşısında manevi bir sığınak görevi görür. Dünya nimetlerinin geçici olduğunu hatırlatarak aşırı hırs ve kontrol arzusunu yumuşatır. İnsanı şikâyet yerine hamde, korku yerine teslimiyete yönlendirir. “Şetâtü’l-emr” yani işlerin dağılması hâlinden Allah’a sığınmak, zihinsel odak ve iç düzen arayışını ifade eder. Bu zikir, kulun kendi gücüne değil Allah’ın rahmetine dayanmayı öğrenmesidir. Düzenli okunduğunda kişide sükûnet, tevazu ve manevi denge hissi oluşturabilir. Özünde bu dua, insanı dağınıklıktan bütünlüğe ve geçicilikten hakikat bilincine taşıyan bir teslimiyet duasıdır.',
+        source: 'Zilhicce fazileti rivayetleri',
+        tags: ['zilhicce', 'dua', 'teslimiyet', 'hamd'],
         categories: ['zilhicce', 'ozel-gun'],
         timeOfDay: 'any',
         recommendedCount: 33,
-        suitableFor: ['namaz-sonrasi', 'gun-boyu'],
+        suitableFor: [
+          'dua',
+          'teslimiyet',
+          'huzur',
+          'adanmışlık',
+          'sığınma',
+          'hayat düzeni',
+          'vesveseden kurtulma',
+          'mal kaygısı',
+        ],
       },
       {
-        key: 'ihlas-kiraati',
+        key: keyMap.IHLAS,
         nameArabic:
           'قُلْ هُوَ اللّٰهُ أَحَدٌ اَللّٰهُ الصَّمَدُ لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ',
         nameTurkish: 'İhlas Suresi',
@@ -90,45 +76,54 @@ const SOURCE_DATASETS = [
         meaning:
           'De ki: O Allah tektir. Allah Samed’dir. Doğurmamış ve doğurulmamıştır. Hiçbir şey O’na denk değildir.',
         virtue:
-          'Tevhid bilincini pekiştirir; özellikle Arefe günü yoğun kıraat tavsiye edilir.',
+          'İhlâs Suresi, tevhidin en saf ve özlü ifadelerinden biri olarak insanın kalbini yalnızca Allah’a yöneltmeyi öğretir. Bu sure, Allah’ın birliğini, benzersizliğini ve hiçbir şeye muhtaç olmadığını güçlü bir şekilde ilan eder. Düzenli okunması, kişinin iç dünyasında sadeleşme ve manevi berraklık hissi oluşturabilir. İnsanı sahte dayanaklardan uzaklaştırıp gerçek güvenin yalnızca Allah’ta olduğunu hatırlatır. Kısa olmasına rağmen taşıdığı anlam derinliği nedeniyle Kur’an’ın özünü yansıtan surelerden biri kabul edilmiştir. Kalpteki korku, bağımlılık ve aşırı dünyevî bağları yumuşatarak teslimiyet duygusunu güçlendirebilir. Zihni dağınıklıktan çıkarıp tek hakikate odaklanmaya yardımcı olur. Manevi gelenekte, samimiyetle okunmasının kalbi arındırdığı ve kişinin iman şuurunu kuvvetlendirdiği ifade edilmiştir. İhlâs Suresi, insanı yalnızca Allah’ın huzurunda değer aramaya çağıran güçlü bir tevhid manifestosu gibidir. Özünde bu sure, kulun kalbini çokluktan birliğe ve geçici bağlardan ebedi hakikate yöneltir.',
         source: 'Arefe günü fazilet rivayetleri',
         tags: ['zilhicce', 'arefe', 'ihlas'],
         categories: ['zilhicce', 'ozel-gun'],
         timeOfDay: 'any',
         recommendedCount: 1000,
-        suitableFor: ['dua-kabulu', 'magfiret', 'tevhid'],
+        suitableFor: [
+          'dua-kabulu',
+          'magfiret',
+          'tevhid',
+          'iman-tazeleme',
+          'allah-sevgisi',
+          'iman-guclendirme',
+          'manevi-huzur',
+        ],
       },
       {
-        key: 'salavat-serife',
-        nameArabic: 'اللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ',
-        nameTurkish: 'Salavat-ı Şerife',
-        transliteration: 'Allâhümme salli alâ seyyidinâ Muhammed.',
-        meaning: "Allah'ım, Efendimiz Muhammed'e salat eyle.",
-        virtue:
-          'Her gün düzenli salavat, kalpte muhabbeti ve manevi diriliği artırır.',
-        source: 'Salavat fazileti rivayetleri',
-        tags: ['zilhicce', 'salavat'],
-        categories: ['zilhicce', 'ozel-gun'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['gun-boyu', 'namaz-sonrasi'],
-      },
-      {
-        key: 'arefe-istigfar-100',
+        key: keyMap.ISTIGFAR,
         nameArabic: 'أَسْتَغْفِرُ اللّٰهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ',
         nameTurkish: 'İstiğfar ve Tövbe',
         transliteration: 'Estağfirullâhel azîme ve etûbü ileyh.',
         meaning: "Azim olan Allah'tan mağfiret dilerim ve O'na tövbe ederim.",
-        virtue: 'Nefis muhasebesini canlı tutar, kalbi arındırır.',
+        virtue:
+          'Kulun Allah’a yönelişini ve samimi tevbesini ifade eden güçlü bir istiğfardır. Bu zikri düzenli okumak, kalbin manevi yüklerden arınmasına ve huzur bulmasına vesile olur. Günahların bağışlanmasını istemekle birlikte, kişiyi daha dikkatli ve bilinçli bir hayata yönlendirir. İstiğfar, insanın iç dünyasında tevazu, teslimiyet ve kulluk bilincini güçlendirir. Rivayetlerde istiğfarın rızkın artmasına, sıkıntıların hafiflemesine ve gönül ferahlığına vesile olduğu bildirilmiştir. Bu zikir, kalbi gafletten uyandırarak Allah’ı daha çok hatırlamaya yardımcı olur. Düzenli istiğfar eden kişi, manevi olarak kendini yenilenmiş ve umut dolu hissedebilir. Aynı zamanda sabrı, şükrü ve iç huzuru destekleyen manevi bir alışkanlık oluşturur. Tevbe ile birlikte okunduğunda, kişinin geçmiş hatalarından ders almasına ve daha güzel bir ahlaka yönelmesine katkı sağlar. Bu istiğfar, Allah’ın rahmetine sığınmanın ve O’na yakınlaşma arzusunun özlü bir ifadesidir.',
         source: 'Tirmizi, Deavat',
         tags: ['zilhicce', 'istigfar', 'tevbe', 'arefe'],
         categories: ['zilhicce', 'ozel-gun'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['magfiret', 'kalp-huzuru', 'magfiret', 'arinma', 'tevbe'],
+        suitableFor: [
+          'magfiret',
+          'tevbe',
+          'gunahlarin-bagislanmasi',
+          'manevi-arınma',
+          'kalp-huzuru',
+          'gonul-ferahligi',
+          'pismanlik',
+          'nefis-terbiyesi',
+          'allah-a-yaklasma',
+          'gafletten-uyanış',
+          'rahmet-talebi',
+          'dua-kabulu',
+          'umut',
+          'sikintidan-kurtulus',
+        ],
       },
       {
-        key: 'ya-hayyu-ya-kayyum',
+        key: keyMap.YA_HAYYU_YA_KAYYUM,
         nameArabic:
           'يَا حَيُّ يَا قَيُّومُ يَا بَدِيعَ السَّمَاوَاتِ وَالْأَرْضِ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
         nameTurkish: 'Yâ Hayyû yâ Kayyûm...',
@@ -187,7 +182,7 @@ const SOURCE_DATASETS = [
         dayIndex: 1,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: ['zilhicce-tevhid-1', 'tekbir-tahmid', 'salavat-serife'],
+        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.TEKBIR, keyMap.SALAVAT_SERIF],
       },
       {
         name: '2 Zilhicce',
@@ -199,7 +194,7 @@ const SOURCE_DATASETS = [
         dayIndex: 2,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: ['vahdehu-lâ', 'tekbir-tahmid', 'arefe-istigfar-100'],
+        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.TEKBIR, keyMap.ISTIGFAR],
       },
       {
         name: '3 Zilhicce',
@@ -211,7 +206,7 @@ const SOURCE_DATASETS = [
         dayIndex: 3,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: ['vahdehu-lâ', 'tekbir-tahmid', 'salavat-serife'],
+        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.TEKBIR, keyMap.SALAVAT_SERIF],
       },
       {
         name: '4 Zilhicce',
@@ -223,7 +218,7 @@ const SOURCE_DATASETS = [
         dayIndex: 4,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: ['zilhicce-hasbiye', 'arefe-istigfar-100', 'tekbir-tahmid'],
+        dhikrKeys: [keyMap.HASBIYE, keyMap.ISTIGFAR, keyMap.TEKBIR],
       },
       {
         name: '5 Zilhicce',
@@ -235,7 +230,7 @@ const SOURCE_DATASETS = [
         dayIndex: 5,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: ['zilhicce-kapsamli-dua', 'salavat-serife', 'tekbir-tahmid'],
+        dhikrKeys: [keyMap.LEKEL_HAMD, keyMap.SALAVAT_SERIF, keyMap.TEKBIR],
       },
       {
         name: '6 Zilhicce',
@@ -247,7 +242,7 @@ const SOURCE_DATASETS = [
         dayIndex: 6,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: ['zilhicce-tevhid-1', 'vahdehu-lâ', 'arefe-istigfar-100'],
+        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.ISTIGFAR],
       },
       {
         name: '7 Zilhicce',
@@ -259,7 +254,7 @@ const SOURCE_DATASETS = [
         dayIndex: 7,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: ['vahdehu-lâ', 'zilhicce-hasbiye', 'salavat-serife'],
+        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.HASBIYE, keyMap.SALAVAT_SERIF],
       },
       {
         name: '8 Zilhicce',
@@ -271,7 +266,7 @@ const SOURCE_DATASETS = [
         dayIndex: 8,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: ['arefe-istigfar-100', 'tekbir-tahmid', 'zilhicce-tevhid-1'],
+        dhikrKeys: [keyMap.ISTIGFAR, keyMap.TEKBIR, keyMap.VAHDEHU_LA],
       },
     ],
   },
@@ -280,7 +275,7 @@ const SOURCE_DATASETS = [
     label: 'Kurban Bayramı 2026',
     dhikrItems: [
       {
-        key: 'tesrik-tekbiri',
+        key: keyMap.TESRIK_TEKBIRI,
         nameArabic:
           'اللّٰهُ أَكْبَرُ اللّٰهُ أَكْبَرُ لاَ إِلٰهَ إِلاَّ اللّٰهُ وَاللّٰهُ أَكْبَرُ اللّٰهُ أَكْبَرُ وَلِلّٰهِ الْحَمْدُ',
         nameTurkish: 'Teşrik Tekbiri',
@@ -291,11 +286,18 @@ const SOURCE_DATASETS = [
         virtue:
           'Teşrik günlerinde farz namazların ardından tekbir getirmek bayram şuurunu canlı tutar.',
         source: 'Teşrik tekbirleri geleneği',
-        tags: ['kurban-bayrami', 'tesrik', 'tekbir'],
+        tags: [
+          'kurban-bayrami',
+          'tesrik',
+          'tekbir',
+          'gönle huzur',
+          'kalbe sevinç',
+          'ilahî şükür',
+        ],
         categories: ['özel gün', 'bayram'],
         timeOfDay: 'any',
         recommendedCount: 23,
-        suitableFor: ['bayram günleri', 'cemaat sonrası zikir'],
+        suitableFor: ['bayram günleri', 'cemaat sonrası zikir', ''],
       },
       {
         key: 'bayram-tesbih-300',
@@ -306,7 +308,13 @@ const SOURCE_DATASETS = [
         virtue:
           'Kalbi arındırır, şükür duygusunu artırır ve bayram günlerinde manevi dengeyi destekler. Bayram günü 300 kere okunup ölmüşlerin ruhuna bağışlandığında her müminin kabrine bin nur girer, okuyan kişi vefat ettiğinde de kabrine bin nur verilir.',
         source: 'Bayram sabahı tavsiye tesbihat',
-        tags: ['kurban-bayrami', 'tesbih'],
+        tags: [
+          'kurban-bayrami',
+          'tesbih',
+          'hastalıktan korunma',
+          'rızık ve bereket',
+          'korku ve vesvese tedavisi',
+        ],
         categories: ['özel gün', 'bayram'],
         timeOfDay: 'morning',
         recommendedCount: 300,
@@ -328,24 +336,6 @@ const SOURCE_DATASETS = [
         suitableFor: ['bayram günü', 'tevbe'],
       },
       {
-        key: 'ya-hayyu-ya-kayyum',
-        nameArabic:
-          'يَا حَيُّ يَا قَيُّومُ يَا بَدِيعَ السَّمَاوَاتِ وَالْأَرْضِ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
-        nameTurkish: 'Kalbin Diriliği Duası',
-        transliteration:
-          "Yâ Hayyû yâ Kayyûm, yâ bedî'as-semâvâti ve'l-ardı, yâ ze'l-celâli ve'l-ikrâm.",
-        meaning:
-          'Ey Hayy ve Kayyûm olan Allahım, ey gökleri ve yeri örneksiz yaratan, ey celal ve ikram sahibi.',
-        virtue:
-          'Kalbi gafletten korumaya, manevi diriliği canlı tutmaya ve bayram günlerinde iç huzuru güçlendirmeye vesile olur.',
-        source: 'Bayram günleri kalp diriliği duaları',
-        tags: ['kurban-bayrami', 'dua', 'hayy', 'kayyum'],
-        categories: ['özel gün', 'bayram', 'dua'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['kalp huzuru', 'gafletten korunma', 'bayram günleri'],
-      },
-      {
         key: 'kurban-sukru-duasi',
         nameArabic:
           'اللّٰهُمَّ لَكَ الْحَمْدُ كُلُّهُ وَلَكَ الشُّكْرُ كُلُّهُ وَإِلَيْكَ يُرْجَعُ الْأَمْرُ كُلُّهُ',
@@ -364,19 +354,36 @@ const SOURCE_DATASETS = [
         suitableFor: ['kurban kesimi sonrası', 'şükür', 'hamd'],
       },
       {
-        key: 'salavat-serife-100',
+        key: keyMap.SALAVAT_SERIF,
         nameArabic: 'اللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ',
         nameTurkish: 'Salavat-ı Şerife',
         transliteration: 'Allâhümme salli alâ seyyidinâ Muhammed.',
         meaning: "Allah'ım, Efendimiz Muhammed'e salat eyle.",
         virtue:
-          'Resulullah sevgisini canlı tutar, kalpte merhamet ve bağlılık duygusunu kuvvetlendirir.',
+          'Salavat-ı Şerife, kalbi Resûlullah sevgisiyle dirilten en bereketli zikirlerdendir. Kişiye manevi huzur, gönül ferahlığı ve iç sükûnet kazandırır. Peygamber Efendimiz’e yapılan her salavatın rahmet kapılarını açtığı rivayet edilmiştir. Salavat, duaların kabulüne vesile olan kıymetli ameller arasında görülür. Sürekli salavat getiren kimsenin kalbi yumuşar, dili güzelleşir ve manevi bağı kuvvetlenir. Sıkıntı anlarında salavat okumak, kalbe teselli ve umut verir. Günahlara kefaret ve derecelerin yükselmesine vesile olduğu bildirilmiştir. Salavat, kişinin hayatına bereket ve nur katan bir ibadet olarak kabul edilir. Meleklerin salavat ehline dua ettiği ve rahmetle yaklaştığı rivayet edilir. Resûlullah’a sevgiyle getirilen her salavat, müminin kalbini Allah’a daha yakın hâle getirir.',
         source: 'Salavat fazileti rivayetleri',
         tags: ['kurban-bayrami', 'salavat'],
         categories: ['özel gün', 'bayram'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['gün boyu', 'namaz sonrası', 'peygamber sevgisi'],
+        suitableFor: [
+          'gün boyu',
+          'namaz sonrası',
+          'peygamber sevgisi',
+          'manevi huzur',
+          'dua öncesi',
+          'dua kabulü',
+          'kalp huzuru',
+          'bereket',
+          'rahmet',
+          'şefaat ümidi',
+          'manevi yakınlık',
+          'iç ferahlığı',
+          'cuma günü',
+          'salih amel',
+          'sünnete bağlılık',
+          'manevi güçlenme',
+        ],
       },
       {
         key: 'hasbiye-zikri-100',
@@ -394,7 +401,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['gün boyu', 'zorlanma anları'],
       },
       {
-        key: 'tevekkul-hasbiye-zikri-100',
+        key: keyMap.HASBIYE,
         nameArabic:
           'حَسْبِيَ اللّٰهُ وَكَفَى سَمِعَ اللّٰهُ لِمَنْ دَعَا لَيْسَ وَرَاءَ اللّٰهِ مُنْتَهَى',
         nameTurkish: 'Tevekkül ve Hasbiye Zikri',
@@ -409,7 +416,13 @@ const SOURCE_DATASETS = [
         categories: ['özel gün', 'bayram', 'dua', 'tevekkül'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['tevekkül', 'endişe anları', 'rahmet talebi'],
+        suitableFor: [
+          'tevekkül',
+          'endişe anları',
+          'rahmet talebi',
+          'korunma',
+          'sükunet',
+        ],
       },
       {
         key: 'rabbi-inni-messeni-100',
@@ -458,21 +471,6 @@ const SOURCE_DATASETS = [
         recommendedCount: 100,
         suitableFor: ['gün boyu', 'namaz sonrası'],
       },
-      {
-        key: 'istigfar-i-azim-1001',
-        nameArabic: 'أَسْتَغْفِرُ اللّٰهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ',
-        nameTurkish: 'İstiğfar-ı Azim',
-        transliteration: 'Estağfirullâhel-azîme ve etûbü ileyh.',
-        meaning: "Azim olan Allah'tan mağfiret dilerim ve O'na tövbe ederim.",
-        virtue:
-          'Manevi arınma sağlar; Arefe ve Bayram günlerindeki ibadet eksiklerini telafiye vesile olur.',
-        source: 'Tirmizi, Deavat',
-        tags: ['istigfar', 'tevbe', 'arinma', 'bayram'],
-        categories: ['genel', 'ozel-gun', 'istigfar'],
-        timeOfDay: 'any',
-        recommendedCount: 1001,
-        suitableFor: ['magfiret', 'kalp-huzuru', 'pismanlik'],
-      },
     ],
     specialDays: [
       {
@@ -482,7 +480,7 @@ const SOURCE_DATASETS = [
         hijriDate: '9 Zilhicce 1447',
         description: 'Arefe Günü (Tevbe, Dua ve Tevhid Yoğunluğu)',
         eventKey: 'kurban-bayrami-2026',
-        dhikrKeys: ['ihlas-kiraati', 'vahdehu-lâ', 'istigfar-i-azim-1001'],
+        dhikrKeys: [keyMap.IHLAS, keyMap.VAHDEHU_LA, keyMap.ISTIGFAR],
       },
       {
         name: 'Kurban Bayramı',
@@ -495,11 +493,11 @@ const SOURCE_DATASETS = [
         dayIndex: 1,
         dayCount: 4,
         dhikrKeys: [
-          'tesrik-tekbiri',
-          'vahdehu-lâ',
+          keyMap.TESRIK_TEKBIRI,
+          keyMap.VAHDEHU_LA,
           'bayram-tesbih-300',
           'bayram-istigfar-100',
-          'ya-hayyu-ya-kayyum',
+          keyMap.YA_HAYYU_YA_KAYYUM,
           'kurban-sukru-duasi',
         ],
       },
@@ -513,13 +511,13 @@ const SOURCE_DATASETS = [
         dayIndex: 2,
         dayCount: 4,
         dhikrKeys: [
-          'tesrik-tekbiri',
-          'salavat-serife-100',
+          keyMap.TESRIK_TEKBIRI,
+          keyMap.SALAVAT_SERIF,
           'hasbiye-zikri-100',
-          'tevekkul-hasbiye-zikri-100',
-          'vahdehu-lâ',
+          keyMap.HASBIYE,
+          keyMap.VAHDEHU_LA,
           'bayram-istigfar-100',
-          'ya-hayyu-ya-kayyum',
+          keyMap.YA_HAYYU_YA_KAYYUM,
         ],
       },
       {
@@ -532,12 +530,12 @@ const SOURCE_DATASETS = [
         dayIndex: 3,
         dayCount: 4,
         dhikrKeys: [
-          'tesrik-tekbiri',
-          'vahdehu-lâ',
+          keyMap.TESRIK_TEKBIRI,
+          keyMap.VAHDEHU_LA,
           'nur-duasi',
           'bayram-istigfar-100',
-          'salavat-serife-100',
-          'ya-hayyu-ya-kayyum',
+          keyMap.SALAVAT_SERIF,
+          keyMap.YA_HAYYU_YA_KAYYUM,
         ],
       },
       {
@@ -550,13 +548,13 @@ const SOURCE_DATASETS = [
         dayIndex: 4,
         dayCount: 4,
         dhikrKeys: [
-          'tesrik-tekbiri',
+          keyMap.TESRIK_TEKBIRI,
           'kelime-i-tevhid-100',
           'hasbiye-zikri-100',
-          'tevekkul-hasbiye-zikri-100',
-          'salavat-serife-100',
+          keyMap.HASBIYE,
+          keyMap.SALAVAT_SERIF,
           'bayram-istigfar-100',
-          'ya-hayyu-ya-kayyum',
+          keyMap.YA_HAYYU_YA_KAYYUM,
         ],
       },
     ],
@@ -596,20 +594,6 @@ const SOURCE_DATASETS = [
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: ['iman tazeleme', 'kandil gecesi', 'tefekkür'],
-      },
-      {
-        key: 'mevlid-istigfar-100',
-        nameArabic: 'أَسْتَغْفِرُ اللّٰهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ',
-        nameTurkish: 'Mevlid İstiğfarı',
-        transliteration: 'Estağfirullâhel-azîme ve etûbü ileyh.',
-        meaning: "Azim olan Allah'tan mağfiret dilerim ve O'na tövbe ederim.",
-        virtue: 'Kalbi arındırır, kusurlar için tevbe bilincini canlı tutar.',
-        source: 'Tirmizi, Deavat',
-        tags: ['mevlid-kandili', 'istigfar', 'tevbe'],
-        categories: ['kandil', 'özel gün', 'istigfar'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['tevbe', 'arınma', 'gece ibadeti'],
       },
       {
         key: 'mevlid-la-havle-100',
@@ -979,7 +963,7 @@ const SOURCE_DATASETS = [
         dhikrKeys: [
           'mevlid-salavat-1000',
           'mevlid-tevhid-100',
-          'mevlid-istigfar-100',
+          keyMap.ISTIGFAR,
           'mevlid-la-havle-100',
           'mevlid-duha-suresi-50',
           'mevlid-seytandan-siginma-33',
@@ -1133,7 +1117,7 @@ const SOURCE_DATASETS = [
         priority: 170,
         dhikrKeys: [
           'bayram-istigfar-100',
-          'ihlas-kiraati',
+          keyMap.IHLAS,
           'muharrem-ayetel-kursi-360',
         ],
       },
@@ -1171,7 +1155,7 @@ const SOURCE_DATASETS = [
         dayIndex: 4,
         dayCount: 10,
         priority: 160,
-        dhikrKeys: ['vahdehu-lâ'],
+        dhikrKeys: [keyMap.VAHDEHU_LA],
       },
       {
         name: '5 Muharrem',
@@ -1207,7 +1191,7 @@ const SOURCE_DATASETS = [
         dayIndex: 7,
         dayCount: 10,
         priority: 160,
-        dhikrKeys: ['ihlas-kiraati'],
+        dhikrKeys: [keyMap.IHLAS],
       },
       {
         name: '8 Muharrem',
@@ -1243,7 +1227,7 @@ const SOURCE_DATASETS = [
         dayIndex: 10,
         dayCount: 10,
         priority: 170,
-        dhikrKeys: ['muharrem-kelime-i-sehadet-33', 'ihlas-kiraati'],
+        dhikrKeys: ['muharrem-kelime-i-sehadet-33', keyMap.IHLAS],
       },
     ],
   },
