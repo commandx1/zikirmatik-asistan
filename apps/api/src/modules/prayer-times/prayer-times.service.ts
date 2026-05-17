@@ -102,10 +102,10 @@ export class PrayerTimesService {
 
     for (const city of cities) {
       const cityUpdatedAt = updatedAtByCity.get(city);
-      if (cityUpdatedAt && isSameMonthByTimezone(cityUpdatedAt, now)) {
+      if (cityUpdatedAt && isSameDayByTimezone(cityUpdatedAt, now)) {
         skippedCount += 1;
         this.logger.log(
-          `Bu ay zaten güncel. API isteği atlanıyor. city=${city}`,
+          `Bugün zaten güncel. API isteği atlanıyor. city=${city}`,
         );
         continue;
       }
@@ -228,18 +228,20 @@ function normalizeCity(value: unknown) {
   return value.trim().toLocaleLowerCase('tr-TR');
 }
 
-function isSameMonthByTimezone(a: Date, b: Date) {
-  return toMonthKey(a) === toMonthKey(b);
+function isSameDayByTimezone(a: Date, b: Date) {
+  return toDateKey(a) === toDateKey(b);
 }
 
-function toMonthKey(value: Date) {
+function toDateKey(value: Date) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Istanbul',
     year: 'numeric',
     month: '2-digit',
+    day: '2-digit',
   }).formatToParts(value);
 
   const year = parts.find((item) => item.type === 'year')?.value ?? '0000';
   const month = parts.find((item) => item.type === 'month')?.value ?? '00';
-  return `${year}-${month}`;
+  const day = parts.find((item) => item.type === 'day')?.value ?? '00';
+  return `${year}-${month}-${day}`;
 }

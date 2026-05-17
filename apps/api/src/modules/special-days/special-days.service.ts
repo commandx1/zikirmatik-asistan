@@ -202,6 +202,10 @@ export class SpecialDaysService {
 
         latestLogByDhikrId = new Map();
         for (const item of logs) {
+          if (!item.dhikrId) {
+            continue;
+          }
+
           const key = item.dhikrId.toString();
           if (latestLogByDhikrId.has(key)) {
             continue;

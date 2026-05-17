@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { CreateDhikrLogBulkDto } from './dto/create-dhikr-log-bulk.dto';
 import { CreateDhikrLogDto } from './dto/create-dhikr-log.dto';
+import { DeleteDhikrLogsByDhikrDto } from './dto/delete-dhikr-logs-by-dhikr.dto';
 import { QueryDhikrLogsDto } from './dto/query-dhikr-logs.dto';
+import { SetDhikrFavoriteDto } from './dto/set-dhikr-favorite.dto';
 import { DhikrLog, type DhikrLogDocument } from './schemas/dhikr-log.schema';
 
 @Injectable()
@@ -19,25 +25,66 @@ export class DhikrLogsService {
 
   async create(payload: CreateDhikrLogDto) {
     const userObjectId = this.asObjectId(payload.userId);
-    const dhikrObjectId = this.asObjectId(payload.dhikrId);
-    await this.ensureReferencesExist([userObjectId], [dhikrObjectId]);
+    const dhikrId = hasNonEmptyString(payload.dhikrId)
+      ? payload.dhikrId
+      : undefined;
+    const dhikrObjectId = dhikrId ? this.asObjectId(dhikrId) : undefined;
+    const customDhikrId: string | undefined = hasNonEmptyString(
+      payload.customDhikrId,
+    )
+      ? payload.customDhikrId.trim()
+      : undefined;
+
+    if (!dhikrObjectId && !customDhikrId) {
+      throw new BadRequestException(
+        'dhikrId veya customDhikrId alanlarından biri zorunludur.',
+      );
+    }
+
+    await this.ensureReferencesExist(
+      [userObjectId],
+      dhikrObjectId ? [dhikrObjectId] : [],
+    );
+
+    const filter: Record<string, unknown> = {
+      userId: userObjectId,
+      date: payload.date,
+    };
+    if (dhikrObjectId) {
+      filter.dhikrId = dhikrObjectId;
+    } else if (customDhikrId) {
+      filter.customDhikrId = customDhikrId;
+    }
+
+    const updateSet: Record<string, unknown> = {
+      count: payload.count,
+      targetCount: payload.targetCount,
+      sessionDuration: payload.sessionDuration ?? 0,
+      source: payload.source ?? 'manual',
+      isCompleted: payload.isCompleted ?? false,
+      customDhikrName: payload.customDhikrName?.trim() || undefined,
+      customDhikrArabic: payload.customDhikrArabic?.trim() || undefined,
+    };
+    if (typeof payload.isFavorite === 'boolean') {
+      updateSet.isFavorite = payload.isFavorite;
+    }
+    const setOnInsert: Record<string, unknown> = {
+      userId: userObjectId,
+      date: payload.date,
+    };
+    if (dhikrObjectId) {
+      setOnInsert.dhikrId = dhikrObjectId;
+    }
+    if (customDhikrId) {
+      setOnInsert.customDhikrId = customDhikrId;
+    }
 
     const created = await this.dhikrLogModel
       .findOneAndUpdate(
-        { userId: userObjectId, dhikrId: dhikrObjectId, date: payload.date },
+        filter,
         {
-          $set: {
-            count: payload.count,
-            targetCount: payload.targetCount,
-            sessionDuration: payload.sessionDuration ?? 0,
-            source: payload.source ?? 'manual',
-            isCompleted: payload.isCompleted ?? false,
-          },
-          $setOnInsert: {
-            userId: userObjectId,
-            dhikrId: dhikrObjectId,
-            date: payload.date,
-          },
+          $set: updateSet,
+          $setOnInsert: setOnInsert,
         },
         {
           upsert: true,
@@ -52,10 +99,17 @@ export class DhikrLogsService {
   }
 
   async createBulk(payload: CreateDhikrLogBulkDto) {
+    if (payload.items.some((item) => !hasNonEmptyString(item.dhikrId))) {
+      throw new BadRequestException(
+        'Bulk dhikr log kaydı için tüm itemlarda dhikrId zorunludur.',
+      );
+    }
+
+    const itemsWithDhikrId = payload.items.filter(hasDhikrId);
     const userObjectIds = payload.items.map((item) =>
       this.asObjectId(item.userId),
     );
-    const dhikrObjectIds = payload.items.map((item) =>
+    const dhikrObjectIds = itemsWithDhikrId.map((item) =>
       this.asObjectId(item.dhikrId),
     );
     await this.ensureReferencesExist(userObjectIds, dhikrObjectIds);
@@ -143,6 +197,56 @@ export class DhikrLogsService {
     return log;
   }
 
+  async removeByDhikr(userId: string, payload: DeleteDhikrLogsByDhikrDto) {
+    const filter: Record<string, unknown> = {
+      userId: this.asObjectId(userId),
+    };
+
+    if (hasNonEmptyString(payload.dhikrId)) {
+      filter.dhikrId = this.asObjectId(payload.dhikrId);
+    } else if (hasNonEmptyString(payload.customDhikrId)) {
+      filter.customDhikrId = payload.customDhikrId.trim();
+    } else {
+      throw new BadRequestException(
+        'dhikrId veya customDhikrId alanlarından biri zorunludur.',
+      );
+    }
+
+    const result = await this.dhikrLogModel.deleteMany(filter).exec();
+
+    return {
+      deleted: true,
+      deletedCount: result.deletedCount ?? 0,
+    };
+  }
+
+  async setFavoriteByDhikr(userId: string, payload: SetDhikrFavoriteDto) {
+    const filter: Record<string, unknown> = {
+      userId: this.asObjectId(userId),
+    };
+
+    if (hasNonEmptyString(payload.dhikrId)) {
+      filter.dhikrId = this.asObjectId(payload.dhikrId);
+    } else if (hasNonEmptyString(payload.customDhikrId)) {
+      filter.customDhikrId = payload.customDhikrId.trim();
+    } else {
+      throw new BadRequestException(
+        'dhikrId veya customDhikrId alanlarından biri zorunludur.',
+      );
+    }
+
+    const result = await this.dhikrLogModel
+      .updateMany(filter, { $set: { isFavorite: payload.isFavorite } })
+      .exec();
+
+    return {
+      updated: true,
+      matchedCount: result.matchedCount ?? 0,
+      modifiedCount: result.modifiedCount ?? 0,
+      isFavorite: payload.isFavorite,
+    };
+  }
+
   private asObjectId(rawId: string) {
     if (!Types.ObjectId.isValid(rawId)) {
       throw new NotFoundException('Geçersiz ObjectId değeri.');
@@ -158,10 +262,9 @@ export class DhikrLogsService {
     const uniqueUserIds = uniqueObjectIds(userIds);
     const uniqueDhikrIds = uniqueObjectIds(dhikrIds);
 
-    const [userCount, dhikrCount] = await Promise.all([
-      this.userModel.countDocuments({ _id: { $in: uniqueUserIds } }),
-      this.dhikrModel.countDocuments({ _id: { $in: uniqueDhikrIds } }),
-    ]);
+    const userCount = await this.userModel.countDocuments({
+      _id: { $in: uniqueUserIds },
+    });
 
     if (userCount !== uniqueUserIds.length) {
       throw new NotFoundException(
@@ -169,10 +272,16 @@ export class DhikrLogsService {
       );
     }
 
-    if (dhikrCount !== uniqueDhikrIds.length) {
-      throw new NotFoundException(
-        'Dhikr log kaydı için en az bir zikir bulunamadı.',
-      );
+    if (uniqueDhikrIds.length > 0) {
+      const dhikrCount = await this.dhikrModel.countDocuments({
+        _id: { $in: uniqueDhikrIds },
+      });
+
+      if (dhikrCount !== uniqueDhikrIds.length) {
+        throw new NotFoundException(
+          'Dhikr log kaydı için en az bir zikir bulunamadı.',
+        );
+      }
     }
   }
 }
@@ -181,4 +290,14 @@ function uniqueObjectIds(values: Types.ObjectId[]) {
   return Array.from(
     new Map(values.map((value) => [value.toHexString(), value])).values(),
   );
+}
+
+function hasNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function hasDhikrId(
+  item: CreateDhikrLogDto,
+): item is CreateDhikrLogDto & { dhikrId: string } {
+  return hasNonEmptyString(item.dhikrId);
 }

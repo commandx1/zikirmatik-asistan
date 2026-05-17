@@ -14,13 +14,22 @@ export class DhikrLog {
   @Prop({ type: Types.ObjectId, ref: User.name, required: true, index: true })
   userId!: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: Dhikr.name, required: true, index: true })
-  dhikrId!: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: Dhikr.name, index: true })
+  dhikrId?: Types.ObjectId;
+
+  @Prop({ type: String, trim: true, index: true })
+  customDhikrId?: string;
+
+  @Prop({ type: String, trim: true })
+  customDhikrName?: string;
+
+  @Prop({ type: String, trim: true })
+  customDhikrArabic?: string;
 
   @Prop({ type: Number, required: true, min: 0 })
   count!: number;
 
-  @Prop({ type: Number, required: true, min: 1 })
+  @Prop({ type: Number, required: true, min: 0 })
   targetCount!: number;
 
   @Prop({ type: Number, required: true, min: 0, default: 0 })
@@ -36,6 +45,9 @@ export class DhikrLog {
   @Prop({ type: Boolean, default: false })
   isCompleted!: boolean;
 
+  @Prop({ type: Boolean, default: false })
+  isFavorite!: boolean;
+
   @Prop({ type: String, required: true })
   date!: string;
 
@@ -46,3 +58,4 @@ export const DhikrLogSchema = SchemaFactory.createForClass(DhikrLog);
 
 DhikrLogSchema.index({ userId: 1, date: -1 });
 DhikrLogSchema.index({ userId: 1, dhikrId: 1, date: 1 });
+DhikrLogSchema.index({ userId: 1, customDhikrId: 1, date: 1 });

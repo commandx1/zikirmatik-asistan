@@ -7,6 +7,7 @@ import {
   IsString,
   Matches,
   Min,
+  ValidateIf,
 } from 'class-validator';
 
 const LOG_SOURCE = {
@@ -20,15 +21,28 @@ export class CreateDhikrLogDto {
   @IsMongoId()
   userId!: string;
 
+  @ValidateIf((payload: CreateDhikrLogDto) => !payload.customDhikrId)
   @IsMongoId()
-  dhikrId!: string;
+  dhikrId?: string;
+
+  @ValidateIf((payload: CreateDhikrLogDto) => !payload.dhikrId)
+  @IsString()
+  customDhikrId?: string;
+
+  @IsOptional()
+  @IsString()
+  customDhikrName?: string;
+
+  @IsOptional()
+  @IsString()
+  customDhikrArabic?: string;
 
   @IsInt()
   @Min(0)
   count!: number;
 
   @IsInt()
-  @Min(1)
+  @Min(0)
   targetCount!: number;
 
   @IsOptional()
@@ -43,6 +57,10 @@ export class CreateDhikrLogDto {
   @IsOptional()
   @IsBoolean()
   isCompleted?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isFavorite?: boolean;
 
   @IsString()
   @Matches(/^\d{4}-\d{2}-\d{2}$/)
