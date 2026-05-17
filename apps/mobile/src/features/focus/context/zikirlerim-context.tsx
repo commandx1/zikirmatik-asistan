@@ -1,7 +1,16 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from "react";
 import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
-import { listDhikrLogsByUser, type BackendDhikrLog } from "../../dhikrs/services/dhikr-logs-api-client";
+import {
+  deleteDhikrLogsByKey,
+  listDhikrLogsByUser,
+  setDhikrFavoriteByKey,
+  type BackendDhikrLog
+} from "../../dhikrs/services/dhikr-logs-api-client";
+import {
+  deleteUserDhikrByClientId,
+  updateUserDhikrByClientId
+} from "../../dhikrs/services/user-dhikrs-api-client";
 import type { ZikirFilterKey, ZikirItem } from "../types";
 
 type ZikirlerimContextValue = {
@@ -9,11 +18,13 @@ type ZikirlerimContextValue = {
   activeFilter: ZikirFilterKey;
   items: ZikirItem[];
   selectedDhikrId: string;
+  deletingDhikrId: string;
   isRefreshing: boolean;
   refresh: () => Promise<void>;
   setActiveFilter: (filter: ZikirFilterKey) => void;
   toggleFavorite: (id: string) => void;
   selectDhikr: (id: string) => void;
+  deleteDhikr: (item: ZikirItem) => Promise<void>;
 };
 
 const ZikirlerimContext = createContext<ZikirlerimContextValue | null>(null);
@@ -29,14 +40,18 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const [activeFilter, setActiveFilter] = useState<ZikirFilterKey>("all");
   const items = useDhikrStore((state) => state.items);
   const selectedDhikrId = useDhikrStore((state) => state.selectedDhikrId);
-  const toggleFavorite = useDhikrStore((state) => state.toggleFavorite);
-  const selectDhikr = useDhikrStore((state) => state.selectDhikr);
+  const storeToggleFavorite = useDhikrStore((state) => state.toggleFavorite);
+  const storeSelectDhikr = useDhikrStore((state) => state.selectDhikr);
+  const upsertPersonalDhikr = useDhikrStore((state) => state.upsertPersonalDhikr);
+  const removePersonalDhikr = useDhikrStore((state) => state.removePersonalDhikr);
+  const clearDhikrProgress = useDhikrStore((state) => state.clearDhikrProgress);
   const lastSavedBackendLog = useDhikrStore((state) => state.lastSavedBackendLog);
   const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
   const sessionAccessToken = useAuthStore((state) => state.session?.accessToken);
   const [logs, setLogs] = useState<BackendDhikrLog[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [deletingDhikrId, setDeletingDhikrId] = useState("");
 
   const fetchLogs = useCallback(async () => {
     if (authStatus !== "authenticated" || !sessionUserId) {
@@ -68,10 +83,14 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
     setLogs((prev) => {
       const next = [...prev];
+      const lastLogKey = resolveLogDhikrKey(lastSavedBackendLog);
+      if (!lastLogKey) {
+        return next;
+      }
       const existingIndex = next.findIndex(
         (log) =>
           log.userId === lastSavedBackendLog.userId &&
-          log.dhikrId === lastSavedBackendLog.dhikrId &&
+          resolveLogDhikrKey(log) === lastLogKey &&
           log.date === lastSavedBackendLog.date
       );
 
@@ -130,12 +149,10 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
   const enrichedItems = useMemo(() => {
     if (authStatus !== "authenticated") {
-      return items.filter((item) => item.current > 0);
+      return items.filter((item) => item.source === "personal" || item.current > 0);
     }
 
-    const personalLocalItems = items.filter(
-      (item) => item.source === "personal" && item.current > 0
-    );
+    const personalLocalItems = items.filter((item) => item.source === "personal");
 
     if (logs.length === 0) {
       return personalLocalItems;
@@ -144,11 +161,16 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     const itemById = new Map(items.map((item) => [item.id, item]));
     const groupedByDhikr = new Map<string, BackendDhikrLog[]>();
     for (const log of logs) {
-      const list = groupedByDhikr.get(log.dhikrId);
+      const dhikrKey = resolveLogDhikrKey(log);
+      if (!dhikrKey) {
+        continue;
+      }
+
+      const list = groupedByDhikr.get(dhikrKey);
       if (list) {
         list.push(log);
       } else {
-        groupedByDhikr.set(log.dhikrId, [log]);
+        groupedByDhikr.set(dhikrKey, [log]);
       }
     }
 
@@ -160,15 +182,15 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
       nextItems.push({
         id: dhikrId,
-        source: matched?.source ?? "ready",
-        arabic: matched?.arabic,
-        transliteration: matched?.transliteration ?? "Kayıtlı Zikir",
+        source: matched?.source ?? "personal",
+        arabic: matched?.arabic ?? latestLog.customDhikrArabic,
+        transliteration: matched?.transliteration ?? latestLog.customDhikrName ?? "Kayıtlı Zikir",
         meaning: matched?.meaning,
         current: latestLog.count,
         target: matched?.target ?? latestLog.targetCount,
         lastActivityLabel: toLastActivityLabel(latestLog.createdAt, latestLog.date),
         streakDays: calculateStreakDays(sorted),
-        isFavorite: matched?.isFavorite ?? false
+        isFavorite: latestLog.isFavorite ?? matched?.isFavorite ?? false
       });
     }
 
@@ -197,9 +219,9 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       return enrichedItems.filter((item) => item.isFavorite);
     }
     if (activeFilter === "completed") {
-      return enrichedItems.filter((item) => item.current >= item.target);
+      return enrichedItems.filter((item) => item.target > 0 && item.current >= item.target);
     }
-    return enrichedItems.filter((item) => item.current < item.target);
+    return enrichedItems.filter((item) => item.target <= 0 || item.current < item.target);
   }, [activeFilter, enrichedItems]);
 
   const value: ZikirlerimContextValue = {
@@ -207,11 +229,112 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     activeFilter,
     items: visibleItems,
     selectedDhikrId,
+    deletingDhikrId,
     isRefreshing,
     refresh,
     setActiveFilter,
-    toggleFavorite,
-    selectDhikr
+    toggleFavorite: (id) => {
+      const fallbackStoreItem = items.find((item) => item.id === id);
+      const contextItem = enrichedItems.find((item) => item.id === id);
+      const currentFavorite = contextItem?.isFavorite ?? fallbackStoreItem?.isFavorite ?? false;
+      const nextFavorite = !currentFavorite;
+
+      storeToggleFavorite(id);
+      setLogs((prev) =>
+        prev.map((log) =>
+          resolveLogDhikrKey(log) === id
+            ? {
+                ...log,
+                isFavorite: nextFavorite
+              }
+            : log
+        )
+      );
+
+      if (authStatus !== "authenticated" || !sessionUserId || !contextItem) {
+        return;
+      }
+
+      const favoriteRequest =
+        contextItem.source === "personal"
+          ? updateUserDhikrByClientId(
+              id,
+              { isFavorite: nextFavorite },
+              sessionAccessToken
+            )
+          : setDhikrFavoriteByKey(
+              isObjectIdLike(id)
+                ? { dhikrId: id, isFavorite: nextFavorite }
+                : { customDhikrId: id, isFavorite: nextFavorite },
+              sessionAccessToken
+            );
+
+      void favoriteRequest.catch(() => {
+        storeToggleFavorite(id);
+        setLogs((prev) =>
+          prev.map((log) =>
+            resolveLogDhikrKey(log) === id
+              ? {
+                  ...log,
+                  isFavorite: currentFavorite
+                }
+              : log
+          )
+        );
+      });
+    },
+    selectDhikr: (id) => {
+      const existsInStore = items.some((item) => item.id === id);
+      if (!existsInStore) {
+        const fromVisible = visibleItems.find((item) => item.id === id);
+        if (fromVisible?.source === "personal") {
+          upsertPersonalDhikr({
+            id: fromVisible.id,
+            transliteration: fromVisible.transliteration,
+            arabic: fromVisible.arabic,
+            meaning: fromVisible.meaning,
+            current: fromVisible.current,
+            target: fromVisible.target,
+            lastActivityLabel: fromVisible.lastActivityLabel,
+            isFavorite: fromVisible.isFavorite
+          });
+        }
+      }
+
+      storeSelectDhikr(id);
+    },
+    deleteDhikr: async (item) => {
+      if (!item.id || deletingDhikrId === item.id) {
+        return;
+      }
+
+      setDeletingDhikrId(item.id);
+      try {
+        if (authStatus === "authenticated" && sessionUserId) {
+          if (item.source === "personal") {
+            await deleteUserDhikrByClientId(item.id, sessionAccessToken);
+          }
+
+          const deletePayload = isObjectIdLike(item.id)
+            ? { dhikrId: item.id }
+            : { customDhikrId: item.id };
+          await deleteDhikrLogsByKey(
+            deletePayload,
+            sessionAccessToken
+          );
+        }
+
+        setLogs((prev) => prev.filter((log) => resolveLogDhikrKey(log) !== item.id));
+
+        if (item.source === "personal") {
+          removePersonalDhikr(item.id);
+        } else {
+          clearDhikrProgress(item.id);
+        }
+      } finally {
+        setDeletingDhikrId("");
+      }
+    }
   };
 
   return <ZikirlerimContext.Provider value={value}>{children}</ZikirlerimContext.Provider>;
@@ -311,4 +434,12 @@ function toLogTimestamp(log: BackendDhikrLog) {
 
   const parsedDate = parseDateKey(log.date);
   return parsedDate ? parsedDate.getTime() : 0;
+}
+
+function resolveLogDhikrKey(log: BackendDhikrLog) {
+  return log.dhikrId ?? log.customDhikrId;
+}
+
+function isObjectIdLike(value: string) {
+  return /^[a-fA-F0-9]{24}$/.test(value);
 }
