@@ -32,9 +32,14 @@ export class SubscriptionsController {
   }
 
   @Get()
-  findAll(@Query() query: QuerySubscriptionsDto, @CurrentUserId() userId: string) {
+  findAll(
+    @Query() query: QuerySubscriptionsDto,
+    @CurrentUserId() userId: string,
+  ) {
     if (query.userId && query.userId !== userId) {
-      throw new ForbiddenException('Sadece kendi abonelik kayıtlarını görebilirsin.');
+      throw new ForbiddenException(
+        'Sadece kendi abonelik kayıtlarını görebilirsin.',
+      );
     }
     query.userId = userId;
     return this.subscriptionsService.findAll(query);
@@ -76,6 +81,8 @@ export class SubscriptionsController {
 
 function assertSelfUser(targetUserId: string, currentUserId: string) {
   if (targetUserId !== currentUserId) {
-    throw new ForbiddenException('Sadece kendi kullanıcı kaydını yönetebilirsin.');
+    throw new ForbiddenException(
+      'Sadece kendi kullanıcı kaydını yönetebilirsin.',
+    );
   }
 }
