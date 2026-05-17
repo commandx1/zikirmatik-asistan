@@ -18,6 +18,7 @@ const FALLBACK_STATS: DailyStatsViewModel = {
 export function useDailyStats(): DailyStatsViewModel {
   const authStatus = useAuthStore((s) => s.status);
   const sessionUserId = useAuthStore((s) => s.session?.userId);
+  const sessionAccessToken = useAuthStore((s) => s.session?.accessToken);
   const [stats, setStats] = useState<DailyStatsViewModel>(FALLBACK_STATS);
 
   useEffect(() => {
@@ -34,8 +35,13 @@ export function useDailyStats(): DailyStatsViewModel {
         weekStart.setDate(now.getDate() - 6);
 
         const [streak, weeklyLogs] = await Promise.all([
-          getUserStreak(sessionUserId),
-          listDhikrLogsByUser(sessionUserId, toDateKey(weekStart), toDateKey(now))
+          getUserStreak(sessionUserId, sessionAccessToken),
+          listDhikrLogsByUser(
+            sessionUserId,
+            toDateKey(weekStart),
+            toDateKey(now),
+            sessionAccessToken
+          )
         ]);
 
         if (isCancelled) {
@@ -66,7 +72,7 @@ export function useDailyStats(): DailyStatsViewModel {
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, sessionUserId]);
+  }, [authStatus, sessionAccessToken, sessionUserId]);
 
   return stats;
 }
