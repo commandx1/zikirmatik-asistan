@@ -34,6 +34,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const lastSavedBackendLog = useDhikrStore((state) => state.lastSavedBackendLog);
   const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
+  const sessionAccessToken = useAuthStore((state) => state.session?.accessToken);
   const [logs, setLogs] = useState<BackendDhikrLog[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -44,12 +45,17 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     }
 
     try {
-      const nextLogs = await listDhikrLogsByUser(sessionUserId);
+      const nextLogs = await listDhikrLogsByUser(
+        sessionUserId,
+        undefined,
+        undefined,
+        sessionAccessToken
+      );
       setLogs(nextLogs);
     } catch {
       setLogs([]);
     }
-  }, [authStatus, sessionUserId]);
+  }, [authStatus, sessionAccessToken, sessionUserId]);
 
   useEffect(() => {
     if (authStatus !== "authenticated" || !sessionUserId || !lastSavedBackendLog) {
@@ -89,7 +95,12 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       };
     }
 
-    void listDhikrLogsByUser(sessionUserId)
+    void listDhikrLogsByUser(
+      sessionUserId,
+      undefined,
+      undefined,
+      sessionAccessToken
+    )
       .then((nextLogs) => {
         if (isCancelled) {
           return;
@@ -106,7 +117,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, sessionUserId]);
+  }, [authStatus, sessionAccessToken, sessionUserId]);
 
   const refresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -122,8 +133,12 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       return items.filter((item) => item.current > 0);
     }
 
+    const personalLocalItems = items.filter(
+      (item) => item.source === "personal" && item.current > 0
+    );
+
     if (logs.length === 0) {
-      return [];
+      return personalLocalItems;
     }
 
     const itemById = new Map(items.map((item) => [item.id, item]));
@@ -155,6 +170,14 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
         streakDays: calculateStreakDays(sorted),
         isFavorite: matched?.isFavorite ?? false
       });
+    }
+
+    for (const personalItem of personalLocalItems) {
+      if (nextItems.some((item) => item.id === personalItem.id)) {
+        continue;
+      }
+
+      nextItems.push(personalItem);
     }
 
     return nextItems.sort((a, b) => {
