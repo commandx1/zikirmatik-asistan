@@ -89,6 +89,9 @@ export class UsersService {
               ? { theme: payload.theme }
               : {}),
             ...(payload.fontFamily ? { fontFamily: payload.fontFamily } : {}),
+            ...(typeof payload.hapticsEnabled === 'boolean'
+              ? { hapticsEnabled: payload.hapticsEnabled }
+              : {}),
             lastSeenAt: now,
           },
         },

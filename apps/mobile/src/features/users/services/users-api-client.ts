@@ -14,6 +14,7 @@ export type BackendUser = {
   city?: string;
   theme?: string;
   fontFamily?: "default" | "merriweather" | "intel-one-mono";
+  hapticsEnabled?: boolean;
   isPremium?: boolean;
   createdAt?: string;
   onboarding?: {
@@ -32,6 +33,7 @@ export type UpdateOnboardingPayload = {
 export type UpdateUserPreferencesPayload = {
   theme?: string;
   fontFamily?: "default" | "merriweather" | "intel-one-mono";
+  hapticsEnabled?: boolean;
 };
 
 export class UsersApiError extends Error {

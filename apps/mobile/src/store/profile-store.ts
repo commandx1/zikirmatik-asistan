@@ -13,11 +13,13 @@ type ProfileState = {
   dailyReminderEnabled: boolean;
   kandilNotificationsEnabled: boolean;
   adhanNotificationsEnabled: boolean;
+  hapticsEnabled: boolean;
   setCity: (city: string) => void;
   setReminderTime: (time: string) => void;
   setDailyReminderEnabled: (enabled: boolean) => void;
   setKandilNotificationsEnabled: (enabled: boolean) => void;
   setAdhanNotificationsEnabled: (enabled: boolean) => void;
+  setHapticsEnabled: (enabled: boolean) => void;
   resetSessionScoped: () => void;
   hydrateFromBackend: (payload: {
     displayName?: string;
@@ -27,6 +29,7 @@ type ProfileState = {
     dailyReminderEnabled?: boolean;
     kandilNotificationsEnabled?: boolean;
     adhanNotificationsEnabled?: boolean;
+    hapticsEnabled?: boolean;
   }) => void;
 };
 
@@ -43,6 +46,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
   dailyReminderEnabled: true,
   kandilNotificationsEnabled: true,
   adhanNotificationsEnabled: false,
+  hapticsEnabled: true,
   setCity: (city) => {
     const nextCity = city.trim();
     set({ city: nextCity });
@@ -59,6 +63,9 @@ export const useProfileStore = create<ProfileState>((set) => ({
   setAdhanNotificationsEnabled: (enabled) => {
     set({ adhanNotificationsEnabled: enabled });
   },
+  setHapticsEnabled: (enabled) => {
+    set({ hapticsEnabled: enabled });
+  },
   resetSessionScoped: () => {
     set({
       displayName: "Ahmet Yılmaz",
@@ -70,7 +77,8 @@ export const useProfileStore = create<ProfileState>((set) => ({
       reminderTime: "08:00",
       dailyReminderEnabled: true,
       kandilNotificationsEnabled: true,
-      adhanNotificationsEnabled: false
+      adhanNotificationsEnabled: false,
+      hapticsEnabled: true
     });
   },
   hydrateFromBackend: (payload) => {
@@ -88,6 +96,9 @@ export const useProfileStore = create<ProfileState>((set) => ({
         : {}),
       ...(typeof payload.adhanNotificationsEnabled === "boolean"
         ? { adhanNotificationsEnabled: payload.adhanNotificationsEnabled }
+        : {}),
+      ...(typeof payload.hapticsEnabled === "boolean"
+        ? { hapticsEnabled: payload.hapticsEnabled }
         : {})
     }));
   }

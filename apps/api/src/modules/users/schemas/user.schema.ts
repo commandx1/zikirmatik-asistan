@@ -45,6 +45,9 @@ export class User {
   @Prop({ type: String, enum: ['small', 'medium', 'large'], default: 'medium' })
   fontSize!: 'small' | 'medium' | 'large';
 
+  @Prop({ type: Boolean, default: true })
+  hapticsEnabled!: boolean;
+
   @Prop(
     raw({
       dailyReminder: { type: Boolean, default: true },

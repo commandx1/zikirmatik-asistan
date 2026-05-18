@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 
 const FONT_FAMILY = {
   default: 'default',
@@ -14,4 +14,8 @@ export class UpdateUserPreferencesDto {
   @IsOptional()
   @IsEnum(FONT_FAMILY)
   fontFamily?: 'default' | 'merriweather' | 'intel-one-mono';
+
+  @IsOptional()
+  @IsBoolean()
+  hapticsEnabled?: boolean;
 }

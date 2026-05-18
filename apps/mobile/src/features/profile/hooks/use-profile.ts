@@ -5,6 +5,7 @@ import { listDhikrLogsByUser } from "../../dhikrs/services/dhikr-logs-api-client
 import { getUserStreak } from "../../stats/services/streaks-api-client";
 import {
   getUserById,
+  saveUserPreferences,
   saveUserOnboarding,
   type BackendUser,
   UsersApiError
@@ -42,9 +43,11 @@ export function useProfile() {
   const dailyReminderEnabled = useProfileStore((s) => s.dailyReminderEnabled);
   const kandilNotificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
   const adhanNotificationsEnabled = useProfileStore((s) => s.adhanNotificationsEnabled);
+  const hapticsEnabled = useProfileStore((s) => s.hapticsEnabled);
   const setDailyReminderEnabled = useProfileStore((s) => s.setDailyReminderEnabled);
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
   const setAdhanNotificationsEnabled = useProfileStore((s) => s.setAdhanNotificationsEnabled);
+  const setHapticsEnabled = useProfileStore((s) => s.setHapticsEnabled);
   const hydrateFromBackend = useProfileStore((s) => s.hydrateFromBackend);
   const authStatus = useAuthStore((s) => s.status);
   const session = useAuthStore((s) => s.session);
@@ -90,7 +93,8 @@ export function useProfile() {
       reminderTime: user.notifSettings?.reminderTime,
       dailyReminderEnabled: user.notifSettings?.dailyReminder,
       kandilNotificationsEnabled: user.notifSettings?.kandilNotifications,
-      adhanNotificationsEnabled: user.notifSettings?.azanNotifications
+      adhanNotificationsEnabled: user.notifSettings?.azanNotifications,
+      hapticsEnabled: user.hapticsEnabled
     });
     hydrateAppearance({
       themeName:
@@ -418,6 +422,25 @@ export function useProfile() {
     }
   };
 
+  const onToggleHaptics = useCallback(
+    (enabled: boolean) => {
+      setHapticsEnabled(enabled);
+
+      if (authStatus !== "authenticated" || !session?.userId) {
+        return;
+      }
+
+      void saveUserPreferences(
+        session.userId,
+        { hapticsEnabled: enabled },
+        session.accessToken
+      ).catch(() => {
+        setHapticsEnabled(!enabled);
+      });
+    },
+    [authStatus, session?.accessToken, session?.userId, setHapticsEnabled]
+  );
+
   return {
     displayName: backendUser?.displayName ?? authDisplayName ?? fallbackDisplayName,
     profileImageUrl: backendUser?.profileImageUrl,
@@ -440,6 +463,7 @@ export function useProfile() {
     dailyReminderEnabled,
     kandilNotificationsEnabled,
     adhanNotificationsEnabled,
+    hapticsEnabled,
     themeLabel: THEME_LABELS[themeName],
     fontLabel: FONT_LABELS[fontFamily],
     quickStats,
@@ -453,6 +477,7 @@ export function useProfile() {
     setDailyReminderEnabled,
     setKandilNotificationsEnabled,
     setAdhanNotificationsEnabled,
+    onToggleHaptics,
     goThemeSelector,
     goFontSelector,
     openPersonalInfoModal,

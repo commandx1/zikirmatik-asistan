@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Vibration } from 'react-native'
 import { useAuthStore } from '../../store/auth-store'
 import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
+import { useProfileStore } from '../../store/profile-store'
 import type { ZikirSource } from '../focus/types'
 import { createDhikrLog, listDhikrLogsByUser, type BackendDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
 import { createUserDhikr } from '../dhikrs/services/user-dhikrs-api-client'
@@ -103,6 +105,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
   const sessionAccessToken = useAuthStore(state => state.session?.accessToken)
+  const hapticsEnabled = useProfileStore(state => state.hapticsEnabled)
 
   const selectedDhikr = useMemo(() => {
     return items.find(item => item.id === selectedDhikrId)
@@ -361,6 +364,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
         if (!selectedDhikr) {
           setFreeCount(prev => prev + 1)
+          if (hapticsEnabled) {
+            Vibration.vibrate(25)
+          }
           return
         }
 
@@ -370,6 +376,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           selectedDhikr.current + 1 >= selectedDhikr.target
 
         incrementSelected()
+        if (hapticsEnabled) {
+          Vibration.vibrate(25)
+        }
 
         if (willCompleteToday) {
           persistSelectedDhikrLog({
@@ -616,6 +625,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     streakDays,
     authDisplayName,
     authStatus,
+    hapticsEnabled,
     setSelectedCount,
     setSelectedTarget,
     targetDraft

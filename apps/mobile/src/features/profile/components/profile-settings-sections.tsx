@@ -14,6 +14,7 @@ type ProfileSettingsSectionsProps = {
   reminderTime: string;
   dailyReminderEnabled: boolean;
   kandilNotificationsEnabled: boolean;
+  hapticsEnabled: boolean;
   onPressPersonalInfo: () => void;
   onPressTheme: () => void;
   onPressFont: () => void;
@@ -25,6 +26,7 @@ type ProfileSettingsSectionsProps = {
   onPressLogout: () => void;
   onToggleDailyReminder: (value: boolean) => void;
   onToggleKandilNotification: (value: boolean) => void;
+  onToggleHaptics: (value: boolean) => void;
 };
 
 export function ProfileSettingsSections({
@@ -35,6 +37,7 @@ export function ProfileSettingsSections({
   reminderTime,
   dailyReminderEnabled,
   kandilNotificationsEnabled,
+  hapticsEnabled,
   onPressPersonalInfo,
   onPressTheme,
   onPressFont,
@@ -45,7 +48,8 @@ export function ProfileSettingsSections({
   onPressRestartOnboarding,
   onPressLogout,
   onToggleDailyReminder,
-  onToggleKandilNotification
+  onToggleKandilNotification,
+  onToggleHaptics
 }: ProfileSettingsSectionsProps) {
   return (
     <View className="gap-6">
@@ -72,7 +76,13 @@ export function ProfileSettingsSections({
         <ProfileSectionTitle label="Kişiselleştirme" />
         <ProfileSettingsCard>
           <ProfileLinkRow label="Tema Seçimi" iconName="moon" value={themeLabel} onPress={onPressTheme} bottomBorder />
-          <ProfileLinkRow label="Yazı Tipi" iconName="font" value={fontLabel} onPress={onPressFont} />
+          <ProfileLinkRow label="Yazı Tipi" iconName="font" value={fontLabel} onPress={onPressFont} bottomBorder />
+          <ProfileToggleRow
+            label="Titreşim"
+            iconName="mobile-screen"
+            value={hapticsEnabled}
+            onChange={onToggleHaptics}
+          />
         </ProfileSettingsCard>
       </View>
 
