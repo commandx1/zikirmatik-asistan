@@ -4,6 +4,7 @@ import { ProfileHeader } from "./components/profile-header";
 import { ProfilePersonalInfoModal } from "./components/profile-personal-info-modal";
 import { ProfilePremiumSheet } from "./components/profile-premium-sheet";
 import { ProfileQuickStatsCard } from "./components/profile-quick-stats-card";
+import { ProfileReminderTimeModal } from "./components/profile-reminder-time-modal";
 import { ProfileSettingsSections } from "./components/profile-settings-sections";
 import { ProfileUserCard } from "./components/profile-user-card";
 import { useProfile } from "./hooks/use-profile";
@@ -42,6 +43,7 @@ export function ProfileScreen() {
               onPressPersonalInfo={profile.openPersonalInfoModal}
               onPressTheme={profile.goThemeSelector}
               onPressFont={profile.goFontSelector}
+              onPressReminderTime={profile.openReminderTimeModal}
               onPressPremium={profile.openPremiumSheet}
               onPressManageSubscription={profile.manageSubscription}
               onPressRateApp={profile.rateApp}
@@ -77,6 +79,18 @@ export function ProfileScreen() {
           onStartPremium={profile.activatePremium}
           onRestorePremium={profile.restorePremium}
           onClose={profile.closePremiumSheet}
+        />
+        <ProfileReminderTimeModal
+          visible={profile.isReminderTimeModalOpen}
+          hourDraft={profile.reminderHourDraft}
+          minuteDraft={profile.reminderMinuteDraft}
+          isSaving={profile.isSavingReminderTime}
+          canSave={profile.canSaveReminderTime}
+          error={profile.reminderTimeError}
+          onChangeHour={profile.onReminderHourChange}
+          onChangeMinute={profile.onReminderMinuteChange}
+          onSave={profile.saveReminderTime}
+          onClose={profile.closeReminderTimeModal}
         />
       </View>
     </PageLayout>

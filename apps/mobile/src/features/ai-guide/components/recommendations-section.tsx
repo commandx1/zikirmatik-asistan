@@ -22,7 +22,7 @@ export function RecommendationsSection({ items, onSelectRecommendation }: Recomm
   return (
     <View className="mb-6">
       <View className="mb-4 flex-row items-center gap-2 px-1">
-        <FontAwesome6 name="sparkles" iconStyle="solid" size={12} color="#C8972A" />
+        <FontAwesome6 name="star" iconStyle="solid" size={12} color="#C8972A" />
         <Text className="text-sm font-semibold text-[#F0EDE6]">Sana Özel Öneriler</Text>
       </View>
 

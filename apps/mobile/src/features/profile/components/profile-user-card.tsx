@@ -53,7 +53,7 @@ export function ProfileUserCard({
 
       {isPremium ? (
         <View className="flex-row items-center gap-1.5 rounded-full bg-[--accent] px-4 py-1.5 shadow-md shadow-[#C8972A]/30">
-          <FontAwesome6 name="sparkles" iconStyle="solid" size={11} color="#0F1B2D" />
+          <FontAwesome6 name="star" iconStyle="solid" size={11} color="#0F1B2D" />
           <Text className="text-[12px] font-bold text-[#0F1B2D]" style={strongTextStyle}>Premium</Text>
         </View>
       ) : (

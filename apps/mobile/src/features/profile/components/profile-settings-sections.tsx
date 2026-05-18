@@ -18,6 +18,7 @@ type ProfileSettingsSectionsProps = {
   onPressPersonalInfo: () => void;
   onPressTheme: () => void;
   onPressFont: () => void;
+  onPressReminderTime: () => void;
   onPressPremium: () => void;
   onPressManageSubscription: () => void;
   onPressRateApp: () => void;
@@ -41,6 +42,7 @@ export function ProfileSettingsSections({
   onPressPersonalInfo,
   onPressTheme,
   onPressFont,
+  onPressReminderTime,
   onPressPremium,
   onPressManageSubscription,
   onPressRateApp,
@@ -98,7 +100,7 @@ export function ProfileSettingsSections({
             onChange={onToggleDailyReminder}
             bottomBorder
           />
-          <ProfileTimeRow label="Hatırlatma Saati" value={reminderTime} bottomBorder />
+          <ProfileTimeRow label="Hatırlatma Saati" value={reminderTime} bottomBorder onPress={onPressReminderTime} />
           <ProfileToggleRow
             label="Kandil Bildirimleri"
             iconName="star-and-crescent"

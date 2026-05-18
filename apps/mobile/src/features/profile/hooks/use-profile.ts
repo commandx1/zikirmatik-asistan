@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "expo-router";
-import { Linking, Platform } from "react-native";
+import { Alert, Linking, Platform } from "react-native";
 import { listDhikrLogsByUser } from "../../dhikrs/services/dhikr-logs-api-client";
 import { getUserStreak } from "../../stats/services/streaks-api-client";
 import {
@@ -45,6 +45,7 @@ export function useProfile() {
   const kandilNotificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
   const adhanNotificationsEnabled = useProfileStore((s) => s.adhanNotificationsEnabled);
   const hapticsEnabled = useProfileStore((s) => s.hapticsEnabled);
+  const setReminderTime = useProfileStore((s) => s.setReminderTime);
   const setDailyReminderEnabled = useProfileStore((s) => s.setDailyReminderEnabled);
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
   const setAdhanNotificationsEnabled = useProfileStore((s) => s.setAdhanNotificationsEnabled);
@@ -77,6 +78,11 @@ export function useProfile() {
   const [draftCity, setDraftCity] = useState(onboardingCity || city || "");
   const [isSavingPersonalInfo, setIsSavingPersonalInfo] = useState(false);
   const [personalInfoError, setPersonalInfoError] = useState<string>();
+  const [isReminderTimeModalOpen, setIsReminderTimeModalOpen] = useState(false);
+  const [reminderHourDraft, setReminderHourDraft] = useState("08");
+  const [reminderMinuteDraft, setReminderMinuteDraft] = useState("00");
+  const [isSavingReminderTime, setIsSavingReminderTime] = useState(false);
+  const [reminderTimeError, setReminderTimeError] = useState<string>();
 
   const syncBackendUser = useCallback(async () => {
     if (authStatus !== "authenticated" || !session?.userId) {
@@ -274,16 +280,21 @@ export function useProfile() {
       "Merhaba,\n\nGeri bildirimim:\n\n\n---\nCihaz:\nUygulama sürümü:\n"
     );
     const mailUrl = `mailto:support@zikirmatik.app?subject=${subject}&body=${body}`;
+    const webComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=support@zikirmatik.app&su=${subject}&body=${body}`;
 
     try {
       const canOpen = await Linking.canOpenURL(mailUrl);
-      if (!canOpen) {
-        setPremiumError("E-posta uygulaması açılamadı.");
+      if (canOpen) {
+        await Linking.openURL(mailUrl);
         return;
       }
-      await Linking.openURL(mailUrl);
+
+      await Linking.openURL(webComposeUrl);
     } catch {
-      setPremiumError("E-posta uygulaması açılamadı.");
+      Alert.alert(
+        "E-posta uygulaması açılamadı",
+        "Cihazında varsayılan e-posta uygulaması yok gibi görünüyor."
+      );
     }
   };
 
@@ -423,6 +434,79 @@ export function useProfile() {
     }
   };
 
+  const normalizedReminderDraft = `${normalizeTimeUnit(reminderHourDraft)}:${normalizeTimeUnit(reminderMinuteDraft)}`;
+  const canSaveReminderTime = normalizedReminderDraft !== reminderTime && !isSavingReminderTime;
+
+  const openReminderTimeModal = () => {
+    const parsed = parseReminderTime(reminderTime);
+    setReminderHourDraft(String(parsed.hour).padStart(2, "0"));
+    setReminderMinuteDraft(String(parsed.minute).padStart(2, "0"));
+    setReminderTimeError(undefined);
+    setIsReminderTimeModalOpen(true);
+  };
+
+  const closeReminderTimeModal = () => {
+    if (isSavingReminderTime) {
+      return;
+    }
+    setReminderTimeError(undefined);
+    setIsReminderTimeModalOpen(false);
+  };
+
+  const onReminderHourChange = (value: string) => {
+    setReminderHourDraft(value.replace(/\D+/g, "").slice(0, 2));
+    if (reminderTimeError) {
+      setReminderTimeError(undefined);
+    }
+  };
+
+  const onReminderMinuteChange = (value: string) => {
+    setReminderMinuteDraft(value.replace(/\D+/g, "").slice(0, 2));
+    if (reminderTimeError) {
+      setReminderTimeError(undefined);
+    }
+  };
+
+  const saveReminderTime = async () => {
+    const parsed = parseReminderTime(`${normalizeTimeUnit(reminderHourDraft)}:${normalizeTimeUnit(reminderMinuteDraft)}`);
+    if (!parsed.isValid) {
+      setReminderTimeError("Lütfen geçerli bir saat gir (00-23 / 00-59).");
+      return;
+    }
+
+    const nextReminderTime = `${String(parsed.hour).padStart(2, "0")}:${String(parsed.minute).padStart(2, "0")}`;
+    const previousReminderTime = reminderTime;
+    setReminderTime(nextReminderTime);
+    setReminderTimeError(undefined);
+    setIsSavingReminderTime(true);
+
+    try {
+      await syncDailyReminderNotification({
+        enabled: dailyReminderEnabled,
+        reminderTime: nextReminderTime,
+        requestPermission: false
+      });
+
+      if (authStatus === "authenticated" && session?.userId) {
+        await saveUserPreferences(
+          session.userId,
+          {
+            reminderTime: nextReminderTime,
+            dailyReminder: dailyReminderEnabled
+          },
+          session.accessToken
+        );
+      }
+
+      setIsReminderTimeModalOpen(false);
+    } catch {
+      setReminderTime(previousReminderTime);
+      setReminderTimeError("Saat güncellenemedi. Lütfen tekrar dene.");
+    } finally {
+      setIsSavingReminderTime(false);
+    }
+  };
+
   const onToggleDailyReminder = useCallback(
     (enabled: boolean) => {
       const previous = dailyReminderEnabled;
@@ -518,11 +602,17 @@ export function useProfile() {
     purposeLabel,
     personalCityLabel: personalCityValue,
     isPersonalInfoModalOpen,
+    isReminderTimeModalOpen,
     draftPurpose,
     draftCity,
+    reminderHourDraft,
+    reminderMinuteDraft,
     isSavingPersonalInfo,
+    isSavingReminderTime,
     personalInfoError,
+    reminderTimeError,
     canSavePersonalInfo,
+    canSaveReminderTime,
     language,
     reminderTime,
     dailyReminderEnabled,
@@ -550,6 +640,11 @@ export function useProfile() {
     setDraftPurpose,
     setDraftCity,
     savePersonalInfo,
+    openReminderTimeModal,
+    closeReminderTimeModal,
+    onReminderHourChange,
+    onReminderMinuteChange,
+    saveReminderTime,
     manageSubscription,
     rateApp,
     sendFeedback,
@@ -561,6 +656,30 @@ export function useProfile() {
     onRestartOnboarding,
     onLogout
   };
+}
+
+function normalizeTimeUnit(value: string) {
+  const trimmedDigits = value.replace(/\D+/g, "").slice(0, 2);
+  if (!trimmedDigits) {
+    return "00";
+  }
+
+  return trimmedDigits.padStart(2, "0");
+}
+
+function parseReminderTime(value: string) {
+  const match = value.match(/^(\d{2}):(\d{2})$/);
+  if (!match) {
+    return { hour: 8, minute: 0, isValid: false };
+  }
+
+  const hour = Number.parseInt(match[1], 10);
+  const minute = Number.parseInt(match[2], 10);
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+    return { hour: 8, minute: 0, isValid: false };
+  }
+
+  return { hour, minute, isValid: true };
 }
 
 function getPurposeLabel(value: string) {
