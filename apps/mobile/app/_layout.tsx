@@ -8,6 +8,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@zikirmatik/ui";
 import { Merriweather_400Regular, Merriweather_700Bold, useFonts } from "@expo-google-fonts/merriweather";
 import { IntelOneMono_400Regular, IntelOneMono_700Bold } from "@expo-google-fonts/intel-one-mono";
+import { Finlandica_400Regular, Finlandica_700Bold } from "@expo-google-fonts/finlandica";
+import { IndieFlower_400Regular } from "@expo-google-fonts/indie-flower";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
 import { useThemePreferences } from "../src/hooks/use-theme-preferences";
@@ -32,7 +34,10 @@ function RootProviders({ children }: { children: ReactNode }) {
     Merriweather_400Regular,
     Merriweather_700Bold,
     IntelOneMono_400Regular,
-    IntelOneMono_700Bold
+    IntelOneMono_700Bold,
+    Finlandica_400Regular,
+    Finlandica_700Bold,
+    IndieFlower_400Regular
   });
   useAuthSessionSync();
   useDhikrBackendSync();
@@ -92,6 +97,14 @@ function resolveGlobalFontFamily(fontFamily: AppFontFamily, fontsLoaded: boolean
     return "IntelOneMono_400Regular";
   }
 
+  if (fontFamily === "finlandica-headline") {
+    return "Finlandica_400Regular";
+  }
+
+  if (fontFamily === "indie-flower") {
+    return "IndieFlower_400Regular";
+  }
+
   return undefined;
 }
 
@@ -106,6 +119,14 @@ function resolveGlobalStrongFontFamily(fontFamily: AppFontFamily, fontsLoaded: b
 
   if (fontFamily === "intel-one-mono") {
     return "IntelOneMono_700Bold";
+  }
+
+  if (fontFamily === "finlandica-headline") {
+    return "Finlandica_700Bold";
+  }
+
+  if (fontFamily === "indie-flower") {
+    return "IndieFlower_400Regular";
   }
 
   return undefined;

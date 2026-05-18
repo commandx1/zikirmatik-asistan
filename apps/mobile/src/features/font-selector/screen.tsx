@@ -30,6 +30,16 @@ const OPTIONS: Array<{
     id: "intel-one-mono",
     title: FONT_LABELS["intel-one-mono"],
     sample: "Bismillahirrahmanirrahim"
+  },
+  {
+    id: "finlandica-headline",
+    title: FONT_LABELS["finlandica-headline"],
+    sample: "Bismillahirrahmanirrahim"
+  },
+  {
+    id: "indie-flower",
+    title: FONT_LABELS["indie-flower"],
+    sample: "Bismillahirrahmanirrahim"
   }
 ];
 
@@ -74,7 +84,11 @@ export function FontSelectorScreen() {
                         ? { fontFamily: "Merriweather_400Regular" }
                         : item.id === "intel-one-mono"
                           ? { fontFamily: "IntelOneMono_400Regular" }
-                          : undefined
+                          : item.id === "finlandica-headline"
+                            ? { fontFamily: "Finlandica_400Regular" }
+                            : item.id === "indie-flower"
+                              ? { fontFamily: "IndieFlower_400Regular" }
+                            : undefined
                     }
                   >
                     {item.sample}
@@ -82,12 +96,6 @@ export function FontSelectorScreen() {
                 </Pressable>
               );
             })}
-          </View>
-
-          <View className="mt-5 rounded-xl border border-white/10 bg-[--card] px-4 py-3">
-            <Text className="text-xs leading-5" style={{ color: tokens.textMuted }}>
-              Merriweather seçeneği Premium değil, herkes kullanabilir. Seçimi kaydetmek için alttaki butona bas.
-            </Text>
           </View>
         </PageScrollView>
 

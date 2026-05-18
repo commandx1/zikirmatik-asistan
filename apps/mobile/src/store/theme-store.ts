@@ -5,7 +5,12 @@ import type { ThemeName } from "@zikirmatik/shared";
 import { saveUserPreferences } from "../features/users/services/users-api-client";
 import { useAuthStore } from "./auth-store";
 
-export type AppFontFamily = "default" | "merriweather" | "intel-one-mono";
+export type AppFontFamily =
+  | "default"
+  | "merriweather"
+  | "intel-one-mono"
+  | "finlandica-headline"
+  | "indie-flower";
 
 type ThemeState = {
   hasHydrated: boolean;

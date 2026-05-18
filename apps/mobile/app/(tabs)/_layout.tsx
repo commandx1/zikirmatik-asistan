@@ -40,7 +40,11 @@ export default function TabsLayout() {
       ? "Merriweather_400Regular"
       : fontFamily === "intel-one-mono"
         ? "IntelOneMono_400Regular"
-        : undefined;
+        : fontFamily === "finlandica-headline"
+          ? "Finlandica_400Regular"
+          : fontFamily === "indie-flower"
+            ? "IndieFlower_400Regular"
+          : undefined;
   const tabLabelStyle =
     tabLabelFontFamily
       ? {

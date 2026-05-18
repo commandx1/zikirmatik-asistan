@@ -52,12 +52,20 @@ export function ProfilePremiumSheet({
       ? { fontFamily: 'Merriweather_400Regular', fontWeight: 'normal' as const }
       : fontFamily === 'intel-one-mono'
         ? { fontFamily: 'IntelOneMono_400Regular', fontWeight: 'normal' as const }
+        : fontFamily === 'finlandica-headline'
+          ? { fontFamily: 'Finlandica_400Regular', fontWeight: 'normal' as const }
+          : fontFamily === 'indie-flower'
+            ? { fontFamily: 'IndieFlower_400Regular', fontWeight: 'normal' as const }
         : undefined
   const strongTextStyle =
     fontFamily === 'merriweather'
       ? { fontFamily: 'Merriweather_700Bold', fontWeight: 'normal' as const }
       : fontFamily === 'intel-one-mono'
         ? { fontFamily: 'IntelOneMono_700Bold', fontWeight: 'normal' as const }
+        : fontFamily === 'finlandica-headline'
+          ? { fontFamily: 'Finlandica_700Bold', fontWeight: 'normal' as const }
+          : fontFamily === 'indie-flower'
+            ? { fontFamily: 'IndieFlower_400Regular', fontWeight: 'normal' as const }
         : undefined
 
   return (

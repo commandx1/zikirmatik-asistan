@@ -17,6 +17,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import Svg, { Circle } from 'react-native-svg'
 import { useHomeContext } from '../home-context'
+import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 
 const WATCH_WIDTH = 234
 const WATCH_HEIGHT = 278
@@ -72,6 +73,7 @@ function ProgressRing({ progress, accent, trackColor }: { progress: number; acce
 export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
   const router = useRouter()
   const { tokens: activeTokens } = useThemeTokens()
+  const { fontFamily } = useThemePreferences()
   const tokens = previewTokens ?? activeTokens
   const home = useHomeContext()
   const isComplete = home.isTargetMode && home.count >= home.target && home.target > 0
@@ -149,6 +151,8 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
   const compactCount = useMemo(() => formatCompactCount(home.count), [home.count])
   const compactTarget = useMemo(() => formatCompactCount(home.target), [home.target])
   const counterText = useMemo(() => (isComplete ? '✓' : compactCount), [compactCount, isComplete])
+  const regularTextStyle = useMemo(() => resolveRegularTextStyle(fontFamily), [fontFamily])
+  const strongTextStyle = useMemo(() => resolveStrongTextStyle(fontFamily), [fontFamily])
 
   return (
     <View className='mb-8 items-center'>
@@ -223,17 +227,23 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
                       innerCircleAnimatedStyle
                     ]}
                   >
-                    <Animated.Text style={counterAnimatedStyle} className='text-[40px] font-bold leading-[42px]'>
+                    <Animated.Text
+                      style={[counterAnimatedStyle, strongTextStyle]}
+                      className='text-[40px] font-bold leading-[42px]'
+                    >
                       {counterText}
                     </Animated.Text>
                     {!home.isTargetMode ? null : !isComplete ? (
-                      <Text className='mt-1 text-[10px]' style={{ color: withAlpha(tokens.textPrimary, 0.4) }}>
+                      <Text
+                        className='mt-1 text-[10px]'
+                        style={[{ color: withAlpha(tokens.textPrimary, 0.4) }, regularTextStyle]}
+                      >
                         / {compactTarget}
                       </Text>
                     ) : (
                       <Text
                         className='mt-1 text-[10px] font-semibold tracking-[0.6px]'
-                        style={{ color: tokens.success }}
+                        style={[{ color: tokens.success }, strongTextStyle]}
                       >
                         {compactCount}/{compactTarget}
                       </Text>
@@ -342,4 +352,44 @@ function toCompact(base: number, suffix: 'K' | 'M' | 'B') {
   const rounded = base >= 100 ? Math.round(base) : Math.round(base * 10) / 10
   const text = Number.isInteger(rounded) ? String(rounded) : String(rounded).replace('.0', '')
   return `${text}${suffix}`
+}
+
+function resolveRegularTextStyle(fontFamily: string) {
+  if (fontFamily === 'merriweather') {
+    return { fontFamily: 'Merriweather_400Regular', fontWeight: 'normal' as const }
+  }
+
+  if (fontFamily === 'intel-one-mono') {
+    return { fontFamily: 'IntelOneMono_400Regular', fontWeight: 'normal' as const }
+  }
+
+  if (fontFamily === 'finlandica-headline') {
+    return { fontFamily: 'Finlandica_400Regular', fontWeight: 'normal' as const }
+  }
+
+  if (fontFamily === 'indie-flower') {
+    return { fontFamily: 'IndieFlower_400Regular', fontWeight: 'normal' as const }
+  }
+
+  return undefined
+}
+
+function resolveStrongTextStyle(fontFamily: string) {
+  if (fontFamily === 'merriweather') {
+    return { fontFamily: 'Merriweather_700Bold', fontWeight: 'normal' as const }
+  }
+
+  if (fontFamily === 'intel-one-mono') {
+    return { fontFamily: 'IntelOneMono_700Bold', fontWeight: 'normal' as const }
+  }
+
+  if (fontFamily === 'finlandica-headline') {
+    return { fontFamily: 'Finlandica_700Bold', fontWeight: 'normal' as const }
+  }
+
+  if (fontFamily === 'indie-flower') {
+    return { fontFamily: 'IndieFlower_400Regular', fontWeight: 'normal' as const }
+  }
+
+  return undefined
 }

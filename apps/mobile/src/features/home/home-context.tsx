@@ -685,7 +685,6 @@ function calculateCompletionStreakDays(logs: BackendDhikrLog[]) {
     return 0
   }
 
-  console.log(todayCompleted, todayIncompleteOnly)
   let cursor = todayCompleted ? today : new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
   let streak = 0
 

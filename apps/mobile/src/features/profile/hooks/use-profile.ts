@@ -111,7 +111,9 @@ export function useProfile() {
           fontFamily:
             user.fontFamily === "default" ||
             user.fontFamily === "merriweather" ||
-            user.fontFamily === "intel-one-mono"
+            user.fontFamily === "intel-one-mono" ||
+            user.fontFamily === "finlandica-headline" ||
+            user.fontFamily === "indie-flower"
               ? user.fontFamily
               : undefined
         });

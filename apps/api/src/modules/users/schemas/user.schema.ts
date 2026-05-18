@@ -37,10 +37,21 @@ export class User {
 
   @Prop({
     type: String,
-    enum: ['default', 'merriweather', 'intel-one-mono'],
+    enum: [
+      'default',
+      'merriweather',
+      'intel-one-mono',
+      'finlandica-headline',
+      'indie-flower',
+    ],
     default: 'default',
   })
-  fontFamily!: 'default' | 'merriweather' | 'intel-one-mono';
+  fontFamily!:
+    | 'default'
+    | 'merriweather'
+    | 'intel-one-mono'
+    | 'finlandica-headline'
+    | 'indie-flower';
 
   @Prop({ type: String, enum: ['small', 'medium', 'large'], default: 'medium' })
   fontSize!: 'small' | 'medium' | 'large';

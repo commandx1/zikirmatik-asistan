@@ -30,12 +30,20 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
       ? styles.previewMerriweatherRegular
       : previewFontFamily === "intel-one-mono"
         ? styles.previewIntelOneMonoRegular
+        : previewFontFamily === "finlandica-headline"
+          ? styles.previewFinlandicaRegular
+          : previewFontFamily === "indie-flower"
+            ? styles.previewIndieFlowerRegular
         : undefined;
   const strongTextStyle =
     previewFontFamily === "merriweather"
       ? styles.previewMerriweatherStrong
       : previewFontFamily === "intel-one-mono"
         ? styles.previewIntelOneMonoStrong
+        : previewFontFamily === "finlandica-headline"
+          ? styles.previewFinlandicaStrong
+          : previewFontFamily === "indie-flower"
+            ? styles.previewIndieFlowerStrong
         : undefined;
 
   return (
@@ -231,6 +239,18 @@ const styles = StyleSheet.create({
   },
   previewIntelOneMonoStrong: {
     fontFamily: "IntelOneMono_700Bold"
+  },
+  previewFinlandicaRegular: {
+    fontFamily: "Finlandica_400Regular"
+  },
+  previewFinlandicaStrong: {
+    fontFamily: "Finlandica_700Bold"
+  },
+  previewIndieFlowerRegular: {
+    fontFamily: "IndieFlower_400Regular"
+  },
+  previewIndieFlowerStrong: {
+    fontFamily: "IndieFlower_400Regular"
   }
 });
 

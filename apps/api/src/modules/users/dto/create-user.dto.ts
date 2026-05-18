@@ -23,6 +23,8 @@ const FONT_FAMILY = {
   default: 'default',
   merriweather: 'merriweather',
   'intel-one-mono': 'intel-one-mono',
+  'finlandica-headline': 'finlandica-headline',
+  'indie-flower': 'indie-flower',
 } as const;
 
 export class CreateUserDto {
@@ -62,7 +64,12 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsEnum(FONT_FAMILY)
-  fontFamily?: 'default' | 'merriweather' | 'intel-one-mono';
+  fontFamily?:
+    | 'default'
+    | 'merriweather'
+    | 'intel-one-mono'
+    | 'finlandica-headline'
+    | 'indie-flower';
 
   @IsOptional()
   @IsEnum(FONT_SIZE)
