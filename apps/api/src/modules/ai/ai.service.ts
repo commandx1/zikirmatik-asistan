@@ -262,7 +262,7 @@ export class AiService {
     const recent = await this.dhikrLogModel.distinct('dhikrId', {
       userId,
       date: { $gte: fromDate },
-      dhikrId: { $ne: null }
+      dhikrId: { $ne: null },
     });
 
     return recent.map((value) => value.toString());
