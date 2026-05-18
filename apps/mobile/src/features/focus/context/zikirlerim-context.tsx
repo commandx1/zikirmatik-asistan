@@ -43,6 +43,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const storeToggleFavorite = useDhikrStore((state) => state.toggleFavorite);
   const storeSelectDhikr = useDhikrStore((state) => state.selectDhikr);
   const upsertPersonalDhikr = useDhikrStore((state) => state.upsertPersonalDhikr);
+  const upsertDhikrSnapshot = useDhikrStore((state) => state.upsertDhikrSnapshot);
   const removePersonalDhikr = useDhikrStore((state) => state.removePersonalDhikr);
   const clearDhikrProgress = useDhikrStore((state) => state.clearDhikrProgress);
   const lastSavedBackendLog = useDhikrStore((state) => state.lastSavedBackendLog);
@@ -179,6 +180,11 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       const matched = itemById.get(dhikrId);
       const sorted = [...dhikrLogs].sort((a, b) => toLogTimestamp(b) - toLogTimestamp(a));
       const latestLog = sorted[0];
+      const streakInfo = calculateStreakInfo(sorted);
+      const lastActivityLabel =
+        streakInfo.days > 1 && streakInfo.rangeLabel
+          ? streakInfo.rangeLabel
+          : toLastActivityLabel(latestLog.createdAt, latestLog.date);
 
       nextItems.push({
         id: dhikrId,
@@ -188,8 +194,8 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
         meaning: matched?.meaning,
         current: latestLog.count,
         target: matched?.target ?? latestLog.targetCount,
-        lastActivityLabel: toLastActivityLabel(latestLog.createdAt, latestLog.date),
-        streakDays: calculateStreakDays(sorted),
+        lastActivityLabel,
+        streakDays: streakInfo.days,
         isFavorite: latestLog.isFavorite ?? matched?.isFavorite ?? false
       });
     }
@@ -284,20 +290,25 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       });
     },
     selectDhikr: (id) => {
-      const existsInStore = items.some((item) => item.id === id);
-      if (!existsInStore) {
-        const fromVisible = visibleItems.find((item) => item.id === id);
-        if (fromVisible?.source === "personal") {
-          upsertPersonalDhikr({
-            id: fromVisible.id,
-            transliteration: fromVisible.transliteration,
-            arabic: fromVisible.arabic,
-            meaning: fromVisible.meaning,
-            current: fromVisible.current,
-            target: fromVisible.target,
-            lastActivityLabel: fromVisible.lastActivityLabel,
-            isFavorite: fromVisible.isFavorite
-          });
+      const fromVisible = visibleItems.find((item) => item.id === id);
+      if (fromVisible) {
+        upsertDhikrSnapshot(fromVisible);
+      } else {
+        const existsInStore = items.some((item) => item.id === id);
+        if (!existsInStore) {
+          const fallbackPersonal = enrichedItems.find((item) => item.id === id && item.source === "personal");
+          if (fallbackPersonal) {
+            upsertPersonalDhikr({
+              id: fallbackPersonal.id,
+              transliteration: fallbackPersonal.transliteration,
+              arabic: fallbackPersonal.arabic,
+              meaning: fallbackPersonal.meaning,
+              current: fallbackPersonal.current,
+              target: fallbackPersonal.target,
+              lastActivityLabel: fallbackPersonal.lastActivityLabel,
+              isFavorite: fallbackPersonal.isFavorite
+            });
+          }
         }
       }
 
@@ -348,9 +359,14 @@ export function useZikirlerim() {
   return context;
 }
 
-function calculateStreakDays(logs: BackendDhikrLog[]) {
+type StreakInfo = {
+  days: number;
+  rangeLabel?: string;
+};
+
+function calculateStreakInfo(logs: BackendDhikrLog[]): StreakInfo {
   if (logs.length === 0) {
-    return 0;
+    return { days: 0 };
   }
 
   const statusByDay = new Map<string, "completed" | "incomplete">();
@@ -369,13 +385,15 @@ function calculateStreakDays(logs: BackendDhikrLog[]) {
   const todayStatus = statusByDay.get(todayKey);
 
   if (todayStatus === "incomplete") {
-    return 0;
+    return { days: 0 };
   }
 
   let cursor =
     todayStatus === "completed"
       ? today
       : new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+  const streakEnd = new Date(cursor);
+  let streakStart = new Date(cursor);
 
   while (true) {
     const key = toDateKey(cursor);
@@ -384,11 +402,19 @@ function calculateStreakDays(logs: BackendDhikrLog[]) {
       break;
     }
 
+    streakStart = new Date(cursor);
     streak += 1;
     cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() - 1);
   }
 
-  return streak;
+  if (streak > 1) {
+    return {
+      days: streak,
+      rangeLabel: `${formatDate(streakStart)} - ${formatDate(streakEnd)}`
+    };
+  }
+
+  return { days: streak };
 }
 
 function toLastActivityLabel(createdAt: string | undefined, dateKey: string) {
@@ -398,7 +424,27 @@ function toLastActivityLabel(createdAt: string | undefined, dateKey: string) {
     return "Kayıtlı";
   }
 
-  return date.toLocaleDateString("tr-TR");
+  return toRelativeDateLabel(date);
+}
+
+function formatDate(value: Date) {
+  return toRelativeDateLabel(value);
+}
+
+function toRelativeDateLabel(value: Date) {
+  const normalized = startOfDay(value);
+  const today = startOfDay(new Date());
+  const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+
+  if (normalized.getTime() === today.getTime()) {
+    return "Bugün";
+  }
+
+  if (normalized.getTime() === yesterday.getTime()) {
+    return "Dün";
+  }
+
+  return normalized.toLocaleDateString("tr-TR");
 }
 
 function parseDateKey(dateKey: string) {

@@ -31,6 +31,7 @@ type DhikrStore = {
     lastActivityLabel?: string;
     isFavorite?: boolean;
   }) => void;
+  upsertDhikrSnapshot: (item: ZikirItem) => void;
   toggleFavorite: (id: string) => void;
   addCustomDhikr: (input: CreateCustomDhikrInput) => string;
   removePersonalDhikr: (id: string) => void;
@@ -101,6 +102,10 @@ function resolveCustomTarget(target: number | undefined) {
     return 0;
   }
 
+  if (target <= 0) {
+    return 0;
+  }
+
   return normalizeTarget(target);
 }
 
@@ -160,6 +165,48 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
 
       return {
         items: [nextPersonal, ...state.items]
+      };
+    }),
+  upsertDhikrSnapshot: (item) =>
+    set((state) => {
+      const normalizedTarget = item.source === "personal"
+        ? resolveCustomTarget(item.target)
+        : normalizeTarget(item.target);
+      const normalizedCurrentRaw = Math.max(0, Math.floor(item.current));
+      const normalizedCurrent = normalizedTarget > 0
+        ? Math.min(normalizedCurrentRaw, normalizedTarget)
+        : normalizedCurrentRaw;
+      const existing = state.items.find((value) => value.id === item.id);
+
+      if (existing) {
+        return {
+          items: state.items.map((value) =>
+            value.id === item.id
+              ? {
+                  ...value,
+                  source: item.source,
+                  arabic: item.arabic,
+                  transliteration: item.transliteration,
+                  meaning: item.meaning,
+                  current: normalizedCurrent,
+                  target: normalizedTarget,
+                  lastActivityLabel: item.lastActivityLabel,
+                  isFavorite: item.isFavorite
+                }
+              : value
+          )
+        };
+      }
+
+      return {
+        items: [
+          {
+            ...item,
+            current: normalizedCurrent,
+            target: normalizedTarget
+          },
+          ...state.items
+        ]
       };
     }),
   toggleFavorite: (id) =>
