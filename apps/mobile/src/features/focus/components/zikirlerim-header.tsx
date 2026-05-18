@@ -1,6 +1,7 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useMemo, useState } from 'react'
-import { KeyboardAvoidingView, Modal, Pressable, ScrollView, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
+import { KeyboardAwareBottomSheetModal } from '../../../components/ui/keyboard-aware-bottom-sheet-modal'
 import { PageHeader } from '../../../components/ui/page-header'
 import { PrimaryCtaButton } from '../../../components/ui/primary-cta-button'
 import { ThemedInput } from '../../../components/ui/themed-input'
@@ -89,81 +90,76 @@ export function ZikirlerimHeader() {
         }
       />
 
-      <Modal visible={isCreateOpen} transparent animationType='slide' onRequestClose={closeCreate}>
-        <KeyboardAvoidingView className='flex-1' behavior='padding'>
-          <View className='flex-1 justify-end bg-black/55'>
-            <View className='rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-10' style={{ maxHeight: '88%' }}>
-              <ScrollView
-                keyboardShouldPersistTaps='handled'
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 24 }}
-              >
-                <View className='mb-4 h-1.5 w-12 self-center rounded-full bg-white/20' />
-                <Text className='mb-1 text-lg font-semibold text-[--text-primary]'>Yeni Zikir</Text>
-                <Text className='mb-4 text-xs text-[--text-muted]'>
-                  Kendi zikrini ekle ve Ana Sayfa sayacında başlat.
-                </Text>
+      <KeyboardAwareBottomSheetModal
+        visible={isCreateOpen}
+        onRequestClose={closeCreate}
+        animationType='slide'
+        showHandle
+        overlayClassName='flex-1 justify-end bg-black/55'
+        sheetClassName='rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-10'
+        scrollContentContainerStyle={{ paddingBottom: 24 }}
+      >
+        <Text className='mb-1 text-lg font-semibold text-[--text-primary]'>Yeni Zikir</Text>
+        <Text className='mb-4 text-xs text-[--text-muted]'>
+          Kendi zikrini ekle ve Ana Sayfa sayacında başlat.
+        </Text>
 
-                <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Zikir adı</Text>
-                <ThemedInput
-                  value={nameDraft}
-                  onChangeText={text => {
-                    setNameDraft(text)
-                    if (error) {
-                      setError(null)
-                    }
-                  }}
-                  placeholder='Örn. Salavat'
-                  className='mb-3 rounded-xl bg-[--bg] px-3'
-                  autoFocus
-                />
+        <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Zikir adı</Text>
+        <ThemedInput
+          value={nameDraft}
+          onChangeText={text => {
+            setNameDraft(text)
+            if (error) {
+              setError(null)
+            }
+          }}
+          placeholder='Örn. Salavat'
+          className='mb-3 rounded-xl bg-[--bg] px-3'
+          autoFocus
+        />
 
-                <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Okunuş (opsiyonel)</Text>
-                <ThemedInput
-                  value={arabicDraft}
-                  onChangeText={setArabicDraft}
-                  placeholder='Örn. Allahumme salli ala Muhammed'
-                  className='mb-3 rounded-xl bg-[--bg] px-3'
-                />
+        <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Okunuş (opsiyonel)</Text>
+        <ThemedInput
+          value={arabicDraft}
+          onChangeText={setArabicDraft}
+          placeholder='Örn. Allahumme salli ala Muhammed'
+          className='mb-3 rounded-xl bg-[--bg] px-3'
+        />
 
-                <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Anlamı (opsiyonel)</Text>
-                <ThemedInput
-                  value={meaningDraft}
-                  onChangeText={setMeaningDraft}
-                  placeholder="Örn. Allah'ım Muhammed'e salat et"
-                  className='mb-3 rounded-xl bg-[--bg] px-3'
-                />
+        <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Anlamı (opsiyonel)</Text>
+        <ThemedInput
+          value={meaningDraft}
+          onChangeText={setMeaningDraft}
+          placeholder="Örn. Allah'ım Muhammed'e salat et"
+          className='mb-3 rounded-xl bg-[--bg] px-3'
+        />
 
-                <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Hedef</Text>
-                <ThemedInput
-                  value={targetDraft}
-                  onChangeText={value => setTargetDraft(value.replace(/\D+/g, ''))}
-                  keyboardType='number-pad'
-                  placeholder='33'
-                  className='mb-2 rounded-xl bg-[--bg] px-3'
-                />
+        <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Hedef</Text>
+        <ThemedInput
+          value={targetDraft}
+          onChangeText={value => setTargetDraft(value.replace(/\D+/g, ''))}
+          keyboardType='number-pad'
+          placeholder='33'
+          className='mb-2 rounded-xl bg-[--bg] px-3'
+        />
 
-                {error ? <Text className='mb-3 text-xs text-[#F97373]'>{error}</Text> : null}
+        {error ? <Text className='mb-3 text-xs text-[#F97373]'>{error}</Text> : null}
 
-                <View className='mt-1 flex-row items-center justify-end gap-2'>
-                  <Pressable onPress={closeCreate} disabled={isSaving} className='rounded-full border border-white/20 px-4 py-2'>
-                    <Text className='text-sm font-medium text-[--text-primary]'>İptal</Text>
-                  </Pressable>
-                  <PrimaryCtaButton
-                    label={isSaving ? 'Kaydediliyor' : 'Kaydet'}
-                    onPress={() => {
-                      void saveCreate()
-                    }}
-                    disabled={isSaveDisabled || isSaving}
-                    className={`px-4 !py-2 ${isSaveDisabled ? 'opacity-50' : ''}`}
-                    textClassName='text-sm font-semibold'
-                  />
-                </View>
-              </ScrollView>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+        <View className='mt-1 flex-row items-center justify-end gap-2'>
+          <Pressable onPress={closeCreate} disabled={isSaving} className='rounded-full border border-white/20 px-4 py-2'>
+            <Text className='text-sm font-medium text-[--text-primary]'>İptal</Text>
+          </Pressable>
+          <PrimaryCtaButton
+            label={isSaving ? 'Kaydediliyor' : 'Kaydet'}
+            onPress={() => {
+              void saveCreate()
+            }}
+            disabled={isSaveDisabled || isSaving}
+            className={`px-4 !py-2 ${isSaveDisabled ? 'opacity-50' : ''}`}
+            textClassName='text-sm font-semibold'
+          />
+        </View>
+      </KeyboardAwareBottomSheetModal>
     </>
   )
 }

@@ -1,6 +1,7 @@
 import { useThemeTokens } from '@zikirmatik/ui'
 import { Modal, Pressable, Text, TextInput, View } from 'react-native'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
+import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-aware-bottom-sheet-modal'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
 import { useHomeContext } from './home-context'
@@ -39,7 +40,9 @@ function SelectedDhikrMeaning() {
         </Text>
         {shouldShowTitleOnly ? (
           <View className='mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2'>
-            <Text className='mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]'>Başlık</Text>
+            <Text className='mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]'>
+              Başlık
+            </Text>
             <Text className='text-sm leading-5 text-[--text-primary]'>{transliteration}</Text>
           </View>
         ) : (
@@ -140,83 +143,115 @@ function FreeSaveNameModal() {
   const { tokens } = useThemeTokens()
 
   return (
-    <Modal visible={home.isFreeSaveNameModalOpen} transparent animationType='fade' onRequestClose={home.onFreeSaveNameCancel}>
-      <View className='flex-1 items-center justify-center bg-black/50 px-6'>
-        <View
-          className='w-full max-w-[320px] rounded-2xl p-5'
-          style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.1), backgroundColor: tokens.card }}
+    <KeyboardAwareBottomSheetModal
+      visible={home.isFreeSaveNameModalOpen}
+      onRequestClose={home.onFreeSaveNameCancel}
+      animationType='slide'
+      showHandle
+      overlayClassName='flex-1 justify-end bg-black/55'
+      sheetClassName='rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-10'
+      scrollContentContainerStyle={{ paddingBottom: 24 }}
+    >
+      <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
+        Zikir Kaydet
+      </Text>
+      <Text className='mb-3 text-xs' style={{ color: tokens.textMuted }}>
+        Serbest çektiğin zikri kaydetmek için bir isim yaz.
+      </Text>
+      <TextInput
+        value={home.freeSaveNameDraft}
+        onChangeText={home.onFreeSaveNameChange}
+        autoFocus
+        placeholder='Örn. Sessiz tesbih'
+        placeholderTextColor={tokens.textMuted}
+        className='mb-2 rounded-xl px-3 py-3 text-sm'
+        style={{
+          borderWidth: 1,
+          borderColor: withAlpha(tokens.accent, 0.4),
+          backgroundColor: withAlpha(tokens.bg, 0.9),
+          color: tokens.textPrimary
+        }}
+        onSubmitEditing={home.onFreeSaveNameSubmit}
+      />
+      <Text className='mb-1 mt-1 text-xs font-medium' style={{ color: tokens.textPrimary }}>
+        Okunuş (opsiyonel)
+      </Text>
+      <TextInput
+        value={home.freeSaveTransliterationDraft}
+        onChangeText={home.onFreeSaveTransliterationChange}
+        placeholder='Örn. Allahumme salli ala Muhammed'
+        placeholderTextColor={tokens.textMuted}
+        className='mb-2 rounded-xl px-3 py-3 text-sm'
+        style={{
+          borderWidth: 1,
+          borderColor: withAlpha(tokens.textPrimary, 0.2),
+          backgroundColor: withAlpha(tokens.bg, 0.9),
+          color: tokens.textPrimary
+        }}
+      />
+      <Text className='mb-1 mt-1 text-xs font-medium' style={{ color: tokens.textPrimary }}>
+        Anlamı (opsiyonel)
+      </Text>
+      <TextInput
+        value={home.freeSaveMeaningDraft}
+        onChangeText={home.onFreeSaveMeaningChange}
+        placeholder="Örn. Allah'ım Muhammed'e salat et"
+        placeholderTextColor={tokens.textMuted}
+        className='mb-2 rounded-xl px-3 py-3 text-sm'
+        style={{
+          borderWidth: 1,
+          borderColor: withAlpha(tokens.textPrimary, 0.2),
+          backgroundColor: withAlpha(tokens.bg, 0.9),
+          color: tokens.textPrimary
+        }}
+      />
+      <Text className='mb-1 mt-1 text-xs font-medium' style={{ color: tokens.textPrimary }}>
+        Hedef (opsiyonel)
+      </Text>
+      <TextInput
+        value={home.freeSaveTargetDraft}
+        onChangeText={home.onFreeSaveTargetChange}
+        keyboardType='number-pad'
+        placeholder='Boş bırakırsan sonsuz'
+        placeholderTextColor={tokens.textMuted}
+        className='mb-2 rounded-xl px-3 py-3 text-sm'
+        style={{
+          borderWidth: 1,
+          borderColor: withAlpha(tokens.textPrimary, 0.2),
+          backgroundColor: withAlpha(tokens.bg, 0.9),
+          color: tokens.textPrimary
+        }}
+        onSubmitEditing={home.onFreeSaveNameSubmit}
+      />
+      {home.freeSaveNameError ? <Text className='mb-3 text-xs text-[#F97373]'>{home.freeSaveNameError}</Text> : null}
+      <View className='flex-row justify-end gap-2'>
+        <Pressable
+          onPress={home.onFreeSaveNameCancel}
+          className='rounded-full px-4 py-2'
+          style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.2) }}
         >
-          <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
-            Zikir Kaydet
+          <Text className='text-sm font-medium' style={{ color: tokens.textPrimary }}>
+            İptal
           </Text>
-          <Text className='mb-3 text-xs' style={{ color: tokens.textMuted }}>
-            Serbest çektiğin zikri kaydetmek için bir isim yaz.
+        </Pressable>
+        <Pressable
+          onPress={home.onFreeSaveNameSubmit}
+          className='rounded-full px-4 py-2'
+          style={{ backgroundColor: tokens.accent }}
+        >
+          <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
+            Kaydet
           </Text>
-          <TextInput
-            value={home.freeSaveNameDraft}
-            onChangeText={home.onFreeSaveNameChange}
-            autoFocus
-            placeholder='Örn. Sessiz tesbih'
-            placeholderTextColor={tokens.textMuted}
-            className='mb-2 rounded-xl px-3 py-3 text-sm'
-            style={{
-              borderWidth: 1,
-              borderColor: withAlpha(tokens.accent, 0.4),
-              backgroundColor: withAlpha(tokens.bg, 0.9),
-              color: tokens.textPrimary
-            }}
-            onSubmitEditing={home.onFreeSaveNameSubmit}
-          />
-          <Text className='mb-1 mt-1 text-xs font-medium' style={{ color: tokens.textPrimary }}>
-            Hedef (opsiyonel)
-          </Text>
-          <TextInput
-            value={home.freeSaveTargetDraft}
-            onChangeText={home.onFreeSaveTargetChange}
-            keyboardType='number-pad'
-            placeholder='Boş bırakırsan sonsuz'
-            placeholderTextColor={tokens.textMuted}
-            className='mb-2 rounded-xl px-3 py-3 text-sm'
-            style={{
-              borderWidth: 1,
-              borderColor: withAlpha(tokens.textPrimary, 0.2),
-              backgroundColor: withAlpha(tokens.bg, 0.9),
-              color: tokens.textPrimary
-            }}
-            onSubmitEditing={home.onFreeSaveNameSubmit}
-          />
-          {home.freeSaveNameError ? (
-            <Text className='mb-3 text-xs text-[#F97373]'>{home.freeSaveNameError}</Text>
-          ) : null}
-          <View className='flex-row justify-end gap-2'>
-            <Pressable
-              onPress={home.onFreeSaveNameCancel}
-              className='rounded-full px-4 py-2'
-              style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.2) }}
-            >
-              <Text className='text-sm font-medium' style={{ color: tokens.textPrimary }}>
-                İptal
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={home.onFreeSaveNameSubmit}
-              className='rounded-full px-4 py-2'
-              style={{ backgroundColor: tokens.accent }}
-            >
-              <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
-                Kaydet
-              </Text>
-            </Pressable>
-          </View>
-        </View>
+        </Pressable>
       </View>
-    </Modal>
+    </KeyboardAwareBottomSheetModal>
   )
 }
 
 export function HomeView() {
   const home = useHomeContext()
-  const hasDhikrDetail = hasContent(home.mainDhikr.turkish) || hasContent(home.mainDhikr.meaning) || hasContent(home.mainDhikr.arabic)
+  const hasDhikrDetail =
+    hasContent(home.mainDhikr.turkish) || hasContent(home.mainDhikr.meaning) || hasContent(home.mainDhikr.arabic)
 
   return (
     <PageLayout frameClassName='relative flex-1 w-full max-w-[375px]'>
