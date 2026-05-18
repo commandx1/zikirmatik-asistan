@@ -32,6 +32,7 @@ export function AiGuideScreen() {
           <CurrentStateCard
             prayerTimeLabel={guide.prayerTimeLabel}
             weekdayLabel={guide.weekdayLabel}
+            lastPrompt={guide.lastPrompt}
           />
           <IntentInputSection
             value={guide.intentInput}

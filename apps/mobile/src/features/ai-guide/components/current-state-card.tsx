@@ -6,9 +6,14 @@ import { AI_GUIDE_CURRENT_STATE } from "../data";
 type CurrentStateCardProps = {
   prayerTimeLabel: string;
   weekdayLabel: string;
+  lastPrompt?: string;
 };
 
-export function CurrentStateCard({ prayerTimeLabel, weekdayLabel }: CurrentStateCardProps) {
+export function CurrentStateCard({ prayerTimeLabel, weekdayLabel, lastPrompt }: CurrentStateCardProps) {
+  const promptLabel = lastPrompt?.trim()
+    ? `Son arama: ${lastPrompt.trim()}`
+    : "Niyetini yaz, önerileri sadece metnine göre hazırlayalım.";
+
   return (
     <ThemedCard className="mb-6 rounded-[24px] p-5" elevated>
       <View className="mb-4 flex-row items-start justify-between">
@@ -20,7 +25,7 @@ export function CurrentStateCard({ prayerTimeLabel, weekdayLabel }: CurrentState
           <Text className="text-2xl">🫶</Text>
         </View>
         <Text className="flex-1 text-sm leading-[30px] font-semibold text-[--text-primary]" numberOfLines={2}>
-          Niyetini yaz, önerileri sadece metnine göre hazırlayalım.
+          {promptLabel}
         </Text>
       </View>
 
