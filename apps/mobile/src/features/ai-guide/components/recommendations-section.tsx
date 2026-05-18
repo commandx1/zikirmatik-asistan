@@ -12,7 +12,9 @@ export function RecommendationsSection({ items, onSelectRecommendation }: Recomm
   if (items.length === 0) {
     return (
       <View className="mb-6">
-        <Text className="text-sm text-[#9A9080]">Henüz öneri bulunamadı. Ruh halini güncelleyip tekrar dene.</Text>
+        <Text className="text-sm text-[#9A9080]">
+          Öneriler burada listelenecek. Niyetini yazıp gönderdiğinde asistan uygun zikirleri getirecek.
+        </Text>
       </View>
     );
   }
