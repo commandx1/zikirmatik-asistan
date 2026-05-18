@@ -51,6 +51,8 @@ type HomeContextValue = {
   createError: string | null;
   isFreeSaveNameModalOpen: boolean;
   freeSaveNameDraft: string;
+  freeSaveTransliterationDraft: string;
+  freeSaveMeaningDraft: string;
   freeSaveNameError: string | null;
   freeSaveTargetDraft: string;
   refresh: () => Promise<void>;
@@ -73,6 +75,8 @@ type HomeContextValue = {
   onCreateTargetChange: (value: string) => void;
   onCreateSubmit: () => void;
   onFreeSaveNameChange: (value: string) => void;
+  onFreeSaveTransliterationChange: (value: string) => void;
+  onFreeSaveMeaningChange: (value: string) => void;
   onFreeSaveNameCancel: () => void;
   onFreeSaveNameSubmit: () => void;
   onFreeSaveTargetChange: (value: string) => void;
@@ -118,6 +122,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [createError, setCreateError] = useState<string | null>(null);
   const [isFreeSaveNameModalOpen, setFreeSaveNameModalOpen] = useState(false);
   const [freeSaveNameDraft, setFreeSaveNameDraft] = useState("");
+  const [freeSaveTransliterationDraft, setFreeSaveTransliterationDraft] = useState("");
+  const [freeSaveMeaningDraft, setFreeSaveMeaningDraft] = useState("");
   const [freeSaveNameError, setFreeSaveNameError] = useState<string | null>(null);
   const [freeSaveTargetDraft, setFreeSaveTargetDraft] = useState("");
   const [isSavingLog, setIsSavingLog] = useState(false);
@@ -241,6 +247,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     const closeFreeSaveName = () => {
       setFreeSaveNameModalOpen(false);
       setFreeSaveNameDraft("");
+      setFreeSaveTransliterationDraft("");
+      setFreeSaveMeaningDraft("");
       setFreeSaveNameError(null);
       setFreeSaveTargetDraft("");
     };
@@ -343,6 +351,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       createError,
       isFreeSaveNameModalOpen,
       freeSaveNameDraft,
+      freeSaveTransliterationDraft,
+      freeSaveMeaningDraft,
       freeSaveNameError,
       freeSaveTargetDraft,
       refresh,
@@ -483,6 +493,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           setFreeSaveNameError(null);
         }
       },
+      onFreeSaveTransliterationChange: (next) => {
+        setFreeSaveTransliterationDraft(next);
+      },
+      onFreeSaveMeaningChange: (next) => {
+        setFreeSaveMeaningDraft(next);
+      },
       onFreeSaveTargetChange: (next) => {
         const digits = next.replace(/\D+/g, "");
         const trimmed = digits.slice(0, String(MAX_DHIKR_TARGET).length);
@@ -508,6 +524,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
         const createdId = addCustomDhikr({
           name: trimmed,
+          transliteration: freeSaveTransliterationDraft.trim() || undefined,
+          meaning: freeSaveMeaningDraft.trim() || undefined,
           target: parsedTarget,
           initialCount: freeCount
         });
@@ -524,6 +542,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           {
             clientId: createdId,
             name: trimmed,
+            transliteration: freeSaveTransliterationDraft.trim() || undefined,
+            meaning: freeSaveMeaningDraft.trim() || undefined,
             target: parsedTarget ?? 0
           },
           sessionAccessToken
@@ -532,7 +552,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             createDhikrLog({
               userId: sessionUserId,
               customDhikrId: createdId,
-              customDhikrName: trimmed,
+              customDhikrName: freeSaveTransliterationDraft.trim() || trimmed,
               count: freeCount,
               targetCount: parsedTarget ?? 0,
               date: toDateKey(new Date()),
@@ -569,6 +589,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     demoCompleted,
     freeCount,
     freeSaveNameDraft,
+    freeSaveTransliterationDraft,
+    freeSaveMeaningDraft,
     freeSaveNameError,
     freeSaveTargetDraft,
     incrementSelected,
