@@ -3,22 +3,30 @@ import { Platform } from "react-native";
 export type BackendDhikrLog = {
   _id: string;
   userId: string;
-  dhikrId: string;
+  dhikrId?: string;
+  customDhikrId?: string;
+  customDhikrName?: string;
+  customDhikrArabic?: string;
   count: number;
   targetCount: number;
   date: string;
   isCompleted: boolean;
+  isFavorite?: boolean;
   createdAt?: string;
 };
 
 export type CreateDhikrLogPayload = {
   userId: string;
-  dhikrId: string;
+  dhikrId?: string;
+  customDhikrId?: string;
+  customDhikrName?: string;
+  customDhikrArabic?: string;
   count: number;
   targetCount: number;
   date: string;
   source?: "manual" | "ai" | "kandil" | "notification";
   isCompleted?: boolean;
+  isFavorite?: boolean;
 };
 
 export class DhikrLogsApiError extends Error {
@@ -65,6 +73,41 @@ export async function createDhikrLog(
   });
 }
 
+export async function deleteDhikrLogsByKey(
+  payload: { dhikrId?: string; customDhikrId?: string },
+  accessToken?: string
+): Promise<{ deleted: boolean; deletedCount: number }> {
+  const params = new URLSearchParams();
+  if (payload.dhikrId?.trim()) {
+    params.set("dhikrId", payload.dhikrId.trim());
+  }
+  if (payload.customDhikrId?.trim()) {
+    params.set("customDhikrId", payload.customDhikrId.trim());
+  }
+
+  return requestJson<{ deleted: boolean; deletedCount: number }>(
+    `/v1/dhikr-logs/by-dhikr?${params.toString()}`,
+    {
+      method: "DELETE",
+      accessToken
+    }
+  );
+}
+
+export async function setDhikrFavoriteByKey(
+  payload: { dhikrId?: string; customDhikrId?: string; isFavorite: boolean },
+  accessToken?: string
+): Promise<{ updated: boolean; matchedCount: number; modifiedCount: number; isFavorite: boolean }> {
+  return requestJson<{ updated: boolean; matchedCount: number; modifiedCount: number; isFavorite: boolean }>(
+    "/v1/dhikr-logs/favorite/by-dhikr",
+    {
+      method: "PATCH",
+      body: payload,
+      accessToken
+    }
+  );
+}
+
 function resolveApiBaseUrl() {
   const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
   if (configured) {
@@ -78,7 +121,7 @@ function resolveApiBaseUrl() {
 
 async function requestJson<TResponse>(
   path: string,
-  options: { method: "GET" | "POST"; body?: unknown; accessToken?: string }
+  options: { method: "GET" | "POST" | "PATCH" | "DELETE"; body?: unknown; accessToken?: string }
 ): Promise<TResponse> {
   try {
     const headers: Record<string, string> = {
