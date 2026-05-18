@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Keyboard } from "react-native";
-import { AI_GUIDE_RECOMMENDATIONS } from "../data";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { AiGuideRecommendation } from "../types";
 import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
@@ -11,6 +11,12 @@ import { getUserById } from "../../users/services/users-api-client";
 import { getPrayerTimesByCity } from "../../prayer-times/services/prayer-times-api-client";
 import { formatCurrentPrayerLabel, formatWeekdayLabel } from "../../../lib/prayer-time";
 
+type LastAiGuideResult = {
+  prompt: string;
+  recommendationId?: string;
+  recommendations: AiGuideRecommendation[];
+};
+
 export function useAiGuide() {
   const [intentInput, setIntentInput] = useState("");
   const [showInfo, setShowInfo] = useState(false);
@@ -20,7 +26,8 @@ export function useAiGuide() {
   const [isRewardedRunning, setRewardedRunning] = useState(false);
   const [error, setError] = useState<string>();
   const [recommendationId, setRecommendationId] = useState<string>();
-  const [recommendations, setRecommendations] = useState<AiGuideRecommendation[]>(AI_GUIDE_RECOMMENDATIONS);
+  const [recommendations, setRecommendations] = useState<AiGuideRecommendation[]>([]);
+  const [lastPrompt, setLastPrompt] = useState("");
   const [prayerTimeLabel, setPrayerTimeLabel] = useState("Vakit bilgisi yok");
   const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
   const [pendingRequest, setPendingRequest] = useState<{ freeText?: string } | null>(null);
@@ -35,6 +42,38 @@ export function useAiGuide() {
 
   const closeInfo = () => setShowInfo(false);
   const toggleInfo = () => setShowInfo((value) => !value);
+
+  const cacheKey = userId ? `ai-guide:last:${userId}` : "";
+
+  useEffect(() => {
+    if (authStatus !== "authenticated" || !cacheKey) {
+      return;
+    }
+
+    let isCancelled = false;
+    void AsyncStorage.getItem(cacheKey)
+      .then((raw) => {
+        if (isCancelled || !raw) {
+          return;
+        }
+
+        const parsed = JSON.parse(raw) as LastAiGuideResult;
+        if (!parsed || !Array.isArray(parsed.recommendations)) {
+          return;
+        }
+
+        setLastPrompt(parsed.prompt || "");
+        setRecommendationId(parsed.recommendationId);
+        setRecommendations(parsed.recommendations);
+      })
+      .catch(() => {
+        // ignore cache read errors
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [authStatus, cacheKey]);
 
   const loadCurrentState = useCallback(async () => {
     setWeekdayLabel(formatWeekdayLabel());
@@ -103,7 +142,7 @@ export function useAiGuide() {
 
       try {
         if (authStatus !== "authenticated" || !userId) {
-          setRecommendations(markFirstPrimary([...AI_GUIDE_RECOMMENDATIONS], "Misafir modunda varsayılan öneriler gösteriliyor."));
+          setRecommendations([]);
           setIntentInput("");
           return;
         }
@@ -121,20 +160,34 @@ export function useAiGuide() {
         }, accessToken);
 
         setRecommendationId(response.recommendationId);
-        setRecommendations(
-          markFirstPrimary(
-            response.items.map((item, index) => ({
-              id: item.id,
-              chipEmoji: index === 0 ? "💆" : "✨",
-              chipLabel: index === 0 ? "Senin için birincil öneri" : "Asistan önerisi",
-              repeatLabel: index === 0 ? "Öncelikli" : undefined,
-              arabic: item.nameArabic,
-              transliteration: item.transliteration || item.nameTurkish,
-              meaning: item.meaning
-            })),
-            response.reasoning
-          )
+        const mappedItems = markFirstPrimary(
+          response.items.map((item, index) => ({
+            id: item.id,
+            chipEmoji: index === 0 ? "💆" : "✨",
+            chipLabel: index === 0 ? "Senin için birincil öneri" : "Asistan önerisi",
+            repeatLabel: index === 0 ? "Öncelikli" : undefined,
+            arabic: item.nameArabic,
+            transliteration: item.transliteration || item.nameTurkish,
+            meaning: item.meaning
+          })),
+          response.reasoning
         );
+        const normalizedPrompt = request.freeText?.trim() || "";
+        setLastPrompt(normalizedPrompt);
+        setRecommendations(mappedItems);
+
+        if (cacheKey) {
+          void AsyncStorage.setItem(
+            cacheKey,
+            JSON.stringify({
+              prompt: normalizedPrompt,
+              recommendationId: response.recommendationId,
+              recommendations: mappedItems
+            } satisfies LastAiGuideResult)
+          ).catch(() => {
+            // ignore cache write errors
+          });
+        }
         setIntentInput("");
       } catch (error) {
         if (error instanceof AiApiError) {
@@ -146,7 +199,7 @@ export function useAiGuide() {
         setIsLoading(false);
       }
     },
-    [accessToken, authStatus, userId]
+    [accessToken, authStatus, cacheKey, userId]
   );
 
   const submitIntent = async () => {
@@ -200,10 +253,7 @@ export function useAiGuide() {
   };
 
   const selectRecommendation = (recommendation: AiGuideRecommendation) => {
-    const matchedDhikrId = resolveDhikrIdForSelection(recommendation);
-    if (matchedDhikrId) {
-      selectDhikr(matchedDhikrId);
-    }
+    selectDhikr(recommendation.id);
 
     if (authStatus !== "authenticated" || !recommendationId) {
       return;
@@ -236,6 +286,7 @@ export function useAiGuide() {
     isRewardedRunning,
     isRefreshing,
     error,
+    lastPrompt,
     recommendations,
     closeInfo,
     toggleInfo,
@@ -247,35 +298,6 @@ export function useAiGuide() {
     refresh,
     selectRecommendation
   };
-}
-
-function resolveDhikrIdForSelection(recommendation: AiGuideRecommendation) {
-  const { items } = useDhikrStore.getState();
-
-  if (items.some((item) => item.id === recommendation.id)) {
-    return recommendation.id;
-  }
-
-  const normalizedRecommendationTransliteration = normalizeLookupText(recommendation.transliteration);
-  const normalizedRecommendationArabic = normalizeLookupText(recommendation.arabic);
-
-  const fallback = items.find((item) => {
-    const normalizedItemTransliteration = normalizeLookupText(item.transliteration);
-    const normalizedItemArabic = normalizeLookupText(item.arabic);
-
-    return (
-      (normalizedRecommendationTransliteration.length > 0 &&
-        normalizedRecommendationTransliteration === normalizedItemTransliteration) ||
-      (normalizedRecommendationArabic.length > 0 &&
-        normalizedRecommendationArabic === normalizedItemArabic)
-    );
-  });
-
-  return fallback?.id;
-}
-
-function normalizeLookupText(value: string | undefined) {
-  return (value ?? "").trim().toLocaleLowerCase("tr-TR");
 }
 
 function markFirstPrimary(items: AiGuideRecommendation[], primaryNote?: string) {
