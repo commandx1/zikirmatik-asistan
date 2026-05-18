@@ -48,7 +48,7 @@ export function ProfileScreen() {
               onPressSendFeedback={profile.sendFeedback}
               onPressRestartOnboarding={profile.onRestartOnboarding}
               onPressLogout={profile.onLogout}
-              onToggleDailyReminder={profile.setDailyReminderEnabled}
+              onToggleDailyReminder={profile.onToggleDailyReminder}
               onToggleKandilNotification={profile.setKandilNotificationsEnabled}
               onToggleHaptics={profile.onToggleHaptics}
             />

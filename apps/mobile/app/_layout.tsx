@@ -3,6 +3,7 @@ import "../global.css";
 import { useEffect, type ReactNode } from "react";
 import { Stack } from "expo-router";
 import { Text, TextInput } from "react-native";
+import * as Notifications from "expo-notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@zikirmatik/ui";
 import { Merriweather_400Regular, Merriweather_700Bold, useFonts } from "@expo-google-fonts/merriweather";
@@ -14,6 +15,15 @@ import type { AppFontFamily } from "../src/store/theme-store";
 import { useThemeStore } from "../src/store/theme-store";
 
 const queryClient = new QueryClient();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false
+  })
+});
 
 function RootProviders({ children }: { children: ReactNode }) {
   const { themeName, fontFamily } = useThemePreferences();

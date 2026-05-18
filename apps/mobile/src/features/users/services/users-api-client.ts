@@ -34,6 +34,8 @@ export type UpdateUserPreferencesPayload = {
   theme?: string;
   fontFamily?: "default" | "merriweather" | "intel-one-mono";
   hapticsEnabled?: boolean;
+  dailyReminder?: boolean;
+  reminderTime?: string;
 };
 
 export class UsersApiError extends Error {

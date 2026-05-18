@@ -80,6 +80,14 @@ export class UsersService {
 
   async savePreferences(userId: string, payload: UpdateUserPreferencesDto) {
     const now = new Date();
+    const notifSettingsUpdates: Record<string, unknown> = {};
+    if (typeof payload.dailyReminder === 'boolean') {
+      notifSettingsUpdates['notifSettings.dailyReminder'] = payload.dailyReminder;
+    }
+    if (typeof payload.reminderTime === 'string') {
+      notifSettingsUpdates['notifSettings.reminderTime'] = payload.reminderTime;
+    }
+
     const user = await this.userModel
       .findByIdAndUpdate(
         this.asObjectId(userId),
@@ -92,6 +100,7 @@ export class UsersService {
             ...(typeof payload.hapticsEnabled === 'boolean'
               ? { hapticsEnabled: payload.hapticsEnabled }
               : {}),
+            ...notifSettingsUpdates,
             lastSeenAt: now,
           },
         },

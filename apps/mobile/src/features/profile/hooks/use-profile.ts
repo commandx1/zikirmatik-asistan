@@ -17,6 +17,7 @@ import {
   syncPremiumStatusWithRevenueCat,
   toRevenueCatMessage
 } from "../../subscriptions/services/revenuecat-client";
+import { syncDailyReminderNotification } from "../services/daily-reminder-notifications";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
 import { useOnboardingStore } from "../../../store/onboarding-store";
@@ -422,6 +423,60 @@ export function useProfile() {
     }
   };
 
+  const onToggleDailyReminder = useCallback(
+    (enabled: boolean) => {
+      const previous = dailyReminderEnabled;
+      setDailyReminderEnabled(enabled);
+
+      const persistPreference = async (nextEnabled: boolean) => {
+        if (authStatus !== "authenticated" || !session?.userId) {
+          return;
+        }
+
+        await saveUserPreferences(
+          session.userId,
+          {
+            dailyReminder: nextEnabled,
+            reminderTime
+          },
+          session.accessToken
+        );
+      };
+
+      void syncDailyReminderNotification({
+        enabled,
+        reminderTime,
+        requestPermission: enabled
+      })
+        .then(async ({ permissionGranted }) => {
+          if (!enabled) {
+            await persistPreference(false);
+            return;
+          }
+
+          if (!permissionGranted) {
+            setDailyReminderEnabled(false);
+            await persistPreference(false);
+            return;
+          }
+
+          await persistPreference(true);
+        })
+        .catch(async () => {
+          setDailyReminderEnabled(previous);
+          await persistPreference(previous);
+        });
+    },
+    [
+      authStatus,
+      dailyReminderEnabled,
+      reminderTime,
+      session?.accessToken,
+      session?.userId,
+      setDailyReminderEnabled
+    ]
+  );
+
   const onToggleHaptics = useCallback(
     (enabled: boolean) => {
       setHapticsEnabled(enabled);
@@ -440,6 +495,16 @@ export function useProfile() {
     },
     [authStatus, session?.accessToken, session?.userId, setHapticsEnabled]
   );
+
+  useEffect(() => {
+    void syncDailyReminderNotification({
+      enabled: dailyReminderEnabled,
+      reminderTime,
+      requestPermission: false
+    }).catch(() => {
+      // Keep user preference as-is when background sync fails.
+    });
+  }, [dailyReminderEnabled, reminderTime]);
 
   return {
     displayName: backendUser?.displayName ?? authDisplayName ?? fallbackDisplayName,
@@ -474,7 +539,7 @@ export function useProfile() {
     isRefreshing,
     premiumError,
     refresh,
-    setDailyReminderEnabled,
+    onToggleDailyReminder,
     setKandilNotificationsEnabled,
     setAdhanNotificationsEnabled,
     onToggleHaptics,

@@ -1,4 +1,10 @@
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 const FONT_FAMILY = {
   default: 'default',
@@ -18,4 +24,15 @@ export class UpdateUserPreferencesDto {
   @IsOptional()
   @IsBoolean()
   hapticsEnabled?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  dailyReminder?: boolean;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+    message: 'Hatırlatma saati HH:mm formatında olmalı.',
+  })
+  reminderTime?: string;
 }
