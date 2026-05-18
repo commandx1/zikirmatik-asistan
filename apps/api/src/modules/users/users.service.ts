@@ -82,7 +82,8 @@ export class UsersService {
     const now = new Date();
     const notifSettingsUpdates: Record<string, unknown> = {};
     if (typeof payload.dailyReminder === 'boolean') {
-      notifSettingsUpdates['notifSettings.dailyReminder'] = payload.dailyReminder;
+      notifSettingsUpdates['notifSettings.dailyReminder'] =
+        payload.dailyReminder;
     }
     if (typeof payload.reminderTime === 'string') {
       notifSettingsUpdates['notifSettings.reminderTime'] = payload.reminderTime;
