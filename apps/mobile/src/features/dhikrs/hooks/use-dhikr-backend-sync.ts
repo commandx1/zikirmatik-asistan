@@ -3,12 +3,14 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import { listDhikrLogsByUser } from "../services/dhikr-logs-api-client";
 import { DhikrsApiError, listVerifiedActiveDhikrs } from "../services/dhikrs-api-client";
+import { listUserDhikrs } from "../services/user-dhikrs-api-client";
 
 export function useDhikrBackendSync() {
   const authStatus = useAuthStore((s) => s.status);
   const sessionUserId = useAuthStore((s) => s.session?.userId);
   const sessionAccessToken = useAuthStore((s) => s.session?.accessToken);
   const hydrateReadyItems = useDhikrStore((s) => s.hydrateReadyItems);
+  const hydratePersonalItems = useDhikrStore((s) => s.hydratePersonalItems);
   const setSyncError = useDhikrStore((s) => s.setSyncError);
 
   useEffect(() => {
@@ -22,7 +24,10 @@ export function useDhikrBackendSync() {
       try {
         setSyncError(undefined);
 
-        const dhikrs = await listVerifiedActiveDhikrs();
+        const [dhikrs, personalDhikrs] = await Promise.all([
+          listVerifiedActiveDhikrs(),
+          listUserDhikrs(sessionAccessToken)
+        ]);
         const today = toDateKey(new Date());
         const logs = sessionUserId
           ? await listDhikrLogsByUser(
@@ -37,16 +42,32 @@ export function useDhikrBackendSync() {
           return;
         }
 
+        hydratePersonalItems(
+          personalDhikrs.map((item) => ({
+            id: item.clientId,
+            transliteration: item.transliteration?.trim() || item.name,
+            arabic: item.arabic,
+            meaning: item.meaning,
+            target: item.target,
+            isFavorite: item.isFavorite
+          }))
+        );
+
         const latestByDhikr = new Map<
           string,
           {
             count: number;
             targetCount: number;
             createdAt?: string;
+            isFavorite: boolean;
           }
         >();
 
         for (const log of logs) {
+          if (!log.dhikrId) {
+            continue;
+          }
+
           const existing = latestByDhikr.get(log.dhikrId);
           if (existing) {
             continue;
@@ -55,7 +76,8 @@ export function useDhikrBackendSync() {
           latestByDhikr.set(log.dhikrId, {
             count: log.count,
             targetCount: log.targetCount,
-            createdAt: log.createdAt
+            createdAt: log.createdAt,
+            isFavorite: Boolean(log.isFavorite)
           });
         }
 
@@ -68,7 +90,8 @@ export function useDhikrBackendSync() {
             meaning: item.meaning,
             target: log?.targetCount ?? item.recommendedCount,
             current: log?.count ?? 0,
-            lastActivityLabel: log?.createdAt ? toLastActivityLabel(log.createdAt) : "Henüz başlanmadı"
+            lastActivityLabel: log?.createdAt ? toLastActivityLabel(log.createdAt) : "Henüz başlanmadı",
+            isFavorite: log?.isFavorite ?? false
           };
         });
 
@@ -88,7 +111,7 @@ export function useDhikrBackendSync() {
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, hydrateReadyItems, sessionAccessToken, sessionUserId, setSyncError]);
+  }, [authStatus, hydratePersonalItems, hydrateReadyItems, sessionAccessToken, sessionUserId, setSyncError]);
 }
 
 function toDateKey(value: Date) {
