@@ -300,7 +300,7 @@ export class AiService {
       'Seçimde zikir anlamını (meaning), etiketlerini(tags), suitableFor, fazilet(virtue) bilgilerini, kullanıcının freeText niyetiyle semantik uyumunu ve zaman bağlamını birlikte değerlendir.',
       `Maksimum ${input.maxRecommendations} ID döndür.`,
       `En fazla ${input.maxRecommendations} zikir seç.`,
-      'reasoning direkt olarak kullanıcıya gösterileceğinden, orada insanî bir dil kullan.',
+      'reasoning direkt olarak kullanıcıya gösterileceğinden, orada insanî bir dil kullan. id gibi data özelliği gösterme.',
       'JSON formatı dışında cevap verme.',
     ].join(' ');
 
