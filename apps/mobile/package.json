@@ -13,6 +13,7 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@expo-google-fonts/merriweather": "^0.4.2",
     "@expo-google-fonts/finlandica": "^0.4.0",
     "@expo-google-fonts/indie-flower": "^0.2.3",
     "@expo-google-fonts/intel-one-mono": "^0.4.0",
