@@ -254,7 +254,7 @@ export function HomeView() {
     hasContent(home.mainDhikr.turkish) || hasContent(home.mainDhikr.meaning) || hasContent(home.mainDhikr.arabic)
 
   return (
-    <PageLayout frameClassName='relative flex-1 w-full max-w-[375px]'>
+    <PageLayout frameClassName='relative flex-1 w-full'>
       <TopBar />
       <PageScrollView
         contentInnerClassName='w-full'

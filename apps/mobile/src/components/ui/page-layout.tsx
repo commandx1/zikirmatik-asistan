@@ -30,7 +30,7 @@ type PageScrollViewProps = Omit<ScrollViewProps, "contentContainerStyle" | "refr
 export function PageLayout({
   children,
   backgroundClassName = "bg-[--bg]",
-  frameClassName = "relative flex-1 w-full max-w-[375px]"
+  frameClassName = "relative flex-1 w-full"
 }: PageLayoutProps) {
   const { tokens, themeName } = useThemeTokens();
   const gradient = tokens.bgGradient;
