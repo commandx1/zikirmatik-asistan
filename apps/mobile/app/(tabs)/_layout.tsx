@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Redirect, Tabs } from "expo-router";
 import { Platform, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useThemePreferences } from "../../src/hooks/use-theme-preferences";
 import { useAuthStore } from "../../src/store/auth-store";
@@ -27,6 +28,7 @@ function TabIcon({ focused, name, activeColor, inactiveColor, regular = false }:
 
 export default function TabsLayout() {
   const { tokens } = useThemeTokens();
+  const insets = useSafeAreaInsets();
   const { fontFamily } = useThemePreferences();
   const authStatus = useAuthStore((s) => s.status);
 
@@ -34,7 +36,7 @@ export default function TabsLayout() {
     return <Redirect href="/auth" />;
   }
 
-  const androidTabBarExtraBottom = Platform.OS === "android" ? 36 : 0;
+  const androidTabBarExtraBottom = Platform.OS === "android" ? Math.max(insets.bottom, 8) : 0;
   const tabLabelFontFamily =
     fontFamily === "merriweather"
       ? "Merriweather_400Regular"
@@ -69,7 +71,7 @@ export default function TabsLayout() {
             borderTopColor: "rgba(255,255,255,0.07)",
             height: 74 + androidTabBarExtraBottom,
             paddingTop: 8,
-            paddingBottom: 8 + androidTabBarExtraBottom
+            paddingBottom: Platform.OS === "android" ? androidTabBarExtraBottom : 8
           },
           tabBarLabelStyle: {
             ...tabLabelStyle

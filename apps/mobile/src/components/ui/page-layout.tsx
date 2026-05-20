@@ -1,6 +1,7 @@
 import type { PropsWithChildren, ReactNode } from "react";
 import {
   ImageBackground,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -9,6 +10,7 @@ import {
   type StyleProp,
   type ViewStyle
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { resolveThemeBackgroundImage } from "../../theme/background-image";
@@ -65,12 +67,15 @@ export function PageScrollView({
   refreshing = false,
   ...props
 }: PageScrollViewProps) {
+  const insets = useSafeAreaInsets();
+  const androidBottomInset = Platform.OS === "android" ? Math.max(insets.bottom, 0) : 0;
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       className="flex-1 w-full"
-      contentContainerStyle={[{ paddingBottom: bottomPadding }, contentContainerStyle]}
+      contentContainerStyle={[{ paddingBottom: bottomPadding + androidBottomInset }, contentContainerStyle]}
       refreshControl={
         onRefresh ? (
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
