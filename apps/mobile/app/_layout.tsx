@@ -12,6 +12,7 @@ import { Finlandica_400Regular, Finlandica_700Bold } from "@expo-google-fonts/fi
 import { IndieFlower_400Regular } from "@expo-google-fonts/indie-flower";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
+import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
 import { useThemePreferences } from "../src/hooks/use-theme-preferences";
 import type { AppFontFamily } from "../src/store/theme-store";
 import { useThemeStore } from "../src/store/theme-store";
@@ -41,6 +42,7 @@ function RootProviders({ children }: { children: ReactNode }) {
   });
   useAuthSessionSync();
   useDhikrBackendSync();
+  useUserPreferencesSync();
 
   const resolvedFontFamily = resolveGlobalFontFamily(fontFamily, fontsLoaded);
   const resolvedStrongFontFamily = resolveGlobalStrongFontFamily(fontFamily, fontsLoaded);
