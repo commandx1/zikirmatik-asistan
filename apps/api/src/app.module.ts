@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { validateEnv } from './config/env.validation';
 import { AppController } from './app.controller';
+import { RenderKeepAliveService } from './common/services/render-keep-alive.service';
 import { AiModule } from './modules/ai/ai.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DhikrLogsModule } from './modules/dhikr-logs/dhikr-logs.module';
@@ -43,6 +44,6 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     UserDhikrsModule,
   ],
   controllers: [AppController],
-  providers: [JwtAuthGuard],
+  providers: [JwtAuthGuard, RenderKeepAliveService],
 })
 export class AppModule {}
