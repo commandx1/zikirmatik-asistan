@@ -3,7 +3,6 @@ import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { ProfileHeader } from "./components/profile-header";
 import { ProfilePersonalInfoModal } from "./components/profile-personal-info-modal";
 import { ProfilePremiumSheet } from "./components/profile-premium-sheet";
-import { ProfileQuickStatsCard } from "./components/profile-quick-stats-card";
 import { ProfileReminderTimeModal } from "./components/profile-reminder-time-modal";
 import { ProfileSettingsSections } from "./components/profile-settings-sections";
 import { ProfileUserCard } from "./components/profile-user-card";
@@ -30,7 +29,6 @@ export function ProfileScreen() {
               isPremium={profile.isPremium}
               onPressUpgrade={profile.openPremiumSheet}
             />
-            <ProfileQuickStatsCard stats={profile.quickStats} />
             <ProfileSettingsSections
               purposeLabel={profile.purposeLabel}
               personalCityLabel={profile.personalCityLabel}

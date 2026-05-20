@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { Alert, Linking, Platform } from "react-native";
-import { listDhikrLogsByUser } from "../../dhikrs/services/dhikr-logs-api-client";
-import { getUserStreak } from "../../stats/services/streaks-api-client";
 import {
   getUserById,
   saveUserPreferences,
@@ -34,9 +32,6 @@ export function useProfile() {
 
   const fallbackDisplayName = useProfileStore((s) => s.displayName);
   const memberSinceLabel = useProfileStore((s) => s.memberSinceLabel);
-  const totalDhikr = useProfileStore((s) => s.totalDhikr);
-  const streakDays = useProfileStore((s) => s.streakDays);
-  const activeDays = useProfileStore((s) => s.activeDays);
   const isPremium = useProfileStore((s) => s.isPremium);
   const city = useProfileStore((s) => s.city);
   const language = useProfileStore((s) => s.language);
@@ -63,11 +58,6 @@ export function useProfile() {
 
   const [isPremiumSheetOpen, setPremiumSheetOpen] = useState(false);
   const [backendUser, setBackendUser] = useState<BackendUser>();
-  const [backendQuickStats, setBackendQuickStats] = useState<{
-    totalDhikr: number;
-    streakDays: number;
-    activeDays: number;
-  }>();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isActivatingPremium, setIsActivatingPremium] = useState(false);
   const [isRestoringPremium, setIsRestoringPremium] = useState(false);
@@ -119,29 +109,6 @@ export function useProfile() {
         });
   }, [authStatus, hydrateAppearance, hydrateFromBackend, session?.accessToken, session?.userId]);
 
-  const syncBackendQuickStats = useCallback(async () => {
-    if (authStatus !== "authenticated" || !session?.userId) {
-      setBackendQuickStats(undefined);
-      return;
-    }
-
-    const [logs, streak] = await Promise.all([
-      listDhikrLogsByUser(session.userId, undefined, undefined, session.accessToken),
-      getUserStreak(session.userId, session.accessToken)
-    ]);
-
-    const completedLogCount = logs.reduce(
-      (sum, item) => sum + (item.isCompleted ? 1 : 0),
-      0
-    );
-
-    setBackendQuickStats({
-      totalDhikr: completedLogCount,
-      streakDays: Math.max(0, streak.currentStreak ?? 0),
-      activeDays: Math.max(0, streak.totalDaysActive ?? 0)
-    });
-  }, [authStatus, session?.userId]);
-
   const refresh = useCallback(async () => {
     if (authStatus !== "authenticated" || !session?.userId) {
       return;
@@ -149,11 +116,11 @@ export function useProfile() {
 
     setIsRefreshing(true);
     try {
-      await Promise.all([syncBackendUser(), syncBackendQuickStats()]);
+      await syncBackendUser();
     } finally {
       setIsRefreshing(false);
     }
-  }, [authStatus, session?.userId, syncBackendQuickStats, syncBackendUser]);
+  }, [authStatus, session?.userId, syncBackendUser]);
 
   useEffect(() => {
     if (authStatus !== "authenticated" || !session?.userId) {
@@ -180,46 +147,6 @@ export function useProfile() {
       isCancelled = true;
     };
   }, [authStatus, session?.userId, syncBackendUser]);
-
-  useEffect(() => {
-    if (authStatus !== "authenticated" || !session?.userId) {
-      setBackendQuickStats(undefined);
-      return;
-    }
-
-    let isCancelled = false;
-
-    const run = async () => {
-      try {
-        await syncBackendQuickStats();
-        if (isCancelled) {
-          return;
-        }
-      } catch {
-        if (!isCancelled) {
-          setBackendQuickStats(undefined);
-        }
-      }
-    };
-
-    void run();
-    return () => {
-      isCancelled = true;
-    };
-  }, [authStatus, session?.userId, syncBackendQuickStats]);
-
-  const quickStats = useMemo(
-    () => [
-      {
-        id: "total-dhikr",
-        value: (backendQuickStats?.totalDhikr ?? totalDhikr).toLocaleString("tr-TR"),
-        label: "Toplam Zikir"
-      },
-      { id: "streak-days", value: String(backendQuickStats?.streakDays ?? streakDays), label: "Gün Seri" },
-      { id: "active-days", value: String(backendQuickStats?.activeDays ?? activeDays), label: "Gün Aktif" }
-    ],
-    [activeDays, backendQuickStats?.activeDays, backendQuickStats?.streakDays, backendQuickStats?.totalDhikr, streakDays, totalDhikr]
-  );
 
   const openPremiumSheet = () => setPremiumSheetOpen(true);
   const closePremiumSheet = () => {
@@ -623,7 +550,6 @@ export function useProfile() {
     hapticsEnabled,
     themeLabel: THEME_LABELS[themeName],
     fontLabel: FONT_LABELS[fontFamily],
-    quickStats,
     isPremiumSheetOpen,
     isActivatingPremium,
     isRestoringPremium,
