@@ -26,6 +26,15 @@ export type CreateAiRecommendationResponse = {
   usedModel: "openai" | "fallback";
 };
 
+export type BackendAiRecommendation = {
+  _id: string;
+  userId: string;
+  freeText?: string;
+  recommendedDhikrIds: string[];
+  selectedDhikrId?: string;
+  createdAt: string;
+};
+
 export class AiApiError extends Error {
   constructor(
     public readonly kind: "transient" | "terminal",
@@ -62,6 +71,13 @@ export async function selectAiRecommendation(
   });
 }
 
+export async function listAiRecommendations(accessToken?: string) {
+  return requestJson<BackendAiRecommendation[]>("/v1/ai/recommendations", {
+    method: "GET",
+    accessToken
+  });
+}
+
 function resolveApiBaseUrl() {
   const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
   if (configured) {
@@ -75,7 +91,7 @@ function resolveApiBaseUrl() {
 
 async function requestJson<TResponse>(
   path: string,
-  options: { method: "POST" | "PATCH"; body: unknown; accessToken?: string }
+  options: { method: "GET" | "POST" | "PATCH"; body?: unknown; accessToken?: string }
 ): Promise<TResponse> {
   try {
     const headers: Record<string, string> = {
@@ -88,7 +104,7 @@ async function requestJson<TResponse>(
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: options.method,
       headers,
-      body: JSON.stringify(options.body)
+      body: options.body === undefined ? undefined : JSON.stringify(options.body)
     });
 
     const rawResponse = await response.text();

@@ -4,7 +4,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { AiGuideRecommendation } from "../types";
 import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
-import { AiApiError, createAiRecommendation, selectAiRecommendation } from "../services/ai-api-client";
+import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-client";
+import {
+  AiApiError,
+  createAiRecommendation,
+  listAiRecommendations,
+  selectAiRecommendation
+} from "../services/ai-api-client";
 import { showRewardedAdGate } from "../services/rewarded-ad-gate";
 import { useProfileStore } from "../../../store/profile-store";
 import { getUserById } from "../../users/services/users-api-client";
@@ -45,35 +51,120 @@ export function useAiGuide() {
 
   const cacheKey = userId ? `ai-guide:last:${userId}` : "";
 
+  const hydrateLastResultFromCache = useCallback(async () => {
+    if (!cacheKey) {
+      return false;
+    }
+
+    const raw = await AsyncStorage.getItem(cacheKey);
+    if (!raw) {
+      return false;
+    }
+
+    const parsed = JSON.parse(raw) as LastAiGuideResult;
+    if (!parsed || !Array.isArray(parsed.recommendations)) {
+      return false;
+    }
+
+    setLastPrompt(parsed.prompt || "");
+    setRecommendationId(parsed.recommendationId);
+    setRecommendations(parsed.recommendations);
+    return true;
+  }, [cacheKey]);
+
+  const hydrateLastResultFromBackend = useCallback(async () => {
+    if (authStatus !== "authenticated" || !userId) {
+      return false;
+    }
+
+    const [recommendationRows, catalog] = await Promise.all([
+      listAiRecommendations(accessToken),
+      listVerifiedActiveDhikrs()
+    ]);
+
+    const catalogById = new Map(catalog.map((item) => [item._id, item]));
+    const latest = recommendationRows.find((item) => normalizeRecommendedIds(item.recommendedDhikrIds).length > 0);
+    if (!latest) {
+      return false;
+    }
+
+    const recommendedIds = normalizeRecommendedIds(latest.recommendedDhikrIds);
+    const hydratedItems = markFirstPrimary(
+      recommendedIds.reduce<AiGuideRecommendation[]>((acc, id, index) => {
+        const matched = catalogById.get(id);
+        if (!matched) {
+          return acc;
+        }
+
+        acc.push({
+          id,
+          chipEmoji: index === 0 ? "💆" : "✨",
+          chipLabel: index === 0 ? "Senin için birincil öneri" : "Asistan önerisi",
+          repeatLabel: index === 0 ? "Öncelikli" : undefined,
+          arabic: matched.nameArabic,
+          transliteration: matched.transliteration || matched.nameTurkish,
+          meaning: matched.meaning
+        });
+        return acc;
+      }, [])
+    );
+
+    if (hydratedItems.length === 0) {
+      return false;
+    }
+
+    const prompt = latest.freeText?.trim() || "";
+    const normalizedRecommendationId = normalizeObjectId(latest._id);
+    setLastPrompt(prompt);
+    setRecommendationId(normalizedRecommendationId);
+    setRecommendations(hydratedItems);
+
+    if (cacheKey) {
+      void AsyncStorage.setItem(
+        cacheKey,
+        JSON.stringify({
+          prompt,
+          recommendationId: normalizedRecommendationId,
+          recommendations: hydratedItems
+        } satisfies LastAiGuideResult)
+      ).catch(() => {
+        // ignore cache write errors
+      });
+    }
+
+    return true;
+  }, [accessToken, authStatus, cacheKey, userId]);
+
   useEffect(() => {
     if (authStatus !== "authenticated" || !cacheKey) {
       return;
     }
 
     let isCancelled = false;
-    void AsyncStorage.getItem(cacheKey)
-      .then((raw) => {
-        if (isCancelled || !raw) {
+    const run = async () => {
+      try {
+        const loadedFromBackend = await hydrateLastResultFromBackend();
+        if (isCancelled || loadedFromBackend) {
           return;
         }
+      } catch {
+        // fallback to local cache
+      }
 
-        const parsed = JSON.parse(raw) as LastAiGuideResult;
-        if (!parsed || !Array.isArray(parsed.recommendations)) {
-          return;
+      try {
+        if (!isCancelled) {
+          await hydrateLastResultFromCache();
         }
-
-        setLastPrompt(parsed.prompt || "");
-        setRecommendationId(parsed.recommendationId);
-        setRecommendations(parsed.recommendations);
-      })
-      .catch(() => {
+      } catch {
         // ignore cache read errors
-      });
+      }
+    };
 
+    void run();
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, cacheKey]);
+  }, [authStatus, cacheKey, hydrateLastResultFromBackend, hydrateLastResultFromCache]);
 
   const loadCurrentState = useCallback(async () => {
     setWeekdayLabel(formatWeekdayLabel());
@@ -298,6 +389,40 @@ export function useAiGuide() {
     refresh,
     selectRecommendation
   };
+}
+
+function normalizeObjectId(value: unknown): string | undefined {
+  if (typeof value === "string" && value.trim()) {
+    return value;
+  }
+
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+
+  const candidate = value as { $oid?: unknown; _id?: unknown; toString?: () => string };
+  if (typeof candidate.$oid === "string" && candidate.$oid.trim()) {
+    return candidate.$oid;
+  }
+
+  if (typeof candidate._id === "string" && candidate._id.trim()) {
+    return candidate._id;
+  }
+
+  if (typeof candidate.toString === "function") {
+    const stringified = candidate.toString();
+    if (typeof stringified === "string" && stringified.trim() && stringified !== "[object Object]") {
+      return stringified;
+    }
+  }
+
+  return undefined;
+}
+
+function normalizeRecommendedIds(values: unknown[]): string[] {
+  return values
+    .map((value) => normalizeObjectId(value))
+    .filter((value): value is string => Boolean(value));
 }
 
 function markFirstPrimary(items: AiGuideRecommendation[], primaryNote?: string) {
