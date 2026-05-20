@@ -7,6 +7,10 @@ const keyMap = {
   SALAVAT_SERIF: 'SALAVAT-I ŞERİFE',
   ISTIGFAR: 'ISTIGFAR',
   YA_HAYYU_YA_KAYYUM: 'YA_HAYYU_YA_KAYYUM',
+  TEVHID: 'TEVHID',
+  NUR: 'NUR',
+  HZYUSUF: 'HZYUSUF',
+  RIZIK_EBU_UMAME: 'RIZIK_EBU_UMAME',
 };
 
 const SOURCE_DATASETS = [
@@ -141,34 +145,30 @@ const SOURCE_DATASETS = [
         suitableFor: ['kalp-huzuru', 'gafletten-korunma', 'bayram-gunleri'],
       },
       {
-        key: 'kelime-i-tevhid-bolca',
-        nameArabic: 'لَا إِلٰهَ إِلَّا اللّٰهُ',
-        nameTurkish: 'Kelime-i Tevhid',
-        transliteration: 'Lâ ilâhe illallâh.',
-        meaning: "Allah'tan başka ilah yoktur.",
-        virtue:
-          'Arefe günü peygamberlerin en hayırlı sözü olan tevhidi bolca tekrar etmek kalbi tahkim eder.',
-        source: 'Arefe günü tevhid rivayetleri',
-        tags: ['zilhicce', 'arefe', 'tevhid'],
-        categories: ['zilhicce', 'ozel-gun', 'arefe'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['iman', 'tevhid', 'huzur'],
-      },
-      {
-        key: 'nur-duasi',
-        nameArabic: 'اللّٰهُمَّ اجْعَلْ فِي قَلْبِي نُورًا',
+        key: keyMap.NUR,
+        nameArabic:
+          'اللّٰهُمَّ اجْعَلْ فِي قَلْبِي نُورًا وَفِي بَصَرِي نُورًا وَفِي سَمْعِي نُورًا وَعَنْ يَمِينِي نُورًا وَعَنْ يَسَارِي نُورًا وَفَوْقِي نُورًا وَتَحْتِي نُورًا وَأَمَامِي نُورًا وَخَلْفِي نُورًا وَاجْعَلْ لِي نُورًا',
         nameTurkish: 'Nur Duası',
-        transliteration: 'Allâhümmec’al fî kalbî nûran.',
-        meaning: "Allah'ım, kalbime nur ver.",
+        transliteration:
+          'Allâhümmec’al fî kalbî nûrâ ve fî basarî nûrâ, ve fî sem’î nûrâ ve ‘an yemînî nûrâ ve ‘an yesârî nûrâ ve fevkî nûrâ ve tahtî nûrâ ve emâmî nûrâ ve halfî nûrâ, vec’allî nûrâ.',
+        meaning:
+          'Allah’ım! Kalbime büyük bir nûr ver; gözüme bir nûr, kulağıma bir nûr ver; sağıma bir nûr, soluma bir nûr ver; üstüme bir nûr, altıma bir nûr ver; önüme bir nûr, arkama bir nûr ver; bana büyük bir nûr ihsân eyle!',
         virtue:
-          'Manevi basireti artırır, kalpte içsel aydınlanmayı güçlendirir.',
-        source: 'Nur talebi duaları',
-        tags: ['zilhicce', 'arefe', 'nur', 'dua'],
-        categories: ['zilhicce', 'ozel-gun', 'arefe'],
+          'Kalbi, zihni ve duyuları ilahi nur bilinciyle kuşatma duasıdır. İçsel karanlık, gaflet ve yön kaybı yaşayan dönemlerde ruhu toparlamaya yardımcı olur. Basireti güçlendirir, doğruyu seçme ve olayları hikmetle değerlendirme kabiliyetini artırır. Günlük zikirde devam edildiğinde manevi odak, iç huzur ve teslimiyet duygusunu derinleştirir.',
+        source: 'Buhârî, Deavât, 9; Müslim, Müsâfirîn, 181',
+        tags: ['zilhicce', 'arefe', 'nur', 'dua', 'basiret', 'hidayet', 'kalp'],
+        categories: ['zilhicce', 'ozel-gun', 'arefe', 'dua', 'manevi-gelisim'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['basiret', 'huzur', 'farkindalik'],
+        suitableFor: [
+          'basiret',
+          'huzur',
+          'farkindalik',
+          'gafletten-uyanis',
+          'zihinsel-berraklik',
+          'manevi-aydınlanma',
+          'içsel-yön-bulma',
+        ],
       },
     ],
     specialDays: [
@@ -441,36 +441,6 @@ const SOURCE_DATASETS = [
         recommendedCount: 100,
         suitableFor: ['zorluk anları', 'dua vakitleri'],
       },
-      {
-        key: 'nur-duasi',
-        nameArabic: 'اللّٰهُمَّ اجْعَلْ فِي قَلْبِي نُورًا',
-        nameTurkish: 'Nur Duası',
-        transliteration: 'Allâhümmec’al fî kalbî nûran.',
-        meaning: "Allah'ım, kalbime nur ver.",
-        virtue:
-          'Manevi farkındalığı artırır, zihinsel dağınıklığı azaltıp iç huzuru destekler.',
-        source: 'Nur talebi duaları',
-        tags: ['kurban-bayrami', 'dua', 'nur'],
-        categories: ['özel gün', 'bayram'],
-        timeOfDay: 'night',
-        recommendedCount: 33,
-        suitableFor: ['akşam', 'tefekkür'],
-      },
-      {
-        key: 'kelime-i-tevhid-100',
-        nameArabic: 'لَا إِلٰهَ إِلَّا اللّٰهُ',
-        nameTurkish: 'Kelime-i Tevhid',
-        transliteration: 'Lâ ilâhe illallâh.',
-        meaning: "Allah'tan başka ilah yoktur.",
-        virtue:
-          'Tevhid inancını sürekli tazeler, kalbi birliğe ve kulluk bilincine yöneltir.',
-        source: 'Tevhid zikirleri',
-        tags: ['kurban-bayrami', 'tevhid'],
-        categories: ['özel gün', 'bayram'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['gün boyu', 'namaz sonrası'],
-      },
     ],
     specialDays: [
       {
@@ -532,7 +502,7 @@ const SOURCE_DATASETS = [
         dhikrKeys: [
           keyMap.TESRIK_TEKBIRI,
           keyMap.VAHDEHU_LA,
-          'nur-duasi',
+          keyMap.NUR,
           'bayram-istigfar-100',
           keyMap.SALAVAT_SERIF,
           keyMap.YA_HAYYU_YA_KAYYUM,
@@ -549,7 +519,7 @@ const SOURCE_DATASETS = [
         dayCount: 4,
         dhikrKeys: [
           keyMap.TESRIK_TEKBIRI,
-          'kelime-i-tevhid-100',
+          keyMap.TEVHID,
           'hasbiye-zikri-100',
           keyMap.HASBIYE,
           keyMap.SALAVAT_SERIF,
@@ -579,21 +549,6 @@ const SOURCE_DATASETS = [
         timeOfDay: 'any',
         recommendedCount: 1000,
         suitableFor: ['kandil gecesi', 'mevlid programı', 'peygamber sevgisi'],
-      },
-      {
-        key: 'mevlid-tevhid-100',
-        nameArabic: 'لَا إِلٰهَ إِلَّا اللّٰهُ',
-        nameTurkish: 'Mevlid Tevhid Zikri',
-        transliteration: 'Lâ ilâhe illallâh.',
-        meaning: "Allah'tan başka ilah yoktur.",
-        virtue:
-          'Tevhid şuurunu kuvvetlendirir, ibadetleri ihlasla yapmaya yardımcı olur.',
-        source: 'Tevhid zikirleri',
-        tags: ['mevlid-kandili', 'tevhid'],
-        categories: ['kandil', 'özel gün', 'tevhid'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['iman tazeleme', 'kandil gecesi', 'tefekkür'],
       },
       {
         key: 'mevlid-la-havle-100',
@@ -640,13 +595,18 @@ const SOURCE_DATASETS = [
         meaning:
           'İşiten ve bilen Allah’a kovulmuş şeytandan sığınırım. Rabbim, şeytanların vesveselerinden Sana sığınırım ve onların yanımda bulunmalarından da Sana sığınırım.',
         virtue:
-          'Kalbi vesvese ve dağınıklıktan korumaya yardımcı olur; zikri huzurla sürdürmek için manevi korunma bilinci kazandırır.',
+          'Kalbi vesvese ve dağınıklıktan korumaya yardımcı olur; zikri huzurla sürdürmek için manevi korunma bilinci kazandırır. Obsesif kompulsif eğilimler, panik anındaki kontrol kaybı kaygısı ve zihne musallat olan tekrarlayıcı olumsuz düşüncelere (vesveselere) karşı zihnel bir kalkan işlevi görür.',
         source: 'Müminun 97-98',
         tags: ['mevlid-kandili', 'dua', 'korunma', 'siginma'],
         categories: ['kandil', 'özel gün', 'dua'],
         timeOfDay: 'any',
         recommendedCount: 33,
-        suitableFor: ['vesveseden korunma', 'manevi korunma', 'gece ibadeti'],
+        suitableFor: [
+          'vesveseden korunma',
+          'manevi korunma',
+          'gece ibadeti',
+          'panik',
+        ],
       },
       {
         key: 'mevlid-sabir-ve-sebat-ayeti',
@@ -742,24 +702,6 @@ const SOURCE_DATASETS = [
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: ['sıkıntı anları', 'sabır', 'rahmet talebi'],
-      },
-      {
-        key: 'mevlid-la-ilahe-illa-ente-100',
-        nameArabic:
-          'لَا إِلٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
-        nameTurkish: "Hz. Yunus'un Duası",
-        transliteration:
-          'Lâ ilâhe illâ ente sübhâneke innî küntü minez-zâlimîn.',
-        meaning:
-          'Senden başka ilah yoktur, Seni tenzih ederim. Şüphesiz ben zalimlerden oldum.',
-        virtue:
-          'Tevbe, teslimiyet ve kurtuluş ümidi bilincini güçlendirir; darlık anlarında kalbe sığınma şuuru verir.',
-        source: 'Enbiya 87',
-        tags: ['mevlid-kandili', 'dua', 'tevbe', 'tevhid'],
-        categories: ['kandil', 'özel gün', 'dua', 'tevhid'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['darlık anları', 'tevbe', 'manevi sığınma'],
       },
       {
         key: 'mevlid-kema-lillahi-salavat-100',
@@ -962,7 +904,7 @@ const SOURCE_DATASETS = [
         priority: 180,
         dhikrKeys: [
           'mevlid-salavat-1000',
-          'mevlid-tevhid-100',
+          keyMap.TEVHID,
           keyMap.ISTIGFAR,
           'mevlid-la-havle-100',
           'mevlid-duha-suresi-50',
@@ -972,7 +914,7 @@ const SOURCE_DATASETS = [
           'mevlid-salavat-sellim-barik-100',
           'mevlid-rabbena-zalemna-100',
           'mevlid-rabbi-inni-messeni-100',
-          'mevlid-la-ilahe-illa-ente-100',
+          keyMap.HZYUSUF,
           'mevlid-kema-lillahi-salavat-100',
           'mevlid-delail-hayrat-dengi-100',
           'mevlid-nur-u-zatiyye-100',
@@ -1055,7 +997,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['merhamet', 'muharrem ilk 10', 'kalp yumuşaması'],
       },
       {
-        key: 'muharrem-kelime-i-tevhid-risalet-100',
+        key: keyMap.TEVHID,
         nameArabic: 'لَا إِلٰهَ إِلَّا اللّٰهُ مُحَمَّدٌ رَسُولُ اللّٰهِ',
         nameTurkish: 'Kelime-i Tevhid ve Risalet',
         transliteration: 'Lâ ilâhe illallâh Muhammedür Rasûlullâh.',
@@ -1064,10 +1006,16 @@ const SOURCE_DATASETS = [
           'Kimlik ve aidiyet bilincini tazeler; Nebevi rehberliğe bağlılığı güçlendirir.',
         source: 'Kelime-i tevhid geleneği',
         tags: ['muharrem', 'tevhid', 'risalet', 'aidiyet'],
-        categories: ['özel gün', 'muharrem', 'tevhid'],
+        categories: ['özel gün', 'tevhid'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['iman tazeleme', 'muharrem ilk 10', 'aidiyet'],
+        suitableFor: [
+          'iman tazeleme',
+          'aidiyet',
+          'kandil gecesi',
+          'tefekkür',
+          'özel gün',
+        ],
       },
       {
         key: 'muharrem-selamun-kavlen-41',
@@ -1203,7 +1151,7 @@ const SOURCE_DATASETS = [
         dayIndex: 8,
         dayCount: 10,
         priority: 160,
-        dhikrKeys: ['muharrem-kelime-i-tevhid-risalet-100'],
+        dhikrKeys: [keyMap.TEVHID],
       },
       {
         name: '9 Muharrem',
@@ -1230,6 +1178,1908 @@ const SOURCE_DATASETS = [
         dhikrKeys: ['muharrem-kelime-i-sehadet-33', keyMap.IHLAS],
       },
     ],
+  },
+  {
+    key: 'sinav-ve-yazili-zikirleri',
+    label: 'Sınav ve Yazılı Süreçleri Zikirleri',
+    dhikrItems: [
+      {
+        key: 'sinav-rabbi-edhilni',
+        nameArabic:
+          'رَبِّ أَدْخِلْنِي مُدْخَلَ صِدْقٍ وَأَخْرِجْنِي مُخْرَجَ صِدْقٍ وَاجْعَلْ لِي مِنْ لَدُنْكَ سُلْطَانًا نَصِيرًا',
+        nameTurkish: 'Sınav Başlangıç Duası',
+        transliteration:
+          "Rabbi edhılnî mudhale sıdkın ve ahricnî muhrece sıdkın vec'al lî min ledunke sultânen nasîrâ.",
+        meaning:
+          'Rabbim, gireceğim yere doğrulukla girmemi ve çıkacağım yerden doğrulukla çıkmamı nasip eyle; katından bana yardımcı bir güç ver.',
+        virtue:
+          'Sınav salonuna girerken veya sıraya oturunca okunması tavsiye edilir; iç huzur ve ilahi destek hissini güçlendirir.',
+        source: 'İsrâ Suresi, 80. Ayet',
+        tags: ['sinav', 'yazili', 'basari', 'dua'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 10,
+        suitableFor: ['sınav öncesi', 'mülakat öncesi', 'heyecan yönetimi'],
+      },
+      {
+        key: 'sinav-rabbisrahli-sadri',
+        nameArabic:
+          'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي',
+        nameTurkish: "Hz. Musa'nın Duası",
+        transliteration:
+          'Rabbişrah lî sadrî. Ve yessir lî emrî. Vahlul ukdeten min lisânî. Yefkahû kavlî.',
+        meaning:
+          'Rabbim, göğsüme genişlik ver; işimi kolaylaştır; dilimdeki düğümü çöz ki sözüm anlaşılsın.',
+        virtue:
+          'Zihinsel tıkanıklık, ifade zorluğu ve sınav kaygısına karşı okunur; odaklanmayı destekler. Toplantı, sunum, mülakat ve önemli görüşmeler öncesinde heyecanı yatıştırmak, hitabet gücünü artırmak ve zihni açmak için okunur.',
+        source: 'Tâ-Hâ Suresi, 25-28. Ayetler',
+        tags: ['sinav', 'yazili', 'odak', 'ifade'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: ['sınav anı', 'sözlü sınav', 'sunum öncesi'],
+      },
+      {
+        key: 'sinav-rabbi-yessir',
+        nameArabic: "Rabbi yessir velâ tuassir, Rabbi temmim bi'l-hayr.",
+        nameTurkish: 'Kolaylık Duası',
+        transliteration: "Rabbi yessir velâ tuassir, Rabbi temmim bi'l-hayr.",
+        meaning: 'Rabbim, kolaylaştır zorlaştırma; işimi hayırla tamamla.',
+        virtue:
+          'Ders çalışmaya veya sınava başlarken okunur; işin kolay ve hayırlı tamamlanmasına niyet eder.',
+        source: 'İslâmî Dua ve Münacat Geleneği',
+        tags: ['sinav', 'yazili', 'kolaylik', 'dua'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 33,
+        suitableFor: ['ders başlangıcı', 'sınav öncesi', 'zor konu çalışması'],
+      },
+      {
+        key: 'sinav-sekine-fetih',
+        nameArabic:
+          "Bismillâhirrahmânirrahîm. Ferdün, Hayyün, Kayyûmun, Hakemun, Adlün, Kuddûsün. İyyâke na'büdü ve iyyâkenesta'în. İnnâ fetahnâ leke fethan mubînâ.",
+        nameTurkish: 'Sekine ve Feth Duası Terkibi',
+        transliteration:
+          "Bismillâhirrahmânirrahîm. Ferdün, Hayyün, Kayyûmun, Hakemun, Adlün, Kuddûsün. İyyâke na'büdü ve iyyâkenesta'în. İnnâ fetahnâ leke fethan mubînâ.",
+        meaning:
+          "Rahman ve Rahim olan Allah'ın adıyla; yalnız Sana ibadet eder, yalnız Senden yardım dileriz. Şüphesiz biz sana apaçık bir fetih verdik.",
+        virtue:
+          'Unutkanlığa karşı ve zihinsel açıklık niyetiyle sınavdan önce veya ders başında okunur.',
+        source:
+          "Mecmuatü'l-Ahzab (Hz. Ali'den nakledilen Sekine duası tertibi)",
+        tags: ['sinav', 'yazili', 'sekine', 'feth'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 19,
+        suitableFor: ['hafıza güçlendirme', 'odaklanma', 'sınav hazırlığı'],
+      },
+      {
+        key: 'sinav-ya-hayyu-ya-kayyum',
+        nameArabic: 'يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ',
+        nameTurkish: 'Ya Hayyu Ya Kayyum İstiğase',
+        transliteration:
+          "Yâ Hayyü, yâ Gayyûm! Bi rahmetike esteğîsü fe eslıh lî şe'nî küllehü ve lâ tekilnî ilâ nefsî tarfete aynin",
+        meaning:
+          "Ey Hayy ve Kayyum olan Allah'ım! Ancak senin rahmetine sığınırım. Benim bütün işlerimi düzelt ve beni göz açıp kapayıncaya kadar (da olsa) asla nefsime (kendi başıma) bırakma.",
+        virtue:
+          'Sınav başlarken okunması tavsiye edilir; panik anlarında zihinsel berraklık sağlar. İşlerin ters gittiği, kriz anlarında veya karar mekanizmalarında tıkanıklık yaşandığında tüm süreçlerin düzene girmesi ve ilahi yardıma nail olmak için okunur.',
+        source: "Tirmizî, De'avât, 90",
+        tags: ['sinav', 'yazili', 'yardim', 'sukunet'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 10,
+        suitableFor: ['sınav anı', 'panik kontrolü', 'zihinsel berraklık'],
+      },
+      {
+        key: 'sinav-allahumme-la-sehle',
+        nameArabic:
+          'اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلًا',
+        nameTurkish: 'Zorluğu Kolaylaştırma Duası',
+        transliteration:
+          "Allâhümme lâ sehle illâ mâ cealtehû sehlen ve ente tec'alü'l-hazne izâ şi'te sehlen.",
+        meaning:
+          "Allah'ım, Senin kolay kıldığından başka kolay yoktur; dilediğinde zoru kolay kılarsın.",
+        virtue:
+          'Zor soru veya karmaşık problemle karşılaşıldığında okunur; zihinsel kilidi çözmeye yardımcı olur.',
+        source:
+          "İbn Hibbân, Sahih, no: 2427; İbnü's-Sünnî, Amelü'l-Yevm, no: 351",
+        tags: ['sinav', 'yazili', 'zor-soru', 'kolaylik'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: ['zor sorular', 'problem çözme', 'sınav stresi'],
+      },
+      {
+        key: 'sinav-estevdiuke-ilim',
+        nameArabic:
+          'Allâhümme innî estevdiuke cemîa mâ estefîduhû min hazâsseyyidi ev fî hazal meclisi hattâ teruddehu aleyye fî vaktihtiyâcî ileyhi.',
+        nameTurkish: 'İlmi Emanet Duası',
+        transliteration:
+          'Allâhümme innî estevdiuke cemîa mâ estefîduhû min hazâsseyyidi ev fî hazal meclisi hattâ teruddehu aleyye fî vaktihtiyâcî ileyhi.',
+        meaning:
+          "Allah'ım, öğrendiğim faydalı bilgileri ihtiyaç anında geri vermen için Sana emanet ediyorum.",
+        virtue:
+          'Ders bitiminde veya sınav öncesinde okunur; öğrenilen bilginin hatırlanmasına niyet eder.',
+        source: "ed-Dürretü'l-harîde, 1/53",
+        tags: ['sinav', 'yazili', 'hafiza', 'dua'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 3,
+        suitableFor: ['unutkanlık', 'ders sonrası', 'bilgi hatırlama'],
+      },
+      {
+        key: 'sinav-rabbi-zidni-ilmen',
+        nameArabic: 'رَبِّ زِدْنِي عِلْمًا',
+        nameTurkish: 'Rabbi Zidnî İlmen',
+        transliteration: 'Rabbi zidnî ilmen.',
+        meaning: 'Rabbim, ilmimi artır.',
+        virtue:
+          'Öğrenme, anlama ve kavrama gücünün artması amacıyla sıkça zikredilir.',
+        source: 'Tâ-Hâ Suresi, 114. Ayet',
+        tags: ['sinav', 'yazili', 'ilim', 'gelisim'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 33,
+        suitableFor: ['ders çalışma', 'öğrenme isteği', 'kavrama gücü'],
+      },
+      {
+        key: 'sinav-senukriuke-fela-tensa',
+        nameArabic: 'سَنُقْرِئُكَ فَلَا تَنْسَىٰ',
+        nameTurkish: 'Senukriuke Felâ Tensâ',
+        transliteration: 'Senukriuke felâ tensâ.',
+        meaning: 'Sana okutacağız; artık unutmayacaksın.',
+        virtue:
+          'Zihin açıklığı ve ezberlenen bilgiyi muhafaza etme niyetiyle düzenli okunur.',
+        source: "A'lâ Suresi, 6. Ayet",
+        tags: ['sinav', 'yazili', 'hafiza', 'ezber'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 33,
+        suitableFor: ['ezber', 'unutkanlık', 'sınav hazırlığı'],
+      },
+      {
+        key: 'sinav-bismillahi-ve-subhanellahi',
+        nameArabic:
+          'Bismillâhi ve sübhânellâhi velhamdülillâhi velâ ilâhe illellâhü vallâhü ekber velâ havle velâ kuvvete illâ billâhil aliyyil azîm.',
+        nameTurkish: 'Tesbih ve Havkale Terkibi',
+        transliteration:
+          'Bismillâhi ve sübhânellâhi velhamdülillâhi velâ ilâhe illellâhü vallâhü ekber velâ havle velâ kuvvete illâ billâhil aliyyil azîm.',
+        meaning:
+          "Allah'ın adıyla; Allah'ı tesbih ederim, hamd Allah'adır, O'ndan başka ilah yoktur, Allah en büyüktür; güç ve kuvvet ancak Allah'tandır.",
+        virtue:
+          'Okuma-yazma sürecinde zihni diri tutmaya, manevi motivasyonu ve dikkat sürekliliğini artırmaya niyet edilir.',
+        source: "ed-Dürretü'l-harîde, 1/53",
+        tags: ['sinav', 'yazili', 'tesbih', 'havkale'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 11,
+        suitableFor: ['yazılı sınav', 'odaklanma', 'zihinsel canlılık'],
+      },
+      {
+        key: 'sinav-allahumme-hirli',
+        nameArabic: 'Allâhümme hır lî vehter lî. Velâ teknînî alâ ihtiyârî.',
+        nameTurkish: 'Doğru Tercih Duası',
+        transliteration:
+          'Allâhümme hır lî vehter lî. Velâ teknînî alâ ihtiyârî.',
+        meaning:
+          'Allahım, bu işte benim için hayırlı olanı seç ve beni nefsimin seçimine bırakma.',
+        virtue:
+          'Şıklı sorularda ve karar gerektiren anlarda doğru tercihe yönelmek için okunur.',
+        source: "Tirmizî, De'avât, 90",
+        tags: ['sinav', 'yazili', 'tercih', 'dua'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 11,
+        suitableFor: ['çoktan seçmeli sınav', 'kararsızlık', 'isabetli tercih'],
+      },
+      {
+        key: 'sinav-nun-vel-kalemi',
+        nameArabic: 'ن ۚ وَالْقَلَمِ وَمَا يَسْطُرُونَ',
+        nameTurkish: 'Nûn Vel-Kalemi',
+        transliteration: 'Nûn. Vel-kalemi vemâ yesturûn.',
+        meaning: 'Nun. Kaleme ve satır satır yazdıklarına yemin olsun.',
+        virtue:
+          'Yazılı sınavlarda düşünceleri kağıda dökme, analitik kurguyu doğru kurma ve ifadeyi berraklaştırma niyetiyle okunur.',
+        source: 'Kalem Suresi, 1. Ayet',
+        tags: ['sinav', 'yazili', 'kalem', 'ifade', 'yazim-berrakligi'],
+        categories: ['genel', 'egitim', 'sinav'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'yazılı sınav',
+          'ifade becerisi',
+          'sınav öncesi',
+          '3-5-7 tekrar tertibi',
+          'analitik kurgu',
+        ],
+      },
+    ],
+    specialDays: [],
+  },
+  {
+    key: 'esma-rizik-ve-bereket-zikirleri',
+    label: 'Esma-ül Hüsna Rızık ve Bereket Zikirleri',
+    dhikrItems: [
+      {
+        key: 'esma-ya-melik',
+        nameArabic: 'يَا مَلِكُ',
+        nameTurkish: 'Ya Melik',
+        transliteration: 'Yâ Melik',
+        meaning: 'Ey mutlak mülkün sahibi olan Allahım.',
+        virtue:
+          'Fakirlikten kurtuluş, maddi güç ve sahip olunan imkanları doğru yönetme niyetiyle okunur.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'rizik', 'bereket', 'maddi-guc'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 91,
+        suitableFor: [
+          'maddi darlık',
+          'rızık talebi',
+          'bereket arzusu',
+          'alternatif 121',
+        ],
+      },
+      {
+        key: 'esma-ya-vehhab',
+        nameArabic: 'يَا وَهَّابُ',
+        nameTurkish: 'Ya Vehhâb',
+        transliteration: 'Yâ Vehhâb',
+        meaning: 'Ey karşılıksız nimetler veren Allahım.',
+        virtue:
+          'Karşılıksız nimet, borç yükünün hafiflemesi ve rızık artışı niyetiyle zikredilir.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'rizik', 'nimet', 'borc'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 196,
+        suitableFor: ['borçlardan kurtulma', 'nimet artışı', 'maddi rahatlama'],
+      },
+      {
+        key: 'esma-ya-rezzak',
+        nameArabic: 'يَا رَزَّاقُ',
+        nameTurkish: 'Ya Rezzâk',
+        transliteration: 'Yâ Rezzâk',
+        meaning: 'Ey bütün mahlukatın rızkını veren Allahım.',
+        virtue:
+          'Bol rızık, darlıkların sona ermesi ve geçim genişliği niyetiyle okunur.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'rizik', 'gecim', 'bolluk'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 308,
+        suitableFor: ['geçim darlığı', 'iş arayışı', 'rızık bereketi'],
+      },
+      {
+        key: 'esma-ya-fettah',
+        nameArabic: 'يَا فَتَّاحُ',
+        nameTurkish: 'Ya Fettâh',
+        transliteration: 'Yâ Fettâh',
+        meaning: 'Ey hayır kapılarını açan Allahım.',
+        virtue:
+          'Kapalı kapıların açılması, iş ve rızık yollarının genişlemesi niyetiyle okunur.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'feth', 'is-kapisi', 'rizik'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 489,
+        suitableFor: [
+          'iş kapılarının açılması',
+          'darlığın bitmesi',
+          'fırsat arayışı',
+        ],
+      },
+      {
+        key: 'esma-ya-gani',
+        nameArabic: 'يَا غَنِيُّ',
+        nameTurkish: 'Ya Ganî',
+        transliteration: 'Yâ Ganî',
+        meaning: 'Ey hiçbir şeye muhtaç olmayan, mutlak zengin Allahım.',
+        virtue:
+          'Kimseye muhtaç olmama, iç ve dış zenginlik bilinci ile maddi ferahlık niyetiyle zikredilir.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'zenginlik', 'istiğna', 'bereket'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 1060,
+        suitableFor: ['maddi bağımsızlık', 'rızık bereketi', 'alternatif 160'],
+      },
+      {
+        key: 'esma-ya-mugni',
+        nameArabic: 'يَا مُغْنِي',
+        nameTurkish: 'Ya Muğnî',
+        transliteration: 'Yâ Muğnî',
+        meaning: 'Ey dilediğini zengin kılan Allahım.',
+        virtue:
+          'Maddi refah, bolluk ve kişinin ihtiyaçlarının karşılanması niyetiyle okunur.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'zenginlik', 'refah', 'rizik'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 1100,
+        suitableFor: ['maddi refah', 'gelir artışı', 'alternatif 1337'],
+      },
+      {
+        key: 'esma-ya-basit',
+        nameArabic: 'يَا بَاسِطُ',
+        nameTurkish: 'Ya Bâsıt',
+        transliteration: 'Yâ Bâsıt',
+        meaning: 'Ey darlığı açıp genişlik veren Allahım.',
+        virtue:
+          'İşlerin büyümesi, mal ve paranın bereketlenmesi niyetiyle zikredilir.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'genislik', 'islerin-acilmasi', 'bereket'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 72,
+        suitableFor: ['iş genişlemesi', 'bereket artışı', 'maddi rahatlama'],
+      },
+      {
+        key: 'esma-ya-kerim',
+        nameArabic: 'يَا كَرِيمُ',
+        nameTurkish: 'Ya Kerîm',
+        transliteration: 'Yâ Kerîm',
+        meaning: 'Ey ikramı bol ve cömert olan Allahım.',
+        virtue:
+          'Kolay rızık, cömertçe verilen nimetler ve hayırlı ikramlar niyetiyle okunur.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'ikram', 'rizik', 'cömertlik'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 270,
+        suitableFor: ['kolay rızık', 'nimet artışı', 'bereket'],
+      },
+      {
+        key: 'esma-ya-malikel-mulk',
+        nameArabic: 'يَا مَالِكَ الْمُلْكِ',
+        nameTurkish: 'Ya Mâlikül Mülk',
+        transliteration: 'Yâ Mâlikel Mülk',
+        meaning: 'Ey mülkün gerçek sahibi ve hükümranı olan Allahım.',
+        virtue:
+          'Ev, arsa gibi taşınmaz mülk edinme ve mevcut mülkün korunması niyetiyle zikredilir.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'mulk', 'ev-arsa', 'korunma'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 212,
+        suitableFor: ['ev alma', 'mülk edinme', 'mülk korunması'],
+      },
+      {
+        key: 'esma-ya-mutekebbir',
+        nameArabic: 'يَا مُتَكَبِّرُ',
+        nameTurkish: 'Ya Mütekebbir',
+        transliteration: 'Yâ Mütekebbir',
+        meaning: 'Ey azamet ve büyüklük sahibi olan Allahım.',
+        virtue:
+          'İzzet, refah ve bereket artışı ile sözün tesirinin güçlenmesi niyetiyle okunur.',
+        source: 'Esma-ül Hüsna ebced uygulama geleneği',
+        tags: ['esma', 'izzet', 'refah', 'bereket'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 662,
+        suitableFor: ['itibar', 'maddi bereket', 'söz etkisi'],
+      },
+    ],
+    specialDays: [],
+  },
+  {
+    key: 'rizik-ve-mulk-tertipleri',
+    label: 'Rızık ve Mülk Tertipleri',
+    dhikrItems: [
+      {
+        key: 'rizik-kombinasyon-ya-gani-ya-mugni',
+        nameArabic: 'يَا غَنِيُّ يَا مُغْنِي',
+        nameTurkish: 'Ya Gani Ya Muğnî',
+        transliteration: 'Yâ Ganî, Yâ Muğnî',
+        meaning: 'Ey mutlak zengin olan ve dilediğini zengin kılan Allahım.',
+        virtue:
+          'Rızık ve zenginlik niyeti için güçlü kombinasyon olarak zikredilir; fakirlik kapılarını kapatma niyeti taşır.',
+        source: 'Havas ve esma kombinasyon geleneği',
+        tags: ['rizik', 'zenginlik', 'esma-kombinasyon', 'bereket'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 2160,
+        suitableFor: ['fakirlikten kurtuluş', 'gelir artışı', 'maddi refah'],
+      },
+      {
+        key: 'rizik-kombinasyon-ya-fettah-ya-malikel-mulk',
+        nameArabic: 'يَا فَتَّاحُ يَا مَالِكَ الْمُلْكِ',
+        nameTurkish: "Ya Fettâh Ya Mâlikü'l-Mülk",
+        transliteration: "Yâ Fettâh, Yâ Mâlikü'l-Mülk",
+        meaning: 'Ey kapıları açan ve mülkün sahibi olan Allahım.',
+        virtue:
+          'İş, rızık ve mülk kapılarının açılması niyetiyle okunan tertiplerdendir.',
+        source: 'Havas ve esma kombinasyon geleneği',
+        tags: ['rizik', 'mulk', 'is-kapisi', 'esma-kombinasyon'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 2000,
+        suitableFor: [
+          'mülk edinme',
+          'iş kapılarının açılması',
+          'darlığın bitmesi',
+        ],
+      },
+      {
+        key: 'rizik-vakia-suresi-gece',
+        nameArabic: 'سُورَةُ الْوَاقِعَةِ',
+        nameTurkish: 'Vâkıa Suresi (Gecelik Vird)',
+        transliteration: "Sûretü'l-Vâkıa",
+        meaning: 'Vâkıa suresinin her gece düzenli okunması.',
+        virtue:
+          "İslam literatüründe 'zenginlik suresi' olarak anılır; fakirlik korkusuna karşı manevi destek kabul edilir.",
+        source: "Abdullah b. Mes'ud rivayeti ve geleneksel vird uygulamaları",
+        tags: ['rizik', 'vakia', 'sure', 'bereket'],
+        categories: ['genel', 'sure', 'rizik-bereket'],
+        timeOfDay: 'night',
+        recommendedCount: 1,
+        suitableFor: ['gece virdi', 'geçim bereketi', 'fakirlik korkusu'],
+      },
+      {
+        key: 'rizik-vakia-suresi-41-gun',
+        nameArabic: 'سُورَةُ الْوَاقِعَةِ',
+        nameTurkish: 'Vâkıa Suresi (41 Günlük Tertip)',
+        transliteration: "Sûretü'l-Vâkıa",
+        meaning:
+          'Vâkıa suresinin 40 gün boyunca günlük 40/41 tekrar okunması tertibi.',
+        virtue:
+          'Düzenli okuma ile yorulmadan helal rızık ve geçim genişliği niyeti taşır.',
+        source: 'Geleneksel vird tertipleri',
+        tags: ['rizik', 'vakia', '40-gun', 'vird'],
+        categories: ['genel', 'sure', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 41,
+        suitableFor: ['40 günlük tertip', 'helal rızık', 'bereket artışı'],
+      },
+      {
+        key: 'rizik-fatiha-seher-41',
+        nameArabic: 'سُورَةُ الْفَاتِحَةِ',
+        nameTurkish: 'Fâtiha Suresi (Seher Tertibi)',
+        transliteration: "Sûretü'l-Fâtiha",
+        meaning: 'Fâtiha suresinin seher vaktinde 40/41 defa okunması.',
+        virtue:
+          'Maddi ve manevi bereket kapılarının açılması niyetiyle seherde uygulanan tertiplerdendir.',
+        source: 'Tasavvufi vird ve tecrübe geleneği',
+        tags: ['rizik', 'fatiha', 'seher', 'bereket'],
+        categories: ['genel', 'sure', 'rizik-bereket'],
+        timeOfDay: 'morning',
+        recommendedCount: 41,
+        suitableFor: ['seher vakti', 'rızık bereketi', 'hane bereketi'],
+      },
+      {
+        key: 'rizik-kadr-suresi',
+        nameArabic: 'سُورَةُ الْقَدْرِ',
+        nameTurkish: 'Kadr Suresi',
+        transliteration: "Sûretü'l-Kadr",
+        meaning:
+          'Kadr suresinin malın korunması ve bereket niyetiyle okunması.',
+        virtue:
+          'Malın zayi olmaması, bereketin artması ve borçların ödenmesine manevi destek niyetiyle okunur.',
+        source: 'Geleneksel rızık ve korunma uygulamaları',
+        tags: ['rizik', 'kadr', 'mal-koruma', 'bereket'],
+        categories: ['genel', 'sure', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: ['mal korunması', 'borç ödemesi', 'bereket niyeti'],
+      },
+      {
+        key: 'rizik-fatir-29-30',
+        nameArabic:
+          'إِنَّ الَّذِينَ يَتْلُونَ كِتَابَ اللَّهِ وَأَقَامُوا الصَّلَاةَ وَأَنْفَقُوا مِمَّا رَزَقْنَاهُمْ سِرًّا وَعَلَانِيَةً يَرْجُونَ تِجَارَةً لَنْ تَبُورَ',
+        nameTurkish: 'Fâtır 29-30 Ticaret Ayetleri',
+        transliteration:
+          'İnnellezîne yetlûne kitâbellâhi ve ekâmus-salâte ve enfekû mimmâ razaknâhum sirran ve alâniyeten yercûne ticâreten len tebûr.',
+        meaning:
+          "Allah'ın kitabını okuyan, namazı dosdoğru kılan ve infak edenlerin bitip tükenmeyecek bir ticaret ummaları.",
+        virtue:
+          "Ticarette kesadın önlenmesi ve 'ticaraten len tebûr' sırrına erişme niyetiyle okunur.",
+        source: 'Fâtır Suresi 29-30',
+        tags: ['rizik', 'ticaret', 'fatir', 'helal-kazanc'],
+        categories: ['genel', 'ayet', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 33,
+        suitableFor: ['ticari bereket', 'helal kazanç', 'iş sürekliliği'],
+      },
+      {
+        key: keyMap.RIZIK_EBU_UMAME,
+        nameArabic:
+          'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ',
+        nameTurkish: 'Ebu Ümâme Duası',
+        transliteration:
+          'Allâhümme innî eûzü bike minel hemmi vel-hazen, ve eûzü bike minel aczi vel-kesel, ve eûzü bike minel-cübnî vel-buhl, ve eûzü bike min galebetid-deyni ve kahri’r-ricâl.',
+        meaning:
+          'Allahım, kederden, acizlikten, tembellikten, cimrilikten, borcun baskısından ve insanların kahrından sana sığınırım.',
+        virtue:
+          'Sabah-akşam okunarak borç ve kaygı yükünü hafifletmeye, psikolojik direnci artırmaya niyet edilir.',
+        source: 'Nebevi dua rivayetleri (Ebu Ümâme hadisi)',
+        tags: ['rizik', 'borc', 'kaygi', 'sabir'],
+        categories: ['genel', 'dua', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 2,
+        suitableFor: ['sabah-akşam virdi', 'borç baskısı', 'psikolojik direnç'],
+      },
+      {
+        key: 'rizik-hz-muaz-borc-duasi',
+        nameArabic:
+          'اللَّهُمَّ مَالِكَ الْمُلْكِ تُؤْتِي الْمُلْكَ مَنْ تَشَاءُ وَتَنْزِعُ الْمُلْكَ مِمَّنْ تَشَاءُ... تَرْحَمُ مَنْ تَشَاءُ وَأَنْتَ الرَّحْمٰنُ الرَّحِيمُ ارْزُقْنِي رَحْمَةً تُغْنِينِي بِهَا عَمَّنْ سِوَاكَ',
+        nameTurkish: "Hz. Muâz'a Öğretilen Borç Duası",
+        transliteration:
+          'Allâhümme mâlikel-mülki tü’til-mülke men teşâ’ ve tenziul-mülke mimmen teşâ’... terhamü men teşâ’ ve ente’r-Rahmânü’r-Rahîm, ürzüknî rahmeten tuğnînî bihâ ammen sivâk.',
+        meaning:
+          'Ey mülkün sahibi Allahım, mülkü dilediğine verirsin... beni senden başkasına muhtaç etmeyecek bir rahmetle rızıklandır.',
+        virtue:
+          'Ağır borç yükünün hafiflemesi ve geniş rızka vesile olması niyetiyle öğretilen dualardandır.',
+        source: "Hz. Muâz'a talim edilen borç duası rivayetleri",
+        tags: ['rizik', 'borc', 'mulk', 'rahmet'],
+        categories: ['genel', 'dua', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'yüksek borç',
+          'muhtaçlıktan kurtulma',
+          'rızık genişliği',
+        ],
+      },
+      {
+        key: 'rizik-la-havle-100',
+        nameArabic:
+          'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ',
+        nameTurkish: 'Lâ Havle velâ Kuvvete illâ Billâh',
+        transliteration: 'Lâ havle ve lâ kuvvete illâ billâhil aliyyil azîm.',
+        meaning: 'Güç ve kuvvet ancak Allahın yardımıyladır.',
+        virtue:
+          'Arşın altındaki hazinelerden kabul edilen zikirlerdendir; fakirlikten korunma ve iç kuvvet niyetiyle okunur.',
+        source: 'Nebevi rivayetler',
+        tags: ['rizik', 'havkale', 'tevekkul', 'dayaniklilik'],
+        categories: ['genel', 'dua', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: ['fakirlikten korunma', 'manevi güç', 'darlık anları'],
+      },
+      {
+        key: 'rizik-la-ilahe-illallahul-melikul-hakkul-mubin',
+        nameArabic: 'لَا إِلٰهَ إِلَّا اللّٰهُ الْمَلِكُ الْحَقُّ الْمُبِينُ',
+        nameTurkish: "Lâ ilâhe illallâhu'l Melikü'l Hakkul Mübin",
+        transliteration: "Lâ ilâhe illallâhu'l Melikü'l Hakkul Mübin.",
+        meaning: 'Allah’tan başka ilah yoktur; O Melik, Hak ve apaçık olandır.',
+        virtue:
+          'Fakirlikten korunma ve kazancın bereketlenmesi niyetiyle günlük vird olarak okunur.',
+        source: 'Geleneksel temcid zikirleri',
+        tags: ['rizik', 'temcid', 'tevhid', 'bereket'],
+        categories: ['genel', 'dua', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: ['fakirlik korkusu', 'gelir bereketi', 'günlük vird'],
+      },
+      {
+        key: 'rizik-hz-suleyman-mulk-duasi',
+        nameArabic:
+          'رَبِّ اغْفِرْ لِي وَهَبْ لِي مُلْكًا لَا يَنْبَغِي لِأَحَدٍ مِنْ بَعْدِي إِنَّكَ أَنْتَ الْوَهَّابُ',
+        nameTurkish: "Hz. Süleyman'ın Mülk Duası",
+        transliteration:
+          'Rabbiğfir lî ve heb lî mülken lâ yenbeğî li-ehadin min ba’dî inneke entel-Vehhâb.',
+        meaning:
+          'Rabbim, beni bağışla ve bana benden sonra kimseye nasip olmayacak bir mülk ver. Şüphesiz sen çok bağışta bulunansın.',
+        virtue:
+          'Hayırlı bir yuva, mülk edinme ve maddi imkanların helal yoldan artması niyetiyle okunur.',
+        source: 'Sâd Suresi, 35. Ayet',
+        tags: ['rizik', 'mulk', 'ev', 'vehhab'],
+        categories: ['genel', 'ayet', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 41,
+        suitableFor: ['ev sahibi olma', 'mülk edinme', 'hayırlı yuva'],
+      },
+      {
+        key: 'rizik-ya-zul-celali-vel-ikram',
+        nameArabic: 'يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
+        nameTurkish: 'Ya Zül Celâli vel İkrâm',
+        transliteration: 'Yâ Zül-Celâli vel-İkrâm',
+        meaning: 'Ey celal ve ikram sahibi olan Allahım.',
+        virtue:
+          'Refah, bereket ve dünyevi işlerde kolaylık niyetiyle tertiplerde zikredilir.',
+        source: 'Esma ve vird geleneği',
+        tags: ['esma', 'bereket', 'ikram', 'refah'],
+        categories: ['genel', 'esma', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 1100,
+        suitableFor: ['iş kolaylığı', 'bereket artışı', 'itibar'],
+      },
+    ],
+    specialDays: [],
+  },
+  {
+    key: 'hayirli-evlat-zikirleri',
+    label: 'Hayırlı Evlat Zikirleri',
+    dhikrItems: [
+      {
+        key: 'evlat-rabbi-la-tezerni',
+        nameArabic: 'رَبِّ لَا تَذَرْنِي فَرْدًا وَأَنْتَ خَيْرُ الْوَارِثِينَ',
+        nameTurkish: 'Hz. Zekeriya Duası',
+        transliteration: "Rabbi lâ tezernî ferden ve ente hayru'l-vârisîn.",
+        meaning: 'Rabbim, beni yalnız bırakma; Sen varislerin en hayırlısısın.',
+        virtue:
+          'Evlat isteyenlerin en sık okuduğu Kurani dualardandır; günde en az 7 defa okunması tavsiye edilir.',
+        source: 'Enbiyâ Suresi, 21/89',
+        tags: ['evlat', 'hayirli-evlat', 'dua', 'zekeriya'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'çocuk sahibi olma niyeti',
+          'manevi odaklanma',
+          'aile duası',
+        ],
+      },
+      {
+        key: 'evlat-rabbi-heb-li-min-ledunke',
+        nameArabic:
+          'رَبِّ هَبْ لِي مِنْ لَدُنْكَ ذُرِّيَّةً طَيِّبَةً إِنَّكَ سَمِيعُ الدُّعَاءِ',
+        nameTurkish: 'Temiz Nesil Duası',
+        transliteration:
+          "Rabbi heb lî min ledunke zürriyyeten tayyibeten inneke semî'u'd-duâ.",
+        meaning:
+          'Rabbim, bana katından tertemiz bir nesil ihsan eyle; şüphesiz Sen duayı işitensin.',
+        virtue:
+          'Neslin ahlaklı, temiz ve salih olması niyetiyle okunan güçlü ayet dualarındandır.',
+        source: 'Âl-i İmrân Suresi, 3/38',
+        tags: ['evlat', 'hayirli-evlat', 'dua', 'nesil'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 41,
+        suitableFor: ['hayırlı nesil', 'dua kabulü', 'aile saadeti'],
+      },
+      {
+        key: 'evlat-rabbi-heb-li-mine-salihin',
+        nameArabic: 'رَبِّ هَبْ لِي مِنَ الصَّالِحِينَ',
+        nameTurkish: "Hz. İbrahim'in Evlat Duası",
+        transliteration: "Rabbi heb lî mine's-sâlihîn.",
+        meaning: 'Rabbim, bana salihlerden bir evlat bağışla.',
+        virtue:
+          'Doğacak çocuğun dindar, hayırlı ve ana-babasına itaatkar olması niyetiyle okunur.',
+        source: 'Sâffât Suresi, 37/100',
+        tags: ['evlat', 'hayirli-evlat', 'salih-nesil', 'dua'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 41,
+        suitableFor: ['salih evlat', 'dindar nesil', 'aile duası'],
+      },
+      {
+        key: 'evlat-rabbena-heb-lena-min-ezvacina',
+        nameArabic:
+          'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
+        nameTurkish: 'Aile ve Zürriyet Duası',
+        transliteration:
+          "Rabbenâ heb lenâ min ezvâcinâ ve zürriyyâtinâ kurrate a'yunin vec'alnâ lil-müttakîne imâmâ.",
+        meaning:
+          'Rabbimiz, eşlerimizden ve neslimizden göz aydınlığı ihsan et; bizi takva sahiplerine önder kıl.',
+        virtue:
+          'Aile içi sevgi ve manevi bağı güçlendirmek, göz aydınlığı olacak hayırlı evlatlar için okunur.',
+        source: 'Furkân Suresi, 25/74',
+        tags: ['evlat', 'aile', 'zürriyet', 'dua'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'aile huzuru',
+          'hayırlı zürriyet',
+          'eşler arası muhabbet',
+        ],
+      },
+      {
+        key: 'evlat-rabbi-inni-nezertu',
+        nameArabic:
+          'رَبِّ إِنِّي نَذَرْتُ لَكَ مَا فِي بَطْنِي مُحَرَّرًا فَتَقَبَّلْ مِنِّي',
+        nameTurkish: "Hz. Meryem'in Annesinin Duası",
+        transliteration:
+          'Rabbi innî nezertu leke mâ fî batnî muharreren fe tekabbel minnî.',
+        meaning: 'Rabbim, karnımdakini yalnız sana adadım; benden kabul buyur.',
+        virtue:
+          'Bebeğin hayırlı ve ahlaklı yetişmesi, hamilelik sürecinin kolay geçmesi niyetiyle okunur.',
+        source: 'Âl-i İmrân Suresi, 3/35',
+        tags: ['evlat', 'hamilelik', 'dua', 'adanmislik'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: ['hamilelik duası', 'hayırlı evlat', 'manevi korunma'],
+      },
+      {
+        key: 'evlat-inne-rabbeke-huvel-hallakul-alim',
+        nameArabic: 'إِنَّ رَبَّكَ هُوَ الْخَلَّاقُ الْعَلِيمُ',
+        nameTurkish: 'Hâllâk ve Alîm Esması Ayeti',
+        transliteration: "İnne rabbeke huve'l-hallâku'l-alîm.",
+        meaning: 'Muhakkak Rabbin, her türlü yaratmayı hakkıyla bilendir.',
+        virtue:
+          'Yaratılış sürecinde ilahi ilme sığınma niyetiyle; 3 ay geceleri 1267 tekrar tertibi aktarılmıştır.',
+        source: 'Hicr Suresi, 15/86',
+        tags: ['evlat', 'yaratilis', 'hamilelik', 'ayet'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'night',
+        recommendedCount: 1267,
+        suitableFor: ['hamilelik süreci', '3 aylık tertip', 'manevi teselli'],
+      },
+      {
+        key: 'evlat-fallahu-huvel-veliyyu-ve-huve-yuhyi',
+        nameArabic: 'فَاللّٰهُ هُوَ الْوَلِيُّ وَهُوَ يُحْيِي',
+        nameTurkish: 'Veliyy ve Muhyî Ayeti',
+        transliteration: "Fallâhu huve'l-veliyyu ve huve yuhyî.",
+        meaning: "Şüphesiz Allah tek dosttur; hayat veren ve dirilten O'dur.",
+        virtue:
+          'Eşlerin çocuk sahibi olmaya manevi hazırlığı için birliktelik öncesi okunması tavsiye edilir.',
+        source: 'Şûrâ Suresi, 42/9',
+        tags: ['evlat', 'aile', 'birliktelik', 'ayet'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 289,
+        suitableFor: ['evlat niyeti', 'eş duası', 'birliktelik öncesi'],
+      },
+      {
+        key: 'evlat-huvel-lahul-haliqul-bariu',
+        nameArabic: 'هُوَ اللّٰهُ الْخَالِقُ الْبَارِئُ',
+        nameTurkish: 'Hâlık-Bârî Esma Ayeti',
+        transliteration: "Huve'l-lâhu'l-hâliku'l-bâriü.",
+        meaning: 'O, yaratan ve yoktan var edendir.',
+        virtue:
+          'Maddi-manevi engellerin aşılması ve yaratılış mucizesinin tecellisi niyetiyle okunur.',
+        source: 'Haşr Suresi, 59/24',
+        tags: ['evlat', 'esma', 'halik', 'bari'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 1054,
+        suitableFor: [
+          'hamilelikte kolaylık',
+          'engellerin kalkması',
+          'hayırlı evlat',
+        ],
+      },
+      {
+        key: 'evlat-estagfirullah-el-azim-el-lezi',
+        nameArabic:
+          'أَسْتَغْفِرُ اللّٰهَ الْعَظِيمَ الَّذِي لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ',
+        nameTurkish: 'Hayy Kayyum İstiğfarı',
+        transliteration:
+          "Estağfirullah el-azîm el-lezî lâ ilâhe illâ huve'l-hayye'l-kayyûme ve etûbü ileyh.",
+        meaning:
+          'Hayy ve Kayyum olan Allah’tan bağışlanma diler, günahlarıma tövbe ederim.',
+        virtue:
+          'Tövbe ve istiğfarın, ilahi rızık ve evlat nimetinin kapılarını açan anahtarlardan olduğu aktarılır.',
+        source: 'Nûh Suresi 71/10-12; hadis rivayetleri',
+        tags: ['evlat', 'istigfar', 'tevbe', 'dua'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: ['günlük istiğfar', 'alternatif 700', 'manevi arınma'],
+      },
+      {
+        key: 'evlat-bismillah-allahumme-cennibnes-seytan',
+        nameArabic:
+          'بِسْمِ اللّٰهِ اللّٰهُمَّ جَنِّبْنَا الشَّيْطَانَ وَجَنِّبِ الشَّيْطَانَ مَا رَزَقْتَنَا',
+        nameTurkish: 'Birliktelik Öncesi Korunma Duası',
+        transliteration:
+          "Bismillâh. Allâhümme cennibne'ş-şeytâne ve cennibi'ş-şeytâne mâ razaktenâ.",
+        meaning:
+          "Allah'ım, şeytanı bizden ve bize ihsan edeceğin evlattan uzaklaştır.",
+        virtue:
+          'Birliktelik öncesinde okunduğunda, doğacak çocuğun şeytanın zararından korunacağı müjdelenmiştir.',
+        source: 'Sahih-i Müslim, Nikâh, 11',
+        tags: ['evlat', 'korunma', 'aile', 'dua'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 1,
+        suitableFor: ['birliktelik öncesi', 'evlat korunması', 'aile duası'],
+      },
+      {
+        key: 'evlat-allahummecalni-zurriyyeten-tayyibeten',
+        nameArabic:
+          'اللّٰهُمَّ اجْعَلْ لِي مِنْ لَدُنْكَ ذُرِّيَّةً طَيِّبَةً مُطِيعَةً',
+        nameTurkish: 'Temiz ve İtaatkâr Nesil Duası',
+        transliteration:
+          "Allâhümmec'alnî min ledünke zürriyyeten tayyibeten mutîaten.",
+        meaning:
+          'Allahım, bana katından temiz, saygılı ve itaatkar bir nesil ihsan eyle.',
+        virtue:
+          'Eşlerin birliktelik öncesinde besmele ve 3 İhlas sonrası yaptığı dua tertiplerindendir.',
+        source: 'Bilal Eren, Açıklamalı Büyük Dua Hazinesi',
+        tags: ['evlat', 'dua', 'nesil', 'ihlas-tertibi'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 1,
+        suitableFor: ['3 ihlas sonrası', 'evlat niyeti', 'aile duası'],
+      },
+      {
+        key: 'evlat-ya-musavvir',
+        nameArabic: 'يَا مُصَوِّرُ',
+        nameTurkish: 'Yâ Musavvir',
+        transliteration: 'Yâ Musavvir',
+        meaning: 'Her şeye şekil, suret ve hususiyet veren Allah.',
+        virtue:
+          'Çocuğun ahlaken ve fıtraten güzel olması, fiziksel gelişiminin sağlıklı olması için zikredilir.',
+        source: 'Esma-i Hüsna; Haşr Suresi 59/24',
+        tags: ['evlat', 'esma', 'musavvir', 'hamilelik'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 336,
+        suitableFor: ['sağlıklı gelişim', 'hayırlı nesil', 'hamilelik süreci'],
+      },
+      {
+        key: 'evlat-ya-bari',
+        nameArabic: 'يَا بَارِئُ',
+        nameTurkish: 'Yâ Bâri’',
+        transliteration: 'Yâ Bâri’',
+        meaning: 'Her şeyi kusursuz ve uyumlu yaratan Allah.',
+        virtue:
+          'Embriyonun gelişim sürecinde fiziksel bozukluklardan korunma ve selamet niyetiyle zikredilir.',
+        source: 'Esma-i Hüsna; Haşr Suresi 59/24',
+        tags: ['evlat', 'esma', 'bari', 'hamilelik'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 214,
+        suitableFor: ['hamilelikte selamet', 'fiziksel gelişim', 'korunma'],
+      },
+      {
+        key: 'evlat-ya-mubdi',
+        nameArabic: 'يَا مُبْدِئُ',
+        nameTurkish: 'Yâ Mübdi’',
+        transliteration: 'Yâ Mübdi’',
+        meaning: 'Maddesiz ve örneksiz olarak ilk kez yaratan Allah.',
+        virtue:
+          'Düşük riskini önleme ve hamileliğin vaktinde tamamlanması niyetiyle seherde okunur.',
+        source: 'Esma-i Hüsna Sırları',
+        tags: ['evlat', 'esma', 'mubdi', 'seher'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'morning',
+        recommendedCount: 99,
+        suitableFor: [
+          'seher virdi',
+          'hamilelikte korunma',
+          'düşük riskine karşı dua',
+        ],
+      },
+      {
+        key: 'evlat-es-samed',
+        nameArabic: 'الصَّمَدُ',
+        nameTurkish: 'Es-Samed',
+        transliteration: 'Es-Samed',
+        meaning:
+          'Hiçbir şeye muhtaç olmayan, her şeyin kendisine muhtaç olduğu yaratıcı.',
+        virtue:
+          'Evlat isteyenlerin sabah ve gece düzenli zikriyle hayırlı nesle vesile olacağı aktarılır.',
+        source: 'Esma-i Hüsna Tecellileri',
+        tags: ['evlat', 'esma', 'samed', 'zikir'],
+        categories: ['genel', 'aile', 'evlat'],
+        timeOfDay: 'any',
+        recommendedCount: 1000,
+        suitableFor: [
+          'evlat sahibi olma niyeti',
+          'sabah-gece virdi',
+          'hayırlı nesil',
+        ],
+      },
+    ],
+    specialDays: [],
+  },
+  {
+    key: 'koruyucu-zikirler',
+    label: 'Büyü, Nazar ve Vesveseye Karşı Koruyucu Zikirler',
+    dhikrItems: [
+      {
+        key: 'korunma-muavvizeteyn-felak-nas',
+        nameArabic:
+          'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ مِنْ شَرِّ مَا خَلَقَ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ ۝ قُلْ أَعُوذُ بِرَبِّ النَّاسِ مَلِكِ النَّاسِ إِلٰهِ النَّاسِ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ مِنَ الْجِنَّةِ وَالنَّاسِ',
+        nameTurkish: 'Muavvizeteyn (Felak ve Nâs Sureleri)',
+        transliteration:
+          "Kul eûzü bi-rabbi'l-felak. Min şerri mâ halak. Ve min şerri ğâsikın izâ vekab. Ve min şerri'n-neffâsâti fi'l-ukad. Ve min şerri hâsidin izâ hased. Kul eûzü bi-rabbi'n-nâs. Meliki'n-nâs. İlâhi'n-nâs. Min şerri'l-vesvâsi'l-hannâs. Ellezî yüvesvisü fî sudûri'n-nâs. Mine'l-cinneti ve'n-nâs.",
+        meaning:
+          'Felak: Yaratılmışların, gecenin, düğümlere üfleyenlerin ve hasetçinin şerrinden Allaha sığınırım. Nâs: Vesvese verenin şerrinden insanların Rabbine, Melikine ve İlahına sığınırım.',
+        virtue:
+          'Peygamber Efendimizin büyü, nazar, sihir ve vesveseye karşı en çok okuduğu korunma sureleridir.',
+        source:
+          "Buhârî, Ehâdîsü'l-Enbiyâ 10; Tirmizî, Tıb 16; Nesâî, İstiâze 37; Ebû Dâvûd",
+        tags: ['korunma', 'nazar', 'buyu', 'vesvese', 'felak', 'nas'],
+        categories: ['genel', 'korunma', 'nazar'],
+        timeOfDay: 'any',
+        recommendedCount: 3,
+        suitableFor: [
+          'sabah-akşam korunma',
+          'nazar',
+          'vesvese',
+          'manevi sığınma',
+        ],
+      },
+      {
+        key: 'korunma-ayetel-kursi-tam',
+        nameArabic:
+          'اللّٰهُ لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
+        nameTurkish: 'Âyetel Kürsî (Tam)',
+        transliteration:
+          "Allâhu lâ ilâhe illâ hüvel hayyül kayyûm. Lâ te'huzuhû sinetün ve lâ nevm. Lehû mâ fis-semâvâti ve mâ fil-ard. Men zellezî yeşfeu indehû illâ bi-iznih. Ya'lemu mâ beyne eydîhim ve mâ halfehüm. Ve lâ yuhîtûne bi şey'in min ilmihî illâ bimâ şâ'. Vesia kürsiyyühüs-semâvâti vel-ard. Ve lâ yeûdühû hifzuhümâ. Ve hüvel aliyyül azîm.",
+        meaning:
+          "Allah, kendisinden başka ilah olmayandır; diridir, kayyumdur. O'nu ne uyuklama ne uyku tutar... O yücedir, büyüktür.",
+        virtue:
+          'Şeytan, cin, nazar ve manevi baskılara karşı en güçlü korunma ayetlerinden biri kabul edilir.',
+        source: 'Bakara Suresi, 2/255',
+        tags: ['korunma', 'ayetel-kursi', 'nazar', 'buyu', 'vesvese'],
+        categories: ['genel', 'korunma', 'kuran'],
+        timeOfDay: 'any',
+        recommendedCount: 3,
+        suitableFor: ['sabah-akşam virdi', 'ev korunması', 'nazar ve vesvese'],
+      },
+      {
+        key: 'korunma-bismillahillezi',
+        nameArabic:
+          'بِسْمِ اللّٰهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',
+        nameTurkish: 'Bismillâhillezî Duası',
+        transliteration:
+          "Bismillâhillezî lâ yedurru me'asmihî şey'ün fil erdi ve lâ fis-semâi ve hüves-semî'ul alîm.",
+        meaning:
+          "Allah'ın adıyla; O'nun ismiyle yerde ve gökte hiçbir şey zarar veremez. O her şeyi işitendir, bilendir.",
+        virtue:
+          'Sabah-akşam üçer defa okunmasıyla ani bela, musibet, nazar ve manevi zararlara karşı korunma niyeti taşır.',
+        source: 'İbn Mâce, Dua 11; Ebû Dâvûd, Edeb 102-103; Tirmizî, Daavât 40',
+        tags: ['korunma', 'nazar', 'bela', 'dua'],
+        categories: ['genel', 'korunma', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 3,
+        suitableFor: ['sabah-akşam', 'ani belalara karşı', 'nazar korunması'],
+      },
+      {
+        key: 'korunma-kelimatillahit-tamme',
+        nameArabic:
+          'أُعِيذُ بِكَلِمَاتِ اللّٰهِ التَّامَّةِ مِنْ شَرِّ كُلِّ شَيْطَانٍ وَهَامَّةٍ وَمِنْ شَرِّ كُلِّ عَيْنٍ لَامَّةٍ',
+        nameTurkish: 'Kelimâtillâhit-tâmme Duası',
+        transliteration:
+          "Eûzü bi-kelimâtillâhi't-tâmmeti min şerri külli şeytânin ve hâmmetin ve min şerri külli aynin lâmmetin.",
+        meaning:
+          "Allah'ın eksiksiz kelimelerine; her şeytanın, her zararlı canlının ve her kem gözün şerrinden sığınırım.",
+        virtue:
+          'Nazar, cin etkisi ve görünmeyen ruhani olumsuzluklara karşı güçlü bir korunma duası olarak okunur.',
+        source:
+          "Buhârî, Ehâdîsü'l-Enbiyâ 10; Müslim, Zikir 54; Tirmizî, Daavât 40",
+        tags: ['korunma', 'nazar', 'cin', 'dua'],
+        categories: ['genel', 'korunma', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: ['çocuk korunması', 'kem göz', 'manevi sığınma'],
+      },
+      {
+        key: 'korunma-hasbunallahu-ve-nimel-vekil',
+        nameArabic: 'حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَكِيلُ',
+        nameTurkish: "Hasbünallâhu ve Ni'mel Vekîl",
+        transliteration: "Hasbünallâhu ve ni'mel vekîl.",
+        meaning: 'Allah bize yeter; O ne güzel vekildir.',
+        virtue:
+          'Haksız beddua, düşman korkusu ve ruhani darlıklarda müminin sığınacağı en büyük tevekkül zikirlerindendir.',
+        source: 'Âl-i İmrân 3/173; Buhârî, Tefsir 13',
+        tags: ['korunma', 'tevekkul', 'beddua', 'korku'],
+        categories: ['genel', 'korunma', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: ['korku anları', 'haksızlık', 'ruhani daralma'],
+      },
+      {
+        key: 'korunma-kalem-sonu-51-52',
+        nameArabic:
+          'وَإِنْ يَكَادُ الَّذِينَ كَفَرُوا لَيُزْلِقُونَكَ بِأَبْصَارِهِمْ لَمَّا سَمِعُوا الذِّكْرَ وَيَقُولُونَ إِنَّهُ لَمَجْنُونٌ وَمَا هُوَ إِلَّا ذِكْرٌ لِلْعَالَمِينَ',
+        nameTurkish: 'Kalem Suresi Sonu (Nazar Ayeti)',
+        transliteration:
+          'Ve in yekâdüllezîne keferû leyüzlikûneke bi-ebsârihim lemmâ semiûz-zikra ve yekûlûne innehu lemecnûn. Ve mâ huve illâ zikrun lil âlemîn.',
+        meaning:
+          'İnkarcılar zikri işitince neredeyse seni gözleriyle devireceklerdi... Oysa bu, alemler için bir öğüttür.',
+        virtue:
+          'Nazarın yıkıcı etkilerine karşı günlük korunma tertiplerinde sıkça okunur.',
+        source: 'Kalem Suresi, 68/51-52',
+        tags: ['korunma', 'nazar', 'kalem', 'ayet'],
+        categories: ['genel', 'korunma', 'kuran'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: ['nazar korunması', 'ruhani baskı', 'günlük vird'],
+      },
+      {
+        key: 'korunma-la-havle',
+        nameArabic:
+          'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ',
+        nameTurkish: 'Lâ Havle Zikri (Korunma)',
+        transliteration: 'Lâ havle ve lâ kuvvete illâ billâhil aliyyil azîm.',
+        meaning: "Güç ve kuvvet yalnızca yüce Allah'ın yardımıyladır.",
+        virtue:
+          'Ağır manevi baskı, vesvese ve ruhani daralmalara karşı iç kuvvet ve korunma niyetiyle okunur.',
+        source: 'İmam-ı Rabbani, Mektubat; alimlerin tavsiyeleri',
+        tags: ['korunma', 'vesvese', 'havkale', 'manevi-guc'],
+        categories: ['genel', 'korunma', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 500,
+        suitableFor: ['vesvese', 'ruhani daralma', 'manevi direnç'],
+      },
+      {
+        key: keyMap.HZYUSUF,
+        nameArabic:
+          'لَا إِلٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
+        nameTurkish: "Hz. Yunus'un Duası",
+        transliteration:
+          'Lâ ilâhe illâ ente sübhâneke innî küntü minez-zâlimîn.',
+        meaning:
+          'Senden başka hiçbir ilâh yoktur. Seni bütün noksan sıfatlardan tenzih ederim. Gerçekten ben zâlimlerden (kendi nefsine haksızlık edenlerden) oldum.',
+        virtue:
+          'Ağır manevi hava, içsel tıkanıklık ve beddua etkisi korkusunda sığınılacak güçlü bir yakarıştır. Ağır travmalar, kederler, çaresizlikler ve her türlü psikolojik darlıktan kurtulmaya vesile olur. Kişinin kendi sınırlarını kabul edip mutlak güce sığınmasını sağlayarak bilişsel yükü hafifletir.',
+        source: 'Enbiyâ Suresi, 87. Ayet / Tirmizî; İbn Sünnî ',
+        tags: ['korunma', 'yunus-duasi', 'vesvese', 'sıkıntı'],
+        categories: ['genel', 'korunma', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 41,
+        suitableFor: [
+          'ruhani sıkıntı',
+          'vesvese',
+          'manevi arınma',
+          'darlık anları',
+        ],
+      },
+      {
+        key: 'korunma-suyuti-vesvese-duasi',
+        nameArabic:
+          'يَا اللّٰهُ الرَّقِيبُ الْحَفِيظُ الرَّحِيمُ يَا اللّٰهُ الْحَيُّ الْحَلِيمُ الْعَظِيمُ الرَّؤُوفُ الْكَرِيمُ',
+        nameTurkish: "Süyuti'nin Vesvese ve Korunma Duası",
+        transliteration:
+          'Yâ Allahür-rakîbül-hafîzür-rahîm. Yâ Allahür-hayyül-halîmül-azîmür-raûfül-kerîm...',
+        meaning:
+          'Ey gözeten, koruyan, merhamet eden Allahım; benimle şeytan arasına set çek.',
+        virtue:
+          'İçsel vesvese, ani korkular ve ruhî bunalımlara karşı günlük korunma virdi olarak okunur.',
+        source: 'Celaleddin-i Süyuti; İmam-ı Gazali',
+        tags: ['korunma', 'vesvese', 'zikir', 'sukunet'],
+        categories: ['genel', 'korunma', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 33,
+        suitableFor: ['vesvese kontrolü', 'ani korku', 'ruhi denge'],
+      },
+      {
+        key: 'korunma-dua-i-sifa',
+        nameArabic:
+          'اللّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ كُلِّ ضُرٍّ وَأَدْرِ عَنِّي مَا يَضُرُّنِي',
+        nameTurkish: 'Dua-i Şifa',
+        transliteration:
+          'Allâhümme innî eûzü bike min külli durrin ve edurrî men lem yedurruh.',
+        meaning:
+          "Allah'ım, zarardan sana sığınırım; bana zarar verecek şeyleri benden uzaklaştır.",
+        virtue:
+          'Nazar, haset ve haksız bedduaların ruhani ağırlığına karşı arınma niyetiyle okunur.',
+        source: 'Manevi şifa kaynakları ve dua mecmuaları',
+        tags: ['korunma', 'sifa', 'nazar', 'haset'],
+        categories: ['genel', 'korunma', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: ['nazar etkisi', 'haset', 'ruhani temizlik'],
+      },
+      {
+        key: 'korunma-iman-ikrari-zikri',
+        nameArabic: 'آمَنْتُ بِاللّٰهِ وَرُسُلِهِ',
+        nameTurkish: 'İman İkrarı Zikri',
+        transliteration: 'Âmentü billâhi ve rusulih.',
+        meaning: "Allah'a ve O'nun gönderdiği elçilere iman ettim.",
+        virtue:
+          'Şeytanın inançla ilgili vesveselerini kesmek için tavsiye edilen iman tazeleme zikridir.',
+        source: "Buhârî, Bed'ü'l-Halk 11; Müslim, Îmân 212",
+        tags: ['korunma', 'iman', 'vesvese', 'zikir'],
+        categories: ['genel', 'korunma', 'iman'],
+        timeOfDay: 'any',
+        recommendedCount: 33,
+        suitableFor: ['itikadi vesvese', 'iman tazeleme', 'zihinsel netlik'],
+      },
+      {
+        key: 'korunma-estagfirullah-min-kulli-ma-kerihallah',
+        nameArabic: 'أَسْتَغْفِرُ اللّٰهَ مِنْ كُلِّ مَا كَرِهَ اللّٰهُ',
+        nameTurkish: 'Estağfirullah min külli mâ kerihallah',
+        transliteration: 'Estağfirullah min külli mâ kerihallah.',
+        meaning:
+          "Allah'ın razı olmadığı her şey için O'ndan bağışlanma dilerim.",
+        virtue:
+          'Maddi-manevi sıkıntılar, nazar ve beddua etkilerinden arınmaya yönelik istiğfar tertibidir.',
+        source: 'İmam-ı Rabbani, Mektubat',
+        tags: ['korunma', 'istigfar', 'arinma', 'beddua'],
+        categories: ['genel', 'korunma', 'istigfar'],
+        timeOfDay: 'any',
+        recommendedCount: 70,
+        suitableFor: ['günlük istiğfar', 'beddua korkusu', 'manevi temizlik'],
+      },
+      {
+        key: 'korunma-suhreverdi-tehlikeyi-onleme',
+        nameArabic:
+          'بِسْمِ اللّٰهِ مَا شَاءَ اللّٰهُ لَا قُوَّةَ إِلَّا بِاللّٰهِ',
+        nameTurkish: "Sühreverdi'nin Tehlikeyi Önleme Duası",
+        transliteration: 'Bismillâhi mâ şâallâh lâ kuvvete illâ billâh...',
+        meaning:
+          "Allah'ın adıyla; Allah ne dilerse o olur, güç ve kuvvet ancak O'nundur.",
+        virtue:
+          'Sabah okunması halinde ani tehlikeler, kötü düşünceler ve ruhani musibetlerden korunma niyeti taşır.',
+        source: "Şeyh Sihâbüddin Sühreverdi, Avarifü'l-Maarif",
+        tags: ['korunma', 'tehlike', 'sabah-virdi', 'dua'],
+        categories: ['genel', 'korunma', 'dua'],
+        timeOfDay: 'morning',
+        recommendedCount: 3,
+        suitableFor: [
+          'tehlike korkusu',
+          'kötü düşünceler',
+          'gün başlangıcı korunma',
+        ],
+      },
+      {
+        key: 'korunma-bakara-ilk-ve-son-ayetler',
+        nameArabic:
+          'الم ذٰلِكَ الْكِتَابُ لَا رَيْبَ فِيهِ هُدًى لِلْمُتَّقِينَ الَّذِينَ يُؤْمِنُونَ بِالْغَيْبِ وَيُقِيمُونَ الصَّلَاةَ وَمِمَّا رَزَقْنَاهُمْ يُنْفِقُونَ وَالَّذِينَ يُؤْمِنُونَ بِمَا أُنْزِلَ إِلَيْكَ وَمَا أُنْزِلَ مِنْ قَبْلِكَ وَبِالْآخِرَةِ هُمْ يُوقِنُونَ أُولٰئِكَ عَلٰى هُدًى مِنْ رَبِّهِمْ وَأُولٰئِكَ هُمُ الْمُفْلِحُونَ ۝ آمَنَ الرَّسُولُ بِمَا أُنْزِلَ إِلَيْهِ مِنْ رَبِّهِ وَالْمُؤْمِنُونَ كُلٌّ آمَنَ بِاللّٰهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِنْ رُسُلِهِ وَقَالُوا سَمِعْنَا وَأَطَعْنَا غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ لَا يُكَلِّفُ اللّٰهُ نَفْسًا إِلَّا وُسْعَهَا لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِنْ قَبْلِنَا رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا أَنْتَ مَوْلَانَا فَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ',
+        nameTurkish: 'Bakara Suresi İlk ve Son Ayetler Tertibi',
+        transliteration:
+          "Elif-lâm-mîm... Ülâike alâ hüden min rabbihim ve ülâike hümül-müflihûn. Âmener-rasûlü bimâ ünzile ileyhi min rabbihî vel-mü'minûn... fensurnâ alel-kavmil-kâfirîn.",
+        meaning:
+          'Bakara suresinin ilk ayetlerindeki hidayet ve son ayetlerdeki iman-teslimiyet dualarını birlikte ihtiva eden tertip.',
+        virtue:
+          'Sabah-akşam ruhani baskı altındaki kimselere okunarak manevi arınma ve korunma niyetiyle uygulanır.',
+        source: 'İbn Mâce, Tirmizî, Darimî; geleneksel koruma tertipleri',
+        tags: ['korunma', 'bakara', 'amenerrasulu', 'hidayet'],
+        categories: ['genel', 'korunma', 'kuran'],
+        timeOfDay: 'any',
+        recommendedCount: 1,
+        suitableFor: ['sabah-akşam tilavet', 'ruhani arınma', 'ev korunması'],
+      },
+      {
+        key: 'korunma-nisa-100-ayet-tertibi',
+        nameArabic:
+          'وَمَنْ يَخْرُجْ مِنْ بَيْتِهِ مُهَاجِرًا إِلَى اللّٰهِ وَرَسُولِهِ ثُمَّ يُدْرِكْهُ الْمَوْتُ فَقَدْ وَقَعَ أَجْرُهُ عَلَى اللّٰهِ',
+        nameTurkish: 'Nisa Suresi 100. Ayet Tertibi',
+        transliteration:
+          'Ve men yahruc min beytihî muhâciran ilallâhi ve rasûlihî sümme yüdrikhhul mevtü fekad vekaa ecruhû alallâh.',
+        meaning:
+          "Kim Allah ve Resulü uğrunda hicret ederek evinden çıkar da sonra ölüm yetişirse, mükafatı Allah'a aittir.",
+        virtue:
+          'Geleneksel havass uygulamalarında güçlü manevi blokajları çözmek için okunan tertipler arasında zikredilir.',
+        source: 'Nisâ Suresi, 4/100',
+        tags: ['korunma', 'nisa', 'ayet', 'buyu'],
+        categories: ['genel', 'korunma', 'kuran'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: ['manevi blokaj', 'ruhani baskı', 'korunma niyeti'],
+      },
+    ],
+    specialDays: [],
+  },
+  {
+    key: 'dogal-afetlerden-korunma-zikirleri',
+    label: 'Doğal Afetlerden Korunma Zikirleri',
+    dhikrItems: [
+      {
+        key: 'afet-allahumme-hfazni-min-beyni-yedeyye',
+        nameArabic:
+          'اللّٰهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي',
+        nameTurkish: 'Altı Yönden Korunma Duası',
+        transliteration:
+          'Allâhümmahfaznî min beyni yedeyye ve min halfî ve an yemînî ve an şimâlî ve min fevkî ve eûzü bi-azametike en uğtâle min tahtî.',
+        meaning:
+          "Allah'ım, beni önümden, arkamdan, sağımdan, solumdan ve üstümden koru; altımdan gelecek helakten azametine sığınırım.",
+        virtue:
+          'Deprem, toprak kayması, çöküntü ve ani fiziksel felaketlere karşı kapsamlı sığınma duası olarak okunur.',
+        source:
+          'Ebû Dâvûd (Edeb, 110); Nesâî (İstiaze, 60); İbn Mâce (Dua, 14)',
+        tags: ['afet', 'deprem', 'korunma', 'dua'],
+        categories: ['genel', 'afet', 'korunma'],
+        timeOfDay: 'any',
+        recommendedCount: 1,
+        suitableFor: ['deprem korkusu', 'yer sarsıntıları', 'günlük korunma'],
+      },
+      {
+        key: 'afet-euzu-bi-kelimatillahit-tammati-min-serri-ma-halak',
+        nameArabic:
+          'أَعُوذُ بِكَلِمَاتِ اللّٰهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',
+        nameTurkish: 'Kelimatullah ile Sığınma Duası',
+        transliteration: "Eûzü bi-kelimâtillâhi't-tâmmâti min şerri mâ halak.",
+        meaning:
+          "Yarattığı her şeyin şerrinden Allah'ın eksiksiz kelimelerine sığınırım.",
+        virtue:
+          'Konaklama, seyahat ve afet riski bulunan ortamlarda her türlü zararlı etkiye karşı okunur.',
+        source: 'Sahih-i Müslim (Zikir, 54); Tirmizî (Deavât, 40)',
+        tags: ['afet', 'seyahat', 'korunma', 'dua'],
+        categories: ['genel', 'afet', 'korunma'],
+        timeOfDay: 'any',
+        recommendedCount: 1,
+        suitableFor: ['seyahat', 'konaklama', 'afet riski'],
+      },
+      {
+        key: 'afet-ebud-derda-duasi-tam',
+        nameArabic:
+          'اللّٰهُمَّ أَنْتَ رَبِّي لَا إِلٰهَ إِلَّا أَنْتَ عَلَيْكَ تَوَكَّلْتُ وَأَنْتَ رَبُّ الْعَرْشِ الْعَظِيمِ مَا شَاءَ اللّٰهُ كَانَ وَمَا لَمْ يَشَأْ لَمْ يَكُنْ لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ أَعْلَمُ أَنَّ اللّٰهَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ وَأَنَّ اللّٰهَ قَدْ أَحَاطَ بِكُلِّ شَيْءٍ عِلْمًا وَأَحْصَى كُلَّ شَيْءٍ عَدَدًا اللّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي وَمِنْ شَرِّ كُلِّ دَابَّةٍ أَنْتَ آخِذٌ بِنَاصِيَتِهَا إِنَّ رَبِّي عَلَى صِرَاطٍ مُسْتَقِيمٍ',
+        nameTurkish: "Ebu'd-Derdâ Afet Korunma Duası",
+        transliteration:
+          "Allâhümme ente rabbî lâ ilâhe illâ ente aleyke tevekkeltü ve ente rabbü'l-arşi'l-azîm. Mâ şâallâhu kâne ve mâ lem yeşe' lem yekün. Lâ havle ve lâ kuvvete illâ billâhil aliyyil azîm. A'lemu ennallâhe alâ külli şey'in kadîr ve ennallâhe kad ehâta bi-külli şey'in ilmen ve ahsâ külle şey'in adedâ. Allâhümme innî eûzü bike min şerri nefsî ve min şerri külli dâbbetin ente âhizün bi-nâsiyetihâ. İnne rabbî alâ sırâtın müstakîm.",
+        meaning:
+          "Allah'ım! Sen benim Rabbimsin... Nefsimin ve tüm canlıların şerrinden sana sığınırım.",
+        virtue:
+          'Sabah-akşam okunduğunda okuyanı, ailesini ve malını ani felaket, yangın, sel ve musibetlerden korumaya yönelik güçlü tevekkül duasıdır.',
+        source: "Kenzü'l-Ummâl (Hadis No: 3432); İbnü's-Sünnî (Amelü'l-Yevm)",
+        tags: ['afet', 'tevekkul', 'yangin', 'sel', 'korunma'],
+        categories: ['genel', 'afet', 'korunma'],
+        timeOfDay: 'any',
+        recommendedCount: 1,
+        suitableFor: [
+          'sabah-akşam',
+          'aile korunması',
+          'ani felaketlerden sığınma',
+        ],
+      },
+      {
+        key: 'afet-subhanallahi-yusebbihur-rad',
+        nameArabic:
+          'سُبْحَانَ الَّذِي يُسَبِّحُ الرَّعْدُ بِحَمْدِهِ وَالْمَلَائِكَةُ مِنْ خِيفَتِهِ',
+        nameTurkish: 'Gök Gürültüsü Zikri',
+        transliteration:
+          "Sübhânallezî yüsebbihur-ra'dü bihamdihî vel-melâiketü min hîfetihî.",
+        meaning:
+          "Gök gürültüsünün ve meleklerin O'nu tesbih ettiği Allah'ı noksan sıfatlardan tenzih ederim.",
+        virtue:
+          'Şiddetli gök gürültüsü, fırtına ve yıldırım anlarında atmosferik afetlere karşı okunur.',
+        source: "İmam Mâlik (Muvatta, Sefer, 40); Ra'd Suresi 13. ayet tefsiri",
+        tags: ['afet', 'firtina', 'yildirim', 'tesbih'],
+        categories: ['genel', 'afet', 'korunma'],
+        timeOfDay: 'any',
+        recommendedCount: 3,
+        suitableFor: ['fırtına', 'yıldırım', 'gök gürültüsü'],
+      },
+      {
+        key: 'afet-bismillahi-ma-saallah-la-kuvvete',
+        nameArabic:
+          'بِسْمِ اللّٰهِ مَا شَاءَ اللّٰهُ لَا قُوَّةَ إِلَّا بِاللّٰهِ',
+        nameTurkish: 'Bismillâhi Mâ Şâallah Tertibi',
+        transliteration:
+          'Bismillâhi mâ şâallah lâ kuvvete illâ billâh. Bismillâhi mâ şâallah lâ yesûkul hayre illallah. Bismillâhi mâ şâallah lâ yekşifüssûe illallah...',
+        meaning:
+          "Allah'ın adıyla; Allah ne dilerse o olur. Güç yalnız O'ndandır. Hayrı yalnız O sevk eder, kötülüğü yalnız O giderir.",
+        virtue:
+          'Her sabah üç defa okunması halinde yangın, boğulma, ani ölüm ve beklenmedik afetlere karşı korunma niyeti taşır.',
+        source: 'Şeyh Şihâbüddin Sühreverdi hazretlerinin evradı',
+        tags: ['afet', 'sabah-virdi', 'yangin', 'korunma'],
+        categories: ['genel', 'afet', 'korunma'],
+        timeOfDay: 'morning',
+        recommendedCount: 3,
+        suitableFor: ['sabah korunma', 'ani afetler', 'tehlikeden sakınma'],
+      },
+      {
+        key: 'afet-allahumme-inni-eseluke-bi-enne-lekel-hamd',
+        nameArabic:
+          'اللّٰهُمَّ إِنِّي أَسْأَلُكَ بِأَنَّ لَكَ الْحَمْدَ لَا إِلٰهَ إِلَّا أَنْتَ يَا حَنَّانُ يَا مَنَّانُ يَا بَدِيعَ السَّمَاوَاتِ وَالْأَرْضِ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ يَا حَيُّ يَا قَيُّومُ',
+        nameTurkish: 'İsm-i A’zam Tertibi Duası',
+        transliteration:
+          "Allâhümme innî es'elüke bi-enne lekel-hamd. Lâ ilâhe illâ ente, yâ Hannânü yâ Mennânü, yâ Bedî'as-semâvâti ve'l-ard, yâ Zelcelâli ve'l-ikrâm, yâ Hayyü yâ Kayyûm.",
+        meaning:
+          "Allah'ım! Hamd sanadır. Senden başka ilah yoktur. Ey Hannân, ey Mennân... ey Hayy ve Kayyûm!",
+        virtue:
+          "İçinde İsm-i A'zamı barındırdığı rivayet edilen yakarış olarak, afet ve büyük tehlike anlarında duanın süratle kabulü niyetiyle okunur.",
+        source: 'Tirmizî (Deavât, 82); Ebû Dâvûd (Salât, 368)',
+        tags: ['afet', 'dua', 'ismi-azam', 'korunma'],
+        categories: ['genel', 'afet', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 1,
+        suitableFor: ['büyük tehlike', 'afet anı', 'acil sığınma'],
+      },
+      {
+        key: 'afet-allahumme-la-tektulna-bi-gadabik',
+        nameArabic:
+          'اللّٰهُمَّ لَا تَقْتُلْنَا بِغَضَبِكَ وَلَا تُهْلِكْنَا بِعَذَابِكَ وَعَافِنَا قَبْلَ ذٰلِكَ',
+        nameTurkish: 'Gazaptan Sığınma Duası',
+        transliteration:
+          'Allâhümme lâ tektulnâ bi-gadabike velâ tuhliknâ bi-azâbike ve âfinâ kable zâlik.',
+        meaning:
+          "Allah'ım! Bizi gazabınla öldürme, azabınla helak etme; bunlardan önce bize afiyet ver.",
+        virtue:
+          'Deprem, semavi afetler ve şiddetli doğa olaylarında ilahi rahmete sığınma niyetiyle okunur.',
+        source: 'Tirmizî (Deavât, 48); Ahmed b. Hanbel (Müsned, II, 116)',
+        tags: ['afet', 'rahmet', 'siginma', 'dua'],
+        categories: ['genel', 'afet', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 3,
+        suitableFor: ['deprem', 'fırtına', 'afet korkusu'],
+      },
+      {
+        key: 'afet-allahumme-inni-eseluke-hayraha',
+        nameArabic:
+          'اللّٰهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا وَخَيْرَ مَا فِيهَا وَخَيْرَ مَا أُرْسِلَتْ بِهِ وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ مَا فِيهَا وَشَرِّ مَا أُرْسِلَتْ بِهِ',
+        nameTurkish: 'Rüzgar ve Fırtına Duası',
+        transliteration:
+          "Allâhümme innî es'elüke hayrahâ ve hayra mâ fîhâ ve hayra mâ ürsilet bihî ve eûzü bike min şerrihâ ve şerri mâ fîhâ ve şerri mâ ürsilet bihî.",
+        meaning:
+          "Allah'ım! Bu rüzgarın hayrını ve gönderildiği hayrı dilerim; şerrinden sana sığınırım.",
+        virtue:
+          'Kasırga, hortum ve şiddetli rüzgarların yıkıcı afete dönüşmemesi için okunan Nebevi duadır.',
+        source: 'Sahih-i Müslim (İstiskâ, 15)',
+        tags: ['afet', 'ruzgar', 'firtina', 'dua'],
+        categories: ['genel', 'afet', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 1,
+        suitableFor: ['fırtına anı', 'şiddetli rüzgar', 'kasırga korkusu'],
+      },
+      {
+        key: 'afet-bismillahi-ala-nefsi-ve-ehli-ve-mali',
+        nameArabic: 'بِسْمِ اللّٰهِ عَلَى نَفْسِي وَأَهْلِي وَمَالِي',
+        nameTurkish: 'Can, Aile ve Malı Allaha Havale Duası',
+        transliteration: 'Bismillâhi alâ nefsî ve ehlî ve mâlî.',
+        meaning:
+          "Allah'ın adıyla kendimi, ailemi ve malımı Allah'ın himayesine bırakıyorum.",
+        virtue:
+          'Sabahları okunduğunda can, aile ve malın dış tehlikelere karşı korunmasına niyet edilir.',
+        source: "Nesâî (Amelü'l-Yevm); İbnü's-Sünnî",
+        tags: ['afet', 'aile', 'mal', 'korunma'],
+        categories: ['genel', 'afet', 'dua'],
+        timeOfDay: 'morning',
+        recommendedCount: 1,
+        suitableFor: ['aile korunması', 'mal emniyeti', 'gün başlangıcı'],
+      },
+      {
+        key: 'afet-rabbi-kullu-seyin-hadimuke',
+        nameArabic:
+          'رَبِّ كُلُّ شَيْءٍ هَادِمُكَ رَبِّ فَاحْفَظْنَا وَانْصُرْنَا وَارْحَمْنَا',
+        nameTurkish: 'Kozmik Korunma ve Nusret Duası',
+        transliteration:
+          "Rabbî küllü şey'in hâdimüke, rabbî fe'hfaznâ ve'nsurnâ ve'rhamnâ.",
+        meaning:
+          'Ey Rabbim! Her şey senin emrindedir; bizi koru, bize yardım et, bize merhamet et.',
+        virtue:
+          'Mahlukatın ve doğa olaylarının şerrine karşı ilahi koruma ve nusret talebi için okunur.',
+        source: "Taberânî (el-Mu'cemü'l-Kebîr); Ebû Dâvûd",
+        tags: ['afet', 'nusret', 'korunma', 'dua'],
+        categories: ['genel', 'afet', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: ['afet korkusu', 'genel korunma', 'yardım talebi'],
+      },
+      {
+        key: 'afet-kureys-suresi',
+        nameArabic:
+          'لِإِيلَافِ قُرَيْشٍ إِيلَافِهِمْ رِحْلَةَ الشِّتَاءِ وَالصَّيْفِ فَلْيَعْبُدُوا رَبَّ هٰذَا الْبَيْتِ الَّذِي أَطْعَمَهُمْ مِنْ جُوعٍ وَآمَنَهُمْ مِنْ خَوْفٍ',
+        nameTurkish: 'Kureyş Suresi',
+        transliteration:
+          "Li-îlâfi kureyş. Îlâfihim rıhlete'ş-şitâi ve's-sayf. Felya'budû rabbe hâzel-beyt. Ellezî at'amehüm min cûin ve âmenehüm min havf.",
+        meaning:
+          'Kureyşe kolaylaştırılan yolculuk nimetini hatırlatarak, açlık ve korkudan emin kılan Rabbe kulluğu emreder.',
+        virtue:
+          'Korkulu ve tehlikeli bölgelerde emniyet, sakinlik ve korunma niyetiyle okunan surelerdendir.',
+        source: 'Kureyş Suresi (106); klasik tefsir kaynakları',
+        tags: ['afet', 'emniyet', 'korku', 'sure'],
+        categories: ['genel', 'afet', 'kuran'],
+        timeOfDay: 'any',
+        recommendedCount: 11,
+        suitableFor: ['tehlikeli yolculuk', 'emniyet talebi', 'korku anları'],
+      },
+    ],
+    specialDays: [],
+  },
+  {
+    key: 'sikinti-kaygi-kriz-zikirleri',
+    label: 'Sıkıntı, Kaygı ve Kriz Anı Zikirleri',
+    dhikrItems: [
+      {
+        key: 'sikinti-insirah-suresi',
+        nameArabic:
+          'أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ وَوَضَعْنَا عَنْكَ وِزْرَكَ الَّذِي أَنْقَضَ ظَهْرَكَ وَرَفَعْنَا لَكَ ذِكْرَكَ فَإِنَّ مَعَ الْعُسْرِ يُسْرًا إِنَّ مَعَ الْعُسْرِ يُسْرًا فَإِذَا فَرَغْتَ فَانْصَبْ وَإِلَىٰ رَبِّكَ فَارْغَبْ',
+        nameTurkish: 'İnşirah Suresi',
+        transliteration:
+          "Elem neşrah leke sadrek. Ve vada'nâ anke vizrek. Ellezî enkada zahrek. Ve refa'nâ leke zikrek. Feinne me'al'usri yüsren. İnne me'al'usri yüsren. Feizâ ferağte fensab. Ve ilâ Rabbike ferğab.",
+        meaning:
+          'Senin için bağrını açmadık mı? İndirmedik mi senden o yükünü? O sırtında gıcırdamakta olan yükünü? Senin şanını yüceltmedik mi? Demek ki zorlukla beraber bir kolaylık var. Evet, zorlukla beraber bir kolaylık var! O halde boş kaldığında yine kalk yorul ve ancak Rabbine yönel.',
+        virtue:
+          'Stres, endişe, iç daralması ve panik nöbeti anlarında kalbe manevi genişlik ve dinginlik verir. Kriz anında 3 veya 7 kere okunması; sağ el göğüs üzerine konularak 7 tekrar edilmesi, kalpteki darlığın hafiflemesine niyet edilen uygulamalardandır.',
+        source: "İnşirah Suresi (Kur'an-ı Kerim, 94. Sure)",
+        tags: ['sikinti', 'kaygi', 'kriz', 'insirah', 'panik', 'dua'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'kuran'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'kriz anı',
+          'kaygı artışı',
+          'iç daralması',
+          'panik nöbeti',
+          'stres yönetimi',
+          '3-7 tekrar tertibi',
+        ],
+      },
+      {
+        key: 'sikinti-la-ilahe-illallahul-azimul-halim',
+        nameArabic:
+          'لَا إِلٰهَ إِلَّا اللّٰهُ الْعَظِيمُ الْحَلِيمُ لَا إِلٰهَ إِلَّا اللّٰهُ رَبُّ الْعَرْشِ الْعَظِيمِ لَا إِلٰهَ إِلَّا اللّٰهُ رَبُّ السَّمَاوَاتِ وَرَبُّ الْأَرْضِ وَرَبُّ الْعَرْشِ الْكَرِيمِ',
+        nameTurkish: 'Kriz ve Keder Anı Tevhid Zikri',
+        transliteration:
+          'Lâ ilâhe illâllahül-azîmül-halîm. Lâ ilâhe illâllahu Rabbül-arşil-azîm. Lâ ilâhe illâllahu Rabbüs-semâvâti ve Rabbül-ardı ve Rabbül-arşil-kerîm.',
+        meaning:
+          "Azamet ve vakar sahibi Allah'tan başka ibadete layık ilah yoktur. Arş-ı Azam sahibi Allah'tan başka ibadete layık ilah yoktur. Göklerin, yerin ve Arş-ı Kerim'in sahibi Allah'tan başka ibadete layık ilah yoktur.",
+        virtue:
+          'Peygamber Efendimizin en ağır kriz, felaket, çaresizlik ve derin keder anlarında okuduğu sığınma zikridir. Yoğun kaygı ve panik anında zihni toparlayıp emniyet hissini güçlendirmeye vesile olur.',
+        source: 'Buhârî (Tecrîd-i Sarîh: 2150); Müslim',
+        tags: ['sikinti', 'kaygi', 'kriz', 'panik', 'tevhid', 'siginma'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'kriz anı',
+          'derin keder',
+          'yoğun anksiyete',
+          'panik hali',
+          'çaresizlik hissi',
+          'manevi emniyet',
+        ],
+      },
+      {
+        key: 'sikinti-euzu-bi-kelimatillahit-tammati-min-gadabihi',
+        nameArabic:
+          'أَعُوذُ بِكَلِمَاتِ اللّٰهِ التَّامَّاتِ مِنْ غَضَبِهِ وَشَرِّ عِبَادِهِ وَمِنْ هَمَزَاتِ الشَّيَاطِينِ وَأَنْ يَحْضُرُونِ',
+        nameTurkish: 'Gece Panik ve Vesvese Sığınma Duası',
+        transliteration:
+          "Eûzü bi-kelimâtillâhi't-tâmmâti min gadabihî ve şerri ibâdihî ve min hemezâtiş-şeyâtîni ve en yehdurûn.",
+        meaning:
+          "Allah'ın gazabından, kullarının kötülüklerinden, şeytanların vesveselerinden ve onların yanımda bulunmalarından Allah'ın mükemmel kelimelerine sığınırım.",
+        virtue:
+          'Uykuda ani uyanmalar, gece panikleri, yalnızlık korkusu, dehşet halleri ve yüksek anksiyete semptomlarını hafifletmede etkili bir sığınma duasıdır; kalbe emniyet hissi aşılar.',
+        source: 'Tirmizî (Daavât, 94)',
+        tags: ['sikinti', 'kaygi', 'gece-panigi', 'vesvese', 'siginma', 'dua'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        timeOfDay: 'night',
+        recommendedCount: 7,
+        suitableFor: [
+          'gece anksiyetesi',
+          'ani uyanma',
+          'panik hali',
+          'yalnızlık korkusu',
+          'vesvese',
+          'manevi emniyet',
+        ],
+      },
+      {
+        key: 'sikinti-inna-lillahi-ve-inna-ileyhi-raciun',
+        nameArabic:
+          'إِنَّا لِلّٰهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ اللّٰهُمَّ عِنْدَكَ أَحْتَسِبُ مُصِيبَتِي فَأْجِرْنِي فِيهَا وَأَبْدِلْ لِي بِهَا خَيْرًا مِنْهَا',
+        nameTurkish: 'Musibet ve Teslimiyet Duası',
+        transliteration:
+          'İnnâ lillâhi ve innâ ileyhi râciûn. Allahümme ındeke ahtesibü musîbetî feecirnî fîhâ ve ebdil lî bihâ hayran minhâ.',
+        meaning:
+          "Şüphesiz biz Allah'ın mülküyüz ve O'na döneceğiz. Allah'ım, bu musibetin ecrini Senin katından dilerim; bunda bana ecir ver ve yerine daha hayırlısını lütfet.",
+        virtue:
+          'Beklenmedik şoklar, kayıplar ve travmatik olaylar karşısında zihinsel dağılmayı azaltır; isyan dürtüsünü teslimiyet ve kabul düzeyine çekerek kalbi teskin eder.',
+        source: 'Bakara Suresi, 2/156; Ebû Dâvud (Cenâiz: 3119); Müslim',
+        tags: ['sikinti', 'musibet', 'kayip', 'travma', 'teslimiyet', 'dua'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'ani kayıp',
+          'şok anı',
+          'travmatik olaylar',
+          'yas süreci',
+          'kalbi teskin',
+          'teslimiyet',
+        ],
+      },
+      {
+        key: 'sikinti-ya-uddeti-inde-siddeti',
+        nameArabic:
+          'يَا عُدَّتِي عِنْدَ شِدَّتِي وَيَا غَوْثِي عِنْدَ كُرْبَتِي أُحْرُسْنِي بِعَيْنِكَ الَّتِي لَا تَنَامُ وَاكْفِنِي بِرُكْنِكَ الَّذِي لَا يُرَامُ',
+        nameTurkish: 'Şiddet ve Kurbette İmdad Duası',
+        transliteration:
+          "Yâ uddetî ınde şiddetî ve yâ gâvsî ınde kürbetî! Ührüsnî bi-aynikelletî lâ tenâmü vekfînî birüknike'llezî lâ yürâmü.",
+        meaning:
+          'Güçlükte desteğim, sıkıntıda imdadıma yetişen Rabbim! Beni hiç uyumayan gözünle muhafaza et; sarsılmaz kudretinle bana kafi gel ve yardım eyle.',
+        virtue:
+          'Yoğun çaresizlik, ağır kriz ve umutsuzluk anlarında kalbe emniyet ve dayanma gücü veren özel bir sığınma duası olarak okunur.',
+        source: 'İmam Cafer-i Sadık Sıkıntı Duası',
+        tags: ['sikinti', 'kriz', 'caresizlik', 'siginma', 'dua'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'ağır kriz',
+          'çaresizlik hissi',
+          'umutsuzluk anı',
+          'manevi dayanma gücü',
+          'kalbi emniyet',
+        ],
+      },
+      {
+        key: 'sikinti-allahu-allahu-rabbi',
+        nameArabic: 'اللّٰهُ اللّٰهُ رَبِّي لَا أُشْرِكُ بِهِ شَيْئًا',
+        nameTurkish: 'Tevhid ile Panik Yatıştırma Zikri',
+        transliteration: "Allâhu Allâhu Rabbî lâ üşrikü bihî şey'en.",
+        meaning: "Rabbim Allah'tır, Allah! Ben O'na hiçbir şeyi ortak koşmam.",
+        virtue:
+          'Panik atak dalgası veya yoğun korku hissedildiğinde 7 defa peş peşe söylendiğinde zihinsel odağı toparlayıp akut semptomları yatıştırmaya yardımcı olur.',
+        source: 'Ebû Dâvud; Nesâî',
+        tags: ['sikinti', 'kaygi', 'panik', 'tevhid', 'dua'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'panik atak dalgası',
+          'ani korku',
+          'akut kaygı',
+          'zihinsel odaklanma',
+          'tevhidle sakinleşme',
+        ],
+      },
+      {
+        key: 'sikinti-ya-muahhir',
+        nameArabic: 'يَا مُؤَخِّرُ',
+        nameTurkish: "Yâ Mu'ahhir",
+        transliteration: "Yâ Mu'ahhir",
+        meaning:
+          'Dilediğini geriye bırakan, sakinleştiren, dinginleştiren ve erteleyen.',
+        virtue:
+          'Akut kaygı ve panik atak nöbetleri esnasında zihni sakinleştirir, kalp ritmini dengelemeye ve iç dinginliği artırmaya destek olur. Günlük 847 tekrar manevi denge niyetiyle uygulanır.',
+        source: 'Esmâ-i Hüsnâ / Şifa Ekolü',
+        tags: ['sikinti', 'kaygi', 'panik', 'esma', 'sukunet'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'any',
+        recommendedCount: 847,
+        suitableFor: [
+          'akut anksiyete',
+          'panik atak',
+          'kalp çarpıntısı',
+          'zihinsel sakinleşme',
+          'manevi denge',
+        ],
+      },
+      {
+        key: 'sikinti-ya-muksit',
+        nameArabic: 'يَا مُقْسِطُ',
+        nameTurkish: 'Yâ Muksit',
+        transliteration: 'Yâ Muksit',
+        meaning:
+          'Adaletle hükmeden, her şeyi yerli yerine koyan ve uyum sağlayan.',
+        virtue:
+          'İçsel öfke, hiddet, tahammülsüzlük ve yoğun iç sıkıntılarında sabah zikri olarak önerilir; duygusal dalgalanmaları yatıştırmaya yardımcı olur.',
+        source: 'Esmâ-i Hüsnâ',
+        tags: ['sikinti', 'kaygi', 'ofke', 'duygusal-denge', 'esma'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'morning',
+        recommendedCount: 209,
+        suitableFor: [
+          'içsel öfke',
+          'hiddet hali',
+          'tahammülsüzlük',
+          'duygusal dalgalanma',
+          'sabah tesbihi',
+        ],
+      },
+      {
+        key: 'sikinti-ya-zulcelali-vel-ikram',
+        nameArabic: 'يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
+        nameTurkish: "Yâ Zülcelâli Ve'l-İkrâm",
+        transliteration: "Yâ Zülcelâli Ve'l-İkrâm",
+        meaning: 'Sonsuz azamet (celal) ve ikram (lütuf) sahibi olan.',
+        virtue:
+          'Zihne musallat olan obsesif düşünce, takıntı, kuruntu ve inançla ilgili vesveselerden kurtulmak için sabah zikri olarak tavsiye edilir.',
+        source: 'Esmâ-i Hüsnâ / Cevşen-ül Kebir',
+        tags: ['sikinti', 'vesvese', 'obsesif-dusunce', 'takinti', 'esma'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'morning',
+        recommendedCount: 1155,
+        suitableFor: [
+          'obsesif düşünceler',
+          'takıntılar',
+          'kuruntular',
+          'itikadi vesvese',
+          'sabah tesbihi',
+        ],
+      },
+      {
+        key: 'sikinti-ya-rauf',
+        nameArabic: 'يَا رَؤُوفُ',
+        nameTurkish: 'Yâ Rauf',
+        transliteration: 'Yâ Rauf',
+        meaning: 'Çok şefkatli, merhametli ve son derece yumuşaklık gösteren.',
+        virtue:
+          'Öfke kontrolü zorlanan ve ani parlamalar yaşayan kişilerde sakinleşmeyi, kalpte şefkat ve merhamet hissinin yerleşmesini desteklemek için zikredilir.',
+        source: 'Esmâ-i Hüsnâ / Şifa Ekolü',
+        tags: ['sikinti', 'ofke-kontrolu', 'sakinlesme', 'sefkat', 'esma'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'any',
+        recommendedCount: 287,
+        suitableFor: [
+          'öfke kontrolü',
+          'ani parlama',
+          'duygusal yumuşama',
+          'şefkat hissi',
+          'sabah-ikindi zikri',
+        ],
+      },
+      {
+        key: 'sikinti-ya-mumin',
+        nameArabic: 'يَا مُؤْمِنُ',
+        nameTurkish: "Yâ Mü'min",
+        transliteration: "Yâ Mü'min",
+        meaning: 'Emniyet ve güven veren, gönüllere huzur ve iman bağışlayan.',
+        virtue:
+          'Gelecek kaygısı, ölüm korkusu ve hastalığa yakalanma endişesini yatıştırmak için sabah ve ikindi sonrası düzenli zikredilir.',
+        source: 'Esmâ-i Hüsnâ',
+        tags: ['sikinti', 'kaygi', 'korku', 'emniyet', 'esma'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'any',
+        recommendedCount: 136,
+        suitableFor: [
+          'gelecek kaygısı',
+          'ölüm korkusu',
+          'hastalık endişesi',
+          'iç huzur',
+          'sabah-ikindi zikri',
+        ],
+      },
+      {
+        key: 'sikinti-ya-muheymin',
+        nameArabic: 'يَا مُهَيْمِنُ',
+        nameTurkish: 'Yâ Müheymin',
+        transliteration: 'Yâ Müheymin',
+        meaning: 'Gözetip koruyan, her şeyin mutlak emniyetini sağlayan.',
+        virtue:
+          'Sosyal kaygı, paranoya ve başkalarının kötülüğünden korkma durumlarında korunma hissini güçlendirmek ve sezgiyi berraklaştırmak için zikredilir.',
+        source: 'Esmâ-i Hüsnâ',
+        tags: ['sikinti', 'sosyal-anksiyete', 'paranoya', 'korunma', 'esma'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'any',
+        recommendedCount: 145,
+        suitableFor: [
+          'sosyal anksiyete',
+          'paranoya',
+          'kötülük korkusu',
+          'sezgi güçlendirme',
+          'manevi emniyet',
+        ],
+      },
+      {
+        key: 'sikinti-ya-halik',
+        nameArabic: 'يَا خَالِقُ',
+        nameTurkish: 'Yâ Hâlık',
+        transliteration: 'Yâ Hâlık',
+        meaning: 'Yoktan var eden, her şeyi ölçülü ve düzenli yaratan.',
+        virtue:
+          'Çözülmesi güç düğümlenmiş işlerin açılması, hayal kırıklığı ve derin üzüntü/sıkıntı hallerinde manevi toparlanma için sabah ve ikindi vakitlerinde zikredilir.',
+        source: 'Esmâ-i Hüsnâ',
+        tags: [
+          'sikinti',
+          'uzuntu',
+          'dugumlenmis-isler',
+          'manevi-toparlanma',
+          'esma',
+        ],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'any',
+        recommendedCount: 731,
+        suitableFor: [
+          'derin üzüntü',
+          'hayal kırıklığı',
+          'çözümü zor sorunlar',
+          'işlerin açılması',
+          'sabah-ikindi zikri',
+        ],
+      },
+      {
+        key: 'sikinti-ya-muizz',
+        nameArabic: 'يَا مُعِزُّ',
+        nameTurkish: 'Yâ Muizz',
+        transliteration: 'Yâ Muizz',
+        meaning: 'İzzet ve şeref veren, koruyup yücelten.',
+        virtue:
+          'Sosyal ortamlarda aşağılanma, yetersizlik hissi ve genel fobiler karşısında özgüveni ve manevi dayanıklılığı desteklemek için zikredilir.',
+        source: 'Esmâ-i Hüsnâ',
+        tags: ['sikinti', 'ozguven', 'sosyal-kaygi', 'fobi', 'esma'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'any',
+        recommendedCount: 117,
+        suitableFor: [
+          'aşağılanma korkusu',
+          'yetersizlik hissi',
+          'sosyal fobiler',
+          'özgüven artışı',
+          'manevi güç',
+        ],
+      },
+      {
+        key: 'sikinti-ya-metin',
+        nameArabic: 'يَا مَتِينُ',
+        nameTurkish: 'Yâ Metîn',
+        transliteration: 'Yâ Metîn',
+        meaning: 'Sarsılmaz derecede güçlü, metanet ve kudret sahibi.',
+        virtue:
+          'Tahammülsüzlük, açgözlülük, hırs ve olumsuz ahlaki eğilimlerden arınarak ruhsal dayanıklılık ve psikolojik metaneti güçlendirmeye destek olur.',
+        source: 'Esmâ-i Hüsnâ',
+        tags: ['sikinti', 'metanet', 'dayaniklilik', 'hirs-kontrolu', 'esma'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'morning',
+        recommendedCount: 500,
+        suitableFor: [
+          'tahammülsüzlük',
+          'hırs ve açgözlülük',
+          'psikolojik metanet',
+          'ruhsal dayanıklılık',
+          'sabah zikri',
+        ],
+      },
+      {
+        key: 'sikinti-ya-selam-ya-latif-ya-vedud',
+        nameArabic: 'يَا سَلَامُ يَا لَطِيفُ يَا وَدُودُ',
+        nameTurkish: 'Yâ Selâm, Yâ Latîf, Yâ Vedûd',
+        transliteration: 'Yâ Selâm, Yâ Latîf, Yâ Vedûd',
+        meaning:
+          'Esenlik veren, lütfeden ve sonsuz sevgiyle sarmalayan ilahi isimlerin terkibi.',
+        virtue:
+          'Kalbe derin bir sükunet ve sevgi iklimi kazandırmak, kaygı anında kalp sıkışmasını hafifletmek için ritmik şekilde zikredilir.',
+        source: 'Esmâ-i Hüsnâ Terkibi',
+        tags: ['sikinti', 'kaygi', 'kalp-sukuneti', 'sevgi', 'esma-terkibi'],
+        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        timeOfDay: 'any',
+        recommendedCount: 99,
+        suitableFor: [
+          'anksiyete anı',
+          'kalp sıkışması',
+          'iç huzur',
+          'duygusal yumuşama',
+          'her biri 99 tekrar',
+        ],
+      },
+    ],
+    specialDays: [],
+  },
+  {
+    key: 'is-hayati-zikirleri',
+    label: 'İş Hayatı ve Kariyer Zikirleri',
+    dhikrItems: [
+      {
+        key: 'is-allahumme-inni-eselukes-sebate',
+        nameArabic:
+          'اللّٰهُمَّ إِنِّي أَسْأَلُكَ الثَّبَاتَ فِي الْأَمْرِ وَأَسْأَلُكَ عَزِيمَةَ الرُّشْدِ وَأَسْأَلُكَ شُكْرَ نِعْمَتِكَ وَحُسْنَ عِبَادَتِكَ وَأَسْأَلُكَ لِسَانًا صَادِقًا وَقَلْبًا سَلِيمًا وَأَعُوذُ بِكَ مِنْ شَرِّ مَا تَعْلَمُ وَأَسْأَلُكَ مِنْ خَيْرِ مَا تَعْلَمُ وَأَسْتَغْفِرُكَ مِمَّا تَعْلَمُ إِنَّكَ أَنْتَ عَلَّامُ الْغُيُوبِ',
+        nameTurkish: 'İşte Sebat ve Rüşd Duası',
+        transliteration:
+          "Allâhümme innî es'elüke's-sebâte fi'l-emri ve es'elüke 'azîmete'r-ruşdi. Ve es'elüke şükra ni'metike ve husne 'ıbâdetike. Ve es'elüke lisânen sâdikan ve kalben selîmen. Ve e'ûzü bike min şerri mâ ta'lemü. Ve es'elüke min hayri mâ ta'lemü. Ve estağfiruke mimmâ ta'lemü. İnneke ente 'allâmü'l-ğuyûb.",
+        meaning:
+          "Allah'ım! Senden dinde sebat etmeyi ve doğruluğa azmetmeyi istiyorum. Nimetine şükretmeyi ve sana güzel bir şekilde ibadet edebilmeyi istiyorum. Doğruyu konuşan bir dil ve eğriliklerden uzak bir kalp diliyorum. Bildiğin her çeşit şerden sana sığınıyorum. Bildiğin bütün hayırları senden istiyorum. Bildiğin günahlarımdan dolayı senden bağış diliyorum. Şüphesiz Sen gaybı bilensin.",
+        virtue:
+          'Yeni başlayan görev veya projelerde istikrarı korumak, zorluklar karşısında yılmamak, kurumsal dürüstlük ve profesyonel itibarı güçlendirmek için okunur.',
+        source: "Tirmizî, De'avât, 23; Diyanet Haber Kayıtları",
+        tags: ['is-hayati', 'kariyer', 'sebat', 'durustluk', 'dua'],
+        categories: ['genel', 'is-hayati', 'kariyer', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'yeni görev başlangıcı',
+          'proje yönetimi',
+          'profesyonel itibar',
+          'işte istikrar',
+          'zorluklara karşı metanet',
+        ],
+      },
+      {
+        key: 'is-allahumme-ikfini-bi-helalike',
+        nameArabic:
+          'اللّٰهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ',
+        nameTurkish: 'Helal Rızık ve İstiğna Duası',
+        transliteration:
+          "Allâhümme ikfînî bi helâlike an harâmike, veğninî bi fadlike ammen sivâke.",
+        meaning:
+          "Allah'ım! Bana helal rızık nasip et, beni haramdan koru; lütfunla beni kendinden başkasına muhtaç etme.",
+        virtue:
+          'Borç yükünden ve maddi sıkıntıdan kurtulmak, iş hayatında helal ve bereketli kazanç elde etmek, bağımsız ve kimseye muhtaç olmayan bir duruş kazanmak için tavsiye edilir.',
+        source: "Hz. Ali'den rivayet; Tirmizî, Daavât, 121",
+        tags: ['is-hayati', 'helal-rizik', 'borc', 'bereket', 'dua'],
+        categories: ['genel', 'is-hayati', 'kariyer', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 70,
+        suitableFor: [
+          'borç yükü',
+          'maddi sıkıntı',
+          'helal kazanç',
+          'bereketli gelir',
+          'kimseye muhtaç olmama',
+        ],
+      },
+      {
+        key: 'is-allahumme-ya-ganiyyu-ya-hamidu',
+        nameArabic:
+          'اللّٰهُمَّ يَا غَنِيُّ يَا حَمِيدُ يَا مُبْدِئُ يَا مُعِيدُ يَا رَحِيمُ يَا وَدُودُ أَغْنِنِي بِحَلَالِكَ عَنْ حَرَامِكَ وَبِطَاعَتِكَ عَنْ مَعْصِيَتِكَ وَبِفَضْلِكَ عَمَّنْ سِوَاكَ',
+        nameTurkish: "İmam-ı Azam'dan Bereket ve Helal Rızık Duası",
+        transliteration:
+          "Allahümme Ya Ğaniyyü, Ya Hamidü, Ya Mübdiü, Ya Mu'idü, Ya Rahimü, Ya Vedud. Eğisni bi helalike an haramike ve bi taatike an ma'siyetike ve bi fadlike ammen sivake.",
+        meaning:
+          "Allah'ım! Ey Zengin, Ey Övülen, Ey ilk baştan yaratan, Ey yeniden dirilten, Ey Merhametli, Ey Sevgi Dolu! Rızkımı haramdan helaline, isyanımdan itaatine ve başkalarından Senin lütfuna çevir.",
+        virtue:
+          'Ticari başarı, iş hayatında kalıcı bolluk ve bereket, maddi darboğazlardan çıkış ve helal kazanç bilincini güçlendirmek için sıklıkla okunması tavsiye edilir.',
+        source: "İmam-ı Azam Ebû Hanife'nin Bereket Duası",
+        tags: [
+          'is-hayati',
+          'ticari-basari',
+          'bereket',
+          'bolluk',
+          'helal-rizik',
+          'esma',
+          'dua',
+        ],
+        categories: ['genel', 'is-hayati', 'kariyer', 'rizik', 'esma', 'dua'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'ticari bereket',
+          'işte bolluk',
+          'maddi darboğazdan çıkış',
+          'helal kazanç hassasiyeti',
+          'sürekli vird',
+        ],
+      },
+      {
+        key: 'is-yusuf-54-56-kariyer-tertibi',
+        nameArabic:
+          'وَقَالَ الْمَلِكُ ائْتُونِي بِهِ أَسْتَخْلِصْهُ لِنَفْسِي فَلَمَّا كَلَّمَهُ قَالَ إِنَّكَ الْيَوْمَ لَدَيْنَا مَكِينٌ أَمِينٌ قَالَ اجْعَلْنِي عَلَى خَزَائِنِ الْأَرْضِ إِنِّي حَفِيظٌ عَلِيمٌ وَكَذَٰلِكَ مَكَّنَّا لِيُوسُفَ فِي الْأَرْضِ يَتَبَوَّأُ مِنْهَا حَيْثُ يَشَاءُ',
+        nameTurkish: 'Yusuf 54-56 Kariyer ve Makam Ayetleri',
+        transliteration:
+          "Ve kâlel meliku'tûnî bihî estahlishu li nefsî, fe lemmâ kellemehû kâle innekel yevme ledeynâ mekînun emîn. Kâlec'alnî alâ hazâinil ard, innî hafîzun alîm. Ve kezâlike mekkennâ li yûsufe fîl ard...",
+        meaning:
+          "Kral dedi ki: 'Onu bana getirin, onu kendime özel danışman edineyim.' Onunla konuşunca da: 'Bugün sen bizim yanımızda yüksek makam sahibi, güvenilir birisin' dedi. Yusuf: 'Beni ülkenin hazinelerinin başına getir. Çünkü ben onları çok iyi korurum ve bu işi bilirim' dedi. Böylece Yusuf'u o ülkede güçlü bir konuma getirdik.",
+        virtue:
+          'İş arayanların hayırlı bir iş bulması, çalışanların kariyer basamaklarında yükselmesi, yönetim kademelerinde güven ve itibar kazanması niyetiyle namazlardan sonra okunur.',
+        source: 'Yusuf Suresi, 12/54-56',
+        tags: ['is-hayati', 'kariyer', 'terfi', 'yonetim', 'itibar', 'kuran'],
+        categories: ['genel', 'is-hayati', 'kariyer', 'kuran'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'iş bulma',
+          'kariyer yükselişi',
+          'yönetim pozisyonu',
+          'kurumsal güven',
+          'namaz sonrası tilavet',
+        ],
+      },
+      {
+        key: 'is-ibrahim-7-sukur-bereket',
+        nameArabic:
+          'وَإِذْ تَأَذَّنَ رَبُّكُمْ لَئِنْ شَكَرْتُمْ لَأَزِيدَنَّكُمْ وَلَئِنْ كَفَرْتُمْ إِنَّ عَذَابِي لَشَدِيدٌ',
+        nameTurkish: 'İbrahim 7 Şükür ve Artış Ayeti',
+        transliteration:
+          "Ve iz te'ezzenâ rabbukum le'in şekertum le'eziydennakum ve le'in keferetum inne azâbî leşedîd.",
+        meaning:
+          "Hani Rabbiniz şöyle bildirmişti: 'Andolsun, eğer şükrederseniz elbette size (nimetimi) artırırım. Ve andolsun, eğer nankörlük ederseniz şüphesiz benim azabım çok şiddetlidir.'",
+        virtue:
+          'Mevcut başarıların ve kariyer kazanımlarının korunması, işteki refah ve bereketin süreklilik kazanması için şükür bilinciyle okunur.',
+        source: 'İbrahim Suresi, 14/7',
+        tags: ['is-hayati', 'sukur', 'bereket', 'nimet-artisi', 'kuran'],
+        categories: ['genel', 'is-hayati', 'kariyer', 'rizik', 'kuran'],
+        timeOfDay: 'any',
+        recommendedCount: 7,
+        suitableFor: [
+          'işte kazanımı koruma',
+          'nimet artışı niyeti',
+          'refahın sürekliliği',
+          'şükür disiplini',
+          'namaz sonrası okuma',
+        ],
+      },
+      {
+        key: 'is-ya-rafi-kariyer-yukselis',
+        nameArabic: 'يَا رَافِعُ',
+        nameTurkish: "Yâ Râfi'",
+        transliteration: "Yâ Râfi'",
+        meaning: 'Yukarı kaldıran, dereceleri yükselten.',
+        virtue:
+          'Günde 351 defa zikredildiğinde çalışanların insanlar ve iş arkadaşları arasında saygınlığının artmasına, rızkının genişlemesine ve makamının yükselmesine vesile olması niyetiyle okunur.',
+        source: 'Esmâ-ül Hüsnâ',
+        tags: [
+          'is-hayati',
+          'kariyer',
+          'terfi',
+          'itibar',
+          'sayginlik',
+          'rizik',
+          'esma',
+        ],
+        categories: ['genel', 'is-hayati', 'kariyer', 'rizik', 'esma'],
+        timeOfDay: 'any',
+        recommendedCount: 351,
+        suitableFor: [
+          'işte saygınlık',
+          'kariyer yükselişi',
+          'makam artışı',
+          'rızkın genişlemesi',
+          'çalışma hayatında itibar',
+        ],
+      },
+    ],
+    specialDays: [],
   },
 ];
 
