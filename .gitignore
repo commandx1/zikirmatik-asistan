@@ -16,3 +16,4 @@ android-logs
 .env.*
 *.env
 docs
+*.jks

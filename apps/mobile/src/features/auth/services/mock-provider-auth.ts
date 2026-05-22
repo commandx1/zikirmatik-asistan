@@ -191,6 +191,14 @@ async function requestGoogleIdentityToken() {
       }
     }
 
+    const diagnostic = formatGoogleAuthDiagnostic(error);
+    if (diagnostic) {
+      throw new ProviderAuthError(
+        'transient',
+        `Google giriş hatası (${diagnostic}).`,
+      );
+    }
+
     throw new ProviderAuthError(
       'transient',
       'Google ile giriş sırasında beklenmeyen bir hata oluştu.',
@@ -221,4 +229,26 @@ function isCancelError(error: unknown) {
     (typeof candidate.message === 'string' &&
       candidate.message.toLowerCase().includes('cancel'))
   );
+}
+
+function formatGoogleAuthDiagnostic(error: unknown) {
+  if (!error || typeof error !== 'object') {
+    return undefined;
+  }
+
+  const candidate = error as { code?: unknown; message?: unknown };
+  const code =
+    typeof candidate.code === 'string' && candidate.code.trim()
+      ? candidate.code.trim()
+      : undefined;
+  const message =
+    typeof candidate.message === 'string' && candidate.message.trim()
+      ? candidate.message.trim()
+      : undefined;
+
+  if (code && message) {
+    return `${code}: ${message}`;
+  }
+
+  return code ?? message;
 }
