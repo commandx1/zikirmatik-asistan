@@ -33,6 +33,7 @@ export async function clearProviderSession(provider: AuthProvider) {
   }
 
   const webClientId = resolveGoogleWebClientId();
+  const androidClientId = resolveGoogleAndroidClientId();
   if (!webClientId) {
     return;
   }
@@ -46,6 +47,7 @@ export async function clearProviderSession(provider: AuthProvider) {
 
   GoogleSignin.configure({
     webClientId,
+    ...(androidClientId ? { androidClientId } : {}),
     offlineAccess: false,
   });
 
@@ -125,6 +127,7 @@ async function requestGoogleIdentityToken() {
   }
 
   const webClientId = resolveGoogleWebClientId();
+  const androidClientId = resolveGoogleAndroidClientId();
   if (!webClientId) {
     throw new ProviderAuthError(
       'terminal',
@@ -144,6 +147,7 @@ async function requestGoogleIdentityToken() {
 
   GoogleSignin.configure({
     webClientId,
+    ...(androidClientId ? { androidClientId } : {}),
     offlineAccess: false,
   });
 
@@ -192,22 +196,30 @@ async function requestGoogleIdentityToken() {
     }
 
     const diagnostic = formatGoogleAuthDiagnostic(error);
+    const configSummary = formatGoogleClientConfigSummary({
+      webClientId,
+      androidClientId,
+    });
     if (diagnostic) {
       throw new ProviderAuthError(
         'transient',
-        `Google giriş hatası (${diagnostic}).`,
+        `Google giriş hatası (${diagnostic}). ${configSummary}`,
       );
     }
 
     throw new ProviderAuthError(
       'transient',
-      'Google ile giriş sırasında beklenmeyen bir hata oluştu.',
+      `Google ile giriş sırasında beklenmeyen bir hata oluştu. ${configSummary}`,
     );
   }
 }
 
 function resolveGoogleWebClientId() {
   return process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?.trim();
+}
+
+function resolveGoogleAndroidClientId() {
+  return process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID?.trim();
 }
 
 async function loadGoogleSignInModule() {
@@ -251,4 +263,29 @@ function formatGoogleAuthDiagnostic(error: unknown) {
   }
 
   return code ?? message;
+}
+
+function formatGoogleClientConfigSummary({
+  webClientId,
+  androidClientId,
+}: {
+  webClientId: string;
+  androidClientId?: string;
+}) {
+  return [
+    `webClientId=${maskGoogleClientId(webClientId)}`,
+    `androidClientId=${maskGoogleClientId(androidClientId)}`,
+  ].join(', ');
+}
+
+function maskGoogleClientId(value?: string) {
+  if (!value) {
+    return 'yok';
+  }
+
+  if (value.length <= 12) {
+    return value;
+  }
+
+  return `${value.slice(0, 12)}...`;
 }
