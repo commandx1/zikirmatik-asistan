@@ -46,7 +46,6 @@ export function ProfileScreen() {
               onPressManageSubscription={profile.manageSubscription}
               onPressRateApp={profile.rateApp}
               onPressSendFeedback={profile.sendFeedback}
-              onPressRestartOnboarding={profile.onRestartOnboarding}
               onPressLogout={profile.onLogout}
               onToggleDailyReminder={profile.onToggleDailyReminder}
               onToggleKandilNotification={profile.setKandilNotificationsEnabled}

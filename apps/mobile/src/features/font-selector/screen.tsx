@@ -1,4 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
@@ -44,6 +45,7 @@ const OPTIONS: Array<{
 ];
 
 export function FontSelectorScreen() {
+  const router = useRouter();
   const { tokens, themeName } = useThemeTokens();
   const { fontFamily, setFontFamily } = useThemePreferences();
   const [draftFontFamily, setDraftFontFamily] = useState<AppFontFamily>(fontFamily);
@@ -57,7 +59,14 @@ export function FontSelectorScreen() {
   return (
     <PageLayout>
       <View className="flex-1 w-full">
-        <PageHeader title="Yazı Tipi" subtitle="Uygulama yazı tipini belirle" />
+        <PageHeader
+          title="Yazı Tipi"
+          subtitle="Uygulama yazı tipini belirle"
+          leftIconName="chevron-left"
+          onPressLeft={() => {
+            router.back();
+          }}
+        />
         <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={24}>
           <View className="gap-5">
             <SelectorPreviewCard themeName={themeName} tokens={tokens} previewFontFamily={draftFontFamily} />
@@ -100,13 +109,13 @@ export function FontSelectorScreen() {
         </PageScrollView>
 
         <BottomActionFooter>
-          <PrimaryCtaButton
-            label="Değişiklikleri Kaydet"
-            onPress={() => setFontFamily(draftFontFamily)}
-            disabled={!hasChanges}
-            className={hasChanges ? undefined : "opacity-50"}
-            textClassName="text-[15px]"
-          />
+          {hasChanges ? (
+            <PrimaryCtaButton
+              label="Değişiklikleri Kaydet"
+              onPress={() => setFontFamily(draftFontFamily)}
+              textClassName="text-[15px]"
+            />
+          ) : null}
         </BottomActionFooter>
       </View>
     </PageLayout>

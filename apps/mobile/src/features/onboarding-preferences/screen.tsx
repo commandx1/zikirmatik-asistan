@@ -44,9 +44,12 @@ export function OnboardingPreferencesScreen() {
   );
 
   const hasChanges = draftPurpose !== storePurpose || draftCity !== (storeCity || profileCity || "");
-  const canSave = draftCity.trim().length > 0 && !isSaving;
 
   const onSave = async () => {
+    if (isSaving) {
+      return;
+    }
+
     const trimmedCity = draftCity.trim();
     if (!trimmedCity) {
       setError("Lütfen şehir seç.");
@@ -129,13 +132,13 @@ export function OnboardingPreferencesScreen() {
         </PageScrollView>
 
         <BottomActionFooter>
-          <PrimaryCtaButton
-            label={isSaving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
-            onPress={onSave}
-            disabled={!hasChanges || !canSave}
-            className={hasChanges && canSave ? undefined : "opacity-50"}
-            textClassName="text-[15px]"
-          />
+          {hasChanges ? (
+            <PrimaryCtaButton
+              label={isSaving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
+              onPress={onSave}
+              textClassName="text-[15px]"
+            />
+          ) : null}
         </BottomActionFooter>
       </View>
     </PageLayout>
