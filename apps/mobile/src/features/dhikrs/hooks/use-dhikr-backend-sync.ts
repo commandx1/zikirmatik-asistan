@@ -41,18 +41,16 @@ export function useDhikrBackendSync() {
           return;
         }
 
-        hydratePersonalItems(
-          personalDhikrs.map((item) => ({
-            id: item.clientId,
-            transliteration: item.transliteration?.trim() || item.name,
-            arabic: item.arabic,
-            meaning: item.meaning,
-            target: item.target,
-            isFavorite: item.isFavorite
-          }))
-        );
-
         const latestByDhikr = new Map<
+          string,
+          {
+            count: number;
+            targetCount: number;
+            createdAt?: string;
+            isFavorite: boolean;
+          }
+        >();
+        const latestByCustomDhikr = new Map<
           string,
           {
             count: number;
@@ -63,22 +61,39 @@ export function useDhikrBackendSync() {
         >();
 
         for (const log of logs) {
-          if (!log.dhikrId) {
-            continue;
+          if (log.dhikrId && !latestByDhikr.has(log.dhikrId)) {
+            latestByDhikr.set(log.dhikrId, {
+              count: log.count,
+              targetCount: log.targetCount,
+              createdAt: log.createdAt,
+              isFavorite: Boolean(log.isFavorite)
+            });
           }
-
-          const existing = latestByDhikr.get(log.dhikrId);
-          if (existing) {
-            continue;
+          if (log.customDhikrId && !latestByCustomDhikr.has(log.customDhikrId)) {
+            latestByCustomDhikr.set(log.customDhikrId, {
+              count: log.count,
+              targetCount: log.targetCount,
+              createdAt: log.createdAt,
+              isFavorite: Boolean(log.isFavorite)
+            });
           }
-
-          latestByDhikr.set(log.dhikrId, {
-            count: log.count,
-            targetCount: log.targetCount,
-            createdAt: log.createdAt,
-            isFavorite: Boolean(log.isFavorite)
-          });
         }
+
+        hydratePersonalItems(
+          personalDhikrs.map((item) => {
+            const customLog = latestByCustomDhikr.get(item.clientId);
+            return {
+              id: item.clientId,
+              transliteration: item.transliteration?.trim() || item.name,
+              arabic: item.arabic,
+              meaning: item.meaning,
+              target: customLog?.targetCount ?? item.target,
+              current: customLog?.count,
+              lastActivityLabel: customLog?.createdAt ? toLastActivityLabel(customLog.createdAt) : undefined,
+              isFavorite: customLog?.isFavorite ?? item.isFavorite
+            };
+          })
+        );
 
         const mappedItems = dhikrs.map((item) => {
           const log = latestByDhikr.get(item._id);
@@ -88,9 +103,9 @@ export function useDhikrBackendSync() {
             transliteration: item.transliteration || item.nameTurkish,
             meaning: item.meaning,
             target: log?.targetCount ?? item.recommendedCount,
-            current: log?.count ?? 0,
-            lastActivityLabel: log?.createdAt ? toLastActivityLabel(log.createdAt) : "Henüz başlanmadı",
-            isFavorite: log?.isFavorite ?? false
+            current: log?.count,
+            lastActivityLabel: log?.createdAt ? toLastActivityLabel(log.createdAt) : undefined,
+            isFavorite: log?.isFavorite
           };
         });
 

@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ZIKIR_ITEMS } from "../features/focus/data";
 import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api-client";
 import type { ZikirItem } from "../features/focus/types";
@@ -59,6 +61,8 @@ type DhikrStore = {
       arabic?: string;
       meaning?: string;
       target: number;
+      current?: number;
+      lastActivityLabel?: string;
       isFavorite?: boolean;
     }>
   ) => void;
@@ -111,12 +115,37 @@ function resolveCustomTarget(target: number | undefined) {
 
 const INITIAL_ITEMS = ZIKIR_ITEMS;
 
-export const useDhikrStore = create<DhikrStore>((set, get) => ({
-  items: INITIAL_ITEMS,
-  selectedDhikrId: "",
-  isHydratedFromBackend: false,
-  lastSavedBackendLog: undefined,
-  selectDhikr: (id) => {
+const safeAsyncStorage: StateStorage = {
+  getItem: async (name) => {
+    try {
+      return await AsyncStorage.getItem(name);
+    } catch {
+      return null;
+    }
+  },
+  setItem: async (name, value) => {
+    try {
+      await AsyncStorage.setItem(name, value);
+    } catch {
+      // Native module missing in current binary; ignore and keep in-memory state.
+    }
+  },
+  removeItem: async (name) => {
+    try {
+      await AsyncStorage.removeItem(name);
+    } catch {
+      // Native module missing in current binary; ignore and keep in-memory state.
+    }
+  }
+};
+
+export const useDhikrStore = create<DhikrStore>()(
+  persist((set, get) => ({
+    items: INITIAL_ITEMS,
+    selectedDhikrId: "",
+    isHydratedFromBackend: false,
+    lastSavedBackendLog: undefined,
+    selectDhikr: (id) => {
     if (!get().items.some((item) => item.id === id)) {
       return;
     }
@@ -337,18 +366,29 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
       }
 
       const personalItems = state.items.filter((item) => item.source === "personal");
-      const normalizedReady: ZikirItem[] = readyItems.map((item) => ({
-        id: item.id,
-        source: "ready",
-        arabic: item.arabic,
-        transliteration: item.transliteration,
-        meaning: item.meaning,
-        current: Math.max(0, Math.floor(item.current ?? 0)),
-        target: normalizeTarget(item.target),
-        lastActivityLabel: item.lastActivityLabel ?? "Henüz başlanmadı",
-        streakDays: 0,
-        isFavorite: Boolean(item.isFavorite)
-      }));
+      const normalizedReady: ZikirItem[] = readyItems.map((item) => {
+        const existing = state.items.find((value) => value.id === item.id && value.source === "ready");
+        const normalizedTarget = normalizeTarget(item.target);
+        const rawCurrent = Math.max(
+          0,
+          Math.floor(typeof item.current === "number" ? item.current : (existing?.current ?? 0))
+        );
+        const normalizedCurrent = Math.min(rawCurrent, normalizedTarget);
+
+        return {
+          ...(existing ?? {}),
+          id: item.id,
+          source: "ready",
+          arabic: item.arabic,
+          transliteration: item.transliteration,
+          meaning: item.meaning,
+          current: normalizedCurrent,
+          target: normalizedTarget,
+          lastActivityLabel: item.lastActivityLabel ?? existing?.lastActivityLabel ?? "Henüz başlanmadı",
+          streakDays: 0,
+          isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)
+        };
+      });
 
       const nextItems = [...personalItems, ...normalizedReady];
       const hasCurrentSelection = nextItems.some((item) => item.id === state.selectedDhikrId);
@@ -363,35 +403,57 @@ export const useDhikrStore = create<DhikrStore>((set, get) => ({
   hydratePersonalItems: (personalItems) =>
     set((state) => {
       const readyItems = state.items.filter((item) => item.source === "ready");
-      const normalizedPersonal: ZikirItem[] = personalItems.map((item) => ({
-        id: item.id,
-        source: "personal",
-        arabic: item.arabic?.trim() || undefined,
-        transliteration: item.transliteration.trim(),
-        meaning: item.meaning?.trim() || undefined,
-        current: 0,
-        target: resolveCustomTarget(item.target),
-        lastActivityLabel: "Henüz başlanmadı",
-        streakDays: 0,
-        isFavorite: Boolean(item.isFavorite)
-      }));
+      const normalizedPersonal: ZikirItem[] = personalItems.map((item) => {
+        const existing = state.items.find((value) => value.id === item.id && value.source === "personal");
+        const normalizedTarget = resolveCustomTarget(item.target);
+        const rawCurrent = Math.max(
+          0,
+          Math.floor(typeof item.current === "number" ? item.current : (existing?.current ?? 0))
+        );
+        const normalizedCurrent = normalizedTarget > 0 ? Math.min(rawCurrent, normalizedTarget) : rawCurrent;
+
+        return {
+          ...(existing ?? {}),
+          id: item.id,
+          source: "personal",
+          arabic: item.arabic?.trim() || undefined,
+          transliteration: item.transliteration.trim(),
+          meaning: item.meaning?.trim() || undefined,
+          current: normalizedCurrent,
+          target: normalizedTarget,
+          lastActivityLabel: item.lastActivityLabel?.trim() || existing?.lastActivityLabel || "Henüz başlanmadı",
+          streakDays: 0,
+          isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)
+        };
+      });
 
       const nextItems = [...normalizedPersonal, ...readyItems];
-      const hasCurrentSelection = nextItems.some((item) => item.id === state.selectedDhikrId);
 
       return {
         items: nextItems,
-        selectedDhikrId: hasCurrentSelection ? state.selectedDhikrId : ""
+        // Personal hydration is only one half of sync pipeline.
+        // Keep current selection here to avoid transient deselection
+        // before ready items are re-hydrated.
+        selectedDhikrId: state.selectedDhikrId
       };
     }),
   applySavedBackendLog: (log) => set({ lastSavedBackendLog: log }),
   setSyncError: (message) => set({ syncError: message }),
-  resetSessionScoped: () =>
-    set({
-      items: INITIAL_ITEMS,
-      selectedDhikrId: "",
-      isHydratedFromBackend: false,
-      lastSavedBackendLog: undefined,
-      syncError: undefined
+    resetSessionScoped: () =>
+      set({
+        items: INITIAL_ITEMS,
+        selectedDhikrId: "",
+        isHydratedFromBackend: false,
+        lastSavedBackendLog: undefined,
+        syncError: undefined
+      })
+  }),
+  {
+    name: "dhikr-store-v1",
+    storage: createJSONStorage(() => safeAsyncStorage),
+    partialize: (state) => ({
+      items: state.items,
+      selectedDhikrId: state.selectedDhikrId
     })
-}));
+  })
+);
