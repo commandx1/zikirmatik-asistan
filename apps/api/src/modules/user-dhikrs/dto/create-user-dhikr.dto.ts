@@ -8,13 +8,15 @@ import {
 } from 'class-validator';
 
 export class CreateUserDhikrDto {
+  @IsOptional()
   @IsString()
   @MaxLength(120)
-  clientId!: string;
+  clientId?: string;
 
+  @IsOptional()
   @IsString()
   @MaxLength(120)
-  name!: string;
+  name?: string;
 
   @IsOptional()
   @IsString()
