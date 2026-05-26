@@ -16,6 +16,7 @@ export type HeroCardViewModel = {
   countdown: CountdownSegment[];
   remaining: string;
   isLocked: boolean;
+  isTodaySpecial: boolean;
 };
 
 export type UpcomingDayViewModel = {
