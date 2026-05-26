@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useMemo, useState } from "react";
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type SelectOption = {
   label: string;
@@ -26,6 +27,7 @@ export function AppSelectBox({
   disabled = false
 }: AppSelectBoxProps) {
   const { tokens } = useThemeTokens();
+  const insets = useSafeAreaInsets();
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedLabel = useMemo(() => options.find((item) => item.value === value)?.label, [options, value]);
@@ -57,12 +59,20 @@ export function AppSelectBox({
             <Pressable
               onPress={() => undefined}
               className="rounded-t-3xl border-t p-5"
-              style={{ borderColor: withAlpha(tokens.textPrimary, 0.08), backgroundColor: tokens.bg }}
+              style={{
+                borderColor: withAlpha(tokens.textPrimary, 0.08),
+                backgroundColor: tokens.bg,
+                paddingBottom: Math.max(20, insets.bottom + 12)
+              }}
             >
               <Text className="mb-3 text-base font-semibold" style={{ color: tokens.textPrimary }}>
                 {title}
               </Text>
-              <ScrollView style={{ maxHeight: 420 }} showsVerticalScrollIndicator={false}>
+              <ScrollView
+                style={{ maxHeight: Math.max(260, 420 - insets.bottom) }}
+                contentContainerStyle={{ paddingBottom: 4 }}
+                showsVerticalScrollIndicator={false}
+              >
                 {options.map((option) => {
                   const isActive = option.value === value;
                   return (
