@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Vibration } from 'react-native'
 import { useAuthStore } from '../../store/auth-store'
 import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
@@ -132,6 +132,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [isSavingLog, setIsSavingLog] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [streakDays, setStreakDays] = useState(0)
+  const liveSelectedCountRef = useRef(0)
+
+  useEffect(() => {
+    liveSelectedCountRef.current = selectedDhikr?.current ?? 0
+  }, [selectedDhikr?.current, selectedDhikr?.id])
 
   const fetchStreakDays = useCallback(async () => {
     if (authStatus !== 'authenticated' || !sessionUserId) {
@@ -370,25 +375,25 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           return
         }
 
-        const willCompleteToday =
-          selectedDhikr.target > 0 &&
-          selectedDhikr.current < selectedDhikr.target &&
-          selectedDhikr.current + 1 >= selectedDhikr.target
+        const baseCount = liveSelectedCountRef.current
+        const nextRawCount = baseCount + 1
+        const nextCount =
+          selectedDhikr.target > 0 ? Math.min(selectedDhikr.target, Math.max(0, nextRawCount)) : Math.max(0, nextRawCount)
+        liveSelectedCountRef.current = nextCount
 
         incrementSelected()
         if (hapticsEnabled) {
           Vibration.vibrate(25)
         }
 
-        if (willCompleteToday) {
-          persistSelectedDhikrLog({
-            countOverride: selectedDhikr.target
-          })
-        }
+        persistSelectedDhikrLog({
+          countOverride: nextCount
+        })
       },
       onResetPress: () => {
         if (selectedDhikr) {
           resetSelected()
+          liveSelectedCountRef.current = 0
           return
         }
 
