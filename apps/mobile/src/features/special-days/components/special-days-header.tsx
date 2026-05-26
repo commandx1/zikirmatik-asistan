@@ -5,7 +5,6 @@ export function SpecialDaysHeader() {
     <PageHeader
       title="Kandil & Özel Günler"
       subtitle="Kutsal gecelere hazırlan"
-      rightIconName="circle-info"
     />
   );
 }
