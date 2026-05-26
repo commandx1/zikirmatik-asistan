@@ -13,7 +13,7 @@ export function ThemeSelectorScreen() {
   return (
     <PageLayout>
       <View className="flex-1 w-full">
-        <SelectorHeader title="Tema Seçimi" subtitle="Uygulamanın görünümünü kişiselleştir" />
+        <SelectorHeader title="Tema Seçimi" subtitle="Uygulamanın görünümünü kişiselleştir" showBackButton />
         <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={24}>
           <View className="gap-8">
             {selector.isPremium ? (
@@ -42,13 +42,13 @@ export function ThemeSelectorScreen() {
         </PageScrollView>
 
         <BottomActionFooter>
-          <PrimaryCtaButton
-            label="Değişiklikleri Kaydet"
-            onPress={selector.saveThemeChanges}
-            disabled={!selector.hasThemeChanges || !selector.canSave}
-            className={selector.hasThemeChanges && selector.canSave ? undefined : "opacity-50"}
-            textClassName="text-[15px]"
-          />
+          {selector.hasThemeChanges ? (
+            <PrimaryCtaButton
+              label="Değişiklikleri Kaydet"
+              onPress={selector.saveThemeChanges}
+              textClassName="text-[15px]"
+            />
+          ) : null}
         </BottomActionFooter>
       </View>
     </PageLayout>
