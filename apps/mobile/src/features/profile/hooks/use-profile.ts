@@ -50,7 +50,6 @@ export function useProfile() {
   const session = useAuthStore((s) => s.session);
   const authDisplayName = useAuthStore((s) => s.session?.displayName);
   const signOut = useAuthStore((s) => s.signOut);
-  const resetOnboarding = useOnboardingStore((s) => s.resetOnboarding);
   const onboardingPurpose = useOnboardingStore((s) => s.purpose);
   const onboardingCity = useOnboardingStore((s) => s.city);
   const setOnboardingPurpose = useOnboardingStore((s) => s.setPurpose);
@@ -158,10 +157,6 @@ export function useProfile() {
   const onLogout = async () => {
     await signOut();
     router.replace("/auth");
-  };
-  const onRestartOnboarding = () => {
-    resetOnboarding();
-    router.replace("/onboarding");
   };
   const manageSubscription = async () => {
     const url =
@@ -640,7 +635,6 @@ export function useProfile() {
     setPremiumPlan,
     activatePremium,
     restorePremium,
-    onRestartOnboarding,
     onLogout
   };
 }

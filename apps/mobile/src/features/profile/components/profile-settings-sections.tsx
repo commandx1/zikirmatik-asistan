@@ -23,7 +23,6 @@ type ProfileSettingsSectionsProps = {
   onPressManageSubscription: () => void;
   onPressRateApp: () => void;
   onPressSendFeedback: () => void;
-  onPressRestartOnboarding: () => void;
   onPressLogout: () => void;
   onToggleDailyReminder: (value: boolean) => void;
   onToggleKandilNotification: (value: boolean) => void;
@@ -47,7 +46,6 @@ export function ProfileSettingsSections({
   onPressManageSubscription,
   onPressRateApp,
   onPressSendFeedback,
-  onPressRestartOnboarding,
   onPressLogout,
   onToggleDailyReminder,
   onToggleKandilNotification,
@@ -140,7 +138,6 @@ export function ProfileSettingsSections({
           <ProfileLinkRow label="Gizlilik Politikası" iconName="shield-halved" bottomBorder />*/}
           <ProfileLinkRow label="Uygulamayı Oyla" iconName="star" rightIconRegular bottomBorder onPress={onPressRateApp} />
           <ProfileLinkRow label="Geri Bildirim Gönder" iconName="comment-dots" rightIconRegular bottomBorder onPress={onPressSendFeedback} />
-          <ProfileLinkRow label="Onboarding'i Yeniden Başlat" iconName="arrows-rotate" onPress={onPressRestartOnboarding} bottomBorder />
           <ProfileLogoutRow onPress={onPressLogout} />
         </ProfileSettingsCard>
       </View>
