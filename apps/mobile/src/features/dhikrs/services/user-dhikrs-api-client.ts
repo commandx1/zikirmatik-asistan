@@ -15,8 +15,8 @@ export type BackendUserDhikr = {
 };
 
 export type CreateUserDhikrPayload = {
-  clientId: string;
-  name: string;
+  clientId?: string;
+  name?: string;
   transliteration?: string;
   arabic?: string;
   meaning?: string;

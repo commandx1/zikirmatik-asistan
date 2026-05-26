@@ -97,6 +97,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const setSelectedCount = useDhikrStore(state => state.setSelectedCount)
   const setSelectedTarget = useDhikrStore(state => state.setSelectedTarget)
   const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
+  const upsertPersonalDhikr = useDhikrStore(state => state.upsertPersonalDhikr)
   const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
   const lastSavedBackendLog = useDhikrStore(state => state.lastSavedBackendLog)
   const syncError = useDhikrStore(state => state.syncError)
@@ -133,10 +134,17 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [streakDays, setStreakDays] = useState(0)
   const liveSelectedCountRef = useRef(0)
+  const liveFreeCountRef = useRef(0)
+  const freeAutoDhikrIdRef = useRef<string | undefined>(undefined)
+  const freeAutoDhikrNameRef = useRef<string | undefined>(undefined)
 
   useEffect(() => {
     liveSelectedCountRef.current = selectedDhikr?.current ?? 0
   }, [selectedDhikr?.current, selectedDhikr?.id])
+
+  useEffect(() => {
+    liveFreeCountRef.current = freeCount
+  }, [freeCount])
 
   const fetchStreakDays = useCallback(async () => {
     if (authStatus !== 'authenticated' || !sessionUserId) {
@@ -319,6 +327,104 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         })
     }
 
+    const clearFreeAutoDhikrRefs = () => {
+      freeAutoDhikrIdRef.current = undefined
+      freeAutoDhikrNameRef.current = undefined
+    }
+
+    const ensureFreeAutoDhikr = async () => {
+      if (freeAutoDhikrIdRef.current && freeAutoDhikrNameRef.current) {
+        return {
+          id: freeAutoDhikrIdRef.current,
+          name: freeAutoDhikrNameRef.current
+        }
+      }
+
+      const fallbackName = buildNextAutoFreeTitle(items)
+      const fallbackId = `free-auto-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+
+      if (authStatus !== 'authenticated') {
+        freeAutoDhikrIdRef.current = fallbackId
+        freeAutoDhikrNameRef.current = fallbackName
+        upsertPersonalDhikr({
+          id: fallbackId,
+          transliteration: fallbackName,
+          current: liveFreeCountRef.current,
+          target: 0,
+          isFavorite: false
+        })
+        return { id: fallbackId, name: fallbackName }
+      }
+
+      try {
+        const created = await createUserDhikr({ target: 0 }, sessionAccessToken)
+        const nextId = created.clientId?.trim() || fallbackId
+        const nextName = created.transliteration?.trim() || created.name?.trim() || fallbackName
+        freeAutoDhikrIdRef.current = nextId
+        freeAutoDhikrNameRef.current = nextName
+        upsertPersonalDhikr({
+          id: nextId,
+          transliteration: nextName,
+          current: liveFreeCountRef.current,
+          target: 0,
+          isFavorite: Boolean(created.isFavorite)
+        })
+        return { id: nextId, name: nextName }
+      } catch {
+        freeAutoDhikrIdRef.current = fallbackId
+        freeAutoDhikrNameRef.current = fallbackName
+        upsertPersonalDhikr({
+          id: fallbackId,
+          transliteration: fallbackName,
+          current: liveFreeCountRef.current,
+          target: 0,
+          isFavorite: false
+        })
+        return { id: fallbackId, name: fallbackName }
+      }
+    }
+
+    const persistFreeModeAutoLog = async (count: number) => {
+      if (authStatus !== 'authenticated' || !sessionUserId) {
+        return
+      }
+
+      const freeAuto = await ensureFreeAutoDhikr()
+
+      setIsSavingLog(true)
+      setSyncError(undefined)
+      return createDhikrLog(
+        {
+          userId: sessionUserId,
+          customDhikrId: freeAuto.id,
+          customDhikrName: freeAuto.name,
+          count,
+          targetCount: 0,
+          date: toDateKey(new Date()),
+          source: 'manual',
+          isCompleted: false
+        },
+        sessionAccessToken
+      )
+        .then(savedLog => {
+          applySavedBackendLog(savedLog)
+          upsertPersonalDhikr({
+            id: freeAuto.id,
+            transliteration: freeAuto.name,
+            current: count,
+            target: 0,
+            isFavorite: false
+          })
+        })
+        .catch((error: unknown) => {
+          const message = error instanceof Error ? error.message : 'Zikir kaydı kaydedilemedi.'
+          setSyncError(message)
+        })
+        .finally(() => {
+          setIsSavingLog(false)
+        })
+    }
+
     return {
       greeting: `Selam, ${authDisplayName?.trim() || 'Dostum'}`,
       streakLabel: `${streakDays} gün`,
@@ -368,10 +474,14 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         }
 
         if (!selectedDhikr) {
-          setFreeCount(prev => prev + 1)
+          const nextCount = liveFreeCountRef.current + 1
+          liveFreeCountRef.current = nextCount
+          setFreeCount(nextCount)
           if (hapticsEnabled) {
             Vibration.vibrate(25)
           }
+
+          void persistFreeModeAutoLog(nextCount)
           return
         }
 
@@ -397,6 +507,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           return
         }
 
+        clearFreeAutoDhikrRefs()
+        liveFreeCountRef.current = 0
         setFreeCount(0)
       },
       onTargetPress: () => {
@@ -434,6 +546,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         if (label === FREE_MODE_LABEL) {
           clearSelectedDhikr()
           setActiveQuickDhikr(FREE_MODE_LABEL)
+          clearFreeAutoDhikrRefs()
+          liveFreeCountRef.current = 0
+          setFreeCount(0)
           return
         }
 
@@ -449,13 +564,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           return
         }
 
-        if (freeCount <= 0) {
-          setSyncError('Önce en az bir zikir çekmelisin.')
-          return
-        }
-
         setSyncError(undefined)
-        setFreeSaveNameModalOpen(true)
       },
       onOpenCreateDhikr: () => {
         setIsCreatingDhikr(true)
@@ -588,6 +697,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       },
       onStartFreeMode: () => {
         clearSelectedDhikr()
+        clearFreeAutoDhikrRefs()
+        liveFreeCountRef.current = 0
         setFreeCount(0)
         setSyncError(undefined)
       }
@@ -595,6 +706,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   }, [
     activeQuickDhikr,
     addCustomDhikr,
+    upsertPersonalDhikr,
     applySavedBackendLog,
     createArabicDraft,
     createError,
@@ -708,4 +820,31 @@ function calculateCompletionStreakDays(logs: BackendDhikrLog[]) {
 
 function startOfDay(value: Date) {
   return new Date(value.getFullYear(), value.getMonth(), value.getDate())
+}
+
+function buildNextAutoFreeTitle(
+  items: Array<{
+    source: ZikirSource
+    transliteration: string
+  }>
+) {
+  let maxIndex = 0
+
+  for (const item of items) {
+    if (item.source !== 'personal') {
+      continue
+    }
+
+    const match = /^Başlık\s+(\d+)$/i.exec(item.transliteration.trim())
+    if (!match) {
+      continue
+    }
+
+    const parsed = Number.parseInt(match[1] ?? '', 10)
+    if (Number.isFinite(parsed) && parsed > maxIndex) {
+      maxIndex = parsed
+    }
+  }
+
+  return `Başlık ${maxIndex + 1}`
 }
