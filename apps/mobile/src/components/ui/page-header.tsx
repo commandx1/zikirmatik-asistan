@@ -8,6 +8,10 @@ type IconName = ComponentProps<typeof FontAwesome6>["name"];
 type PageHeaderProps = {
   title: string;
   subtitle?: string;
+  leftIconName?: IconName;
+  leftIconStyle?: "solid" | "regular";
+  onPressLeft?: () => void;
+  leftAccessory?: ReactNode;
   rightIconName?: IconName;
   rightIconStyle?: "solid" | "regular";
   onPressRight?: () => void;
@@ -17,6 +21,10 @@ type PageHeaderProps = {
 export function PageHeader({
   title,
   subtitle,
+  leftIconName,
+  leftIconStyle = "regular",
+  onPressLeft,
+  leftAccessory,
   rightIconName,
   rightIconStyle = "regular",
   onPressRight,
@@ -27,7 +35,24 @@ export function PageHeader({
   return (
     <View className="px-5 pb-4 pt-12">
       <View className="flex-row items-center">
-        <View className="h-9 w-9" />
+        {leftAccessory ? (
+          <View className="h-9 w-9 items-center justify-center">{leftAccessory}</View>
+        ) : leftIconName ? (
+          onPressLeft ? (
+            <Pressable
+              onPress={onPressLeft}
+              className="h-9 w-9 items-center justify-center rounded-full border border-white/10"
+            >
+              <FontAwesome6 name={leftIconName} iconStyle={leftIconStyle} size={14} color={tokens.textMuted} />
+            </Pressable>
+          ) : (
+            <View className="h-9 w-9 items-center justify-center rounded-full border border-white/10">
+              <FontAwesome6 name={leftIconName} iconStyle={leftIconStyle} size={14} color={tokens.textMuted} />
+            </View>
+          )
+        ) : (
+          <View className="h-9 w-9" />
+        )}
 
         <View className="flex-1 items-center px-2">
           <Text className="text-[20px] leading-[28px] font-semibold text-center text-[--text-primary]" numberOfLines={2}>
