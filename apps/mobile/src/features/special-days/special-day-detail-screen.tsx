@@ -25,7 +25,13 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
   return (
     <PageLayout>
       <View className='flex-1 w-full'>
-        <PageHeader title='Özel Gün Detayı' />
+        <PageHeader
+          title='Özel Gün Detayı'
+          leftIconName='chevron-left'
+          onPressLeft={() => {
+            router.back()
+          }}
+        />
 
         <PageScrollView
           contentInnerClassName='w-full px-5'
