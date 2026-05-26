@@ -1,7 +1,7 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef } from 'react'
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import { useThemeTokens } from '@zikirmatik/ui'
 import type { ThemeTokens } from '@zikirmatik/shared'
 import Animated, {
@@ -153,6 +153,17 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
   const counterText = useMemo(() => (isComplete ? '✓' : compactCount), [compactCount, isComplete])
   const regularTextStyle = useMemo(() => resolveRegularTextStyle(fontFamily), [fontFamily])
   const strongTextStyle = useMemo(() => resolveStrongTextStyle(fontFamily), [fontFamily])
+  const resetDhikrName = useMemo(
+    () => home.mainDhikr.turkish.trim() || home.activeQuickDhikr.trim() || 'Zikir',
+    [home.activeQuickDhikr, home.mainDhikr.turkish]
+  )
+
+  const onResetConfirmPress = () => {
+    Alert.alert('Sayacı Sıfırla', `${resetDhikrName} sayacınız sıfırlanacak. Bu işlem geri alınamaz.`, [
+      { text: 'Vazgeç', style: 'cancel' },
+      { text: 'Sıfırla', style: 'destructive', onPress: home.onResetPress }
+    ])
+  }
 
   return (
     <View className='mb-8 items-center'>
@@ -277,7 +288,7 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
                   />
                 </Pressable>
                 <Pressable
-                  onPress={home.onResetPress}
+                  onPress={onResetConfirmPress}
                   className='h-9 w-9 items-center justify-center rounded-full border'
                   style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
                 >
