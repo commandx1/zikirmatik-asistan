@@ -12,7 +12,7 @@ export function BottomActionFooter({ children, className }: BottomActionFooterPr
   return (
     <View
       className={["bg-transarent px-5 pt-3", className ?? ""].join(" ")}
-      style={{ paddingBottom: Math.max(insets.bottom, 12) }}
+      style={{ paddingBottom: Math.max(insets.bottom + 8, 12) }}
     >
       {children}
     </View>
