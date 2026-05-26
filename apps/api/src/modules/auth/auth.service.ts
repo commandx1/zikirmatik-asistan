@@ -199,16 +199,16 @@ export class AuthService {
 
     await this.authIdentityModel
       .findOneAndUpdate(
-        { provider, providerUserId: claims.sub },
+        { userId: created._id, provider },
         {
           $set: {
-            userId: created._id,
+            providerUserId: claims.sub,
             email: claims.email,
             verifiedAt: new Date(),
           },
           $setOnInsert: {
+            userId: created._id,
             provider,
-            providerUserId: claims.sub,
           },
         },
         {
