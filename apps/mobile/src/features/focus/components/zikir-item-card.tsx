@@ -1,5 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useRouter } from 'expo-router'
+import { useThemeTokens } from '@zikirmatik/ui'
 import { Alert, Pressable, Text, View } from 'react-native'
 import { ThemedCard } from '../../../components/ui/themed-card'
 import { useZikirlerim } from '../context/zikirlerim-context'
@@ -47,6 +48,7 @@ function resolveAccent(item: ZikirItem) {
 
 export function ZikirItemCard({ item }: ZikirItemCardProps) {
   const router = useRouter()
+  const { tokens } = useThemeTokens()
   const {
     toggleFavorite,
     selectDhikr,
@@ -64,6 +66,19 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
   const isUpdatingThisItem = isUpdatingDhikr && editingDhikr?.id === item.id
   const targetLabel = item.target > 0 ? String(item.target) : '∞'
   const title = item.nameTurkish || item.transliteration
+  const updateBorderColor = withAlpha(tokens.accent, 0.42)
+  const updateBackgroundColor = withAlpha(tokens.accent, 0.12)
+  const updateTextColor = tokens.accent
+  const dangerBase = '#EF4444'
+  const deleteBorderColor = withAlpha(dangerBase, 0.58)
+  const deleteBackgroundColor = withAlpha(dangerBase, 0.2)
+  const deleteTextColor = deleteBorderColor
+  const selectIdleBorderColor = withAlpha(tokens.textPrimary, 0.14)
+  const selectIdleBackgroundColor = withAlpha(tokens.bg, 0.85)
+  const selectIdleTextColor = tokens.textPrimary
+  const selectActiveBorderColor = withAlpha(tokens.accent, 0.42)
+  const selectActiveBackgroundColor = withAlpha(tokens.accent, 0.18)
+  const selectActiveTextColor = tokens.accent
 
   return (
     <ThemedCard
@@ -133,13 +148,10 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
             <Pressable
               disabled={isUpdatingThisItem}
               onPress={() => openUpdateModal(item)}
-              className={
-                isUpdatingThisItem
-                  ? 'rounded-full border border-cyan-300/20 bg-cyan-400/10 px-3 py-2 opacity-60'
-                  : 'rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-2'
-              }
+              className={`rounded-full border px-3 py-2 ${isUpdatingThisItem ? 'opacity-60' : ''}`}
+              style={{ borderColor: updateBorderColor, backgroundColor: updateBackgroundColor }}
             >
-              <Text className='text-xs font-semibold text-cyan-200'>
+              <Text className='text-xs font-semibold' style={{ color: updateTextColor }}>
                 {isUpdatingThisItem ? 'Güncelleniyor' : 'Güncelle'}
               </Text>
             </Pressable>
@@ -163,28 +175,23 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
                 ]
               )
             }}
-            className={
-              isDeleting
-                ? 'rounded-full border border-red-400/20 bg-red-500/10 px-3 py-2 opacity-60'
-                : 'rounded-full border border-red-400/30 bg-red-500/10 px-3 py-2'
-            }
+            className={`rounded-full border px-3 py-2 ${isDeleting ? 'opacity-60' : ''}`}
+            style={{ borderColor: deleteBorderColor, backgroundColor: deleteBackgroundColor }}
           >
-            <Text className='text-xs font-semibold text-red-300'>{isDeleting ? 'Siliniyor' : 'Sil'}</Text>
+            <Text className='text-xs font-semibold' style={{ color: deleteTextColor }}>
+              {isDeleting ? 'Siliniyor' : 'Sil'}
+            </Text>
           </Pressable>
 
           <Pressable
             onPress={() => selectDhikr(item.id)}
-            className={
-              isSelected
-                ? 'rounded-full border border-[--accent]/35 bg-[--accent]/20 px-3 py-2'
-                : 'rounded-full border border-white/10 bg-[--bg] px-3 py-2'
-            }
+            className='rounded-full border px-3 py-2'
+            style={{
+              borderColor: isSelected ? selectActiveBorderColor : selectIdleBorderColor,
+              backgroundColor: isSelected ? selectActiveBackgroundColor : selectIdleBackgroundColor
+            }}
           >
-            <Text
-              className={
-                isSelected ? 'text-xs font-semibold text-[--accent]' : 'text-xs font-medium text-[--text-primary]'
-              }
-            >
+            <Text className={`text-xs ${isSelected ? 'font-semibold' : 'font-medium'}`} style={{ color: isSelected ? selectActiveTextColor : selectIdleTextColor }}>
               {isSelected ? 'Seçili' : 'Seç'}
             </Text>
           </Pressable>
@@ -202,4 +209,17 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
       </View>
     </ThemedCard>
   )
+}
+
+function withAlpha(hex: string, alpha: number) {
+  const normalized = hex.replace('#', '')
+  if (!(normalized.length === 6 || normalized.length === 8)) {
+    return hex
+  }
+
+  const r = Number.parseInt(normalized.slice(0, 2), 16)
+  const g = Number.parseInt(normalized.slice(2, 4), 16)
+  const b = Number.parseInt(normalized.slice(4, 6), 16)
+
+  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`
 }
