@@ -15,7 +15,8 @@ export class UserDhikrsService {
   async createOrUpdate(userId: string, payload: CreateUserDhikrDto) {
     const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
     const clientId = payload.clientId?.trim() || this.buildAutoClientId();
-    const name = payload.name?.trim() || (await this.buildNextAutoTitle(userObjectId));
+    const name =
+      payload.name?.trim() || (await this.buildNextAutoTitle(userObjectId));
 
     const next = await this.userDhikrModel
       .findOneAndUpdate(
