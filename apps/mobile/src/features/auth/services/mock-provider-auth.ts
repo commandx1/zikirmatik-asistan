@@ -119,6 +119,10 @@ async function requestAppleIdentityToken() {
 }
 
 async function requestGoogleIdentityToken() {
+  if (__DEV__) {
+    return buildDevGoogleIdentityToken();
+  }
+
   if (Platform.OS !== 'android') {
     throw new ProviderAuthError(
       'terminal',
@@ -276,6 +280,21 @@ function formatGoogleClientConfigSummary({
     `webClientId=${maskGoogleClientId(webClientId)}`,
     `androidClientId=${maskGoogleClientId(androidClientId)}`,
   ].join(', ');
+}
+
+function buildDevGoogleIdentityToken() {
+  const email =
+    process.env.EXPO_PUBLIC_DEV_GOOGLE_EMAIL?.trim() || 'serhatbelen7@gmail.com';
+  const displayName =
+    process.env.EXPO_PUBLIC_DEV_GOOGLE_NAME?.trim() || 'Serhat Belen';
+  const stableSub =
+    process.env.EXPO_PUBLIC_DEV_GOOGLE_SUB?.trim() || `dev-google-${email}`;
+
+  return JSON.stringify({
+    sub: stableSub,
+    email,
+    name: displayName,
+  });
 }
 
 function maskGoogleClientId(value?: string) {
