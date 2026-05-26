@@ -149,7 +149,7 @@ export function ZikirFormModal({
 
       {resolvedError ? <Text className='mb-3 text-xs text-[#F97373]'>{resolvedError}</Text> : null}
 
-      <View className='mt-1 flex-row items-center justify-end gap-2'>
+      <View className='mt-1 mb-2 flex-row items-center justify-end gap-2'>
         <Pressable onPress={onRequestClose} disabled={isSaving} className='rounded-full border border-white/20 px-4 py-2'>
           <Text className='text-sm font-medium text-[--text-primary]'>İptal</Text>
         </Pressable>

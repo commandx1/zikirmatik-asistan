@@ -25,6 +25,7 @@ type DhikrStore = {
   clearSelectedDhikr: () => void;
   upsertPersonalDhikr: (item: {
     id: string;
+    nameTurkish: string;
     transliteration: string;
     arabic?: string;
     meaning?: string;
@@ -45,6 +46,7 @@ type DhikrStore = {
   hydrateReadyItems: (
     items: Array<{
       id: string;
+      nameTurkish: string;
       arabic?: string;
       transliteration: string;
       meaning?: string;
@@ -57,6 +59,7 @@ type DhikrStore = {
   hydratePersonalItems: (
     items: Array<{
       id: string;
+      nameTurkish: string;
       transliteration: string;
       arabic?: string;
       meaning?: string;
@@ -166,6 +169,7 @@ export const useDhikrStore = create<DhikrStore>()(
               ? {
                   ...value,
                   source: "personal",
+                  nameTurkish: item.nameTurkish,
                   transliteration: item.transliteration,
                   arabic: item.arabic,
                   meaning: item.meaning,
@@ -182,6 +186,7 @@ export const useDhikrStore = create<DhikrStore>()(
       const nextPersonal: ZikirItem = {
         id: item.id,
         source: "personal",
+        nameTurkish: item.nameTurkish,
         transliteration: item.transliteration,
         arabic: item.arabic,
         meaning: item.meaning,
@@ -214,6 +219,7 @@ export const useDhikrStore = create<DhikrStore>()(
               ? {
                   ...value,
                   source: item.source,
+                  nameTurkish: item.nameTurkish,
                   arabic: item.arabic,
                   transliteration: item.transliteration,
                   meaning: item.meaning,
@@ -254,6 +260,7 @@ export const useDhikrStore = create<DhikrStore>()(
     const custom: ZikirItem = {
       id,
       source: "personal",
+      nameTurkish: name,
       transliteration,
       arabic: input.arabicOrPronunciation?.trim() || undefined,
       meaning,
@@ -379,6 +386,7 @@ export const useDhikrStore = create<DhikrStore>()(
           ...(existing ?? {}),
           id: item.id,
           source: "ready",
+          nameTurkish: item.nameTurkish,
           arabic: item.arabic,
           transliteration: item.transliteration,
           meaning: item.meaning,
@@ -416,6 +424,7 @@ export const useDhikrStore = create<DhikrStore>()(
           ...(existing ?? {}),
           id: item.id,
           source: "personal",
+          nameTurkish: item.nameTurkish.trim(),
           arabic: item.arabic?.trim() || undefined,
           transliteration: item.transliteration.trim(),
           meaning: item.meaning?.trim() || undefined,

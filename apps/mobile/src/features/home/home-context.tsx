@@ -10,8 +10,9 @@ import { createUserDhikr } from '../dhikrs/services/user-dhikrs-api-client'
 type HomeDhikr = {
   id: string
   source: ZikirSource
+  nameTurkish: string
+  transliteration?: string
   arabic?: string
-  turkish: string
   meaning?: string
 }
 
@@ -112,7 +113,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     return items.find(item => item.id === selectedDhikrId)
   }, [items, selectedDhikrId])
 
-  const [activeQuickDhikr, setActiveQuickDhikr] = useState(selectedDhikr?.transliteration ?? '')
+  const [activeQuickDhikr, setActiveQuickDhikr] = useState(selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || '')
   const [demoCompleted, setDemoCompleted] = useState(false)
   const [isEditingTarget, setIsEditingTarget] = useState(false)
   const [targetDraft, setTargetDraft] = useState(selectedDhikr ? String(selectedDhikr.target) : '100')
@@ -146,6 +147,25 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     liveFreeCountRef.current = freeCount
   }, [freeCount])
 
+  useEffect(() => {
+    if (!freeAutoDhikrIdRef.current) {
+      return
+    }
+
+    const stillExists = items.some(
+      item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal'
+    )
+    if (stillExists) {
+      return
+    }
+
+    freeAutoDhikrIdRef.current = undefined
+    freeAutoDhikrNameRef.current = undefined
+    liveFreeCountRef.current = 0
+    setFreeCount(0)
+    setActiveQuickDhikr(FREE_MODE_LABEL)
+  }, [items])
+
   const fetchStreakDays = useCallback(async () => {
     if (authStatus !== 'authenticated' || !sessionUserId) {
       setStreakDays(0)
@@ -167,9 +187,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    setActiveQuickDhikr(selectedDhikr.transliteration)
+    setActiveQuickDhikr(selectedDhikr.nameTurkish || selectedDhikr.transliteration)
     setTargetDraft(String(selectedDhikr.target > 0 ? selectedDhikr.target : 100))
-  }, [selectedDhikr?.id, selectedDhikr?.target, selectedDhikr?.transliteration])
+  }, [selectedDhikr?.id, selectedDhikr?.nameTurkish, selectedDhikr?.target, selectedDhikr?.transliteration])
 
   useEffect(() => {
     void fetchStreakDays()
@@ -194,7 +214,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         .map(item => ({
           id: item.id,
           source: item.source,
-          label: item.transliteration,
+          label: item.nameTurkish || item.transliteration,
           secondary: item.arabic,
           target: item.target
         })),
@@ -208,7 +228,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         .map(item => ({
           id: item.id,
           source: item.source,
-          label: item.transliteration,
+          label: item.nameTurkish || item.transliteration,
           secondary: item.arabic,
           target: item.target
         })),
@@ -232,6 +252,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<HomeContextValue>(() => {
     const isTargetMode = Boolean(selectedDhikr && selectedDhikr.target > 0)
+    const activeFreeModeTitle =
+      freeAutoDhikrNameRef.current?.trim() ||
+      (freeCount > 0 ? buildNextAutoFreeTitle(items) : '')
 
     const submitTarget = () => {
       if (!selectedDhikr) {
@@ -300,7 +323,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         : {
             userId: sessionUserId,
             customDhikrId: selectedDhikr.id,
-            customDhikrName: selectedDhikr.transliteration,
+            customDhikrName: selectedDhikr.nameTurkish || selectedDhikr.transliteration,
             customDhikrArabic: selectedDhikr.arabic,
             count: safeCount,
             targetCount: selectedDhikr.target,
@@ -334,9 +357,17 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
     const ensureFreeAutoDhikr = async () => {
       if (freeAutoDhikrIdRef.current && freeAutoDhikrNameRef.current) {
+        const stillExists = items.some(
+          item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal'
+        )
+        if (!stillExists) {
+          freeAutoDhikrIdRef.current = undefined
+          freeAutoDhikrNameRef.current = undefined
+        } else {
         return {
           id: freeAutoDhikrIdRef.current,
           name: freeAutoDhikrNameRef.current
+        }
         }
       }
 
@@ -348,6 +379,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         freeAutoDhikrNameRef.current = fallbackName
         upsertPersonalDhikr({
           id: fallbackId,
+          nameTurkish: fallbackName,
           transliteration: fallbackName,
           current: liveFreeCountRef.current,
           target: 0,
@@ -359,11 +391,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       try {
         const created = await createUserDhikr({ target: 0 }, sessionAccessToken)
         const nextId = created.clientId?.trim() || fallbackId
-        const nextName = created.transliteration?.trim() || created.name?.trim() || fallbackName
+        const nextName = created.name?.trim() || created.transliteration?.trim() || fallbackName
         freeAutoDhikrIdRef.current = nextId
         freeAutoDhikrNameRef.current = nextName
         upsertPersonalDhikr({
           id: nextId,
+          nameTurkish: nextName,
           transliteration: nextName,
           current: liveFreeCountRef.current,
           target: 0,
@@ -375,6 +408,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         freeAutoDhikrNameRef.current = fallbackName
         upsertPersonalDhikr({
           id: fallbackId,
+          nameTurkish: fallbackName,
           transliteration: fallbackName,
           current: liveFreeCountRef.current,
           target: 0,
@@ -410,6 +444,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           applySavedBackendLog(savedLog)
           upsertPersonalDhikr({
             id: freeAuto.id,
+            nameTurkish: freeAuto.name,
             transliteration: freeAuto.name,
             current: count,
             target: 0,
@@ -438,8 +473,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       mainDhikr: {
         id: selectedDhikr?.id ?? '',
         source: selectedDhikr?.source ?? 'personal',
+        nameTurkish: selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || activeFreeModeTitle,
+        transliteration: selectedDhikr?.transliteration || (selectedDhikr ? '' : activeFreeModeTitle),
         arabic: selectedDhikr?.arabic,
-        turkish: selectedDhikr?.transliteration ?? '',
         meaning: selectedDhikr?.meaning
       },
       quickDhikrs,
@@ -507,9 +543,19 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           return
         }
 
-        clearFreeAutoDhikrRefs()
         liveFreeCountRef.current = 0
         setFreeCount(0)
+
+        if (freeAutoDhikrIdRef.current && freeAutoDhikrNameRef.current) {
+          upsertPersonalDhikr({
+            id: freeAutoDhikrIdRef.current,
+            nameTurkish: freeAutoDhikrNameRef.current,
+            transliteration: freeAutoDhikrNameRef.current,
+            current: 0,
+            target: 0,
+            isFavorite: false
+          })
+        }
       },
       onTargetPress: () => {
         if (!selectedDhikr) {
@@ -553,7 +599,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         }
 
         setActiveQuickDhikr(label)
-        const matched = items.find(item => item.transliteration === label)
+        const matched = items.find(item => item.nameTurkish === label)
         if (matched) {
           selectDhikr(matched.id)
         }
@@ -673,7 +719,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
               {
                 userId: sessionUserId,
                 customDhikrId: createdId,
-                customDhikrName: freeSaveTransliterationDraft.trim() || trimmed,
+                customDhikrName: trimmed,
                 count: freeCount,
                 targetCount: parsedTarget ?? 0,
                 date: toDateKey(new Date()),
@@ -825,7 +871,8 @@ function startOfDay(value: Date) {
 function buildNextAutoFreeTitle(
   items: Array<{
     source: ZikirSource
-    transliteration: string
+    nameTurkish: string
+    transliteration?: string
   }>
 ) {
   let maxIndex = 0
@@ -835,7 +882,8 @@ function buildNextAutoFreeTitle(
       continue
     }
 
-    const match = /^Başlık\s+(\d+)$/i.exec(item.transliteration.trim())
+    const title = (item.nameTurkish || item.transliteration || '').trim()
+    const match = /^Başlık\s+(\d+)$/i.exec(title)
     if (!match) {
       continue
     }

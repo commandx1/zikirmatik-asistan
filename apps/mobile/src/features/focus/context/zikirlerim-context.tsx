@@ -57,6 +57,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const selectedDhikrId = useDhikrStore((state) => state.selectedDhikrId);
   const storeToggleFavorite = useDhikrStore((state) => state.toggleFavorite);
   const storeSelectDhikr = useDhikrStore((state) => state.selectDhikr);
+  const storeClearSelectedDhikr = useDhikrStore((state) => state.clearSelectedDhikr);
   const upsertPersonalDhikr = useDhikrStore((state) => state.upsertPersonalDhikr);
   const upsertDhikrSnapshot = useDhikrStore((state) => state.upsertDhikrSnapshot);
   const removePersonalDhikr = useDhikrStore((state) => state.removePersonalDhikr);
@@ -207,6 +208,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       nextItems.push({
         id: dhikrId,
         source: matched?.source ?? "personal",
+        nameTurkish: matched?.nameTurkish ?? latestLog.customDhikrName ?? matched?.transliteration ?? "Kayıtlı Zikir",
         arabic: matched?.arabic ?? latestLog.customDhikrArabic,
         transliteration: matched?.transliteration ?? latestLog.customDhikrName ?? "Kayıtlı Zikir",
         meaning: matched?.meaning,
@@ -278,7 +280,6 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       const trimmedName = values.name.trim();
       const trimmedTransliteration = values.transliteration.trim();
       const trimmedMeaning = values.meaning.trim();
-      const nextTransliteration = trimmedTransliteration || trimmedName;
       const nextTarget = values.target > 0 ? values.target : 0;
 
       const previousSnapshot: ZikirItem = {
@@ -290,7 +291,8 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
       upsertPersonalDhikr({
         id: editingDhikr.id,
-        transliteration: nextTransliteration,
+        nameTurkish: trimmedName,
+        transliteration: trimmedTransliteration,
         arabic: editingDhikr.arabic,
         meaning: trimmedMeaning || undefined,
         current: editingDhikr.current,
@@ -318,6 +320,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       } catch {
         upsertPersonalDhikr({
           id: previousSnapshot.id,
+          nameTurkish: previousSnapshot.nameTurkish,
           transliteration: previousSnapshot.transliteration,
           arabic: previousSnapshot.arabic,
           meaning: previousSnapshot.meaning,
@@ -408,6 +411,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
           if (fallbackPersonal) {
             upsertPersonalDhikr({
               id: fallbackPersonal.id,
+              nameTurkish: fallbackPersonal.nameTurkish,
               transliteration: fallbackPersonal.transliteration,
               arabic: fallbackPersonal.arabic,
               meaning: fallbackPersonal.meaning,
@@ -449,6 +453,10 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
           removePersonalDhikr(item.id);
         } else {
           clearDhikrProgress(item.id);
+        }
+
+        if (selectedDhikrId === item.id) {
+          storeClearSelectedDhikr();
         }
 
         if (editingDhikrId === item.id) {

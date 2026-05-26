@@ -10,6 +10,7 @@ export const ZIKIR_ITEMS: ZikirItem[] = [
   {
     id: "estagfirullah",
     source: "ready",
+    nameTurkish: "Estağfirullah",
     arabic: "أَسْتَغْفِرُ اللَّهَ",
     transliteration: "Estağfirullah",
     meaning: "Allah'tan bağışlanma dilerim",
@@ -22,6 +23,7 @@ export const ZIKIR_ITEMS: ZikirItem[] = [
   {
     id: "subhanallah",
     source: "ready",
+    nameTurkish: "Sübhanallah",
     arabic: "سُبْحَانَ اللَّهِ",
     transliteration: "Sübhanallah",
     meaning: "Allah noksan sıfatlardan münezzehtir",
@@ -34,6 +36,7 @@ export const ZIKIR_ITEMS: ZikirItem[] = [
   {
     id: "elhamdulillah",
     source: "ready",
+    nameTurkish: "Elhamdülillah",
     arabic: "الْحَمْدُ لِلَّهِ",
     transliteration: "Elhamdülillah",
     meaning: "Her türlü hamd ve övgü Allah'a mahsustur",
@@ -46,6 +49,7 @@ export const ZIKIR_ITEMS: ZikirItem[] = [
   {
     id: "allahu-ekber",
     source: "ready",
+    nameTurkish: "Allahu Ekber",
     arabic: "اللَّهُ أَكْبَرُ",
     transliteration: "Allahu Ekber",
     meaning: "Allah en büyüktür",
@@ -58,6 +62,7 @@ export const ZIKIR_ITEMS: ZikirItem[] = [
   {
     id: "la-ilahe-illallah",
     source: "ready",
+    nameTurkish: "La ilahe illallah",
     arabic: "لَا إِلَٰهَ إِلَّا اللَّهُ",
     transliteration: "La ilahe illallah",
     meaning: "Allah'tan başka ilah yoktur",
@@ -70,6 +75,7 @@ export const ZIKIR_ITEMS: ZikirItem[] = [
   {
     id: "la-havle",
     source: "ready",
+    nameTurkish: "La havle vela kuvvete illa billah",
     arabic: "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
     transliteration: "La havle vela kuvvete illa billah",
     meaning: "Güç ve kuvvet ancak Allah'tandır",
@@ -82,6 +88,7 @@ export const ZIKIR_ITEMS: ZikirItem[] = [
   {
     id: "bismillah",
     source: "ready",
+    nameTurkish: "Bismillahirrahmanirrahim",
     arabic: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
     transliteration: "Bismillahirrahmanirrahim",
     meaning: "Rahman ve Rahim olan Allah'ın adıyla",
@@ -94,6 +101,7 @@ export const ZIKIR_ITEMS: ZikirItem[] = [
   {
     id: "subhanallahi-ve-bihamdihi",
     source: "ready",
+    nameTurkish: "Sübhanallahi ve bihamdihi",
     arabic: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
     transliteration: "Sübhanallahi ve bihamdihi",
     meaning: "Allah'ı hamd ile tesbih ederim",

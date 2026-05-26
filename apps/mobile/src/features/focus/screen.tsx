@@ -28,7 +28,7 @@ function FocusContent() {
   } = useZikirlerim();
 
   const initialValues = {
-    name: editingDhikr?.transliteration ?? "",
+    name: editingDhikr?.nameTurkish || editingDhikr?.transliteration || "",
     transliteration: editingDhikr?.transliteration ?? "",
     meaning: editingDhikr?.meaning ?? "",
     target: editingDhikr?.target ?? 33

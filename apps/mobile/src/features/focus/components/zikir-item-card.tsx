@@ -63,6 +63,7 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
   const isDeleting = deletingDhikrId === item.id
   const isUpdatingThisItem = isUpdatingDhikr && editingDhikr?.id === item.id
   const targetLabel = item.target > 0 ? String(item.target) : '∞'
+  const title = item.nameTurkish || item.transliteration
 
   return (
     <ThemedCard
@@ -73,7 +74,10 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
     >
       <View className='mb-3 flex-row items-start justify-between'>
         <View className='flex-1 pr-3'>
-          <Text className='mb-2 text-sm font-medium text-[--text-primary]'>{item.transliteration}</Text>
+          <Text className='mb-2 text-sm font-medium text-[--text-primary]'>{title}</Text>
+          {item.transliteration ? (
+            <Text className='mb-1 text-xs text-[--text-muted]'>{item.transliteration}</Text>
+          ) : null}
           {item.meaning ? <Text className='text-xs text-[--text-muted]'>{item.meaning}</Text> : null}
         </View>
 

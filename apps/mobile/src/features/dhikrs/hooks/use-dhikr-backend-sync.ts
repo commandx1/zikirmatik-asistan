@@ -84,6 +84,7 @@ export function useDhikrBackendSync() {
             const customLog = latestByCustomDhikr.get(item.clientId);
             return {
               id: item.clientId,
+              nameTurkish: item.name.trim(),
               transliteration: item.transliteration?.trim() || item.name,
               arabic: item.arabic,
               meaning: item.meaning,
@@ -99,6 +100,7 @@ export function useDhikrBackendSync() {
           const log = latestByDhikr.get(item._id);
           return {
             id: item._id,
+            nameTurkish: item.nameTurkish,
             arabic: item.nameArabic,
             transliteration: item.transliteration || item.nameTurkish,
             meaning: item.meaning,

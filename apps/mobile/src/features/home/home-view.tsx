@@ -16,12 +16,13 @@ function TopBar() {
 function SelectedDhikrMeaning() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
-  const transliteration = home.mainDhikr.turkish?.trim()
+  const title = (home.mainDhikr.nameTurkish || home.mainDhikr.transliteration || '').trim()
+  const transliteration = home.mainDhikr.transliteration?.trim()
   const arabic = home.mainDhikr.arabic?.trim()
   const meaning = home.mainDhikr.meaning?.trim()
-  const shouldShowTitleOnly = home.mainDhikr.source === 'personal' && !arabic && !meaning && Boolean(transliteration)
+  const shouldShowTitleOnly = home.mainDhikr.source === 'personal' && !arabic && !meaning && Boolean(title)
 
-  if (!transliteration && !meaning && !arabic) {
+  if (!title && !transliteration && !meaning && !arabic) {
     return null
   }
 
@@ -43,7 +44,7 @@ function SelectedDhikrMeaning() {
             <Text className='mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]'>
               Başlık
             </Text>
-            <Text className='text-sm leading-5 text-[--text-primary]'>{transliteration}</Text>
+            <Text className='text-sm leading-5 text-[--text-primary]'>{title}</Text>
           </View>
         ) : (
           <DhikrContentStack
@@ -251,7 +252,10 @@ function FreeSaveNameModal() {
 export function HomeView() {
   const home = useHomeContext()
   const hasDhikrDetail =
-    hasContent(home.mainDhikr.turkish) || hasContent(home.mainDhikr.meaning) || hasContent(home.mainDhikr.arabic)
+    hasContent(home.mainDhikr.nameTurkish) ||
+    hasContent(home.mainDhikr.transliteration) ||
+    hasContent(home.mainDhikr.meaning) ||
+    hasContent(home.mainDhikr.arabic)
 
   return (
     <PageLayout frameClassName='relative flex-1 w-full'>

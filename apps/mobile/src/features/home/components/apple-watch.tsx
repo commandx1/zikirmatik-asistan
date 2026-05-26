@@ -154,8 +154,8 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
   const regularTextStyle = useMemo(() => resolveRegularTextStyle(fontFamily), [fontFamily])
   const strongTextStyle = useMemo(() => resolveStrongTextStyle(fontFamily), [fontFamily])
   const resetDhikrName = useMemo(
-    () => home.mainDhikr.turkish.trim() || home.activeQuickDhikr.trim() || 'Zikir',
-    [home.activeQuickDhikr, home.mainDhikr.turkish]
+    () => home.mainDhikr.nameTurkish.trim() || home.activeQuickDhikr.trim() || 'Zikir',
+    [home.activeQuickDhikr, home.mainDhikr.nameTurkish]
   )
 
   const onResetConfirmPress = () => {
