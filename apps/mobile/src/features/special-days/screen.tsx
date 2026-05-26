@@ -22,7 +22,10 @@ export function SpecialDaysScreen() {
                 <Text className="text-[12px] text-[#fecaca]">{specialDays.error}</Text>
               </View>
             ) : null}
-            <HeroCountdownCard data={specialDays.heroCard} />
+            <HeroCountdownCard
+              data={specialDays.heroCard}
+              onPressDetail={(id) => router.push(`/special-days/${id}`)}
+            />
             {specialDays.todayAction ? (
               <TodayActionsCard
                 action={specialDays.todayAction}
