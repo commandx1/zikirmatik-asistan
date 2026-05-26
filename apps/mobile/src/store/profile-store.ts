@@ -43,7 +43,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
   city: "Ankara",
   language: "Türkçe",
   reminderTime: "08:00",
-  dailyReminderEnabled: true,
+  dailyReminderEnabled: false,
   kandilNotificationsEnabled: true,
   adhanNotificationsEnabled: false,
   hapticsEnabled: true,
@@ -75,7 +75,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
       isPremium: false,
       city: "Ankara",
       reminderTime: "08:00",
-      dailyReminderEnabled: true,
+      dailyReminderEnabled: false,
       kandilNotificationsEnabled: true,
       adhanNotificationsEnabled: false,
       hapticsEnabled: true
