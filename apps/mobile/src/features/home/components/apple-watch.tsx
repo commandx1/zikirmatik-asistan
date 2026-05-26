@@ -273,19 +273,13 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
                 </Pressable>
                 <Pressable
                   onPress={home.onTargetPress}
-                  disabled={!home.selectedDhikrId}
                   className='h-9 w-9 items-center justify-center rounded-full border'
                   style={{
                     borderColor: controlButtonBorder,
-                    backgroundColor: controlButtonBg,
-                    opacity: home.selectedDhikrId ? 1 : 0.45
+                    backgroundColor: controlButtonBg
                   }}
                 >
-                  <FontAwesome6
-                    name='bullseye'
-                    size={12}
-                    color={home.selectedDhikrId ? tokens.textPrimary : withAlpha(tokens.textPrimary, 0.55)}
-                  />
+                  <FontAwesome6 name='bullseye' size={12} color={tokens.textPrimary} />
                 </Pressable>
                 <Pressable
                   onPress={onResetConfirmPress}

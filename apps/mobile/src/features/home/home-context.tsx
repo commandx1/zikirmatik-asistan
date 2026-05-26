@@ -5,7 +5,7 @@ import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
 import { useProfileStore } from '../../store/profile-store'
 import type { ZikirSource } from '../focus/types'
 import { createDhikrLog, listDhikrLogsByUser, type BackendDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
-import { createUserDhikr } from '../dhikrs/services/user-dhikrs-api-client'
+import { createUserDhikr, updateUserDhikrByClientId } from '../dhikrs/services/user-dhikrs-api-client'
 
 type HomeDhikr = {
   id: string
@@ -257,18 +257,101 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       (freeCount > 0 ? buildNextAutoFreeTitle(items) : '')
 
     const submitTarget = () => {
-      if (!selectedDhikr) {
+      const parsed = Number.parseInt(targetDraft, 10)
+      const nextTarget = !Number.isNaN(parsed) && parsed > 0 ? Math.min(parsed, MAX_DHIKR_TARGET) : 0
+
+      if (selectedDhikr) {
+        if (nextTarget > 0) {
+          setSelectedTarget(nextTarget)
+        }
+        setTargetDraft(String(nextTarget > 0 ? nextTarget : (selectedDhikr?.target ?? 33)))
         setIsEditingTarget(false)
         return
       }
 
-      const parsed = Number.parseInt(targetDraft, 10)
-      if (!Number.isNaN(parsed) && parsed > 0) {
-        setSelectedTarget(Math.min(parsed, MAX_DHIKR_TARGET))
+      if (nextTarget <= 0) {
+        setTargetDraft('100')
+        setIsEditingTarget(false)
+        return
       }
-      setTargetDraft(
-        String(!Number.isNaN(parsed) && parsed > 0 ? Math.min(parsed, MAX_DHIKR_TARGET) : (selectedDhikr?.target ?? 33))
+
+      const existingFreeItem = freeAutoDhikrIdRef.current
+        ? items.find(item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal')
+        : undefined
+      const nextName =
+        existingFreeItem?.nameTurkish?.trim() || freeAutoDhikrNameRef.current?.trim() || buildNextAutoFreeTitle(items)
+      const nextTransliteration = existingFreeItem?.transliteration?.trim() || nextName
+      const nextCurrent = Math.max(
+        0,
+        Math.floor(typeof existingFreeItem?.current === 'number' ? existingFreeItem.current : liveFreeCountRef.current)
       )
+      const fallbackId =
+        existingFreeItem?.id ||
+        freeAutoDhikrIdRef.current ||
+        `free-auto-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+
+      const upsertAndSelect = (id: string, nameTurkish: string, transliteration: string, isFavorite: boolean) => {
+        upsertPersonalDhikr({
+          id,
+          nameTurkish,
+          transliteration,
+          current: nextCurrent,
+          target: nextTarget,
+          isFavorite
+        })
+        freeAutoDhikrIdRef.current = id
+        freeAutoDhikrNameRef.current = nameTurkish
+        selectDhikr(id)
+        setActiveQuickDhikr(nameTurkish)
+        liveFreeCountRef.current = 0
+        setFreeCount(0)
+      }
+
+      if (authStatus === 'authenticated') {
+        if (existingFreeItem) {
+          upsertAndSelect(
+            existingFreeItem.id,
+            existingFreeItem.nameTurkish || nextName,
+            existingFreeItem.transliteration || nextTransliteration,
+            existingFreeItem.isFavorite
+          )
+          void updateUserDhikrByClientId(
+            existingFreeItem.id,
+            {
+              name: existingFreeItem.nameTurkish || nextName,
+              transliteration: existingFreeItem.transliteration || nextTransliteration,
+              target: nextTarget
+            },
+            sessionAccessToken
+          ).catch(() => {
+            setSyncError('Hedef güncellemesi senkronize edilemedi.')
+          })
+        } else {
+          void createUserDhikr(
+            {
+              clientId: fallbackId,
+              name: nextName,
+              transliteration: nextTransliteration,
+              target: nextTarget
+            },
+            sessionAccessToken
+          )
+            .then(created => {
+              const createdId = created.clientId?.trim() || fallbackId
+              const createdName = created.name?.trim() || nextName
+              const createdTransliteration = created.transliteration?.trim() || nextTransliteration
+              upsertAndSelect(createdId, createdName, createdTransliteration, Boolean(created.isFavorite))
+            })
+            .catch(() => {
+              upsertAndSelect(fallbackId, nextName, nextTransliteration, false)
+              setSyncError('Hedef güncellemesi senkronize edilemedi.')
+            })
+        }
+      } else {
+        upsertAndSelect(fallbackId, nextName, nextTransliteration, false)
+      }
+
+      setTargetDraft(String(nextTarget))
       setIsEditingTarget(false)
     }
 
@@ -558,11 +641,10 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         }
       },
       onTargetPress: () => {
-        if (!selectedDhikr) {
-          return
-        }
-
-        setTargetDraft(String(selectedDhikr.target > 0 ? selectedDhikr.target : 100))
+        const freeAutoItem = freeAutoDhikrIdRef.current
+          ? items.find(item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal')
+          : undefined
+        setTargetDraft(String(selectedDhikr?.target && selectedDhikr.target > 0 ? selectedDhikr.target : (freeAutoItem?.target && freeAutoItem.target > 0 ? freeAutoItem.target : 100)))
         setIsEditingTarget(true)
       },
       onTargetDraftChange: next => {
@@ -571,7 +653,10 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         setTargetDraft(trimmed)
       },
       onTargetCancel: () => {
-        setTargetDraft(String(selectedDhikr && selectedDhikr.target > 0 ? selectedDhikr.target : 100))
+        const freeAutoItem = freeAutoDhikrIdRef.current
+          ? items.find(item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal')
+          : undefined
+        setTargetDraft(String(selectedDhikr && selectedDhikr.target > 0 ? selectedDhikr.target : (freeAutoItem?.target && freeAutoItem.target > 0 ? freeAutoItem.target : 100)))
         setIsEditingTarget(false)
       },
       onTargetSubmit: submitTarget,
