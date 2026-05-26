@@ -13,25 +13,31 @@ export function TodayActionsCard({ action, onPressDetail }: TodayActionsCardProp
   const { tokens } = useThemeTokens();
 
   return (
-    <ThemedCard className="rounded-2xl px-4 py-4" borderClassName="border-white/5">
-      <Text className="text-sm font-semibold text-[--text-primary]">{action.title}</Text>
-      <Text className="mt-1 text-xs leading-5 text-[--text-muted]">{action.subtitle}</Text>
+    <Pressable
+      onPress={() => onPressDetail(action.specialDayId)}
+      disabled={action.isLocked}
+      className={action.isLocked ? "opacity-60" : undefined}
+    >
+      <ThemedCard className="rounded-2xl px-4 py-4" borderClassName="border-white/5">
+        <Text className="text-sm font-semibold text-[--text-primary]">{action.title}</Text>
+        <Text className="mt-1 text-xs leading-5 text-[--text-muted]">{action.subtitle}</Text>
 
-      <Pressable
-        onPress={() => onPressDetail(action.specialDayId)}
-        disabled={action.isLocked}
-        className={`mt-4 h-11 flex-row items-center justify-center gap-2 rounded-full border border-[--accent]/40 ${
-          action.isLocked ? "opacity-60" : ""
-        }`}
-      >
-        <FontAwesome6
-          name={action.isLocked ? "lock" : "compass"}
-          iconStyle="regular"
-          size={12}
-          color={tokens.accent}
-        />
-        <Text className="text-sm font-semibold text-[--accent]">{action.ctaLabel}</Text>
-      </Pressable>
-    </ThemedCard>
+        <Pressable
+          onPress={() => onPressDetail(action.specialDayId)}
+          disabled={action.isLocked}
+          className={`mt-4 h-11 flex-row items-center justify-center gap-2 rounded-full border border-[--accent]/40 ${
+            action.isLocked ? "opacity-60" : ""
+          }`}
+        >
+          <FontAwesome6
+            name={action.isLocked ? "lock" : "compass"}
+            iconStyle="regular"
+            size={12}
+            color={tokens.accent}
+          />
+          <Text className="text-sm font-semibold text-[--accent]">{action.ctaLabel}</Text>
+        </Pressable>
+      </ThemedCard>
+    </Pressable>
   );
 }
