@@ -12,6 +12,7 @@ export const HERO_CARD: HeroCardViewModel = {
   ],
   remaining: "3 gün",
   isLocked: false,
+  isTodaySpecial: false,
 };
 
 export const UPCOMING_DAYS: UpcomingDayViewModel[] = [

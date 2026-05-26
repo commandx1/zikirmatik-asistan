@@ -44,6 +44,7 @@ export function useSpecialDays() {
           countdown: response.hero.countdown,
           remaining: response.hero.remainingLabel,
           isLocked: response.hero.isLocked,
+          isTodaySpecial: response.hero.source === "today",
         });
       }
 
