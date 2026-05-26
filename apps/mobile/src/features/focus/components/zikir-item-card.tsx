@@ -47,11 +47,21 @@ function resolveAccent(item: ZikirItem) {
 
 export function ZikirItemCard({ item }: ZikirItemCardProps) {
   const router = useRouter()
-  const { toggleFavorite, selectDhikr, selectedDhikrId, deleteDhikr, deletingDhikrId } = useZikirlerim()
+  const {
+    toggleFavorite,
+    selectDhikr,
+    selectedDhikrId,
+    deleteDhikr,
+    deletingDhikrId,
+    editingDhikr,
+    isUpdatingDhikr,
+    openUpdateModal
+  } = useZikirlerim()
   const progressPct = item.target === 0 ? 0 : Math.min(100, Math.round((item.current / item.target) * 100))
   const accent = resolveAccent(item)
   const isSelected = selectedDhikrId === item.id
   const isDeleting = deletingDhikrId === item.id
+  const isUpdatingThisItem = isUpdatingDhikr && editingDhikr?.id === item.id
   const targetLabel = item.target > 0 ? String(item.target) : '∞'
 
   return (
@@ -115,6 +125,22 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
 
       <View className='flex-row items-center justify-between gap-2'>
         <View className='flex-row items-center gap-2'>
+          {item.source === 'personal' ? (
+            <Pressable
+              disabled={isUpdatingThisItem}
+              onPress={() => openUpdateModal(item)}
+              className={
+                isUpdatingThisItem
+                  ? 'rounded-full border border-cyan-300/20 bg-cyan-400/10 px-3 py-2 opacity-60'
+                  : 'rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-2'
+              }
+            >
+              <Text className='text-xs font-semibold text-cyan-200'>
+                {isUpdatingThisItem ? 'Güncelleniyor' : 'Güncelle'}
+              </Text>
+            </Pressable>
+          ) : null}
+
           <Pressable
             disabled={isDeleting}
             onPress={() => {

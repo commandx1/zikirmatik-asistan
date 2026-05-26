@@ -1,13 +1,11 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
-import { useMemo, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
-import { KeyboardAwareBottomSheetModal } from '../../../components/ui/keyboard-aware-bottom-sheet-modal'
+import { useState } from 'react'
+import { Pressable } from 'react-native'
 import { PageHeader } from '../../../components/ui/page-header'
-import { PrimaryCtaButton } from '../../../components/ui/primary-cta-button'
-import { ThemedInput } from '../../../components/ui/themed-input'
 import { createUserDhikr } from '../../dhikrs/services/user-dhikrs-api-client'
 import { useAuthStore } from '../../../store/auth-store'
 import { useDhikrStore } from '../../../store/dhikr-store'
+import { ZikirFormModal } from './zikir-form-modal'
 
 export function ZikirlerimHeader() {
   const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
@@ -16,38 +14,22 @@ export function ZikirlerimHeader() {
   const sessionAccessToken = useAuthStore(state => state.session?.accessToken)
 
   const [isCreateOpen, setCreateOpen] = useState(false)
-  const [nameDraft, setNameDraft] = useState('')
-  const [arabicDraft, setArabicDraft] = useState('')
-  const [meaningDraft, setMeaningDraft] = useState('')
-  const [targetDraft, setTargetDraft] = useState('33')
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
 
-  const isSaveDisabled = useMemo(() => nameDraft.trim().length === 0, [nameDraft])
-
   const closeCreate = () => {
     setCreateOpen(false)
-    setNameDraft('')
-    setArabicDraft('')
-    setMeaningDraft('')
-    setTargetDraft('33')
     setError(null)
   }
 
-  const saveCreate = async () => {
-    const trimmedName = nameDraft.trim()
-    const trimmedPronunciation = arabicDraft.trim()
-    if (!trimmedName) {
-      setError('Zikir adı zorunlu.')
-      return
-    }
-
-    const parsedTarget = Number.parseInt(targetDraft, 10)
+  const saveCreate = async (values: { name: string; transliteration: string; meaning: string; target: number }) => {
+    const trimmedName = values.name.trim()
+    const trimmedPronunciation = values.transliteration.trim()
     const createdId = addCustomDhikr({
       name: trimmedName,
       transliteration: trimmedPronunciation || undefined,
-      meaning: meaningDraft.trim() || undefined,
-      target: Number.isNaN(parsedTarget) ? 33 : parsedTarget
+      meaning: values.meaning.trim() || undefined,
+      target: values.target > 0 ? values.target : 0
     })
 
     if (authStatus === 'authenticated') {
@@ -58,8 +40,8 @@ export function ZikirlerimHeader() {
             clientId: createdId,
             name: trimmedName,
             transliteration: trimmedPronunciation || undefined,
-            meaning: meaningDraft.trim() || undefined,
-            target: Number.isNaN(parsedTarget) ? 33 : parsedTarget
+            meaning: values.meaning.trim() || undefined,
+            target: values.target > 0 ? values.target : 0
           },
           sessionAccessToken
         )
@@ -82,7 +64,10 @@ export function ZikirlerimHeader() {
         title='Zikirlerim'
         rightAccessory={
           <Pressable
-            onPress={() => setCreateOpen(true)}
+            onPress={() => {
+              setError(null)
+              setCreateOpen(true)
+            }}
             className='h-9 w-9 items-center justify-center rounded-full bg-[--accent] shadow-sm shadow-black/30'
           >
             <FontAwesome6 name='plus' size={14} color='#111827' />
@@ -90,76 +75,24 @@ export function ZikirlerimHeader() {
         }
       />
 
-      <KeyboardAwareBottomSheetModal
+      <ZikirFormModal
         visible={isCreateOpen}
+        title='Yeni Zikir'
+        description='Kendi zikrini ekle ve Ana Sayfa sayacında başlat.'
+        submitLabel='Kaydet'
+        savingLabel='Kaydediliyor'
+        isSaving={isSaving}
+        error={error}
+        initialValues={{
+          name: '',
+          transliteration: '',
+          meaning: '',
+          target: 33
+        }}
         onRequestClose={closeCreate}
-        animationType='slide'
-        showHandle
-        overlayClassName='flex-1 justify-end bg-black/55'
-        sheetClassName='rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-10'
-        scrollContentContainerStyle={{ paddingBottom: 24 }}
-      >
-        <Text className='mb-1 text-lg font-semibold text-[--text-primary]'>Yeni Zikir</Text>
-        <Text className='mb-4 text-xs text-[--text-muted]'>
-          Kendi zikrini ekle ve Ana Sayfa sayacında başlat.
-        </Text>
-
-        <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Zikir adı</Text>
-        <ThemedInput
-          value={nameDraft}
-          onChangeText={text => {
-            setNameDraft(text)
-            if (error) {
-              setError(null)
-            }
-          }}
-          placeholder='Örn. Salavat'
-          className='mb-3 rounded-xl bg-[--bg] px-3'
-          autoFocus
-        />
-
-        <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Okunuş (opsiyonel)</Text>
-        <ThemedInput
-          value={arabicDraft}
-          onChangeText={setArabicDraft}
-          placeholder='Örn. Allahumme salli ala Muhammed'
-          className='mb-3 rounded-xl bg-[--bg] px-3'
-        />
-
-        <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Anlamı (opsiyonel)</Text>
-        <ThemedInput
-          value={meaningDraft}
-          onChangeText={setMeaningDraft}
-          placeholder="Örn. Allah'ım Muhammed'e salat et"
-          className='mb-3 rounded-xl bg-[--bg] px-3'
-        />
-
-        <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Hedef</Text>
-        <ThemedInput
-          value={targetDraft}
-          onChangeText={value => setTargetDraft(value.replace(/\D+/g, ''))}
-          keyboardType='number-pad'
-          placeholder='33'
-          className='mb-2 rounded-xl bg-[--bg] px-3'
-        />
-
-        {error ? <Text className='mb-3 text-xs text-[#F97373]'>{error}</Text> : null}
-
-        <View className='mt-1 flex-row items-center justify-end gap-2'>
-          <Pressable onPress={closeCreate} disabled={isSaving} className='rounded-full border border-white/20 px-4 py-2'>
-            <Text className='text-sm font-medium text-[--text-primary]'>İptal</Text>
-          </Pressable>
-          <PrimaryCtaButton
-            label={isSaving ? 'Kaydediliyor' : 'Kaydet'}
-            onPress={() => {
-              void saveCreate()
-            }}
-            disabled={isSaveDisabled || isSaving}
-            className={`px-4 !py-2 ${isSaveDisabled ? 'opacity-50' : ''}`}
-            textClassName='text-sm font-semibold'
-          />
-        </View>
-      </KeyboardAwareBottomSheetModal>
+        onErrorClear={() => setError(null)}
+        onSubmit={saveCreate}
+      />
     </>
   )
 }

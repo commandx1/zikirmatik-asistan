@@ -13,18 +13,33 @@ import {
 } from "../../dhikrs/services/user-dhikrs-api-client";
 import type { ZikirFilterKey, ZikirItem } from "../types";
 
+type UpdateDhikrValues = {
+  name: string;
+  transliteration: string;
+  meaning: string;
+  target: number;
+};
+
 type ZikirlerimContextValue = {
   filters: Array<{ key: ZikirFilterKey; label: string }>;
   activeFilter: ZikirFilterKey;
   items: ZikirItem[];
   selectedDhikrId: string;
   deletingDhikrId: string;
+  editingDhikr: ZikirItem | null;
+  isUpdateOpen: boolean;
+  isUpdatingDhikr: boolean;
+  updateError: string | null;
   isRefreshing: boolean;
   refresh: () => Promise<void>;
   setActiveFilter: (filter: ZikirFilterKey) => void;
   toggleFavorite: (id: string) => void;
   selectDhikr: (id: string) => void;
   deleteDhikr: (item: ZikirItem) => Promise<void>;
+  openUpdateModal: (item: ZikirItem) => void;
+  closeUpdateModal: () => void;
+  clearUpdateError: () => void;
+  saveDhikrUpdate: (values: UpdateDhikrValues) => Promise<void>;
 };
 
 const ZikirlerimContext = createContext<ZikirlerimContextValue | null>(null);
@@ -53,6 +68,9 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const [logs, setLogs] = useState<BackendDhikrLog[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [deletingDhikrId, setDeletingDhikrId] = useState("");
+  const [editingDhikrId, setEditingDhikrId] = useState("");
+  const [isUpdatingDhikr, setIsUpdatingDhikr] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
 
   const fetchLogs = useCallback(async () => {
     if (authStatus !== "authenticated" || !sessionUserId) {
@@ -230,12 +248,102 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     return enrichedItems.filter((item) => item.target <= 0 || item.current < item.target);
   }, [activeFilter, enrichedItems]);
 
+  const editingDhikr = useMemo(() => {
+    if (!editingDhikrId) {
+      return null;
+    }
+
+    return (
+      enrichedItems.find((item) => item.id === editingDhikrId) ??
+      items.find((item) => item.id === editingDhikrId) ??
+      null
+    );
+  }, [editingDhikrId, enrichedItems, items]);
+
+  const closeUpdateModal = useCallback(() => {
+    if (isUpdatingDhikr) {
+      return;
+    }
+
+    setEditingDhikrId("");
+    setUpdateError(null);
+  }, [isUpdatingDhikr]);
+
+  const saveDhikrUpdate = useCallback(
+    async (values: UpdateDhikrValues) => {
+      if (!editingDhikr || editingDhikr.source !== "personal" || isUpdatingDhikr) {
+        return;
+      }
+
+      const trimmedName = values.name.trim();
+      const trimmedTransliteration = values.transliteration.trim();
+      const trimmedMeaning = values.meaning.trim();
+      const nextTransliteration = trimmedTransliteration || trimmedName;
+      const nextTarget = values.target > 0 ? values.target : 0;
+
+      const previousSnapshot: ZikirItem = {
+        ...editingDhikr
+      };
+
+      setUpdateError(null);
+      setIsUpdatingDhikr(true);
+
+      upsertPersonalDhikr({
+        id: editingDhikr.id,
+        transliteration: nextTransliteration,
+        arabic: editingDhikr.arabic,
+        meaning: trimmedMeaning || undefined,
+        current: editingDhikr.current,
+        target: nextTarget,
+        lastActivityLabel: editingDhikr.lastActivityLabel,
+        isFavorite: editingDhikr.isFavorite
+      });
+
+      try {
+        if (authStatus === "authenticated" && sessionUserId) {
+          await updateUserDhikrByClientId(
+            editingDhikr.id,
+            {
+              name: trimmedName,
+              transliteration: trimmedTransliteration || undefined,
+              meaning: trimmedMeaning || undefined,
+              target: nextTarget
+            },
+            sessionAccessToken
+          );
+        }
+
+        setEditingDhikrId("");
+        setUpdateError(null);
+      } catch {
+        upsertPersonalDhikr({
+          id: previousSnapshot.id,
+          transliteration: previousSnapshot.transliteration,
+          arabic: previousSnapshot.arabic,
+          meaning: previousSnapshot.meaning,
+          current: previousSnapshot.current,
+          target: previousSnapshot.target,
+          lastActivityLabel: previousSnapshot.lastActivityLabel,
+          isFavorite: previousSnapshot.isFavorite
+        });
+        setUpdateError("Zikir güncellenemedi. Lütfen tekrar dene.");
+      } finally {
+        setIsUpdatingDhikr(false);
+      }
+    },
+    [authStatus, editingDhikr, isUpdatingDhikr, sessionAccessToken, sessionUserId, upsertPersonalDhikr]
+  );
+
   const value: ZikirlerimContextValue = {
     filters: FILTERS,
     activeFilter,
     items: visibleItems,
     selectedDhikrId,
     deletingDhikrId,
+    editingDhikr,
+    isUpdateOpen: Boolean(editingDhikr),
+    isUpdatingDhikr,
+    updateError,
     isRefreshing,
     refresh,
     setActiveFilter,
@@ -342,10 +450,27 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
         } else {
           clearDhikrProgress(item.id);
         }
+
+        if (editingDhikrId === item.id) {
+          setEditingDhikrId("");
+          setUpdateError(null);
+        }
       } finally {
         setDeletingDhikrId("");
       }
-    }
+    },
+    openUpdateModal: (item) => {
+      if (item.source !== "personal") {
+        return;
+      }
+      setEditingDhikrId(item.id);
+      setUpdateError(null);
+    },
+    closeUpdateModal,
+    clearUpdateError: () => {
+      setUpdateError(null);
+    },
+    saveDhikrUpdate
   };
 
   return <ZikirlerimContext.Provider value={value}>{children}</ZikirlerimContext.Provider>;
