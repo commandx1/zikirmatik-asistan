@@ -247,9 +247,14 @@ export class AuthService {
   }
 
   private allowInsecureLocalTokens() {
-    return (
+    if (
       this.configService.get<string>('AUTH_ALLOW_INSECURE_TEST_TOKENS') === '1'
-    );
+    ) {
+      return true;
+    }
+
+    const nodeEnv = this.configService.get<string>('NODE_ENV');
+    return nodeEnv === 'development' || nodeEnv === 'test';
   }
 
   private parseJsonClaims(rawToken: string): ProviderClaims {
