@@ -40,8 +40,8 @@ export function ProfilePremiumSheet({
   onClose
 }: ProfilePremiumSheetProps) {
   const { fontFamily } = useThemePreferences()
-  const MONTHLY_PRICE = 59
-  const YEARLY_PRICE = 590
+  const MONTHLY_PRICE = 94.99
+  const YEARLY_PRICE = 949.99
 
   if (!visible) {
     return null

@@ -1,31 +1,8 @@
 import { Platform } from "react-native";
-
-const DEFAULT_ANDROID_REWARDED_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
-const DEFAULT_IOS_REWARDED_UNIT_ID = "ca-app-pub-3940256099942544/1712485313";
+import { resolveRewardedUnitId } from "./rewarded-ad-unit";
 
 let initializePromise: Promise<unknown> | null = null;
 let mobileAdsModulePromise: Promise<typeof import("react-native-google-mobile-ads") | null> | null = null;
-
-function resolveRewardedUnitId(): string | null {
-  const configured =
-    Platform.OS === "ios"
-      ? process.env.EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID_IOS?.trim()
-      : process.env.EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID_ANDROID?.trim();
-
-  if (__DEV__) {
-    const allowRealAdsInDev = process.env.EXPO_PUBLIC_ADMOB_USE_REAL_ADS_IN_DEV === "1";
-    if (allowRealAdsInDev && configured) {
-      return configured;
-    }
-    return Platform.OS === "ios" ? DEFAULT_IOS_REWARDED_UNIT_ID : DEFAULT_ANDROID_REWARDED_UNIT_ID;
-  }
-
-  if (configured) {
-    return configured;
-  }
-
-  return null;
-}
 
 async function loadMobileAdsModule() {
   if (!mobileAdsModulePromise) {
@@ -61,7 +38,11 @@ export async function showRewardedAdGate(): Promise<boolean> {
     return false;
   }
 
-  const rewardedUnitId = resolveRewardedUnitId();
+  const rewardedUnitId = resolveRewardedUnitId({
+    env: process.env,
+    isDev: __DEV__,
+    platform: Platform.OS
+  });
   if (!rewardedUnitId) {
     return false;
   }
