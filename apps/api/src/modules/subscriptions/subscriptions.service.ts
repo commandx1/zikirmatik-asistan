@@ -4,6 +4,7 @@ import { Types, type Model } from 'mongoose';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { QuerySubscriptionsDto } from './dto/query-subscriptions.dto';
+import { SyncPremiumDto } from './dto/sync-premium.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import {
   Subscription,
@@ -174,9 +175,14 @@ export class SubscriptionsService {
     };
   }
 
-  async syncPremiumForUser(userId: string) {
+  async syncPremiumForUser(userId: string, payload?: SyncPremiumDto) {
     const objectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
     await this.ensureUserExists(objectId);
+
+    if (payload?.hasActivePremiumEntitlement === false) {
+      await this.expireActivePremiumSubscriptions(objectId, payload.provider);
+    }
+
     await this.syncUserPremiumStatus(objectId);
 
     const user = await this.userModel.findById(objectId).lean().exec();
@@ -201,6 +207,28 @@ export class SubscriptionsService {
       { _id: userId },
       { $set: { isPremium: activePremiumSubscriptionExists } },
     );
+  }
+
+  private async expireActivePremiumSubscriptions(
+    userId: Types.ObjectId,
+    provider?: 'apple' | 'google',
+  ) {
+    await this.subscriptionModel
+      .updateMany(
+        {
+          userId,
+          plan: 'premium',
+          status: 'active',
+          ...(provider ? { provider } : {}),
+        },
+        {
+          $set: {
+            status: 'expired',
+            endDate: new Date(),
+          },
+        },
+      )
+      .exec();
   }
 
   private async ensureUserExists(userId: Types.ObjectId) {

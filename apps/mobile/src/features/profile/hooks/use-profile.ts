@@ -278,10 +278,8 @@ export function useProfile() {
       try {
         const synced = await syncPremiumStatusWithRevenueCat(session.userId, session.accessToken);
         if (!isCancelled) {
-          if (synced.isPremium) {
-            hydrateFromBackend({ isPremium: true });
-            setBackendUser((current) => (current ? { ...current, isPremium: true } : current));
-          }
+          hydrateFromBackend({ isPremium: synced.isPremium });
+          setBackendUser((current) => (current ? { ...current, isPremium: synced.isPremium } : current));
         }
       } catch {
         // Keep existing backend premium status when RevenueCat sync fails.

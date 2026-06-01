@@ -14,6 +14,7 @@ import { CurrentUserId } from '../../common/auth/current-user-id.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { QuerySubscriptionsDto } from './dto/query-subscriptions.dto';
+import { SyncPremiumDto } from './dto/sync-premium.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { SubscriptionsService } from './subscriptions.service';
 
@@ -72,10 +73,11 @@ export class SubscriptionsController {
   @Post('sync-user/:userId')
   syncPremiumForUser(
     @Param('userId') userId: string,
+    @Body() payload: SyncPremiumDto,
     @CurrentUserId() currentUserId: string,
   ) {
     assertSelfUser(userId, currentUserId);
-    return this.subscriptionsService.syncPremiumForUser(userId);
+    return this.subscriptionsService.syncPremiumForUser(userId, payload);
   }
 }
 

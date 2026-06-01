@@ -14,6 +14,11 @@ export type CreateSubscriptionPayload = {
   endDate: string;
 };
 
+export type SyncSubscriptionPayload = {
+  hasActivePremiumEntitlement?: boolean;
+  provider?: SubscriptionProvider;
+};
+
 export class SubscriptionsApiError extends Error {
   constructor(
     public readonly kind: "transient" | "terminal",
@@ -35,10 +40,14 @@ export async function createSubscription(payload: CreateSubscriptionPayload, acc
   });
 }
 
-export async function syncSubscriptionForUser(userId: string, accessToken?: string): Promise<{ userId: string; isPremium: boolean }> {
+export async function syncSubscriptionForUser(
+  userId: string,
+  accessToken?: string,
+  payload: SyncSubscriptionPayload = {}
+): Promise<{ userId: string; isPremium: boolean }> {
   return requestJson(`/v1/subscriptions/sync-user/${userId}`, {
     method: "POST",
-    body: {},
+    body: payload,
     accessToken
   });
 }

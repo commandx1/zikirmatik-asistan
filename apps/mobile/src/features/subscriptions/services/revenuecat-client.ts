@@ -65,9 +65,7 @@ export async function syncPremiumStatusWithRevenueCat(
 ): Promise<PremiumSyncResult> {
   await ensureRevenueCatConfigured(userId);
   const customerInfo = await Purchases.getCustomerInfo();
-  void accessToken;
-  const activeEntitlement = resolveActiveEntitlement(customerInfo);
-  return { isPremium: Boolean(activeEntitlement) };
+  return syncBackendFromCustomerInfo(userId, accessToken, customerInfo);
 }
 
 async function ensureRevenueCatConfigured(appUserId: string) {
@@ -138,6 +136,8 @@ async function syncBackendFromCustomerInfo(
 ): Promise<PremiumSyncResult> {
   const activeEntitlement = resolveActiveEntitlement(customerInfo);
 
+  const provider = Platform.OS === "ios" ? "apple" : "google";
+
   if (activeEntitlement) {
     const productId = asString(activeEntitlement.productIdentifier) || "revenuecat_premium";
     const purchaseDate = asString(activeEntitlement.latestPurchaseDate) || new Date().toISOString();
@@ -150,7 +150,7 @@ async function syncBackendFromCustomerInfo(
       {
         userId,
         plan: "premium",
-        provider: Platform.OS === "ios" ? "apple" : "google",
+        provider,
         status: "active",
         productId,
         startDate: purchaseDate,
@@ -160,7 +160,10 @@ async function syncBackendFromCustomerInfo(
     );
   }
 
-  const synced = await syncSubscriptionForUser(userId, accessToken);
+  const synced = await syncSubscriptionForUser(userId, accessToken, {
+    hasActivePremiumEntitlement: Boolean(activeEntitlement),
+    provider
+  });
   return { isPremium: synced.isPremium };
 }
 
