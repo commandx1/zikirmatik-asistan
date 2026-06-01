@@ -34,3 +34,19 @@ export function resolveRewardedUnitId({ env, isDev, platform }: RewardedAdUnitOp
 
   return configured || null;
 }
+
+export function resolveRewardedUnitIdFromPublicEnv({
+  isDev,
+  platform
+}: Omit<RewardedAdUnitOptions, "env">): string | null {
+  return resolveRewardedUnitId({
+    env: {
+      EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID_ANDROID: process.env.EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID_ANDROID,
+      EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID_IOS: process.env.EXPO_PUBLIC_ADMOB_REWARDED_UNIT_ID_IOS,
+      EXPO_PUBLIC_ADMOB_USE_REAL_ADS_IN_DEV: process.env.EXPO_PUBLIC_ADMOB_USE_REAL_ADS_IN_DEV,
+      EXPO_PUBLIC_ADMOB_USE_TEST_ADS: process.env.EXPO_PUBLIC_ADMOB_USE_TEST_ADS
+    },
+    isDev,
+    platform
+  });
+}

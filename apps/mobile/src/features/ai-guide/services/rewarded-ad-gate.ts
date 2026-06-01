@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { resolveRewardedUnitId } from "./rewarded-ad-unit";
+import { resolveRewardedUnitIdFromPublicEnv } from "./rewarded-ad-unit";
 
 let initializePromise: Promise<unknown> | null = null;
 let mobileAdsModulePromise: Promise<typeof import("react-native-google-mobile-ads") | null> | null = null;
@@ -38,8 +38,7 @@ export async function showRewardedAdGate(): Promise<boolean> {
     return false;
   }
 
-  const rewardedUnitId = resolveRewardedUnitId({
-    env: process.env,
+  const rewardedUnitId = resolveRewardedUnitIdFromPublicEnv({
     isDev: __DEV__,
     platform: Platform.OS
   });
