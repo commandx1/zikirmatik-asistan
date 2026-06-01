@@ -31,7 +31,7 @@ export class UsersService {
     const created = await this.userModel.create({
       ...payload,
       email: normalizedEmail,
-      isPremium: true,
+      isPremium: false,
       lastSeenAt: new Date(),
     });
 
@@ -152,7 +152,7 @@ export class UsersService {
       displayName: input.displayName ?? 'Misafir Kullanıcı',
       profileImageUrl: input.profileImageUrl,
       authProvider: input.provider,
-      isPremium: true,
+      isPremium: false,
       lastSeenAt: now,
     });
   }

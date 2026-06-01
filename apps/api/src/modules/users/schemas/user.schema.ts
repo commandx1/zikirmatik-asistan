@@ -76,7 +76,7 @@ export class User {
     fridayReminder: boolean;
   };
 
-  @Prop({ type: Boolean, default: true })
+  @Prop({ type: Boolean, default: false })
   isPremium!: boolean;
 
   @Prop(
