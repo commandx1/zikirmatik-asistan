@@ -96,6 +96,28 @@ export class DhikrsService {
       .exec();
   }
 
+  async findVerifiedActiveByTransliteration(transliteration: string) {
+    const normalized = transliteration.trim();
+    if (!normalized) {
+      throw new NotFoundException('Zikir bulunamadı.');
+    }
+
+    const dhikr = await this.dhikrModel
+      .findOne({
+        transliteration: new RegExp(`^${escapeRegExp(normalized)}$`, 'i'),
+        isVerified: true,
+        isActive: true,
+      })
+      .lean()
+      .exec();
+
+    if (!dhikr) {
+      throw new NotFoundException('Zikir bulunamadı.');
+    }
+
+    return dhikr;
+  }
+
   private asObjectId(rawId: string) {
     if (!Types.ObjectId.isValid(rawId)) {
       throw new NotFoundException('Geçersiz zikir kimliği.');
@@ -103,4 +125,8 @@ export class DhikrsService {
 
     return new Types.ObjectId(rawId);
   }
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
