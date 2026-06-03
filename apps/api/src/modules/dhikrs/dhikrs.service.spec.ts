@@ -26,7 +26,9 @@ describe('DhikrsService', () => {
       }),
     });
 
-    await expect(service.findVerifiedActiveByTransliteration(' er-rahmân ')).resolves.toEqual(record);
+    await expect(
+      service.findVerifiedActiveByTransliteration(' er-rahmân '),
+    ).resolves.toEqual(record);
     expect(dhikrModel.findOne).toHaveBeenCalledWith({
       transliteration: /^er-rahmân$/i,
       isVerified: true,
@@ -41,6 +43,8 @@ describe('DhikrsService', () => {
       }),
     });
 
-    await expect(service.findVerifiedActiveByTransliteration('Bilinmeyen')).rejects.toBeInstanceOf(NotFoundException);
+    await expect(
+      service.findVerifiedActiveByTransliteration('Bilinmeyen'),
+    ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

@@ -1,4 +1,14 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CreateDhikrDto } from './dto/create-dhikr.dto';
 import { QueryDhikrsDto } from './dto/query-dhikrs.dto';
 import { UpdateDhikrDto } from './dto/update-dhikr.dto';
