@@ -1435,6 +1435,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'اللَّهُ',
         nameTurkish: 'Allah (C.C.)',
         transliteration: 'ALLAH (C.C.)',
+        dhikrDay: 'Pazar',
         meaning:
           'Tüm isim ve sıfatları kendinde toplayan, eşi benzeri bulunmayan tek ilah.',
         virtue:
@@ -1457,6 +1458,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الرَّحْمٰنُ',
         nameTurkish: 'Er-Rahmân',
         transliteration: 'Er-Rahmân',
+        dhikrDay: 'Pazar',
         meaning:
           'Dünyadaki bütün yaratılmışlara ayırt etmeden merhamet eden, esirgeyen.',
         virtue:
@@ -1479,6 +1481,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الرَّحِيمُ',
         nameTurkish: 'Er-Rahîm',
         transliteration: 'Er-Rahîm',
+        dhikrDay: 'Pazar',
         meaning:
           'Ahirette sadece müminlere sonsuz ihsanda, lütufta ve merhamette bulunan.',
         virtue:
@@ -1501,6 +1504,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمَلِكُ',
         nameTurkish: 'El-Melik',
         transliteration: 'El-Melik',
+        dhikrDay: 'Çarşamba',
         meaning:
           'Kainatın tek sahibi, mülk ve saltanatı sürekli olan mutlak hükümdar.',
         virtue:
@@ -1523,6 +1527,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْقُدُّوسُ',
         nameTurkish: 'El-Kuddüs',
         transliteration: 'El-Kuddüs',
+        dhikrDay: 'Perşembe',
         meaning:
           'Hatadan, gafletten, aczden ve her türlü eksiklikten pek uzak, pek temiz.',
         virtue:
@@ -1545,6 +1550,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'السَّلَامُ',
         nameTurkish: 'Es-Selâm',
         transliteration: 'Es-Selâm',
+        dhikrDay: 'Pazar',
         meaning:
           'Kullarını her türlü tehlikelerden selamete çıkaran, cennette selam veren.',
         virtue:
@@ -1567,6 +1573,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُؤْمِنُ',
         nameTurkish: "El-Mü'min",
         transliteration: "El-Mü'min",
+        dhikrDay: 'Pazartesi',
         meaning:
           'Gönüllerde iman ışığı uyandıran, kendine sığınanları koruyan ve rahatlatan.',
         virtue:
@@ -1589,6 +1596,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُهَيْمِنُ',
         nameTurkish: 'El-Müheymin',
         transliteration: 'El-Müheymin',
+        dhikrDay: 'Perşembe',
         meaning:
           'Her şeyi görüp gözeten, her varlığın yaptıklarından haberdar olan, koruyan.',
         virtue:
@@ -1611,6 +1619,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْعَزِيزُ',
         nameTurkish: 'El-Azîz',
         transliteration: 'El-Azîz',
+        dhikrDay: 'Salı',
         meaning:
           'İzzet sahibi, mağlup edilmesi asla mümkün olmayan, her şeye galip.',
         virtue:
@@ -1633,6 +1642,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْجَبَّارُ',
         nameTurkish: 'El-Cebbâr',
         transliteration: 'El-Cebbâr',
+        dhikrDay: 'Salı',
         meaning:
           'Eksikleri tamamlayan, dilediğini zorla yaptırmaya muktedir olan, azamet sahibi.',
         virtue:
@@ -1655,6 +1665,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُتَكَبِّرُ',
         nameTurkish: 'El-Mütekebbir',
         transliteration: 'El-Mütekebbir',
+        dhikrDay: 'Perşembe',
         meaning:
           'Büyüklükte eşi benzeri olmayan, her şeyde büyüklüğünü gösteren.',
         virtue:
@@ -1677,6 +1688,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْخَالِقُ',
         nameTurkish: 'El-Hâlık',
         transliteration: 'El-Hâlık',
+        dhikrDay: 'Pazar',
         meaning: 'Bütün varlığı, halleri ve hadiseleri tayin edip yoktan var eden.',
         virtue:
           'İşlerde üzüntü ve darlıktan kurtulmak; her işte başarı; zor akıl hastalarına yazılıp taşıtıldığında şifa; çözülmesi imkansız görülen işlerin kolayca çözülmesi.',
@@ -1698,6 +1710,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْبَارِئُ',
         nameTurkish: "El-Bâri'",
         transliteration: "El-Bâri'",
+        dhikrDay: 'Pazar',
         meaning: 'Eşyayı ve her şeyin vücudunu birbirine uygun ve kusursuz yaratan.',
         virtue:
           'İş hayatında olağanüstü başarı ve şöhret; düşmanları yenmek; zihin ve aklın gelişimi; ağır işlerin kolaylaşması; bir sene devamla zikredildiğinde şifacılık yeteneği.',
@@ -1720,6 +1733,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُصَوِّرُ',
         nameTurkish: 'El-Musavvir',
         transliteration: 'El-Musavvir',
+        dhikrDay: 'Pazartesi',
         meaning: 'Varlıklara şekillerini veren, onları birbirinden farklı kılan.',
         virtue:
           'Maksat ve merama ulaşmak; en zor işleri başarmak; sanatkarlar için yaratıcılık; ruhanilerle irtibat kurmak; sıkıntılardan arınmak; ahlaklı evlat sahibi olmak.',
@@ -1741,6 +1755,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْغَفَّارُ',
         nameTurkish: 'El-Gaffâr',
         transliteration: 'El-Gaffâr',
+        dhikrDay: 'Cuma',
         meaning: 'Kullarının günahlarını örten, mağfireti pek çok olan.',
         virtue:
           'Günahların bağışlanması ve korunması; hata ve isyanlardan arınma; düşman ve hasımların gözünde görünmez (zararsız) hale gelmek.',
@@ -1762,6 +1777,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْقَهَّارُ',
         nameTurkish: 'El-Kahhâr',
         transliteration: 'El-Kahhâr',
+        dhikrDay: 'Salı',
         meaning: 'Her şeye, her istediğini yapacak surette galip ve hakim olan.',
         virtue:
           'Din düşmanlarının, zalimlerin ve zorbaların kahrından kurtulmak; nefs-i emmarenin isteklerini ve kötü huyları ezmek.',
@@ -1783,6 +1799,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْوَهَّابُ',
         nameTurkish: 'El-Vehhâb',
         transliteration: 'El-Vehhâb',
+        dhikrDay: 'Cuma',
         meaning: 'Karşılıksız bol ihsanlarda, bağışlarda ve hibelerde bulunan.',
         virtue:
           'Sıkıntısız, borçsuz ve son derece konforlu bir yaşam; rızkın artması; mahlukata karşı güçlü ve heybetli görünmek; duaların hızla kabulü.',
@@ -1804,6 +1821,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الرَّزَّاقُ',
         nameTurkish: 'Er-Rezzâk',
         transliteration: 'Er-Rezzâk',
+        dhikrDay: 'Perşembe',
         meaning: 'Bütün mahlukatın rızkını veren ve her türlü ihtiyacını karşılayan.',
         virtue:
           'Rızık bolluğu; maddi sıkıntıların kalıcı bitişi; zihin açılması; resmi işlerin çözülmesi; sabah namazı öncesi okunup üflendiğinde eve kötülük girmemesi.',
@@ -1825,6 +1843,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْفَتَّاحُ',
         nameTurkish: 'El-Fettâh',
         transliteration: 'El-Fettâh',
+        dhikrDay: 'Çarşamba',
         meaning: 'Her türlü zorlukları kolaylaştıran, maddi-manevi darlıktan kurtaran.',
         virtue:
           'Maddi ve manevi hayır kapılarının açılması; ticarette başarı; darlık çekmemek; kalbin nurlanması; rüyada bilinmeyen sırların gösterilmesi.',
@@ -1846,6 +1865,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْعَلِيمُ',
         nameTurkish: 'El-Alîm',
         transliteration: 'El-Alîm',
+        dhikrDay: 'Perşembe',
         meaning: 'Her şeyi en küçük detayına kadar ezeli ve ebedi ilmi ile en iyi bilen.',
         virtue:
           'İlim zenginliği; gizli sırlara vakıf olmak; hikmetli konuşma; anlayış ve zeka artışı; ilahi marifete ulaşmak.',
@@ -1868,6 +1888,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْقَابِضُ',
         nameTurkish: 'El-Kâbıd',
         transliteration: 'El-Kâbıd',
+        dhikrDay: 'Perşembe',
         meaning: 'Dilediğine darlık veren, sıkan, daraltan, ruhları alan.',
         virtue:
           'Zalimin zulmünden korunmak; heybet ve celal kazanarak düşman dedikodularını engellemek; nefsani kötü huyları bırakmak; metafizik perdelerin kalkması.',
@@ -1889,6 +1910,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْبَاسِطُ',
         nameTurkish: 'El-Bâsıt',
         transliteration: 'El-Bâsıt',
+        dhikrDay: 'Cuma',
         meaning: 'Dilediğine bolluk veren, açan, genişleten, ferahlatan.',
         virtue:
           'Rızkın genişlemesi ve bereket; korkulardan emin olmak; endişelerin gitmesi; kalp gözünün açılması; keyif ve neşenin artması.',
@@ -1911,6 +1933,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْخَافِضُ',
         nameTurkish: 'El-Hâfıd',
         transliteration: 'El-Hâfıd',
+        dhikrDay: 'Pazar',
         meaning: 'Dereceleri alçaltan, kâfir ve facirleri aşağıya indiren.',
         virtue:
           'Kötülerin ve belaların defedilmesi; zalimlerin şerrinden korunmak; düşmanlara karşı her daim üstün ve güçlü görünmek.',
@@ -1932,6 +1955,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الرَّافِعُ',
         nameTurkish: 'Er-Râfi',
         transliteration: 'Er-Râfi',
+        dhikrDay: 'Pazar',
         meaning: 'Şeref vererek yükselten, yukarı kaldıran.',
         virtue:
           'İnsanlar arasında ve iş hayatında yükselmek; tevazu sahibi olmak; rızkın artması; düşmanların kalbine korku salmak; fakirlikten korunma.',
@@ -1954,6 +1978,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُعِزُّ',
         nameTurkish: "El-Mu'ız",
         transliteration: "El-Mu'ız",
+        dhikrDay: 'Pazar',
         meaning: 'Dilediğini aziz eden, izzet verip ağırlayan.',
         virtue:
           'Fakirlik ve zelillikten kurtulmak; gücün ve cesaretin artması; kadri kıymetin yücelmesi; mahlukata karşı heybetli görünmek.',
@@ -1975,6 +2000,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'المُذِلُّ',
         nameTurkish: 'El-Müzil',
         transliteration: 'El-Müzil',
+        dhikrDay: 'Salı',
         meaning: 'Dilediğini zillete düşüren, hor ve hakir eden.',
         virtue:
           'Düşmanları zelil etmek; zalim şerrinden emin olmak; haksızlık yapanları hezimete uğratmak.',
@@ -1995,6 +2021,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'السَّمِيعُ',
         nameTurkish: 'Es-Semî',
         transliteration: 'Es-Semî',
+        dhikrDay: 'Perşembe',
         meaning: 'Her şeyi en iyi işiten, duaları kabul eden.',
         virtue:
           'Duaların ilahi dergahta hızla kabulü; oruç ve halvetle zikredildiğinde ruhsal hassasiyetin artması ve metafizik algıların açılması.',
@@ -2016,6 +2043,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْبَصِيرُ',
         nameTurkish: 'El-Basîr',
         transliteration: 'El-Basîr',
+        dhikrDay: 'Pazar',
         meaning: 'Gizli açık her şeyi en iyi gören, her şeyi fark eden.',
         virtue:
           'Acziyetin ortadan kalkması; basiretli ve sezgileri güçlü biri olmak; dünya ve ahiret korkularından tamamen kurtulmak.',
@@ -2037,6 +2065,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْحَكَمُ',
         nameTurkish: 'El-Hakem',
         transliteration: 'El-Hakem',
+        dhikrDay: 'Pazar',
         meaning: 'Mutlak hakim olan, hakkı batıldan ayıran, hikmetle hükmeden.',
         virtue:
           'Haklı davayı kazanmak; insanlar arasında hak ve adaletle hüküm vermek; olayların iç yüzünü kavrama yeteneği.',
@@ -2057,6 +2086,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْعَدْلُ',
         nameTurkish: 'El-Adl',
         transliteration: 'El-Adl',
+        dhikrDay: 'Pazar',
         meaning: 'Mutlak adil olan, her şeyi yerli yerinde yapan.',
         virtue:
           'Adaletli olmak; haklı davayı kazanmak; nefsi terbiye etmek; haram işlerden ve kötü ahlaktan uzak durmak.',
@@ -2078,6 +2108,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'اللَّطِيفُ',
         nameTurkish: 'El-Latîf',
         transliteration: 'El-Latîf',
+        dhikrDay: 'Cuma',
         meaning: 'Bütün incelikleri bilen, kullarına sezdirmeden lütuf sunan.',
         virtue:
           'Dileklerin kabulü; kısmet ve rızkın umulmadık yerlerden artması; zor durumların kolayca atlatılması.',
@@ -2099,6 +2130,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْخَبِيرُ',
         nameTurkish: 'El-Habîr',
         transliteration: 'El-Habîr',
+        dhikrDay: 'Pazar',
         meaning: 'Her şeyin iç yüzünden, gizli tarafından haberdar olan.',
         virtue:
           'Hafıza ve idrakin genişlemesi; bilinmeyen, gizemli meselelerin rüya ve ilham yoluyla kişiye aşikar olması.',
@@ -2120,6 +2152,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْحَلِيمُ',
         nameTurkish: 'El-Halîm',
         transliteration: 'El-Halîm',
+        dhikrDay: 'Cumartesi',
         meaning: 'Cezalandırmada acele etmeyen, yumuşak davranan, hilm sahibi.',
         virtue:
           'Ahlak güzelliği; yumuşak huylu olmak; öfke, hiddet ve sinir krizlerinden kurtulup ruhi sükunete ermek.',
@@ -2141,6 +2174,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْعَظِيمُ',
         nameTurkish: 'El-Azîm',
         transliteration: 'El-Azîm',
+        dhikrDay: 'Çarşamba',
         meaning: 'Pek yüce, büyüklükte benzeri ve ortağı olmayan.',
         virtue:
           'Sözünün insanlar üzerinde son derece tesirli ve dinlenir olması; toplum nezdinde büyük heybet ve saygınlık kazanmak.',
@@ -2162,6 +2196,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْغَفُورُ',
         nameTurkish: 'El-Gafûr',
         transliteration: 'El-Gafûr',
+        dhikrDay: 'Pazar',
         meaning: 'Affı ve mağfireti çok bol olan, günahları bağışlayan.',
         virtue:
           'Günahların affı; kötü ahlaktan korunmak; stres ve anksiyeteden kurtulup kalbe derin bir huzur ve sekine indirmek.',
@@ -2183,6 +2218,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الشَّكُورُ',
         nameTurkish: 'Eş-Şekûr',
         transliteration: 'Eş-Şekûr',
+        dhikrDay: 'Pazar',
         meaning: 'Kendi rızası için yapılan az amele çok sevap veren.',
         virtue:
           'Verilen nimetlerin şükrünü eda edebilmek; talihin açıklığı; rızıkta ve kazançta bereketin katlanarak artması.',
@@ -2204,6 +2240,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْعَلِيُّ',
         nameTurkish: 'El-Aliyy',
         transliteration: 'El-Aliyy',
+        dhikrDay: 'Pazar',
         meaning: 'Yüceler yücesi, çok yüksek ve ulaşılamaz olan.',
         virtue:
           'Zilletten, hor görülmekten kurtulmak; ilim ve manevi derecelerin hızla artması; saygınlık elde etmek.',
@@ -2225,6 +2262,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْكَبِيرُ',
         nameTurkish: 'El-Kebîr',
         transliteration: 'El-Kebîr',
+        dhikrDay: 'Perşembe',
         meaning: 'Büyüklüğünde hudut olmayan, her şeyden büyük olan.',
         virtue:
           'Maddi ve manevi büyüklük; toplumda sözü dinlenen, hürmet ve tazim gören saygın bir lider konumuna gelmek.',
@@ -2246,6 +2284,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْحَفِيظُ',
         nameTurkish: 'El-Hafîz',
         transliteration: 'El-Hafîz',
+        dhikrDay: 'Cumartesi',
         meaning: 'Yapılan işleri ayrıntısıyla tutan, her şeyi belli vakte kadar koruyan.',
         virtue:
           'Nefsin, canın ve malın korunması; zalimlerin şerrinden emin olmak; düşmanlara karşı her daim üstünlük sağlamak.',
@@ -2267,6 +2306,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُقِيتُ',
         nameTurkish: 'El-Mukît',
         transliteration: 'El-Mukît',
+        dhikrDay: 'Pazar',
         meaning: 'Yaratılmış her mahlukatın azığını, gıdasını ve rızkını veren.',
         virtue:
           'Muhtaç olunan rızkı kolayca kazanmak; beden gücü elde etmek; darlık ve açlık korkularından emin olmak.',
@@ -2282,6 +2322,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْحَسِيبُ',
         nameTurkish: 'El-Hasîb',
         transliteration: 'El-Hasîb',
+        dhikrDay: 'Cuma',
         meaning: 'Kulların hayatları boyunca yaptıklarının hesabını en iyi gören.',
         virtue:
           'Herkese karşı açık alınlı ve dürüst olmak; korkulardan emin olmak; haksız ithamlardan ve dedikodulardan korunmak.',
@@ -2297,6 +2338,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْجَلِيلُ',
         nameTurkish: 'El-Celîl',
         transliteration: 'El-Celîl',
+        dhikrDay: 'Pazar',
         meaning: 'Azamet, celal ve ululuk sahibi olan, şanı yüce olan.',
         virtue:
           'Toplumda manevi heybet kazanmak; düşmanların kötülük yapmaya cesaret edememesi; saygı duyulan biri olmak.',
@@ -2312,6 +2354,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْكَرِيمُ',
         nameTurkish: 'El-Kerîm',
         transliteration: 'El-Kerîm',
+        dhikrDay: 'Cuma',
         meaning: 'Karşılıksız veren, çok ikram edici, lütuf ve ihsanı bol olan.',
         virtue:
           'Cömertlik ve güzel ahlak kazanmak; darlıktan kurtulmak; her türlü maddi-manevi lütfa zahmetsizce ulaşmak.',
@@ -2327,6 +2370,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الرَّقِيبُ',
         nameTurkish: 'Er-Rakîb',
         transliteration: 'Er-Rakîb',
+        dhikrDay: 'Cuma',
         meaning: 'Bütün varlıkları ve işleri her an murakabe edip gözeten.',
         virtue:
           'Hırsızlıktan, ihanetten ve kazalardan emin olmak; işlerin kontrol altında aksamadan ilerlemesi.',
@@ -2342,6 +2386,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُجِيبُ',
         nameTurkish: 'El-Mucîb',
         transliteration: 'El-Mucîb',
+        dhikrDay: 'Perşembe',
         meaning: 'Kendisine dua edenlerin dualarını kabul eden, istekleri veren.',
         virtue:
           'Duaların engelsiz şekilde ilahi huzura kabulü; hayırlı isteklerin hızlıca gerçekleşmesi.',
@@ -2357,6 +2402,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْوَاسِعُ',
         nameTurkish: 'El-Vâsi',
         transliteration: 'El-Vâsi',
+        dhikrDay: 'Pazartesi',
         meaning: 'İlmi, rahmeti ve kudreti ile her şeyi kuşatan, lütfu bol olan.',
         virtue:
           'Kalp ve gönül ferahlığı; rızık darlığından kurtulmak; ömre, rızka ve berekete genişlik kazandırmak.',
@@ -2372,6 +2418,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْحَكِيمُ',
         nameTurkish: 'El-Hakîm',
         transliteration: 'El-Hakîm',
+        dhikrDay: 'Cuma',
         meaning: 'Emirleri, kelamı ve bütün işleri mutlak hikmetli olan.',
         virtue:
           'Derin ilim ve hikmet sahibi olmak; engellerin kalkması; işlerde en hayırlı ve isabetli kararları verebilmek.',
@@ -2387,6 +2434,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْوَدُودُ',
         nameTurkish: 'El-Vedûd',
         transliteration: 'El-Vedûd',
+        dhikrDay: 'Pazartesi',
         meaning: 'İyi kullarını çok seven, sevilmeye ve dostluğa en layık olan.',
         virtue:
           'İnsanlar arasında eşsiz bir sevgi, şefkat ve muhabbet celbi; borçlardan ve maddi sıkıntılardan kurtulmak.',
@@ -2402,6 +2450,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمَجِيدُ',
         nameTurkish: 'El-Mecîd',
         transliteration: 'El-Mecîd',
+        dhikrDay: 'Cuma',
         meaning: 'Nimeti ve ihsanı sonsuz, şanı ve şerefi çok yüksek olan.',
         virtue:
           'Şan, şeref ve makam kazanmak; insanların sevgisine nail olmak; kalbin manevi kirlerden temizlenmesi.',
@@ -2417,6 +2466,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْبَاعِثُ',
         nameTurkish: 'El-Bâis',
         transliteration: 'El-Bâis',
+        dhikrDay: 'Pazar',
         meaning: 'Ölüleri diriltip kabirlerinden çıkaran, elçiler gönderen.',
         virtue:
           'Alacakları tahsil edebilmek; zalimlerin şerrinden ve iftiralardan hızla kurtulmak.',
@@ -2432,6 +2482,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الشَّهِيدُ',
         nameTurkish: 'Eş-Şehîd',
         transliteration: 'Eş-Şehîd',
+        dhikrDay: 'Perşembe',
         meaning: 'Bütün zamanlarda ve her yerde hazır ve nazır olan, gören.',
         virtue:
           'Heybetli görünmek; asi, itaatsiz ve geçimsiz yakınların, eş ve çocukların ıslah olup yola gelmesi.',
@@ -2447,6 +2498,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْحَقُّ',
         nameTurkish: 'El-Hakk',
         transliteration: 'El-Hakk',
+        dhikrDay: 'Cuma',
         meaning: 'Varlığı hiç değişmeden duran, hakkı ve adaleti gösteren.',
         virtue:
           'Haklı davalarda üstün gelmek; yalan ve batıllardan uzaklaşmak; işlerin doğruluk ve dürüstlük üzere yürümesi.',
@@ -2462,6 +2514,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْوَكِيلُ',
         nameTurkish: 'El-Vekîl',
         transliteration: 'El-Vekîl',
+        dhikrDay: 'Cuma',
         meaning: 'Kendisine tevekkül edenlerin işlerini en iyi neticeye ulaştıran.',
         virtue:
           'Ani musibetlerden korunmak; rızık kapılarının açılması; düşman üzerine zöhre saatinde beddua için okunması.',
@@ -2477,6 +2530,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْقَوِيُّ',
         nameTurkish: 'El-Kaviyy',
         transliteration: 'El-Kaviyy',
+        dhikrDay: 'Salı',
         meaning: 'Pek kuvvetli, pek güçlü, kudreti en üstün olan.',
         virtue:
           'Kansızlık ve fiziki zayıflıktan kurtulmak; yolculuk kazalarından muhafaza olmak; ağır yükleri kolayca kaldırmak.',
@@ -2492,6 +2546,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمَتِينُ',
         nameTurkish: 'El-Metîn',
         transliteration: 'El-Metîn',
+        dhikrDay: 'Cuma',
         meaning: 'Çok sağlam, kudreti hiç eksilmeyen, sarsılmaz olan.',
         virtue:
           'Maddi-manevi direnç kazanmak; fakirlikten, zulümden, kötü ahlaktan arınmak; manevi sırlara vakıf olmak.',
@@ -2507,6 +2562,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْوَلِيُّ',
         nameTurkish: 'El-Veliyy',
         transliteration: 'El-Veliyy',
+        dhikrDay: 'Salı',
         meaning: 'İnananların, salih kulların gerçek dostu ve yardımcısı.',
         virtue:
           'Her işte ilahi yardım görmek; ahiret hesabının kolaylaşması; veli kullar zümresine kabul edilmek.',
@@ -2522,6 +2578,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْحَمِيدُ',
         nameTurkish: 'El-Hamîd',
         transliteration: 'El-Hamîd',
+        dhikrDay: 'Çarşamba',
         meaning: 'Ancak kendisine hamdedilen, bütün varlığın diliyle övülen.',
         virtue:
           'Ahlakın ve amellerin güzelleşmesi; kazancın helal yoldan genişlemesi; mahlukatın sevgisi; namaz ardı 100 okuma ile salih olmak.',
@@ -2537,6 +2594,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُحْصِي',
         nameTurkish: 'El-Muhsî',
         transliteration: 'El-Muhsî',
+        dhikrDay: 'Pazar',
         meaning: 'Sonsuz da olsa her şeyin tek tek sayısını ve miktarını bilen.',
         virtue:
           'Zekanın olağanüstü kuvvetlenmesi; unutkanlığın tamamen gitmesi; muhatap kalplerin itaat etmesi; hastalıklara şifa.',
@@ -2552,6 +2610,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُبْدِئُ',
         nameTurkish: 'El-Mübdi',
         transliteration: 'El-Mübdi',
+        dhikrDay: 'Perşembe',
         meaning: 'Bütün varlıkları örneksiz ve maddesiz olarak ilk baştan yaratan.',
         virtue:
           'Girişilen işlerde üstün başarı; karar verme güçlüklerini aşmak; başlanan projeleri bitirmek.',
@@ -2567,6 +2626,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُعِيدُ',
         nameTurkish: 'El-Muîd',
         transliteration: 'El-Muîd',
+        dhikrDay: 'Cumartesi',
         meaning: 'Varlıkları yok ettikten sonra tekrar yaratan, dirilten.',
         virtue:
           'Kaybedilen itibar, mevki ve makamı geri kazanmak; altüst olmuş işlerin yeniden düzene girmesi.',
@@ -2582,6 +2642,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُحْيِي',
         nameTurkish: 'El-Muhyî',
         transliteration: 'El-Muhyî',
+        dhikrDay: 'Cuma',
         meaning: 'İhya eden, can bağışlayan, dirilten, sağlık veren.',
         virtue:
           'Şifacılık yeteneklerinin uyanması; kalbin gafletten uyanıp dirilmesi; ağır ve kronik hastalıklardan kurtuluş.',
@@ -2597,6 +2658,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُمِيتُ',
         nameTurkish: 'El-Mümît',
         transliteration: 'El-Mümît',
+        dhikrDay: 'Salı',
         meaning: 'Canlıların hayatına son veren, ölümü yaratan, öldüren.',
         virtue:
           'Nefsin harama olan meylini ve şehvetini köreltmek; düşmanların her türlü kötü planını iptal etmek.',
@@ -2612,6 +2674,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْحَيُّ',
         nameTurkish: 'El-Hayy',
         transliteration: 'El-Hayy',
+        dhikrDay: 'Pazar',
         meaning: 'Diri, tam ve mükemmel manasıyla sonsuz hayat sahibi.',
         virtue:
           'Genç, zinde ve diri kalmak; bedensel güçlenme; uzun ve sağlıklı ömür; kalbin tevhid nuruyla dolması.',
@@ -2627,6 +2690,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْقَيُّومُ',
         nameTurkish: 'El-Kayyûm',
         transliteration: 'El-Kayyûm',
+        dhikrDay: 'Perşembe',
         meaning: 'Gökleri, yeri ve her şeyi ayakta tutan, varlığı kendinden olan.',
         virtue:
           'Ruhsal ve psikolojik rahatsızlıkların tedavisi; işlerin süreklilik ve istikrar kazanması.',
@@ -2642,6 +2706,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْوَاجِدُ',
         nameTurkish: 'El-Vâcid',
         transliteration: 'El-Vâcid',
+        dhikrDay: 'Cuma',
         meaning: 'İstediğini istediği an bulan, hiçbir şeye muhtaç olmayan.',
         virtue:
           'Kaybedilen değerli şeyleri bulmak; kalbin manevi zenginliği; mevcut nimetlerin elden çıkmasını engellemek.',
@@ -2657,6 +2722,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمَاجِدُ',
         nameTurkish: 'El-Mâcid',
         transliteration: 'El-Mâcid',
+        dhikrDay: 'Cuma',
         meaning: 'Kadri büyük, şanı yüce, keremi ve cömertliği bol olan.',
         virtue:
           'Kan basıncının dengelenmesi; şan ve şerefin artması; maddi imkanların genişlemesi.',
@@ -2672,6 +2738,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْوَاحِدُ',
         nameTurkish: 'El-Vâhid',
         transliteration: 'El-Vâhid',
+        dhikrDay: 'Pazar',
         meaning: 'Zatında, sıfatlarında ve fiillerinde ortağı bulunmayan tek.',
         virtue:
           'Kalbin masivadan arınarak tek ilaha yönelmesi; yalnızlık korkusunu yenmek; tevhid bilincine ulaşmak.',
@@ -2687,6 +2754,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الصَّمَدُ',
         nameTurkish: 'Es-Samed',
         transliteration: 'Es-Samed',
+        dhikrDay: 'Perşembe',
         meaning: 'Herkesin muhtaç olduğu, kendisi hiçbir şeye muhtaç olmayan.',
         virtue:
           'Şansın açılması; dertlere derman bulmak; kimseye muhtaç olmadan onurlu ve bağımsız bir yaşam sürmek.',
@@ -2702,6 +2770,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْقَادِرُ',
         nameTurkish: 'El-Kâdir',
         transliteration: 'El-Kâdir',
+        dhikrDay: 'Pazar',
         meaning: 'Dilediğini yapmaya gücü yeten, mutlak kudret sahibi.',
         virtue:
           'Bedensel ve zihinsel güç kazanmak; düşman şerrinden tam koruma; bilimsel çalışmalarda başarı; sol göz sağlığı.',
@@ -2717,6 +2786,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُقْتَدِرُ',
         nameTurkish: 'El-Muktedir',
         transliteration: 'El-Muktedir',
+        dhikrDay: 'Cumartesi',
         meaning: 'Güç ve kuvvet sahipleri üzerinde dilediği gibi tasarruf eden.',
         virtue:
           'İktidar, güç ve nüfuz sahibi olmak; zor işlerin kolayca çözülmesi; omuz ve boyun fıtığı şifası.',
@@ -2732,6 +2802,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُقَدِّمُ',
         nameTurkish: 'El-Mukaddim',
         transliteration: 'El-Mukaddim',
+        dhikrDay: 'Cumartesi',
         meaning: 'Dilediğini ileri geçiren, öne alan, yükselten.',
         virtue:
           'Sınav, ticaret ve hayırlı işlerde rakiplerin önüne geçmek; makamda yükselmek; işlerin hızlanması.',
@@ -2747,6 +2818,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُؤَخِّرُ',
         nameTurkish: 'El-Muahhir',
         transliteration: 'El-Muahhir',
+        dhikrDay: 'Cumartesi',
         meaning: 'Dilediğini geride bırakan, arkaya koyan, erteleyen.',
         virtue:
           'Kötü niyetli kişileri geride bırakmak; belaları ertelemek; sağ ayak ve lenf ödemi şifası.',
@@ -2762,6 +2834,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْأَوَّلُ',
         nameTurkish: 'El-Evvel',
         transliteration: 'El-Evvel',
+        dhikrDay: 'Pazar',
         meaning: 'Ezeli olan, başlangıcı bulunmayan, ilk olan.',
         virtue:
           'Girişilen işlerin sonunun hayırla neticelenmesi; uzun yolculukların kaza belasız tamamlanması.',
@@ -2777,6 +2850,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْآخِرُ',
         nameTurkish: 'El-Âhir',
         transliteration: 'El-Âhir',
+        dhikrDay: 'Cuma',
         meaning: 'Ebedi olan, sonu bulunmayan, sonsuz olan.',
         virtue:
           'Ömrün hayırla tamamlanması; son nefeste imanla göçmek; gizli düşmanların tamamen etkisiz hale gelmesi.',
@@ -2792,6 +2866,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الظَّاهِرُ',
         nameTurkish: 'Ez-Zâhir',
         transliteration: 'Ez-Zâhir',
+        dhikrDay: 'Cumartesi',
         meaning: 'Eserleriyle, yarattıklarıyla varlığı açık ve aşikar olan.',
         virtue:
           'Gizli kalmış işlerin aydınlanması; kalbin nurlanması; rakiplere karşı ezici üstünlük sağlamak.',
@@ -2807,6 +2882,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْبَاطِنُ',
         nameTurkish: 'El-Bâtın',
         transliteration: 'El-Bâtın',
+        dhikrDay: 'Pazartesi',
         meaning: 'Yüceliği gizli olan, akılların idrak edemeyeceği zat.',
         virtue:
           'Ruhsal derinlik ve manevi olgunluk kazanmak; vesveselerden kalıcı olarak özgürleşmek.',
@@ -2822,6 +2898,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْوَالِي',
         nameTurkish: 'El-Vâlî',
         transliteration: 'El-Vâlî',
+        dhikrDay: 'Pazar',
         meaning: 'Kainatı idare eden, onun üzerinde tek tasarruf sahibi olan.',
         virtue:
           'Yönetim ve liderlik yeteneği kazanmak; karmaşık işleri kolayca idare etmek; amirler nezdinde dinlenmek.',
@@ -2837,6 +2914,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُتَعَالِي',
         nameTurkish: 'El-Müteâlî',
         transliteration: 'El-Müteâlî',
+        dhikrDay: 'Cumartesi',
         meaning: 'İzzet, şan ve şerefiyle her şeyden üstün, pek yüce olan.',
         virtue:
           'Mevki ve makamın korunması; haksız suçlamalardan ve iftiralardan uzak kalmak; devlet işlerinin kolaylaşması.',
@@ -2852,6 +2930,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْبَرُّ',
         nameTurkish: 'El-Berr',
         transliteration: 'El-Berr',
+        dhikrDay: 'Cuma',
         meaning: 'İyilik ve ihsanı bol olan, kullarının iyiliğini isteyen.',
         virtue:
           'İçindeki iyilik yapma arzusunun artması; kazalardan korunmak; ahlakın mükemmelleşmesi.',
@@ -2867,6 +2946,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'التَّوَّابُ',
         nameTurkish: 'Et-Tevvâb',
         transliteration: 'Et-Tevvâb',
+        dhikrDay: 'Perşembe',
         meaning: 'Tövbeleri kabul eden, günahları bağışlayan.',
         virtue:
           'Günahlardan samimi tövbeyle sıyrılmak; kötü alışkanlıkları kolayca bırakmak; rızık kapılarının açılması.',
@@ -2882,6 +2962,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُنْتَقِمُ',
         nameTurkish: 'El-Müntekim',
         transliteration: 'El-Müntekim',
+        dhikrDay: 'Salı',
         meaning: 'Suçluları adaletiyle cezalandıran, intikam alan.',
         virtue:
           'Zalimlerin şerrinden adalete sığınmak; haksızlığa uğrayanların hakkını ilahi adaletle geri alması.',
@@ -2897,6 +2978,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْعَفُوُّ',
         nameTurkish: 'El-Afüvv',
         transliteration: 'El-Afüvv',
+        dhikrDay: 'Pazar',
         meaning: 'Affı çok olan, günahları tamamen silip yok eden.',
         virtue:
           'İlahi affa nail olmak; kin, nefret ve intikam gibi kalbi yıpratan duygulardan tamamen arınmak.',
@@ -2912,6 +2994,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الرَّؤُوفُ',
         nameTurkish: 'Er-Raûf',
         transliteration: 'Er-Raûf',
+        dhikrDay: 'Cumartesi',
         meaning: 'Çok merhametli, çok şefkatli, lütufta bulunan.',
         virtue:
           'Merhamet ve şefkat duygularının artması; insanlar tarafından sevilip korunmak; öfkenin kontrolü.',
@@ -2927,6 +3010,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'مَالِكُ الْمُلْكِ',
         nameTurkish: 'Mâlik-ül Mülk',
         transliteration: 'Mâlik-ül Mülk',
+        dhikrDay: 'Çarşamba',
         meaning: 'Her varlığın, mülkün tek ve mutlak sahibi olan.',
         virtue:
           'Maddi güç, mal ve servetin korunması; kimseye borçlu kalmadan huzurlu bir yaşam sürmek.',
@@ -2942,6 +3026,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'ذُو الْجَلَالِ وَالْإِكْرَامِ',
         nameTurkish: 'Zül-Celâli vel İkrâm',
         transliteration: 'Zül-Celâli vel İkrâm',
+        dhikrDay: 'Pazar',
         meaning: 'Hem celal (azamet) hem de ikram (kerem) sahibi olan.',
         virtue:
           'Duaların en hızlı şekilde kabulü; insanların gözünde olağanüstü saygınlık ve karizma kazanmak.',
@@ -2957,6 +3042,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُقْسِطُ',
         nameTurkish: 'El-Muksit',
         transliteration: 'El-Muksit',
+        dhikrDay: 'Perşembe',
         meaning: 'Her işi birbirine denk yapan, mutlak adil olan.',
         virtue:
           'Aile içi geçimsizliklerin ve huzursuzlukların bitmesi; adil kararlar verebilmek; borç ödeme kolaylığı.',
@@ -2972,6 +3058,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْجَامِعُ',
         nameTurkish: 'El-Câmi',
         transliteration: 'El-Câmi',
+        dhikrDay: 'Perşembe',
         meaning: 'Mahşerde mahlukatı bir araya toplayan, birleştiren.',
         virtue:
           'Kaybolan eşyayı veya insanı bulmak; dargınları barıştırmak; dağınık işleri bir araya getirmek.',
@@ -2987,6 +3074,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْغَنِيُّ',
         nameTurkish: 'El-Ganiyy',
         transliteration: 'El-Ganiyy',
+        dhikrDay: 'Pazar',
         meaning: 'Hiçbir şeye ihtiyacı olmayan, mutlak zengin olan.',
         virtue:
           'Maddi-manevi zenginlik; baş ağrısı ve migren ağrılarının şifası.',
@@ -3002,6 +3090,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمُغْنِي',
         nameTurkish: 'El-Mugnî',
         transliteration: 'El-Mugnî',
+        dhikrDay: 'Cuma',
         meaning: 'Dilediğini zengin kılan, kendi kendine yeterli kılan.',
         virtue:
           'Büyük zenginliğe ulaşmak; geçim darlığından tamamen kurtulmak; insanlardan bir şey istemeyecek konuma gelmek.',
@@ -3017,6 +3106,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْمَانِعُ',
         nameTurkish: 'El-Mâni',
         transliteration: 'El-Mâni',
+        dhikrDay: 'Pazar',
         meaning: 'Dilemediği şeylerin gerçekleşmesini engelleyen, koruyan.',
         virtue:
           'Kazaların, belaların engellenmesi; sağ el, başın üstü ve kalp için şifa; zararlı alışkanlıkları bırakmak.',
@@ -3032,6 +3122,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الضَّارُ',
         nameTurkish: 'Ed-Dârr',
         transliteration: 'Ed-Dârr',
+        dhikrDay: 'Salı',
         meaning: 'Zarar verenleri yaratan, dilediğine zarar veren.',
         virtue:
           'Zararlı düşmanların planlarını bozmak; hile yapanların hilelerini kendi başlarına yıkmak.',
@@ -3047,6 +3138,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'النَّافِعُ',
         nameTurkish: 'En-Nâfi',
         transliteration: 'En-Nâfi',
+        dhikrDay: 'Cuma',
         meaning: 'Fayda verenleri yaratan, dilediğine fayda sağlayan.',
         virtue:
           'Hastalıklara şifa bulmak; kazancın artması; girişilen her türlü ticari işten büyük kârlar elde etmek.',
@@ -3062,6 +3154,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'النُّورُ',
         nameTurkish: 'En-Nûr',
         transliteration: 'En-Nûr',
+        dhikrDay: 'Cuma',
         meaning: 'Alemleri nurlandıran, kalplere hidayet nuru veren.',
         virtue:
           'Kalbin iman nuruyla dolması; zihin ve basiret açıklığı; doğru yolu kolayca görebilmek.',
@@ -3077,6 +3170,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْهَادِي',
         nameTurkish: 'El-Hâdî',
         transliteration: 'El-Hâdî',
+        dhikrDay: 'Pazar',
         meaning: 'Hidayet veren, dilediğini doğru yola ulaştıran.',
         virtue:
           'Hidayete ermek; çocukların güzel ahlaklı olması; idrar kesesi ve kalp için fiziki şifa.',
@@ -3092,6 +3186,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْبَدِيعُ',
         nameTurkish: 'El-Bedî',
         transliteration: 'El-Bedî',
+        dhikrDay: 'Perşembe',
         meaning: 'Örneksiz, benzersiz ve eşsiz yaratan.',
         virtue:
           'Sanatta, bilimde ve iş hayatında özgün projeler üretmek; zor işlerin üstesinden gelmek; takdir toplamak.',
@@ -3107,6 +3202,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْبَاقِي',
         nameTurkish: 'El-Bâkî',
         transliteration: 'El-Bâkî',
+        dhikrDay: 'Pazar',
         meaning: 'Ebedi olan, varlığının sonu bulunmayan.',
         virtue:
           'Ömrün uzun ve bereketli olması; sadır, idrar yolu ve boşaltım için fiziki şifa; gelecek endişesini yenmek.',
@@ -3122,6 +3218,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الْوَارِثُ',
         nameTurkish: 'El-Vâris',
         transliteration: 'El-Vâris',
+        dhikrDay: 'Cuma',
         meaning: 'Her şey yok olduktan sonra varlığı devam eden asıl sahibi.',
         virtue:
           'Mal, mülk ve toprak sahibi olmak; hayırlı bir neslin devam etmesi; ahiret saadetine ermek.',
@@ -3137,6 +3234,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الرَّشِيدُ',
         nameTurkish: 'Er-Reşîd',
         transliteration: 'Er-Reşîd',
+        dhikrDay: 'Pazar',
         meaning: 'Doğru yolu en iyi gösteren, irşad eden.',
         virtue:
           'Alınan kararlardan pişman olmamak; doğru kararlar vermek; prostat, omurilik ve sağ ayak için fiziki şifa.',
@@ -3152,6 +3250,7 @@ const SOURCE_DATASETS = [
         nameArabic: 'الصَّبُورُ',
         nameTurkish: 'Es-Sabûr',
         transliteration: 'Es-Sabûr',
+        dhikrDay: 'Pazar',
         meaning: 'Cezalandırmada acele etmeyen, sabrı çok olan.',
         virtue:
           'Zor zamanlarda sabır ve metanet kazanmak; öfkeyi kontrol altına almak; sıkıntılardan kurtulmak.',
@@ -4124,7 +4223,7 @@ const SOURCE_DATASETS = [
         transliteration:
           "Allâhümme ente rabbî lâ ilâhe illâ ente aleyke tevekkeltü ve ente rabbü'l-arşi'l-azîm. Mâ şâallâhu kâne ve mâ lem yeşe' lem yekün. Lâ havle ve lâ kuvvete illâ billâhil aliyyil azîm. A'lemu ennallâhe alâ külli şey'in kadîr ve ennallâhe kad ehâta bi-külli şey'in ilmen ve ahsâ külle şey'in adedâ. Allâhümme innî eûzü bike min şerri nefsî ve min şerri külli dâbbetin ente âhizün bi-nâsiyetihâ. İnne rabbî alâ sırâtın müstakîm.",
         meaning:
-          "Allah'ım! Sen benim Rabbimsin... Nefsimin ve tüm canlıların şerrinden sana sığınırım.",
+          "Allah'ım! Sen benim Rabbimsin; Senden başka ilâh yoktur. Sana tevekkül ettim; Sen yüce Arş'ın Rabbisin. Allah'ın dilediği olur, dilemediği olmaz. Güç ve kuvvet ancak yüce ve azîm olan Allah'ın yardımıyladır. Bilirim ki Allah her şeye kadirdir; Allah ilmiyle her şeyi kuşatmıştır ve her şeyi tek tek saymıştır. Allah'ım! Nefsimin şerrinden ve perçeminden tuttuğun her canlının şerrinden Sana sığınırım. Şüphesiz Rabbim dosdoğru yol üzeredir.",
         virtue:
           'Sabah-akşam okunduğunda okuyanı, ailesini ve malını ani felaket, yangın, sel ve musibetlerden korumaya yönelik güçlü tevekkül duasıdır.',
         source: "Kenzü'l-Ummâl (Hadis No: 3432); İbnü's-Sünnî (Amelü'l-Yevm)",
