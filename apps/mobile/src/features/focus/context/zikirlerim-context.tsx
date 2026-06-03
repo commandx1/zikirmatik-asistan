@@ -1,12 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from "react";
+import { useRouter } from "expo-router";
 import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import {
+  createDhikrLog,
   deleteDhikrLogsByKey,
   listDhikrLogsByUser,
   setDhikrFavoriteByKey,
   type BackendDhikrLog
 } from "../../dhikrs/services/dhikr-logs-api-client";
+import { shouldConfirmUnsavedDhikrTransition } from "../../home/services/unsaved-transition-guard";
 import {
   deleteUserDhikrByClientId,
   updateUserDhikrByClientId
@@ -30,11 +33,20 @@ type ZikirlerimContextValue = {
   isUpdateOpen: boolean;
   isUpdatingDhikr: boolean;
   updateError: string | null;
+  isUnsavedTransitionOpen: boolean;
+  isSavingUnsavedTransition: boolean;
+  unsavedTransitionDhikrName: string;
+  unsavedTransitionCount: number;
+  unsavedTransitionError: string | null;
   isRefreshing: boolean;
   refresh: () => Promise<void>;
   setActiveFilter: (filter: ZikirFilterKey) => void;
   toggleFavorite: (id: string) => void;
   selectDhikr: (id: string) => void;
+  startDhikrOnHome: (id: string) => void;
+  cancelUnsavedTransition: () => void;
+  saveAndContinueUnsavedTransition: () => void;
+  continueWithoutSavingUnsavedTransition: () => void;
   deleteDhikr: (item: ZikirItem) => Promise<void>;
   openUpdateModal: (item: ZikirItem) => void;
   closeUpdateModal: () => void;
@@ -51,15 +63,22 @@ const FILTERS: Array<{ key: ZikirFilterKey; label: string }> = [
   { key: "favorites", label: "Favoriler" }
 ];
 
+type PendingFocusTransition = { kind: "select"; id: string } | { kind: "startHome"; id: string };
+
 export function ZikirlerimProvider({ children }: PropsWithChildren) {
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<ZikirFilterKey>("all");
   const items = useDhikrStore((state) => state.items);
   const selectedDhikrId = useDhikrStore((state) => state.selectedDhikrId);
+  const unsavedProgressDhikrIds = useDhikrStore((state) => state.unsavedProgressDhikrIds);
   const storeToggleFavorite = useDhikrStore((state) => state.toggleFavorite);
   const storeSelectDhikr = useDhikrStore((state) => state.selectDhikr);
   const storeClearSelectedDhikr = useDhikrStore((state) => state.clearSelectedDhikr);
   const upsertPersonalDhikr = useDhikrStore((state) => state.upsertPersonalDhikr);
   const upsertDhikrSnapshot = useDhikrStore((state) => state.upsertDhikrSnapshot);
+  const applySavedBackendLog = useDhikrStore((state) => state.applySavedBackendLog);
+  const setSyncError = useDhikrStore((state) => state.setSyncError);
+  const discardUnsavedProgress = useDhikrStore((state) => state.discardUnsavedProgress);
   const removePersonalDhikr = useDhikrStore((state) => state.removePersonalDhikr);
   const clearDhikrProgress = useDhikrStore((state) => state.clearDhikrProgress);
   const lastSavedBackendLog = useDhikrStore((state) => state.lastSavedBackendLog);
@@ -72,6 +91,9 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const [editingDhikrId, setEditingDhikrId] = useState("");
   const [isUpdatingDhikr, setIsUpdatingDhikr] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [pendingFocusTransition, setPendingFocusTransition] = useState<PendingFocusTransition | null>(null);
+  const [isSavingUnsavedTransition, setIsSavingUnsavedTransition] = useState(false);
+  const [unsavedTransitionError, setUnsavedTransitionError] = useState<string | null>(null);
 
   const fetchLogs = useCallback(async () => {
     if (authStatus !== "authenticated" || !sessionUserId) {
@@ -199,6 +221,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       const matched = itemById.get(dhikrId);
       const sorted = [...dhikrLogs].sort((a, b) => toLogTimestamp(b) - toLogTimestamp(a));
       const latestLog = sorted[0];
+      const hasUnsavedProgress = unsavedProgressDhikrIds.includes(dhikrId);
       const streakInfo = calculateStreakInfo(sorted);
       const lastActivityLabel =
         streakInfo.days > 1 && streakInfo.rangeLabel
@@ -212,8 +235,8 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
         arabic: matched?.arabic ?? latestLog.customDhikrArabic,
         transliteration: matched?.transliteration ?? latestLog.customDhikrName ?? "Kayıtlı Zikir",
         meaning: matched?.meaning,
-        current: latestLog.count,
-        target: matched?.target ?? latestLog.targetCount,
+        current: hasUnsavedProgress && matched ? matched.current : latestLog.count,
+        target: hasUnsavedProgress && matched ? matched.target : (matched?.target ?? latestLog.targetCount),
         lastActivityLabel,
         streakDays: streakInfo.days,
         isFavorite: latestLog.isFavorite ?? matched?.isFavorite ?? false
@@ -235,7 +258,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       const latestB = bLogs.reduce((max, log) => Math.max(max, toLogTimestamp(log)), 0);
       return latestB - latestA;
     });
-  }, [authStatus, items, logs]);
+  }, [authStatus, items, logs, unsavedProgressDhikrIds]);
 
   const visibleItems = useMemo(() => {
     if (activeFilter === "all") {
@@ -337,6 +360,173 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     [authStatus, editingDhikr, isUpdatingDhikr, sessionAccessToken, sessionUserId, upsertPersonalDhikr]
   );
 
+  const selectDhikrImmediately = useCallback(
+    (id: string) => {
+      const fromVisible = visibleItems.find((item) => item.id === id);
+      if (fromVisible) {
+        upsertDhikrSnapshot(fromVisible);
+      } else {
+        const existsInStore = items.some((item) => item.id === id);
+        if (!existsInStore) {
+          const fallbackPersonal = enrichedItems.find((item) => item.id === id && item.source === "personal");
+          if (fallbackPersonal) {
+            upsertPersonalDhikr({
+              id: fallbackPersonal.id,
+              nameTurkish: fallbackPersonal.nameTurkish,
+              transliteration: fallbackPersonal.transliteration,
+              arabic: fallbackPersonal.arabic,
+              meaning: fallbackPersonal.meaning,
+              current: fallbackPersonal.current,
+              target: fallbackPersonal.target,
+              lastActivityLabel: fallbackPersonal.lastActivityLabel,
+              isFavorite: fallbackPersonal.isFavorite
+            });
+          }
+        }
+      }
+
+      storeSelectDhikr(id);
+    },
+    [enrichedItems, items, storeSelectDhikr, upsertDhikrSnapshot, upsertPersonalDhikr, visibleItems]
+  );
+
+  const saveSelectedDhikrProgress = useCallback(async () => {
+    const selectedItem = items.find((item) => item.id === selectedDhikrId);
+    if (!selectedItem) {
+      return true;
+    }
+
+    if (authStatus !== "authenticated" || !sessionUserId) {
+      const message = "Kaydetmek için giriş yapmalısın.";
+      setSyncError(message);
+      setUnsavedTransitionError(message);
+      return false;
+    }
+
+    const safeCount = Math.max(0, Math.floor(selectedItem.current));
+    const isCompleted = selectedItem.target > 0 && safeCount >= selectedItem.target;
+    const payload = isObjectIdLike(selectedItem.id)
+      ? {
+          userId: sessionUserId,
+          dhikrId: selectedItem.id,
+          count: safeCount,
+          targetCount: selectedItem.target,
+          date: toDateKey(new Date()),
+          source: "manual" as const,
+          isCompleted,
+          isFavorite: selectedItem.isFavorite
+        }
+      : {
+          userId: sessionUserId,
+          customDhikrId: selectedItem.id,
+          customDhikrName: selectedItem.nameTurkish || selectedItem.transliteration,
+          customDhikrArabic: selectedItem.arabic,
+          count: safeCount,
+          targetCount: selectedItem.target,
+          date: toDateKey(new Date()),
+          source: "manual" as const,
+          isCompleted: false,
+          isFavorite: selectedItem.isFavorite
+        };
+
+    setIsSavingUnsavedTransition(true);
+    setUnsavedTransitionError(null);
+    setSyncError(undefined);
+    try {
+      const savedLog = await createDhikrLog(payload, sessionAccessToken);
+      applySavedBackendLog(savedLog);
+      return true;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Zikir kaydı kaydedilemedi.";
+      setSyncError(message);
+      setUnsavedTransitionError(message);
+      return false;
+    } finally {
+      setIsSavingUnsavedTransition(false);
+    }
+  }, [
+    applySavedBackendLog,
+    authStatus,
+    items,
+    selectedDhikrId,
+    sessionAccessToken,
+    sessionUserId,
+    setSyncError
+  ]);
+
+  const runFocusTransition = useCallback(
+    (transition: PendingFocusTransition) => {
+      selectDhikrImmediately(transition.id);
+      if (transition.kind === "startHome") {
+        router.push("/(tabs)/home");
+      }
+    },
+    [router, selectDhikrImmediately]
+  );
+
+  const requestFocusTransition = useCallback(
+    (transition: PendingFocusTransition) => {
+      if (
+        shouldConfirmUnsavedDhikrTransition({
+          selectedDhikrId,
+          targetDhikrId: transition.id,
+          unsavedProgressDhikrIds
+        })
+      ) {
+        setPendingFocusTransition(transition);
+        setUnsavedTransitionError(null);
+        return;
+      }
+
+      runFocusTransition(transition);
+    },
+    [runFocusTransition, selectedDhikrId, unsavedProgressDhikrIds]
+  );
+
+  const cancelUnsavedTransition = useCallback(() => {
+    if (isSavingUnsavedTransition) {
+      return;
+    }
+
+    setPendingFocusTransition(null);
+    setUnsavedTransitionError(null);
+  }, [isSavingUnsavedTransition]);
+
+  const continueWithoutSavingUnsavedTransition = useCallback(() => {
+    if (!pendingFocusTransition || isSavingUnsavedTransition) {
+      return;
+    }
+
+    const transition = pendingFocusTransition;
+    discardUnsavedProgress(selectedDhikrId);
+    setPendingFocusTransition(null);
+    setUnsavedTransitionError(null);
+    runFocusTransition(transition);
+  }, [
+    discardUnsavedProgress,
+    isSavingUnsavedTransition,
+    pendingFocusTransition,
+    runFocusTransition,
+    selectedDhikrId
+  ]);
+
+  const saveAndContinueUnsavedTransition = useCallback(() => {
+    if (!pendingFocusTransition || isSavingUnsavedTransition) {
+      return;
+    }
+
+    const transition = pendingFocusTransition;
+    void saveSelectedDhikrProgress().then((didSave) => {
+      if (!didSave) {
+        return;
+      }
+
+      setPendingFocusTransition(null);
+      setUnsavedTransitionError(null);
+      runFocusTransition(transition);
+    });
+  }, [isSavingUnsavedTransition, pendingFocusTransition, runFocusTransition, saveSelectedDhikrProgress]);
+
   const value: ZikirlerimContextValue = {
     filters: FILTERS,
     activeFilter,
@@ -347,6 +537,14 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     isUpdateOpen: Boolean(editingDhikr),
     isUpdatingDhikr,
     updateError,
+    isUnsavedTransitionOpen: Boolean(pendingFocusTransition),
+    isSavingUnsavedTransition,
+    unsavedTransitionDhikrName:
+      items.find((item) => item.id === selectedDhikrId)?.nameTurkish ||
+      items.find((item) => item.id === selectedDhikrId)?.transliteration ||
+      "Bu zikir",
+    unsavedTransitionCount: items.find((item) => item.id === selectedDhikrId)?.current ?? 0,
+    unsavedTransitionError,
     isRefreshing,
     refresh,
     setActiveFilter,
@@ -400,32 +598,11 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
         );
       });
     },
-    selectDhikr: (id) => {
-      const fromVisible = visibleItems.find((item) => item.id === id);
-      if (fromVisible) {
-        upsertDhikrSnapshot(fromVisible);
-      } else {
-        const existsInStore = items.some((item) => item.id === id);
-        if (!existsInStore) {
-          const fallbackPersonal = enrichedItems.find((item) => item.id === id && item.source === "personal");
-          if (fallbackPersonal) {
-            upsertPersonalDhikr({
-              id: fallbackPersonal.id,
-              nameTurkish: fallbackPersonal.nameTurkish,
-              transliteration: fallbackPersonal.transliteration,
-              arabic: fallbackPersonal.arabic,
-              meaning: fallbackPersonal.meaning,
-              current: fallbackPersonal.current,
-              target: fallbackPersonal.target,
-              lastActivityLabel: fallbackPersonal.lastActivityLabel,
-              isFavorite: fallbackPersonal.isFavorite
-            });
-          }
-        }
-      }
-
-      storeSelectDhikr(id);
-    },
+    selectDhikr: (id) => requestFocusTransition({ kind: "select", id }),
+    startDhikrOnHome: (id) => requestFocusTransition({ kind: "startHome", id }),
+    cancelUnsavedTransition,
+    saveAndContinueUnsavedTransition,
+    continueWithoutSavingUnsavedTransition,
     deleteDhikr: async (item) => {
       if (!item.id || deletingDhikrId === item.id) {
         return;

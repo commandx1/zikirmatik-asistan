@@ -4,6 +4,7 @@ import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-aware-bottom-sheet-modal'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
+import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-transition-modal'
 import { useHomeContext } from './home-context'
 import { AppleWatch } from './components/apple-watch'
 import { EsmaulHusnaSection } from './components/esmaul-husna-section'
@@ -340,6 +341,16 @@ export function HomeView() {
       <EsmaSelectionModal />
       <TargetModal />
       <FreeSaveNameModal />
+      <UnsavedDhikrTransitionModal
+        visible={home.isUnsavedTransitionModalOpen}
+        dhikrName={home.unsavedTransitionDhikrName}
+        count={home.unsavedTransitionCount}
+        isSaving={home.isSavingLog}
+        error={home.unsavedTransitionError}
+        onSaveAndContinue={home.onUnsavedTransitionSaveAndContinue}
+        onContinueWithoutSaving={home.onUnsavedTransitionContinueWithoutSaving}
+        onCancel={home.onUnsavedTransitionCancel}
+      />
     </PageLayout>
   )
 }

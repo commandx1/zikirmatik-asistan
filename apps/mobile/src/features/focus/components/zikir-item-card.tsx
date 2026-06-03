@@ -1,5 +1,4 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
-import { useRouter } from 'expo-router'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { Alert, Pressable, Text, View } from 'react-native'
 import { ThemedCard } from '../../../components/ui/themed-card'
@@ -47,11 +46,11 @@ function resolveAccent(item: ZikirItem) {
 }
 
 export function ZikirItemCard({ item }: ZikirItemCardProps) {
-  const router = useRouter()
   const { tokens } = useThemeTokens()
   const {
     toggleFavorite,
     selectDhikr,
+    startDhikrOnHome,
     selectedDhikrId,
     deleteDhikr,
     deletingDhikrId,
@@ -199,8 +198,7 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
 
         <Pressable
           onPress={() => {
-            selectDhikr(item.id)
-            router.push('/(tabs)/home')
+            startDhikrOnHome(item.id)
           }}
           className='rounded-full bg-[--accent] px-3 py-2'
         >

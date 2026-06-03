@@ -3,6 +3,6 @@ import type { CounterSession } from "../types";
 export function incrementCounter(session: CounterSession): CounterSession {
   return {
     ...session,
-    count: Math.min(session.target, session.count + 1)
+    count: session.target > 0 ? Math.min(session.target, session.count + 1) : session.count + 1
   };
 }

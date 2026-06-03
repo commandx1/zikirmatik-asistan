@@ -7,4 +7,8 @@ describe("counter-service", () => {
     expect(incrementCounter(session)).toEqual({ count: 100, target: 100 });
     expect(incrementCounter({ count: 100, target: 100 })).toEqual({ count: 100, target: 100 });
   });
+
+  it("increments without an upper bound when target is zero", () => {
+    expect(incrementCounter({ count: 100, target: 0 })).toEqual({ count: 101, target: 0 });
+  });
 });

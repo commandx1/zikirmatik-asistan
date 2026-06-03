@@ -6,7 +6,8 @@ import { useProfileStore } from '../../store/profile-store'
 import type { EsmaulHusnaItem, ZikirSource } from '../focus/types'
 import { createDhikrLog, listDhikrLogsByUser, type BackendDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
 import { findVerifiedActiveDhikrByTransliteration } from '../dhikrs/services/dhikrs-api-client'
-import { createUserDhikr, updateUserDhikrByClientId } from '../dhikrs/services/user-dhikrs-api-client'
+import { createUserDhikr } from '../dhikrs/services/user-dhikrs-api-client'
+import { shouldConfirmUnsavedDhikrTransition } from './services/unsaved-transition-guard'
 
 type HomeDhikr = {
   id: string
@@ -26,6 +27,12 @@ type HomeDhikrOption = {
 }
 
 const FREE_MODE_LABEL = 'Serbest'
+
+type PendingDhikrTransition =
+  | { kind: 'free' }
+  | { kind: 'select'; id: string }
+  | { kind: 'quick'; label: string }
+  | { kind: 'esma'; item: EsmaulHusnaItem }
 
 type HomeContextValue = {
   greeting: string
@@ -54,6 +61,10 @@ type HomeContextValue = {
   createTargetDraft: string
   createError: string | null
   isFreeSaveNameModalOpen: boolean
+  isUnsavedTransitionModalOpen: boolean
+  unsavedTransitionDhikrName: string
+  unsavedTransitionCount: number
+  unsavedTransitionError: string | null
   isEsmaSelectionModalOpen: boolean
   isSelectingEsmaDhikr: boolean
   selectedEsmaForConfirmation?: EsmaulHusnaItem
@@ -88,6 +99,9 @@ type HomeContextValue = {
   onFreeSaveNameCancel: () => void
   onFreeSaveNameSubmit: () => void
   onFreeSaveTargetChange: (value: string) => void
+  onUnsavedTransitionCancel: () => void
+  onUnsavedTransitionSaveAndContinue: () => void
+  onUnsavedTransitionContinueWithoutSaving: () => void
   onStartFreeMode: () => void
   onEsmaPress: (item: EsmaulHusnaItem) => void
   onEsmaSelectCancel: () => void
@@ -105,13 +119,20 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const resetSelected = useDhikrStore(state => state.resetSelected)
   const setSelectedCount = useDhikrStore(state => state.setSelectedCount)
   const setSelectedTarget = useDhikrStore(state => state.setSelectedTarget)
+  const freeCount = useDhikrStore(state => state.freeModeCount)
+  const freeTarget = useDhikrStore(state => state.freeModeTarget)
+  const incrementFreeMode = useDhikrStore(state => state.incrementFreeMode)
+  const resetFreeMode = useDhikrStore(state => state.resetFreeMode)
+  const clearFreeModeSession = useDhikrStore(state => state.clearFreeModeSession)
+  const setFreeModeTarget = useDhikrStore(state => state.setFreeModeTarget)
   const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
-  const upsertPersonalDhikr = useDhikrStore(state => state.upsertPersonalDhikr)
   const upsertDhikrSnapshot = useDhikrStore(state => state.upsertDhikrSnapshot)
   const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
   const lastSavedBackendLog = useDhikrStore(state => state.lastSavedBackendLog)
   const syncError = useDhikrStore(state => state.syncError)
   const setSyncError = useDhikrStore(state => state.setSyncError)
+  const unsavedProgressDhikrIds = useDhikrStore(state => state.unsavedProgressDhikrIds)
+  const discardUnsavedProgress = useDhikrStore(state => state.discardUnsavedProgress)
   const authDisplayName = useAuthStore(state => state.session?.displayName)
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
@@ -127,7 +148,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [isEditingTarget, setIsEditingTarget] = useState(false)
   const [targetDraft, setTargetDraft] = useState(selectedDhikr ? String(selectedDhikr.target) : '100')
   const [isSelectingDhikr, setIsSelectingDhikr] = useState(false)
-  const [freeCount, setFreeCount] = useState(0)
 
   const [isCreatingDhikr, setIsCreatingDhikr] = useState(false)
   const [createNameDraft, setCreateNameDraft] = useState('')
@@ -135,6 +155,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [createTargetDraft, setCreateTargetDraft] = useState('33')
   const [createError, setCreateError] = useState<string | null>(null)
   const [isFreeSaveNameModalOpen, setFreeSaveNameModalOpen] = useState(false)
+  const [pendingDhikrTransition, setPendingDhikrTransition] = useState<PendingDhikrTransition | null>(null)
+  const [unsavedTransitionError, setUnsavedTransitionError] = useState<string | null>(null)
   const [freeSaveNameDraft, setFreeSaveNameDraft] = useState('')
   const [freeSaveTransliterationDraft, setFreeSaveTransliterationDraft] = useState('')
   const [freeSaveMeaningDraft, setFreeSaveMeaningDraft] = useState('')
@@ -173,8 +195,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
     freeAutoDhikrIdRef.current = undefined
     freeAutoDhikrNameRef.current = undefined
-    liveFreeCountRef.current = 0
-    setFreeCount(0)
     setActiveQuickDhikr(FREE_MODE_LABEL)
   }, [items])
 
@@ -263,7 +283,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   }, [fetchStreakDays])
 
   const value = useMemo<HomeContextValue>(() => {
-    const isTargetMode = Boolean(selectedDhikr && selectedDhikr.target > 0)
+    const isTargetMode = selectedDhikr ? selectedDhikr.target > 0 : freeTarget > 0
     const activeFreeModeTitle =
       freeAutoDhikrNameRef.current?.trim() ||
       (freeCount > 0 ? buildNextAutoFreeTitle(items) : '')
@@ -281,89 +301,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      if (nextTarget <= 0) {
-        setTargetDraft('100')
-        setIsEditingTarget(false)
-        return
-      }
-
-      const existingFreeItem = freeAutoDhikrIdRef.current
-        ? items.find(item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal')
-        : undefined
-      const nextName =
-        existingFreeItem?.nameTurkish?.trim() || freeAutoDhikrNameRef.current?.trim() || buildNextAutoFreeTitle(items)
-      const nextTransliteration = existingFreeItem?.transliteration?.trim() || nextName
-      const nextCurrent = Math.max(
-        0,
-        Math.floor(typeof existingFreeItem?.current === 'number' ? existingFreeItem.current : liveFreeCountRef.current)
-      )
-      const fallbackId =
-        existingFreeItem?.id ||
-        freeAutoDhikrIdRef.current ||
-        `free-auto-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
-
-      const upsertAndSelect = (id: string, nameTurkish: string, transliteration: string, isFavorite: boolean) => {
-        upsertPersonalDhikr({
-          id,
-          nameTurkish,
-          transliteration,
-          current: nextCurrent,
-          target: nextTarget,
-          isFavorite
-        })
-        freeAutoDhikrIdRef.current = id
-        freeAutoDhikrNameRef.current = nameTurkish
-        selectDhikr(id)
-        setActiveQuickDhikr(nameTurkish)
-        liveFreeCountRef.current = 0
-        setFreeCount(0)
-      }
-
-      if (authStatus === 'authenticated') {
-        if (existingFreeItem) {
-          upsertAndSelect(
-            existingFreeItem.id,
-            existingFreeItem.nameTurkish || nextName,
-            existingFreeItem.transliteration || nextTransliteration,
-            existingFreeItem.isFavorite
-          )
-          void updateUserDhikrByClientId(
-            existingFreeItem.id,
-            {
-              name: existingFreeItem.nameTurkish || nextName,
-              transliteration: existingFreeItem.transliteration || nextTransliteration,
-              target: nextTarget
-            },
-            sessionAccessToken
-          ).catch(() => {
-            setSyncError('Hedef güncellemesi senkronize edilemedi.')
-          })
-        } else {
-          void createUserDhikr(
-            {
-              clientId: fallbackId,
-              name: nextName,
-              transliteration: nextTransliteration,
-              target: nextTarget
-            },
-            sessionAccessToken
-          )
-            .then(created => {
-              const createdId = created.clientId?.trim() || fallbackId
-              const createdName = created.name?.trim() || nextName
-              const createdTransliteration = created.transliteration?.trim() || nextTransliteration
-              upsertAndSelect(createdId, createdName, createdTransliteration, Boolean(created.isFavorite))
-            })
-            .catch(() => {
-              upsertAndSelect(fallbackId, nextName, nextTransliteration, false)
-              setSyncError('Hedef güncellemesi senkronize edilemedi.')
-            })
-        }
-      } else {
-        upsertAndSelect(fallbackId, nextName, nextTransliteration, false)
-      }
-
-      setTargetDraft(String(nextTarget))
+      setFreeModeTarget(nextTarget)
+      setTargetDraft(String(nextTarget > 0 ? nextTarget : 100))
       setIsEditingTarget(false)
     }
 
@@ -384,13 +323,13 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       setFreeSaveTargetDraft('')
     }
 
-    const persistSelectedDhikrLog = ({
+    const saveSelectedDhikrLog = async ({
       countOverride
     }: {
       countOverride?: number
     } = {}) => {
       if (!selectedDhikr) {
-        return
+        return true
       }
 
       const rawCount = Math.max(0, Math.floor(countOverride ?? selectedDhikr.current))
@@ -398,12 +337,15 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target
 
       if (authStatus !== 'authenticated' || !sessionUserId) {
-        setSyncError('Kaydetmek için giriş yapmalısın.')
-        return
+        const message = 'Kaydetmek için giriş yapmalısın.'
+        setSyncError(message)
+        setUnsavedTransitionError(message)
+        return false
       }
 
       setIsSavingLog(true)
       setSyncError(undefined)
+      setUnsavedTransitionError(null)
       const payload = isObjectId(selectedDhikr.id)
         ? {
             userId: sessionUserId,
@@ -427,132 +369,28 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             isCompleted: false,
             isFavorite: selectedDhikr.isFavorite
           }
-      void createDhikrLog(
-        {
-          ...payload
-        },
-        sessionAccessToken
-      )
-        .then(savedLog => {
-          applySavedBackendLog(savedLog)
-        })
-        .catch((error: unknown) => {
-          const message = error instanceof Error ? error.message : 'Zikir kaydı kaydedilemedi.'
-          setSyncError(message)
-        })
-        .finally(() => {
-          setIsSavingLog(false)
-        })
+      try {
+        const savedLog = await createDhikrLog(
+          {
+            ...payload
+          },
+          sessionAccessToken
+        )
+        applySavedBackendLog(savedLog)
+        return true
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Zikir kaydı kaydedilemedi.'
+        setSyncError(message)
+        setUnsavedTransitionError(message)
+        return false
+      } finally {
+        setIsSavingLog(false)
+      }
     }
 
     const clearFreeAutoDhikrRefs = () => {
       freeAutoDhikrIdRef.current = undefined
       freeAutoDhikrNameRef.current = undefined
-    }
-
-    const ensureFreeAutoDhikr = async () => {
-      if (freeAutoDhikrIdRef.current && freeAutoDhikrNameRef.current) {
-        const stillExists = items.some(
-          item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal'
-        )
-        if (!stillExists) {
-          freeAutoDhikrIdRef.current = undefined
-          freeAutoDhikrNameRef.current = undefined
-        } else {
-        return {
-          id: freeAutoDhikrIdRef.current,
-          name: freeAutoDhikrNameRef.current
-        }
-        }
-      }
-
-      const fallbackName = buildNextAutoFreeTitle(items)
-      const fallbackId = `free-auto-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
-
-      if (authStatus !== 'authenticated') {
-        freeAutoDhikrIdRef.current = fallbackId
-        freeAutoDhikrNameRef.current = fallbackName
-        upsertPersonalDhikr({
-          id: fallbackId,
-          nameTurkish: fallbackName,
-          transliteration: fallbackName,
-          current: liveFreeCountRef.current,
-          target: 0,
-          isFavorite: false
-        })
-        return { id: fallbackId, name: fallbackName }
-      }
-
-      try {
-        const created = await createUserDhikr({ target: 0 }, sessionAccessToken)
-        const nextId = created.clientId?.trim() || fallbackId
-        const nextName = created.name?.trim() || created.transliteration?.trim() || fallbackName
-        freeAutoDhikrIdRef.current = nextId
-        freeAutoDhikrNameRef.current = nextName
-        upsertPersonalDhikr({
-          id: nextId,
-          nameTurkish: nextName,
-          transliteration: nextName,
-          current: liveFreeCountRef.current,
-          target: 0,
-          isFavorite: Boolean(created.isFavorite)
-        })
-        return { id: nextId, name: nextName }
-      } catch {
-        freeAutoDhikrIdRef.current = fallbackId
-        freeAutoDhikrNameRef.current = fallbackName
-        upsertPersonalDhikr({
-          id: fallbackId,
-          nameTurkish: fallbackName,
-          transliteration: fallbackName,
-          current: liveFreeCountRef.current,
-          target: 0,
-          isFavorite: false
-        })
-        return { id: fallbackId, name: fallbackName }
-      }
-    }
-
-    const persistFreeModeAutoLog = async (count: number) => {
-      if (authStatus !== 'authenticated' || !sessionUserId) {
-        return
-      }
-
-      const freeAuto = await ensureFreeAutoDhikr()
-
-      setIsSavingLog(true)
-      setSyncError(undefined)
-      return createDhikrLog(
-        {
-          userId: sessionUserId,
-          customDhikrId: freeAuto.id,
-          customDhikrName: freeAuto.name,
-          count,
-          targetCount: 0,
-          date: toDateKey(new Date()),
-          source: 'manual',
-          isCompleted: false
-        },
-        sessionAccessToken
-      )
-        .then(savedLog => {
-          applySavedBackendLog(savedLog)
-          upsertPersonalDhikr({
-            id: freeAuto.id,
-            nameTurkish: freeAuto.name,
-            transliteration: freeAuto.name,
-            current: count,
-            target: 0,
-            isFavorite: false
-          })
-        })
-        .catch((error: unknown) => {
-          const message = error instanceof Error ? error.message : 'Zikir kaydı kaydedilemedi.'
-          setSyncError(message)
-        })
-        .finally(() => {
-          setIsSavingLog(false)
-        })
     }
 
     const closeEsmaSelection = () => {
@@ -592,7 +430,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           setActiveQuickDhikr(dhikr.nameTurkish || dhikr.transliteration)
           clearFreeAutoDhikrRefs()
           liveFreeCountRef.current = 0
-          setFreeCount(0)
+          clearFreeModeSession()
           setDemoCompleted(false)
           setSelectedEsmaForConfirmation(undefined)
         })
@@ -606,6 +444,95 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         })
     }
 
+    const runDhikrTransition = (transition: PendingDhikrTransition) => {
+      if (transition.kind === 'free') {
+        clearSelectedDhikr()
+        setActiveQuickDhikr(FREE_MODE_LABEL)
+        clearFreeAutoDhikrRefs()
+        liveFreeCountRef.current = 0
+        clearFreeModeSession()
+        setSyncError(undefined)
+        return
+      }
+
+      if (transition.kind === 'select') {
+        selectDhikr(transition.id)
+        setIsSelectingDhikr(false)
+        return
+      }
+
+      if (transition.kind === 'esma') {
+        setSelectedEsmaForConfirmation(transition.item)
+        setEsmaSelectionError(null)
+        return
+      }
+
+      if (transition.label === FREE_MODE_LABEL) {
+        runDhikrTransition({ kind: 'free' })
+        return
+      }
+
+      setActiveQuickDhikr(transition.label)
+      const matched = items.find(item => item.nameTurkish === transition.label)
+      if (matched) {
+        selectDhikr(matched.id)
+      }
+    }
+
+    const requestDhikrTransition = (transition: PendingDhikrTransition, targetDhikrId?: string) => {
+      if (
+        shouldConfirmUnsavedDhikrTransition({
+          selectedDhikrId,
+          targetDhikrId,
+          unsavedProgressDhikrIds
+        })
+      ) {
+        setPendingDhikrTransition(transition)
+        setUnsavedTransitionError(null)
+        return
+      }
+
+      runDhikrTransition(transition)
+    }
+
+    const closeUnsavedTransition = () => {
+      if (isSavingLog) {
+        return
+      }
+
+      setPendingDhikrTransition(null)
+      setUnsavedTransitionError(null)
+    }
+
+    const continueUnsavedTransition = () => {
+      if (!pendingDhikrTransition || isSavingLog) {
+        return
+      }
+
+      const transition = pendingDhikrTransition
+      discardUnsavedProgress(selectedDhikrId)
+      setPendingDhikrTransition(null)
+      setUnsavedTransitionError(null)
+      runDhikrTransition(transition)
+    }
+
+    const saveAndContinueUnsavedTransition = () => {
+      if (!pendingDhikrTransition || isSavingLog) {
+        return
+      }
+
+      const transition = pendingDhikrTransition
+      void saveSelectedDhikrLog().then(didSave => {
+        if (!didSave) {
+          return
+        }
+
+        setPendingDhikrTransition(null)
+        setUnsavedTransitionError(null)
+        runDhikrTransition(transition)
+      })
+    }
+
     return {
       greeting: `Selam, ${authDisplayName?.trim() || 'Dostum'}`,
       streakLabel: `${streakDays} gün`,
@@ -614,8 +541,14 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       syncError,
       isTargetMode,
       count: selectedDhikr?.current ?? freeCount,
-      target: selectedDhikr?.target ?? 0,
-      progress: selectedDhikr && selectedDhikr.target > 0 ? selectedDhikr.current / selectedDhikr.target : 0,
+      target: selectedDhikr?.target ?? freeTarget,
+      progress: selectedDhikr
+        ? selectedDhikr.target > 0
+          ? selectedDhikr.current / selectedDhikr.target
+          : 0
+        : freeTarget > 0
+          ? freeCount / freeTarget
+          : 0,
       mainDhikr: {
         id: selectedDhikr?.id ?? '',
         source: selectedDhikr?.source ?? 'personal',
@@ -644,6 +577,10 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       createTargetDraft,
       createError,
       isFreeSaveNameModalOpen,
+      isUnsavedTransitionModalOpen: Boolean(pendingDhikrTransition),
+      unsavedTransitionDhikrName: selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || 'Bu zikir',
+      unsavedTransitionCount: selectedDhikr?.current ?? 0,
+      unsavedTransitionError,
       isEsmaSelectionModalOpen: Boolean(selectedEsmaForConfirmation),
       isSelectingEsmaDhikr,
       selectedEsmaForConfirmation,
@@ -660,14 +597,14 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         }
 
         if (!selectedDhikr) {
-          const nextCount = liveFreeCountRef.current + 1
+          const nextRawCount = liveFreeCountRef.current + 1
+          const nextCount = freeTarget > 0 ? Math.min(freeTarget, nextRawCount) : nextRawCount
           liveFreeCountRef.current = nextCount
-          setFreeCount(nextCount)
+          incrementFreeMode()
           if (hapticsEnabled) {
             Vibration.vibrate(25)
           }
 
-          void persistFreeModeAutoLog(nextCount)
           return
         }
 
@@ -681,10 +618,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         if (hapticsEnabled) {
           Vibration.vibrate(25)
         }
-
-        persistSelectedDhikrLog({
-          countOverride: nextCount
-        })
       },
       onResetPress: () => {
         if (selectedDhikr) {
@@ -694,24 +627,10 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         }
 
         liveFreeCountRef.current = 0
-        setFreeCount(0)
-
-        if (freeAutoDhikrIdRef.current && freeAutoDhikrNameRef.current) {
-          upsertPersonalDhikr({
-            id: freeAutoDhikrIdRef.current,
-            nameTurkish: freeAutoDhikrNameRef.current,
-            transliteration: freeAutoDhikrNameRef.current,
-            current: 0,
-            target: 0,
-            isFavorite: false
-          })
-        }
+        resetFreeMode()
       },
       onTargetPress: () => {
-        const freeAutoItem = freeAutoDhikrIdRef.current
-          ? items.find(item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal')
-          : undefined
-        setTargetDraft(String(selectedDhikr?.target && selectedDhikr.target > 0 ? selectedDhikr.target : (freeAutoItem?.target && freeAutoItem.target > 0 ? freeAutoItem.target : 100)))
+        setTargetDraft(String(selectedDhikr?.target && selectedDhikr.target > 0 ? selectedDhikr.target : (freeTarget > 0 ? freeTarget : 100)))
         setIsEditingTarget(true)
       },
       onTargetDraftChange: next => {
@@ -720,18 +639,14 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         setTargetDraft(trimmed)
       },
       onTargetCancel: () => {
-        const freeAutoItem = freeAutoDhikrIdRef.current
-          ? items.find(item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal')
-          : undefined
-        setTargetDraft(String(selectedDhikr && selectedDhikr.target > 0 ? selectedDhikr.target : (freeAutoItem?.target && freeAutoItem.target > 0 ? freeAutoItem.target : 100)))
+        setTargetDraft(String(selectedDhikr && selectedDhikr.target > 0 ? selectedDhikr.target : (freeTarget > 0 ? freeTarget : 100)))
         setIsEditingTarget(false)
       },
       onTargetSubmit: submitTarget,
       onChangeDhikrPress: () => setIsSelectingDhikr(true),
       onCloseDhikrPicker: () => setIsSelectingDhikr(false),
       onSelectDhikr: id => {
-        selectDhikr(id)
-        setIsSelectingDhikr(false)
+        requestDhikrTransition({ kind: 'select', id }, id)
       },
       onToggleDemoComplete: () => {
         setDemoCompleted(prev => {
@@ -741,28 +656,18 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         })
       },
       onQuickDhikrSelect: label => {
-        if (label === FREE_MODE_LABEL) {
-          clearSelectedDhikr()
-          setActiveQuickDhikr(FREE_MODE_LABEL)
-          clearFreeAutoDhikrRefs()
-          liveFreeCountRef.current = 0
-          setFreeCount(0)
-          return
-        }
-
-        setActiveQuickDhikr(label)
         const matched = items.find(item => item.nameTurkish === label)
-        if (matched) {
-          selectDhikr(matched.id)
-        }
+        requestDhikrTransition({ kind: 'quick', label }, matched?.id)
       },
       onSavePress: () => {
         if (selectedDhikr) {
-          persistSelectedDhikrLog()
+          void saveSelectedDhikrLog()
           return
         }
 
         setSyncError(undefined)
+        setFreeSaveTargetDraft(freeTarget > 0 ? String(freeTarget) : '')
+        setFreeSaveNameModalOpen(true)
       },
       onOpenCreateDhikr: () => {
         setIsCreatingDhikr(true)
@@ -839,18 +744,20 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           setFreeSaveNameError('Hedef girilecekse 1 veya daha büyük olmalı.')
           return
         }
+        const countToSave = freeCount
+        const targetToSave = parsedTarget ?? 0
 
         const createdId = addCustomDhikr({
           name: trimmed,
           transliteration: freeSaveTransliterationDraft.trim() || undefined,
           meaning: freeSaveMeaningDraft.trim() || undefined,
-          target: parsedTarget,
-          initialCount: freeCount
+          target: targetToSave,
+          initialCount: countToSave
         })
         closeFreeSaveName()
+        clearFreeModeSession()
         if (authStatus !== 'authenticated' || !sessionUserId) {
           setSyncError('Kalıcı kaydetmek için giriş yapmalısın.')
-          setFreeCount(0)
           return
         }
 
@@ -862,7 +769,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             name: trimmed,
             transliteration: freeSaveTransliterationDraft.trim() || undefined,
             meaning: freeSaveMeaningDraft.trim() || undefined,
-            target: parsedTarget ?? 0
+            target: targetToSave
           },
           sessionAccessToken
         )
@@ -872,8 +779,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
                 userId: sessionUserId,
                 customDhikrId: createdId,
                 customDhikrName: trimmed,
-                count: freeCount,
-                targetCount: parsedTarget ?? 0,
+                count: countToSave,
+                targetCount: targetToSave,
                 date: toDateKey(new Date()),
                 source: 'manual',
                 isCompleted: false
@@ -883,7 +790,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           )
           .then(savedLog => {
             applySavedBackendLog(savedLog)
-            setFreeCount(0)
           })
           .catch((error: unknown) => {
             const message = error instanceof Error ? error.message : 'Zikir kaydı kaydedilemedi.'
@@ -894,30 +800,31 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           })
       },
       onStartFreeMode: () => {
-        clearSelectedDhikr()
-        clearFreeAutoDhikrRefs()
-        liveFreeCountRef.current = 0
-        setFreeCount(0)
-        setSyncError(undefined)
+        requestDhikrTransition({ kind: 'free' })
       },
       onEsmaPress: item => {
-        setSelectedEsmaForConfirmation(item)
-        setEsmaSelectionError(null)
+        requestDhikrTransition({ kind: 'esma', item })
       },
       onEsmaSelectCancel: closeEsmaSelection,
-      onEsmaSelectConfirm: confirmEsmaSelection
+      onEsmaSelectConfirm: confirmEsmaSelection,
+      onUnsavedTransitionCancel: closeUnsavedTransition,
+      onUnsavedTransitionSaveAndContinue: saveAndContinueUnsavedTransition,
+      onUnsavedTransitionContinueWithoutSaving: continueUnsavedTransition
     }
   }, [
     activeQuickDhikr,
     addCustomDhikr,
-    upsertPersonalDhikr,
     applySavedBackendLog,
+    clearSelectedDhikr,
+    clearFreeModeSession,
     createArabicDraft,
     createError,
     createNameDraft,
     createTargetDraft,
     demoCompleted,
+    discardUnsavedProgress,
     freeCount,
+    freeTarget,
     freeSaveNameDraft,
     freeSaveTransliterationDraft,
     freeSaveMeaningDraft,
@@ -926,6 +833,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     selectedEsmaForConfirmation,
     isSelectingEsmaDhikr,
     esmaSelectionError,
+    incrementFreeMode,
     incrementSelected,
     isSavingLog,
     isRefreshing,
@@ -933,12 +841,14 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     isEditingTarget,
     isSelectingDhikr,
     isFreeSaveNameModalOpen,
+    pendingDhikrTransition,
     upsertDhikrSnapshot,
     items,
     personalDhikrs,
     quickDhikrs,
     readyDhikrs,
     refresh,
+    resetFreeMode,
     resetSelected,
     syncError,
     selectDhikr,
@@ -953,7 +863,10 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     hapticsEnabled,
     setSelectedCount,
     setSelectedTarget,
-    targetDraft
+    setFreeModeTarget,
+    targetDraft,
+    unsavedProgressDhikrIds,
+    unsavedTransitionError
   ])
 
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>

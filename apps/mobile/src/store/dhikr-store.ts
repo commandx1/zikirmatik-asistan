@@ -15,9 +15,19 @@ type CreateCustomDhikrInput = {
   initialCount?: number;
 };
 
+type UnsavedProgressSnapshot = {
+  current: number;
+  target: number;
+  lastActivityLabel: string;
+};
+
 type DhikrStore = {
   items: ZikirItem[];
   selectedDhikrId: string;
+  freeModeCount: number;
+  freeModeTarget: number;
+  unsavedProgressDhikrIds: string[];
+  unsavedProgressSnapshots: Record<string, UnsavedProgressSnapshot>;
   isHydratedFromBackend: boolean;
   lastSavedBackendLog?: BackendDhikrLog;
   syncError?: string;
@@ -43,6 +53,11 @@ type DhikrStore = {
   resetSelected: () => void;
   setSelectedCount: (count: number) => void;
   setSelectedTarget: (target: number) => void;
+  discardUnsavedProgress: (id: string) => void;
+  incrementFreeMode: () => void;
+  resetFreeMode: () => void;
+  clearFreeModeSession: () => void;
+  setFreeModeTarget: (target: number) => void;
   hydrateReadyItems: (
     items: Array<{
       id: string;
@@ -118,6 +133,61 @@ function resolveCustomTarget(target: number | undefined) {
 
 const INITIAL_ITEMS = ZIKIR_ITEMS;
 
+function addUnique(values: string[], value: string) {
+  return values.includes(value) ? values : [...values, value];
+}
+
+function removeValue(values: string[], value: string | undefined) {
+  return value ? values.filter((item) => item !== value) : values;
+}
+
+function markUnsavedProgress(
+  unsavedIds: string[],
+  snapshots: Record<string, UnsavedProgressSnapshot>,
+  item: ZikirItem | undefined
+) {
+  if (!item) {
+    return {
+      unsavedProgressDhikrIds: unsavedIds,
+      unsavedProgressSnapshots: snapshots
+    };
+  }
+
+  return {
+    unsavedProgressDhikrIds: addUnique(unsavedIds, item.id),
+    unsavedProgressSnapshots: snapshots[item.id]
+      ? snapshots
+      : {
+          ...snapshots,
+          [item.id]: {
+            current: item.current,
+            target: item.target,
+            lastActivityLabel: item.lastActivityLabel
+          }
+        }
+  };
+}
+
+function clearUnsavedSnapshot(
+  unsavedIds: string[],
+  snapshots: Record<string, UnsavedProgressSnapshot>,
+  id: string | undefined
+) {
+  if (!id) {
+    return {
+      unsavedProgressDhikrIds: unsavedIds,
+      unsavedProgressSnapshots: snapshots
+    };
+  }
+
+  const remainingSnapshots = { ...snapshots };
+  delete remainingSnapshots[id];
+  return {
+    unsavedProgressDhikrIds: removeValue(unsavedIds, id),
+    unsavedProgressSnapshots: remainingSnapshots
+  };
+}
+
 const safeAsyncStorage: StateStorage = {
   getItem: async (name) => {
     try {
@@ -146,6 +216,10 @@ export const useDhikrStore = create<DhikrStore>()(
   persist((set, get) => ({
     items: INITIAL_ITEMS,
     selectedDhikrId: "",
+    freeModeCount: 0,
+    freeModeTarget: 0,
+    unsavedProgressDhikrIds: [],
+    unsavedProgressSnapshots: {},
     isHydratedFromBackend: false,
     lastSavedBackendLog: undefined,
     selectDhikr: (id) => {
@@ -304,8 +378,9 @@ export const useDhikrStore = create<DhikrStore>()(
       selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId
     })),
   incrementSelected: () =>
-    set((state) => ({
-      items: state.items.map((item) => {
+    set((state) => {
+      let changedItem: ZikirItem | undefined;
+      const items = state.items.map((item) => {
         if (item.id !== state.selectedDhikrId) {
           return item;
         }
@@ -315,26 +390,40 @@ export const useDhikrStore = create<DhikrStore>()(
           return item;
         }
 
+        changedItem = item;
         return {
           ...item,
           current: nextCount,
           lastActivityLabel: formatLastActivityLabel()
         };
-      })
-    })),
+      });
+
+      return {
+        items,
+        ...markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, changedItem)
+      };
+    }),
   resetSelected: () =>
-    set((state) => ({
-      items: state.items.map((item) => {
+    set((state) => {
+      let changedItem: ZikirItem | undefined;
+      const items = state.items.map((item) => {
         if (item.id !== state.selectedDhikrId) {
           return item;
         }
 
+        changedItem = item;
         return { ...item, current: 0, lastActivityLabel: formatLastActivityLabel() };
-      })
-    })),
+      });
+
+      return {
+        items,
+        ...markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, changedItem)
+      };
+    }),
   setSelectedCount: (count) =>
-    set((state) => ({
-      items: state.items.map((item) => {
+    set((state) => {
+      let changedItem: ZikirItem | undefined;
+      const items = state.items.map((item) => {
         if (item.id !== state.selectedDhikrId) {
           return item;
         }
@@ -342,28 +431,85 @@ export const useDhikrStore = create<DhikrStore>()(
         const safeCount = item.target > 0
           ? Math.max(0, Math.min(item.target, Math.floor(count)))
           : Math.max(0, Math.floor(count));
+        changedItem = item;
         return {
           ...item,
           current: safeCount,
           lastActivityLabel: formatLastActivityLabel()
         };
-      })
-    })),
+      });
+
+      return {
+        items,
+        ...markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, changedItem)
+      };
+    }),
   setSelectedTarget: (target) =>
-    set((state) => ({
-      items: state.items.map((item) => {
+    set((state) => {
+      let changedItem: ZikirItem | undefined;
+      const items = state.items.map((item) => {
         if (item.id !== state.selectedDhikrId) {
           return item;
         }
 
         const safeTarget = normalizeTarget(target);
+        changedItem = item;
         return {
           ...item,
           target: safeTarget,
           current: Math.min(item.current, safeTarget)
         };
-      })
-    })),
+      });
+
+      return {
+        items,
+        ...markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, changedItem)
+      };
+    }),
+  discardUnsavedProgress: (id) =>
+    set((state) => {
+      const snapshot = state.unsavedProgressSnapshots[id];
+      if (!snapshot) {
+        return clearUnsavedSnapshot(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, id);
+      }
+
+      return {
+        items: state.items.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                current: snapshot.current,
+                target: snapshot.target,
+                lastActivityLabel: snapshot.lastActivityLabel
+              }
+            : item
+        ),
+        ...clearUnsavedSnapshot(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, id)
+      };
+    }),
+  incrementFreeMode: () =>
+    set((state) => {
+      const nextCount =
+        state.freeModeTarget > 0 ? Math.min(state.freeModeTarget, state.freeModeCount + 1) : state.freeModeCount + 1;
+
+      if (nextCount === state.freeModeCount) {
+        return {};
+      }
+
+      return {
+        freeModeCount: nextCount
+      };
+    }),
+  resetFreeMode: () => set({ freeModeCount: 0 }),
+  clearFreeModeSession: () => set({ freeModeCount: 0, freeModeTarget: 0 }),
+  setFreeModeTarget: (target) =>
+    set((state) => {
+      const safeTarget = resolveCustomTarget(target);
+      return {
+        freeModeTarget: safeTarget,
+        freeModeCount: safeTarget > 0 ? Math.min(state.freeModeCount, safeTarget) : state.freeModeCount
+      };
+    }),
   hydrateReadyItems: (readyItems) =>
     set((state) => {
       if (readyItems.length === 0) {
@@ -376,11 +522,13 @@ export const useDhikrStore = create<DhikrStore>()(
       const normalizedReady: ZikirItem[] = readyItems.map((item) => {
         const existing = state.items.find((value) => value.id === item.id && value.source === "ready");
         const normalizedTarget = normalizeTarget(item.target);
+        const hasUnsavedProgress = state.unsavedProgressDhikrIds.includes(item.id);
         const rawCurrent = Math.max(
           0,
-          Math.floor(typeof item.current === "number" ? item.current : (existing?.current ?? 0))
+          Math.floor(hasUnsavedProgress ? (existing?.current ?? 0) : (typeof item.current === "number" ? item.current : (existing?.current ?? 0)))
         );
-        const normalizedCurrent = Math.min(rawCurrent, normalizedTarget);
+        const effectiveTarget = hasUnsavedProgress && existing ? existing.target : normalizedTarget;
+        const normalizedCurrent = Math.min(rawCurrent, effectiveTarget);
 
         return {
           ...(existing ?? {}),
@@ -391,7 +539,7 @@ export const useDhikrStore = create<DhikrStore>()(
           transliteration: item.transliteration,
           meaning: item.meaning,
           current: normalizedCurrent,
-          target: normalizedTarget,
+          target: effectiveTarget,
           lastActivityLabel: item.lastActivityLabel ?? existing?.lastActivityLabel ?? "Henüz başlanmadı",
           streakDays: 0,
           isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)
@@ -414,11 +562,13 @@ export const useDhikrStore = create<DhikrStore>()(
       const normalizedPersonal: ZikirItem[] = personalItems.map((item) => {
         const existing = state.items.find((value) => value.id === item.id && value.source === "personal");
         const normalizedTarget = resolveCustomTarget(item.target);
+        const hasUnsavedProgress = state.unsavedProgressDhikrIds.includes(item.id);
         const rawCurrent = Math.max(
           0,
-          Math.floor(typeof item.current === "number" ? item.current : (existing?.current ?? 0))
+          Math.floor(hasUnsavedProgress ? (existing?.current ?? 0) : (typeof item.current === "number" ? item.current : (existing?.current ?? 0)))
         );
-        const normalizedCurrent = normalizedTarget > 0 ? Math.min(rawCurrent, normalizedTarget) : rawCurrent;
+        const effectiveTarget = hasUnsavedProgress && existing ? existing.target : normalizedTarget;
+        const normalizedCurrent = effectiveTarget > 0 ? Math.min(rawCurrent, effectiveTarget) : rawCurrent;
 
         return {
           ...(existing ?? {}),
@@ -429,7 +579,7 @@ export const useDhikrStore = create<DhikrStore>()(
           transliteration: item.transliteration.trim(),
           meaning: item.meaning?.trim() || undefined,
           current: normalizedCurrent,
-          target: normalizedTarget,
+          target: effectiveTarget,
           lastActivityLabel: item.lastActivityLabel?.trim() || existing?.lastActivityLabel || "Henüz başlanmadı",
           streakDays: 0,
           isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)
@@ -446,12 +596,23 @@ export const useDhikrStore = create<DhikrStore>()(
         selectedDhikrId: state.selectedDhikrId
       };
     }),
-  applySavedBackendLog: (log) => set({ lastSavedBackendLog: log }),
+  applySavedBackendLog: (log) => set((state) => ({
+    lastSavedBackendLog: log,
+    ...clearUnsavedSnapshot(
+      state.unsavedProgressDhikrIds,
+      state.unsavedProgressSnapshots,
+      log.dhikrId ?? log.customDhikrId
+    )
+  })),
   setSyncError: (message) => set({ syncError: message }),
     resetSessionScoped: () =>
       set({
         items: INITIAL_ITEMS,
         selectedDhikrId: "",
+        freeModeCount: 0,
+        freeModeTarget: 0,
+        unsavedProgressDhikrIds: [],
+        unsavedProgressSnapshots: {},
         isHydratedFromBackend: false,
         lastSavedBackendLog: undefined,
         syncError: undefined
@@ -462,7 +623,11 @@ export const useDhikrStore = create<DhikrStore>()(
     storage: createJSONStorage(() => safeAsyncStorage),
     partialize: (state) => ({
       items: state.items,
-      selectedDhikrId: state.selectedDhikrId
+      selectedDhikrId: state.selectedDhikrId,
+      freeModeCount: state.freeModeCount,
+      freeModeTarget: state.freeModeTarget,
+      unsavedProgressDhikrIds: state.unsavedProgressDhikrIds,
+      unsavedProgressSnapshots: state.unsavedProgressSnapshots
     })
   })
 );

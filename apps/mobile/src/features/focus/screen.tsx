@@ -1,5 +1,6 @@
 import { View } from "react-native";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
+import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
 import { ZikirFilterTabs } from "./components/zikir-filter-tabs";
 import { ZikirFormModal } from "./components/zikir-form-modal";
 import { ZikirListSection } from "./components/zikir-list-section";
@@ -22,9 +23,17 @@ function FocusContent() {
     isUpdateOpen,
     isUpdatingDhikr,
     updateError,
+    isUnsavedTransitionOpen,
+    isSavingUnsavedTransition,
+    unsavedTransitionDhikrName,
+    unsavedTransitionCount,
+    unsavedTransitionError,
     closeUpdateModal,
     clearUpdateError,
-    saveDhikrUpdate
+    saveDhikrUpdate,
+    cancelUnsavedTransition,
+    saveAndContinueUnsavedTransition,
+    continueWithoutSavingUnsavedTransition
   } = useZikirlerim();
 
   const initialValues = {
@@ -54,6 +63,16 @@ function FocusContent() {
           onRequestClose={closeUpdateModal}
           onErrorClear={clearUpdateError}
           onSubmit={saveDhikrUpdate}
+        />
+        <UnsavedDhikrTransitionModal
+          visible={isUnsavedTransitionOpen}
+          dhikrName={unsavedTransitionDhikrName}
+          count={unsavedTransitionCount}
+          isSaving={isSavingUnsavedTransition}
+          error={unsavedTransitionError}
+          onSaveAndContinue={saveAndContinueUnsavedTransition}
+          onContinueWithoutSaving={continueWithoutSavingUnsavedTransition}
+          onCancel={cancelUnsavedTransition}
         />
       </View>
     </PageLayout>
