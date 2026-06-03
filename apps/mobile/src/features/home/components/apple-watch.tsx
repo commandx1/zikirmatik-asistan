@@ -184,24 +184,10 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
             className='h-full w-full overflow-hidden px-4 pt-4'
           >
             <ScrollView
-              className='w-full'
+              className='w-full flex-1'
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ alignItems: 'center', paddingBottom: 12 }}
+              contentContainerStyle={{ alignItems: 'center', flexGrow: 1, justifyContent: 'center', paddingBottom: 12 }}
             >
-              <View className='mb-2 w-full flex-row justify-end gap-1'>
-                <View className='h-1.5 w-1.5 rounded-full' style={{ backgroundColor: tokens.accent }} />
-                <View
-                  className='h-1.5 w-1.5 rounded-full'
-                  style={{ backgroundColor: withAlpha(tokens.textPrimary, 0.2) }}
-                />
-                <View
-                  className='h-1.5 w-1.5 rounded-full'
-                  style={{ backgroundColor: withAlpha(tokens.textPrimary, 0.2) }}
-                />
-              </View>
-
-              <View className='mb-2 mt-0.5 h-2' />
-
               <Pressable
                 onPress={home.onCountPress}
                 className='relative items-center justify-center'
