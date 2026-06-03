@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from "react";
+import type { PropsWithChildren, ReactNode, Ref } from "react";
 import {
   ImageBackground,
   Platform,
@@ -27,6 +27,7 @@ type PageScrollViewProps = Omit<ScrollViewProps, "contentContainerStyle" | "refr
   bottomPadding?: number;
   onRefresh?: () => void | Promise<void>;
   refreshing?: boolean;
+  scrollRef?: Ref<ScrollView>;
 };
 
 export function PageLayout({
@@ -65,6 +66,7 @@ export function PageScrollView({
   bottomPadding = 32,
   onRefresh,
   refreshing = false,
+  scrollRef,
   ...props
 }: PageScrollViewProps) {
   const insets = useSafeAreaInsets();
@@ -72,6 +74,7 @@ export function PageScrollView({
 
   return (
     <ScrollView
+      ref={scrollRef}
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       className="flex-1 w-full"

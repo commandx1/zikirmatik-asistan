@@ -1,5 +1,6 @@
 import { useThemeTokens } from '@zikirmatik/ui'
-import { Modal, Pressable, Text, TextInput, View } from 'react-native'
+import { useRef } from 'react'
+import { InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-aware-bottom-sheet-modal'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
@@ -7,6 +8,7 @@ import { PageHeader } from '../../components/ui/page-header'
 import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-transition-modal'
 import { useHomeContext } from './home-context'
 import { AppleWatch } from './components/apple-watch'
+import { DailyEsmaWelcomeModal } from './components/daily-esma-welcome-modal'
 import { EsmaulHusnaSection } from './components/esmaul-husna-section'
 
 function TopBar() {
@@ -313,16 +315,29 @@ function FreeSaveNameModal() {
 
 export function HomeView() {
   const home = useHomeContext()
+  const scrollRef = useRef<ScrollView>(null)
+  const esmaSectionYRef = useRef(0)
   const hasDhikrDetail =
     hasContent(home.mainDhikr.nameTurkish) ||
     hasContent(home.mainDhikr.transliteration) ||
     hasContent(home.mainDhikr.meaning) ||
     hasContent(home.mainDhikr.arabic)
 
+  const showAllEsma = () => {
+    home.onDailyEsmaShowAll()
+    InteractionManager.runAfterInteractions(() => {
+      scrollRef.current?.scrollTo({
+        y: Math.max(0, esmaSectionYRef.current - 12),
+        animated: true
+      })
+    })
+  }
+
   return (
     <PageLayout frameClassName='relative flex-1 w-full'>
       <TopBar />
       <PageScrollView
+        scrollRef={scrollRef}
         contentInnerClassName='w-full'
         contentContainerStyle={!hasDhikrDetail ? { flexGrow: 1, justifyContent: 'center' } : undefined}
         bottomPadding={hasDhikrDetail ? 32 : 0}
@@ -332,13 +347,24 @@ export function HomeView() {
         <AppleWatch />
         <SelectedDhikrMeaning />
         <FreeModeButton />
-        <EsmaulHusnaSection
-          disabled={home.isSelectingEsmaDhikr}
-          selectedTransliteration={home.mainDhikr.transliteration}
-          onSelect={home.onEsmaPress}
-        />
+        <View onLayout={event => {
+          esmaSectionYRef.current = event.nativeEvent.layout.y
+        }}>
+          <EsmaulHusnaSection
+            disabled={home.isSelectingEsmaDhikr}
+            selectedTransliteration={home.mainDhikr.transliteration}
+            onSelect={home.onEsmaPress}
+          />
+        </View>
       </PageScrollView>
       <EsmaSelectionModal />
+      <DailyEsmaWelcomeModal
+        visible={home.isDailyEsmaWelcomeOpen}
+        items={home.dailyEsmaSuggestions}
+        onDismiss={home.onDailyEsmaDismiss}
+        onShowAll={showAllEsma}
+        onStart={home.onDailyEsmaStart}
+      />
       <TargetModal />
       <FreeSaveNameModal />
       <UnsavedDhikrTransitionModal

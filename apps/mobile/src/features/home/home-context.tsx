@@ -1,12 +1,18 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Vibration } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useAuthStore } from '../../store/auth-store'
 import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
 import { useProfileStore } from '../../store/profile-store'
+import { ESMAUL_HUSNA } from '../focus/data'
 import type { EsmaulHusnaItem, ZikirSource } from '../focus/types'
 import { createDhikrLog, listDhikrLogsByUser, type BackendDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
 import { findVerifiedActiveDhikrByTransliteration } from '../dhikrs/services/dhikrs-api-client'
 import { createUserDhikr } from '../dhikrs/services/user-dhikrs-api-client'
+import {
+  buildDailyEsmaWelcomeStorageKey,
+  resolveDailyEsmaSuggestions
+} from './services/daily-esma-suggestion-service'
 import { shouldConfirmUnsavedDhikrTransition } from './services/unsaved-transition-guard'
 
 type HomeDhikr = {
@@ -69,6 +75,8 @@ type HomeContextValue = {
   isSelectingEsmaDhikr: boolean
   selectedEsmaForConfirmation?: EsmaulHusnaItem
   esmaSelectionError: string | null
+  isDailyEsmaWelcomeOpen: boolean
+  dailyEsmaSuggestions: EsmaulHusnaItem[]
   freeSaveNameDraft: string
   freeSaveTransliterationDraft: string
   freeSaveMeaningDraft: string
@@ -106,6 +114,9 @@ type HomeContextValue = {
   onEsmaPress: (item: EsmaulHusnaItem) => void
   onEsmaSelectCancel: () => void
   onEsmaSelectConfirm: () => void
+  onDailyEsmaDismiss: () => void
+  onDailyEsmaShowAll: () => void
+  onDailyEsmaStart: (item: EsmaulHusnaItem) => void
 }
 
 const HomeContext = createContext<HomeContextValue | null>(null)
@@ -165,6 +176,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [selectedEsmaForConfirmation, setSelectedEsmaForConfirmation] = useState<EsmaulHusnaItem | undefined>(undefined)
   const [isSelectingEsmaDhikr, setIsSelectingEsmaDhikr] = useState(false)
   const [esmaSelectionError, setEsmaSelectionError] = useState<string | null>(null)
+  const [dailyEsmaSuggestions, setDailyEsmaSuggestions] = useState<EsmaulHusnaItem[]>([])
+  const [isDailyEsmaWelcomeOpen, setDailyEsmaWelcomeOpen] = useState(false)
+  const [checkedDailyEsmaWelcomeKey, setCheckedDailyEsmaWelcomeKey] = useState('')
   const [isSavingLog, setIsSavingLog] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [streakDays, setStreakDays] = useState(0)
@@ -281,6 +295,67 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       setIsRefreshing(false)
     }
   }, [fetchStreakDays])
+
+  const hasUnsavedActiveDhikr = selectedDhikrId
+    ? unsavedProgressDhikrIds.includes(selectedDhikrId)
+    : freeCount > 0
+  const shouldDeferDailyEsmaWelcome =
+    hasUnsavedActiveDhikr ||
+    isEditingTarget ||
+    isSelectingDhikr ||
+    isCreatingDhikr ||
+    isFreeSaveNameModalOpen ||
+    Boolean(pendingDhikrTransition) ||
+    Boolean(selectedEsmaForConfirmation)
+
+  useEffect(() => {
+    if (shouldDeferDailyEsmaWelcome) {
+      return
+    }
+
+    const today = new Date()
+    const storageKey = buildDailyEsmaWelcomeStorageKey(today)
+    if (checkedDailyEsmaWelcomeKey === storageKey) {
+      return
+    }
+
+    let isCancelled = false
+    void AsyncStorage.getItem(storageKey)
+      .then(value => {
+        if (isCancelled) {
+          return
+        }
+
+        setCheckedDailyEsmaWelcomeKey(storageKey)
+        if (value) {
+          return
+        }
+
+        const suggestions = resolveDailyEsmaSuggestions(ESMAUL_HUSNA, today)
+        if (suggestions.length === 0) {
+          return
+        }
+
+        setDailyEsmaSuggestions(suggestions)
+        setDailyEsmaWelcomeOpen(true)
+      })
+      .catch(() => {
+        setCheckedDailyEsmaWelcomeKey(storageKey)
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [checkedDailyEsmaWelcomeKey, shouldDeferDailyEsmaWelcome])
+
+  const markDailyEsmaWelcomeSeen = useCallback(() => {
+    const storageKey = buildDailyEsmaWelcomeStorageKey(new Date())
+    setCheckedDailyEsmaWelcomeKey(storageKey)
+    setDailyEsmaWelcomeOpen(false)
+    void AsyncStorage.setItem(storageKey, 'seen').catch(() => {
+      // Ignore local marker write errors; the popup remains dismissed for this session.
+    })
+  }, [])
 
   const value = useMemo<HomeContextValue>(() => {
     const isTargetMode = selectedDhikr ? selectedDhikr.target > 0 : freeTarget > 0
@@ -585,6 +660,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       isSelectingEsmaDhikr,
       selectedEsmaForConfirmation,
       esmaSelectionError,
+      isDailyEsmaWelcomeOpen,
+      dailyEsmaSuggestions,
       freeSaveNameDraft,
       freeSaveTransliterationDraft,
       freeSaveMeaningDraft,
@@ -807,6 +884,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       },
       onEsmaSelectCancel: closeEsmaSelection,
       onEsmaSelectConfirm: confirmEsmaSelection,
+      onDailyEsmaDismiss: markDailyEsmaWelcomeSeen,
+      onDailyEsmaShowAll: markDailyEsmaWelcomeSeen,
+      onDailyEsmaStart: item => {
+        markDailyEsmaWelcomeSeen()
+        requestDhikrTransition({ kind: 'esma', item })
+      },
       onUnsavedTransitionCancel: closeUnsavedTransition,
       onUnsavedTransitionSaveAndContinue: saveAndContinueUnsavedTransition,
       onUnsavedTransitionContinueWithoutSaving: continueUnsavedTransition
@@ -822,6 +905,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     createNameDraft,
     createTargetDraft,
     demoCompleted,
+    dailyEsmaSuggestions,
     discardUnsavedProgress,
     freeCount,
     freeTarget,
@@ -838,9 +922,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     isSavingLog,
     isRefreshing,
     isCreatingDhikr,
+    isDailyEsmaWelcomeOpen,
     isEditingTarget,
     isSelectingDhikr,
     isFreeSaveNameModalOpen,
+    markDailyEsmaWelcomeSeen,
     pendingDhikrTransition,
     upsertDhikrSnapshot,
     items,
