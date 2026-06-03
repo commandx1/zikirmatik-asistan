@@ -92,8 +92,6 @@ export function ProfileSettingsSections({
           <ProfileToggleRow
             label="Günlük Zikir Hatırlatması"
             iconName="bell"
-            iconContainerClassName="bg-[--accent]/10"
-            iconColor="#C8972A"
             value={dailyReminderEnabled}
             onChange={onToggleDailyReminder}
             bottomBorder

@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
+import { useThemeTokens } from "@zikirmatik/ui";
 import type { AiGuideRecommendation } from "../types";
 import { RecommendationCard } from "./recommendation-card";
 
@@ -9,10 +10,12 @@ type RecommendationsSectionProps = {
 };
 
 export function RecommendationsSection({ items, onSelectRecommendation }: RecommendationsSectionProps) {
+  const { tokens } = useThemeTokens();
+
   if (items.length === 0) {
     return (
       <View className="mb-6">
-        <Text className="text-sm text-[#9A9080]">
+        <Text className="text-sm" style={{ color: tokens.textMuted }}>
           Öneriler burada listelenecek. Niyetini yazıp gönderdiğinde asistan uygun zikirleri getirecek.
         </Text>
       </View>
@@ -22,8 +25,10 @@ export function RecommendationsSection({ items, onSelectRecommendation }: Recomm
   return (
     <View className="mb-6">
       <View className="mb-4 flex-row items-center gap-2 px-1">
-        <FontAwesome6 name="star" iconStyle="solid" size={12} color="#C8972A" />
-        <Text className="text-sm font-semibold text-[#F0EDE6]">Sana Özel Öneriler</Text>
+        <FontAwesome6 name="star" iconStyle="solid" size={12} color={tokens.accent} />
+        <Text className="text-sm font-semibold" style={{ color: tokens.textPrimary }}>
+          Sana Özel Öneriler
+        </Text>
       </View>
 
       <View className="gap-4">

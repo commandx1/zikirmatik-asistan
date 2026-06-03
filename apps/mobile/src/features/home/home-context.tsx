@@ -13,6 +13,7 @@ import {
   buildDailyEsmaWelcomeStorageKey,
   resolveDailyEsmaSuggestions
 } from './services/daily-esma-suggestion-service'
+import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
 import { shouldConfirmUnsavedDhikrTransition } from './services/unsaved-transition-guard'
 
 type HomeDhikr = {
@@ -149,6 +150,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const sessionUserId = useAuthStore(state => state.session?.userId)
   const sessionAccessToken = useAuthStore(state => state.session?.accessToken)
   const hapticsEnabled = useProfileStore(state => state.hapticsEnabled)
+  const pendingNavigationDailyEsmaStart = useHomeNavigationIntentStore(state => state.pendingDailyEsmaStart)
+  const esmaListFocusRequestId = useHomeNavigationIntentStore(state => state.esmaListFocusRequestId)
 
   const selectedDhikr = useMemo(() => {
     return items.find(item => item.id === selectedDhikrId)
@@ -174,6 +177,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [freeSaveNameError, setFreeSaveNameError] = useState<string | null>(null)
   const [freeSaveTargetDraft, setFreeSaveTargetDraft] = useState('')
   const [selectedEsmaForConfirmation, setSelectedEsmaForConfirmation] = useState<EsmaulHusnaItem | undefined>(undefined)
+  const [pendingFreeSaveTransition, setPendingFreeSaveTransition] = useState<PendingDhikrTransition | null>(null)
   const [isSelectingEsmaDhikr, setIsSelectingEsmaDhikr] = useState(false)
   const [esmaSelectionError, setEsmaSelectionError] = useState<string | null>(null)
   const [dailyEsmaSuggestions, setDailyEsmaSuggestions] = useState<EsmaulHusnaItem[]>([])
@@ -306,15 +310,21 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     isCreatingDhikr ||
     isFreeSaveNameModalOpen ||
     Boolean(pendingDhikrTransition) ||
-    Boolean(selectedEsmaForConfirmation)
+    Boolean(selectedEsmaForConfirmation) ||
+    Boolean(pendingNavigationDailyEsmaStart) ||
+    esmaListFocusRequestId > 0
 
   useEffect(() => {
+    const today = new Date()
+    const storageKey = buildDailyEsmaWelcomeStorageKey(today)
+
     if (shouldDeferDailyEsmaWelcome) {
+      if (pendingNavigationDailyEsmaStart || esmaListFocusRequestId > 0) {
+        setCheckedDailyEsmaWelcomeKey(storageKey)
+      }
       return
     }
 
-    const today = new Date()
-    const storageKey = buildDailyEsmaWelcomeStorageKey(today)
     if (checkedDailyEsmaWelcomeKey === storageKey) {
       return
     }
@@ -346,7 +356,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     return () => {
       isCancelled = true
     }
-  }, [checkedDailyEsmaWelcomeKey, shouldDeferDailyEsmaWelcome])
+  }, [
+    checkedDailyEsmaWelcomeKey,
+    esmaListFocusRequestId,
+    pendingNavigationDailyEsmaStart,
+    shouldDeferDailyEsmaWelcome
+  ])
 
   const markDailyEsmaWelcomeSeen = useCallback(() => {
     const storageKey = buildDailyEsmaWelcomeStorageKey(new Date())
@@ -396,6 +411,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       setFreeSaveMeaningDraft('')
       setFreeSaveNameError(null)
       setFreeSaveTargetDraft('')
+      setPendingFreeSaveTransition(null)
     }
 
     const saveSelectedDhikrLog = async ({
@@ -555,11 +571,15 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
 
     const requestDhikrTransition = (transition: PendingDhikrTransition, targetDhikrId?: string) => {
+      const isLeavingFreeMode =
+        transition.kind !== 'free' && !(transition.kind === 'quick' && transition.label === FREE_MODE_LABEL)
       if (
         shouldConfirmUnsavedDhikrTransition({
           selectedDhikrId,
           targetDhikrId,
-          unsavedProgressDhikrIds
+          unsavedProgressDhikrIds,
+          hasUnsavedFreeMode: !selectedDhikrId && freeCount > 0,
+          isLeavingFreeMode
         })
       ) {
         setPendingDhikrTransition(transition)
@@ -585,7 +605,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       }
 
       const transition = pendingDhikrTransition
-      discardUnsavedProgress(selectedDhikrId)
+      if (selectedDhikrId) {
+        discardUnsavedProgress(selectedDhikrId)
+      } else {
+        liveFreeCountRef.current = 0
+        clearFreeModeSession()
+      }
       setPendingDhikrTransition(null)
       setUnsavedTransitionError(null)
       runDhikrTransition(transition)
@@ -597,6 +622,15 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       }
 
       const transition = pendingDhikrTransition
+      if (!selectedDhikr && freeCount > 0) {
+        setPendingFreeSaveTransition(transition)
+        setPendingDhikrTransition(null)
+        setUnsavedTransitionError(null)
+        setFreeSaveTargetDraft(freeTarget > 0 ? String(freeTarget) : '')
+        setFreeSaveNameModalOpen(true)
+        return
+      }
+
       void saveSelectedDhikrLog().then(didSave => {
         if (!didSave) {
           return
@@ -653,8 +687,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       createError,
       isFreeSaveNameModalOpen,
       isUnsavedTransitionModalOpen: Boolean(pendingDhikrTransition),
-      unsavedTransitionDhikrName: selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || 'Bu zikir',
-      unsavedTransitionCount: selectedDhikr?.current ?? 0,
+      unsavedTransitionDhikrName: selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || activeFreeModeTitle || FREE_MODE_LABEL,
+      unsavedTransitionCount: selectedDhikr?.current ?? freeCount,
       unsavedTransitionError,
       isEsmaSelectionModalOpen: Boolean(selectedEsmaForConfirmation),
       isSelectingEsmaDhikr,
@@ -831,8 +865,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           target: targetToSave,
           initialCount: countToSave
         })
+        const transitionAfterSave = pendingFreeSaveTransition
         closeFreeSaveName()
         clearFreeModeSession()
+        if (transitionAfterSave) {
+          runDhikrTransition(transitionAfterSave)
+        }
         if (authStatus !== 'authenticated' || !sessionUserId) {
           setSyncError('Kalıcı kaydetmek için giriş yapmalısın.')
           return
@@ -926,6 +964,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     isEditingTarget,
     isSelectingDhikr,
     isFreeSaveNameModalOpen,
+    pendingFreeSaveTransition,
     markDailyEsmaWelcomeSeen,
     pendingDhikrTransition,
     upsertDhikrSnapshot,

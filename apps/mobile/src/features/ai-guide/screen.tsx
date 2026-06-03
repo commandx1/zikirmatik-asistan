@@ -1,7 +1,13 @@
+import { useMemo, useState } from "react";
 import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
-import { CurrentStateCard } from "./components/current-state-card";
+import { DailyEsmaWelcomeModal } from "../home/components/daily-esma-welcome-modal";
+import { ESMAUL_HUSNA } from "../focus/data";
+import type { EsmaulHusnaItem } from "../focus/types";
+import { resolveDailyEsmaSuggestions } from "../home/services/daily-esma-suggestion-service";
+import { useHomeNavigationIntentStore } from "../home/services/home-navigation-intent-store";
+import { DailyEsmaShortcutCard } from "./components/daily-esma-shortcut-card";
 import { HistorySection } from "./components/history-section";
 import { InfoTooltip } from "./components/info-tooltip";
 import { IntentInputSection } from "./components/intent-input-section";
@@ -15,6 +21,26 @@ import { useAiGuide } from "./hooks/use-ai-guide";
 export function AiGuideScreen() {
   const router = useRouter();
   const guide = useAiGuide();
+  const [isDailyEsmaOpen, setDailyEsmaOpen] = useState(false);
+  const dailyEsmaSuggestions = useMemo(() => resolveDailyEsmaSuggestions(ESMAUL_HUSNA, new Date()), []);
+  const requestDailyEsmaStart = useHomeNavigationIntentStore((state) => state.requestDailyEsmaStart);
+  const requestEsmaListFocus = useHomeNavigationIntentStore((state) => state.requestEsmaListFocus);
+
+  const closeDailyEsma = () => {
+    setDailyEsmaOpen(false);
+  };
+
+  const showAllDailyEsma = () => {
+    setDailyEsmaOpen(false);
+    requestEsmaListFocus();
+    router.push("/(tabs)/home");
+  };
+
+  const startDailyEsma = (item: EsmaulHusnaItem) => {
+    setDailyEsmaOpen(false);
+    requestDailyEsmaStart(item);
+    router.push("/(tabs)/home");
+  };
 
   return (
     <PageLayout>
@@ -30,11 +56,6 @@ export function AiGuideScreen() {
           refreshing={guide.isRefreshing}
           onScrollBeginDrag={guide.closeInfo}
         >
-          <CurrentStateCard
-            prayerTimeLabel={guide.prayerTimeLabel}
-            weekdayLabel={guide.weekdayLabel}
-            lastPrompt={guide.lastPrompt}
-          />
           <IntentInputSection
             value={guide.intentInput}
             isLoading={guide.isLoading}
@@ -42,6 +63,7 @@ export function AiGuideScreen() {
             onSend={guide.submitIntent}
             onSelectPrompt={guide.applyPrompt}
           />
+          <DailyEsmaShortcutCard onPress={() => setDailyEsmaOpen(true)} />
           <HistorySection
             items={guide.visibleHistoryItems}
             totalCount={guide.historyItems.length}
@@ -73,6 +95,13 @@ export function AiGuideScreen() {
           isRunning={guide.isRewardedRunning}
           onConfirm={guide.confirmRewardedAndSubmit}
           onClose={guide.closeRewardedSheet}
+        />
+        <DailyEsmaWelcomeModal
+          visible={isDailyEsmaOpen}
+          items={dailyEsmaSuggestions}
+          onDismiss={closeDailyEsma}
+          onShowAll={showAllDailyEsma}
+          onStart={startDailyEsma}
         />
       </View>
     </PageLayout>

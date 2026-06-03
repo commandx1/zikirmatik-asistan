@@ -23,7 +23,7 @@ export function DailyEsmaWelcomeModal({
   const insets = useSafeAreaInsets()
 
   return (
-    <Modal visible={visible} transparent animationType='slide' onRequestClose={onDismiss}>
+    <Modal visible={visible} transparent animationType='fade' onRequestClose={onDismiss}>
       <View className='flex-1 justify-end bg-black/55'>
         <View
           className='rounded-t-3xl px-5 pb-8 pt-4'

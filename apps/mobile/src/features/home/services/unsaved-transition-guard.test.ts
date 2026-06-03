@@ -21,4 +21,26 @@ describe("unsaved-transition-guard", () => {
       })
     ).toBe(false);
   });
+
+  it("asks for confirmation when leaving unsaved free mode", () => {
+    expect(
+      shouldConfirmUnsavedDhikrTransition({
+        selectedDhikrId: "",
+        unsavedProgressDhikrIds: [],
+        hasUnsavedFreeMode: true,
+        isLeavingFreeMode: true
+      })
+    ).toBe(true);
+  });
+
+  it("does not ask when staying in free mode", () => {
+    expect(
+      shouldConfirmUnsavedDhikrTransition({
+        selectedDhikrId: "",
+        unsavedProgressDhikrIds: [],
+        hasUnsavedFreeMode: true,
+        isLeavingFreeMode: false
+      })
+    ).toBe(false);
+  });
 });

@@ -1,5 +1,6 @@
 import { useThemeTokens } from '@zikirmatik/ui'
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
 import { InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-aware-bottom-sheet-modal'
@@ -10,6 +11,7 @@ import { useHomeContext } from './home-context'
 import { AppleWatch } from './components/apple-watch'
 import { DailyEsmaWelcomeModal } from './components/daily-esma-welcome-modal'
 import { EsmaulHusnaSection } from './components/esmaul-husna-section'
+import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
 
 function TopBar() {
   const home = useHomeContext()
@@ -317,6 +319,10 @@ export function HomeView() {
   const home = useHomeContext()
   const scrollRef = useRef<ScrollView>(null)
   const esmaSectionYRef = useRef(0)
+  const pendingDailyEsmaStart = useHomeNavigationIntentStore(state => state.pendingDailyEsmaStart)
+  const consumeDailyEsmaStart = useHomeNavigationIntentStore(state => state.consumeDailyEsmaStart)
+  const esmaListFocusRequestId = useHomeNavigationIntentStore(state => state.esmaListFocusRequestId)
+  const consumeEsmaListFocus = useHomeNavigationIntentStore(state => state.consumeEsmaListFocus)
   const hasDhikrDetail =
     hasContent(home.mainDhikr.nameTurkish) ||
     hasContent(home.mainDhikr.transliteration) ||
@@ -325,6 +331,10 @@ export function HomeView() {
 
   const showAllEsma = () => {
     home.onDailyEsmaShowAll()
+    scrollToEsmaSection()
+  }
+
+  const scrollToEsmaSection = () => {
     InteractionManager.runAfterInteractions(() => {
       scrollRef.current?.scrollTo({
         y: Math.max(0, esmaSectionYRef.current - 12),
@@ -332,6 +342,24 @@ export function HomeView() {
       })
     })
   }
+
+  useFocusEffect(useCallback(() => {
+    if (!pendingDailyEsmaStart) {
+      return
+    }
+
+    home.onEsmaPress(pendingDailyEsmaStart)
+    consumeDailyEsmaStart()
+  }, [consumeDailyEsmaStart, home, pendingDailyEsmaStart]))
+
+  useFocusEffect(useCallback(() => {
+    if (esmaListFocusRequestId <= 0) {
+      return
+    }
+
+    scrollToEsmaSection()
+    consumeEsmaListFocus(esmaListFocusRequestId)
+  }, [consumeEsmaListFocus, esmaListFocusRequestId]))
 
   return (
     <PageLayout frameClassName='relative flex-1 w-full'>
