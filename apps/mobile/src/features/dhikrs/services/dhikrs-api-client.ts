@@ -26,6 +26,12 @@ export async function listVerifiedActiveDhikrs(): Promise<BackendDhikr[]> {
   return requestJson<BackendDhikr[]>("/v1/dhikrs/verified-active");
 }
 
+export async function findVerifiedActiveDhikrByTransliteration(transliteration: string): Promise<BackendDhikr> {
+  return requestJson<BackendDhikr>(
+    `/v1/dhikrs/lookup?transliteration=${encodeURIComponent(transliteration)}`
+  );
+}
+
 function resolveApiBaseUrl() {
   const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
   if (configured) {
