@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { Alert, Linking, Platform } from "react-native";
+import { Alert, AppState, Linking, Platform } from "react-native";
 import {
   getUserById,
   saveUserPreferences,
@@ -72,6 +72,7 @@ export function useProfile() {
   const [reminderMinuteDraft, setReminderMinuteDraft] = useState("00");
   const [isSavingReminderTime, setIsSavingReminderTime] = useState(false);
   const [reminderTimeError, setReminderTimeError] = useState<string>();
+  const [shouldSyncPremiumOnForeground, setShouldSyncPremiumOnForeground] = useState(false);
 
   const syncBackendUser = useCallback(async () => {
     if (authStatus !== "authenticated" || !session?.userId) {
@@ -158,6 +159,24 @@ export function useProfile() {
     await signOut();
     router.replace("/auth");
   };
+
+  const syncPremiumFromRevenueCat = useCallback(
+    async ({ refreshCustomerInfo = false }: { refreshCustomerInfo?: boolean } = {}) => {
+      if (authStatus !== "authenticated" || !session?.userId || !isRevenueCatConfigured()) {
+        return;
+      }
+
+      const synced = await syncPremiumStatusWithRevenueCat(
+        session.userId,
+        session.accessToken,
+        { refreshCustomerInfo }
+      );
+      hydrateFromBackend({ isPremium: synced.isPremium });
+      setBackendUser((current) => (current ? { ...current, isPremium: synced.isPremium } : current));
+    },
+    [authStatus, hydrateFromBackend, session?.accessToken, session?.userId]
+  );
+
   const manageSubscription = async () => {
     const url =
       Platform.OS === "android"
@@ -171,6 +190,7 @@ export function useProfile() {
         return;
       }
 
+      setShouldSyncPremiumOnForeground(true);
       await Linking.openURL(url);
     } catch {
       setPremiumError("Abonelik yönetim ekranı açılamadı.");
@@ -276,10 +296,8 @@ export function useProfile() {
     let isCancelled = false;
     const run = async () => {
       try {
-        const synced = await syncPremiumStatusWithRevenueCat(session.userId, session.accessToken);
         if (!isCancelled) {
-          hydrateFromBackend({ isPremium: synced.isPremium });
-          setBackendUser((current) => (current ? { ...current, isPremium: synced.isPremium } : current));
+          await syncPremiumFromRevenueCat();
         }
       } catch {
         // Keep existing backend premium status when RevenueCat sync fails.
@@ -290,7 +308,39 @@ export function useProfile() {
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, hydrateFromBackend, session?.accessToken, session?.userId]);
+  }, [authStatus, session?.userId, syncPremiumFromRevenueCat]);
+
+  useEffect(() => {
+    if (authStatus !== "authenticated" || !session?.userId || !shouldSyncPremiumOnForeground) {
+      return;
+    }
+
+    let isSyncing = false;
+    const subscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState !== "active" || isSyncing) {
+        return;
+      }
+
+      isSyncing = true;
+      void syncPremiumFromRevenueCat({ refreshCustomerInfo: true })
+        .catch(() => {
+          // Keep existing backend premium status when the store sync cannot be refreshed.
+        })
+        .finally(() => {
+          isSyncing = false;
+          setShouldSyncPremiumOnForeground(false);
+        });
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [
+    authStatus,
+    session?.userId,
+    shouldSyncPremiumOnForeground,
+    syncPremiumFromRevenueCat
+  ]);
 
   const purposeValue = backendUser?.onboarding?.purpose ?? onboardingPurpose;
   const personalCityValue =

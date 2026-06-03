@@ -61,9 +61,13 @@ export async function restorePremiumWithRevenueCat(
 
 export async function syncPremiumStatusWithRevenueCat(
   userId: string,
-  accessToken: string | undefined
+  accessToken: string | undefined,
+  options: { refreshCustomerInfo?: boolean } = {}
 ): Promise<PremiumSyncResult> {
   await ensureRevenueCatConfigured(userId);
+  if (options.refreshCustomerInfo) {
+    await Purchases.invalidateCustomerInfoCache();
+  }
   const customerInfo = await Purchases.getCustomerInfo();
   return syncBackendFromCustomerInfo(userId, accessToken, customerInfo);
 }

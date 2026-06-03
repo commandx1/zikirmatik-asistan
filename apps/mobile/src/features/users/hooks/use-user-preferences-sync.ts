@@ -7,6 +7,10 @@ import type { AppFontFamily } from "../../../store/theme-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useThemeStore } from "../../../store/theme-store";
 import { THEME_LABELS } from "../../../theme/labels";
+import {
+  isRevenueCatConfigured,
+  syncPremiumStatusWithRevenueCat
+} from "../../subscriptions/services/revenuecat-client";
 
 function normalizeThemeName(value: string | undefined): ThemeName | undefined {
   if (!value) {
@@ -42,8 +46,16 @@ export function useUserPreferencesSync() {
     }
 
     let cancelled = false;
-    const sync = async () => {
+    const sync = async ({ refreshCustomerInfo = false }: { refreshCustomerInfo?: boolean } = {}) => {
       try {
+        if (isRevenueCatConfigured()) {
+          await syncPremiumStatusWithRevenueCat(
+            session.userId,
+            session.accessToken,
+            { refreshCustomerInfo }
+          );
+        }
+
         const user = await getUserById(session.userId, session.accessToken);
         if (cancelled) {
           return;
@@ -72,7 +84,7 @@ export function useUserPreferencesSync() {
 
     const subscription = AppState.addEventListener("change", (nextState) => {
       if (nextState === "active") {
-        void sync();
+        void sync({ refreshCustomerInfo: true });
       }
     });
 
