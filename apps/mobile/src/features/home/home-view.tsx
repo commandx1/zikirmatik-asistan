@@ -6,6 +6,7 @@ import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
 import { useHomeContext } from './home-context'
 import { AppleWatch } from './components/apple-watch'
+import { EsmaulHusnaSection } from './components/esmaul-husna-section'
 
 function TopBar() {
   const home = useHomeContext()
@@ -79,6 +80,66 @@ function FreeModeButton() {
         </Text>
       </Pressable>
     </View>
+  )
+}
+
+function EsmaSelectionModal() {
+  const home = useHomeContext()
+  const { tokens } = useThemeTokens()
+  const selectedEsma = home.selectedEsmaForConfirmation
+
+  return (
+    <Modal
+      visible={home.isEsmaSelectionModalOpen}
+      transparent
+      animationType='fade'
+      onRequestClose={home.onEsmaSelectCancel}
+    >
+      <View className='flex-1 items-center justify-center bg-black/50 px-6'>
+        <View
+          className='w-full max-w-[340px] rounded-2xl p-5'
+          style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.1), backgroundColor: tokens.card }}
+        >
+          <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
+            Esmayı seç
+          </Text>
+          <Text className='mb-4 text-sm leading-5' style={{ color: tokens.textMuted }}>
+            {selectedEsma?.transliteration
+              ? `${selectedEsma.transliteration} esmasını zikir olarak seçmek istediğine emin misin?`
+              : 'Bu esmayı zikir olarak seçmek istediğine emin misin?'}
+          </Text>
+          {home.esmaSelectionError ? (
+            <Text className='mb-3 text-xs text-[#F97373]'>{home.esmaSelectionError}</Text>
+          ) : null}
+          <View className='flex-row justify-end gap-2'>
+            <Pressable
+              disabled={home.isSelectingEsmaDhikr}
+              onPress={home.onEsmaSelectCancel}
+              className='rounded-full px-4 py-2'
+              style={{
+                borderWidth: 1,
+                borderColor: withAlpha(tokens.textPrimary, 0.2),
+                opacity: home.isSelectingEsmaDhikr ? 0.56 : 1
+              }}
+            >
+              <Text className='text-sm font-medium' style={{ color: tokens.textPrimary }}>
+                Vazgeç
+              </Text>
+            </Pressable>
+            <Pressable
+              disabled={home.isSelectingEsmaDhikr}
+              onPress={home.onEsmaSelectConfirm}
+              className='rounded-full px-4 py-2'
+              style={{ backgroundColor: tokens.accent, opacity: home.isSelectingEsmaDhikr ? 0.72 : 1 }}
+            >
+              <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
+                {home.isSelectingEsmaDhikr ? 'Seçiliyor...' : 'Seç'}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
   )
 }
 
@@ -270,7 +331,13 @@ export function HomeView() {
         <AppleWatch />
         <SelectedDhikrMeaning />
         <FreeModeButton />
+        <EsmaulHusnaSection
+          disabled={home.isSelectingEsmaDhikr}
+          selectedTransliteration={home.mainDhikr.transliteration}
+          onSelect={home.onEsmaPress}
+        />
       </PageScrollView>
+      <EsmaSelectionModal />
       <TargetModal />
       <FreeSaveNameModal />
     </PageLayout>
