@@ -3,8 +3,9 @@ import { Vibration } from 'react-native'
 import { useAuthStore } from '../../store/auth-store'
 import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
 import { useProfileStore } from '../../store/profile-store'
-import type { ZikirSource } from '../focus/types'
+import type { EsmaulHusnaItem, ZikirSource } from '../focus/types'
 import { createDhikrLog, listDhikrLogsByUser, type BackendDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
+import { findVerifiedActiveDhikrByTransliteration } from '../dhikrs/services/dhikrs-api-client'
 import { createUserDhikr, updateUserDhikrByClientId } from '../dhikrs/services/user-dhikrs-api-client'
 
 type HomeDhikr = {
@@ -53,6 +54,10 @@ type HomeContextValue = {
   createTargetDraft: string
   createError: string | null
   isFreeSaveNameModalOpen: boolean
+  isEsmaSelectionModalOpen: boolean
+  isSelectingEsmaDhikr: boolean
+  selectedEsmaForConfirmation?: EsmaulHusnaItem
+  esmaSelectionError: string | null
   freeSaveNameDraft: string
   freeSaveTransliterationDraft: string
   freeSaveMeaningDraft: string
@@ -84,6 +89,9 @@ type HomeContextValue = {
   onFreeSaveNameSubmit: () => void
   onFreeSaveTargetChange: (value: string) => void
   onStartFreeMode: () => void
+  onEsmaPress: (item: EsmaulHusnaItem) => void
+  onEsmaSelectCancel: () => void
+  onEsmaSelectConfirm: () => void
 }
 
 const HomeContext = createContext<HomeContextValue | null>(null)
@@ -99,6 +107,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const setSelectedTarget = useDhikrStore(state => state.setSelectedTarget)
   const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
   const upsertPersonalDhikr = useDhikrStore(state => state.upsertPersonalDhikr)
+  const upsertDhikrSnapshot = useDhikrStore(state => state.upsertDhikrSnapshot)
   const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
   const lastSavedBackendLog = useDhikrStore(state => state.lastSavedBackendLog)
   const syncError = useDhikrStore(state => state.syncError)
@@ -131,6 +140,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [freeSaveMeaningDraft, setFreeSaveMeaningDraft] = useState('')
   const [freeSaveNameError, setFreeSaveNameError] = useState<string | null>(null)
   const [freeSaveTargetDraft, setFreeSaveTargetDraft] = useState('')
+  const [selectedEsmaForConfirmation, setSelectedEsmaForConfirmation] = useState<EsmaulHusnaItem | undefined>(undefined)
+  const [isSelectingEsmaDhikr, setIsSelectingEsmaDhikr] = useState(false)
+  const [esmaSelectionError, setEsmaSelectionError] = useState<string | null>(null)
   const [isSavingLog, setIsSavingLog] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [streakDays, setStreakDays] = useState(0)
@@ -543,6 +555,57 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         })
     }
 
+    const closeEsmaSelection = () => {
+      if (isSelectingEsmaDhikr) {
+        return
+      }
+
+      setSelectedEsmaForConfirmation(undefined)
+      setEsmaSelectionError(null)
+    }
+
+    const confirmEsmaSelection = () => {
+      if (!selectedEsmaForConfirmation || isSelectingEsmaDhikr) {
+        return
+      }
+
+      setIsSelectingEsmaDhikr(true)
+      setEsmaSelectionError(null)
+      setSyncError(undefined)
+
+      void findVerifiedActiveDhikrByTransliteration(selectedEsmaForConfirmation.transliteration)
+        .then(dhikr => {
+          upsertDhikrSnapshot({
+            id: dhikr._id,
+            source: 'ready',
+            nameTurkish: dhikr.nameTurkish,
+            arabic: dhikr.nameArabic,
+            transliteration: dhikr.transliteration || dhikr.nameTurkish,
+            meaning: dhikr.meaning,
+            current: 0,
+            target: dhikr.recommendedCount,
+            lastActivityLabel: 'Henüz başlanmadı',
+            streakDays: 0,
+            isFavorite: false
+          })
+          selectDhikr(dhikr._id)
+          setActiveQuickDhikr(dhikr.nameTurkish || dhikr.transliteration)
+          clearFreeAutoDhikrRefs()
+          liveFreeCountRef.current = 0
+          setFreeCount(0)
+          setDemoCompleted(false)
+          setSelectedEsmaForConfirmation(undefined)
+        })
+        .catch((error: unknown) => {
+          const message = error instanceof Error ? error.message : 'Esma zikri bulunamadı.'
+          setEsmaSelectionError(message)
+          setSyncError(message)
+        })
+        .finally(() => {
+          setIsSelectingEsmaDhikr(false)
+        })
+    }
+
     return {
       greeting: `Selam, ${authDisplayName?.trim() || 'Dostum'}`,
       streakLabel: `${streakDays} gün`,
@@ -581,6 +644,10 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       createTargetDraft,
       createError,
       isFreeSaveNameModalOpen,
+      isEsmaSelectionModalOpen: Boolean(selectedEsmaForConfirmation),
+      isSelectingEsmaDhikr,
+      selectedEsmaForConfirmation,
+      esmaSelectionError,
       freeSaveNameDraft,
       freeSaveTransliterationDraft,
       freeSaveMeaningDraft,
@@ -832,7 +899,13 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         liveFreeCountRef.current = 0
         setFreeCount(0)
         setSyncError(undefined)
-      }
+      },
+      onEsmaPress: item => {
+        setSelectedEsmaForConfirmation(item)
+        setEsmaSelectionError(null)
+      },
+      onEsmaSelectCancel: closeEsmaSelection,
+      onEsmaSelectConfirm: confirmEsmaSelection
     }
   }, [
     activeQuickDhikr,
@@ -850,6 +923,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     freeSaveMeaningDraft,
     freeSaveNameError,
     freeSaveTargetDraft,
+    selectedEsmaForConfirmation,
+    isSelectingEsmaDhikr,
+    esmaSelectionError,
     incrementSelected,
     isSavingLog,
     isRefreshing,
@@ -857,6 +933,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     isEditingTarget,
     isSelectingDhikr,
     isFreeSaveNameModalOpen,
+    upsertDhikrSnapshot,
     items,
     personalDhikrs,
     quickDhikrs,
