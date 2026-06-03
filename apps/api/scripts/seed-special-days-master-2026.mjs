@@ -11,6 +11,27 @@ const keyMap = {
   NUR: 'NUR',
   HZYUSUF: 'HZYUSUF',
   RIZIK_EBU_UMAME: 'RIZIK_EBU_UMAME',
+  SUBHANALLAHI_VE_BIHAMDIHI: 'SUBHANALLAHI_VE_BIHAMDIHI',
+  ESTAGFIRULLAH: 'ESTAGFIRULLAH',
+  KURBAN_SUKRU_DUASI: 'KURBAN_SUKRU_DUASI',
+  HASBIYE_ZIKRI_100: 'HASBIYE_ZIKRI_100',
+  ENBIYA_83: 'ENBIYA_83',
+  SALAVAT_FATIH: 'SALAVAT_FATIH',
+  HZ_FATIMA_SALAVATI: 'HZ_FATIMA_SALAVATI',
+  RUYADA_GORME_SALAVATI: 'RUYADA_GORME_SALAVATI',
+  TEFRICIYE_SALAVATI: 'TEFRICIYE_SALAVATI',
+  MUNCIYE: 'MUNCIYE',
+  MEVLID_HAMD: 'MEVLID_HAMD',
+  MEVLID_RAHMET: 'MEVLID_RAHMET',
+  LA_HAVLE: 'LA_HAVLE',
+  DUHA_SURESI: 'DUHA_SURESI',
+  SEYTANDAN_SIGINMA: 'SEYTANDAN_SIGINMA',
+  IMRAN_200: 'IMRAN_200',
+  AHZAB_56: 'AHZAB_56',
+  SELLIM_BARIK: 'SELLIM_BARIK',
+  RABBENA_ZALEMNA: 'RABBENA_ZALEMNA',
+  KEMALILLAHI: 'KEMALILLAHI',
+  DELAIL_HAYRAT: 'DELAIL_HAYRAT',
 };
 
 const SOURCE_DATASETS = [
@@ -300,13 +321,13 @@ const SOURCE_DATASETS = [
         suitableFor: ['bayram günleri', 'cemaat sonrası zikir', ''],
       },
       {
-        key: 'bayram-tesbih-300',
+        key: keyMap.SUBHANALLAHI_VE_BIHAMDIHI,
         nameArabic: 'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ',
         nameTurkish: 'Tesbih Zikri',
         transliteration: 'Sübhânallâhi ve bi-hamdihî.',
         meaning: "Allah'ı noksan sıfatlardan tenzih eder ve O'na hamd ederim.",
         virtue:
-          'Kalbi arındırır, şükür duygusunu artırır ve bayram günlerinde manevi dengeyi destekler. Bayram günü 300 kere okunup ölmüşlerin ruhuna bağışlandığında her müminin kabrine bin nur girer, okuyan kişi vefat ettiğinde de kabrine bin nur verilir.',
+          'Kalbi arındırır, şükür duygusunu artırır ve bayram günlerinde manevi dengeyi destekler. Bayram günü 300 kere okunup ölmüşlerin ruhuna bağışlandığında her müminin kabrine bin nur girer, okuyan kişi vefat ettiğinde de kabrine bin nur verilir. Günde yüz defa okuyan kişinin günahları deniz köpüğü kadar olsa bile bağışlanır.',
         source: 'Bayram sabahı tavsiye tesbihat',
         tags: [
           'kurban-bayrami',
@@ -318,10 +339,15 @@ const SOURCE_DATASETS = [
         categories: ['özel gün', 'bayram'],
         timeOfDay: 'morning',
         recommendedCount: 300,
-        suitableFor: ['bayram sabahı', 'tesbihat'],
+        suitableFor: [
+          'bayram sabahı',
+          'tesbihat',
+          'allah sevgisi',
+          'günahların bağışlanması',
+        ],
       },
       {
-        key: 'bayram-istigfar-100',
+        key: keyMap.ESTAGFIRULLAH,
         nameArabic: 'أَسْتَغْفِرُ اللّٰهَ',
         nameTurkish: 'Estağfirullâh',
         transliteration: 'Estağfirullâh.',
@@ -333,10 +359,10 @@ const SOURCE_DATASETS = [
         categories: ['özel gün', 'bayram'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['bayram günü', 'tevbe'],
+        suitableFor: ['bayram günü', 'tevbe', 'günahların bağışlanması'],
       },
       {
-        key: 'kurban-sukru-duasi',
+        key: keyMap.KURBAN_SUKRU_DUASI,
         nameArabic:
           'اللّٰهُمَّ لَكَ الْحَمْدُ كُلُّهُ وَلَكَ الشُّكْرُ كُلُّهُ وَإِلَيْكَ يُرْجَعُ الْأَمْرُ كُلُّهُ',
         nameTurkish: 'Şükür Duası',
@@ -354,11 +380,149 @@ const SOURCE_DATASETS = [
         suitableFor: ['kurban kesimi sonrası', 'şükür', 'hamd'],
       },
       {
+        key: keyMap.HASBIYE_ZIKRI_100,
+        nameArabic: 'حَسْبِيَ اللّٰهُ وَنِعْمَ الْوَكِيلُ',
+        nameTurkish: 'Hasbiye Zikri',
+        transliteration: "Hasbiyallâhu ve ni'mel-vekîl.",
+        meaning: 'Allah bana yeter, O ne güzel vekildir.',
+        virtue:
+          'Tevekkül bilincini artırır, endişe ve dağınıklık halinde kalbi dengelemeye yardımcı olur.',
+        source: 'Tevekkül zikirleri',
+        tags: ['kurban-bayrami', 'tevekkül', 'hasbiye'],
+        categories: ['özel gün', 'bayram'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'gün boyu',
+          'zorlanma anları',
+          'tevekkül',
+          'endişe anları',
+        ],
+      },
+      {
+        key: keyMap.HASBIYE,
+        nameArabic:
+          'حَسْبِيَ اللّٰهُ وَكَفَى سَمِعَ اللّٰهُ لِمَنْ دَعَا لَيْسَ وَرَاءَ اللّٰهِ مُنْتَهَى',
+        nameTurkish: 'Tevekkül ve Hasbiye Zikri',
+        transliteration:
+          'Hasbiyallâhu ve kefâ. Semiallâhu limen deâ. Leyse verâ-allâhi müntehâ.',
+        meaning:
+          "Allah bana yeter ve kâfidir. Allah dua edeni işitir. Allah'tan öte varılacak bir son yoktur.",
+        virtue:
+          'Tevekkül bilincini derinleştirir; kalpte emniyet ve teslimiyet hissini artırır.',
+        source: 'Hasbiye rivayetleri',
+        tags: ['kurban-bayrami', 'hasbiye', 'tevekkül', 'dua'],
+        categories: ['özel gün', 'bayram', 'dua', 'tevekkül'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'tevekkül',
+          'endişe anları',
+          'rahmet talebi',
+          'korunma',
+          'sükunet',
+        ],
+      },
+    ],
+    specialDays: [
+      {
+        name: 'Kurban Bayramı Arefe Günü',
+        type: 'özel gün',
+        date: '2026-05-26',
+        hijriDate: '9 Zilhicce 1447',
+        description: 'Arefe Günü (Tevbe, Dua ve Tevhid Yoğunluğu)',
+        eventKey: 'kurban-bayrami-2026',
+        dhikrKeys: [keyMap.IHLAS, keyMap.VAHDEHU_LA, keyMap.ISTIGFAR],
+      },
+      {
+        name: 'Kurban Bayramı',
+        type: 'bayram',
+        date: '2026-05-27',
+        hijriDate: '10 Zilhicce 1447',
+        description:
+          'Kurban Bayramı 1. Gün (Bayram Sabahı ve Teşrik Başlangıcı)',
+        eventKey: 'kurban-bayrami-2026',
+        dayIndex: 1,
+        dayCount: 4,
+        dhikrKeys: [
+          keyMap.TESRIK_TEKBIRI,
+          keyMap.VAHDEHU_LA,
+          keyMap.SUBHANALLAHI_VE_BIHAMDIHI,
+          keyMap.ESTAGFIRULLAH,
+          keyMap.YA_HAYYU_YA_KAYYUM,
+          keyMap.KURBAN_SUKRU_DUASI,
+        ],
+      },
+      {
+        name: 'Kurban Bayramı',
+        type: 'bayram',
+        date: '2026-05-28',
+        hijriDate: '11 Zilhicce 1447',
+        description: 'Kurban Bayramı 2. Gün (Tevhid, Salavat ve Tevekkül Günü)',
+        eventKey: 'kurban-bayrami-2026',
+        dayIndex: 2,
+        dayCount: 4,
+        dhikrKeys: [
+          keyMap.TESRIK_TEKBIRI,
+          keyMap.SALAVAT_SERIF,
+          keyMap.HASBIYE_ZIKRI_100,
+          keyMap.HASBIYE,
+          keyMap.VAHDEHU_LA,
+          keyMap.ESTAGFIRULLAH,
+          keyMap.YA_HAYYU_YA_KAYYUM,
+        ],
+      },
+      {
+        name: 'Kurban Bayramı',
+        type: 'bayram',
+        date: '2026-05-29',
+        hijriDate: '12 Zilhicce 1447',
+        description: 'Kurban Bayramı 3. Gün (Sabır, Dua ve Arınma Günü)',
+        eventKey: 'kurban-bayrami-2026',
+        dayIndex: 3,
+        dayCount: 4,
+        dhikrKeys: [
+          keyMap.TESRIK_TEKBIRI,
+          keyMap.VAHDEHU_LA,
+          keyMap.NUR,
+          keyMap.ESTAGFIRULLAH,
+          keyMap.SALAVAT_SERIF,
+          keyMap.YA_HAYYU_YA_KAYYUM,
+        ],
+      },
+      {
+        name: 'Kurban Bayramı',
+        type: 'bayram',
+        date: '2026-05-30',
+        hijriDate: '13 Zilhicce 1447',
+        description: 'Kurban Bayramı 4. Gün (Kapanış ve Teşrik Tamamlama Günü)',
+        eventKey: 'kurban-bayrami-2026',
+        dayIndex: 4,
+        dayCount: 4,
+        dhikrKeys: [
+          keyMap.TESRIK_TEKBIRI,
+          keyMap.TEVHID,
+          keyMap.HASBIYE_ZIKRI_100,
+          keyMap.HASBIYE,
+          keyMap.SALAVAT_SERIF,
+          keyMap.ESTAGFIRULLAH,
+          keyMap.YA_HAYYU_YA_KAYYUM,
+        ],
+      },
+    ],
+  },
+  {
+    key: 'mevlid-kandili-2026',
+    label: 'Mevlid Kandili 2026',
+    dhikrItems: [
+      {
         key: keyMap.SALAVAT_SERIF,
-        nameArabic: 'اللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ',
-        nameTurkish: 'Salavat-ı Şerife',
-        transliteration: 'Allâhümme salli alâ seyyidinâ Muhammed.',
-        meaning: "Allah'ım, Efendimiz Muhammed'e salat eyle.",
+        nameArabic:
+          'اللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ',
+        nameTurkish: 'Mevlid Salavatı',
+        transliteration:
+          'Allâhümme salli alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed.',
+        meaning: "Allah'ım, Efendimiz Muhammed'e ve O'nun aline salat eyle.",
         virtue:
           'Salavat-ı Şerife, kalbi Resûlullah sevgisiyle dirilten en bereketli zikirlerdendir. Kişiye manevi huzur, gönül ferahlığı ve iç sükûnet kazandırır. Peygamber Efendimiz’e yapılan her salavatın rahmet kapılarını açtığı rivayet edilmiştir. Salavat, duaların kabulüne vesile olan kıymetli ameller arasında görülür. Sürekli salavat getiren kimsenin kalbi yumuşar, dili güzelleşir ve manevi bağı kuvvetlenir. Sıkıntı anlarında salavat okumak, kalbe teselli ve umut verir. Günahlara kefaret ve derecelerin yükselmesine vesile olduğu bildirilmiştir. Salavat, kişinin hayatına bereket ve nur katan bir ibadet olarak kabul edilir. Meleklerin salavat ehline dua ettiği ve rahmetle yaklaştığı rivayet edilir. Resûlullah’a sevgiyle getirilen her salavat, müminin kalbini Allah’a daha yakın hâle getirir.',
         source: 'Salavat fazileti rivayetleri',
@@ -386,172 +550,7 @@ const SOURCE_DATASETS = [
         ],
       },
       {
-        key: 'hasbiye-zikri-100',
-        nameArabic: 'حَسْبِيَ اللّٰهُ وَنِعْمَ الْوَكِيلُ',
-        nameTurkish: 'Hasbiye Zikri',
-        transliteration: "Hasbiyallâhu ve ni'mel-vekîl.",
-        meaning: 'Allah bana yeter, O ne güzel vekildir.',
-        virtue:
-          'Tevekkül bilincini artırır, endişe ve dağınıklık halinde kalbi dengelemeye yardımcı olur.',
-        source: 'Tevekkül zikirleri',
-        tags: ['kurban-bayrami', 'tevekkül', 'hasbiye'],
-        categories: ['özel gün', 'bayram'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['gün boyu', 'zorlanma anları'],
-      },
-      {
-        key: keyMap.HASBIYE,
-        nameArabic:
-          'حَسْبِيَ اللّٰهُ وَكَفَى سَمِعَ اللّٰهُ لِمَنْ دَعَا لَيْسَ وَرَاءَ اللّٰهِ مُنْتَهَى',
-        nameTurkish: 'Tevekkül ve Hasbiye Zikri',
-        transliteration:
-          'Hasbiyallâhu ve kefâ. Semiallâhu limen deâ. Leyse verâ-allâhi müntehâ.',
-        meaning:
-          "Allah bana yeter ve kâfidir. Allah dua edeni işitir. Allah'tan öte varılacak bir son yoktur.",
-        virtue:
-          "Tevekkül bilincini derinleştirir; kalpte emniyet ve teslimiyet hissini artırır. Rivayette Cebrâil'in Hz. Îsâ'ya öğrettiği zikirlerdendir.",
-        source: "Hasbiye rivayetleri (Cebrâil'in Hz. Îsâ'ya öğrettiği zikir)",
-        tags: ['kurban-bayrami', 'hasbiye', 'tevekkül', 'dua'],
-        categories: ['özel gün', 'bayram', 'dua', 'tevekkül'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: [
-          'tevekkül',
-          'endişe anları',
-          'rahmet talebi',
-          'korunma',
-          'sükunet',
-        ],
-      },
-      {
-        key: 'rabbi-inni-messeni-100',
-        nameArabic:
-          'رَبِّ إِنِّي مَسَّنِيَ الضُّرُّ وَأَنْتَ أَرْحَمُ الرَّاحِمِينَ',
-        nameTurkish: 'Hz. Eyyub Duası',
-        transliteration: 'Rabbi innî messeniyed-durru ve ente erhamur-râhimîn.',
-        meaning:
-          'Rabbim, bana dert dokundu; Sen merhametlilerin en merhametlisisin.',
-        virtue:
-          'Sabır, sığınma ve rahmet talebini güçlendirir; sıkıntılı dönemlerde umut ve teslimiyet verir.',
-        source: 'Enbiya Suresi 83',
-        tags: ['kurban-bayrami', 'dua', 'sabır'],
-        categories: ['özel gün', 'bayram'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['zorluk anları', 'dua vakitleri'],
-      },
-    ],
-    specialDays: [
-      {
-        name: 'Kurban Bayramı Arefe Günü',
-        type: 'özel gün',
-        date: '2026-05-26',
-        hijriDate: '9 Zilhicce 1447',
-        description: 'Arefe Günü (Tevbe, Dua ve Tevhid Yoğunluğu)',
-        eventKey: 'kurban-bayrami-2026',
-        dhikrKeys: [keyMap.IHLAS, keyMap.VAHDEHU_LA, keyMap.ISTIGFAR],
-      },
-      {
-        name: 'Kurban Bayramı',
-        type: 'bayram',
-        date: '2026-05-27',
-        hijriDate: '10 Zilhicce 1447',
-        description:
-          'Kurban Bayramı 1. Gün (Bayram Sabahı ve Teşrik Başlangıcı)',
-        eventKey: 'kurban-bayrami-2026',
-        dayIndex: 1,
-        dayCount: 4,
-        dhikrKeys: [
-          keyMap.TESRIK_TEKBIRI,
-          keyMap.VAHDEHU_LA,
-          'bayram-tesbih-300',
-          'bayram-istigfar-100',
-          keyMap.YA_HAYYU_YA_KAYYUM,
-          'kurban-sukru-duasi',
-        ],
-      },
-      {
-        name: 'Kurban Bayramı',
-        type: 'bayram',
-        date: '2026-05-28',
-        hijriDate: '11 Zilhicce 1447',
-        description: 'Kurban Bayramı 2. Gün (Tevhid, Salavat ve Tevekkül Günü)',
-        eventKey: 'kurban-bayrami-2026',
-        dayIndex: 2,
-        dayCount: 4,
-        dhikrKeys: [
-          keyMap.TESRIK_TEKBIRI,
-          keyMap.SALAVAT_SERIF,
-          'hasbiye-zikri-100',
-          keyMap.HASBIYE,
-          keyMap.VAHDEHU_LA,
-          'bayram-istigfar-100',
-          keyMap.YA_HAYYU_YA_KAYYUM,
-        ],
-      },
-      {
-        name: 'Kurban Bayramı',
-        type: 'bayram',
-        date: '2026-05-29',
-        hijriDate: '12 Zilhicce 1447',
-        description: 'Kurban Bayramı 3. Gün (Sabır, Dua ve Arınma Günü)',
-        eventKey: 'kurban-bayrami-2026',
-        dayIndex: 3,
-        dayCount: 4,
-        dhikrKeys: [
-          keyMap.TESRIK_TEKBIRI,
-          keyMap.VAHDEHU_LA,
-          keyMap.NUR,
-          'bayram-istigfar-100',
-          keyMap.SALAVAT_SERIF,
-          keyMap.YA_HAYYU_YA_KAYYUM,
-        ],
-      },
-      {
-        name: 'Kurban Bayramı',
-        type: 'bayram',
-        date: '2026-05-30',
-        hijriDate: '13 Zilhicce 1447',
-        description: 'Kurban Bayramı 4. Gün (Kapanış ve Teşrik Tamamlama Günü)',
-        eventKey: 'kurban-bayrami-2026',
-        dayIndex: 4,
-        dayCount: 4,
-        dhikrKeys: [
-          keyMap.TESRIK_TEKBIRI,
-          keyMap.TEVHID,
-          'hasbiye-zikri-100',
-          keyMap.HASBIYE,
-          keyMap.SALAVAT_SERIF,
-          'bayram-istigfar-100',
-          keyMap.YA_HAYYU_YA_KAYYUM,
-        ],
-      },
-    ],
-  },
-  {
-    key: 'mevlid-kandili-2026',
-    label: 'Mevlid Kandili 2026',
-    dhikrItems: [
-      {
-        key: 'mevlid-salavat-1000',
-        nameArabic:
-          'اللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ',
-        nameTurkish: 'Mevlid Salavatı',
-        transliteration:
-          'Allâhümme salli alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed.',
-        meaning: "Allah'ım, Efendimiz Muhammed'e ve O'nun aline salat eyle.",
-        virtue:
-          'Peygamber sevgisini güçlendirir, kalpte muhabbet ve bağlılığı artırır.',
-        source: 'Salavat fazileti rivayetleri',
-        tags: ['mevlid-kandili', 'salavat', 'peygamber-sevgisi'],
-        categories: ['kandil', 'özel gün', 'salavat'],
-        timeOfDay: 'any',
-        recommendedCount: 1000,
-        suitableFor: ['kandil gecesi', 'mevlid programı', 'peygamber sevgisi'],
-      },
-      {
-        key: 'mevlid-la-havle-100',
+        key: keyMap.LA_HAVLE,
         nameArabic:
           'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ',
         nameTurkish: 'Lâ Havle Zikri',
@@ -565,17 +564,23 @@ const SOURCE_DATASETS = [
         categories: ['kandil', 'özel gün', 'tevekkül'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['acziyet bilinci', 'tevekkül', 'zorlanma anları'],
+        suitableFor: [
+          'acziyet bilinci',
+          'tevekkül',
+          'zorlanma anları',
+          'ruhani daralma',
+          'fakirlikten korunma',
+        ],
       },
       {
-        key: 'mevlid-duha-suresi-50',
+        key: keyMap.DUHA_SURESI,
         nameArabic:
-          'وَالضُّحَى وَاللَّيْلِ إِذَا سَجَى مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَى',
+          'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ، وَالضُّحَى، وَاللَّيْلِ إِذَا سَجَى، مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَى، وَلَلْآخِرَةُ خَيْرٌ لَكَ مِنَ الْأُولَى، وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَى، أَلَمْ يَجِدْكَ يَتِيمًا فَآوَى، وَوَجَدَكَ ضَالًّا فَهَدَى، وَوَجَدَكَ عَائِلًا فَأَغْنَى، فَأَمَّا الْيَتِيمَ فَلَا تَقْهَرْ، وَأَمَّا السَّائِلَ فَلَا تَنْهَرْ، وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ',
         nameTurkish: 'Duha Suresi',
         transliteration:
-          'Ved-duhâ. Velleyli izâ secâ. Mâ veddeake rabbüke ve mâ kalâ.',
+          "Ved duhâ. Vel leyli izâ secâ. Mâ veddeake rabbuke ve mâ kalâ. Ve lel âhıratu hayrun leke minel ûlâ. Ve le sevfe yu'tîke rabbuke fe terdâ. E lem yecidke yetîmen fe âvâ. Ve vecedeke dâllen fe hedâ. Ve vecedeke âilen fe agnâ. Fe emmâl yetîme fe lâ takher. Ve emmâs sâile fe lâ tenher. Ve emmâ bi ni'meti rabbike fe haddis.",
         meaning:
-          'Kuşluk vaktine ve sükun bulmuş geceye andolsun. Rabbin seni terk etmedi ve sana darılmadı.',
+          "Rahmân ve Rahîm olan Allah'ın ismiyle. Andolsun kuşluk vaktine ve dindiği zaman o geceye ki, Rabbin sana veda etmedi ve darılmadı! Ve kesinlikle senin için sonu önünden (ahiret dünyadan) daha hayırlıdır. İleride Rabbin sana verecek de hoşnut olacaksın! O, seni bir yetim iken barındırmadı mı? Seni, yol bilmez iken (doğru) yola koymadı mı? Seni bir yoksul iken zengin etmedi mi? Öyle ise, sakın yetime kahretme (onu horlama)! El açıp isteyeni de azarlama! Fakat Rabbinin nimetini anlat da anlat!",
         virtue:
           'Ümit, teselli ve rahmet vurgusunu güçlendirir; kalbe ferahlık ve teslimiyet kazandırır.',
         source: 'Duha Suresi',
@@ -586,7 +591,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['manevi ferahlık', 'tefekkür', 'kandil gecesi'],
       },
       {
-        key: 'mevlid-seytandan-siginma-33',
+        key: keyMap.SEYTANDAN_SIGINMA,
         nameArabic:
           'أَعُوذُ بِاللّٰهِ السَّمِيعِ الْعَلِيمِ مِنَ الشَّيْطَانِ الرَّجِيمِ رَبِّ أَعُوذُ بِكَ مِنْ هَمَزَاتِ الشَّيَاطِينِ وَأَعُوذُ بِكَ رَبِّ أَنْ يَحْضُرُونِ',
         nameTurkish: 'Şeytanın Şerrinden Sığınma Duası',
@@ -609,7 +614,7 @@ const SOURCE_DATASETS = [
         ],
       },
       {
-        key: 'mevlid-sabir-ve-sebat-ayeti',
+        key: keyMap.IMRAN_200,
         nameArabic:
           'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ يَا أَيُّهَا الَّذِينَ آمَنُوا اصْبِرُوا وَصَابِرُوا وَرَابِطُوا وَاتَّقُوا اللّٰهَ لَعَلَّكُمْ تُفْلِحُونَ صَدَقَ اللّٰهُ الْعَظِيمُ',
         nameTurkish: 'Sabır ve Sebat Ayeti',
@@ -627,7 +632,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['sabır', 'sebat', 'manevi disiplin'],
       },
       {
-        key: 'mevlid-salavat-emri-ayeti',
+        key: keyMap.AHZAB_56,
         nameArabic:
           'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ إِنَّ اللّٰهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا صَدَقَ اللّٰهُ الْعَظِيمُ',
         nameTurkish: 'Salavat Emri Ayeti',
@@ -651,7 +656,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['salavat bilinci', 'peygamber sevgisi', 'kandil gecesi'],
       },
       {
-        key: 'mevlid-salavat-sellim-barik-100',
+        key: keyMap.SELLIM_BARIK,
         nameArabic:
           'اللّٰهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ',
         nameTurkish: 'Salavat-ı Şerife (Salli Sellim Barik)',
@@ -669,7 +674,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['salavat', 'peygamber sevgisi', 'manevi bereket'],
       },
       {
-        key: 'mevlid-rabbena-zalemna-100',
+        key: keyMap.RABBENA_ZALEMNA,
         nameArabic:
           'رَبَّنَا ظَلَمْنَا أَنْفُسَنَا وَإِنْ لَمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ',
         nameTurkish: "Hz. Adem'in Duası",
@@ -687,7 +692,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['tevbe', 'pişmanlık', 'merhamet talebi'],
       },
       {
-        key: 'mevlid-rabbi-inni-messeni-100',
+        key: keyMap.ENBIYA_83,
         nameArabic:
           'رَبِّ إِنِّي مَسَّنِيَ الضُّرُّ وَأَنْتَ أَرْحَمُ الرَّاحِمِينَ',
         nameTurkish: "Hz. Eyyûb'un Duası",
@@ -696,7 +701,7 @@ const SOURCE_DATASETS = [
           'Rabbim, şüphesiz bana bir zarar dokundu; Sen merhametlilerin en merhametlisisin.',
         virtue:
           'Sabrı, sığınmayı ve rahmet ümidini güçlendirir; sıkıntı anlarında kalbi teslimiyete yöneltir.',
-        source: 'Enbiya 83',
+        source: 'Enbiyâ Suresi 83. ayet',
         tags: ['mevlid-kandili', 'dua', 'sabir', 'rahmet'],
         categories: ['kandil', 'özel gün', 'dua'],
         timeOfDay: 'any',
@@ -704,7 +709,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['sıkıntı anları', 'sabır', 'rahmet talebi'],
       },
       {
-        key: 'mevlid-kema-lillahi-salavat-100',
+        key: keyMap.KEMALILLAHI,
         nameArabic:
           'اللّٰهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ عَدَدَ كَمَالِ اللّٰهِ وَكَمَا يَلِيقُ بِكَمَالِهِ',
         nameTurkish: 'Kema Lillahi Salavatı',
@@ -722,7 +727,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['salavat hatmi', 'manevi bereket', 'peygamber sevgisi'],
       },
       {
-        key: 'mevlid-delail-hayrat-dengi-100',
+        key: keyMap.DELAIL_HAYRAT,
         nameArabic:
           'اللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ صَلَاةً تُعَادِلُ جَمِيعَ صَلَوَاتِ أَهْلِ مَحَبَّتِكَ وَسَلِّمْ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ سَلَامًا يُعَادِلُ سَلَامَهُمْ',
         nameTurkish: "Delailü'l-Hayrat Dengi Salavat",
@@ -741,6 +746,7 @@ const SOURCE_DATASETS = [
           'muhabbet ehli niyeti',
           'salavat programı',
           'kandil gecesi',
+          'manevi bereket',
         ],
       },
       {
@@ -758,18 +764,23 @@ const SOURCE_DATASETS = [
         tags: ['mevlid-kandili', 'salavat', 'nur', 'tefekkür'],
         categories: ['kandil', 'özel gün', 'salavat'],
         timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['zihinsel berraklık', 'manevi nur talebi', 'tefekkür'],
+        recommendedCount: 10,
+        suitableFor: [
+          'zihinsel berraklık',
+          'manevi nur talebi',
+          'tefekkür',
+          'kapalı kapıların açılması',
+        ],
       },
       {
-        key: 'mevlid-salavat-i-fatih-100',
+        key: keyMap.SALAVAT_FATIH,
         nameArabic:
-          'اللّٰهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ الْفَاتِحِ لِمَا أُغْلِقَ وَالْخَاتِمِ لِمَا سَبَقَ',
+          'اللّٰهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ الْفَاتِحِ لِمَا أُغْلِقَ، وَالْخَاتِمِ لِمَا سَبَقَ، وَالنَّاصِرِ الْحَقَّ بِالْحَقِّ، وَالْهَادِي إِلَى صِرَاطِكَ الْمُسْتَقِيمِ، صَلَّى اللّٰهُ عَلَيْهِ وَعَلَى آلِهِ وَأَصْحَابِهِ حَقَّ قَدْرِهِ وَمِقْدَارِهِ الْعَظِيمِ',
         nameTurkish: 'Salavat-ı Fatih',
         transliteration:
-          'Allâhümme salli ve sellim ve barik alâ seyyidinâ Muhammedinil fâtihi limâ uğlika vel hâtimi limâ sebeka...',
+          'Allâhümme salli ve sellim ve bârik alâ seyyidinâ Muhammedinil fâtihi limâ uğlika, vel hâtimi li mâ sebeka, ven nâsıril hakkı bil hakkı, ve hâdî ilâ sırâtikel müstekıym. Sallallâhü aleyhi ve alâ âlihi ve ashâbihî hakka kadrihî ve mikdârihil azîm.',
         meaning:
-          'Allahım, kapalı olanı açan ve önceki hakikatleri tamamlayan Efendimiz Muhammede salat, selam ve bereket eyle.',
+          "Allah’ım! Kapalı olanları açan, geçmişi mühürleyen, hakkı hak ile destekleyen ve doğru yoluna ileten Efendimiz Muhammed’e (s.a.v.) salât ve selâm eyle, O'nu mübarek kıl. O’na, âline ve ashabına, O'nun kadrince ve yüce miktarınca salât eyle.",
         virtue:
           'Kapalı kapıları açan, hakka yardım eden ve hidayet yolunu gösteren en kuvvetli salavatlardan kabul edilir.',
         source: 'Salavat mecmuaları',
@@ -784,14 +795,14 @@ const SOURCE_DATASETS = [
         ],
       },
       {
-        key: 'mevlid-hz-fatima-salavati-100',
+        key: keyMap.HZ_FATIMA_SALAVATI,
         nameArabic:
-          'اللّٰهُمَّ صَلِّ عَلَى مَنْ رُوحُهُ مِحْرَابُ الْأَرْوَاحِ وَالْمَلَائِكَةِ وَالْكَوْنِ اللّٰهُمَّ صَلِّ عَلَى مَنْ هُوَ إِمَامُ الْأَنْبِيَاءِ',
+          'اللّٰهُمَّ صَلِّ عَلَى مَنْ رُوحُهُ مِحْرَابُ الْأَرْوَاحِ وَالْمَلَائِكَةِ وَالْكَوْنِ، اللّٰهُمَّ صَلِّ عَلَى مَنْ هُوَ إِمَامُ الْأَنْبِيَاءِ وَالْمُرْسَلِينَ، اللّٰهُمَّ صَلِّ عَلَى مَنْ هُوَ إِمَامُ أَهْلِ الْجَنَّةِ عِبَادِ اللّٰهِ الْمُؤْمِنِينَ',
         nameTurkish: "Hz. Fatıma'nın Salavatı",
         transliteration:
-          'Allâhümme salli alâ men rûhuhu mihrâbül ervâhı vel melâiketi vel kevn. Allâhümme salli alâ men hüve imâmül enbiyâi...',
+          'Allahümme salli ala men ruhuhu mihrabül ervahı ve melaiketi vel kevn. Allahümme salli ala men hüve imamül enbiyai vel mürseliyn. Allahümme salli ala men hüve imamü ehlil cenneti ıbadillahil mü’minin.',
         meaning:
-          'Allahım, ruhu varlık ve melekut âleminin kıblesi olan zata ve peygamberlerin imamına salat eyle.',
+          'Ya rabbi! Babacığım Hazreti Muhammed(s.a.v.)’e salat getir. O bütün kainatın kıblesidir. Ervahlar, melaikeler ve peygamberler hep ondan şefaat isterler. Ya rabbi! Benim peygamberim Hazreti Muhammed’e salat getir. Çünkü o peygamberlerin ve resullerin reisidir. Ya Rabbi! Babam Hazreti Muhammed (s.a.v.)’e salat getir. Zira o mü’minlerin, cennet ahalisinin, peygamberlerin ve resullerin en hayırlısıdır.',
         virtue:
           'Denizler mürekkep, ağaçlar kalem olsa sevabının yazılamayacağı nakledilen yüce bir salavat tertibidir.',
         source: 'Salavat mecmuaları',
@@ -802,32 +813,43 @@ const SOURCE_DATASETS = [
         suitableFor: ['ehlibeyt muhabbeti', 'derin salavat', 'kandil gecesi'],
       },
       {
-        key: 'mevlid-ruyada-gorme-salavati-70',
+        key: keyMap.RUYADA_GORME_SALAVATI,
         nameArabic:
-          'اللّٰهُمَّ صَلِّ عَلَى رُوحِ سَيِّدِنَا مُحَمَّدٍ فِي الْأَرْوَاحِ اللّٰهُمَّ صَلِّ عَلَى جَسَدِ سَيِّدِنَا مُحَمَّدٍ فِي الْأَجْسَادِ',
+          'اللّٰهُمَّ صَلِّ عَلَى رُوحِ سَيِّدِنَا مُحَمَّدٍ فِي الْأَرْوَاحِ، وَصَلِّ عَلَى جَسَدِ سَيِّدِنَا مُحَمَّدٍ فِي الْأَجْسَادِ، وَصَلِّ عَلَى قَبْرِ سَيِّدِنَا مُحَمَّدٍ فِي الْقُبُورِ',
         nameTurkish: 'Rüyada Görme Salavatı',
         transliteration:
-          'Allâhümme salli alâ rûhi seyyidinâ Muhammedin fil ervâh. Allâhümme salli alâ cesedi seyyidinâ Muhammedin fil ecsâd...',
+          'Allâhümme salli alâ rûhi seyyidinâ Muhammedin fil ervâh. Ve salli alâ cesedi seyyidinâ Muhammedin fil ecsâd. Ve salli alâ kabri seyyidinâ Muhammedin fil qubûr.',
         meaning:
-          'Allahım, Efendimiz Muhammedin ruhuna ruhlar aleminde ve bedenine bedenler aleminde salat eyle.',
+          'Allahım, Efendimiz Muhammedin ruhuna ruhlar aleminde, bedenine bedenler aleminde ve kabrine kabirler aleminde salat eyle.',
         virtue:
-          "Yatmadan önce açıktan yetmiş kez okunduğunda Peygamber'i rüyada görmeye vesile kılındığı nakledilir.",
+          "Yatmadan önce açıktan yüz kez okunduğunda Peygamber'i rüyada görmeye vesile kılındığı nakledilir.",
         source: 'Salavat mecmuaları',
-        tags: ['mevlid-kandili', 'salavat', 'ruya', 'gece-ibadeti'],
+        tags: [
+          'mevlid-kandili',
+          'berat-kandili',
+          'salavat',
+          'ruya',
+          'gece-ibadeti',
+        ],
         categories: ['kandil', 'özel gün', 'salavat'],
         timeOfDay: 'night',
-        recommendedCount: 70,
-        suitableFor: ['yatmadan önce', 'rüya niyeti', 'gece zikri'],
+        recommendedCount: 100,
+        suitableFor: [
+          'yatmadan önce',
+          'rüya niyeti',
+          'gece zikri',
+          'kandil gecesi',
+        ],
       },
       {
-        key: 'mevlid-salavat-i-tefriciyye-41',
+        key: keyMap.TEFRICIYE_SALAVATI,
         nameArabic:
-          'اللّٰهُمَّ صَلِّ صَلَاةً كَامِلَةً وَسَلِّمْ سَلَامًا تَامًّا عَلَى سَيِّدِنَا مُحَمَّدٍ الَّذِي تَنْحَلُّ بِهِ الْعُقَدُ',
+          'اللّٰهُمَّ صَلِّ صَلَاةً كَامِلَةً وَسَلِّمْ سَلَامًا تَامًّا عَلَى سَيِّدِنَا مُحَمَّدٍ الَّذِي تَنْحَلُّ بِهِ الْعُقَدُ، وَتَنْفَرِجُ بِهِ الْكُرَبُ، وَتُقْضَى بِهِ الْحَوَائِجُ، وَتُنَالُ بِهِ الرَّغَائِبُ، وَحُسْنُ الْخَوَاتِمِ، وَيُسْتَسْقَى الْغَمَامُ بِوَجْهِهِ الْكَرِيمِ، وَعَلَى آلِهِ وَصَحْبِهِ وَفِي كُلِّ لَمْحَةٍ وَنَفَسٍ بِعَدَدِ كُلِّ مَعْلُومٍ لَكَ',
         nameTurkish: 'Salavat-ı Tefriciyye',
         transliteration:
-          'Allâhümme salli salâten kâmileten ve sellim selâmen tâmmen alâ seyyidinâ Muhammedinillezî tenhallü bihil ugad...',
+          "Allahümme salli salâten kâmileten ve sellim selâmen tâmmen alâ seyyidina Muhammedinillezi tenhallü bihil ukadu ve tenfericu bihil kürübu ve tukdâ bihil hevâicu ve tunâlü bihir ragâibu ve hüsnül hâvatimi ve yüsteska'l gamâmu bi vechihil kerîm ve alâ âlihi ve sahbihi ve fî külli lemhatin ve nefesin bi adedi külli malûmin lek.",
         meaning:
-          "Allah'ım, düğümlerin çözüldüğü Efendimiz Muhammede eksiksiz salat ve tam selam eyle.",
+          "Ya Rab! Bizim Efendimiz Muhammed'e (S.A. V) tam kusursuz bir salât ve rahmet, mükemmel bir selâm ve selâmet vermeni diliyoruz. O Peygamber ki, onun bu hürmetine düğümler çözülür, belalar ve sıkıntılar onun hürmetine açılıp dağılır, ihtiyaçlar ve hacet onun bu hürmetine yerine getirilir. Maksatlara O'nun hürmetine ulaşılır, güzel sonuçlar O'nun hürmetine elde edilir. O'nun şerefli yüzünün hürmetine bulutlardaki yağmur istenilir. Allah'ım, onun ashabına, ehl-i beytine de her nefes alacak zamanda ve göz kırpacak kadar zamanda sana malum olan varlıklar sayısınca salât et.",
         virtue:
           'Günde en az 41 kez okunduğunda düğümleri çözen, kederleri gideren ve hastalara şifa vesilesi olan salavat olarak aktarılır.',
         source: 'Salavat mecmuaları',
@@ -835,28 +857,36 @@ const SOURCE_DATASETS = [
         categories: ['kandil', 'özel gün', 'salavat', 'dua'],
         timeOfDay: 'any',
         recommendedCount: 41,
-        suitableFor: ['sıkıntıların giderilmesi', 'şifa niyeti', 'hacet duası'],
+        suitableFor: [
+          'sıkıntıların giderilmesi',
+          'şifa niyeti',
+          'hacet duası',
+          'işlerin kolaylaşması',
+          'kaza ve belalardan korunma',
+          'duaların kabul olması',
+          'geçim darlığının sona ermesi',
+        ],
       },
       {
-        key: 'mevlid-salat-i-tuncina-41',
+        key: keyMap.MUNCIYE,
         nameArabic:
-          'اللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ صَلَاةً تُنْجِينَا بِهَا مِنْ جَمِيعِ الْأَهْوَالِ وَالْآفَاتِ',
+          'اللّٰهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ صَلَاةً تُنْجِينَا بِهَا مِنْ جَمِيعِ الْأَهْوَالِ وَالْآفَاتِ، وَتَقْضِي لَنَا بِهَا جَمِيعَ الْحَاجَاتِ، وَتُطَهِّرُنَا بِهَا مِنْ جَمِيعِ السَّيِّئَاتِ، وَتَرْفَعُنَا بِهَا أَعْلَى الدَّرَجَاتِ، وَتُبَلِّغُنَا بِهَا أَقْصَى الْغَايَاتِ، مِنْ جَمِيعِ الْخَيْرَاتِ فِي الْحَيَاةِ وَبَعْدَ الْمَمَاتِ',
         nameTurkish: 'Salât-ı Tüncîna (Salât-ı Münciye)',
         transliteration:
-          "Allâhümme salli 'alâ seyyidinâ Muhammedin... Salâten tüncînâ bihâ min cemî'ı'l-ehvâli ve'l-âfât...",
+          'Allâahumme salli alâ seyyidinâ Muhammedin, salâten tüncînâ bihâ min cemîil ehvâali vel âfât, ve takdî lenâ bihâ cemî’al hâcât, ve tutahhirunâ bihâ min cemî’isseyyi’âat ve terfe’unâ bihâ a’ledderecâat, ve tübelliğunâ bihâ aksa’l gayât, min cemî’il hayrâti fi’l hayâti ve ba’del memâat.',
         meaning:
-          'Allahım, Efendimiz Muhammede öyle bir salat eyle ki onunla bizi bütün korku, bela ve afetlerden kurtarasın.',
+          'Allah’ım! Peygamber Efendimiz Hazret-i Muhammed Mustafâ’ya salât eyle. Öyle bir salât ki; o salât vesîlesiyle bizi bütün korku ve âfetlerden kurtar, bütün ihtiyaçlarımızı gider, bizi bütün günahlardan temizle, bizi derecelerin en yücesine yükselt ve onun vesîlesiyle bizi, hayâtta ve ölümden sonra bütün hayırların en son noktasına ulaştır.',
         virtue:
           'Korku, bela, deprem ve afetlerden korunmaya vesile bir kalkan duası olarak aktarılır.',
         source: 'Salavat mecmuaları',
-        tags: ['mevlid-kandili', 'salavat', 'korunma', 'munciye'],
+        tags: ['mevlid-kandili', 'salavat', 'korunma', 'münciye'],
         categories: ['kandil', 'özel gün', 'salavat', 'dua'],
         timeOfDay: 'any',
         recommendedCount: 41,
         suitableFor: ['afetlerden korunma', 'korku anları', 'emniyet duası'],
       },
       {
-        key: 'mevlid-hamd-tesbih-100',
+        key: keyMap.MEVLID_HAMD,
         nameArabic:
           'سُبْحَانَ اللّٰهِ وَالْحَمْدُ لِلّٰهِ وَلَا إِلٰهَ إِلَّا اللّٰهُ وَاللّٰهُ أَكْبَرُ',
         nameTurkish: 'Mevlid Hamd ve Tesbih Zikri',
@@ -874,7 +904,7 @@ const SOURCE_DATASETS = [
         suitableFor: ['şükür', 'zikir meclisi', 'kandil gecesi'],
       },
       {
-        key: 'mevlid-rahmet-duasi-100',
+        key: keyMap.MEVLID_RAHMET,
         nameArabic:
           'اللّٰهُمَّ إِنِّي أَسْأَلُكَ حُبَّكَ وَحُبَّ مَنْ يُحِبُّكَ وَالْعَمَلَ الَّذِي يُبَلِّغُنِي حُبَّكَ',
         nameTurkish: 'Mevlid Muhabbet Duası',
@@ -903,28 +933,28 @@ const SOURCE_DATASETS = [
         eventKey: 'mevlid-kandili-2026',
         priority: 180,
         dhikrKeys: [
-          'mevlid-salavat-1000',
+          keyMap.SALAVAT_SERIF,
           keyMap.TEVHID,
           keyMap.ISTIGFAR,
-          'mevlid-la-havle-100',
-          'mevlid-duha-suresi-50',
-          'mevlid-seytandan-siginma-33',
-          'mevlid-sabir-ve-sebat-ayeti',
-          'mevlid-salavat-emri-ayeti',
-          'mevlid-salavat-sellim-barik-100',
-          'mevlid-rabbena-zalemna-100',
-          'mevlid-rabbi-inni-messeni-100',
+          keyMap.LA_HAVLE,
+          keyMap.DUHA_SURESI,
+          keyMap.SEYTANDAN_SIGINMA,
+          keyMap.IMRAN_200,
+          keyMap.AHZAB_56,
+          keyMap.SELLIM_BARIK,
+          keyMap.RABBENA_ZALEMNA,
+          keyMap.ENBIYA_83,
           keyMap.HZYUSUF,
-          'mevlid-kema-lillahi-salavat-100',
-          'mevlid-delail-hayrat-dengi-100',
+          keyMap.KEMALILLAHI,
+          keyMap.DELAIL_HAYRAT,
           'mevlid-nur-u-zatiyye-100',
-          'mevlid-salavat-i-fatih-100',
-          'mevlid-hz-fatima-salavati-100',
-          'mevlid-ruyada-gorme-salavati-70',
-          'mevlid-salavat-i-tefriciyye-41',
-          'mevlid-salat-i-tuncina-41',
-          'mevlid-hamd-tesbih-100',
-          'mevlid-rahmet-duasi-100',
+          keyMap.SALAVAT_FATIH,
+          keyMap.HZ_FATIMA_SALAVATI,
+          keyMap.RUYADA_GORME_SALAVATI,
+          keyMap.TEFRICIYE_SALAVATI,
+          keyMap.MUNCIYE,
+          keyMap.MEVLID_HAMD,
+          keyMap.MEVLID_RAHMET,
         ],
       },
     ],
@@ -1064,7 +1094,7 @@ const SOURCE_DATASETS = [
         dayCount: 10,
         priority: 170,
         dhikrKeys: [
-          'bayram-istigfar-100',
+          keyMap.ESTAGFIRULLAH,
           keyMap.IHLAS,
           'muharrem-ayetel-kursi-360',
         ],
@@ -1127,7 +1157,7 @@ const SOURCE_DATASETS = [
         dayIndex: 6,
         dayCount: 10,
         priority: 160,
-        dhikrKeys: ['mevlid-la-havle-100'],
+        dhikrKeys: [keyMap.LA_HAVLE],
       },
       {
         name: '7 Muharrem',
@@ -1391,6 +1421,255 @@ const SOURCE_DATASETS = [
           'sınav öncesi',
           '3-5-7 tekrar tertibi',
           'analitik kurgu',
+        ],
+      },
+    ],
+    specialDays: [],
+  },
+  {
+    key: 'esmaul-husna-temel-liste',
+    label: 'Esmaül Hüsna Temel Liste',
+    dhikrItems: [
+      {
+        key: 'esmaul-husna-allah',
+        nameArabic: 'اللَّهُ',
+        nameTurkish: 'Allah (C.C.)',
+        transliteration: 'ALLAH (C.C.)',
+        meaning:
+          'Tüm isim ve sıfatları kendinde toplayan, eşi benzeri bulunmayan tek ilah.',
+        virtue:
+          'Derecenin hem Allah hem insanlar katında artması; sevilen, sayılan, sözü geçen biri olmak; her türlü şeytan ve nefis şerrinden korunmak; uykuda meleklerin yardımına nail olmak.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'allah', 'tevhid', 'korunma'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'korunma'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'derece artışı',
+          'itibar',
+          'sevilmek',
+          'şeytan ve nefis şerrinden korunma',
+          'uykuda manevi yardım',
+        ],
+      },
+      {
+        key: 'esmaul-husna-er-rahman',
+        nameArabic: 'الرَّحْمٰنُ',
+        nameTurkish: 'Er-Rahmân',
+        transliteration: 'Er-Rahmân',
+        meaning:
+          'Dünyadaki bütün yaratılmışlara ayırt etmeden merhamet eden, esirgeyen.',
+        virtue:
+          'Dünya ve ahirette ilahi sevgi kazanmak; farz namaz ardı 100 zikirle rıza bulmak; 40 gün riyazetle 1000 zikirle kalp gözünün açılması; her arzunun gerçekleşmesi.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'rahmet', 'merhamet', 'dua'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'rahmet'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'ilahi sevgi',
+          'rıza talebi',
+          'kalp açıklığı',
+          'dua kabulü',
+          'merhamet bilinci',
+        ],
+      },
+      {
+        key: 'esmaul-husna-er-rahim',
+        nameArabic: 'الرَّحِيمُ',
+        nameTurkish: 'Er-Rahîm',
+        transliteration: 'Er-Rahîm',
+        meaning:
+          'Ahirette sadece müminlere sonsuz ihsanda, lütufta ve merhamette bulunan.',
+        virtue:
+          'Maddi ve manevi bol rızık; belalardan, kazalardan ve afetlerden korunma; uykuda ağlayan/korkan çocukların şifası; ahlak güzelliği ve fiziki iyileşme.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'rahmet', 'rizik', 'sifa'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'rahmet', 'şifa'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'bol rızık',
+          'belalardan korunma',
+          'çocukların şifası',
+          'ahlak güzelliği',
+          'fiziki iyileşme',
+        ],
+      },
+      {
+        key: 'esmaul-husna-el-melik',
+        nameArabic: 'الْمَلِكُ',
+        nameTurkish: 'El-Melik',
+        transliteration: 'El-Melik',
+        meaning:
+          'Kainatın tek sahibi, mülk ve saltanatı sürekli olan mutlak hükümdar.',
+        virtue:
+          'Maddi ve manevi güçlü olmak; insanlara sözünü dinletip emir sahibi olmak; her sabah namazı ardı 121 zikirle fakirlikten kalıcı kurtuluş; gizli sırlara ve ilme vakıf olmak.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'mulk', 'guc', 'rizik'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'maddi güç',
+          'manevi güç',
+          'söz etkisi',
+          'fakirlikten kurtuluş',
+          'ilim ve hikmet',
+        ],
+      },
+      {
+        key: 'esmaul-husna-el-kuddus',
+        nameArabic: 'الْقُدُّوسُ',
+        nameTurkish: 'El-Kuddüs',
+        transliteration: 'El-Kuddüs',
+        meaning:
+          'Hatadan, gafletten, aczden ve her türlü eksiklikten pek uzak, pek temiz.',
+        virtue:
+          'Maddi-manevi her türlü temizlik; nefsi şehvetten ve manevi hastalıklardan koruma; vesveseden ve şeytanın hilelerinden uzaklaşıp insanlar arasında saygı görmek.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'temizlik', 'arinma', 'vesvese'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'manevi-arinma'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'manevi temizlik',
+          'nefis terbiyesi',
+          'vesveseden korunma',
+          'saygınlık',
+          'manevi hastalıklardan korunma',
+        ],
+      },
+      {
+        key: 'esmaul-husna-es-selam',
+        nameArabic: 'السَّلَامُ',
+        nameTurkish: 'Es-Selâm',
+        transliteration: 'Es-Selâm',
+        meaning:
+          'Kullarını her türlü tehlikelerden selamete çıkaran, cennette selam veren.',
+        virtue:
+          'Korkulardan emin olmak; hastanın üzerine okunduğunda fiziki şifa; kabza yazılıp aç karnına içildiğinde vesvese hastalığının yok olması; her duanın kabule ulaşması.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'selamet', 'sifa', 'dua'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'korunma'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'korkulardan emin olmak',
+          'fiziki şifa',
+          'vesvese',
+          'dua kabulü',
+          'selamet talebi',
+        ],
+      },
+      {
+        key: 'esmaul-husna-el-mumin',
+        nameArabic: 'الْمُؤْمِنُ',
+        nameTurkish: "El-Mü'min",
+        transliteration: "El-Mü'min",
+        meaning:
+          'Gönüllerde iman ışığı uyandıran, kendine sığınanları koruyan ve rahatlatan.',
+        virtue:
+          'Kötü ve bulaşıcı hastalıklara yakalanmamak; dili yalandan, küfürden, riyadan, zinadan, kibirden ve hasetten uzaklaştırmak; kimseye muhtaç olmamak.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'iman', 'korunma', 'ahlak'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'iman', 'korunma'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'iman güçlenmesi',
+          'hastalıklardan korunma',
+          'dil terbiyesi',
+          'kötü ahlaktan uzaklaşma',
+          'kimseye muhtaç olmamak',
+        ],
+      },
+      {
+        key: 'esmaul-husna-el-muheymin',
+        nameArabic: 'الْمُهَيْمِنُ',
+        nameTurkish: 'El-Müheymin',
+        transliteration: 'El-Müheymin',
+        meaning:
+          'Her şeyi görüp gözeten, her varlığın yaptıklarından haberdar olan, koruyan.',
+        virtue:
+          'İnsanların düşüncelerini ve niyetlerini okumak; unutkanlıktan kurtulmak; yatsı namazı sonrası okuyup uyuyana rüyada olacak hadiselerin bildirilmesi; bela ve musibetten korunma.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'korunma', 'basiret', 'hafiza'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'basiret'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'basiret',
+          'unutkanlıktan kurtulma',
+          'rüya niyeti',
+          'bela ve musibetten korunma',
+          'niyetleri sezme',
+        ],
+      },
+      {
+        key: 'esmaul-husna-el-aziz',
+        nameArabic: 'الْعَزِيزُ',
+        nameTurkish: 'El-Azîz',
+        transliteration: 'El-Azîz',
+        meaning:
+          'İzzet sahibi, mağlup edilmesi asla mümkün olmayan, her şeye galip.',
+        virtue:
+          'Düşmanlara ezici üstünlük sağlamak; kendini insanlara sevdirmek; iş ve isteklerin geri çevrilmemesi; evden çıkarken okunduğunda dünya ve ahiret bahtiyarlığı.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'izzet', 'basari', 'sevgi'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'itibar'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'düşmanlara üstünlük',
+          'sevilmek',
+          'işlerin kolaylaşması',
+          'dünya ve ahiret bahtiyarlığı',
+          'itibar',
+        ],
+      },
+      {
+        key: 'esmaul-husna-el-cebbar',
+        nameArabic: 'الْجَبَّارُ',
+        nameTurkish: 'El-Cebbâr',
+        transliteration: 'El-Cebbâr',
+        meaning:
+          'Eksikleri tamamlayan, dilediğini zorla yaptırmaya muktedir olan, azamet sahibi.',
+        virtue:
+          'İsteklerin gerçekleşmesi; insanların ve cinlerin şerrinden emin olmak; düşmanların helaki; "Ya Zülcelali Vel İkram" ile yazıldığında insanlara şirin ve heybetli görünmek.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'azamet', 'korunma', 'hacet'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'hacet'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'isteklerin gerçekleşmesi',
+          'insan ve cin şerrinden korunma',
+          'düşmanlardan korunma',
+          'heybet',
+          'hacet niyeti',
+        ],
+      },
+      {
+        key: 'esmaul-husna-el-mutekebbir',
+        nameArabic: 'الْمُتَكَبِّرُ',
+        nameTurkish: 'El-Mütekebbir',
+        transliteration: 'El-Mütekebbir',
+        meaning:
+          'Büyüklükte eşi benzeri olmayan, her şeyde büyüklüğünü gösteren.',
+        virtue:
+          'İzzet ve refaha nail olmak; konuşurken muhatapları tesir altında bırakmak; itibar kazanmak; kötü ahlaklı ve haram işleyen kişilerin ıslah olması.',
+        source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        tags: ['esma', 'esmaul-husna', 'izzet', 'refah', 'itibar'],
+        categories: ['genel', 'esma', 'esmaul-husna', 'itibar'],
+        timeOfDay: 'any',
+        recommendedCount: 100,
+        suitableFor: [
+          'izzet',
+          'refah',
+          'söz etkisi',
+          'itibar kazanmak',
+          'ahlak ıslahı',
         ],
       },
     ],
@@ -1719,22 +1998,6 @@ const SOURCE_DATASETS = [
           'muhtaçlıktan kurtulma',
           'rızık genişliği',
         ],
-      },
-      {
-        key: 'rizik-la-havle-100',
-        nameArabic:
-          'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ',
-        nameTurkish: 'Lâ Havle velâ Kuvvete illâ Billâh',
-        transliteration: 'Lâ havle ve lâ kuvvete illâ billâhil aliyyil azîm.',
-        meaning: 'Güç ve kuvvet ancak Allahın yardımıyladır.',
-        virtue:
-          'Arşın altındaki hazinelerden kabul edilen zikirlerdendir; fakirlikten korunma ve iç kuvvet niyetiyle okunur.',
-        source: 'Nebevi rivayetler',
-        tags: ['rizik', 'havkale', 'tevekkul', 'dayaniklilik'],
-        categories: ['genel', 'dua', 'rizik-bereket'],
-        timeOfDay: 'any',
-        recommendedCount: 100,
-        suitableFor: ['fakirlikten korunma', 'manevi güç', 'darlık anları'],
       },
       {
         key: 'rizik-la-ilahe-illallahul-melikul-hakkul-mubin',
@@ -2174,22 +2437,6 @@ const SOURCE_DATASETS = [
         suitableFor: ['nazar korunması', 'ruhani baskı', 'günlük vird'],
       },
       {
-        key: 'korunma-la-havle',
-        nameArabic:
-          'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ',
-        nameTurkish: 'Lâ Havle Zikri (Korunma)',
-        transliteration: 'Lâ havle ve lâ kuvvete illâ billâhil aliyyil azîm.',
-        meaning: "Güç ve kuvvet yalnızca yüce Allah'ın yardımıyladır.",
-        virtue:
-          'Ağır manevi baskı, vesvese ve ruhani daralmalara karşı iç kuvvet ve korunma niyetiyle okunur.',
-        source: 'İmam-ı Rabbani, Mektubat; alimlerin tavsiyeleri',
-        tags: ['korunma', 'vesvese', 'havkale', 'manevi-guc'],
-        categories: ['genel', 'korunma', 'dua'],
-        timeOfDay: 'any',
-        recommendedCount: 500,
-        suitableFor: ['vesvese', 'ruhani daralma', 'manevi direnç'],
-      },
-      {
         key: keyMap.HZYUSUF,
         nameArabic:
           'لَا إِلٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
@@ -2215,12 +2462,12 @@ const SOURCE_DATASETS = [
       {
         key: 'korunma-suyuti-vesvese-duasi',
         nameArabic:
-          'يَا اللّٰهُ الرَّقِيبُ الْحَفِيظُ الرَّحِيمُ يَا اللّٰهُ الْحَيُّ الْحَلِيمُ الْعَظِيمُ الرَّؤُوفُ الْكَرِيمُ',
+          'يَا اللّٰهُ الرَّقِيبُ الْحَفِيظُ الرَّحِيمُ، يَا اللّٰهُ الْحَيُّ الْحَلِيمُ الْعَظِيمُ الرَّؤُوفُ الْكَرِيمُ، يَا اللّٰهُ الْحَيُّ الْقَيُّومُ الْقَائِمُ عَلَى كُلِّ نَفْسٍ بِمَا كَسَبَتْ، حُلْ بَيْنِي وَبَيْنَ عَدُوِّي',
         nameTurkish: "Süyuti'nin Vesvese ve Korunma Duası",
         transliteration:
-          'Yâ Allahür-rakîbül-hafîzür-rahîm. Yâ Allahür-hayyül-halîmül-azîmür-raûfül-kerîm...',
+          'Yâ Allah-ür-rakîb-ül-hafîz-ür-rahîm. Yâ Allah-ül-hayy-ül-halîm-ül-azîm-ür-raûf-ül-kerîm. Yâ Allah-ül-hayy-ül-kayyûm-ül-kâimü alâ külli nefsin bimâ kesebet, hul beyni ve beyne adüvvî!',
         meaning:
-          'Ey gözeten, koruyan, merhamet eden Allahım; benimle şeytan arasına set çek.',
+          'Ey gözeten, koruyan ve merhamet eden Allah’ım! Ey hayat sahibi, halîm, azametli, çok şefkatli ve cömert olan Allah’ım! Ey diri, her şeyi ayakta tutan ve her nefsin kazandığı şeyleri bilen (Kayyûm) Allah’ım! Benimle düşmanımın arasına engel ol!',
         virtue:
           'İçsel vesvese, ani korkular ve ruhî bunalımlara karşı günlük korunma virdi olarak okunur.',
         source: 'Celaleddin-i Süyuti; İmam-ı Gazali',
@@ -2951,7 +3198,7 @@ const SOURCE_DATASETS = [
           'اللّٰهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ',
         nameTurkish: 'Helal Rızık ve İstiğna Duası',
         transliteration:
-          "Allâhümme ikfînî bi helâlike an harâmike, veğninî bi fadlike ammen sivâke.",
+          'Allâhümme ikfînî bi helâlike an harâmike, veğninî bi fadlike ammen sivâke.',
         meaning:
           "Allah'ım! Bana helal rızık nasip et, beni haramdan koru; lütfunla beni kendinden başkasına muhtaç etme.",
         virtue:
