@@ -9,3 +9,10 @@ export type AiGuideRecommendation = {
   note?: string;
   isPrimary?: boolean;
 };
+
+export type AiGuideHistoryItem = {
+  id: string;
+  prompt: string;
+  createdAt: string;
+  recommendations: AiGuideRecommendation[];
+};

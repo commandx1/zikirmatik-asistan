@@ -2,6 +2,7 @@ import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { CurrentStateCard } from "./components/current-state-card";
+import { HistorySection } from "./components/history-section";
 import { InfoTooltip } from "./components/info-tooltip";
 import { IntentInputSection } from "./components/intent-input-section";
 import { LoadingSection } from "./components/loading-section";
@@ -40,6 +41,14 @@ export function AiGuideScreen() {
             onChangeValue={guide.onIntentInputChange}
             onSend={guide.submitIntent}
             onSelectPrompt={guide.applyPrompt}
+          />
+          <HistorySection
+            items={guide.visibleHistoryItems}
+            totalCount={guide.historyItems.length}
+            isExpanded={guide.isHistoryExpanded}
+            activeRecommendationId={guide.recommendationId}
+            onToggleExpanded={guide.toggleHistoryExpanded}
+            onOpenHistoryItem={guide.openHistoryItem}
           />
           {guide.error ? (
             <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3">

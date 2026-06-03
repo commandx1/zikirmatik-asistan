@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Keyboard } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { AiGuideRecommendation } from "../types";
+import type { AiGuideHistoryItem, AiGuideRecommendation } from "../types";
 import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-client";
@@ -12,6 +12,7 @@ import {
   selectAiRecommendation
 } from "../services/ai-api-client";
 import { showRewardedAdGate } from "../services/rewarded-ad-gate";
+import { buildAiGuideHistoryItems, resolveVisibleAiGuideHistory } from "../services/ai-guide-history-service";
 import { useProfileStore } from "../../../store/profile-store";
 import { getUserById } from "../../users/services/users-api-client";
 import { getPrayerTimesByCity } from "../../prayer-times/services/prayer-times-api-client";
@@ -33,6 +34,8 @@ export function useAiGuide() {
   const [error, setError] = useState<string>();
   const [recommendationId, setRecommendationId] = useState<string>();
   const [recommendations, setRecommendations] = useState<AiGuideRecommendation[]>([]);
+  const [historyItems, setHistoryItems] = useState<AiGuideHistoryItem[]>([]);
+  const [isHistoryExpanded, setHistoryExpanded] = useState(false);
   const [lastPrompt, setLastPrompt] = useState("");
   const [prayerTimeLabel, setPrayerTimeLabel] = useState("Vakit bilgisi yok");
   const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
@@ -50,6 +53,19 @@ export function useAiGuide() {
   const toggleInfo = () => setShowInfo((value) => !value);
 
   const cacheKey = userId ? `ai-guide:last:${userId}` : "";
+
+  useEffect(() => {
+    setError(undefined);
+    setRecommendationId(undefined);
+    setRecommendations([]);
+    setHistoryItems([]);
+    setHistoryExpanded(false);
+    setLastPrompt("");
+    setIntentInput("");
+    setPendingRequest(null);
+    setRewardedSheetOpen(false);
+    setRewardedRunning(false);
+  }, [authStatus, cacheKey]);
 
   const hydrateLastResultFromCache = useCallback(async () => {
     if (!cacheKey) {
@@ -69,6 +85,19 @@ export function useAiGuide() {
     setLastPrompt(parsed.prompt || "");
     setRecommendationId(parsed.recommendationId);
     setRecommendations(parsed.recommendations);
+    setHistoryItems(
+      parsed.recommendationId
+        ? [
+            {
+              id: parsed.recommendationId,
+              prompt: parsed.prompt?.trim() || "Genel öneri",
+              createdAt: "",
+              recommendations: parsed.recommendations
+            }
+          ]
+        : []
+    );
+    setHistoryExpanded(false);
     return true;
   }, [cacheKey]);
 
@@ -82,50 +111,26 @@ export function useAiGuide() {
       listVerifiedActiveDhikrs()
     ]);
 
-    const catalogById = new Map(catalog.map((item) => [item._id, item]));
-    const latest = recommendationRows.find((item) => normalizeRecommendedIds(item.recommendedDhikrIds).length > 0);
+    const nextHistoryItems = buildAiGuideHistoryItems(recommendationRows, catalog);
+    setHistoryItems(nextHistoryItems);
+
+    const latest = nextHistoryItems[0];
     if (!latest) {
       return false;
     }
 
-    const recommendedIds = normalizeRecommendedIds(latest.recommendedDhikrIds);
-    const hydratedItems = markFirstPrimary(
-      recommendedIds.reduce<AiGuideRecommendation[]>((acc, id, index) => {
-        const matched = catalogById.get(id);
-        if (!matched) {
-          return acc;
-        }
-
-        acc.push({
-          id,
-          chipEmoji: index === 0 ? "💆" : "✨",
-          chipLabel: index === 0 ? "Senin için birincil öneri" : "Asistan önerisi",
-          repeatLabel: index === 0 ? "Öncelikli" : undefined,
-          arabic: matched.nameArabic,
-          transliteration: matched.transliteration || matched.nameTurkish,
-          meaning: matched.meaning
-        });
-        return acc;
-      }, [])
-    );
-
-    if (hydratedItems.length === 0) {
-      return false;
-    }
-
-    const prompt = latest.freeText?.trim() || "";
-    const normalizedRecommendationId = normalizeObjectId(latest._id);
+    const prompt = latest.prompt === "Genel öneri" ? "" : latest.prompt;
     setLastPrompt(prompt);
-    setRecommendationId(normalizedRecommendationId);
-    setRecommendations(hydratedItems);
+    setRecommendationId(latest.id);
+    setRecommendations(latest.recommendations);
 
     if (cacheKey) {
       void AsyncStorage.setItem(
         cacheKey,
         JSON.stringify({
           prompt,
-          recommendationId: normalizedRecommendationId,
-          recommendations: hydratedItems
+          recommendationId: latest.id,
+          recommendations: latest.recommendations
         } satisfies LastAiGuideResult)
       ).catch(() => {
         // ignore cache write errors
@@ -266,6 +271,16 @@ export function useAiGuide() {
         const normalizedPrompt = request.freeText?.trim() || "";
         setLastPrompt(normalizedPrompt);
         setRecommendations(mappedItems);
+        setHistoryItems((prev) => [
+          {
+            id: response.recommendationId,
+            prompt: normalizedPrompt || "Genel öneri",
+            createdAt: new Date().toISOString(),
+            recommendations: mappedItems
+          },
+          ...prev.filter((item) => item.id !== response.recommendationId)
+        ]);
+        setHistoryExpanded(false);
 
         if (cacheKey) {
           void AsyncStorage.setItem(
@@ -357,6 +372,18 @@ export function useAiGuide() {
     });
   };
 
+  const visibleHistoryItems = useMemo(
+    () => resolveVisibleAiGuideHistory(historyItems, isHistoryExpanded),
+    [historyItems, isHistoryExpanded]
+  );
+
+  const openHistoryItem = (item: AiGuideHistoryItem) => {
+    setRecommendationId(item.id);
+    setLastPrompt(item.prompt === "Genel öneri" ? "" : item.prompt);
+    setRecommendations(item.recommendations);
+    setError(undefined);
+  };
+
   const refresh = async () => {
     closeInfo();
     setIsRefreshing(true);
@@ -377,8 +404,13 @@ export function useAiGuide() {
     isRewardedRunning,
     isRefreshing,
     error,
+    recommendationId,
     lastPrompt,
     recommendations,
+    historyItems,
+    visibleHistoryItems,
+    isHistoryExpanded,
+    canExpandHistory: historyItems.length > 2,
     closeInfo,
     toggleInfo,
     applyPrompt,
@@ -387,42 +419,10 @@ export function useAiGuide() {
     closeRewardedSheet,
     confirmRewardedAndSubmit,
     refresh,
-    selectRecommendation
+    selectRecommendation,
+    openHistoryItem,
+    toggleHistoryExpanded: () => setHistoryExpanded((value) => !value)
   };
-}
-
-function normalizeObjectId(value: unknown): string | undefined {
-  if (typeof value === "string" && value.trim()) {
-    return value;
-  }
-
-  if (!value || typeof value !== "object") {
-    return undefined;
-  }
-
-  const candidate = value as { $oid?: unknown; _id?: unknown; toString?: () => string };
-  if (typeof candidate.$oid === "string" && candidate.$oid.trim()) {
-    return candidate.$oid;
-  }
-
-  if (typeof candidate._id === "string" && candidate._id.trim()) {
-    return candidate._id;
-  }
-
-  if (typeof candidate.toString === "function") {
-    const stringified = candidate.toString();
-    if (typeof stringified === "string" && stringified.trim() && stringified !== "[object Object]") {
-      return stringified;
-    }
-  }
-
-  return undefined;
-}
-
-function normalizeRecommendedIds(values: unknown[]): string[] {
-  return values
-    .map((value) => normalizeObjectId(value))
-    .filter((value): value is string => Boolean(value));
 }
 
 function markFirstPrimary(items: AiGuideRecommendation[], primaryNote?: string) {
