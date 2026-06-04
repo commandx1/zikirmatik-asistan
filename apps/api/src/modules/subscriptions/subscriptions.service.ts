@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { Types, type Model } from 'mongoose';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
@@ -13,6 +14,8 @@ import {
 
 @Injectable()
 export class SubscriptionsService {
+  private readonly logger = new Logger(SubscriptionsService.name);
+
   constructor(
     @InjectModel(Subscription.name)
     private readonly subscriptionModel: Model<SubscriptionDocument>,
@@ -173,6 +176,82 @@ export class SubscriptionsService {
       deleted: true,
       id,
     };
+  }
+
+  /**
+   * RevenueCat webhook'undan gelen app_user_id / original_app_user_id
+   * adaylarından, veritabanında gerçekten var olan ilk kullanıcıyı bulur.
+   * Geçersiz ObjectId'leri (ör. anonim RC kimlikleri) sessizce atlar.
+   */
+  async resolveExistingUserId(
+    ...candidates: Array<string | undefined | null>
+  ): Promise<string | null> {
+    for (const candidate of candidates) {
+      const trimmed = candidate?.trim();
+      if (!trimmed || !Types.ObjectId.isValid(trimmed)) {
+        continue;
+      }
+
+      const objectId = new Types.ObjectId(trimmed);
+      const exists = await this.userModel.exists({ _id: objectId });
+      if (exists) {
+        return objectId.toString();
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Olay (webhook / client sync) kaçırılsa bile premium durumunu zaman
+   * bazında düzelten güvenlik ağı. Süresi dolmuş aktif abonelikleri
+   * 'expired' yapar ve isPremium bayrağını gerçek duruma göre iki yönlü
+   * eşitler. Tüm işlemler idempotent olduğundan birden fazla instance'ta
+   * güvenle çalışır.
+   */
+  @Cron(CronExpression.EVERY_30_MINUTES)
+  async reconcilePremiumStatuses() {
+    const now = new Date();
+
+    const expired = await this.subscriptionModel
+      .updateMany(
+        { status: 'active', endDate: { $lt: now } },
+        { $set: { status: 'expired' } },
+      )
+      .exec();
+
+    if (expired.modifiedCount > 0) {
+      this.logger.log(
+        `Mutabakat: ${expired.modifiedCount} süresi dolmuş abonelik 'expired' yapıldı.`,
+      );
+    }
+
+    const activeUserIds = await this.subscriptionModel.distinct('userId', {
+      plan: 'premium',
+      status: 'active',
+      endDate: { $gte: now },
+    });
+
+    const downgraded = await this.userModel
+      .updateMany(
+        { isPremium: true, _id: { $nin: activeUserIds } },
+        { $set: { isPremium: false } },
+      )
+      .exec();
+
+    const upgraded = await this.userModel
+      .updateMany(
+        { isPremium: false, _id: { $in: activeUserIds } },
+        { $set: { isPremium: true } },
+      )
+      .exec();
+
+    if (downgraded.modifiedCount > 0 || upgraded.modifiedCount > 0) {
+      this.logger.log(
+        `Mutabakat: ${downgraded.modifiedCount} kullanıcı premium'dan düşürüldü, ` +
+          `${upgraded.modifiedCount} kullanıcı premium'a yükseltildi.`,
+      );
+    }
   }
 
   async syncPremiumForUser(userId: string, payload?: SyncPremiumDto) {

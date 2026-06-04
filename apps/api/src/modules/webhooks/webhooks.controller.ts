@@ -70,15 +70,25 @@ export class WebhooksController {
   }
 
   private async handleRevoke(event: RevenueCatEvent) {
+    const userId = await this.resolveUserId(event);
+    if (!userId) {
+      return;
+    }
+
     const provider = resolveProvider(event.store);
-    await this.subscriptionsService.syncPremiumForUser(event.app_user_id, {
+    await this.subscriptionsService.syncPremiumForUser(userId, {
       hasActivePremiumEntitlement: false,
       provider,
     });
-    this.logger.log(`Premium revoked for user ${event.app_user_id}`);
+    this.logger.log(`Premium revoked for user ${userId}`);
   }
 
   private async handleGrant(event: RevenueCatEvent) {
+    const userId = await this.resolveUserId(event);
+    if (!userId) {
+      return;
+    }
+
     const provider = resolveProvider(event.store);
 
     if (!event.expiration_at_ms) {
@@ -89,7 +99,7 @@ export class WebhooksController {
     }
 
     const dto = Object.assign(new CreateSubscriptionDto(), {
-      userId: event.app_user_id,
+      userId,
       plan: 'premium' as const,
       provider,
       status: 'active' as const,
@@ -100,7 +110,29 @@ export class WebhooksController {
       endDate: new Date(event.expiration_at_ms),
     });
     await this.subscriptionsService.create(dto);
-    this.logger.log(`Premium granted for user ${event.app_user_id}`);
+    this.logger.log(`Premium granted for user ${userId}`);
+  }
+
+  /**
+   * RevenueCat olayındaki app_user_id (öncelikli) veya original_app_user_id
+   * ile veritabanındaki gerçek kullanıcıyı bulur. Bulunamazsa net bir uyarı
+   * loglar — sessiz hata yerine görünür hata.
+   */
+  private async resolveUserId(event: RevenueCatEvent): Promise<string | null> {
+    const userId = await this.subscriptionsService.resolveExistingUserId(
+      event.app_user_id,
+      event.original_app_user_id,
+    );
+
+    if (!userId) {
+      this.logger.warn(
+        `RevenueCat olayı eşleşen kullanıcıya bağlanamadı: ` +
+          `app_user_id=${event.app_user_id} ` +
+          `original_app_user_id=${event.original_app_user_id} type=${event.type}`,
+      );
+    }
+
+    return userId;
   }
 
   private verifySecret(authHeader: string | undefined) {
