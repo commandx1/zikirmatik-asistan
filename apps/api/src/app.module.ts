@@ -15,6 +15,7 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
 import { UsersModule } from './modules/users/users.module';
 import { PrayerTimesModule } from './modules/prayer-times/prayer-times.module';
 import { UserDhikrsModule } from './modules/user-dhikrs/user-dhikrs.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
@@ -42,6 +43,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     SubscriptionsModule,
     PrayerTimesModule,
     UserDhikrsModule,
+    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [JwtAuthGuard, RenderKeepAliveService],
