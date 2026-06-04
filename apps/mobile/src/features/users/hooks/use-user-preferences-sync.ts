@@ -80,7 +80,7 @@ export function useUserPreferencesSync() {
       }
     };
 
-    void sync();
+    void sync({ refreshCustomerInfo: true });
 
     const subscription = AppState.addEventListener("change", (nextState) => {
       if (nextState === "active") {
