@@ -15,17 +15,16 @@ export type RevenueCatEventType =
   | 'SUBSCRIPTION_PAUSED'
   | 'TRANSFER'
   | 'TEST'
-  | 'NON_SUBSCRIPTION_PURCHASE'
-  | string;
+  | 'NON_SUBSCRIPTION_PURCHASE';
 
-export type RevenueCatStore = 'APP_STORE' | 'PLAY_STORE' | 'STRIPE' | string;
+export type RevenueCatStore = 'APP_STORE' | 'PLAY_STORE' | 'STRIPE';
 
 export type RevenueCatEvent = {
-  type: RevenueCatEventType;
+  type: string;
   app_user_id: string;
   original_app_user_id: string;
   product_id: string;
-  store: RevenueCatStore;
+  store: string;
   purchased_at_ms?: number;
   expiration_at_ms?: number;
   environment?: string;
