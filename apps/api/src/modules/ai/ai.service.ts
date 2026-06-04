@@ -70,61 +70,30 @@ export class AiService {
       availableDhikrs.map((item) => [item._id.toString(), item]),
     );
 
-    const catalog = availableDhikrs.map((item) => ({
+    const allDhikrs = availableDhikrs.map((item) => ({
       id: item._id.toString(),
       nameTurkish: item.nameTurkish,
       meaning: item.meaning,
+      virtue: item.virtue,
       tags: item.tags,
       categories: item.categories,
       timeOfDay: item.timeOfDay,
       suitableFor: item.suitableFor,
     }));
 
-    const intent = await this.extractIntentTags(freeText);
-    const candidatePoolSize = Math.min(
-      availableDhikrs.length,
-      Math.max(maxRecommendations * 4, 20),
-    );
-    const candidateIds = rankCandidateIds({
-      freeText,
-      intentTags: intent.tags,
-      recentDhikrIds,
-      timeContext,
-      catalog,
-      poolSize: candidatePoolSize,
-    });
-    const candidateIdSet = new Set(candidateIds);
-    const candidateDhikrs = candidateIds
-      .map((id) => dhikrMapById.get(id))
-      .filter((item): item is (typeof availableDhikrs)[number] => Boolean(item))
-      .map((item) => ({
-        id: item._id.toString(),
-        nameTurkish: item.nameTurkish,
-        meaning: item.meaning,
-        tags: item.tags,
-        categories: item.categories,
-        timeOfDay: item.timeOfDay,
-        virtue: item.virtue,
-        suitableFor: item.suitableFor,
-      }));
-
     const openAiResult = await this.generateViaOpenAi({
       freeText,
-      intentTags: intent.tags,
       timeContext,
       recentDhikrIds,
-      candidateDhikrs,
+      candidateDhikrs: allDhikrs,
       maxRecommendations,
     });
 
     const openAiRankedIds = dedupeIds(openAiResult?.recommendedIds ?? [])
-      .filter((id) => candidateIdSet.has(id))
+      .filter((id) => availableIdSet.has(id))
       .slice(0, maxRecommendations);
 
-    let safeRecommendedIds = dedupeIds([
-      ...openAiRankedIds,
-      ...candidateIds,
-    ]).slice(0, maxRecommendations);
+    let safeRecommendedIds = openAiRankedIds.slice();
     let reasoning =
       openAiResult?.reasoning?.trim() ||
       'Niyet metnine uygun bir zikir listesi hazırladım.';
@@ -270,7 +239,6 @@ export class AiService {
 
   private async generateViaOpenAi(input: {
     freeText?: string;
-    intentTags: string[];
     timeContext: TimeContext;
     recentDhikrIds: string[];
     candidateDhikrs: Array<{
@@ -307,7 +275,6 @@ export class AiService {
 
     const promptPayload = {
       freeText: input.freeText,
-      intentTags: input.intentTags,
       timeContext: input.timeContext,
       recentDhikrIds: input.recentDhikrIds,
       candidateDhikrs: input.candidateDhikrs,
@@ -357,67 +324,6 @@ export class AiService {
     }
   }
 
-  private async extractIntentTags(freeText?: string) {
-    const inferred = inferIntentTagsFromText(freeText);
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    if (!apiKey || !freeText) {
-      return { tags: inferred, confidence: 0.4 };
-    }
-
-    const client = new OpenAI({ apiKey });
-    const model =
-      this.configService.get<string>('OPENAI_MODEL') || 'gpt-4o-mini';
-
-    const systemInstruction = [
-      'Sen bir intent etiketleme yardımcısısın.',
-      'Verilen metinden 3-8 kısa intent etiketi çıkar.',
-      'Etiketler Türkçe, küçük harfli ve kısa olmalı.',
-      'JSON dışında cevap verme.',
-    ].join(' ');
-
-    const promptPayload = {
-      freeText,
-      outputFormat: {
-        intentTags: 'string[]',
-        confidence: 'number',
-      },
-    };
-
-    try {
-      const response = await client.chat.completions.create({
-        model,
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: systemInstruction },
-          { role: 'user', content: JSON.stringify(promptPayload) },
-        ],
-      });
-
-      const text = response.choices?.[0]?.message?.content;
-      if (!text) {
-        return { tags: inferred, confidence: 0.4 };
-      }
-
-      const parsed = JSON.parse(text) as {
-        intentTags?: unknown;
-        confidence?: unknown;
-      };
-
-      const parsedTags = normalizeIntentTags(
-        Array.isArray(parsed.intentTags) ? parsed.intentTags : [],
-      );
-      const tags = parsedTags.length > 0 ? parsedTags : inferred;
-      const confidence =
-        typeof parsed.confidence === 'number'
-          ? Math.max(0, Math.min(1, parsed.confidence))
-          : 0.5;
-
-      return { tags, confidence };
-    } catch {
-      return { tags: inferred, confidence: 0.4 };
-    }
-  }
-
   private defaultTimeContext(): TimeContext {
     const now = new Date();
 
@@ -453,169 +359,4 @@ function toDateString(date: Date) {
 
 function dedupeIds(ids: string[]) {
   return [...new Set(ids)];
-}
-
-function inferIntentTagsFromText(freeText?: string) {
-  const tokens = tokenizeIntent(freeText ?? '');
-  if (tokens.length === 0) {
-    return ['huzur', 'şükür', 'teslimiyet'];
-  }
-
-  return dedupeIds(tokens).slice(0, 8);
-}
-
-function normalizeIntentTags(values: unknown[]) {
-  return dedupeIds(
-    values
-      .map((item) => (typeof item === 'string' ? item : ''))
-      .map((item) => normalizeToken(item))
-      .filter((item) => item.length >= 2),
-  ).slice(0, 8);
-}
-
-function rankCandidateIds(input: {
-  freeText?: string;
-  intentTags: string[];
-  recentDhikrIds: string[];
-  timeContext: TimeContext;
-  catalog: Array<{
-    id: string;
-    nameTurkish: string;
-    meaning?: string;
-    tags: string[];
-    categories: string[];
-    timeOfDay: string;
-    suitableFor: string[];
-  }>;
-  poolSize: number;
-}) {
-  const intentTokens = dedupeIds([
-    ...input.intentTags.map((item) => normalizeToken(item)),
-    ...tokenizeIntent(input.freeText ?? ''),
-  ]);
-  const recentSet = new Set(input.recentDhikrIds);
-
-  const ranked = input.catalog.map((item) => {
-    const spaceTokens = tokenizeIntent(
-      [
-        item.nameTurkish,
-        item.meaning ?? '',
-        item.tags.join(' '),
-        item.categories.join(' '),
-        item.suitableFor.join(' '),
-      ].join(' '),
-    );
-
-    const intentScore = overlapRatio(intentTokens, spaceTokens);
-    const timeScore = scoreTimeMatch(input.timeContext.hour, item.timeOfDay);
-    const specialScore = scoreSpecialDayMatch(
-      input.timeContext.isSpecialDay,
-      input.timeContext.specialDayName,
-      item.suitableFor,
-    );
-    const diversityBonus = recentSet.has(item.id) ? 0 : 1;
-
-    const score =
-      intentScore * 0.6 +
-      timeScore * 0.15 +
-      specialScore * 0.15 +
-      diversityBonus * 0.1;
-
-    return { id: item.id, score };
-  });
-
-  ranked.sort((a, b) => b.score - a.score);
-  return ranked.slice(0, input.poolSize).map((item) => item.id);
-}
-
-function overlapRatio(a: string[], b: string[]) {
-  if (a.length === 0 || b.length === 0) {
-    return 0;
-  }
-
-  const bSet = new Set(b);
-  const hitCount = a.filter((token) => bSet.has(token)).length;
-  return hitCount / a.length;
-}
-
-function scoreTimeMatch(hour: number, timeOfDay: string) {
-  if (timeOfDay === 'any') {
-    return 0.7;
-  }
-
-  if (hour >= 5 && hour < 12 && timeOfDay === 'morning') {
-    return 1;
-  }
-
-  if (hour >= 12 && hour < 19 && timeOfDay === 'evening') {
-    return 1;
-  }
-
-  if ((hour >= 19 || hour < 5) && timeOfDay === 'night') {
-    return 1;
-  }
-
-  return 0.2;
-}
-
-function scoreSpecialDayMatch(
-  isSpecialDay: boolean,
-  specialDayName: string | undefined,
-  suitableFor: string[],
-) {
-  if (!isSpecialDay) {
-    return 0.6;
-  }
-
-  const lowered = normalizeToken(specialDayName ?? '');
-  const suitable = suitableFor.map((item) => normalizeToken(item));
-
-  if (suitable.length === 0) {
-    return 0.2;
-  }
-
-  if (
-    lowered &&
-    suitable.some((item) => lowered.includes(item) || item.includes(lowered))
-  ) {
-    return 1;
-  }
-
-  return 0.4;
-}
-
-function tokenizeIntent(value: string) {
-  const normalized = value
-    .toLocaleLowerCase('tr-TR')
-    .replace(/ı/g, 'i')
-    .replace(/ğ/g, 'g')
-    .replace(/ü/g, 'u')
-    .replace(/ş/g, 's')
-    .replace(/ö/g, 'o')
-    .replace(/ç/g, 'c')
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  if (!normalized) {
-    return [];
-  }
-
-  return normalized
-    .split(' ')
-    .map(normalizeToken)
-    .filter((item) => item.length >= 2);
-}
-
-function normalizeToken(value: string) {
-  return value
-    .toLocaleLowerCase('tr-TR')
-    .replace(/ı/g, 'i')
-    .replace(/ğ/g, 'g')
-    .replace(/ü/g, 'u')
-    .replace(/ş/g, 's')
-    .replace(/ö/g, 'o')
-    .replace(/ç/g, 'c')
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .trim();
 }
