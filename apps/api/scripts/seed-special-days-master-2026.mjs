@@ -32,7 +32,14 @@ const keyMap = {
   RABBENA_ZALEMNA: 'RABBENA_ZALEMNA',
   KEMALILLAHI: 'KEMALILLAHI',
   DELAIL_HAYRAT: 'DELAIL_HAYRAT',
-};
+  NUR_ZATIYYE: 'NUR_ZATIYYE',
+  AYETEL_KURSI: 'AYETEL_KURSI',
+  BAKIYAT_SALIHAT: 'BAKIYAT_SALIHAT',
+  YA_SELAM: 'YA_SELAM',
+  YA_RAHMAN_YA_RAHIM: 'YA_RAHMAN_YA_RAHIM',
+  SELAMUN_KAVLEN: 'SELAMUN_KAVLEN',
+  SEHADET: 'SEHADET'
+}
 
 const SOURCE_DATASETS = [
   {
@@ -51,8 +58,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Tevhid şuurunu güçlendirir, kurban ve teslimiyet bilincini derinleştirir.',
         source: 'Zilhicce fazileti rivayetleri',
-        tags: ['zilhicce', 'tevhid', 'bes-hediye'],
-        categories: ['zilhicce', 'ozel-gun'],
+        tags: ['zilhicce','tevhid','bes-hediye'],
+        categories: ['zilhicce','ozel-gun'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -76,8 +83,8 @@ const SOURCE_DATASETS = [
         virtue:
           '“Allahümme lekel hamd” zikri, insanın kendi sınırlılığını fark ederek tüm övgünün Allah’a ait olduğunu kabul etmesini öğretir. Bu dua, hayatın merkezini dağınık arzular yerine ilahi bir hedef etrafında toplamayı amaçlar. Kişiye, namazının, emeğinin, hayatının ve hatta ölümünün bile anlamlı bir bütünün parçası olduğunu hatırlatır. Vesvese, iç sıkışması ve zihinsel karmaşa karşısında manevi bir sığınak görevi görür. Dünya nimetlerinin geçici olduğunu hatırlatarak aşırı hırs ve kontrol arzusunu yumuşatır. İnsanı şikâyet yerine hamde, korku yerine teslimiyete yönlendirir. “Şetâtü’l-emr” yani işlerin dağılması hâlinden Allah’a sığınmak, zihinsel odak ve iç düzen arayışını ifade eder. Bu zikir, kulun kendi gücüne değil Allah’ın rahmetine dayanmayı öğrenmesidir. Düzenli okunduğunda kişide sükûnet, tevazu ve manevi denge hissi oluşturabilir. Özünde bu dua, insanı dağınıklıktan bütünlüğe ve geçicilikten hakikat bilincine taşıyan bir teslimiyet duasıdır.',
         source: 'Zilhicce fazileti rivayetleri',
-        tags: ['zilhicce', 'dua', 'teslimiyet', 'hamd'],
-        categories: ['zilhicce', 'ozel-gun'],
+        tags: ['zilhicce','dua','teslimiyet','hamd'],
+        categories: ['zilhicce','ozel-gun'],
         timeOfDay: 'any',
         recommendedCount: 33,
         suitableFor: [
@@ -103,8 +110,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İhlâs Suresi, tevhidin en saf ve özlü ifadelerinden biri olarak insanın kalbini yalnızca Allah’a yöneltmeyi öğretir. Bu sure, Allah’ın birliğini, benzersizliğini ve hiçbir şeye muhtaç olmadığını güçlü bir şekilde ilan eder. Düzenli okunması, kişinin iç dünyasında sadeleşme ve manevi berraklık hissi oluşturabilir. İnsanı sahte dayanaklardan uzaklaştırıp gerçek güvenin yalnızca Allah’ta olduğunu hatırlatır. Kısa olmasına rağmen taşıdığı anlam derinliği nedeniyle Kur’an’ın özünü yansıtan surelerden biri kabul edilmiştir. Kalpteki korku, bağımlılık ve aşırı dünyevî bağları yumuşatarak teslimiyet duygusunu güçlendirebilir. Zihni dağınıklıktan çıkarıp tek hakikate odaklanmaya yardımcı olur. Manevi gelenekte, samimiyetle okunmasının kalbi arındırdığı ve kişinin iman şuurunu kuvvetlendirdiği ifade edilmiştir. İhlâs Suresi, insanı yalnızca Allah’ın huzurunda değer aramaya çağıran güçlü bir tevhid manifestosu gibidir. Özünde bu sure, kulun kalbini çokluktan birliğe ve geçici bağlardan ebedi hakikate yöneltir.',
         source: 'Arefe günü fazilet rivayetleri',
-        tags: ['zilhicce', 'arefe', 'ihlas'],
-        categories: ['zilhicce', 'ozel-gun'],
+        tags: ['zilhicce','arefe','ihlas'],
+        categories: ['zilhicce','ozel-gun'],
         timeOfDay: 'any',
         recommendedCount: 1000,
         suitableFor: [
@@ -126,8 +133,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kulun Allah’a yönelişini ve samimi tevbesini ifade eden güçlü bir istiğfardır. Bu zikri düzenli okumak, kalbin manevi yüklerden arınmasına ve huzur bulmasına vesile olur. Günahların bağışlanmasını istemekle birlikte, kişiyi daha dikkatli ve bilinçli bir hayata yönlendirir. İstiğfar, insanın iç dünyasında tevazu, teslimiyet ve kulluk bilincini güçlendirir. Rivayetlerde istiğfarın rızkın artmasına, sıkıntıların hafiflemesine ve gönül ferahlığına vesile olduğu bildirilmiştir. Bu zikir, kalbi gafletten uyandırarak Allah’ı daha çok hatırlamaya yardımcı olur. Düzenli istiğfar eden kişi, manevi olarak kendini yenilenmiş ve umut dolu hissedebilir. Aynı zamanda sabrı, şükrü ve iç huzuru destekleyen manevi bir alışkanlık oluşturur. Tevbe ile birlikte okunduğunda, kişinin geçmiş hatalarından ders almasına ve daha güzel bir ahlaka yönelmesine katkı sağlar. Bu istiğfar, Allah’ın rahmetine sığınmanın ve O’na yakınlaşma arzusunun özlü bir ifadesidir.',
         source: 'Tirmizi, Deavat',
-        tags: ['zilhicce', 'istigfar', 'tevbe', 'arefe'],
-        categories: ['zilhicce', 'ozel-gun'],
+        tags: ['zilhicce','istigfar','tevbe','arefe'],
+        categories: ['zilhicce','ozel-gun'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -159,11 +166,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kalbi gafletten korumaya, manevi diriliği canlı tutmaya ve bayram günlerinde iç huzuru güçlendirmeye vesile olur.',
         source: 'Bayram günleri kalp diriliği duaları',
-        tags: ['zilhicce', 'bayram', 'dua', 'hayy', 'kayyum'],
-        categories: ['zilhicce', 'ozel-gun', 'bayram', 'dua'],
+        tags: ['zilhicce','bayram','dua','hayy','kayyum'],
+        categories: ['zilhicce','ozel-gun','bayram','dua'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['kalp-huzuru', 'gafletten-korunma', 'bayram-gunleri'],
+        suitableFor: ['kalp-huzuru','gafletten-korunma','bayram-gunleri'],
       },
       {
         key: keyMap.NUR,
@@ -177,8 +184,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kalbi, zihni ve duyuları ilahi nur bilinciyle kuşatma duasıdır. İçsel karanlık, gaflet ve yön kaybı yaşayan dönemlerde ruhu toparlamaya yardımcı olur. Basireti güçlendirir, doğruyu seçme ve olayları hikmetle değerlendirme kabiliyetini artırır. Günlük zikirde devam edildiğinde manevi odak, iç huzur ve teslimiyet duygusunu derinleştirir.',
         source: 'Buhârî, Deavât, 9; Müslim, Müsâfirîn, 181',
-        tags: ['zilhicce', 'arefe', 'nur', 'dua', 'basiret', 'hidayet', 'kalp'],
-        categories: ['zilhicce', 'ozel-gun', 'arefe', 'dua', 'manevi-gelisim'],
+        tags: ['zilhicce','arefe','nur','dua','basiret','hidayet','kalp'],
+        categories: ['zilhicce','ozel-gun','arefe','dua','manevi-gelisim'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -203,7 +210,7 @@ const SOURCE_DATASETS = [
         dayIndex: 1,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.TEKBIR, keyMap.SALAVAT_SERIF],
+        dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.TEKBIR,keyMap.SALAVAT_SERIF],
       },
       {
         name: '2 Zilhicce',
@@ -215,7 +222,7 @@ const SOURCE_DATASETS = [
         dayIndex: 2,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.TEKBIR, keyMap.ISTIGFAR],
+        dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.TEKBIR,keyMap.ISTIGFAR],
       },
       {
         name: '3 Zilhicce',
@@ -227,7 +234,7 @@ const SOURCE_DATASETS = [
         dayIndex: 3,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.TEKBIR, keyMap.SALAVAT_SERIF],
+        dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.TEKBIR,keyMap.SALAVAT_SERIF],
       },
       {
         name: '4 Zilhicce',
@@ -239,7 +246,7 @@ const SOURCE_DATASETS = [
         dayIndex: 4,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: [keyMap.HASBIYE, keyMap.ISTIGFAR, keyMap.TEKBIR],
+        dhikrKeys: [keyMap.HASBIYE,keyMap.ISTIGFAR,keyMap.TEKBIR],
       },
       {
         name: '5 Zilhicce',
@@ -251,7 +258,7 @@ const SOURCE_DATASETS = [
         dayIndex: 5,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: [keyMap.LEKEL_HAMD, keyMap.SALAVAT_SERIF, keyMap.TEKBIR],
+        dhikrKeys: [keyMap.LEKEL_HAMD,keyMap.SALAVAT_SERIF,keyMap.TEKBIR],
       },
       {
         name: '6 Zilhicce',
@@ -263,7 +270,7 @@ const SOURCE_DATASETS = [
         dayIndex: 6,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.ISTIGFAR],
+        dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.ISTIGFAR],
       },
       {
         name: '7 Zilhicce',
@@ -275,7 +282,7 @@ const SOURCE_DATASETS = [
         dayIndex: 7,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: [keyMap.VAHDEHU_LA, keyMap.HASBIYE, keyMap.SALAVAT_SERIF],
+        dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.HASBIYE,keyMap.SALAVAT_SERIF],
       },
       {
         name: '8 Zilhicce',
@@ -287,7 +294,7 @@ const SOURCE_DATASETS = [
         dayIndex: 8,
         dayCount: 10,
         priority: 140,
-        dhikrKeys: [keyMap.ISTIGFAR, keyMap.TEKBIR, keyMap.VAHDEHU_LA],
+        dhikrKeys: [keyMap.ISTIGFAR,keyMap.TEKBIR,keyMap.VAHDEHU_LA],
       },
     ],
   },
@@ -315,10 +322,10 @@ const SOURCE_DATASETS = [
           'kalbe sevinç',
           'ilahî şükür',
         ],
-        categories: ['özel gün', 'bayram'],
+        categories: ['özel gün','bayram'],
         timeOfDay: 'any',
         recommendedCount: 23,
-        suitableFor: ['bayram günleri', 'cemaat sonrası zikir', ''],
+        suitableFor: ['bayram günleri','cemaat sonrası zikir',''],
       },
       {
         key: keyMap.SUBHANALLAHI_VE_BIHAMDIHI,
@@ -336,7 +343,7 @@ const SOURCE_DATASETS = [
           'rızık ve bereket',
           'korku ve vesvese tedavisi',
         ],
-        categories: ['özel gün', 'bayram'],
+        categories: ['özel gün','bayram'],
         timeOfDay: 'morning',
         recommendedCount: 300,
         suitableFor: [
@@ -355,11 +362,11 @@ const SOURCE_DATASETS = [
         virtue:
           'İbadetlerdeki eksiklikler için tevbe bilincini güçlendirir ve kalpte arınma sağlar.',
         source: 'Bayram günü istiğfar tavsiyesi',
-        tags: ['kurban-bayrami', 'istigfar', 'tevbe'],
-        categories: ['özel gün', 'bayram'],
+        tags: ['kurban-bayrami','istigfar','tevbe'],
+        categories: ['özel gün','bayram'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['bayram günü', 'tevbe', 'günahların bağışlanması'],
+        suitableFor: ['bayram günü','tevbe','günahların bağışlanması'],
       },
       {
         key: keyMap.KURBAN_SUKRU_DUASI,
@@ -373,11 +380,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kurban ibadetini şükür ve teslimiyet boyutuyla tamamlar, nimetin sahibini hatırlatır.',
         source: 'Kurban ibadeti sonrası şükür duaları',
-        tags: ['kurban-bayrami', 'şükür', 'dua'],
-        categories: ['özel gün', 'bayram'],
+        tags: ['kurban-bayrami','şükür','dua'],
+        categories: ['özel gün','bayram'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['kurban kesimi sonrası', 'şükür', 'hamd'],
+        suitableFor: ['kurban kesimi sonrası','şükür','hamd'],
       },
       {
         key: keyMap.HASBIYE_ZIKRI_100,
@@ -388,8 +395,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Tevekkül bilincini artırır, endişe ve dağınıklık halinde kalbi dengelemeye yardımcı olur.',
         source: 'Tevekkül zikirleri',
-        tags: ['kurban-bayrami', 'tevekkül', 'hasbiye'],
-        categories: ['özel gün', 'bayram'],
+        tags: ['kurban-bayrami','tevekkül','hasbiye'],
+        categories: ['özel gün','bayram'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -411,8 +418,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Tevekkül bilincini derinleştirir; kalpte emniyet ve teslimiyet hissini artırır.',
         source: 'Hasbiye rivayetleri',
-        tags: ['kurban-bayrami', 'hasbiye', 'tevekkül', 'dua'],
-        categories: ['özel gün', 'bayram', 'dua', 'tevekkül'],
+        tags: ['kurban-bayrami','hasbiye','tevekkül','dua'],
+        categories: ['özel gün','bayram','dua','tevekkül'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -432,7 +439,7 @@ const SOURCE_DATASETS = [
         hijriDate: '9 Zilhicce 1447',
         description: 'Arefe Günü (Tevbe, Dua ve Tevhid Yoğunluğu)',
         eventKey: 'kurban-bayrami-2026',
-        dhikrKeys: [keyMap.IHLAS, keyMap.VAHDEHU_LA, keyMap.ISTIGFAR],
+        dhikrKeys: [keyMap.IHLAS,keyMap.VAHDEHU_LA,keyMap.ISTIGFAR],
       },
       {
         name: 'Kurban Bayramı',
@@ -526,8 +533,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Salavat-ı Şerife, kalbi Resûlullah sevgisiyle dirilten en bereketli zikirlerdendir. Kişiye manevi huzur, gönül ferahlığı ve iç sükûnet kazandırır. Peygamber Efendimiz’e yapılan her salavatın rahmet kapılarını açtığı rivayet edilmiştir. Salavat, duaların kabulüne vesile olan kıymetli ameller arasında görülür. Sürekli salavat getiren kimsenin kalbi yumuşar, dili güzelleşir ve manevi bağı kuvvetlenir. Sıkıntı anlarında salavat okumak, kalbe teselli ve umut verir. Günahlara kefaret ve derecelerin yükselmesine vesile olduğu bildirilmiştir. Salavat, kişinin hayatına bereket ve nur katan bir ibadet olarak kabul edilir. Meleklerin salavat ehline dua ettiği ve rahmetle yaklaştığı rivayet edilir. Resûlullah’a sevgiyle getirilen her salavat, müminin kalbini Allah’a daha yakın hâle getirir.',
         source: 'Salavat fazileti rivayetleri',
-        tags: ['kurban-bayrami', 'salavat'],
-        categories: ['özel gün', 'bayram'],
+        tags: ['kurban-bayrami','salavat'],
+        categories: ['özel gün','bayram'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -560,8 +567,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kulun acziyetini kabul ederek mutlak güç ve kudreti Allaha havale etmesini sağlar; tevekkül ve teslimiyet bilincini güçlendirir.',
         source: 'Havkale fazileti rivayetleri',
-        tags: ['mevlid-kandili', 'havkale', 'tevekkül', 'teslimiyet'],
-        categories: ['kandil', 'özel gün', 'tevekkül'],
+        tags: ['mevlid-kandili','havkale','tevekkül','teslimiyet'],
+        categories: ['kandil','özel gün','tevekkül'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -584,11 +591,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ümit, teselli ve rahmet vurgusunu güçlendirir; kalbe ferahlık ve teslimiyet kazandırır.',
         source: 'Duha Suresi',
-        tags: ['mevlid-kandili', 'kuran', 'sure', 'teselli'],
-        categories: ['kandil', 'özel gün', 'kuran'],
+        tags: ['mevlid-kandili','kuran','sure','teselli'],
+        categories: ['kandil','özel gün','kuran'],
         timeOfDay: 'any',
         recommendedCount: 50,
-        suitableFor: ['manevi ferahlık', 'tefekkür', 'kandil gecesi'],
+        suitableFor: ['manevi ferahlık','tefekkür','kandil gecesi'],
       },
       {
         key: keyMap.SEYTANDAN_SIGINMA,
@@ -602,8 +609,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kalbi vesvese ve dağınıklıktan korumaya yardımcı olur; zikri huzurla sürdürmek için manevi korunma bilinci kazandırır. Obsesif kompulsif eğilimler, panik anındaki kontrol kaybı kaygısı ve zihne musallat olan tekrarlayıcı olumsuz düşüncelere (vesveselere) karşı zihnel bir kalkan işlevi görür.',
         source: 'Müminun 97-98',
-        tags: ['mevlid-kandili', 'dua', 'korunma', 'siginma'],
-        categories: ['kandil', 'özel gün', 'dua'],
+        tags: ['mevlid-kandili','dua','korunma','siginma'],
+        categories: ['kandil','özel gün','dua'],
         timeOfDay: 'any',
         recommendedCount: 33,
         suitableFor: [
@@ -625,11 +632,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sabır, sebat ve takva bilincini güçlendirir; kandil gecesinde nefis muhasebesine ve manevi diriliğe destek olur.',
         source: 'Âl-i İmran 200',
-        tags: ['mevlid-kandili', 'kuran', 'ayet', 'sabir', 'takva'],
-        categories: ['kandil', 'özel gün', 'kuran'],
+        tags: ['mevlid-kandili','kuran','ayet','sabir','takva'],
+        categories: ['kandil','özel gün','kuran'],
         timeOfDay: 'any',
         recommendedCount: 1,
-        suitableFor: ['sabır', 'sebat', 'manevi disiplin'],
+        suitableFor: ['sabır','sebat','manevi disiplin'],
       },
       {
         key: keyMap.AHZAB_56,
@@ -650,10 +657,10 @@ const SOURCE_DATASETS = [
           'salavat',
           'peygamber-sevgisi',
         ],
-        categories: ['kandil', 'özel gün', 'kuran', 'salavat'],
+        categories: ['kandil','özel gün','kuran','salavat'],
         timeOfDay: 'any',
         recommendedCount: 1,
-        suitableFor: ['salavat bilinci', 'peygamber sevgisi', 'kandil gecesi'],
+        suitableFor: ['salavat bilinci','peygamber sevgisi','kandil gecesi'],
       },
       {
         key: keyMap.SELLIM_BARIK,
@@ -667,11 +674,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Peygamber sevgisini artırır, sünnete bağlılığı güçlendirir ve kalpte rahmet-bereket bilincini canlı tutar.',
         source: 'Salavat fazileti rivayetleri',
-        tags: ['mevlid-kandili', 'salavat', 'bereket', 'peygamber-sevgisi'],
-        categories: ['kandil', 'özel gün', 'salavat'],
+        tags: ['mevlid-kandili','salavat','bereket','peygamber-sevgisi'],
+        categories: ['kandil','özel gün','salavat'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['salavat', 'peygamber sevgisi', 'manevi bereket'],
+        suitableFor: ['salavat','peygamber sevgisi','manevi bereket'],
       },
       {
         key: keyMap.RABBENA_ZALEMNA,
@@ -685,11 +692,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Tevbe, pişmanlık ve ilahi merhamet talebini derinleştirir; nefis muhasebesini güçlendirir.',
         source: 'Araf 23',
-        tags: ['mevlid-kandili', 'dua', 'tevbe', 'merhamet'],
-        categories: ['kandil', 'özel gün', 'dua', 'istigfar'],
+        tags: ['mevlid-kandili','dua','tevbe','merhamet'],
+        categories: ['kandil','özel gün','dua','istigfar'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['tevbe', 'pişmanlık', 'merhamet talebi'],
+        suitableFor: ['tevbe','pişmanlık','merhamet talebi'],
       },
       {
         key: keyMap.ENBIYA_83,
@@ -702,11 +709,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sabrı, sığınmayı ve rahmet ümidini güçlendirir; sıkıntı anlarında kalbi teslimiyete yöneltir.',
         source: 'Enbiyâ Suresi 83. ayet',
-        tags: ['mevlid-kandili', 'dua', 'sabir', 'rahmet'],
-        categories: ['kandil', 'özel gün', 'dua'],
+        tags: ['mevlid-kandili','dua','sabir','rahmet'],
+        categories: ['kandil','özel gün','dua'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['sıkıntı anları', 'sabır', 'rahmet talebi'],
+        suitableFor: ['sıkıntı anları','sabır','rahmet talebi'],
       },
       {
         key: keyMap.KEMALILLAHI,
@@ -720,11 +727,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Tek bir okunuşta yetmiş bin salavatın manevi sevabına eşdeğer kabul edilen salavat tertibidir.',
         source: 'Salavat mecmuaları',
-        tags: ['mevlid-kandili', 'salavat', 'kemal', 'bereket'],
-        categories: ['kandil', 'özel gün', 'salavat'],
+        tags: ['mevlid-kandili','salavat','kemal','bereket'],
+        categories: ['kandil','özel gün','salavat'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['salavat hatmi', 'manevi bereket', 'peygamber sevgisi'],
+        suitableFor: ['salavat hatmi','manevi bereket','peygamber sevgisi'],
       },
       {
         key: keyMap.DELAIL_HAYRAT,
@@ -738,8 +745,8 @@ const SOURCE_DATASETS = [
         virtue:
           "Üç kez okunduğunda tüm muhabbet ehlinin salavatlarının toplamına ve Delailü'l-Hayrat okumaya denk sayılan bir salavat tertibidir.",
         source: 'Salavat mecmuaları',
-        tags: ['mevlid-kandili', 'salavat', 'delail', 'muhabbet'],
-        categories: ['kandil', 'özel gün', 'salavat'],
+        tags: ['mevlid-kandili','salavat','delail','muhabbet'],
+        categories: ['kandil','özel gün','salavat'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -750,19 +757,19 @@ const SOURCE_DATASETS = [
         ],
       },
       {
-        key: 'mevlid-nur-u-zatiyye-100',
+        key: keyMap.NUR_ZATIYYE,
         nameArabic:
-          'اللّٰهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ النُّورِ الذَّاتِيِّ وَالسِّرِّ السَّارِي فِي سَائِرِ الْأَسْمَاءِ وَالصِّفَاتِ',
+          'اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ نُورِ الذَّاتِ وَالسِّرِّ السَّارِي فِي جَمِيعِ الْأَسْمَاءِ وَالصِّفَاتِ وَعَلَى آلِهِ وَصَحْبِهِ وَسَلِّمْ عَدَدَ مَا فِي عِلْمِكَ مُضَاعَفًا بِدَوَامِكَ',
         nameTurkish: 'Nur-u Zatiyye Salavatı',
         transliteration:
-          'Allâhümme salli ve sellim ve barik alâ seyyidinâ Muhammedin in-nûriz-zâtiyyi ves sirris-sârî fî sâiril esmâi ves sıfât.',
+          "Allâhümme salli ve sellim ve bârik alâ seyyidinâ Muhammedin nûri'z-zâti ve's-sirri's-sârî fî cemî'i'l-esmâi ve's-sıfât, ve alâ âlihî ve sahbihî ve sellim adede mâ fî ilmike muzâafen bi-devâmik.",
         meaning:
-          "Allah'ım, zatî nur ve ilahi isim-sıfatlarda tecelli eden sır sahibi Efendimiz Muhammed'e salat, selam ve bereket eyle.",
+          "Allah'ım! Zât'ının nuru, bütün isim ve sıfatlarının eserlerine akarak yayılan sır olan Efendimiz Muhammed'e, onun Âl ve Ashabına; senin ilminde var olanların adedince ve daimi olmanla katlandıkça katlanacak şekilde salat, selam ve bereket eyle.",
         virtue:
           'Nur-u Zatiyye salavatı olarak bilinir; yüz bin salavat kuvvetinde zihni aydınlattığı kabul edilir.',
         source: 'Salavat mecmuaları',
-        tags: ['mevlid-kandili', 'salavat', 'nur', 'tefekkür'],
-        categories: ['kandil', 'özel gün', 'salavat'],
+        tags: ['mevlid-kandili','salavat','nur','tefekkür'],
+        categories: ['kandil','özel gün','salavat'],
         timeOfDay: 'any',
         recommendedCount: 10,
         suitableFor: [
@@ -770,6 +777,7 @@ const SOURCE_DATASETS = [
           'manevi nur talebi',
           'tefekkür',
           'kapalı kapıların açılması',
+          'sıkıntı ve belaların def edilmesi için'
         ],
       },
       {
@@ -784,8 +792,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kapalı kapıları açan, hakka yardım eden ve hidayet yolunu gösteren en kuvvetli salavatlardan kabul edilir.',
         source: 'Salavat mecmuaları',
-        tags: ['mevlid-kandili', 'salavat', 'feth', 'hidayet'],
-        categories: ['kandil', 'özel gün', 'salavat'],
+        tags: ['mevlid-kandili','salavat','feth','hidayet'],
+        categories: ['kandil','özel gün','salavat'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -806,11 +814,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Denizler mürekkep, ağaçlar kalem olsa sevabının yazılamayacağı nakledilen yüce bir salavat tertibidir.',
         source: 'Salavat mecmuaları',
-        tags: ['mevlid-kandili', 'salavat', 'ehlibeyt', 'muhabbet'],
-        categories: ['kandil', 'özel gün', 'salavat'],
+        tags: ['mevlid-kandili','salavat','ehlibeyt','muhabbet'],
+        categories: ['kandil','özel gün','salavat'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['ehlibeyt muhabbeti', 'derin salavat', 'kandil gecesi'],
+        suitableFor: ['ehlibeyt muhabbeti','derin salavat','kandil gecesi'],
       },
       {
         key: keyMap.RUYADA_GORME_SALAVATI,
@@ -831,7 +839,7 @@ const SOURCE_DATASETS = [
           'ruya',
           'gece-ibadeti',
         ],
-        categories: ['kandil', 'özel gün', 'salavat'],
+        categories: ['kandil','özel gün','salavat'],
         timeOfDay: 'night',
         recommendedCount: 100,
         suitableFor: [
@@ -853,8 +861,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Günde en az 41 kez okunduğunda düğümleri çözen, kederleri gideren ve hastalara şifa vesilesi olan salavat olarak aktarılır.',
         source: 'Salavat mecmuaları',
-        tags: ['mevlid-kandili', 'salavat', 'ferahlik', 'sifa'],
-        categories: ['kandil', 'özel gün', 'salavat', 'dua'],
+        tags: ['mevlid-kandili','salavat','ferahlik','sifa'],
+        categories: ['kandil','özel gün','salavat','dua'],
         timeOfDay: 'any',
         recommendedCount: 41,
         suitableFor: [
@@ -879,11 +887,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Korku, bela, deprem ve afetlerden korunmaya vesile bir kalkan duası olarak aktarılır.',
         source: 'Salavat mecmuaları',
-        tags: ['mevlid-kandili', 'salavat', 'korunma', 'münciye'],
-        categories: ['kandil', 'özel gün', 'salavat', 'dua'],
+        tags: ['mevlid-kandili','salavat','korunma','münciye'],
+        categories: ['kandil','özel gün','salavat','dua'],
         timeOfDay: 'any',
         recommendedCount: 41,
-        suitableFor: ['afetlerden korunma', 'korku anları', 'emniyet duası'],
+        suitableFor: ['afetlerden korunma','korku anları','emniyet duası'],
       },
       {
         key: keyMap.MEVLID_HAMD,
@@ -897,11 +905,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Dil, kalp ve şükür boyutunu birlikte canlandırır; geceyi zikirle ihyaya destek olur.',
         source: 'Tesbih ve tahmid zikirleri',
-        tags: ['mevlid-kandili', 'tesbih', 'tahmid'],
-        categories: ['kandil', 'özel gün', 'tesbih'],
+        tags: ['mevlid-kandili','tesbih','tahmid'],
+        categories: ['kandil','özel gün','tesbih'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['şükür', 'zikir meclisi', 'kandil gecesi'],
+        suitableFor: ['şükür','zikir meclisi','kandil gecesi'],
       },
       {
         key: keyMap.MEVLID_RAHMET,
@@ -915,11 +923,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Peygamber ahlakına yönelmeyi, Allah sevgisini ve salih amel niyetini güçlendirir.',
         source: 'Tirmizi, Deavat',
-        tags: ['mevlid-kandili', 'dua', 'muhabbet'],
-        categories: ['kandil', 'özel gün', 'dua'],
+        tags: ['mevlid-kandili','dua','muhabbet'],
+        categories: ['kandil','özel gün','dua'],
         timeOfDay: 'night',
         recommendedCount: 100,
-        suitableFor: ['muhabbet', 'ahlak niyeti', 'gece duası'],
+        suitableFor: ['muhabbet','ahlak niyeti','gece duası'],
       },
     ],
     specialDays: [
@@ -947,7 +955,7 @@ const SOURCE_DATASETS = [
           keyMap.HZYUSUF,
           keyMap.KEMALILLAHI,
           keyMap.DELAIL_HAYRAT,
-          'mevlid-nur-u-zatiyye-100',
+          keyMap.NUR_ZATIYYE,
           keyMap.SALAVAT_FATIH,
           keyMap.HZ_FATIMA_SALAVATI,
           keyMap.RUYADA_GORME_SALAVATI,
@@ -964,7 +972,7 @@ const SOURCE_DATASETS = [
     label: 'Muharrem İlk 10 Gün 2026',
     dhikrItems: [
       {
-        key: 'muharrem-ayetel-kursi-360',
+        key: keyMap.AYETEL_KURSI,
         nameArabic:
           'اللّٰهُ لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
         nameTurkish: 'Âyetel Kürsî',
@@ -973,16 +981,16 @@ const SOURCE_DATASETS = [
         meaning:
           "Allah, kendisinden başka ilah olmayandır; diridir, kayyumdur. O'nu ne uyuklama ne uyku tutar. Göklerde ve yerde ne varsa O'nundur. İzni olmadan katında kim şefaat edebilir? Kulların önlerindekini ve arkalarındakini bilir. O'nun dilediği kadarının dışında ilminden hiçbir şeyi kuşatamazlar. Kürsüsü gökleri ve yeri kaplamıştır; onları koruyup gözetmek O'na ağır gelmez. O yücedir, büyüktür.",
         virtue:
-          'Yıl boyunca maddi ve manevi belalardan korunma niyetiyle ilahi himayeye sığınma bilincini güçlendirir.',
+          'Yıl boyunca maddi ve manevi belalardan korunma niyetiyle ilahi himayeye sığınma bilincini güçlendirir. Şeytan, cin, nazar ve manevi baskılara karşı en güçlü korunma ayetlerinden biri kabul edilir.',
         source: 'Bakara 255',
-        tags: ['muharrem', 'hicri-yilbasi', 'korunma', 'güven', 'ayetel-kursi'],
-        categories: ['özel gün', 'muharrem', 'kuran'],
+        tags: ['muharrem','hicri-yilbasi','korunma','güven','ayetel-kursi'],
+        categories: ['özel gün','muharrem','kuran'],
         timeOfDay: 'any',
         recommendedCount: 360,
-        suitableFor: ['korunma', 'güven', 'hicri yılbaşı', 'muharrem ilk 10'],
+        suitableFor: ['korunma','güven','hicri yılbaşı','muharrem ilk 10','nazar ve vesvese','ev koruması'],
       },
       {
-        key: 'muharrem-bakiyat-salihat-100',
+        key: keyMap.BAKIYAT_SALIHAT,
         nameArabic: 'سُبْحَانَ اللّٰهِ وَالْحَمْدُ لِلّٰهِ وَاللّٰهُ أَكْبَرُ',
         nameTurkish: 'Bakıyat-ı Salihat Zikri',
         transliteration: 'Sübhanellahi velhamdü lillahi vallahü ekber.',
@@ -990,14 +998,14 @@ const SOURCE_DATASETS = [
         virtue:
           'Şükür, tesbih ve tekbir bilincini birlikte pekiştirir; varoluşsal şükranı canlı tutar.',
         source: 'Bakiyat-ı Salihat rivayetleri',
-        tags: ['muharrem', 'tesbih', 'hamd', 'tekbir'],
-        categories: ['özel gün', 'muharrem', 'tesbih'],
+        tags: ['muharrem','tesbih','hamd','tekbir'],
+        categories: ['özel gün','muharrem','tesbih'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['şükür', 'muharrem ilk 10', 'manevi denge'],
+        suitableFor: ['şükür','muharrem ilk 10','manevi denge'],
       },
       {
-        key: 'muharrem-ya-selam-313',
+        key: keyMap.YA_SELAM,
         nameArabic: 'يَا سَلَامُ',
         nameTurkish: 'Ya Selam (c.c.)',
         transliteration: 'Yâ Selâm.',
@@ -1005,14 +1013,14 @@ const SOURCE_DATASETS = [
         virtue:
           'Bedensel ve ruhsal esenlik niyetini güçlendirir; barış ve sükun talebini diri tutar.',
         source: 'Esma-i Hüsna',
-        tags: ['muharrem', 'esma', 'selamet', 'baris'],
-        categories: ['özel gün', 'muharrem', 'esma'],
+        tags: ['muharrem','esma','selamet','baris'],
+        categories: ['özel gün','muharrem','esma'],
         timeOfDay: 'any',
         recommendedCount: 313,
-        suitableFor: ['huzur', 'muharrem ilk 10', 'barış niyeti'],
+        suitableFor: ['huzur','muharrem ilk 10','barış niyeti'],
       },
       {
-        key: 'muharrem-ya-rahman-ya-rahim-100',
+        key: keyMap.YA_RAHMAN_YA_RAHIM,
         nameArabic: 'يَا رَحْمٰنُ يَا رَحِيمُ',
         nameTurkish: 'Ya Rahman Ya Rahim',
         transliteration: 'Yâ Rahmân, Yâ Rahîm.',
@@ -1020,11 +1028,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Merhamet, şefkat ve empati bilincini artırır; kalbi yumuşatır.',
         source: 'Esma-i Hüsna',
-        tags: ['muharrem', 'esma', 'rahmet', 'merhamet'],
-        categories: ['özel gün', 'muharrem', 'esma'],
+        tags: ['muharrem','esma','rahmet','merhamet'],
+        categories: ['özel gün','muharrem','esma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['merhamet', 'muharrem ilk 10', 'kalp yumuşaması'],
+        suitableFor: ['merhamet','muharrem ilk 10','kalp yumuşaması'],
       },
       {
         key: keyMap.TEVHID,
@@ -1035,8 +1043,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kimlik ve aidiyet bilincini tazeler; Nebevi rehberliğe bağlılığı güçlendirir.',
         source: 'Kelime-i tevhid geleneği',
-        tags: ['muharrem', 'tevhid', 'risalet', 'aidiyet'],
-        categories: ['özel gün', 'tevhid'],
+        tags: ['muharrem','tevhid','risalet','aidiyet'],
+        categories: ['özel gün','tevhid'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1048,7 +1056,7 @@ const SOURCE_DATASETS = [
         ],
       },
       {
-        key: 'muharrem-selamun-kavlen-41',
+        key: keyMap.SELAMUN_KAVLEN,
         nameArabic: 'سَلَامٌ قَوْلًا مِنْ رَبٍّ رَحِيمٍ',
         nameTurkish: 'Selamün Kavlen Mirrabbirrahim',
         transliteration: 'Selâmün kavlen mir rabbir rahîm.',
@@ -1056,14 +1064,14 @@ const SOURCE_DATASETS = [
         virtue:
           'Selamet, umut ve güven duygusunu besler; kalbe rahmet iklimi kazandırır.',
         source: 'Yasin 58',
-        tags: ['muharrem', 'kuran', 'selamet', 'umut'],
-        categories: ['özel gün', 'muharrem', 'kuran'],
+        tags: ['muharrem','kuran','selamet','umut'],
+        categories: ['özel gün','muharrem','kuran'],
         timeOfDay: 'any',
         recommendedCount: 41,
-        suitableFor: ['umut', 'muharrem ilk 10', 'manevi teselli'],
+        suitableFor: ['umut','muharrem ilk 10','manevi teselli'],
       },
       {
-        key: 'muharrem-kelime-i-sehadet-33',
+        key: keyMap.SEHADET,
         nameArabic:
           'أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللّٰهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللّٰهِ',
         nameTurkish: 'Kelime-i Şehadet',
@@ -1074,11 +1082,11 @@ const SOURCE_DATASETS = [
         virtue:
           'İman ikrarını yeniler; Aşure gününde tevhid ve teslimiyet şuurunu pekiştirir.',
         source: 'Kelime-i şehadet geleneği',
-        tags: ['muharrem', 'asure', 'iman', 'sehadet'],
-        categories: ['özel gün', 'muharrem', 'tevhid'],
+        tags: ['muharrem','asure','iman','sehadet'],
+        categories: ['özel gün','muharrem','tevhid'],
         timeOfDay: 'any',
         recommendedCount: 33,
-        suitableFor: ['aşure günü', 'iman tazeleme', 'muharrem ilk 10'],
+        suitableFor: ['aşure günü','iman tazeleme','muharrem ilk 10'],
       },
     ],
     specialDays: [
@@ -1096,7 +1104,7 @@ const SOURCE_DATASETS = [
         dhikrKeys: [
           keyMap.ESTAGFIRULLAH,
           keyMap.IHLAS,
-          'muharrem-ayetel-kursi-360',
+          keyMap.AYETEL_KURSI,
         ],
       },
       {
@@ -1109,7 +1117,7 @@ const SOURCE_DATASETS = [
         dayIndex: 2,
         dayCount: 10,
         priority: 160,
-        dhikrKeys: ['muharrem-bakiyat-salihat-100'],
+        dhikrKeys: [keyMap.BAKIYAT_SALIHAT],
       },
       {
         name: '3 Muharrem',
@@ -1121,7 +1129,7 @@ const SOURCE_DATASETS = [
         dayIndex: 3,
         dayCount: 10,
         priority: 160,
-        dhikrKeys: ['muharrem-ya-selam-313'],
+        dhikrKeys: [keyMap.YA_SELAM],
       },
       {
         name: '4 Muharrem',
@@ -1145,7 +1153,7 @@ const SOURCE_DATASETS = [
         dayIndex: 5,
         dayCount: 10,
         priority: 160,
-        dhikrKeys: ['muharrem-ya-rahman-ya-rahim-100'],
+        dhikrKeys: [keyMap.YA_RAHMAN_YA_RAHIM],
       },
       {
         name: '6 Muharrem',
@@ -1193,7 +1201,7 @@ const SOURCE_DATASETS = [
         dayIndex: 9,
         dayCount: 10,
         priority: 160,
-        dhikrKeys: ['muharrem-selamun-kavlen-41'],
+        dhikrKeys: [keyMap.SELAMUN_KAVLEN],
       },
       {
         name: '10 Muharrem (Aşure)',
@@ -1205,7 +1213,7 @@ const SOURCE_DATASETS = [
         dayIndex: 10,
         dayCount: 10,
         priority: 170,
-        dhikrKeys: ['muharrem-kelime-i-sehadet-33', keyMap.IHLAS],
+        dhikrKeys: [keyMap.SEHADET,keyMap.IHLAS],
       },
     ],
   },
@@ -1225,11 +1233,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sınav salonuna girerken veya sıraya oturunca okunması tavsiye edilir; iç huzur ve ilahi destek hissini güçlendirir.',
         source: 'İsrâ Suresi, 80. Ayet',
-        tags: ['sinav', 'yazili', 'basari', 'dua'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','basari','dua'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 10,
-        suitableFor: ['sınav öncesi', 'mülakat öncesi', 'heyecan yönetimi'],
+        suitableFor: ['sınav öncesi','mülakat öncesi','heyecan yönetimi'],
       },
       {
         key: 'sinav-rabbisrahli-sadri',
@@ -1243,11 +1251,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Zihinsel tıkanıklık, ifade zorluğu ve sınav kaygısına karşı okunur; odaklanmayı destekler. Toplantı, sunum, mülakat ve önemli görüşmeler öncesinde heyecanı yatıştırmak, hitabet gücünü artırmak ve zihni açmak için okunur.',
         source: 'Tâ-Hâ Suresi, 25-28. Ayetler',
-        tags: ['sinav', 'yazili', 'odak', 'ifade'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','odak','ifade'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['sınav anı', 'sözlü sınav', 'sunum öncesi'],
+        suitableFor: ['sınav anı','sözlü sınav','sunum öncesi'],
       },
       {
         key: 'sinav-rabbi-yessir',
@@ -1258,11 +1266,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ders çalışmaya veya sınava başlarken okunur; işin kolay ve hayırlı tamamlanmasına niyet eder.',
         source: 'İslâmî Dua ve Münacat Geleneği',
-        tags: ['sinav', 'yazili', 'kolaylik', 'dua'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','kolaylik','dua'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 33,
-        suitableFor: ['ders başlangıcı', 'sınav öncesi', 'zor konu çalışması'],
+        suitableFor: ['ders başlangıcı','sınav öncesi','zor konu çalışması'],
       },
       {
         key: 'sinav-sekine-fetih',
@@ -1277,11 +1285,11 @@ const SOURCE_DATASETS = [
           'Unutkanlığa karşı ve zihinsel açıklık niyetiyle sınavdan önce veya ders başında okunur.',
         source:
           "Mecmuatü'l-Ahzab (Hz. Ali'den nakledilen Sekine duası tertibi)",
-        tags: ['sinav', 'yazili', 'sekine', 'feth'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','sekine','feth'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 19,
-        suitableFor: ['hafıza güçlendirme', 'odaklanma', 'sınav hazırlığı'],
+        suitableFor: ['hafıza güçlendirme','odaklanma','sınav hazırlığı'],
       },
       {
         key: 'sinav-ya-hayyu-ya-kayyum',
@@ -1294,11 +1302,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sınav başlarken okunması tavsiye edilir; panik anlarında zihinsel berraklık sağlar. İşlerin ters gittiği, kriz anlarında veya karar mekanizmalarında tıkanıklık yaşandığında tüm süreçlerin düzene girmesi ve ilahi yardıma nail olmak için okunur.',
         source: "Tirmizî, De'avât, 90",
-        tags: ['sinav', 'yazili', 'yardim', 'sukunet'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','yardim','sukunet'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 10,
-        suitableFor: ['sınav anı', 'panik kontrolü', 'zihinsel berraklık'],
+        suitableFor: ['sınav anı','panik kontrolü','zihinsel berraklık'],
       },
       {
         key: 'sinav-allahumme-la-sehle',
@@ -1313,11 +1321,11 @@ const SOURCE_DATASETS = [
           'Zor soru veya karmaşık problemle karşılaşıldığında okunur; zihinsel kilidi çözmeye yardımcı olur.',
         source:
           "İbn Hibbân, Sahih, no: 2427; İbnü's-Sünnî, Amelü'l-Yevm, no: 351",
-        tags: ['sinav', 'yazili', 'zor-soru', 'kolaylik'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','zor-soru','kolaylik'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['zor sorular', 'problem çözme', 'sınav stresi'],
+        suitableFor: ['zor sorular','problem çözme','sınav stresi'],
       },
       {
         key: 'sinav-estevdiuke-ilim',
@@ -1331,11 +1339,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ders bitiminde veya sınav öncesinde okunur; öğrenilen bilginin hatırlanmasına niyet eder.',
         source: "ed-Dürretü'l-harîde, 1/53",
-        tags: ['sinav', 'yazili', 'hafiza', 'dua'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','hafiza','dua'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 3,
-        suitableFor: ['unutkanlık', 'ders sonrası', 'bilgi hatırlama'],
+        suitableFor: ['unutkanlık','ders sonrası','bilgi hatırlama'],
       },
       {
         key: 'sinav-rabbi-zidni-ilmen',
@@ -1346,11 +1354,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Öğrenme, anlama ve kavrama gücünün artması amacıyla sıkça zikredilir.',
         source: 'Tâ-Hâ Suresi, 114. Ayet',
-        tags: ['sinav', 'yazili', 'ilim', 'gelisim'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','ilim','gelisim'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 33,
-        suitableFor: ['ders çalışma', 'öğrenme isteği', 'kavrama gücü'],
+        suitableFor: ['ders çalışma','öğrenme isteği','kavrama gücü'],
       },
       {
         key: 'sinav-senukriuke-fela-tensa',
@@ -1361,11 +1369,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Zihin açıklığı ve ezberlenen bilgiyi muhafaza etme niyetiyle düzenli okunur.',
         source: "A'lâ Suresi, 6. Ayet",
-        tags: ['sinav', 'yazili', 'hafiza', 'ezber'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','hafiza','ezber'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 33,
-        suitableFor: ['ezber', 'unutkanlık', 'sınav hazırlığı'],
+        suitableFor: ['ezber','unutkanlık','sınav hazırlığı'],
       },
       {
         key: 'sinav-bismillahi-ve-subhanellahi',
@@ -1379,11 +1387,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Okuma-yazma sürecinde zihni diri tutmaya, manevi motivasyonu ve dikkat sürekliliğini artırmaya niyet edilir.',
         source: "ed-Dürretü'l-harîde, 1/53",
-        tags: ['sinav', 'yazili', 'tesbih', 'havkale'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','tesbih','havkale'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 11,
-        suitableFor: ['yazılı sınav', 'odaklanma', 'zihinsel canlılık'],
+        suitableFor: ['yazılı sınav','odaklanma','zihinsel canlılık'],
       },
       {
         key: 'sinav-allahumme-hirli',
@@ -1396,11 +1404,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Şıklı sorularda ve karar gerektiren anlarda doğru tercihe yönelmek için okunur.',
         source: "Tirmizî, De'avât, 90",
-        tags: ['sinav', 'yazili', 'tercih', 'dua'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','tercih','dua'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 11,
-        suitableFor: ['çoktan seçmeli sınav', 'kararsızlık', 'isabetli tercih'],
+        suitableFor: ['çoktan seçmeli sınav','kararsızlık','isabetli tercih'],
       },
       {
         key: 'sinav-nun-vel-kalemi',
@@ -1411,8 +1419,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Yazılı sınavlarda düşünceleri kağıda dökme, analitik kurguyu doğru kurma ve ifadeyi berraklaştırma niyetiyle okunur.',
         source: 'Kalem Suresi, 1. Ayet',
-        tags: ['sinav', 'yazili', 'kalem', 'ifade', 'yazim-berrakligi'],
-        categories: ['genel', 'egitim', 'sinav'],
+        tags: ['sinav','yazili','kalem','ifade','yazim-berrakligi'],
+        categories: ['genel','egitim','sinav'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -1441,8 +1449,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Derecenin hem Allah hem insanlar katında artması; sevilen, sayılan, sözü geçen biri olmak; her türlü şeytan ve nefis şerrinden korunmak; uykuda meleklerin yardımına nail olmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'allah', 'tevhid', 'korunma'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma'],
+        tags: ['esma','esmaul-husna','allah','tevhid','korunma'],
+        categories: ['genel','esma','esmaul-husna','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1464,8 +1472,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Dünya ve ahirette ilahi sevgi kazanmak; farz namaz ardı 100 zikirle rıza bulmak; 40 gün riyazetle 1000 zikirle kalp gözünün açılması; her arzunun gerçekleşmesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'rahmet', 'merhamet', 'dua'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rahmet'],
+        tags: ['esma','esmaul-husna','rahmet','merhamet','dua'],
+        categories: ['genel','esma','esmaul-husna','rahmet'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1487,8 +1495,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi ve manevi bol rızık; belalardan, kazalardan ve afetlerden korunma; uykuda ağlayan/korkan çocukların şifası; ahlak güzelliği ve fiziki iyileşme.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'rahmet', 'rizik', 'sifa'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rahmet', 'şifa'],
+        tags: ['esma','esmaul-husna','rahmet','rizik','sifa'],
+        categories: ['genel','esma','esmaul-husna','rahmet','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1510,8 +1518,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi ve manevi güçlü olmak; insanlara sözünü dinletip emir sahibi olmak; her sabah namazı ardı 121 zikirle fakirlikten kalıcı kurtuluş; gizli sırlara ve ilme vakıf olmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'mulk', 'guc', 'rizik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','mulk','guc','rizik'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1533,8 +1541,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi-manevi her türlü temizlik; nefsi şehvetten ve manevi hastalıklardan koruma; vesveseden ve şeytanın hilelerinden uzaklaşıp insanlar arasında saygı görmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'temizlik', 'arinma', 'vesvese'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'manevi-arinma'],
+        tags: ['esma','esmaul-husna','temizlik','arinma','vesvese'],
+        categories: ['genel','esma','esmaul-husna','manevi-arinma'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1556,8 +1564,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Korkulardan emin olmak; hastanın üzerine okunduğunda fiziki şifa; kabza yazılıp aç karnına içildiğinde vesvese hastalığının yok olması; her duanın kabule ulaşması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'selamet', 'sifa', 'dua'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'korunma'],
+        tags: ['esma','esmaul-husna','selamet','sifa','dua'],
+        categories: ['genel','esma','esmaul-husna','şifa','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1579,8 +1587,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kötü ve bulaşıcı hastalıklara yakalanmamak; dili yalandan, küfürden, riyadan, zinadan, kibirden ve hasetten uzaklaştırmak; kimseye muhtaç olmamak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'iman', 'korunma', 'ahlak'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'iman', 'korunma'],
+        tags: ['esma','esmaul-husna','iman','korunma','ahlak'],
+        categories: ['genel','esma','esmaul-husna','iman','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1602,8 +1610,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İnsanların düşüncelerini ve niyetlerini okumak; unutkanlıktan kurtulmak; yatsı namazı sonrası okuyup uyuyana rüyada olacak hadiselerin bildirilmesi; bela ve musibetten korunma.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'korunma', 'basiret', 'hafiza'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'basiret'],
+        tags: ['esma','esmaul-husna','korunma','basiret','hafiza'],
+        categories: ['genel','esma','esmaul-husna','korunma','basiret'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1625,8 +1633,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Düşmanlara ezici üstünlük sağlamak; kendini insanlara sevdirmek; iş ve isteklerin geri çevrilmemesi; evden çıkarken okunduğunda dünya ve ahiret bahtiyarlığı.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'izzet', 'basari', 'sevgi'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'itibar'],
+        tags: ['esma','esmaul-husna','izzet','basari','sevgi'],
+        categories: ['genel','esma','esmaul-husna','başarı','itibar'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1648,8 +1656,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İsteklerin gerçekleşmesi; insanların ve cinlerin şerrinden emin olmak; düşmanların helaki; "Ya Zülcelali Vel İkram" ile yazıldığında insanlara şirin ve heybetli görünmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'azamet', 'korunma', 'hacet'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'hacet'],
+        tags: ['esma','esmaul-husna','azamet','korunma','hacet'],
+        categories: ['genel','esma','esmaul-husna','korunma','hacet'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1671,8 +1679,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İzzet ve refaha nail olmak; konuşurken muhatapları tesir altında bırakmak; itibar kazanmak; kötü ahlaklı ve haram işleyen kişilerin ıslah olması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'izzet', 'refah', 'itibar'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'itibar'],
+        tags: ['esma','esmaul-husna','izzet','refah','itibar'],
+        categories: ['genel','esma','esmaul-husna','itibar'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1693,8 +1701,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İşlerde üzüntü ve darlıktan kurtulmak; her işte başarı; zor akıl hastalarına yazılıp taşıtıldığında şifa; çözülmesi imkansız görülen işlerin kolayca çözülmesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'yaratilis', 'basari', 'sifa'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'şifa'],
+        tags: ['esma','esmaul-husna','yaratilis','basari','sifa'],
+        categories: ['genel','esma','esmaul-husna','başarı','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1715,8 +1723,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İş hayatında olağanüstü başarı ve şöhret; düşmanları yenmek; zihin ve aklın gelişimi; ağır işlerin kolaylaşması; bir sene devamla zikredildiğinde şifacılık yeteneği.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'yaratilis', 'is-hayati', 'zihin'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'is-hayati', 'şifa'],
+        tags: ['esma','esmaul-husna','yaratilis','is-hayati','zihin'],
+        categories: ['genel','esma','esmaul-husna','is-hayati','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1738,8 +1746,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Maksat ve merama ulaşmak; en zor işleri başarmak; sanatkarlar için yaratıcılık; ruhanilerle irtibat kurmak; sıkıntılardan arınmak; ahlaklı evlat sahibi olmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'yaraticilik', 'evlat', 'basari'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'evlat'],
+        tags: ['esma','esmaul-husna','yaraticilik','evlat','basari'],
+        categories: ['genel','esma','esmaul-husna','başarı','evlat'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1760,8 +1768,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Günahların bağışlanması ve korunması; hata ve isyanlardan arınma; düşman ve hasımların gözünde görünmez (zararsız) hale gelmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'magfiret', 'tevbe', 'korunma'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'manevi-arinma', 'korunma'],
+        tags: ['esma','esmaul-husna','magfiret','tevbe','korunma'],
+        categories: ['genel','esma','esmaul-husna','manevi-arinma','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1782,8 +1790,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Din düşmanlarının, zalimlerin ve zorbaların kahrından kurtulmak; nefs-i emmarenin isteklerini ve kötü huyları ezmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'korunma', 'nefis', 'kotu-huy'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'nefis-terbiyesi'],
+        tags: ['esma','esmaul-husna','korunma','nefis','kotu-huy'],
+        categories: ['genel','esma','esmaul-husna','korunma','nefis-terbiyesi'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1804,8 +1812,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Sıkıntısız, borçsuz ve son derece konforlu bir yaşam; rızkın artması; mahlukata karşı güçlü ve heybetli görünmek; duaların hızla kabulü.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'rizik', 'borc', 'dua'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'dua'],
+        tags: ['esma','esmaul-husna','rizik','borc','dua'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket','dua'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1826,8 +1834,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Rızık bolluğu; maddi sıkıntıların kalıcı bitişi; zihin açılması; resmi işlerin çözülmesi; sabah namazı öncesi okunup üflendiğinde eve kötülük girmemesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'rizik', 'bereket', 'zihin'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','rizik','bereket','zihin'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1848,8 +1856,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi ve manevi hayır kapılarının açılması; ticarette başarı; darlık çekmemek; kalbin nurlanması; rüyada bilinmeyen sırların gösterilmesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'feth', 'ticaret', 'basari'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','feth','ticaret','basari'],
+        categories: ['genel','esma','esmaul-husna','başarı','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1870,8 +1878,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İlim zenginliği; gizli sırlara vakıf olmak; hikmetli konuşma; anlayış ve zeka artışı; ilahi marifete ulaşmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'ilim', 'zeka', 'hikmet'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'egitim'],
+        tags: ['esma','esmaul-husna','ilim','zeka','hikmet'],
+        categories: ['genel','esma','esmaul-husna','ilim','egitim'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1893,8 +1901,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Zalimin zulmünden korunmak; heybet ve celal kazanarak düşman dedikodularını engellemek; nefsani kötü huyları bırakmak; metafizik perdelerin kalkması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'korunma', 'heybet', 'nefis'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'nefis-terbiyesi'],
+        tags: ['esma','esmaul-husna','korunma','heybet','nefis'],
+        categories: ['genel','esma','esmaul-husna','korunma','nefis-terbiyesi'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1915,8 +1923,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Rızkın genişlemesi ve bereket; korkulardan emin olmak; endişelerin gitmesi; kalp gözünün açılması; keyif ve neşenin artması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'rizik', 'bereket', 'ferahlik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'huzur'],
+        tags: ['esma','esmaul-husna','rizik','bereket','ferahlik'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1938,8 +1946,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kötülerin ve belaların defedilmesi; zalimlerin şerrinden korunmak; düşmanlara karşı her daim üstün ve güçlü görünmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'korunma', 'bela', 'dusman'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma'],
+        tags: ['esma','esmaul-husna','korunma','bela','dusman'],
+        categories: ['genel','esma','esmaul-husna','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1960,8 +1968,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İnsanlar arasında ve iş hayatında yükselmek; tevazu sahibi olmak; rızkın artması; düşmanların kalbine korku salmak; fakirlikten korunma.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'yukselis', 'is-hayati', 'rizik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'is-hayati', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','yukselis','is-hayati','rizik'],
+        categories: ['genel','esma','esmaul-husna','is-hayati','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -1983,8 +1991,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Fakirlik ve zelillikten kurtulmak; gücün ve cesaretin artması; kadri kıymetin yücelmesi; mahlukata karşı heybetli görünmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'izzet', 'cesaret', 'heybet'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'itibar', 'korunma'],
+        tags: ['esma','esmaul-husna','izzet','cesaret','heybet'],
+        categories: ['genel','esma','esmaul-husna','itibar','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2005,8 +2013,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Düşmanları zelil etmek; zalim şerrinden emin olmak; haksızlık yapanları hezimete uğratmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'dusman', 'zalim', 'korunma'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma'],
+        tags: ['esma','esmaul-husna','dusman','zalim','korunma'],
+        categories: ['genel','esma','esmaul-husna','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2026,8 +2034,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Duaların ilahi dergahta hızla kabulü; oruç ve halvetle zikredildiğinde ruhsal hassasiyetin artması ve metafizik algıların açılması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'dua', 'halvet', 'basiret'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'dua', 'basiret'],
+        tags: ['esma','esmaul-husna','dua','halvet','basiret'],
+        categories: ['genel','esma','esmaul-husna','dua','basiret'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2048,8 +2056,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Acziyetin ortadan kalkması; basiretli ve sezgileri güçlü biri olmak; dünya ve ahiret korkularından tamamen kurtulmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'basiret', 'sezgi', 'korku'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'basiret', 'huzur'],
+        tags: ['esma','esmaul-husna','basiret','sezgi','korku'],
+        categories: ['genel','esma','esmaul-husna','basiret','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2070,8 +2078,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Haklı davayı kazanmak; insanlar arasında hak ve adaletle hüküm vermek; olayların iç yüzünü kavrama yeteneği.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'adalet', 'hak', 'hikmet'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'adalet', 'hikmet'],
+        tags: ['esma','esmaul-husna','adalet','hak','hikmet'],
+        categories: ['genel','esma','esmaul-husna','adalet','hikmet'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2091,8 +2099,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Adaletli olmak; haklı davayı kazanmak; nefsi terbiye etmek; haram işlerden ve kötü ahlaktan uzak durmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'adalet', 'nefis', 'ahlak'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'adalet', 'nefis-terbiyesi'],
+        tags: ['esma','esmaul-husna','adalet','nefis','ahlak'],
+        categories: ['genel','esma','esmaul-husna','adalet','nefis-terbiyesi'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2113,8 +2121,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Dileklerin kabulü; kısmet ve rızkın umulmadık yerlerden artması; zor durumların kolayca atlatılması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'lutuf', 'rizik', 'kolaylik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'dua'],
+        tags: ['esma','esmaul-husna','lutuf','rizik','kolaylik'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket','dua'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2135,8 +2143,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Hafıza ve idrakin genişlemesi; bilinmeyen, gizemli meselelerin rüya ve ilham yoluyla kişiye aşikar olması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'hafiza', 'idrak', 'ilham'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'basiret'],
+        tags: ['esma','esmaul-husna','hafiza','idrak','ilham'],
+        categories: ['genel','esma','esmaul-husna','ilim','basiret'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2157,8 +2165,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Ahlak güzelliği; yumuşak huylu olmak; öfke, hiddet ve sinir krizlerinden kurtulup ruhi sükunete ermek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'ahlak', 'ofke', 'sukunet'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'nefis-terbiyesi'],
+        tags: ['esma','esmaul-husna','ahlak','ofke','sukunet'],
+        categories: ['genel','esma','esmaul-husna','huzur','nefis-terbiyesi'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2179,8 +2187,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Sözünün insanlar üzerinde son derece tesirli ve dinlenir olması; toplum nezdinde büyük heybet ve saygınlık kazanmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'heybet', 'sayginlik', 'soz-etkisi'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'itibar'],
+        tags: ['esma','esmaul-husna','heybet','sayginlik','soz-etkisi'],
+        categories: ['genel','esma','esmaul-husna','itibar'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2201,8 +2209,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Günahların affı; kötü ahlaktan korunmak; stres ve anksiyeteden kurtulup kalbe derin bir huzur ve sekine indirmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'magfiret', 'huzur', 'stres'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'manevi-arinma', 'huzur'],
+        tags: ['esma','esmaul-husna','magfiret','huzur','stres'],
+        categories: ['genel','esma','esmaul-husna','manevi-arinma','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2223,8 +2231,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Verilen nimetlerin şükrünü eda edebilmek; talihin açıklığı; rızıkta ve kazançta bereketin katlanarak artması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'sukur', 'bereket', 'rizik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'şükür', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','sukur','bereket','rizik'],
+        categories: ['genel','esma','esmaul-husna','şükür','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2245,8 +2253,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Zilletten, hor görülmekten kurtulmak; ilim ve manevi derecelerin hızla artması; saygınlık elde etmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'ilim', 'sayginlik', 'yukselis'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'itibar'],
+        tags: ['esma','esmaul-husna','ilim','sayginlik','yukselis'],
+        categories: ['genel','esma','esmaul-husna','ilim','itibar'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2267,8 +2275,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi ve manevi büyüklük; toplumda sözü dinlenen, hürmet ve tazim gören saygın bir lider konumuna gelmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'liderlik', 'sayginlik', 'itibar'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'liderlik', 'itibar'],
+        tags: ['esma','esmaul-husna','liderlik','sayginlik','itibar'],
+        categories: ['genel','esma','esmaul-husna','liderlik','itibar'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2289,8 +2297,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Nefsin, canın ve malın korunması; zalimlerin şerrinden emin olmak; düşmanlara karşı her daim üstünlük sağlamak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'korunma', 'mal', 'can'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma'],
+        tags: ['esma','esmaul-husna','korunma','mal','can'],
+        categories: ['genel','esma','esmaul-husna','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -2311,11 +2319,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Muhtaç olunan rızkı kolayca kazanmak; beden gücü elde etmek; darlık ve açlık korkularından emin olmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'rizik', 'beden-gucu', 'korunma'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'korunma'],
+        tags: ['esma','esmaul-husna','rizik','beden-gucu','korunma'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['rızık kazanmak', 'beden gücü', 'darlıktan korunma', 'açlık korkusundan emin olmak'],
+        suitableFor: ['rızık kazanmak','beden gücü','darlıktan korunma','açlık korkusundan emin olmak'],
       },
       {
         key: 'esmaul-husna-el-hasib',
@@ -2327,11 +2335,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Herkese karşı açık alınlı ve dürüst olmak; korkulardan emin olmak; haksız ithamlardan ve dedikodulardan korunmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'durustluk', 'korunma', 'dedikodu'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'ahlak'],
+        tags: ['esma','esmaul-husna','durustluk','korunma','dedikodu'],
+        categories: ['genel','esma','esmaul-husna','korunma','ahlak'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['dürüstlük', 'korkulardan emin olmak', 'haksız ithamdan korunmak', 'dedikodudan korunmak'],
+        suitableFor: ['dürüstlük','korkulardan emin olmak','haksız ithamdan korunmak','dedikodudan korunmak'],
       },
       {
         key: 'esmaul-husna-el-celil',
@@ -2343,11 +2351,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Toplumda manevi heybet kazanmak; düşmanların kötülük yapmaya cesaret edememesi; saygı duyulan biri olmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'heybet', 'sayginlik', 'korunma'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'itibar', 'korunma'],
+        tags: ['esma','esmaul-husna','heybet','sayginlik','korunma'],
+        categories: ['genel','esma','esmaul-husna','itibar','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['manevi heybet', 'saygınlık', 'düşmanlardan korunma', 'toplumsal itibar'],
+        suitableFor: ['manevi heybet','saygınlık','düşmanlardan korunma','toplumsal itibar'],
       },
       {
         key: 'esmaul-husna-el-kerim',
@@ -2359,11 +2367,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Cömertlik ve güzel ahlak kazanmak; darlıktan kurtulmak; her türlü maddi-manevi lütfa zahmetsizce ulaşmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'comertlik', 'ahlak', 'lutuf'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'ahlak', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','comertlik','ahlak','lutuf'],
+        categories: ['genel','esma','esmaul-husna','ahlak','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['cömertlik', 'güzel ahlak', 'darlıktan kurtulma', 'maddi manevi lütuf'],
+        suitableFor: ['cömertlik','güzel ahlak','darlıktan kurtulma','maddi manevi lütuf'],
       },
       {
         key: 'esmaul-husna-er-rakib',
@@ -2375,11 +2383,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Hırsızlıktan, ihanetten ve kazalardan emin olmak; işlerin kontrol altında aksamadan ilerlemesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'korunma', 'kontrol', 'islerin-ilerlemesi'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'is-hayati'],
+        tags: ['esma','esmaul-husna','korunma','kontrol','islerin-ilerlemesi'],
+        categories: ['genel','esma','esmaul-husna','korunma','is-hayati'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['hırsızlıktan korunma', 'ihanetten korunma', 'kazalardan korunma', 'işlerin düzenli ilerlemesi'],
+        suitableFor: ['hırsızlıktan korunma','ihanetten korunma','kazalardan korunma','işlerin düzenli ilerlemesi'],
       },
       {
         key: 'esmaul-husna-el-mucib',
@@ -2391,11 +2399,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Duaların engelsiz şekilde ilahi huzura kabulü; hayırlı isteklerin hızlıca gerçekleşmesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'dua', 'hacet', 'kabul'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'dua', 'hacet'],
+        tags: ['esma','esmaul-husna','dua','hacet','kabul'],
+        categories: ['genel','esma','esmaul-husna','dua','hacet'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['dua kabulü', 'hayırlı istekler', 'hacet', 'isteklerin gerçekleşmesi'],
+        suitableFor: ['dua kabulü','hayırlı istekler','hacet','isteklerin gerçekleşmesi'],
       },
       {
         key: 'esmaul-husna-el-vasi',
@@ -2407,11 +2415,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kalp ve gönül ferahlığı; rızık darlığından kurtulmak; ömre, rızka ve berekete genişlik kazandırmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'ferahlik', 'rizik', 'bereket'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'huzur'],
+        tags: ['esma','esmaul-husna','ferahlik','rizik','bereket'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['gönül ferahlığı', 'rızık darlığından kurtulma', 'ömür bereketi', 'rızık bereketi'],
+        suitableFor: ['gönül ferahlığı','rızık darlığından kurtulma','ömür bereketi','rızık bereketi'],
       },
       {
         key: 'esmaul-husna-el-hakim',
@@ -2423,11 +2431,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Derin ilim ve hikmet sahibi olmak; engellerin kalkması; işlerde en hayırlı ve isabetli kararları verebilmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'hikmet', 'ilim', 'karar'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'hikmet'],
+        tags: ['esma','esmaul-husna','hikmet','ilim','karar'],
+        categories: ['genel','esma','esmaul-husna','ilim','hikmet'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['ilim', 'hikmet', 'engellerin kalkması', 'isabetli karar', 'hayırlı karar'],
+        suitableFor: ['ilim','hikmet','engellerin kalkması','isabetli karar','hayırlı karar'],
       },
       {
         key: 'esmaul-husna-el-vedud',
@@ -2439,11 +2447,11 @@ const SOURCE_DATASETS = [
         virtue:
           'İnsanlar arasında eşsiz bir sevgi, şefkat ve muhabbet celbi; borçlardan ve maddi sıkıntılardan kurtulmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'sevgi', 'muhabbet', 'borc'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'muhabbet', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','sevgi','muhabbet','borc'],
+        categories: ['genel','esma','esmaul-husna','muhabbet','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['sevgi', 'şefkat', 'muhabbet', 'borçlardan kurtulma', 'maddi sıkıntıdan kurtulma'],
+        suitableFor: ['sevgi','şefkat','muhabbet','borçlardan kurtulma','maddi sıkıntıdan kurtulma'],
       },
       {
         key: 'esmaul-husna-el-mecid',
@@ -2455,11 +2463,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Şan, şeref ve makam kazanmak; insanların sevgisine nail olmak; kalbin manevi kirlerden temizlenmesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'seref', 'makam', 'temizlik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'itibar', 'manevi-arinma'],
+        tags: ['esma','esmaul-husna','seref','makam','temizlik'],
+        categories: ['genel','esma','esmaul-husna','itibar','manevi-arinma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['şan', 'şeref', 'makam', 'insanların sevgisi', 'kalbin temizlenmesi'],
+        suitableFor: ['şan','şeref','makam','insanların sevgisi','kalbin temizlenmesi'],
       },
       {
         key: 'esmaul-husna-el-bais',
@@ -2471,11 +2479,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Alacakları tahsil edebilmek; zalimlerin şerrinden ve iftiralardan hızla kurtulmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'alacak', 'korunma', 'iftira'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','alacak','korunma','iftira'],
+        categories: ['genel','esma','esmaul-husna','korunma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['alacak tahsili', 'zalimlerden korunma', 'iftiradan kurtulma', 'hızlı kurtuluş'],
+        suitableFor: ['alacak tahsili','zalimlerden korunma','iftiradan kurtulma','hızlı kurtuluş'],
       },
       {
         key: 'esmaul-husna-es-sehid',
@@ -2487,11 +2495,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Heybetli görünmek; asi, itaatsiz ve geçimsiz yakınların, eş ve çocukların ıslah olup yola gelmesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'heybet', 'aile', 'islah'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'aile', 'itibar'],
+        tags: ['esma','esmaul-husna','heybet','aile','islah'],
+        categories: ['genel','esma','esmaul-husna','aile','itibar'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['heybet', 'yakınların ıslahı', 'eş ve çocukların yola gelmesi', 'aile huzuru'],
+        suitableFor: ['heybet','yakınların ıslahı','eş ve çocukların yola gelmesi','aile huzuru'],
       },
       {
         key: 'esmaul-husna-el-hakk',
@@ -2503,11 +2511,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Haklı davalarda üstün gelmek; yalan ve batıllardan uzaklaşmak; işlerin doğruluk ve dürüstlük üzere yürümesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'hak', 'adalet', 'durustluk'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'adalet', 'ahlak'],
+        tags: ['esma','esmaul-husna','hak','adalet','durustluk'],
+        categories: ['genel','esma','esmaul-husna','adalet','ahlak'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['haklı davada üstünlük', 'yalanlardan uzaklaşma', 'batıldan uzaklaşma', 'doğruluk', 'dürüstlük'],
+        suitableFor: ['haklı davada üstünlük','yalanlardan uzaklaşma','batıldan uzaklaşma','doğruluk','dürüstlük'],
       },
       {
         key: 'esmaul-husna-el-vekil',
@@ -2519,11 +2527,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ani musibetlerden korunmak; rızık kapılarının açılması; düşman üzerine zöhre saatinde beddua için okunması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'tevekkul', 'korunma', 'rizik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','tevekkul','korunma','rizik'],
+        categories: ['genel','esma','esmaul-husna','korunma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['musibetlerden korunma', 'rızık kapılarının açılması', 'tevekkül', 'düşmandan korunma'],
+        suitableFor: ['musibetlerden korunma','rızık kapılarının açılması','tevekkül','düşmandan korunma'],
       },
       {
         key: 'esmaul-husna-el-kaviyy',
@@ -2535,11 +2543,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kansızlık ve fiziki zayıflıktan kurtulmak; yolculuk kazalarından muhafaza olmak; ağır yükleri kolayca kaldırmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'guc', 'sifa', 'yolculuk'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'korunma'],
+        tags: ['esma','esmaul-husna','guc','sifa','yolculuk'],
+        categories: ['genel','esma','esmaul-husna','şifa','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['fiziki güç', 'kansızlıktan kurtulma', 'yolculuk kazalarından korunma', 'ağır yükleri kaldırmak'],
+        suitableFor: ['fiziki güç','kansızlıktan kurtulma','yolculuk kazalarından korunma','ağır yükleri kaldırmak'],
       },
       {
         key: 'esmaul-husna-el-metin',
@@ -2551,11 +2559,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi-manevi direnç kazanmak; fakirlikten, zulümden, kötü ahlaktan arınmak; manevi sırlara vakıf olmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'direnc', 'korunma', 'sirlar'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'manevi-gelisim'],
+        tags: ['esma','esmaul-husna','direnc','korunma','sirlar'],
+        categories: ['genel','esma','esmaul-husna','korunma','manevi-gelisim'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['manevi direnç', 'fakirlikten kurtulma', 'zulümden arınma', 'kötü ahlaktan arınma', 'manevi sırlar'],
+        suitableFor: ['manevi direnç','fakirlikten kurtulma','zulümden arınma','kötü ahlaktan arınma','manevi sırlar'],
       },
       {
         key: 'esmaul-husna-el-veliyy',
@@ -2567,11 +2575,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Her işte ilahi yardım görmek; ahiret hesabının kolaylaşması; veli kullar zümresine kabul edilmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'yardim', 'velayet', 'ahiret'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'manevi-gelisim', 'yardim'],
+        tags: ['esma','esmaul-husna','yardim','velayet','ahiret'],
+        categories: ['genel','esma','esmaul-husna','manevi-gelisim','yardim'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['ilahi yardım', 'ahiret hesabı', 'salih kullar', 'manevi yakınlık'],
+        suitableFor: ['ilahi yardım','ahiret hesabı','salih kullar','manevi yakınlık'],
       },
       {
         key: 'esmaul-husna-el-hamid',
@@ -2583,11 +2591,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ahlakın ve amellerin güzelleşmesi; kazancın helal yoldan genişlemesi; mahlukatın sevgisi; namaz ardı 100 okuma ile salih olmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'hamd', 'ahlak', 'helal-rizik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'ahlak', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','hamd','ahlak','helal-rizik'],
+        categories: ['genel','esma','esmaul-husna','ahlak','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['ahlak güzelliği', 'amel güzelliği', 'helal kazanç', 'mahlukatın sevgisi', 'salih olmak'],
+        suitableFor: ['ahlak güzelliği','amel güzelliği','helal kazanç','mahlukatın sevgisi','salih olmak'],
       },
       {
         key: 'esmaul-husna-el-muhsi',
@@ -2599,11 +2607,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Zekanın olağanüstü kuvvetlenmesi; unutkanlığın tamamen gitmesi; muhatap kalplerin itaat etmesi; hastalıklara şifa.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'zeka', 'hafiza', 'sifa'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'şifa'],
+        tags: ['esma','esmaul-husna','zeka','hafiza','sifa'],
+        categories: ['genel','esma','esmaul-husna','ilim','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['zeka güçlenmesi', 'unutkanlıktan kurtulma', 'kalplere tesir', 'hastalıklara şifa'],
+        suitableFor: ['zeka güçlenmesi','unutkanlıktan kurtulma','kalplere tesir','hastalıklara şifa'],
       },
       {
         key: 'esmaul-husna-el-mubdi',
@@ -2615,11 +2623,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Girişilen işlerde üstün başarı; karar verme güçlüklerini aşmak; başlanan projeleri bitirmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'basari', 'karar', 'proje'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'is-hayati'],
+        tags: ['esma','esmaul-husna','basari','karar','proje'],
+        categories: ['genel','esma','esmaul-husna','başarı','is-hayati'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['işlerde başarı', 'karar verme', 'projeleri bitirmek', 'başlangıç bereketi'],
+        suitableFor: ['işlerde başarı','karar verme','projeleri bitirmek','başlangıç bereketi'],
       },
       {
         key: 'esmaul-husna-el-muid',
@@ -2631,11 +2639,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kaybedilen itibar, mevki ve makamı geri kazanmak; altüst olmuş işlerin yeniden düzene girmesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'itibar', 'makam', 'duzen'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'itibar', 'is-hayati'],
+        tags: ['esma','esmaul-husna','itibar','makam','duzen'],
+        categories: ['genel','esma','esmaul-husna','itibar','is-hayati'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['itibarı geri kazanmak', 'makamı geri kazanmak', 'işlerin düzene girmesi', 'yeniden toparlanma'],
+        suitableFor: ['itibarı geri kazanmak','makamı geri kazanmak','işlerin düzene girmesi','yeniden toparlanma'],
       },
       {
         key: 'esmaul-husna-el-muhyi',
@@ -2647,11 +2655,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Şifacılık yeteneklerinin uyanması; kalbin gafletten uyanıp dirilmesi; ağır ve kronik hastalıklardan kurtuluş.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'sifa', 'kalp', 'dirilis'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'manevi-gelisim'],
+        tags: ['esma','esmaul-husna','sifa','kalp','dirilis'],
+        categories: ['genel','esma','esmaul-husna','şifa','manevi-gelisim'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['şifacılık', 'kalp diriliği', 'gafletten uyanma', 'kronik hastalıklardan kurtuluş'],
+        suitableFor: ['şifacılık','kalp diriliği','gafletten uyanma','kronik hastalıklardan kurtuluş'],
       },
       {
         key: 'esmaul-husna-el-mumit',
@@ -2663,11 +2671,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Nefsin harama olan meylini ve şehvetini köreltmek; düşmanların her türlü kötü planını iptal etmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'nefis', 'korunma', 'dusman'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'nefis-terbiyesi', 'korunma'],
+        tags: ['esma','esmaul-husna','nefis','korunma','dusman'],
+        categories: ['genel','esma','esmaul-husna','nefis-terbiyesi','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['haramdan uzaklaşma', 'şehveti köreltmek', 'düşman planlarından korunma', 'nefis terbiyesi'],
+        suitableFor: ['haramdan uzaklaşma','şehveti köreltmek','düşman planlarından korunma','nefis terbiyesi'],
       },
       {
         key: 'esmaul-husna-el-hayy',
@@ -2679,11 +2687,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Genç, zinde ve diri kalmak; bedensel güçlenme; uzun ve sağlıklı ömür; kalbin tevhid nuruyla dolması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'hayat', 'saglik', 'tevhid'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'manevi-gelisim'],
+        tags: ['esma','esmaul-husna','hayat','saglik','tevhid'],
+        categories: ['genel','esma','esmaul-husna','şifa','manevi-gelisim'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['zindelik', 'bedensel güç', 'sağlıklı ömür', 'tevhid bilinci', 'kalp nuru'],
+        suitableFor: ['zindelik','bedensel güç','sağlıklı ömür','tevhid bilinci','kalp nuru'],
       },
       {
         key: 'esmaul-husna-el-kayyum',
@@ -2695,11 +2703,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ruhsal ve psikolojik rahatsızlıkların tedavisi; işlerin süreklilik ve istikrar kazanması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'istikrar', 'psikoloji', 'sifa'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'huzur'],
+        tags: ['esma','esmaul-husna','istikrar','psikoloji','sifa'],
+        categories: ['genel','esma','esmaul-husna','şifa','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['ruhsal denge', 'psikolojik rahatlama', 'işlerde istikrar', 'süreklilik'],
+        suitableFor: ['ruhsal denge','psikolojik rahatlama','işlerde istikrar','süreklilik'],
       },
       {
         key: 'esmaul-husna-el-vacid',
@@ -2711,11 +2719,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kaybedilen değerli şeyleri bulmak; kalbin manevi zenginliği; mevcut nimetlerin elden çıkmasını engellemek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'bulmak', 'nimet', 'manevi-zenginlik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','bulmak','nimet','manevi-zenginlik'],
+        categories: ['genel','esma','esmaul-husna','huzur','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['kaybolanı bulmak', 'manevi zenginlik', 'nimetleri korumak', 'muhtaç olmamak'],
+        suitableFor: ['kaybolanı bulmak','manevi zenginlik','nimetleri korumak','muhtaç olmamak'],
       },
       {
         key: 'esmaul-husna-el-macid',
@@ -2727,11 +2735,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kan basıncının dengelenmesi; şan ve şerefin artması; maddi imkanların genişlemesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'sifa', 'seref', 'rizik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','sifa','seref','rizik'],
+        categories: ['genel','esma','esmaul-husna','şifa','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['tansiyon dengesi', 'şan ve şeref', 'maddi imkanların genişlemesi', 'cömertlik'],
+        suitableFor: ['tansiyon dengesi','şan ve şeref','maddi imkanların genişlemesi','cömertlik'],
       },
       {
         key: 'esmaul-husna-el-vahid',
@@ -2743,11 +2751,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kalbin masivadan arınarak tek ilaha yönelmesi; yalnızlık korkusunu yenmek; tevhid bilincine ulaşmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'tevhid', 'yalnizlik', 'kalp'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'tevhid', 'huzur'],
+        tags: ['esma','esmaul-husna','tevhid','yalnizlik','kalp'],
+        categories: ['genel','esma','esmaul-husna','tevhid','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['tevhid bilinci', 'kalp arınması', 'yalnızlık korkusu', 'masivadan arınmak'],
+        suitableFor: ['tevhid bilinci','kalp arınması','yalnızlık korkusu','masivadan arınmak'],
       },
       {
         key: 'esmaul-husna-es-samed',
@@ -2759,11 +2767,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Şansın açılması; dertlere derman bulmak; kimseye muhtaç olmadan onurlu ve bağımsız bir yaşam sürmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'bagimsizlik', 'derman', 'samed'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','bagimsizlik','derman','samed'],
+        categories: ['genel','esma','esmaul-husna','huzur','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['şans açıklığı', 'dertlerden kurtulma', 'kimseye muhtaç olmamak', 'bağımsız yaşam'],
+        suitableFor: ['şans açıklığı','dertlerden kurtulma','kimseye muhtaç olmamak','bağımsız yaşam'],
       },
       {
         key: 'esmaul-husna-el-kadir',
@@ -2775,11 +2783,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Bedensel ve zihinsel güç kazanmak; düşman şerrinden tam koruma; bilimsel çalışmalarda başarı; sol göz sağlığı.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'guc', 'korunma', 'basari'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'korunma'],
+        tags: ['esma','esmaul-husna','guc','korunma','basari'],
+        categories: ['genel','esma','esmaul-husna','başarı','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['bedensel güç', 'zihinsel güç', 'düşmandan korunma', 'bilimsel başarı', 'göz sağlığı'],
+        suitableFor: ['bedensel güç','zihinsel güç','düşmandan korunma','bilimsel başarı','göz sağlığı'],
       },
       {
         key: 'esmaul-husna-el-muktedir',
@@ -2791,11 +2799,11 @@ const SOURCE_DATASETS = [
         virtue:
           'İktidar, güç ve nüfuz sahibi olmak; zor işlerin kolayca çözülmesi; omuz ve boyun fıtığı şifası.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'guc', 'nufuz', 'kolaylik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'şifa'],
+        tags: ['esma','esmaul-husna','guc','nufuz','kolaylik'],
+        categories: ['genel','esma','esmaul-husna','başarı','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['güç kazanma', 'nüfuz sahibi olma', 'zor işleri çözme', 'omuz ve boyun şifası'],
+        suitableFor: ['güç kazanma','nüfuz sahibi olma','zor işleri çözme','omuz ve boyun şifası'],
       },
       {
         key: 'esmaul-husna-el-mukaddim',
@@ -2807,11 +2815,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sınav, ticaret ve hayırlı işlerde rakiplerin önüne geçmek; makamda yükselmek; işlerin hızlanması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'yukselis', 'sinav', 'ticaret'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'iş-kariyer'],
+        tags: ['esma','esmaul-husna','yukselis','sinav','ticaret'],
+        categories: ['genel','esma','esmaul-husna','başarı','iş-kariyer'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['sınav başarısı', 'ticari başarı', 'makamda yükselme', 'işlerin hızlanması'],
+        suitableFor: ['sınav başarısı','ticari başarı','makamda yükselme','işlerin hızlanması'],
       },
       {
         key: 'esmaul-husna-el-muahhir',
@@ -2823,11 +2831,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kötü niyetli kişileri geride bırakmak; belaları ertelemek; sağ ayak ve lenf ödemi şifası.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'korunma', 'sifa', 'bela'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'şifa'],
+        tags: ['esma','esmaul-husna','korunma','sifa','bela'],
+        categories: ['genel','esma','esmaul-husna','korunma','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['kötü niyetlilerden korunma', 'belalardan korunma', 'ayak şifası', 'lenf ödemi şifası'],
+        suitableFor: ['kötü niyetlilerden korunma','belalardan korunma','ayak şifası','lenf ödemi şifası'],
       },
       {
         key: 'esmaul-husna-el-evvel',
@@ -2839,11 +2847,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Girişilen işlerin sonunun hayırla neticelenmesi; uzun yolculukların kaza belasız tamamlanması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'hayir', 'yolculuk', 'baslangic'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'korunma'],
+        tags: ['esma','esmaul-husna','hayir','yolculuk','baslangic'],
+        categories: ['genel','esma','esmaul-husna','başarı','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['hayırlı sonuç', 'işlerin tamamlanması', 'yolculuk güvenliği', 'kazadan korunma'],
+        suitableFor: ['hayırlı sonuç','işlerin tamamlanması','yolculuk güvenliği','kazadan korunma'],
       },
       {
         key: 'esmaul-husna-el-ahir',
@@ -2855,11 +2863,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ömrün hayırla tamamlanması; son nefeste imanla göçmek; gizli düşmanların tamamen etkisiz hale gelmesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'iman', 'korunma', 'hayirli-omur'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'iman', 'korunma'],
+        tags: ['esma','esmaul-husna','iman','korunma','hayirli-omur'],
+        categories: ['genel','esma','esmaul-husna','iman','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['hayırlı ömür', 'imanla göçmek', 'gizli düşmandan korunma', 'manevi hazırlık'],
+        suitableFor: ['hayırlı ömür','imanla göçmek','gizli düşmandan korunma','manevi hazırlık'],
       },
       {
         key: 'esmaul-husna-ez-zahir',
@@ -2871,11 +2879,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Gizli kalmış işlerin aydınlanması; kalbin nurlanması; rakiplere karşı ezici üstünlük sağlamak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'aydınlanma', 'nur', 'ustunluk'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'başarı'],
+        tags: ['esma','esmaul-husna','aydınlanma','nur','ustunluk'],
+        categories: ['genel','esma','esmaul-husna','huzur','başarı'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['gizli işlerin aydınlanması', 'kalp nuru', 'rakiplere üstünlük', 'farkındalık'],
+        suitableFor: ['gizli işlerin aydınlanması','kalp nuru','rakiplere üstünlük','farkındalık'],
       },
       {
         key: 'esmaul-husna-el-batin',
@@ -2887,11 +2895,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ruhsal derinlik ve manevi olgunluk kazanmak; vesveselerden kalıcı olarak özgürleşmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'maneviyat', 'vesvese', 'olgunluk'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'manevi-arınma'],
+        tags: ['esma','esmaul-husna','maneviyat','vesvese','olgunluk'],
+        categories: ['genel','esma','esmaul-husna','huzur','manevi-arınma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['ruhsal derinlik', 'manevi olgunluk', 'vesveseden kurtulma', 'iç huzur'],
+        suitableFor: ['ruhsal derinlik','manevi olgunluk','vesveseden kurtulma','iç huzur'],
       },
       {
         key: 'esmaul-husna-el-vali',
@@ -2903,11 +2911,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Yönetim ve liderlik yeteneği kazanmak; karmaşık işleri kolayca idare etmek; amirler nezdinde dinlenmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'liderlik', 'yonetim', 'itibar'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'iş-kariyer', 'başarı'],
+        tags: ['esma','esmaul-husna','liderlik','yonetim','itibar'],
+        categories: ['genel','esma','esmaul-husna','iş-kariyer','başarı'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['liderlik', 'yönetim becerisi', 'karmaşık işleri idare', 'itibar kazanma'],
+        suitableFor: ['liderlik','yönetim becerisi','karmaşık işleri idare','itibar kazanma'],
       },
       {
         key: 'esmaul-husna-el-muteali',
@@ -2919,11 +2927,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Mevki ve makamın korunması; haksız suçlamalardan ve iftiralardan uzak kalmak; devlet işlerinin kolaylaşması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'itibar', 'makam', 'korunma'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'iş-kariyer', 'korunma'],
+        tags: ['esma','esmaul-husna','itibar','makam','korunma'],
+        categories: ['genel','esma','esmaul-husna','iş-kariyer','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['makamı koruma', 'iftiradan korunma', 'devlet işleri', 'itibar'],
+        suitableFor: ['makamı koruma','iftiradan korunma','devlet işleri','itibar'],
       },
       {
         key: 'esmaul-husna-el-berr',
@@ -2935,11 +2943,11 @@ const SOURCE_DATASETS = [
         virtue:
           'İçindeki iyilik yapma arzusunun artması; kazalardan korunmak; ahlakın mükemmelleşmesi.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'iyilik', 'ahlak', 'korunma'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'güzel-ahlak', 'korunma'],
+        tags: ['esma','esmaul-husna','iyilik','ahlak','korunma'],
+        categories: ['genel','esma','esmaul-husna','güzel-ahlak','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['iyilik arzusu', 'ahlak güzelliği', 'kazadan korunma', 'ihsan bilinci'],
+        suitableFor: ['iyilik arzusu','ahlak güzelliği','kazadan korunma','ihsan bilinci'],
       },
       {
         key: 'esmaul-husna-et-tevvab',
@@ -2951,11 +2959,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Günahlardan samimi tövbeyle sıyrılmak; kötü alışkanlıkları kolayca bırakmak; rızık kapılarının açılması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'tevbe', 'magfiret', 'rizik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'tevbe', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','tevbe','magfiret','rizik'],
+        categories: ['genel','esma','esmaul-husna','tevbe','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['samimi tövbe', 'günahlardan arınma', 'kötü alışkanlıkları bırakma', 'rızık kapıları'],
+        suitableFor: ['samimi tövbe','günahlardan arınma','kötü alışkanlıkları bırakma','rızık kapıları'],
       },
       {
         key: 'esmaul-husna-el-muntekim',
@@ -2967,11 +2975,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Zalimlerin şerrinden adalete sığınmak; haksızlığa uğrayanların hakkını ilahi adaletle geri alması.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'adalet', 'korunma', 'haksizlik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'adalet', 'korunma'],
+        tags: ['esma','esmaul-husna','adalet','korunma','haksizlik'],
+        categories: ['genel','esma','esmaul-husna','adalet','korunma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['adalete sığınma', 'haksızlıktan korunma', 'zalimlerden korunma', 'hakkını alma'],
+        suitableFor: ['adalete sığınma','haksızlıktan korunma','zalimlerden korunma','hakkını alma'],
       },
       {
         key: 'esmaul-husna-el-afuvv',
@@ -2983,11 +2991,11 @@ const SOURCE_DATASETS = [
         virtue:
           'İlahi affa nail olmak; kin, nefret ve intikam gibi kalbi yıpratan duygulardan tamamen arınmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'af', 'arınma', 'kalp'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'tevbe', 'manevi-arınma'],
+        tags: ['esma','esmaul-husna','af','arınma','kalp'],
+        categories: ['genel','esma','esmaul-husna','tevbe','manevi-arınma'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['ilahi af', 'kin ve nefretten arınma', 'intikam duygusunu bırakma', 'kalp huzuru'],
+        suitableFor: ['ilahi af','kin ve nefretten arınma','intikam duygusunu bırakma','kalp huzuru'],
       },
       {
         key: 'esmaul-husna-er-rauf',
@@ -2999,11 +3007,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Merhamet ve şefkat duygularının artması; insanlar tarafından sevilip korunmak; öfkenin kontrolü.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'merhamet', 'sefkat', 'ofke'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'güzel-ahlak', 'huzur'],
+        tags: ['esma','esmaul-husna','merhamet','sefkat','ofke'],
+        categories: ['genel','esma','esmaul-husna','güzel-ahlak','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['merhamet', 'şefkat', 'sevilmek', 'öfke kontrolü'],
+        suitableFor: ['merhamet','şefkat','sevilmek','öfke kontrolü'],
       },
       {
         key: 'esmaul-husna-malik-ul-mulk',
@@ -3015,11 +3023,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi güç, mal ve servetin korunması; kimseye borçlu kalmadan huzurlu bir yaşam sürmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'mulk', 'servet', 'borc'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'huzur'],
+        tags: ['esma','esmaul-husna','mulk','servet','borc'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['mal ve servet korunması', 'borçtan kurtulma', 'maddi güç', 'huzurlu yaşam'],
+        suitableFor: ['mal ve servet korunması','borçtan kurtulma','maddi güç','huzurlu yaşam'],
       },
       {
         key: 'esmaul-husna-zul-celali-vel-ikram',
@@ -3031,11 +3039,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Duaların en hızlı şekilde kabulü; insanların gözünde olağanüstü saygınlık ve karizma kazanmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'dua', 'sayginlik', 'ikram'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'dua', 'itibar'],
+        tags: ['esma','esmaul-husna','dua','sayginlik','ikram'],
+        categories: ['genel','esma','esmaul-husna','dua','itibar'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['dua kabulü', 'saygınlık', 'karizma', 'manevi heybet'],
+        suitableFor: ['dua kabulü','saygınlık','karizma','manevi heybet'],
       },
       {
         key: 'esmaul-husna-el-muksit',
@@ -3047,11 +3055,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Aile içi geçimsizliklerin ve huzursuzlukların bitmesi; adil kararlar verebilmek; borç ödeme kolaylığı.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'adalet', 'aile', 'borc'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'adalet', 'aile'],
+        tags: ['esma','esmaul-husna','adalet','aile','borc'],
+        categories: ['genel','esma','esmaul-husna','adalet','aile'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['aile huzuru', 'adil karar', 'borç ödeme', 'geçimsizliğin bitmesi'],
+        suitableFor: ['aile huzuru','adil karar','borç ödeme','geçimsizliğin bitmesi'],
       },
       {
         key: 'esmaul-husna-el-cami',
@@ -3063,11 +3071,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kaybolan eşyayı veya insanı bulmak; dargınları barıştırmak; dağınık işleri bir araya getirmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'birlik', 'barisma', 'kayip'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'aile', 'huzur'],
+        tags: ['esma','esmaul-husna','birlik','barisma','kayip'],
+        categories: ['genel','esma','esmaul-husna','aile','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['kaybolanı bulma', 'barışma', 'dağınık işleri toplama', 'birlik'],
+        suitableFor: ['kaybolanı bulma','barışma','dağınık işleri toplama','birlik'],
       },
       {
         key: 'esmaul-husna-el-ganiyy',
@@ -3079,11 +3087,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi-manevi zenginlik; baş ağrısı ve migren ağrılarının şifası.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'zenginlik', 'sifa', 'migren'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'şifa'],
+        tags: ['esma','esmaul-husna','zenginlik','sifa','migren'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['maddi zenginlik', 'manevi zenginlik', 'baş ağrısı şifası', 'migren şifası'],
+        suitableFor: ['maddi zenginlik','manevi zenginlik','baş ağrısı şifası','migren şifası'],
       },
       {
         key: 'esmaul-husna-el-mugni',
@@ -3095,11 +3103,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Büyük zenginliğe ulaşmak; geçim darlığından tamamen kurtulmak; insanlardan bir şey istemeyecek konuma gelmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'zenginlik', 'gecim', 'istiğna'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'huzur'],
+        tags: ['esma','esmaul-husna','zenginlik','gecim','istiğna'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['zenginlik', 'geçim darlığından kurtulma', 'kimseye muhtaç olmamak', 'maddi ferahlık'],
+        suitableFor: ['zenginlik','geçim darlığından kurtulma','kimseye muhtaç olmamak','maddi ferahlık'],
       },
       {
         key: 'esmaul-husna-el-mani',
@@ -3111,11 +3119,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kazaların, belaların engellenmesi; sağ el, başın üstü ve kalp için şifa; zararlı alışkanlıkları bırakmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'korunma', 'sifa', 'aliskanlik'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'şifa'],
+        tags: ['esma','esmaul-husna','korunma','sifa','aliskanlik'],
+        categories: ['genel','esma','esmaul-husna','korunma','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['kazalardan korunma', 'belalardan korunma', 'fiziki şifa', 'zararlı alışkanlıkları bırakma'],
+        suitableFor: ['kazalardan korunma','belalardan korunma','fiziki şifa','zararlı alışkanlıkları bırakma'],
       },
       {
         key: 'esmaul-husna-ed-darr',
@@ -3127,11 +3135,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Zararlı düşmanların planlarını bozmak; hile yapanların hilelerini kendi başlarına yıkmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'korunma', 'dusman', 'hile'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'adalet'],
+        tags: ['esma','esmaul-husna','korunma','dusman','hile'],
+        categories: ['genel','esma','esmaul-husna','korunma','adalet'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['düşman planlarından korunma', 'hileden korunma', 'zarardan korunma', 'adalete sığınma'],
+        suitableFor: ['düşman planlarından korunma','hileden korunma','zarardan korunma','adalete sığınma'],
       },
       {
         key: 'esmaul-husna-en-nafi',
@@ -3143,11 +3151,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Hastalıklara şifa bulmak; kazancın artması; girişilen her türlü ticari işten büyük kârlar elde etmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'fayda', 'sifa', 'kazanc'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'rizik-bereket'],
+        tags: ['esma','esmaul-husna','fayda','sifa','kazanc'],
+        categories: ['genel','esma','esmaul-husna','şifa','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['hastalıklara şifa', 'kazanç artışı', 'ticari başarı', 'fayda görmek'],
+        suitableFor: ['hastalıklara şifa','kazanç artışı','ticari başarı','fayda görmek'],
       },
       {
         key: 'esmaul-husna-en-nur',
@@ -3159,11 +3167,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kalbin iman nuruyla dolması; zihin ve basiret açıklığı; doğru yolu kolayca görebilmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'nur', 'hidayet', 'basiret'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'iman', 'huzur'],
+        tags: ['esma','esmaul-husna','nur','hidayet','basiret'],
+        categories: ['genel','esma','esmaul-husna','iman','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['iman nuru', 'zihin açıklığı', 'basiret', 'doğru yolu görmek'],
+        suitableFor: ['iman nuru','zihin açıklığı','basiret','doğru yolu görmek'],
       },
       {
         key: 'esmaul-husna-el-hadi',
@@ -3175,11 +3183,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Hidayete ermek; çocukların güzel ahlaklı olması; idrar kesesi ve kalp için fiziki şifa.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'hidayet', 'ahlak', 'sifa'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'iman', 'şifa'],
+        tags: ['esma','esmaul-husna','hidayet','ahlak','sifa'],
+        categories: ['genel','esma','esmaul-husna','iman','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['hidayet', 'çocukların güzel ahlakı', 'idrar kesesi şifası', 'kalp şifası'],
+        suitableFor: ['hidayet','çocukların güzel ahlakı','idrar kesesi şifası','kalp şifası'],
       },
       {
         key: 'esmaul-husna-el-bedi',
@@ -3191,11 +3199,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sanatta, bilimde ve iş hayatında özgün projeler üretmek; zor işlerin üstesinden gelmek; takdir toplamak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'yaraticilik', 'bilim', 'basari'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'iş-kariyer'],
+        tags: ['esma','esmaul-husna','yaraticilik','bilim','basari'],
+        categories: ['genel','esma','esmaul-husna','başarı','iş-kariyer'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['özgün projeler', 'yaratıcılık', 'zor işleri aşma', 'takdir görmek'],
+        suitableFor: ['özgün projeler','yaratıcılık','zor işleri aşma','takdir görmek'],
       },
       {
         key: 'esmaul-husna-el-baki',
@@ -3207,11 +3215,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ömrün uzun ve bereketli olması; sadır, idrar yolu ve boşaltım için fiziki şifa; gelecek endişesini yenmek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'omur', 'bereket', 'sifa'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'şifa'],
+        tags: ['esma','esmaul-husna','omur','bereket','sifa'],
+        categories: ['genel','esma','esmaul-husna','huzur','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['uzun ömür', 'bereketli ömür', 'fiziki şifa', 'gelecek endişesi'],
+        suitableFor: ['uzun ömür','bereketli ömür','fiziki şifa','gelecek endişesi'],
       },
       {
         key: 'esmaul-husna-el-varis',
@@ -3223,11 +3231,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Mal, mülk ve toprak sahibi olmak; hayırlı bir neslin devam etmesi; ahiret saadetine ermek.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'mulk', 'nesil', 'ahiret'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'aile'],
+        tags: ['esma','esmaul-husna','mulk','nesil','ahiret'],
+        categories: ['genel','esma','esmaul-husna','rizik-bereket','aile'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['mal ve mülk', 'toprak sahibi olmak', 'hayırlı nesil', 'ahiret saadeti'],
+        suitableFor: ['mal ve mülk','toprak sahibi olmak','hayırlı nesil','ahiret saadeti'],
       },
       {
         key: 'esmaul-husna-er-resid',
@@ -3239,11 +3247,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Alınan kararlardan pişman olmamak; doğru kararlar vermek; prostat, omurilik ve sağ ayak için fiziki şifa.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'karar', 'irşad', 'sifa'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'şifa'],
+        tags: ['esma','esmaul-husna','karar','irşad','sifa'],
+        categories: ['genel','esma','esmaul-husna','huzur','şifa'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['doğru karar', 'pişmanlıktan korunma', 'fiziki şifa', 'irşad'],
+        suitableFor: ['doğru karar','pişmanlıktan korunma','fiziki şifa','irşad'],
       },
       {
         key: 'esmaul-husna-es-sabur',
@@ -3255,11 +3263,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Zor zamanlarda sabır ve metanet kazanmak; öfkeyi kontrol altına almak; sıkıntılardan kurtulmak.',
         source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-        tags: ['esma', 'esmaul-husna', 'sabir', 'metanet', 'ofke'],
-        categories: ['genel', 'esma', 'esmaul-husna', 'sabır', 'huzur'],
+        tags: ['esma','esmaul-husna','sabir','metanet','ofke'],
+        categories: ['genel','esma','esmaul-husna','sabır','huzur'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['sabır', 'metanet', 'öfke kontrolü', 'sıkıntılardan kurtulma'],
+        suitableFor: ['sabır','metanet','öfke kontrolü','sıkıntılardan kurtulma'],
       },
     ],
     specialDays: [],
@@ -3277,8 +3285,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Fakirlikten kurtuluş, maddi güç ve sahip olunan imkanları doğru yönetme niyetiyle okunur.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'rizik', 'bereket', 'maddi-guc'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','rizik','bereket','maddi-guc'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 91,
         suitableFor: [
@@ -3297,11 +3305,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Karşılıksız nimet, borç yükünün hafiflemesi ve rızık artışı niyetiyle zikredilir.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'rizik', 'nimet', 'borc'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','rizik','nimet','borc'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 196,
-        suitableFor: ['borçlardan kurtulma', 'nimet artışı', 'maddi rahatlama'],
+        suitableFor: ['borçlardan kurtulma','nimet artışı','maddi rahatlama'],
       },
       {
         key: 'esma-ya-rezzak',
@@ -3312,11 +3320,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Bol rızık, darlıkların sona ermesi ve geçim genişliği niyetiyle okunur.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'rizik', 'gecim', 'bolluk'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','rizik','gecim','bolluk'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 308,
-        suitableFor: ['geçim darlığı', 'iş arayışı', 'rızık bereketi'],
+        suitableFor: ['geçim darlığı','iş arayışı','rızık bereketi'],
       },
       {
         key: 'esma-ya-fettah',
@@ -3327,8 +3335,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kapalı kapıların açılması, iş ve rızık yollarının genişlemesi niyetiyle okunur.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'feth', 'is-kapisi', 'rizik'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','feth','is-kapisi','rizik'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 489,
         suitableFor: [
@@ -3346,11 +3354,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kimseye muhtaç olmama, iç ve dış zenginlik bilinci ile maddi ferahlık niyetiyle zikredilir.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'zenginlik', 'istiğna', 'bereket'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','zenginlik','istiğna','bereket'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 1060,
-        suitableFor: ['maddi bağımsızlık', 'rızık bereketi', 'alternatif 160'],
+        suitableFor: ['maddi bağımsızlık','rızık bereketi','alternatif 160'],
       },
       {
         key: 'esma-ya-mugni',
@@ -3361,11 +3369,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi refah, bolluk ve kişinin ihtiyaçlarının karşılanması niyetiyle okunur.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'zenginlik', 'refah', 'rizik'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','zenginlik','refah','rizik'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 1100,
-        suitableFor: ['maddi refah', 'gelir artışı', 'alternatif 1337'],
+        suitableFor: ['maddi refah','gelir artışı','alternatif 1337'],
       },
       {
         key: 'esma-ya-basit',
@@ -3376,11 +3384,11 @@ const SOURCE_DATASETS = [
         virtue:
           'İşlerin büyümesi, mal ve paranın bereketlenmesi niyetiyle zikredilir.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'genislik', 'islerin-acilmasi', 'bereket'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','genislik','islerin-acilmasi','bereket'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 72,
-        suitableFor: ['iş genişlemesi', 'bereket artışı', 'maddi rahatlama'],
+        suitableFor: ['iş genişlemesi','bereket artışı','maddi rahatlama'],
       },
       {
         key: 'esma-ya-kerim',
@@ -3391,11 +3399,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kolay rızık, cömertçe verilen nimetler ve hayırlı ikramlar niyetiyle okunur.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'ikram', 'rizik', 'cömertlik'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','ikram','rizik','cömertlik'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 270,
-        suitableFor: ['kolay rızık', 'nimet artışı', 'bereket'],
+        suitableFor: ['kolay rızık','nimet artışı','bereket'],
       },
       {
         key: 'esma-ya-malikel-mulk',
@@ -3406,11 +3414,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Ev, arsa gibi taşınmaz mülk edinme ve mevcut mülkün korunması niyetiyle zikredilir.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'mulk', 'ev-arsa', 'korunma'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','mulk','ev-arsa','korunma'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 212,
-        suitableFor: ['ev alma', 'mülk edinme', 'mülk korunması'],
+        suitableFor: ['ev alma','mülk edinme','mülk korunması'],
       },
       {
         key: 'esma-ya-mutekebbir',
@@ -3421,11 +3429,11 @@ const SOURCE_DATASETS = [
         virtue:
           'İzzet, refah ve bereket artışı ile sözün tesirinin güçlenmesi niyetiyle okunur.',
         source: 'Esma-ül Hüsna ebced uygulama geleneği',
-        tags: ['esma', 'izzet', 'refah', 'bereket'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','izzet','refah','bereket'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 662,
-        suitableFor: ['itibar', 'maddi bereket', 'söz etkisi'],
+        suitableFor: ['itibar','maddi bereket','söz etkisi'],
       },
     ],
     specialDays: [],
@@ -3443,11 +3451,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Rızık ve zenginlik niyeti için güçlü kombinasyon olarak zikredilir; fakirlik kapılarını kapatma niyeti taşır.',
         source: 'Havas ve esma kombinasyon geleneği',
-        tags: ['rizik', 'zenginlik', 'esma-kombinasyon', 'bereket'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['rizik','zenginlik','esma-kombinasyon','bereket'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 2160,
-        suitableFor: ['fakirlikten kurtuluş', 'gelir artışı', 'maddi refah'],
+        suitableFor: ['fakirlikten kurtuluş','gelir artışı','maddi refah'],
       },
       {
         key: 'rizik-kombinasyon-ya-fettah-ya-malikel-mulk',
@@ -3458,8 +3466,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İş, rızık ve mülk kapılarının açılması niyetiyle okunan tertiplerdendir.',
         source: 'Havas ve esma kombinasyon geleneği',
-        tags: ['rizik', 'mulk', 'is-kapisi', 'esma-kombinasyon'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['rizik','mulk','is-kapisi','esma-kombinasyon'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 2000,
         suitableFor: [
@@ -3477,11 +3485,11 @@ const SOURCE_DATASETS = [
         virtue:
           "İslam literatüründe 'zenginlik suresi' olarak anılır; fakirlik korkusuna karşı manevi destek kabul edilir.",
         source: "Abdullah b. Mes'ud rivayeti ve geleneksel vird uygulamaları",
-        tags: ['rizik', 'vakia', 'sure', 'bereket'],
-        categories: ['genel', 'sure', 'rizik-bereket'],
+        tags: ['rizik','vakia','sure','bereket'],
+        categories: ['genel','sure','rizik-bereket'],
         timeOfDay: 'night',
         recommendedCount: 1,
-        suitableFor: ['gece virdi', 'geçim bereketi', 'fakirlik korkusu'],
+        suitableFor: ['gece virdi','geçim bereketi','fakirlik korkusu'],
       },
       {
         key: 'rizik-vakia-suresi-41-gun',
@@ -3493,11 +3501,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Düzenli okuma ile yorulmadan helal rızık ve geçim genişliği niyeti taşır.',
         source: 'Geleneksel vird tertipleri',
-        tags: ['rizik', 'vakia', '40-gun', 'vird'],
-        categories: ['genel', 'sure', 'rizik-bereket'],
+        tags: ['rizik','vakia','40-gun','vird'],
+        categories: ['genel','sure','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 41,
-        suitableFor: ['40 günlük tertip', 'helal rızık', 'bereket artışı'],
+        suitableFor: ['40 günlük tertip','helal rızık','bereket artışı'],
       },
       {
         key: 'rizik-fatiha-seher-41',
@@ -3508,11 +3516,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi ve manevi bereket kapılarının açılması niyetiyle seherde uygulanan tertiplerdendir.',
         source: 'Tasavvufi vird ve tecrübe geleneği',
-        tags: ['rizik', 'fatiha', 'seher', 'bereket'],
-        categories: ['genel', 'sure', 'rizik-bereket'],
+        tags: ['rizik','fatiha','seher','bereket'],
+        categories: ['genel','sure','rizik-bereket'],
         timeOfDay: 'morning',
         recommendedCount: 41,
-        suitableFor: ['seher vakti', 'rızık bereketi', 'hane bereketi'],
+        suitableFor: ['seher vakti','rızık bereketi','hane bereketi'],
       },
       {
         key: 'rizik-kadr-suresi',
@@ -3524,11 +3532,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Malın zayi olmaması, bereketin artması ve borçların ödenmesine manevi destek niyetiyle okunur.',
         source: 'Geleneksel rızık ve korunma uygulamaları',
-        tags: ['rizik', 'kadr', 'mal-koruma', 'bereket'],
-        categories: ['genel', 'sure', 'rizik-bereket'],
+        tags: ['rizik','kadr','mal-koruma','bereket'],
+        categories: ['genel','sure','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['mal korunması', 'borç ödemesi', 'bereket niyeti'],
+        suitableFor: ['mal korunması','borç ödemesi','bereket niyeti'],
       },
       {
         key: 'rizik-fatir-29-30',
@@ -3542,11 +3550,11 @@ const SOURCE_DATASETS = [
         virtue:
           "Ticarette kesadın önlenmesi ve 'ticaraten len tebûr' sırrına erişme niyetiyle okunur.",
         source: 'Fâtır Suresi 29-30',
-        tags: ['rizik', 'ticaret', 'fatir', 'helal-kazanc'],
-        categories: ['genel', 'ayet', 'rizik-bereket'],
+        tags: ['rizik','ticaret','fatir','helal-kazanc'],
+        categories: ['genel','ayet','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 33,
-        suitableFor: ['ticari bereket', 'helal kazanç', 'iş sürekliliği'],
+        suitableFor: ['ticari bereket','helal kazanç','iş sürekliliği'],
       },
       {
         key: keyMap.RIZIK_EBU_UMAME,
@@ -3560,11 +3568,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sabah-akşam okunarak borç ve kaygı yükünü hafifletmeye, psikolojik direnci artırmaya niyet edilir.',
         source: 'Nebevi dua rivayetleri (Ebu Ümâme hadisi)',
-        tags: ['rizik', 'borc', 'kaygi', 'sabir'],
-        categories: ['genel', 'dua', 'rizik-bereket'],
+        tags: ['rizik','borc','kaygi','sabir'],
+        categories: ['genel','dua','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 2,
-        suitableFor: ['sabah-akşam virdi', 'borç baskısı', 'psikolojik direnç'],
+        suitableFor: ['sabah-akşam virdi','borç baskısı','psikolojik direnç'],
       },
       {
         key: 'rizik-hz-muaz-borc-duasi',
@@ -3578,8 +3586,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Ağır borç yükünün hafiflemesi ve geniş rızka vesile olması niyetiyle öğretilen dualardandır.',
         source: "Hz. Muâz'a talim edilen borç duası rivayetleri",
-        tags: ['rizik', 'borc', 'mulk', 'rahmet'],
-        categories: ['genel', 'dua', 'rizik-bereket'],
+        tags: ['rizik','borc','mulk','rahmet'],
+        categories: ['genel','dua','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -3597,11 +3605,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Fakirlikten korunma ve kazancın bereketlenmesi niyetiyle günlük vird olarak okunur.',
         source: 'Geleneksel temcid zikirleri',
-        tags: ['rizik', 'temcid', 'tevhid', 'bereket'],
-        categories: ['genel', 'dua', 'rizik-bereket'],
+        tags: ['rizik','temcid','tevhid','bereket'],
+        categories: ['genel','dua','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['fakirlik korkusu', 'gelir bereketi', 'günlük vird'],
+        suitableFor: ['fakirlik korkusu','gelir bereketi','günlük vird'],
       },
       {
         key: 'rizik-hz-suleyman-mulk-duasi',
@@ -3615,11 +3623,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Hayırlı bir yuva, mülk edinme ve maddi imkanların helal yoldan artması niyetiyle okunur.',
         source: 'Sâd Suresi, 35. Ayet',
-        tags: ['rizik', 'mulk', 'ev', 'vehhab'],
-        categories: ['genel', 'ayet', 'rizik-bereket'],
+        tags: ['rizik','mulk','ev','vehhab'],
+        categories: ['genel','ayet','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 41,
-        suitableFor: ['ev sahibi olma', 'mülk edinme', 'hayırlı yuva'],
+        suitableFor: ['ev sahibi olma','mülk edinme','hayırlı yuva'],
       },
       {
         key: 'rizik-ya-zul-celali-vel-ikram',
@@ -3630,11 +3638,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Refah, bereket ve dünyevi işlerde kolaylık niyetiyle tertiplerde zikredilir.',
         source: 'Esma ve vird geleneği',
-        tags: ['esma', 'bereket', 'ikram', 'refah'],
-        categories: ['genel', 'esma', 'rizik-bereket'],
+        tags: ['esma','bereket','ikram','refah'],
+        categories: ['genel','esma','rizik-bereket'],
         timeOfDay: 'any',
         recommendedCount: 1100,
-        suitableFor: ['iş kolaylığı', 'bereket artışı', 'itibar'],
+        suitableFor: ['iş kolaylığı','bereket artışı','itibar'],
       },
     ],
     specialDays: [],
@@ -3652,8 +3660,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Evlat isteyenlerin en sık okuduğu Kurani dualardandır; günde en az 7 defa okunması tavsiye edilir.',
         source: 'Enbiyâ Suresi, 21/89',
-        tags: ['evlat', 'hayirli-evlat', 'dua', 'zekeriya'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','hayirli-evlat','dua','zekeriya'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -3674,11 +3682,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Neslin ahlaklı, temiz ve salih olması niyetiyle okunan güçlü ayet dualarındandır.',
         source: 'Âl-i İmrân Suresi, 3/38',
-        tags: ['evlat', 'hayirli-evlat', 'dua', 'nesil'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','hayirli-evlat','dua','nesil'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 41,
-        suitableFor: ['hayırlı nesil', 'dua kabulü', 'aile saadeti'],
+        suitableFor: ['hayırlı nesil','dua kabulü','aile saadeti'],
       },
       {
         key: 'evlat-rabbi-heb-li-mine-salihin',
@@ -3689,11 +3697,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Doğacak çocuğun dindar, hayırlı ve ana-babasına itaatkar olması niyetiyle okunur.',
         source: 'Sâffât Suresi, 37/100',
-        tags: ['evlat', 'hayirli-evlat', 'salih-nesil', 'dua'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','hayirli-evlat','salih-nesil','dua'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 41,
-        suitableFor: ['salih evlat', 'dindar nesil', 'aile duası'],
+        suitableFor: ['salih evlat','dindar nesil','aile duası'],
       },
       {
         key: 'evlat-rabbena-heb-lena-min-ezvacina',
@@ -3707,8 +3715,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Aile içi sevgi ve manevi bağı güçlendirmek, göz aydınlığı olacak hayırlı evlatlar için okunur.',
         source: 'Furkân Suresi, 25/74',
-        tags: ['evlat', 'aile', 'zürriyet', 'dua'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','aile','zürriyet','dua'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -3728,11 +3736,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Bebeğin hayırlı ve ahlaklı yetişmesi, hamilelik sürecinin kolay geçmesi niyetiyle okunur.',
         source: 'Âl-i İmrân Suresi, 3/35',
-        tags: ['evlat', 'hamilelik', 'dua', 'adanmislik'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','hamilelik','dua','adanmislik'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['hamilelik duası', 'hayırlı evlat', 'manevi korunma'],
+        suitableFor: ['hamilelik duası','hayırlı evlat','manevi korunma'],
       },
       {
         key: 'evlat-inne-rabbeke-huvel-hallakul-alim',
@@ -3743,11 +3751,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Yaratılış sürecinde ilahi ilme sığınma niyetiyle; 3 ay geceleri 1267 tekrar tertibi aktarılmıştır.',
         source: 'Hicr Suresi, 15/86',
-        tags: ['evlat', 'yaratilis', 'hamilelik', 'ayet'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','yaratilis','hamilelik','ayet'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'night',
         recommendedCount: 1267,
-        suitableFor: ['hamilelik süreci', '3 aylık tertip', 'manevi teselli'],
+        suitableFor: ['hamilelik süreci','3 aylık tertip','manevi teselli'],
       },
       {
         key: 'evlat-fallahu-huvel-veliyyu-ve-huve-yuhyi',
@@ -3758,11 +3766,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Eşlerin çocuk sahibi olmaya manevi hazırlığı için birliktelik öncesi okunması tavsiye edilir.',
         source: 'Şûrâ Suresi, 42/9',
-        tags: ['evlat', 'aile', 'birliktelik', 'ayet'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','aile','birliktelik','ayet'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 289,
-        suitableFor: ['evlat niyeti', 'eş duası', 'birliktelik öncesi'],
+        suitableFor: ['evlat niyeti','eş duası','birliktelik öncesi'],
       },
       {
         key: 'evlat-huvel-lahul-haliqul-bariu',
@@ -3773,8 +3781,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi-manevi engellerin aşılması ve yaratılış mucizesinin tecellisi niyetiyle okunur.',
         source: 'Haşr Suresi, 59/24',
-        tags: ['evlat', 'esma', 'halik', 'bari'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','esma','halik','bari'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 1054,
         suitableFor: [
@@ -3795,11 +3803,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Tövbe ve istiğfarın, ilahi rızık ve evlat nimetinin kapılarını açan anahtarlardan olduğu aktarılır.',
         source: 'Nûh Suresi 71/10-12; hadis rivayetleri',
-        tags: ['evlat', 'istigfar', 'tevbe', 'dua'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','istigfar','tevbe','dua'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['günlük istiğfar', 'alternatif 700', 'manevi arınma'],
+        suitableFor: ['günlük istiğfar','alternatif 700','manevi arınma'],
       },
       {
         key: 'evlat-bismillah-allahumme-cennibnes-seytan',
@@ -3813,11 +3821,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Birliktelik öncesinde okunduğunda, doğacak çocuğun şeytanın zararından korunacağı müjdelenmiştir.',
         source: 'Sahih-i Müslim, Nikâh, 11',
-        tags: ['evlat', 'korunma', 'aile', 'dua'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','korunma','aile','dua'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 1,
-        suitableFor: ['birliktelik öncesi', 'evlat korunması', 'aile duası'],
+        suitableFor: ['birliktelik öncesi','evlat korunması','aile duası'],
       },
       {
         key: 'evlat-allahummecalni-zurriyyeten-tayyibeten',
@@ -3831,11 +3839,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Eşlerin birliktelik öncesinde besmele ve 3 İhlas sonrası yaptığı dua tertiplerindendir.',
         source: 'Bilal Eren, Açıklamalı Büyük Dua Hazinesi',
-        tags: ['evlat', 'dua', 'nesil', 'ihlas-tertibi'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','dua','nesil','ihlas-tertibi'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 1,
-        suitableFor: ['3 ihlas sonrası', 'evlat niyeti', 'aile duası'],
+        suitableFor: ['3 ihlas sonrası','evlat niyeti','aile duası'],
       },
       {
         key: 'evlat-ya-musavvir',
@@ -3846,11 +3854,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Çocuğun ahlaken ve fıtraten güzel olması, fiziksel gelişiminin sağlıklı olması için zikredilir.',
         source: 'Esma-i Hüsna; Haşr Suresi 59/24',
-        tags: ['evlat', 'esma', 'musavvir', 'hamilelik'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','esma','musavvir','hamilelik'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 336,
-        suitableFor: ['sağlıklı gelişim', 'hayırlı nesil', 'hamilelik süreci'],
+        suitableFor: ['sağlıklı gelişim','hayırlı nesil','hamilelik süreci'],
       },
       {
         key: 'evlat-ya-bari',
@@ -3861,11 +3869,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Embriyonun gelişim sürecinde fiziksel bozukluklardan korunma ve selamet niyetiyle zikredilir.',
         source: 'Esma-i Hüsna; Haşr Suresi 59/24',
-        tags: ['evlat', 'esma', 'bari', 'hamilelik'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','esma','bari','hamilelik'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 214,
-        suitableFor: ['hamilelikte selamet', 'fiziksel gelişim', 'korunma'],
+        suitableFor: ['hamilelikte selamet','fiziksel gelişim','korunma'],
       },
       {
         key: 'evlat-ya-mubdi',
@@ -3876,8 +3884,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Düşük riskini önleme ve hamileliğin vaktinde tamamlanması niyetiyle seherde okunur.',
         source: 'Esma-i Hüsna Sırları',
-        tags: ['evlat', 'esma', 'mubdi', 'seher'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','esma','mubdi','seher'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'morning',
         recommendedCount: 99,
         suitableFor: [
@@ -3896,8 +3904,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Evlat isteyenlerin sabah ve gece düzenli zikriyle hayırlı nesle vesile olacağı aktarılır.',
         source: 'Esma-i Hüsna Tecellileri',
-        tags: ['evlat', 'esma', 'samed', 'zikir'],
-        categories: ['genel', 'aile', 'evlat'],
+        tags: ['evlat','esma','samed','zikir'],
+        categories: ['genel','aile','evlat'],
         timeOfDay: 'any',
         recommendedCount: 1000,
         suitableFor: [
@@ -3926,8 +3934,8 @@ const SOURCE_DATASETS = [
           'Peygamber Efendimizin büyü, nazar, sihir ve vesveseye karşı en çok okuduğu korunma sureleridir.',
         source:
           "Buhârî, Ehâdîsü'l-Enbiyâ 10; Tirmizî, Tıb 16; Nesâî, İstiâze 37; Ebû Dâvûd",
-        tags: ['korunma', 'nazar', 'buyu', 'vesvese', 'felak', 'nas'],
-        categories: ['genel', 'korunma', 'nazar'],
+        tags: ['korunma','nazar','buyu','vesvese','felak','nas'],
+        categories: ['genel','korunma','nazar'],
         timeOfDay: 'any',
         recommendedCount: 3,
         suitableFor: [
@@ -3936,24 +3944,6 @@ const SOURCE_DATASETS = [
           'vesvese',
           'manevi sığınma',
         ],
-      },
-      {
-        key: 'korunma-ayetel-kursi-tam',
-        nameArabic:
-          'اللّٰهُ لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
-        nameTurkish: 'Âyetel Kürsî (Tam)',
-        transliteration:
-          "Allâhu lâ ilâhe illâ hüvel hayyül kayyûm. Lâ te'huzuhû sinetün ve lâ nevm. Lehû mâ fis-semâvâti ve mâ fil-ard. Men zellezî yeşfeu indehû illâ bi-iznih. Ya'lemu mâ beyne eydîhim ve mâ halfehüm. Ve lâ yuhîtûne bi şey'in min ilmihî illâ bimâ şâ'. Vesia kürsiyyühüs-semâvâti vel-ard. Ve lâ yeûdühû hifzuhümâ. Ve hüvel aliyyül azîm.",
-        meaning:
-          "Allah, kendisinden başka ilah olmayandır; diridir, kayyumdur. O'nu ne uyuklama ne uyku tutar... O yücedir, büyüktür.",
-        virtue:
-          'Şeytan, cin, nazar ve manevi baskılara karşı en güçlü korunma ayetlerinden biri kabul edilir.',
-        source: 'Bakara Suresi, 2/255',
-        tags: ['korunma', 'ayetel-kursi', 'nazar', 'buyu', 'vesvese'],
-        categories: ['genel', 'korunma', 'kuran'],
-        timeOfDay: 'any',
-        recommendedCount: 3,
-        suitableFor: ['sabah-akşam virdi', 'ev korunması', 'nazar ve vesvese'],
       },
       {
         key: 'korunma-bismillahillezi',
@@ -3967,11 +3957,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sabah-akşam üçer defa okunmasıyla ani bela, musibet, nazar ve manevi zararlara karşı korunma niyeti taşır.',
         source: 'İbn Mâce, Dua 11; Ebû Dâvûd, Edeb 102-103; Tirmizî, Daavât 40',
-        tags: ['korunma', 'nazar', 'bela', 'dua'],
-        categories: ['genel', 'korunma', 'dua'],
+        tags: ['korunma','nazar','bela','dua'],
+        categories: ['genel','korunma','dua'],
         timeOfDay: 'any',
         recommendedCount: 3,
-        suitableFor: ['sabah-akşam', 'ani belalara karşı', 'nazar korunması'],
+        suitableFor: ['sabah-akşam','ani belalara karşı','nazar korunması'],
       },
       {
         key: 'korunma-kelimatillahit-tamme',
@@ -3986,11 +3976,11 @@ const SOURCE_DATASETS = [
           'Nazar, cin etkisi ve görünmeyen ruhani olumsuzluklara karşı güçlü bir korunma duası olarak okunur.',
         source:
           "Buhârî, Ehâdîsü'l-Enbiyâ 10; Müslim, Zikir 54; Tirmizî, Daavât 40",
-        tags: ['korunma', 'nazar', 'cin', 'dua'],
-        categories: ['genel', 'korunma', 'dua'],
+        tags: ['korunma','nazar','cin','dua'],
+        categories: ['genel','korunma','dua'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['çocuk korunması', 'kem göz', 'manevi sığınma'],
+        suitableFor: ['çocuk korunması','kem göz','manevi sığınma'],
       },
       {
         key: 'korunma-hasbunallahu-ve-nimel-vekil',
@@ -4001,11 +3991,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Haksız beddua, düşman korkusu ve ruhani darlıklarda müminin sığınacağı en büyük tevekkül zikirlerindendir.',
         source: 'Âl-i İmrân 3/173; Buhârî, Tefsir 13',
-        tags: ['korunma', 'tevekkul', 'beddua', 'korku'],
-        categories: ['genel', 'korunma', 'dua'],
+        tags: ['korunma','tevekkul','beddua','korku'],
+        categories: ['genel','korunma','dua'],
         timeOfDay: 'any',
         recommendedCount: 100,
-        suitableFor: ['korku anları', 'haksızlık', 'ruhani daralma'],
+        suitableFor: ['korku anları','haksızlık','ruhani daralma'],
       },
       {
         key: 'korunma-kalem-sonu-51-52',
@@ -4019,11 +4009,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Nazarın yıkıcı etkilerine karşı günlük korunma tertiplerinde sıkça okunur.',
         source: 'Kalem Suresi, 68/51-52',
-        tags: ['korunma', 'nazar', 'kalem', 'ayet'],
-        categories: ['genel', 'korunma', 'kuran'],
+        tags: ['korunma','nazar','kalem','ayet'],
+        categories: ['genel','korunma','kuran'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['nazar korunması', 'ruhani baskı', 'günlük vird'],
+        suitableFor: ['nazar korunması','ruhani baskı','günlük vird'],
       },
       {
         key: keyMap.HZYUSUF,
@@ -4037,8 +4027,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Ağır manevi hava, içsel tıkanıklık ve beddua etkisi korkusunda sığınılacak güçlü bir yakarıştır. Ağır travmalar, kederler, çaresizlikler ve her türlü psikolojik darlıktan kurtulmaya vesile olur. Kişinin kendi sınırlarını kabul edip mutlak güce sığınmasını sağlayarak bilişsel yükü hafifletir.',
         source: 'Enbiyâ Suresi, 87. Ayet / Tirmizî; İbn Sünnî ',
-        tags: ['korunma', 'yunus-duasi', 'vesvese', 'sıkıntı'],
-        categories: ['genel', 'korunma', 'dua'],
+        tags: ['korunma','yunus-duasi','vesvese','sıkıntı'],
+        categories: ['genel','korunma','dua'],
         timeOfDay: 'any',
         recommendedCount: 41,
         suitableFor: [
@@ -4060,11 +4050,11 @@ const SOURCE_DATASETS = [
         virtue:
           'İçsel vesvese, ani korkular ve ruhî bunalımlara karşı günlük korunma virdi olarak okunur.',
         source: 'Celaleddin-i Süyuti; İmam-ı Gazali',
-        tags: ['korunma', 'vesvese', 'zikir', 'sukunet'],
-        categories: ['genel', 'korunma', 'dua'],
+        tags: ['korunma','vesvese','zikir','sukunet'],
+        categories: ['genel','korunma','dua'],
         timeOfDay: 'any',
         recommendedCount: 33,
-        suitableFor: ['vesvese kontrolü', 'ani korku', 'ruhi denge'],
+        suitableFor: ['vesvese kontrolü','ani korku','ruhi denge'],
       },
       {
         key: 'korunma-dua-i-sifa',
@@ -4078,11 +4068,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Nazar, haset ve haksız bedduaların ruhani ağırlığına karşı arınma niyetiyle okunur.',
         source: 'Manevi şifa kaynakları ve dua mecmuaları',
-        tags: ['korunma', 'sifa', 'nazar', 'haset'],
-        categories: ['genel', 'korunma', 'dua'],
+        tags: ['korunma','sifa','nazar','haset'],
+        categories: ['genel','korunma','dua'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['nazar etkisi', 'haset', 'ruhani temizlik'],
+        suitableFor: ['nazar etkisi','haset','ruhani temizlik'],
       },
       {
         key: 'korunma-iman-ikrari-zikri',
@@ -4093,11 +4083,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Şeytanın inançla ilgili vesveselerini kesmek için tavsiye edilen iman tazeleme zikridir.',
         source: "Buhârî, Bed'ü'l-Halk 11; Müslim, Îmân 212",
-        tags: ['korunma', 'iman', 'vesvese', 'zikir'],
-        categories: ['genel', 'korunma', 'iman'],
+        tags: ['korunma','iman','vesvese','zikir'],
+        categories: ['genel','korunma','iman'],
         timeOfDay: 'any',
         recommendedCount: 33,
-        suitableFor: ['itikadi vesvese', 'iman tazeleme', 'zihinsel netlik'],
+        suitableFor: ['itikadi vesvese','iman tazeleme','zihinsel netlik'],
       },
       {
         key: 'korunma-estagfirullah-min-kulli-ma-kerihallah',
@@ -4109,11 +4099,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Maddi-manevi sıkıntılar, nazar ve beddua etkilerinden arınmaya yönelik istiğfar tertibidir.',
         source: 'İmam-ı Rabbani, Mektubat',
-        tags: ['korunma', 'istigfar', 'arinma', 'beddua'],
-        categories: ['genel', 'korunma', 'istigfar'],
+        tags: ['korunma','istigfar','arinma','beddua'],
+        categories: ['genel','korunma','istigfar'],
         timeOfDay: 'any',
         recommendedCount: 70,
-        suitableFor: ['günlük istiğfar', 'beddua korkusu', 'manevi temizlik'],
+        suitableFor: ['günlük istiğfar','beddua korkusu','manevi temizlik'],
       },
       {
         key: 'korunma-suhreverdi-tehlikeyi-onleme',
@@ -4126,8 +4116,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Sabah okunması halinde ani tehlikeler, kötü düşünceler ve ruhani musibetlerden korunma niyeti taşır.',
         source: "Şeyh Sihâbüddin Sühreverdi, Avarifü'l-Maarif",
-        tags: ['korunma', 'tehlike', 'sabah-virdi', 'dua'],
-        categories: ['genel', 'korunma', 'dua'],
+        tags: ['korunma','tehlike','sabah-virdi','dua'],
+        categories: ['genel','korunma','dua'],
         timeOfDay: 'morning',
         recommendedCount: 3,
         suitableFor: [
@@ -4148,11 +4138,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sabah-akşam ruhani baskı altındaki kimselere okunarak manevi arınma ve korunma niyetiyle uygulanır.',
         source: 'İbn Mâce, Tirmizî, Darimî; geleneksel koruma tertipleri',
-        tags: ['korunma', 'bakara', 'amenerrasulu', 'hidayet'],
-        categories: ['genel', 'korunma', 'kuran'],
+        tags: ['korunma','bakara','amenerrasulu','hidayet'],
+        categories: ['genel','korunma','kuran'],
         timeOfDay: 'any',
         recommendedCount: 1,
-        suitableFor: ['sabah-akşam tilavet', 'ruhani arınma', 'ev korunması'],
+        suitableFor: ['sabah-akşam tilavet','ruhani arınma','ev korunması'],
       },
       {
         key: 'korunma-nisa-100-ayet-tertibi',
@@ -4166,11 +4156,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Geleneksel havass uygulamalarında güçlü manevi blokajları çözmek için okunan tertipler arasında zikredilir.',
         source: 'Nisâ Suresi, 4/100',
-        tags: ['korunma', 'nisa', 'ayet', 'buyu'],
-        categories: ['genel', 'korunma', 'kuran'],
+        tags: ['korunma','nisa','ayet','buyu'],
+        categories: ['genel','korunma','kuran'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['manevi blokaj', 'ruhani baskı', 'korunma niyeti'],
+        suitableFor: ['manevi blokaj','ruhani baskı','korunma niyeti'],
       },
     ],
     specialDays: [],
@@ -4192,11 +4182,11 @@ const SOURCE_DATASETS = [
           'Deprem, toprak kayması, çöküntü ve ani fiziksel felaketlere karşı kapsamlı sığınma duası olarak okunur.',
         source:
           'Ebû Dâvûd (Edeb, 110); Nesâî (İstiaze, 60); İbn Mâce (Dua, 14)',
-        tags: ['afet', 'deprem', 'korunma', 'dua'],
-        categories: ['genel', 'afet', 'korunma'],
+        tags: ['afet','deprem','korunma','dua'],
+        categories: ['genel','afet','korunma'],
         timeOfDay: 'any',
         recommendedCount: 1,
-        suitableFor: ['deprem korkusu', 'yer sarsıntıları', 'günlük korunma'],
+        suitableFor: ['deprem korkusu','yer sarsıntıları','günlük korunma'],
       },
       {
         key: 'afet-euzu-bi-kelimatillahit-tammati-min-serri-ma-halak',
@@ -4209,11 +4199,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Konaklama, seyahat ve afet riski bulunan ortamlarda her türlü zararlı etkiye karşı okunur.',
         source: 'Sahih-i Müslim (Zikir, 54); Tirmizî (Deavât, 40)',
-        tags: ['afet', 'seyahat', 'korunma', 'dua'],
-        categories: ['genel', 'afet', 'korunma'],
+        tags: ['afet','seyahat','korunma','dua'],
+        categories: ['genel','afet','korunma'],
         timeOfDay: 'any',
         recommendedCount: 1,
-        suitableFor: ['seyahat', 'konaklama', 'afet riski'],
+        suitableFor: ['seyahat','konaklama','afet riski'],
       },
       {
         key: 'afet-ebud-derda-duasi-tam',
@@ -4227,8 +4217,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Sabah-akşam okunduğunda okuyanı, ailesini ve malını ani felaket, yangın, sel ve musibetlerden korumaya yönelik güçlü tevekkül duasıdır.',
         source: "Kenzü'l-Ummâl (Hadis No: 3432); İbnü's-Sünnî (Amelü'l-Yevm)",
-        tags: ['afet', 'tevekkul', 'yangin', 'sel', 'korunma'],
-        categories: ['genel', 'afet', 'korunma'],
+        tags: ['afet','tevekkul','yangin','sel','korunma'],
+        categories: ['genel','afet','korunma'],
         timeOfDay: 'any',
         recommendedCount: 1,
         suitableFor: [
@@ -4249,11 +4239,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Şiddetli gök gürültüsü, fırtına ve yıldırım anlarında atmosferik afetlere karşı okunur.',
         source: "İmam Mâlik (Muvatta, Sefer, 40); Ra'd Suresi 13. ayet tefsiri",
-        tags: ['afet', 'firtina', 'yildirim', 'tesbih'],
-        categories: ['genel', 'afet', 'korunma'],
+        tags: ['afet','firtina','yildirim','tesbih'],
+        categories: ['genel','afet','korunma'],
         timeOfDay: 'any',
         recommendedCount: 3,
-        suitableFor: ['fırtına', 'yıldırım', 'gök gürültüsü'],
+        suitableFor: ['fırtına','yıldırım','gök gürültüsü'],
       },
       {
         key: 'afet-bismillahi-ma-saallah-la-kuvvete',
@@ -4267,11 +4257,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Her sabah üç defa okunması halinde yangın, boğulma, ani ölüm ve beklenmedik afetlere karşı korunma niyeti taşır.',
         source: 'Şeyh Şihâbüddin Sühreverdi hazretlerinin evradı',
-        tags: ['afet', 'sabah-virdi', 'yangin', 'korunma'],
-        categories: ['genel', 'afet', 'korunma'],
+        tags: ['afet','sabah-virdi','yangin','korunma'],
+        categories: ['genel','afet','korunma'],
         timeOfDay: 'morning',
         recommendedCount: 3,
-        suitableFor: ['sabah korunma', 'ani afetler', 'tehlikeden sakınma'],
+        suitableFor: ['sabah korunma','ani afetler','tehlikeden sakınma'],
       },
       {
         key: 'afet-allahumme-inni-eseluke-bi-enne-lekel-hamd',
@@ -4285,11 +4275,11 @@ const SOURCE_DATASETS = [
         virtue:
           "İçinde İsm-i A'zamı barındırdığı rivayet edilen yakarış olarak, afet ve büyük tehlike anlarında duanın süratle kabulü niyetiyle okunur.",
         source: 'Tirmizî (Deavât, 82); Ebû Dâvûd (Salât, 368)',
-        tags: ['afet', 'dua', 'ismi-azam', 'korunma'],
-        categories: ['genel', 'afet', 'dua'],
+        tags: ['afet','dua','ismi-azam','korunma'],
+        categories: ['genel','afet','dua'],
         timeOfDay: 'any',
         recommendedCount: 1,
-        suitableFor: ['büyük tehlike', 'afet anı', 'acil sığınma'],
+        suitableFor: ['büyük tehlike','afet anı','acil sığınma'],
       },
       {
         key: 'afet-allahumme-la-tektulna-bi-gadabik',
@@ -4303,11 +4293,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Deprem, semavi afetler ve şiddetli doğa olaylarında ilahi rahmete sığınma niyetiyle okunur.',
         source: 'Tirmizî (Deavât, 48); Ahmed b. Hanbel (Müsned, II, 116)',
-        tags: ['afet', 'rahmet', 'siginma', 'dua'],
-        categories: ['genel', 'afet', 'dua'],
+        tags: ['afet','rahmet','siginma','dua'],
+        categories: ['genel','afet','dua'],
         timeOfDay: 'any',
         recommendedCount: 3,
-        suitableFor: ['deprem', 'fırtına', 'afet korkusu'],
+        suitableFor: ['deprem','fırtına','afet korkusu'],
       },
       {
         key: 'afet-allahumme-inni-eseluke-hayraha',
@@ -4321,11 +4311,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Kasırga, hortum ve şiddetli rüzgarların yıkıcı afete dönüşmemesi için okunan Nebevi duadır.',
         source: 'Sahih-i Müslim (İstiskâ, 15)',
-        tags: ['afet', 'ruzgar', 'firtina', 'dua'],
-        categories: ['genel', 'afet', 'dua'],
+        tags: ['afet','ruzgar','firtina','dua'],
+        categories: ['genel','afet','dua'],
         timeOfDay: 'any',
         recommendedCount: 1,
-        suitableFor: ['fırtına anı', 'şiddetli rüzgar', 'kasırga korkusu'],
+        suitableFor: ['fırtına anı','şiddetli rüzgar','kasırga korkusu'],
       },
       {
         key: 'afet-bismillahi-ala-nefsi-ve-ehli-ve-mali',
@@ -4337,11 +4327,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Sabahları okunduğunda can, aile ve malın dış tehlikelere karşı korunmasına niyet edilir.',
         source: "Nesâî (Amelü'l-Yevm); İbnü's-Sünnî",
-        tags: ['afet', 'aile', 'mal', 'korunma'],
-        categories: ['genel', 'afet', 'dua'],
+        tags: ['afet','aile','mal','korunma'],
+        categories: ['genel','afet','dua'],
         timeOfDay: 'morning',
         recommendedCount: 1,
-        suitableFor: ['aile korunması', 'mal emniyeti', 'gün başlangıcı'],
+        suitableFor: ['aile korunması','mal emniyeti','gün başlangıcı'],
       },
       {
         key: 'afet-rabbi-kullu-seyin-hadimuke',
@@ -4355,11 +4345,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Mahlukatın ve doğa olaylarının şerrine karşı ilahi koruma ve nusret talebi için okunur.',
         source: "Taberânî (el-Mu'cemü'l-Kebîr); Ebû Dâvûd",
-        tags: ['afet', 'nusret', 'korunma', 'dua'],
-        categories: ['genel', 'afet', 'dua'],
+        tags: ['afet','nusret','korunma','dua'],
+        categories: ['genel','afet','dua'],
         timeOfDay: 'any',
         recommendedCount: 7,
-        suitableFor: ['afet korkusu', 'genel korunma', 'yardım talebi'],
+        suitableFor: ['afet korkusu','genel korunma','yardım talebi'],
       },
       {
         key: 'afet-kureys-suresi',
@@ -4373,11 +4363,11 @@ const SOURCE_DATASETS = [
         virtue:
           'Korkulu ve tehlikeli bölgelerde emniyet, sakinlik ve korunma niyetiyle okunan surelerdendir.',
         source: 'Kureyş Suresi (106); klasik tefsir kaynakları',
-        tags: ['afet', 'emniyet', 'korku', 'sure'],
-        categories: ['genel', 'afet', 'kuran'],
+        tags: ['afet','emniyet','korku','sure'],
+        categories: ['genel','afet','kuran'],
         timeOfDay: 'any',
         recommendedCount: 11,
-        suitableFor: ['tehlikeli yolculuk', 'emniyet talebi', 'korku anları'],
+        suitableFor: ['tehlikeli yolculuk','emniyet talebi','korku anları'],
       },
     ],
     specialDays: [],
@@ -4398,8 +4388,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Stres, endişe, iç daralması ve panik nöbeti anlarında kalbe manevi genişlik ve dinginlik verir. Kriz anında 3 veya 7 kere okunması; sağ el göğüs üzerine konularak 7 tekrar edilmesi, kalpteki darlığın hafiflemesine niyet edilen uygulamalardandır.',
         source: "İnşirah Suresi (Kur'an-ı Kerim, 94. Sure)",
-        tags: ['sikinti', 'kaygi', 'kriz', 'insirah', 'panik', 'dua'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'kuran'],
+        tags: ['sikinti','kaygi','kriz','insirah','panik','dua'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','kuran'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -4423,8 +4413,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Peygamber Efendimizin en ağır kriz, felaket, çaresizlik ve derin keder anlarında okuduğu sığınma zikridir. Yoğun kaygı ve panik anında zihni toparlayıp emniyet hissini güçlendirmeye vesile olur.',
         source: 'Buhârî (Tecrîd-i Sarîh: 2150); Müslim',
-        tags: ['sikinti', 'kaygi', 'kriz', 'panik', 'tevhid', 'siginma'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        tags: ['sikinti','kaygi','kriz','panik','tevhid','siginma'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','dua'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -4448,8 +4438,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Uykuda ani uyanmalar, gece panikleri, yalnızlık korkusu, dehşet halleri ve yüksek anksiyete semptomlarını hafifletmede etkili bir sığınma duasıdır; kalbe emniyet hissi aşılar.',
         source: 'Tirmizî (Daavât, 94)',
-        tags: ['sikinti', 'kaygi', 'gece-panigi', 'vesvese', 'siginma', 'dua'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        tags: ['sikinti','kaygi','gece-panigi','vesvese','siginma','dua'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','dua'],
         timeOfDay: 'night',
         recommendedCount: 7,
         suitableFor: [
@@ -4473,8 +4463,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Beklenmedik şoklar, kayıplar ve travmatik olaylar karşısında zihinsel dağılmayı azaltır; isyan dürtüsünü teslimiyet ve kabul düzeyine çekerek kalbi teskin eder.',
         source: 'Bakara Suresi, 2/156; Ebû Dâvud (Cenâiz: 3119); Müslim',
-        tags: ['sikinti', 'musibet', 'kayip', 'travma', 'teslimiyet', 'dua'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        tags: ['sikinti','musibet','kayip','travma','teslimiyet','dua'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','dua'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -4498,8 +4488,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Yoğun çaresizlik, ağır kriz ve umutsuzluk anlarında kalbe emniyet ve dayanma gücü veren özel bir sığınma duası olarak okunur.',
         source: 'İmam Cafer-i Sadık Sıkıntı Duası',
-        tags: ['sikinti', 'kriz', 'caresizlik', 'siginma', 'dua'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        tags: ['sikinti','kriz','caresizlik','siginma','dua'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','dua'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -4519,8 +4509,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Panik atak dalgası veya yoğun korku hissedildiğinde 7 defa peş peşe söylendiğinde zihinsel odağı toparlayıp akut semptomları yatıştırmaya yardımcı olur.',
         source: 'Ebû Dâvud; Nesâî',
-        tags: ['sikinti', 'kaygi', 'panik', 'tevhid', 'dua'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'dua'],
+        tags: ['sikinti','kaygi','panik','tevhid','dua'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','dua'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -4541,8 +4531,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Akut kaygı ve panik atak nöbetleri esnasında zihni sakinleştirir, kalp ritmini dengelemeye ve iç dinginliği artırmaya destek olur. Günlük 847 tekrar manevi denge niyetiyle uygulanır.',
         source: 'Esmâ-i Hüsnâ / Şifa Ekolü',
-        tags: ['sikinti', 'kaygi', 'panik', 'esma', 'sukunet'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        tags: ['sikinti','kaygi','panik','esma','sukunet'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'any',
         recommendedCount: 847,
         suitableFor: [
@@ -4563,8 +4553,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İçsel öfke, hiddet, tahammülsüzlük ve yoğun iç sıkıntılarında sabah zikri olarak önerilir; duygusal dalgalanmaları yatıştırmaya yardımcı olur.',
         source: 'Esmâ-i Hüsnâ',
-        tags: ['sikinti', 'kaygi', 'ofke', 'duygusal-denge', 'esma'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        tags: ['sikinti','kaygi','ofke','duygusal-denge','esma'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'morning',
         recommendedCount: 209,
         suitableFor: [
@@ -4584,8 +4574,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Zihne musallat olan obsesif düşünce, takıntı, kuruntu ve inançla ilgili vesveselerden kurtulmak için sabah zikri olarak tavsiye edilir.',
         source: 'Esmâ-i Hüsnâ / Cevşen-ül Kebir',
-        tags: ['sikinti', 'vesvese', 'obsesif-dusunce', 'takinti', 'esma'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        tags: ['sikinti','vesvese','obsesif-dusunce','takinti','esma'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'morning',
         recommendedCount: 1155,
         suitableFor: [
@@ -4605,8 +4595,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Öfke kontrolü zorlanan ve ani parlamalar yaşayan kişilerde sakinleşmeyi, kalpte şefkat ve merhamet hissinin yerleşmesini desteklemek için zikredilir.',
         source: 'Esmâ-i Hüsnâ / Şifa Ekolü',
-        tags: ['sikinti', 'ofke-kontrolu', 'sakinlesme', 'sefkat', 'esma'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        tags: ['sikinti','ofke-kontrolu','sakinlesme','sefkat','esma'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'any',
         recommendedCount: 287,
         suitableFor: [
@@ -4626,8 +4616,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Gelecek kaygısı, ölüm korkusu ve hastalığa yakalanma endişesini yatıştırmak için sabah ve ikindi sonrası düzenli zikredilir.',
         source: 'Esmâ-i Hüsnâ',
-        tags: ['sikinti', 'kaygi', 'korku', 'emniyet', 'esma'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        tags: ['sikinti','kaygi','korku','emniyet','esma'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'any',
         recommendedCount: 136,
         suitableFor: [
@@ -4647,8 +4637,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Sosyal kaygı, paranoya ve başkalarının kötülüğünden korkma durumlarında korunma hissini güçlendirmek ve sezgiyi berraklaştırmak için zikredilir.',
         source: 'Esmâ-i Hüsnâ',
-        tags: ['sikinti', 'sosyal-anksiyete', 'paranoya', 'korunma', 'esma'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        tags: ['sikinti','sosyal-anksiyete','paranoya','korunma','esma'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'any',
         recommendedCount: 145,
         suitableFor: [
@@ -4675,7 +4665,7 @@ const SOURCE_DATASETS = [
           'manevi-toparlanma',
           'esma',
         ],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'any',
         recommendedCount: 731,
         suitableFor: [
@@ -4695,8 +4685,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Sosyal ortamlarda aşağılanma, yetersizlik hissi ve genel fobiler karşısında özgüveni ve manevi dayanıklılığı desteklemek için zikredilir.',
         source: 'Esmâ-i Hüsnâ',
-        tags: ['sikinti', 'ozguven', 'sosyal-kaygi', 'fobi', 'esma'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        tags: ['sikinti','ozguven','sosyal-kaygi','fobi','esma'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'any',
         recommendedCount: 117,
         suitableFor: [
@@ -4716,8 +4706,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Tahammülsüzlük, açgözlülük, hırs ve olumsuz ahlaki eğilimlerden arınarak ruhsal dayanıklılık ve psikolojik metaneti güçlendirmeye destek olur.',
         source: 'Esmâ-i Hüsnâ',
-        tags: ['sikinti', 'metanet', 'dayaniklilik', 'hirs-kontrolu', 'esma'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        tags: ['sikinti','metanet','dayaniklilik','hirs-kontrolu','esma'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'morning',
         recommendedCount: 500,
         suitableFor: [
@@ -4738,8 +4728,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Kalbe derin bir sükunet ve sevgi iklimi kazandırmak, kaygı anında kalp sıkışmasını hafifletmek için ritmik şekilde zikredilir.',
         source: 'Esmâ-i Hüsnâ Terkibi',
-        tags: ['sikinti', 'kaygi', 'kalp-sukuneti', 'sevgi', 'esma-terkibi'],
-        categories: ['genel', 'kaygi-yonetimi', 'manevi-destek', 'esma'],
+        tags: ['sikinti','kaygi','kalp-sukuneti','sevgi','esma-terkibi'],
+        categories: ['genel','kaygi-yonetimi','manevi-destek','esma'],
         timeOfDay: 'any',
         recommendedCount: 99,
         suitableFor: [
@@ -4769,8 +4759,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Yeni başlayan görev veya projelerde istikrarı korumak, zorluklar karşısında yılmamak, kurumsal dürüstlük ve profesyonel itibarı güçlendirmek için okunur.',
         source: "Tirmizî, De'avât, 23; Diyanet Haber Kayıtları",
-        tags: ['is-hayati', 'kariyer', 'sebat', 'durustluk', 'dua'],
-        categories: ['genel', 'is-hayati', 'kariyer', 'dua'],
+        tags: ['is-hayati','kariyer','sebat','durustluk','dua'],
+        categories: ['genel','is-hayati','kariyer','dua'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -4793,8 +4783,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Borç yükünden ve maddi sıkıntıdan kurtulmak, iş hayatında helal ve bereketli kazanç elde etmek, bağımsız ve kimseye muhtaç olmayan bir duruş kazanmak için tavsiye edilir.',
         source: "Hz. Ali'den rivayet; Tirmizî, Daavât, 121",
-        tags: ['is-hayati', 'helal-rizik', 'borc', 'bereket', 'dua'],
-        categories: ['genel', 'is-hayati', 'kariyer', 'dua'],
+        tags: ['is-hayati','helal-rizik','borc','bereket','dua'],
+        categories: ['genel','is-hayati','kariyer','dua'],
         timeOfDay: 'any',
         recommendedCount: 70,
         suitableFor: [
@@ -4826,7 +4816,7 @@ const SOURCE_DATASETS = [
           'esma',
           'dua',
         ],
-        categories: ['genel', 'is-hayati', 'kariyer', 'rizik', 'esma', 'dua'],
+        categories: ['genel','is-hayati','kariyer','rizik','esma','dua'],
         timeOfDay: 'any',
         recommendedCount: 100,
         suitableFor: [
@@ -4849,8 +4839,8 @@ const SOURCE_DATASETS = [
         virtue:
           'İş arayanların hayırlı bir iş bulması, çalışanların kariyer basamaklarında yükselmesi, yönetim kademelerinde güven ve itibar kazanması niyetiyle namazlardan sonra okunur.',
         source: 'Yusuf Suresi, 12/54-56',
-        tags: ['is-hayati', 'kariyer', 'terfi', 'yonetim', 'itibar', 'kuran'],
-        categories: ['genel', 'is-hayati', 'kariyer', 'kuran'],
+        tags: ['is-hayati','kariyer','terfi','yonetim','itibar','kuran'],
+        categories: ['genel','is-hayati','kariyer','kuran'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -4873,8 +4863,8 @@ const SOURCE_DATASETS = [
         virtue:
           'Mevcut başarıların ve kariyer kazanımlarının korunması, işteki refah ve bereketin süreklilik kazanması için şükür bilinciyle okunur.',
         source: 'İbrahim Suresi, 14/7',
-        tags: ['is-hayati', 'sukur', 'bereket', 'nimet-artisi', 'kuran'],
-        categories: ['genel', 'is-hayati', 'kariyer', 'rizik', 'kuran'],
+        tags: ['is-hayati','sukur','bereket','nimet-artisi','kuran'],
+        categories: ['genel','is-hayati','kariyer','rizik','kuran'],
         timeOfDay: 'any',
         recommendedCount: 7,
         suitableFor: [
@@ -4903,7 +4893,7 @@ const SOURCE_DATASETS = [
           'rizik',
           'esma',
         ],
-        categories: ['genel', 'is-hayati', 'kariyer', 'rizik', 'esma'],
+        categories: ['genel','is-hayati','kariyer','rizik','esma'],
         timeOfDay: 'any',
         recommendedCount: 351,
         suitableFor: [
@@ -4917,27 +4907,27 @@ const SOURCE_DATASETS = [
     ],
     specialDays: [],
   },
-];
+]
 
 function normalize(value) {
   return String(value ?? '')
     .toLocaleLowerCase('tr-TR')
-    .replace(/ı/g, 'i')
-    .replace(/ğ/g, 'g')
-    .replace(/ü/g, 'u')
-    .replace(/ş/g, 's')
-    .replace(/ö/g, 'o')
-    .replace(/ç/g, 'c')
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+    .replace(/ı/g,'i')
+    .replace(/ğ/g,'g')
+    .replace(/ü/g,'u')
+    .replace(/ş/g,'s')
+    .replace(/ö/g,'o')
+    .replace(/ç/g,'c')
+    .replace(/[^\p{L}\p{N}\s]/gu,' ')
+    .replace(/\s+/g,' ')
+    .trim()
 }
 
 function uniq(items) {
-  return [...new Set(items.filter(Boolean))];
+  return [...new Set(items.filter(Boolean))]
 }
 
-function mergeDhikr(base, next) {
+function mergeDhikr(base,next) {
   return {
     ...base,
     ...next,
@@ -4965,103 +4955,103 @@ function mergeDhikr(base, next) {
       base.recommendedCount ?? 0,
       next.recommendedCount ?? 0,
     ),
-    tags: uniq([...(base.tags ?? []), ...(next.tags ?? [])]),
-    categories: uniq([...(base.categories ?? []), ...(next.categories ?? [])]),
+    tags: uniq([...(base.tags ?? []),...(next.tags ?? [])]),
+    categories: uniq([...(base.categories ?? []),...(next.categories ?? [])]),
     suitableFor: uniq([
       ...(base.suitableFor ?? []),
       ...(next.suitableFor ?? []),
     ]),
-  };
+  }
 }
 
-const canonicalByKey = new Map();
-const canonicalBySignature = new Map();
-const keyRemap = new Map();
+const canonicalByKey = new Map()
+const canonicalBySignature = new Map()
+const keyRemap = new Map()
 
 for (const dataset of SOURCE_DATASETS) {
   for (const item of dataset.dhikrItems) {
     const canonicalSignature =
-      normalize(item.nameTurkish) + '|' + normalize(item.transliteration);
+      normalize(item.nameTurkish) + '|' + normalize(item.transliteration)
 
-    const existingKey = canonicalBySignature.get(canonicalSignature);
+    const existingKey = canonicalBySignature.get(canonicalSignature)
     if (existingKey) {
-      const merged = mergeDhikr(canonicalByKey.get(existingKey), item);
-      canonicalByKey.set(existingKey, { ...merged, key: existingKey });
-      keyRemap.set(item.key, existingKey);
-      continue;
+      const merged = mergeDhikr(canonicalByKey.get(existingKey),item)
+      canonicalByKey.set(existingKey,{ ...merged,key: existingKey })
+      keyRemap.set(item.key,existingKey)
+      continue
     }
 
-    canonicalByKey.set(item.key, { ...item });
-    canonicalBySignature.set(canonicalSignature, item.key);
-    keyRemap.set(item.key, item.key);
+    canonicalByKey.set(item.key,{ ...item })
+    canonicalBySignature.set(canonicalSignature,item.key)
+    keyRemap.set(item.key,item.key)
   }
 }
 
-const dhikrItems = Array.from(canonicalByKey.values());
-const specialDayByComposite = new Map();
+const dhikrItems = Array.from(canonicalByKey.values())
+const specialDayByComposite = new Map()
 
 for (const dataset of SOURCE_DATASETS) {
   for (const item of dataset.specialDays) {
     const remappedDhikrKeys = uniq(
       (item.dhikrKeys ?? []).map((key) => keyRemap.get(key) ?? key),
-    );
-    const specialDay = { ...item, dhikrKeys: remappedDhikrKeys };
+    )
+    const specialDay = { ...item,dhikrKeys: remappedDhikrKeys }
     const compositeKey = [
       item.eventKey,
       item.date,
       item.dayIndex ?? '',
       item.name ?? '',
-    ].join('|');
-    const existing = specialDayByComposite.get(compositeKey);
+    ].join('|')
+    const existing = specialDayByComposite.get(compositeKey)
 
     if (!existing) {
-      specialDayByComposite.set(compositeKey, specialDay);
-      continue;
+      specialDayByComposite.set(compositeKey,specialDay)
+      continue
     }
 
     if (
       (specialDay.dhikrKeys?.length ?? 0) > (existing.dhikrKeys?.length ?? 0)
     ) {
-      specialDayByComposite.set(compositeKey, specialDay);
+      specialDayByComposite.set(compositeKey,specialDay)
     }
   }
 }
 
-const specialDays = Array.from(specialDayByComposite.values()).sort((a, b) => {
+const specialDays = Array.from(specialDayByComposite.values()).sort((a,b) => {
   if (a.date === b.date) {
-    return (a.dayIndex ?? 0) - (b.dayIndex ?? 0);
+    return (a.dayIndex ?? 0) - (b.dayIndex ?? 0)
   }
-  return a.date.localeCompare(b.date);
-});
+  return a.date.localeCompare(b.date)
+})
 
 export const SPECIAL_DAY_DATASET = {
   key: 'special-days-master-2026',
   label: 'Special Days Master 2026',
   dhikrItems,
   specialDays,
-};
+}
 
 export function getAvailableEventKeys() {
-  return uniq(specialDays.map((item) => item.eventKey));
+  return uniq(specialDays.map((item) => item.eventKey))
 }
 
 export function buildEventDataset(eventKey) {
-  const filtered = specialDays.filter((item) => item.eventKey === eventKey);
+  const filtered = specialDays.filter((item) => item.eventKey === eventKey)
   if (filtered.length === 0) {
-    return null;
+    return null
   }
 
   const usedDhikrKeySet = new Set(
     filtered.flatMap((item) => item.dhikrKeys ?? []),
-  );
+  )
   const filteredDhikrs = dhikrItems.filter((item) =>
     usedDhikrKeySet.has(item.key),
-  );
+  )
 
   return {
     key: eventKey,
     label: 'Special Days ' + eventKey,
     dhikrItems: filteredDhikrs,
     specialDays: filtered,
-  };
+  }
 }
