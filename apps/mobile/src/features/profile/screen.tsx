@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { ConfirmModal } from "../../components/ui/confirm-modal";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { ProfileHeader } from "./components/profile-header";
 import { ProfilePersonalInfoModal } from "./components/profile-personal-info-modal";
@@ -88,6 +89,14 @@ export function ProfileScreen() {
           onChangeMinute={profile.onReminderMinuteChange}
           onSave={profile.saveReminderTime}
           onClose={profile.closeReminderTimeModal}
+        />
+        <ConfirmModal
+          visible={!!profile.feedbackError}
+          title="E-posta uygulaması açılamadı"
+          message={profile.feedbackError ?? ""}
+          confirmLabel="Tamam"
+          onConfirm={profile.clearFeedbackError}
+          onCancel={profile.clearFeedbackError}
         />
       </View>
     </PageLayout>

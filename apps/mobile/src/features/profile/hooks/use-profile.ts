@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { Alert, AppState, Linking, Platform } from "react-native";
+import { AppState, Linking, Platform } from "react-native";
 import {
   getUserById,
   saveUserPreferences,
@@ -73,6 +73,7 @@ export function useProfile() {
   const [isSavingReminderTime, setIsSavingReminderTime] = useState(false);
   const [reminderTimeError, setReminderTimeError] = useState<string>();
   const [shouldSyncPremiumOnForeground, setShouldSyncPremiumOnForeground] = useState(false);
+  const [feedbackError, setFeedbackError] = useState<string>();
 
   const syncBackendUser = useCallback(async () => {
     if (authStatus !== "authenticated" || !session?.userId) {
@@ -235,10 +236,7 @@ export function useProfile() {
 
       await Linking.openURL(webComposeUrl);
     } catch {
-      Alert.alert(
-        "E-posta uygulaması açılamadı",
-        "Cihazında varsayılan e-posta uygulaması yok gibi görünüyor."
-      );
+      setFeedbackError("Cihazında varsayılan e-posta uygulaması yok gibi görünüyor.");
     }
   };
 
@@ -675,6 +673,8 @@ export function useProfile() {
     onReminderHourChange,
     onReminderMinuteChange,
     saveReminderTime,
+    feedbackError,
+    clearFeedbackError: () => setFeedbackError(undefined),
     manageSubscription,
     rateApp,
     sendFeedback,

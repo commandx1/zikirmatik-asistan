@@ -1,7 +1,8 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useRouter } from 'expo-router'
-import { useEffect, useMemo, useRef } from 'react'
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native'
+import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { useThemeTokens } from '@zikirmatik/ui'
 import type { ThemeTokens } from '@zikirmatik/shared'
 import Animated, {
@@ -72,6 +73,7 @@ function ProgressRing({ progress, accent, trackColor }: { progress: number; acce
 
 export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
   const router = useRouter()
+  const [isResetConfirmVisible, setIsResetConfirmVisible] = useState(false)
   const { tokens: activeTokens } = useThemeTokens()
   const { fontFamily } = useThemePreferences()
   const tokens = previewTokens ?? activeTokens
@@ -158,12 +160,7 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
     [home.activeQuickDhikr, home.mainDhikr.nameTurkish]
   )
 
-  const onResetConfirmPress = () => {
-    Alert.alert('Sayacı Sıfırla', `${resetDhikrName} sayacınız sıfırlanacak. Bu işlem geri alınamaz.`, [
-      { text: 'Vazgeç', style: 'cancel' },
-      { text: 'Sıfırla', style: 'destructive', onPress: home.onResetPress }
-    ])
-  }
+  const onResetConfirmPress = () => setIsResetConfirmVisible(true)
 
   return (
     <View className='mb-8 items-center'>
@@ -304,6 +301,20 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
       </View>
 
       <View className='-mt-5 h-[74px] w-[168px] rounded-b-[26px]' style={{ backgroundColor: strapColor }} />
+
+      <ConfirmModal
+        visible={isResetConfirmVisible}
+        title='Sayacı Sıfırla'
+        message={`${resetDhikrName} sayacınız sıfırlanacak. Bu işlem geri alınamaz.`}
+        confirmLabel='Sıfırla'
+        cancelLabel='Vazgeç'
+        destructive
+        onConfirm={() => {
+          setIsResetConfirmVisible(false)
+          home.onResetPress()
+        }}
+        onCancel={() => setIsResetConfirmVisible(false)}
+      />
     </View>
   )
 }

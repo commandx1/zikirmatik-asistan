@@ -1,6 +1,8 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useThemeTokens } from '@zikirmatik/ui'
-import { Alert, Pressable, Text, View } from 'react-native'
+import { useState } from 'react'
+import { Pressable, Text, View } from 'react-native'
+import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { ThemedCard } from '../../../components/ui/themed-card'
 import { useZikirlerim } from '../context/zikirlerim-context'
 import type { ZikirItem } from '../types'
@@ -47,6 +49,7 @@ function resolveAccent(item: ZikirItem) {
 
 export function ZikirItemCard({ item }: ZikirItemCardProps) {
   const { tokens } = useThemeTokens()
+  const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
   const {
     toggleFavorite,
     selectDhikr,
@@ -158,22 +161,7 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
 
           <Pressable
             disabled={isDeleting}
-            onPress={() => {
-              Alert.alert(
-                'Zikri Sil',
-                'Bu zikri Zikirlerim listesinden kaldırmak istediğine emin misin?',
-                [
-                  { text: 'Vazgeç', style: 'cancel' },
-                  {
-                    text: 'Sil',
-                    style: 'destructive',
-                    onPress: () => {
-                      void deleteDhikr(item)
-                    }
-                  }
-                ]
-              )
-            }}
+            onPress={() => setIsDeleteConfirmVisible(true)}
             className={`rounded-full border px-3 py-2 ${isDeleting ? 'opacity-60' : ''}`}
             style={{ borderColor: deleteBorderColor, backgroundColor: deleteBackgroundColor }}
           >
@@ -205,6 +193,19 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
           <Text className='text-xs font-semibold text-[#111827]'>Ana Sayfa'da Başlat</Text>
         </Pressable>
       </View>
+      <ConfirmModal
+        visible={isDeleteConfirmVisible}
+        title='Zikri Sil'
+        message='Bu zikri Zikirlerim listesinden kaldırmak istediğine emin misin?'
+        confirmLabel='Sil'
+        cancelLabel='Vazgeç'
+        destructive
+        onConfirm={() => {
+          setIsDeleteConfirmVisible(false)
+          void deleteDhikr(item)
+        }}
+        onCancel={() => setIsDeleteConfirmVisible(false)}
+      />
     </ThemedCard>
   )
 }
