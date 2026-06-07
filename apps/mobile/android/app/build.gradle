@@ -1,15 +1,8 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-import java.io.FileInputStream
-import java.util.Properties
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -99,7 +92,7 @@ android {
         applicationId 'com.zikirmatik_asistan.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10
+        versionCode 1
         versionName "0.1.0"
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
@@ -111,26 +104,15 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-        release {
-            if (keystorePropertiesFile.exists()) {
-                storeFile file(keystoreProperties['MYAPP_UPLOAD_STORE_FILE'])
-                storePassword keystoreProperties['MYAPP_UPLOAD_STORE_PASSWORD']
-                keyAlias keystoreProperties['MYAPP_UPLOAD_KEY_ALIAS']
-                keyPassword keystoreProperties['MYAPP_UPLOAD_KEY_PASSWORD']
-            } else if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
-                storeFile file(MYAPP_UPLOAD_STORE_FILE)
-                storePassword MYAPP_UPLOAD_STORE_PASSWORD
-                keyAlias MYAPP_UPLOAD_KEY_ALIAS
-                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
-            }
-        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.release
+            // Caution! In production, you need to generate your own keystore file.
+            // see https://reactnative.dev/docs/signed-apk-android.
+            signingConfig signingConfigs.debug
             def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
             shrinkResources enableShrinkResources.toBoolean()
             minifyEnabled enableMinifyInReleaseBuilds
@@ -196,26 +178,5 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
-    }
-}
-
-// Workaround: with New Architecture enabled, clean may fail on missing generated JNI dirs.
-// Disabling app-level native clean tasks avoids false-negative clean failures before release bundling.
-tasks.configureEach { task ->
-    if (task.name == "externalNativeBuildCleanDebug" || task.name == "externalNativeBuildCleanRelease") {
-        task.enabled = false
-    }
-}
-
-// Ensure Worklets prefab package is generated before Reanimated CMake configure in release builds.
-gradle.projectsEvaluated {
-    def reanimatedProject = rootProject.findProject(":react-native-reanimated")
-    def workletsProject = rootProject.findProject(":react-native-worklets")
-    if (reanimatedProject != null && workletsProject != null) {
-        reanimatedProject.tasks.configureEach { task ->
-            if (task.name.startsWith("configureCMakeRelWithDebInfo")) {
-                task.dependsOn(workletsProject.tasks.named("prefabReleasePackage"))
-            }
-        }
     }
 }

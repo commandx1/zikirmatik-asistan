@@ -20,7 +20,9 @@
       "Bash(npx skills *)",
       "Bash(python3 -c ' *)",
       "Bash(bun add *)",
-      "Bash(pnpm add *)"
+      "Bash(pnpm add *)",
+      "Bash(./gradlew app:assembleDebug -x lint -x test --configure-on-demand --build-cache -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=arm64-v8a)",
+      "Bash(npx install-skia *)"
     ]
   }
 }
