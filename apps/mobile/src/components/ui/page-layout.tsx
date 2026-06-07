@@ -48,6 +48,12 @@ export function PageLayout({
         <ImageBackground source={backgroundImage} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
       ) : null}
       {isAnimated ? <GalaksiGirdabiBg /> : null}
+      {isAnimated ? (
+        <View
+          pointerEvents="none"
+          style={[StyleSheet.absoluteFillObject, { backgroundColor: "rgba(4,2,16,0.38)" }]}
+        />
+      ) : null}
       {showGradient ? (
         <LinearGradient
           colors={gradient.colors}

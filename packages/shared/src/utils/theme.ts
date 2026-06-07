@@ -136,7 +136,7 @@ export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
     bg: "#080514",
     card: "#12092A",
     textPrimary: "#EDE8FF",
-    textMuted: "#9B86C4",
+    textMuted: "#C4B5E8",
     accent: "#8B5CF6",
     success: "#34D399",
     border: "#261A4A",

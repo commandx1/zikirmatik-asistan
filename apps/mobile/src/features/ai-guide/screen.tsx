@@ -15,7 +15,6 @@ import { LoadingSection } from "./components/loading-section";
 import { RecommendationsSection } from "./components/recommendations-section";
 import { RewardedGateSheet } from "./components/rewarded-gate-sheet";
 import { TopBar } from "./components/top-bar";
-import { VerificationFooter } from "./components/verification-footer";
 import { useAiGuide } from "./hooks/use-ai-guide";
 
 export function AiGuideScreen() {
@@ -87,7 +86,6 @@ export function AiGuideScreen() {
               }}
             />
           )}
-          <VerificationFooter />
         </PageScrollView>
 
         <RewardedGateSheet

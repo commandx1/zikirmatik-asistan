@@ -88,16 +88,26 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
       <Animated.View style={isTodaySpecial ? cardPulseAnimatedStyle : undefined}>
         <ThemedCard
           className="rounded-[24px] p-6"
-          borderClassName={isTodaySpecial ? "border-[--accent]/60" : "border-white/5"}
+          borderClassName={isTodaySpecial ? "border-[--accent]/60" : "border-white/10"}
           elevated
           style={{
             shadowColor: isTodaySpecial ? tokens.accent : "#000000",
-            shadowOpacity: isTodaySpecial ? 0.44 : 0.24,
-            shadowRadius: isTodaySpecial ? 24 : 16,
+            shadowOpacity: isTodaySpecial ? 0.44 : 0.28,
+            shadowRadius: isTodaySpecial ? 24 : 20,
             shadowOffset: { width: 0, height: 6 },
-            backgroundColor: isTodaySpecial ? withAlpha(tokens.accent, 0.07) : undefined,
+            backgroundColor: isTodaySpecial
+              ? withAlpha(tokens.accent, 0.12)
+              : "rgba(255,255,255,0.06)",
           }}
         >
+          {/* Glass sheen overlay */}
+          <LinearGradient
+            pointerEvents="none"
+            colors={["rgba(255,255,255,0.10)", "rgba(255,255,255,0.03)", "rgba(255,255,255,0.00)"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            style={{ position: "absolute", inset: 0, borderRadius: 24 }}
+          />
           {isTodaySpecial ? (
             <>
               <Animated.View pointerEvents="none" className="absolute inset-0" style={glowAnimatedStyle}>
