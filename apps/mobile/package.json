@@ -13,13 +13,14 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "@expo-google-fonts/merriweather": "^0.4.2",
     "@expo-google-fonts/finlandica": "^0.4.0",
     "@expo-google-fonts/indie-flower": "^0.2.3",
     "@expo-google-fonts/intel-one-mono": "^0.4.0",
+    "@expo-google-fonts/merriweather": "^0.4.2",
     "@expo/metro-runtime": "~6.1.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-google-signin/google-signin": "^16.1.2",
+    "@shopify/react-native-skia": "^2.6.4",
     "@tanstack/react-query": "^5.75.7",
     "@zikirmatik/shared": "workspace:*",
     "@zikirmatik/ui": "workspace:*",

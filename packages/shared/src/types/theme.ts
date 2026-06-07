@@ -13,6 +13,7 @@ export type ThemeName =
   | "gul-bahcesi"
   | "saf-siyah"
   | "acik-mod"
+  | "galaksi-girdabi"
   //| "premium-doku";
 
 export type FontSize = "small" | "medium" | "large";

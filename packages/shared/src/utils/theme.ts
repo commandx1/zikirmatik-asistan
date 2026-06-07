@@ -132,6 +132,20 @@ export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
     success: "#2EA77B",
     border: "#DFE6F1"
   },
+  "galaksi-girdabi": {
+    bg: "#080514",
+    card: "#12092A",
+    textPrimary: "#EDE8FF",
+    textMuted: "#9B86C4",
+    accent: "#8B5CF6",
+    success: "#34D399",
+    border: "#261A4A",
+    bgGradient: {
+      colors: ["#08051A", "#1A0842", "#0A0F3A"],
+      start: { x: 0, y: 0 },
+      end: { x: 1, y: 1 }
+    }
+  },
   /* "premium-doku": {
     bg: "#0C131A",
     card: "#16222C",

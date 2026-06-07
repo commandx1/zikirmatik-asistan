@@ -5,6 +5,7 @@ import Svg, { Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import type { AppFontFamily } from "../../../store/theme-store";
 import { resolveThemeBackgroundImage } from "../../../theme/background-image";
+import { GalaksiGirdabiBg } from "../../../theme/galaksi-girdabi-bg";
 
 type SelectorPreviewCardProps = {
   themeName: ThemeName;
@@ -23,8 +24,9 @@ const PREVIEW_ARABIC = "سُبْحَانَ اللّٰهِ وَبِحَمْدِه
 
 export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "default" }: SelectorPreviewCardProps) {
   const backgroundImage = resolveThemeBackgroundImage(themeName);
+  const isAnimated = themeName === "galaksi-girdabi";
   const gradient = tokens.bgGradient;
-  const showGradient = Boolean(!backgroundImage && gradient && gradient.colors.length >= 2);
+  const showGradient = Boolean(!isAnimated && !backgroundImage && gradient && gradient.colors.length >= 2);
   const regularTextStyle =
     previewFontFamily === "merriweather"
       ? styles.previewMerriweatherRegular
@@ -65,6 +67,7 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
                 {backgroundImage ? (
                   <ImageBackground source={backgroundImage} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
                 ) : null}
+                {isAnimated ? <GalaksiGirdabiBg /> : null}
                 {showGradient ? (
                   <LinearGradient
                     colors={gradient!.colors}

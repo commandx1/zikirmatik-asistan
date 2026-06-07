@@ -29,6 +29,7 @@ const THEME_NAMES: ThemeName[] = [
   "gul-bahcesi",
   "saf-siyah",
   "acik-mod",
+  "galaksi-girdabi",
   //"premium-doku"
 ];
 
@@ -129,6 +130,13 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
     swatchInner: "#F3F4F6",
     dotColor: "#0F1B2D",
     dotBorder: "#0F1B2D",
+    isPremiumLocked: true
+  },
+  "galaksi-girdabi": {
+    swatchBg: "#080514",
+    swatchInner: "#1A0842",
+    dotColor: "#8B5CF6",
+    dotBorder: "#8B5CF6",
     isPremiumLocked: true
   },
   /* "premium-doku": {

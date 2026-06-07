@@ -5,7 +5,22 @@
       "Bash(npx remotion *)",
       "Bash(npx tsc *)",
       "Bash(xargs ls)",
-      "Bash(npx jest *)"
+      "Bash(npx jest *)",
+      "Bash(python3 -m json.tool)",
+      "Read(//Users/serhatbelen/.claude/**)",
+      "Bash(/plugin install *)",
+      "Bash(xargs -I{} cat {})",
+      "Bash(xargs -I{} python3 -c \"import json,sys; d=json.load\\(open\\('{}','r'\\)\\); print\\('name:', d.get\\('name','?'\\)\\)\")",
+      "Bash(xargs -I{} python3 -c \"import json; d=json.load\\(open\\('{}','r'\\)\\); print\\('name:', d.get\\('name','?'\\)\\)\")",
+      "Bash(xargs -I{} python3 -c \"import json; d=json.load\\(open\\('{}','r'\\)\\); print\\(d.get\\('name','?'\\)\\)\")",
+      "Bash(xargs -I{} basename {})",
+      "Bash(read f *)",
+      "Bash(python3 -c 'import json; d=json.load\\(open\\('\\\\''__TRACKED_VAR__'\\\\''\\)\\); print\\(d.get\\('\\\\''name'\\\\'','\\\\''?'\\\\''\\)\\)')",
+      "Bash(python3 -c 'import json; d=json.load\\(open\\('\\\\''__TRACKED_VAR__'\\\\''\\)\\); print\\(d.get\\('\\\\''description'\\\\'','\\\\'''\\\\''\\)[:120]\\)')",
+      "Bash(npx skills *)",
+      "Bash(python3 -c ' *)",
+      "Bash(bun add *)",
+      "Bash(pnpm add *)"
     ]
   }
 }

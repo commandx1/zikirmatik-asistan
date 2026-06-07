@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { resolveThemeBackgroundImage } from "../../theme/background-image";
+import { GalaksiGirdabiBg } from "../../theme/galaksi-girdabi-bg";
 
 type PageLayoutProps = PropsWithChildren<{
   backgroundClassName?: string;
@@ -38,13 +39,15 @@ export function PageLayout({
   const { tokens, themeName } = useThemeTokens();
   const gradient = tokens.bgGradient;
   const backgroundImage = resolveThemeBackgroundImage(themeName);
-  const showGradient = !backgroundImage && gradient && gradient.colors.length >= 2;
+  const isAnimated = themeName === "galaksi-girdabi";
+  const showGradient = !isAnimated && !backgroundImage && gradient && gradient.colors.length >= 2;
 
   return (
     <View className={`flex-1 items-center ${backgroundClassName}`}>
       {backgroundImage ? (
         <ImageBackground source={backgroundImage} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
       ) : null}
+      {isAnimated ? <GalaksiGirdabiBg /> : null}
       {showGradient ? (
         <LinearGradient
           colors={gradient.colors}

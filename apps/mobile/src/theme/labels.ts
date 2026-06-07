@@ -15,5 +15,6 @@ export const THEME_LABELS: Record<ThemeName, string> = {
   "gul-bahcesi": "Gül Bahçesi",
   "saf-siyah": "Saf Siyah",
   "acik-mod": "Açık Mod",
+  "galaksi-girdabi": "Galaksi Girdabı",
   //"premium-doku": "Premium Doku"
 };
