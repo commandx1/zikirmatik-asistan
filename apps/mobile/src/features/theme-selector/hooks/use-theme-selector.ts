@@ -62,10 +62,10 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
     isPremiumLocked: true
   },
   "col-kumulu": {
-    swatchBg: "#E8DECC",
-    swatchInner: "#DBCBB3",
-    dotColor: "#B37B22",
-    dotBorder: "#B37B22",
+    swatchBg: "#2A2015",
+    swatchInner: "#3C2E1F",
+    dotColor: "#E0B25A",
+    dotBorder: "#E0B25A",
     isPremiumLocked: false
   },
   "kum-tasi-minimal": {
