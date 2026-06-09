@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
@@ -27,6 +27,10 @@ type TimeContext = {
 
 @Injectable()
 export class AiService {
+  private readonly logger = new Logger(AiService.name);
+  private openAiClient: OpenAI | null = null;
+  private openAiClientResolved = false;
+
   constructor(
     private readonly configService: ConfigService,
     @InjectModel(AiRecommendation.name)
@@ -224,6 +228,18 @@ export class AiService {
       .lean()
       .exec();
 
+    // Seçilen zikrin popülerlik sayacını best-effort artır; hata seçim
+    // yanıtını bozmamalı.
+    try {
+      await this.dhikrModel
+        .updateOne({ _id: selectedDhikrId }, { $inc: { recommendedCount: 1 } })
+        .exec();
+    } catch (error) {
+      this.logger.warn(
+        `recommendedCount artırılamadı (dhikr ${selectedDhikrId.toString()}): ${this.describeError(error)}`,
+      );
+    }
+
     return updated;
   }
 
@@ -257,12 +273,11 @@ export class AiService {
     }>;
     maxRecommendations: number;
   }) {
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+    const client = this.getOpenAiClient();
 
-    if (!apiKey) {
+    if (!client) {
       return null;
     }
-    const client = new OpenAI({ apiKey });
     const model =
       this.configService.get<string>('OPENAI_MODEL') || 'gpt-4o-mini';
 
@@ -300,32 +315,88 @@ export class AiService {
 
       const text = response.choices?.[0]?.message?.content;
       if (!text) {
+        this.logger.warn('OpenAI yanıtı boş döndü, fallback kullanılacak.');
         return null;
       }
 
-      const parsed = JSON.parse(text) as {
-        recommendedIds?: unknown;
-        reasoning?: unknown;
-      };
+      let parsed: { recommendedIds?: unknown; reasoning?: unknown };
+      try {
+        parsed = JSON.parse(text) as {
+          recommendedIds?: unknown;
+          reasoning?: unknown;
+        };
+      } catch (error) {
+        this.logger.warn(
+          `OpenAI yanıtı JSON olarak ayrıştırılamadı: ${this.describeError(error)}`,
+        );
+        return null;
+      }
+
       if (!Array.isArray(parsed.recommendedIds)) {
+        this.logger.warn(
+          'OpenAI yanıtında geçerli recommendedIds dizisi yok, fallback kullanılacak.',
+        );
         return null;
       }
 
       const recommendedIds = parsed.recommendedIds
-        .map((item) => (typeof item === 'string' ? item : null))
+        .map((item) => (typeof item === 'string' ? item.trim() : null))
         .filter((item): item is string => Boolean(item));
+
+      const reasoning =
+        typeof parsed.reasoning === 'string' &&
+        parsed.reasoning.trim().length > 0
+          ? stripObjectIds(parsed.reasoning).trim() || undefined
+          : undefined;
 
       return {
         recommendedIds,
-        reasoning:
-          typeof parsed.reasoning === 'string' &&
-          parsed.reasoning.trim().length > 0
-            ? parsed.reasoning
-            : undefined,
+        reasoning,
       };
-    } catch {
+    } catch (error) {
+      this.logger.warn(
+        `OpenAI öneri çağrısı başarısız oldu, fallback kullanılacak: ${this.describeError(error)}`,
+      );
       return null;
     }
+  }
+
+  private getOpenAiClient(): OpenAI | null {
+    if (this.openAiClientResolved) {
+      return this.openAiClient;
+    }
+
+    this.openAiClientResolved = true;
+    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+
+    if (!apiKey) {
+      this.logger.warn(
+        'OPENAI_API_KEY tanımlı değil, öneriler fallback ile üretilecek.',
+      );
+      this.openAiClient = null;
+      return null;
+    }
+
+    const timeout = this.readNumberConfig('OPENAI_TIMEOUT_MS', 15_000);
+    const maxRetries = this.readNumberConfig('OPENAI_MAX_RETRIES', 2);
+
+    this.openAiClient = new OpenAI({ apiKey, timeout, maxRetries });
+    return this.openAiClient;
+  }
+
+  private readNumberConfig(key: string, fallback: number): number {
+    const raw = this.configService.get<string | number>(key);
+    const parsed = typeof raw === 'number' ? raw : Number(raw);
+
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+  }
+
+  private describeError(error: unknown): string {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    return typeof error === 'string' ? error : 'bilinmeyen hata';
   }
 
   private defaultTimeContext(): TimeContext {
@@ -363,4 +434,8 @@ function toDateString(date: Date) {
 
 function dedupeIds(ids: string[]) {
   return [...new Set(ids)];
+}
+
+function stripObjectIds(text: string) {
+  return text.replace(/\b[a-f0-9]{24}\b/gi, '').replace(/\s{2,}/g, ' ');
 }
