@@ -1,7 +1,7 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import type { ThemeTokens } from '@zikirmatik/shared'
 import { useThemeTokens } from '@zikirmatik/ui'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import Animated, {
   Easing,
@@ -17,6 +17,9 @@ import type { ZikirItem } from '../types'
 
 type ZikirItemCardProps = {
   item: ZikirItem
+  isSelected: boolean
+  isDeleting: boolean
+  isUpdatingThisItem: boolean
 }
 
 function resolveAccent(item: ZikirItem) {
@@ -58,7 +61,7 @@ function resolveAccent(item: ZikirItem) {
 const EXPAND_DURATION = 280
 const COLLAPSE_DURATION = 220
 
-function AccordionContent({ item, tokens }: { item: ZikirItem; tokens: ThemeTokens }) {
+const AccordionContent = memo(function AccordionContent({ item, tokens }: { item: ZikirItem; tokens: ThemeTokens }) {
   return (
     <View
       className='pb-3 gap-2 pt-1'
@@ -186,9 +189,9 @@ function AccordionContent({ item, tokens }: { item: ZikirItem; tokens: ThemeToke
       ) : null}
     </View>
   )
-}
+})
 
-export function ZikirItemCard({ item }: ZikirItemCardProps) {
+export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isDeleting, isUpdatingThisItem }: ZikirItemCardProps) {
   const { tokens } = useThemeTokens()
   const [isExpanded, setIsExpanded] = useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
@@ -196,23 +199,10 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
   const animOpacity = useSharedValue(0)
   const animChevron = useSharedValue(0)
 
-  const {
-    toggleFavorite,
-    selectDhikr,
-    startDhikrOnHome,
-    selectedDhikrId,
-    deleteDhikr,
-    deletingDhikrId,
-    editingDhikr,
-    isUpdatingDhikr,
-    openUpdateModal
-  } = useZikirlerim()
+  const { toggleFavorite, selectDhikr, startDhikrOnHome, deleteDhikr, openUpdateModal } = useZikirlerim()
 
   const progressPct = item.target === 0 ? 0 : Math.min(100, Math.round((item.current / item.target) * 100))
   const accent = resolveAccent(item)
-  const isSelected = selectedDhikrId === item.id
-  const isDeleting = deletingDhikrId === item.id
-  const isUpdatingThisItem = isUpdatingDhikr && editingDhikr?.id === item.id
   const targetLabel = item.target > 0 ? String(item.target) : '∞'
   const title = item.nameTurkish || item.transliteration
   const showTransliteration = item.transliteration && item.transliteration !== title
@@ -427,7 +417,7 @@ export function ZikirItemCard({ item }: ZikirItemCardProps) {
       />
     </ThemedCard>
   )
-}
+})
 
 function withAlpha(hex: string, alpha: number) {
   const normalized = hex.replace('#', '')

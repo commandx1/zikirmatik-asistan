@@ -3,7 +3,7 @@ import { useZikirlerim } from "../context/zikirlerim-context";
 import { ZikirItemCard } from "./zikir-item-card";
 
 export function ZikirListSection() {
-  const { items } = useZikirlerim();
+  const { items, selectedDhikrId, deletingDhikrId, editingDhikr, isUpdatingDhikr } = useZikirlerim();
 
   if (items.length === 0) {
     return (
@@ -18,7 +18,13 @@ export function ZikirListSection() {
   return (
     <View className="gap-3 px-5 pb-6">
       {items.map((item) => (
-        <ZikirItemCard key={item.id} item={item} />
+        <ZikirItemCard
+          key={item.id}
+          item={item}
+          isSelected={selectedDhikrId === item.id}
+          isDeleting={deletingDhikrId === item.id}
+          isUpdatingThisItem={isUpdatingDhikr && editingDhikr?.id === item.id}
+        />
       ))}
     </View>
   );

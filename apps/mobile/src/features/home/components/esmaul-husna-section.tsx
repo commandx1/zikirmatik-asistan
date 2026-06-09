@@ -1,4 +1,5 @@
 import { useThemeTokens } from '@zikirmatik/ui'
+import { useMemo } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { ESMAUL_HUSNA } from '../../focus/data'
 import type { EsmaulHusnaItem } from '../../focus/types'
@@ -14,22 +15,19 @@ type EsmaulHusnaSectionProps = {
   onSelect: (item: EsmaulHusnaItem) => void
 }
 
-const ESMAUL_HUSNA_ROWS = ESMAUL_HUSNA.reduce<EsmaulHusnaTableEntry[][]>((rows, item, index) => {
-  const rowIndex = Math.floor(index / 2)
-  const entry = { number: index + 1, item }
-
-  if (!rows[rowIndex]) {
-    rows[rowIndex] = []
-  }
-
-  rows[rowIndex].push(entry)
-  return rows
-}, [])
-
 export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, onSelect }: EsmaulHusnaSectionProps) {
   const { tokens } = useThemeTokens()
 
-  if (ESMAUL_HUSNA_ROWS.length === 0) {
+  const rows = useMemo(() =>
+    ESMAUL_HUSNA.reduce<EsmaulHusnaTableEntry[][]>((acc, item, index) => {
+      const rowIndex = Math.floor(index / 2)
+      if (!acc[rowIndex]) acc[rowIndex] = []
+      acc[rowIndex].push({ number: index + 1, item })
+      return acc
+    }, []),
+  [])
+
+  if (rows.length === 0) {
     return null
   }
 
@@ -47,8 +45,8 @@ export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, 
           Esmaül Hüsna
         </Text>
         <View className='overflow-hidden rounded-xl' style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.1) }}>
-          {ESMAUL_HUSNA_ROWS.map((row, rowIndex) => {
-            const isLastRow = rowIndex === ESMAUL_HUSNA_ROWS.length - 1
+          {rows.map((row, rowIndex) => {
+            const isLastRow = rowIndex === rows.length - 1
 
             return (
               <View
