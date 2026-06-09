@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Text, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { DailyEsmaWelcomeModal } from "../home/components/daily-esma-welcome-modal";
@@ -20,7 +20,14 @@ import { useAiGuide } from "./hooks/use-ai-guide";
 export function AiGuideScreen() {
   const router = useRouter();
   const guide = useAiGuide();
+  const scrollRef = useRef<ScrollView>(null);
   const [isDailyEsmaOpen, setDailyEsmaOpen] = useState(false);
+
+  useEffect(() => {
+    if (guide.isLoading) {
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 120);
+    }
+  }, [guide.isLoading]);
   const dailyEsmaSuggestions = useMemo(() => resolveDailyEsmaSuggestions(ESMAUL_HUSNA, new Date()), []);
   const requestDailyEsmaStart = useHomeNavigationIntentStore((state) => state.requestDailyEsmaStart);
   const requestEsmaListFocus = useHomeNavigationIntentStore((state) => state.requestEsmaListFocus);
@@ -48,6 +55,7 @@ export function AiGuideScreen() {
         <InfoTooltip visible={guide.showInfo} />
 
         <PageScrollView
+          scrollRef={scrollRef}
           contentInnerClassName="w-full px-5"
           keyboardShouldPersistTaps="handled"
           bottomPadding={32}
@@ -80,6 +88,7 @@ export function AiGuideScreen() {
           {guide.isLoading ? null : (
             <RecommendationsSection
               items={guide.recommendations}
+              assistantNote={guide.assistantNote}
               onSelectRecommendation={(item) => {
                 guide.selectRecommendation(item);
                 router.push("/(tabs)/home");

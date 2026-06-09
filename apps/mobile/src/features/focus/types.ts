@@ -1,6 +1,13 @@
 export type ZikirFilterKey = 'all' | 'active' | 'completed' | 'favorites'
 export type ZikirSource = 'ready' | 'personal'
 
+export type AiDhikrContext = {
+  dhikrId: string
+  recommendationId: string
+  prompt: string
+  assistantNote?: string
+}
+
 export type ZikirItem = {
   id: string
   source: ZikirSource
@@ -8,6 +15,11 @@ export type ZikirItem = {
   arabic?: string
   transliteration: string
   meaning?: string
+  virtue?: string
+  contentSource?: string
+  aiPrompt?: string
+  aiAssistantNote?: string
+  aiRecommendationId?: string
   current: number
   target: number
   lastActivityLabel: string

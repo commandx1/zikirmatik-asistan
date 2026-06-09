@@ -22,7 +22,9 @@ export function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
           return (
             <View key={`${line}-${index}`} className="flex-row items-start gap-2">
               <Text className="pt-[1px] text-xs text-[--text-muted]">•</Text>
-              <Text className="flex-1 text-xs leading-5 text-[--text-muted]">{bulletMatch[1]}</Text>
+              <Text className="flex-1 text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+                {bulletMatch[1]}
+              </Text>
             </View>
           );
         }
@@ -32,13 +34,15 @@ export function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
           return (
             <View key={`${line}-${index}`} className="flex-row items-start gap-2">
               <Text className="text-xs text-[--text-muted]">{`${index + 1}.`}</Text>
-              <Text className="flex-1 text-xs leading-5 text-[--text-muted]">{orderedMatch[1]}</Text>
+              <Text className="flex-1 text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+                {orderedMatch[1]}
+              </Text>
             </View>
           );
         }
 
         return (
-          <Text key={`${line}-${index}`} className="text-xs leading-5 text-[--text-muted]">
+          <Text key={`${line}-${index}`} className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
             {line}
           </Text>
         );

@@ -6,6 +6,8 @@ export type BackendDhikr = {
   nameTurkish: string;
   transliteration: string;
   meaning: string;
+  virtue?: string;
+  source?: string;
   recommendedCount: number;
 };
 

@@ -22,6 +22,9 @@ export type CreateAiRecommendationResponse = {
     nameArabic: string;
     transliteration: string;
     meaning: string;
+    virtue?: string;
+    source?: string;
+    recommendedCount?: number;
   }>;
   usedModel: "openai" | "fallback";
 };
@@ -30,6 +33,7 @@ export type BackendAiRecommendation = {
   _id: string;
   userId: string;
   freeText?: string;
+  assistantNote?: string;
   recommendedDhikrIds: string[];
   selectedDhikrId?: string;
   createdAt: string;

@@ -5,14 +5,17 @@ export type AiGuideRecommendation = {
   arabic: string;
   transliteration: string;
   meaning: string;
+  virtue?: string;
+  source?: string;
+  recommendedCount?: number;
   repeatLabel?: string;
-  note?: string;
   isPrimary?: boolean;
 };
 
 export type AiGuideHistoryItem = {
   id: string;
   prompt: string;
+  assistantNote?: string;
   createdAt: string;
   recommendations: AiGuideRecommendation[];
 };

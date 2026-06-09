@@ -1,4 +1,5 @@
 export type ThemeName =
+  | "sistem"
   | "gece-koyu"
   | "gece-lacivert"
   | "cami-yesili"

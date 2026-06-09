@@ -118,6 +118,8 @@ type HomeContextValue = {
   onDailyEsmaDismiss: () => void
   onDailyEsmaShowAll: () => void
   onDailyEsmaStart: (item: EsmaulHusnaItem) => void
+  tapAnywhereEnabled: boolean
+  toggleTapAnywhere: () => void
 }
 
 const HomeContext = createContext<HomeContextValue | null>(null)
@@ -145,6 +147,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const setSyncError = useDhikrStore(state => state.setSyncError)
   const unsavedProgressDhikrIds = useDhikrStore(state => state.unsavedProgressDhikrIds)
   const discardUnsavedProgress = useDhikrStore(state => state.discardUnsavedProgress)
+  const activeAiContext = useDhikrStore(state => state.activeAiContext)
   const authDisplayName = useAuthStore(state => state.session?.displayName)
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
@@ -186,6 +189,21 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [isSavingLog, setIsSavingLog] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [streakDays, setStreakDays] = useState(0)
+  const [tapAnywhereEnabled, setTapAnywhereEnabled] = useState(false)
+  const toggleTapAnywhere = useCallback(() => {
+    setTapAnywhereEnabled(prev => {
+      const next = !prev
+      void AsyncStorage.setItem('tap-anywhere-enabled', next ? '1' : '0')
+      return next
+    })
+  }, [])
+
+  useEffect(() => {
+    void AsyncStorage.getItem('tap-anywhere-enabled').then(val => {
+      if (val === '1') setTapAnywhereEnabled(true)
+    })
+  }, [])
+
   const liveSelectedCountRef = useRef(0)
   const liveFreeCountRef = useRef(0)
   const freeAutoDhikrIdRef = useRef<string | undefined>(undefined)
@@ -437,6 +455,17 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       setIsSavingLog(true)
       setSyncError(undefined)
       setUnsavedTransitionError(null)
+      const aiLogContext =
+        activeAiContext?.dhikrId === selectedDhikr.id
+          ? {
+              source: 'ai' as const,
+              aiRecommendationId: activeAiContext.recommendationId,
+              aiPrompt: activeAiContext.prompt,
+              aiAssistantNote: activeAiContext.assistantNote
+            }
+          : {
+              source: 'manual' as const
+            }
       const payload = isObjectId(selectedDhikr.id)
         ? {
             userId: sessionUserId,
@@ -444,7 +473,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             count: safeCount,
             targetCount: selectedDhikr.target,
             date: toDateKey(new Date()),
-            source: 'manual' as const,
+            ...aiLogContext,
             isCompleted,
             isFavorite: selectedDhikr.isFavorite
           }
@@ -456,7 +485,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             count: safeCount,
             targetCount: selectedDhikr.target,
             date: toDateKey(new Date()),
-            source: 'manual' as const,
+            ...aiLogContext,
             isCompleted: false,
             isFavorite: selectedDhikr.isFavorite
           }
@@ -930,7 +959,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       },
       onUnsavedTransitionCancel: closeUnsavedTransition,
       onUnsavedTransitionSaveAndContinue: saveAndContinueUnsavedTransition,
-      onUnsavedTransitionContinueWithoutSaving: continueUnsavedTransition
+      onUnsavedTransitionContinueWithoutSaving: continueUnsavedTransition,
+      tapAnywhereEnabled,
+      toggleTapAnywhere
     }
   }, [
     activeQuickDhikr,
@@ -991,7 +1022,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     setFreeModeTarget,
     targetDraft,
     unsavedProgressDhikrIds,
-    unsavedTransitionError
+    unsavedTransitionError,
+    tapAnywhereEnabled,
+    toggleTapAnywhere
   ])
 
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>

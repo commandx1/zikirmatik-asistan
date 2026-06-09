@@ -1,6 +1,5 @@
 import { Pressable, Text, View } from "react-native";
 import { DhikrContentStack } from "../../../components/ui/dhikr-content-stack";
-import { MarkdownRenderer } from "../../../components/ui/markdown-renderer";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { ThemedTag } from "../../../components/ui/themed-tag";
 import type { AiGuideRecommendation } from "../types";
@@ -33,12 +32,7 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
             transliteration={item.transliteration}
             meaning={item.meaning}
           />
-          {item.note ? (
-            <View className="mt-3 rounded-xl border border-[--accent]/20 bg-[--accent]/5 px-3 py-2">
-              <Text className="mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--accent]">Asistan Notu</Text>
-              <MarkdownRenderer markdown={item.note} />
-            </View>
-          ) : null}
+          <RecommendationEvidence item={item} />
         </View>
 
         <Pressable onPress={() => onSelect(item)} className="relative z-10 w-full rounded-full bg-[--accent] py-3">
@@ -66,17 +60,48 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
           transliteration={item.transliteration}
           meaning={item.meaning}
         />
-        {item.note ? (
-          <View className="mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-            <Text className="mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Asistan Notu</Text>
-            <MarkdownRenderer markdown={item.note} />
-          </View>
-        ) : null}
+        <RecommendationEvidence item={item} />
       </View>
 
       <Pressable onPress={() => onSelect(item)} className="w-full rounded-full border border-[--accent]/40 py-2.5">
         <Text className="text-center text-sm font-medium text-[--accent]">Başla</Text>
       </Pressable>
     </ThemedCard>
+  );
+}
+
+function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
+  if (!item.virtue && !item.source && !item.recommendedCount) {
+    return null;
+  }
+
+  return (
+    <View className="mt-3 gap-2">
+      {item.virtue ? (
+        <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+          <Text className="mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Fazilet</Text>
+          <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+            {item.virtue}
+          </Text>
+        </View>
+      ) : null}
+      {item.source || item.recommendedCount ? (
+        <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+          {item.source ? (
+            <>
+              <Text className="mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Kaynak</Text>
+              <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+                {item.source}
+              </Text>
+            </>
+          ) : null}
+          {item.recommendedCount ? (
+            <Text className={`${item.source ? "mt-2" : ""} text-xs text-[--text-muted]`}>
+              Önerilen hedef: {item.recommendedCount}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
+    </View>
   );
 }

@@ -424,14 +424,14 @@ export function useProfile() {
   };
 
   const onReminderHourChange = (value: string) => {
-    setReminderHourDraft(value.replace(/\D+/g, "").slice(0, 2));
+    setReminderHourDraft(value);
     if (reminderTimeError) {
       setReminderTimeError(undefined);
     }
   };
 
   const onReminderMinuteChange = (value: string) => {
-    setReminderMinuteDraft(value.replace(/\D+/g, "").slice(0, 2));
+    setReminderMinuteDraft(value);
     if (reminderTimeError) {
       setReminderTimeError(undefined);
     }

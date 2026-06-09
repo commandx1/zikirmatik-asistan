@@ -14,6 +14,7 @@ describe("dhikr-store", () => {
     useDhikrStore.setState({
       items: [],
       selectedDhikrId: "",
+      activeAiContext: undefined,
       freeModeCount: 0,
       freeModeTarget: 0,
       unsavedProgressDhikrIds: [],
@@ -133,5 +134,40 @@ describe("dhikr-store", () => {
     expect(item?.current).toBe(3);
     expect(item?.target).toBe(33);
     expect(useDhikrStore.getState().unsavedProgressDhikrIds).toEqual([]);
+  });
+
+  it("keeps AI recommendation context with the selected dhikr until selection is cleared", () => {
+    useDhikrStore.setState({
+      items: [
+        {
+          id: "ready-a",
+          source: "ready",
+          nameTurkish: "Dua A",
+          transliteration: "Dua A",
+          current: 0,
+          target: 33,
+          lastActivityLabel: "Henüz başlanmadı",
+          streakDays: 0,
+          isFavorite: false
+        }
+      ]
+    });
+
+    useDhikrStore.getState().selectDhikr("ready-a", {
+      recommendationId: "rec-a",
+      prompt: "borç sıkıntısı",
+      assistantNote: "Bu öneri borç sıkıntısı bağlamında seçildi."
+    });
+
+    expect(useDhikrStore.getState().activeAiContext).toEqual({
+      dhikrId: "ready-a",
+      recommendationId: "rec-a",
+      prompt: "borç sıkıntısı",
+      assistantNote: "Bu öneri borç sıkıntısı bağlamında seçildi."
+    });
+
+    useDhikrStore.getState().clearSelectedDhikr();
+
+    expect(useDhikrStore.getState().activeAiContext).toBeUndefined();
   });
 });
