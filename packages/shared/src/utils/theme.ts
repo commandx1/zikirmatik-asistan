@@ -1,6 +1,15 @@
 import type { FontSize, FontTokens, ThemeName, ThemeTokens } from "../types/theme";
 
 export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
+  "sistem": {
+    bg: "#050505",
+    card: "#141414",
+    textPrimary: "#F7F7F7",
+    textMuted: "#A0A0A0",
+    accent: "#D2A038",
+    success: "#4CB98E",
+    border: "#242424"
+  },
   "gece-koyu": {
     bg: "#0B1423",
     card: "#162236",

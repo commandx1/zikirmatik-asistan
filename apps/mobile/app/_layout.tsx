@@ -13,6 +13,7 @@ import { IndieFlower_400Regular } from "@expo-google-fonts/indie-flower";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
 import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
+import { useReactiveColorScheme } from "../src/hooks/use-reactive-color-scheme";
 import { useThemePreferences } from "../src/hooks/use-theme-preferences";
 import type { AppFontFamily } from "../src/store/theme-store";
 import { useThemeStore } from "../src/store/theme-store";
@@ -30,6 +31,10 @@ Notifications.setNotificationHandler({
 
 function RootProviders({ children }: { children: ReactNode }) {
   const { themeName, fontFamily } = useThemePreferences();
+  const colorScheme = useReactiveColorScheme();
+  const effectiveThemeName = themeName === "sistem"
+    ? (colorScheme === "dark" ? "saf-siyah" : "acik-mod")
+    : themeName;
   const themeStoreHydrated = useThemeStore((s) => s.hasHydrated);
   const [fontsLoaded] = useFonts({
     Merriweather_400Regular,
@@ -61,7 +66,7 @@ function RootProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
-        themeName={themeName}
+        themeName={effectiveThemeName}
         fontSize="medium"
         textFontFamily={resolvedFontFamily}
         textFontFamilyStrong={resolvedStrongFontFamily}

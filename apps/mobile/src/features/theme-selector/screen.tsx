@@ -23,7 +23,7 @@ export function ThemeSelectorScreen() {
             ) : (
               <View className="rounded-xl border border-white/10 bg-[--card] px-4 py-3">
                 <Text className="text-[12px] font-semibold text-[--text-primary]">
-                  Ücretsiz planda 3 tema açık. Diğer temalar Premium ile açılır.
+                  Bazı temalar Premium ile açılır.
                 </Text>
               </View>
             )}

@@ -1,5 +1,6 @@
 import { resolveThemeTokens, type ThemeTokens, type ThemeName } from "@zikirmatik/shared";
 import { useEffect, useMemo, useState } from "react";
+import { useReactiveColorScheme } from "../../../hooks/use-reactive-color-scheme";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useProfileStore } from "../../../store/profile-store";
 import { THEME_LABELS } from "../../../theme/labels";
@@ -15,6 +16,7 @@ export type ThemeOption = {
 };
 
 const THEME_NAMES: ThemeName[] = [
+  "sistem",
   "gece-koyu",
   "gece-lacivert",
   "cami-yesili",
@@ -34,6 +36,13 @@ const THEME_NAMES: ThemeName[] = [
 ];
 
 const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
+  "sistem": {
+    swatchBg: "#1C1C1C",
+    swatchInner: "#F0F0F0",
+    dotColor: "#C8972A",
+    dotBorder: "#C8972A",
+    isPremiumLocked: false
+  },
   "gece-koyu": {
     swatchBg: "#0F1B2D",
     swatchInner: "#162236",
@@ -123,14 +132,14 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
     swatchInner: "#111111",
     dotColor: "#C8972A",
     dotBorder: "#C8972A",
-    isPremiumLocked: true
+    isPremiumLocked: false
   },
   "acik-mod": {
     swatchBg: "#FFFFFF",
     swatchInner: "#F3F4F6",
     dotColor: "#0F1B2D",
     dotBorder: "#0F1B2D",
-    isPremiumLocked: true
+    isPremiumLocked: false
   },
   "galaksi-girdabi": {
     swatchBg: "#080514",
@@ -151,6 +160,7 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
 export function useThemeSelector() {
   const { themeName, setThemeName } = useThemePreferences();
   const isPremium = useProfileStore((s) => s.isPremium);
+  const colorScheme = useReactiveColorScheme();
   const [draftThemeName, setDraftThemeName] = useState<ThemeName>(themeName);
   const [lockedThemeMessage, setLockedThemeMessage] = useState<string>();
 
@@ -168,7 +178,14 @@ export function useThemeSelector() {
     };
   }) as ThemeOption[];
 
-  const draftThemeTokens: ThemeTokens = useMemo(() => resolveThemeTokens(draftThemeName), [draftThemeName]);
+  const resolvedDraftThemeName = draftThemeName === "sistem"
+    ? (colorScheme === "dark" ? "saf-siyah" : "acik-mod")
+    : draftThemeName;
+
+  const draftThemeTokens: ThemeTokens = useMemo(
+    () => resolveThemeTokens(resolvedDraftThemeName),
+    [resolvedDraftThemeName]
+  );
 
   const hasThemeChanges = draftThemeName !== themeName;
   const canSave = !themes.some((theme) => theme.id === draftThemeName && theme.isPremiumLocked);

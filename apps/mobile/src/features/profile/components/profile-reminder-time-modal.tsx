@@ -1,7 +1,17 @@
 import { Pressable, Text, View } from "react-native";
+import { AppSelectBox } from "../../../components/ui/app-selectbox";
 import { KeyboardAwareBottomSheetModal } from "../../../components/ui/keyboard-aware-bottom-sheet-modal";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
-import { ThemedInput } from "../../../components/ui/themed-input";
+
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => {
+  const value = String(i).padStart(2, "0");
+  return { label: value, value };
+});
+
+const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, i) => {
+  const value = String(i).padStart(2, "0");
+  return { label: value, value };
+});
 
 type ProfileReminderTimeModalProps = {
   visible: boolean;
@@ -46,25 +56,21 @@ export function ProfileReminderTimeModal({
       <View className="flex-row items-end gap-3">
         <View className="flex-1">
           <Text className="mb-1.5 text-xs font-medium text-[--text-primary]">Saat</Text>
-          <ThemedInput
+          <AppSelectBox
             value={hourDraft}
-            onChangeText={onChangeHour}
-            keyboardType="number-pad"
-            maxLength={2}
-            placeholder="08"
-            className="rounded-xl bg-[--bg] px-3 text-center"
+            options={HOUR_OPTIONS}
+            onChange={onChangeHour}
+            title="Saat Seç"
           />
         </View>
         <Text className="mb-3 text-lg font-semibold text-[--text-muted]">:</Text>
         <View className="flex-1">
           <Text className="mb-1.5 text-xs font-medium text-[--text-primary]">Dakika</Text>
-          <ThemedInput
+          <AppSelectBox
             value={minuteDraft}
-            onChangeText={onChangeMinute}
-            keyboardType="number-pad"
-            maxLength={2}
-            placeholder="00"
-            className="rounded-xl bg-[--bg] px-3 text-center"
+            options={MINUTE_OPTIONS}
+            onChange={onChangeMinute}
+            title="Dakika Seç"
           />
         </View>
       </View>

@@ -20,6 +20,7 @@ import { formatCurrentPrayerLabel, formatWeekdayLabel } from "../../../lib/praye
 
 type LastAiGuideResult = {
   prompt: string;
+  assistantNote?: string;
   recommendationId?: string;
   recommendations: AiGuideRecommendation[];
 };
@@ -34,6 +35,7 @@ export function useAiGuide() {
   const [error, setError] = useState<string>();
   const [recommendationId, setRecommendationId] = useState<string>();
   const [recommendations, setRecommendations] = useState<AiGuideRecommendation[]>([]);
+  const [assistantNote, setAssistantNote] = useState<string>();
   const [historyItems, setHistoryItems] = useState<AiGuideHistoryItem[]>([]);
   const [isHistoryExpanded, setHistoryExpanded] = useState(false);
   const [lastPrompt, setLastPrompt] = useState("");
@@ -58,6 +60,7 @@ export function useAiGuide() {
     setError(undefined);
     setRecommendationId(undefined);
     setRecommendations([]);
+    setAssistantNote(undefined);
     setHistoryItems([]);
     setHistoryExpanded(false);
     setLastPrompt("");
@@ -83,6 +86,7 @@ export function useAiGuide() {
     }
 
     setLastPrompt(parsed.prompt || "");
+    setAssistantNote(parsed.assistantNote?.trim() || undefined);
     setRecommendationId(parsed.recommendationId);
     setRecommendations(parsed.recommendations);
     setHistoryItems(
@@ -91,6 +95,7 @@ export function useAiGuide() {
             {
               id: parsed.recommendationId,
               prompt: parsed.prompt?.trim() || "Genel öneri",
+              assistantNote: parsed.assistantNote?.trim() || undefined,
               createdAt: "",
               recommendations: parsed.recommendations
             }
@@ -121,6 +126,7 @@ export function useAiGuide() {
 
     const prompt = latest.prompt === "Genel öneri" ? "" : latest.prompt;
     setLastPrompt(prompt);
+    setAssistantNote(latest.assistantNote);
     setRecommendationId(latest.id);
     setRecommendations(latest.recommendations);
 
@@ -129,6 +135,7 @@ export function useAiGuide() {
         cacheKey,
         JSON.stringify({
           prompt,
+          assistantNote: latest.assistantNote,
           recommendationId: latest.id,
           recommendations: latest.recommendations
         } satisfies LastAiGuideResult)
@@ -256,6 +263,7 @@ export function useAiGuide() {
         }, accessToken);
 
         setRecommendationId(response.recommendationId);
+        const nextAssistantNote = response.reasoning?.trim() || undefined;
         const mappedItems = markFirstPrimary(
           response.items.map((item, index) => ({
             id: item.id,
@@ -264,17 +272,21 @@ export function useAiGuide() {
             repeatLabel: index === 0 ? "Öncelikli" : undefined,
             arabic: item.nameArabic,
             transliteration: item.transliteration || item.nameTurkish,
-            meaning: item.meaning
-          })),
-          response.reasoning
+            meaning: item.meaning,
+            virtue: item.virtue,
+            source: item.source,
+            recommendedCount: item.recommendedCount
+          }))
         );
         const normalizedPrompt = request.freeText?.trim() || "";
         setLastPrompt(normalizedPrompt);
+        setAssistantNote(nextAssistantNote);
         setRecommendations(mappedItems);
         setHistoryItems((prev) => [
           {
             id: response.recommendationId,
             prompt: normalizedPrompt || "Genel öneri",
+            assistantNote: nextAssistantNote,
             createdAt: new Date().toISOString(),
             recommendations: mappedItems
           },
@@ -287,6 +299,7 @@ export function useAiGuide() {
             cacheKey,
             JSON.stringify({
               prompt: normalizedPrompt,
+              assistantNote: nextAssistantNote,
               recommendationId: response.recommendationId,
               recommendations: mappedItems
             } satisfies LastAiGuideResult)
@@ -359,7 +372,16 @@ export function useAiGuide() {
   };
 
   const selectRecommendation = (recommendation: AiGuideRecommendation) => {
-    selectDhikr(recommendation.id);
+    selectDhikr(
+      recommendation.id,
+      recommendationId
+        ? {
+            recommendationId,
+            prompt: lastPrompt.trim() || "Genel öneri",
+            assistantNote
+          }
+        : undefined
+    );
 
     if (authStatus !== "authenticated" || !recommendationId) {
       return;
@@ -380,6 +402,7 @@ export function useAiGuide() {
   const openHistoryItem = (item: AiGuideHistoryItem) => {
     setRecommendationId(item.id);
     setLastPrompt(item.prompt === "Genel öneri" ? "" : item.prompt);
+    setAssistantNote(item.assistantNote);
     setRecommendations(item.recommendations);
     setError(undefined);
   };
@@ -406,6 +429,7 @@ export function useAiGuide() {
     error,
     recommendationId,
     lastPrompt,
+    assistantNote,
     recommendations,
     historyItems,
     visibleHistoryItems,
@@ -425,7 +449,7 @@ export function useAiGuide() {
   };
 }
 
-function markFirstPrimary(items: AiGuideRecommendation[], primaryNote?: string) {
+function markFirstPrimary(items: AiGuideRecommendation[]) {
   if (items.length === 0) {
     return items;
   }
@@ -440,8 +464,7 @@ function markFirstPrimary(items: AiGuideRecommendation[], primaryNote?: string) 
 
     return {
       ...item,
-      isPrimary: true,
-      note: primaryNote ?? item.note
+      isPrimary: true
     };
   });
 }

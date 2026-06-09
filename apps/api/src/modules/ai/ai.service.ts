@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
@@ -27,6 +27,10 @@ type TimeContext = {
 
 @Injectable()
 export class AiService {
+  private readonly logger = new Logger(AiService.name);
+  private openAiClient: OpenAI | null = null;
+  private openAiClientResolved = false;
+
   constructor(
     private readonly configService: ConfigService,
     @InjectModel(AiRecommendation.name)
@@ -73,7 +77,6 @@ export class AiService {
     const allDhikrs = availableDhikrs.map((item) => ({
       id: item._id.toString(),
       nameTurkish: item.nameTurkish,
-      meaning: item.meaning,
       virtue: item.virtue,
       tags: item.tags,
       categories: item.categories,
@@ -89,17 +92,20 @@ export class AiService {
       maxRecommendations,
     });
 
-    const openAiRankedIds = dedupeIds(openAiResult?.recommendedIds ?? [])
-      .filter((id) => availableIdSet.has(id))
+    // OpenAI önerilerini yalnızca geçerli adaylarla, id bazında tekilleştirerek
+    // süz. Geçersiz/uydurma bir id düşerse gerekçesi de onunla birlikte düşer;
+    // böylece assistantNote ile recommendedDhikrIds asla ıraksamaz.
+    const rankedRecs = dedupeById(openAiResult?.recommendations ?? [])
+      .filter((rec) => availableIdSet.has(rec.id))
       .slice(0, maxRecommendations);
 
-    let safeRecommendedIds = openAiRankedIds.slice();
+    let safeRecommendedIds = rankedRecs.map((rec) => rec.id);
     let reasoning =
-      openAiResult?.reasoning?.trim() ||
+      this.composeReasoning(openAiResult?.summary, rankedRecs, dhikrMapById) ||
       'Niyet metnine uygun bir zikir listesi hazırladım.';
     let usedModel: 'openai' | 'fallback' = 'openai';
 
-    if (openAiRankedIds.length === 0 || safeRecommendedIds.length === 0) {
+    if (safeRecommendedIds.length === 0) {
       const fallback = fallbackRecommend({
         freeText,
         timeContext,
@@ -136,6 +142,7 @@ export class AiService {
     const created = await this.aiRecommendationModel.create({
       userId,
       freeText,
+      assistantNote: reasoning,
       timeContext,
       recommendedDhikrIds: safeRecommendedIds.map(
         (id) => new Types.ObjectId(id),
@@ -151,6 +158,9 @@ export class AiService {
         nameArabic: item.nameArabic,
         transliteration: item.transliteration,
         meaning: item.meaning,
+        virtue: item.virtue,
+        source: item.source,
+        recommendedCount: item.recommendedCount,
       }));
 
     return {
@@ -220,6 +230,18 @@ export class AiService {
       .lean()
       .exec();
 
+    // Seçilen zikrin popülerlik sayacını best-effort artır; hata seçim
+    // yanıtını bozmamalı.
+    try {
+      await this.dhikrModel
+        .updateOne({ _id: selectedDhikrId }, { $inc: { recommendedCount: 1 } })
+        .exec();
+    } catch (error) {
+      this.logger.warn(
+        `recommendedCount artırılamadı (dhikr ${selectedDhikrId.toString()}): ${this.describeError(error)}`,
+      );
+    }
+
     return updated;
   }
 
@@ -237,6 +259,38 @@ export class AiService {
     return recent.map((value) => value.toString());
   }
 
+  private composeReasoning(
+    summary: string | undefined,
+    recs: Array<{ id: string; reason?: string }>,
+    dhikrMapById: Map<string, { nameTurkish: string }>,
+  ): string {
+    const lines = recs
+      .map((rec) => {
+        const name = dhikrMapById.get(rec.id)?.nameTurkish?.trim();
+        const reason = rec.reason ? stripObjectIds(rec.reason).trim() : '';
+
+        if (name && reason) {
+          return `- **${name}:** ${reason}`;
+        }
+        if (name) {
+          return `- **${name}**`;
+        }
+        return reason ? `- ${reason}` : null;
+      })
+      .filter((line): line is string => Boolean(line));
+
+    const parts: string[] = [];
+    const cleanSummary = summary?.trim();
+    if (cleanSummary) {
+      parts.push(cleanSummary);
+    }
+    if (lines.length > 0) {
+      parts.push(lines.join('\n'));
+    }
+
+    return parts.join('\n\n');
+  }
+
   private async generateViaOpenAi(input: {
     freeText?: string;
     timeContext: TimeContext;
@@ -244,7 +298,6 @@ export class AiService {
     candidateDhikrs: Array<{
       id: string;
       nameTurkish: string;
-      meaning?: string;
       tags: string[];
       categories: string[];
       timeOfDay: string;
@@ -253,24 +306,26 @@ export class AiService {
     }>;
     maxRecommendations: number;
   }) {
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+    const client = this.getOpenAiClient();
 
-    if (!apiKey) {
+    if (!client) {
       return null;
     }
-    const client = new OpenAI({ apiKey });
     const model =
       this.configService.get<string>('OPENAI_MODEL') || 'gpt-4o-mini';
 
     const systemInstruction = [
       'Sen bir İslami zikir öneri asistanısın.',
-      'YALNIZCA verilen candidateDhikrs listesinden seçim yap.',
-      'Candidate listesi dışından ID üretme.',
-      'Seçimde zikir anlamını (meaning), etiketlerini(tags), suitableFor, fazilet(virtue) bilgilerini, kullanıcının freeText niyetiyle semantik uyumunu ve zaman bağlamını birlikte değerlendir.',
-      `Maksimum ${input.maxRecommendations} ID döndür.`,
-      `En fazla ${input.maxRecommendations} zikir seç.`,
-      'reasoning direkt olarak kullanıcıya gösterileceğinden, orada insanî bir dil kullan. id gibi data özelliği gösterme.',
-      'JSON formatı dışında cevap verme.',
+      'YALNIZCA verilen candidateDhikrs listesinden seçim yap; liste dışından ID üretme.',
+      'Önce kullanıcının freeText niyetini/temasını belirle (ör. huzur, şükür, bağışlanma, kaygı, rızık, şifa, koruma).',
+      'Sonra bu niyeti adayların fazilet (virtue), etiket (tags) ve kategori (categories) alanlarıyla eşleştirerek en uygunları seç.',
+      'Zaman bağlamını (timeOfDay, suitableFor) ikincil ve ayırt edici kriter olarak kullan.',
+      `En fazla ${input.maxRecommendations} zikir seç ve en uygundan başlayarak sırala.`,
+      'Her seçtiğin zikir için recommendations dizisine bir nesne ekle: id (candidate id) ve reason (o zikrin neden seçildiği).',
+      "Yalnızca recommendations dizisindeki id'lerden bahset; listede olmayan bir zikri reason veya summary içinde anma.",
+      'reason ve summary doğrudan kullanıcıya gösterilecek; insanî, sıcak ve empatik bir dil kullan; id veya teknik alan adı yazma.',
+      'summary, kullanıcının niyetini anlayan 2-3 cümlelik sıcak bir girişdir: önce niyeti/hissi kabul et, sonra bu seçimlerin neden yardımcı olabileceğini kısaca belirt. Belirli zikir/dua isimleri içermez.',
+      'Yalnızca JSON döndür.',
     ].join(' ');
 
     const promptPayload = {
@@ -279,14 +334,18 @@ export class AiService {
       recentDhikrIds: input.recentDhikrIds,
       candidateDhikrs: input.candidateDhikrs,
       outputFormat: {
-        recommendedIds: 'string[]',
-        reasoning: 'string',
+        recommendations: [{ id: 'string (candidate id)', reason: 'string' }],
+        summary: 'string',
       },
     };
 
     try {
       const response = await client.chat.completions.create({
         model,
+        // Düşük temperature: öneri görevi yaratıcılık değil isabet ister.
+        // Varsayılan (~1.0) aynı niyet için her çağrıda farklı/alakasız zikir
+        // seçilmesine yol açıyordu. Env ile ayarlanabilir (varsayılan 0.2).
+        temperature: this.readNumberConfig('OPENAI_TEMPERATURE', 0.2),
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: systemInstruction },
@@ -296,32 +355,89 @@ export class AiService {
 
       const text = response.choices?.[0]?.message?.content;
       if (!text) {
+        this.logger.warn('OpenAI yanıtı boş döndü, fallback kullanılacak.');
         return null;
       }
 
-      const parsed = JSON.parse(text) as {
-        recommendedIds?: unknown;
-        reasoning?: unknown;
-      };
-      if (!Array.isArray(parsed.recommendedIds)) {
+      let parsed: { recommendations?: unknown; summary?: unknown };
+      try {
+        parsed = JSON.parse(text) as {
+          recommendations?: unknown;
+          summary?: unknown;
+        };
+      } catch (error) {
+        this.logger.warn(
+          `OpenAI yanıtı JSON olarak ayrıştırılamadı: ${this.describeError(error)}`,
+        );
         return null;
       }
 
-      const recommendedIds = parsed.recommendedIds
-        .map((item) => (typeof item === 'string' ? item : null))
-        .filter((item): item is string => Boolean(item));
+      if (!Array.isArray(parsed.recommendations)) {
+        this.logger.warn(
+          'OpenAI yanıtında geçerli recommendations dizisi yok, fallback kullanılacak.',
+        );
+        return null;
+      }
+
+      const recommendations = parsed.recommendations
+        .map((item) => parseRecommendation(item))
+        .filter((item): item is { id: string; reason?: string } =>
+          Boolean(item),
+        );
+
+      const summary =
+        typeof parsed.summary === 'string' && parsed.summary.trim().length > 0
+          ? stripObjectIds(parsed.summary).trim() || undefined
+          : undefined;
 
       return {
-        recommendedIds,
-        reasoning:
-          typeof parsed.reasoning === 'string' &&
-          parsed.reasoning.trim().length > 0
-            ? parsed.reasoning
-            : undefined,
+        recommendations,
+        summary,
       };
-    } catch {
+    } catch (error) {
+      this.logger.warn(
+        `OpenAI öneri çağrısı başarısız oldu, fallback kullanılacak: ${this.describeError(error)}`,
+      );
       return null;
     }
+  }
+
+  private getOpenAiClient(): OpenAI | null {
+    if (this.openAiClientResolved) {
+      return this.openAiClient;
+    }
+
+    this.openAiClientResolved = true;
+    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+
+    if (!apiKey) {
+      this.logger.warn(
+        'OPENAI_API_KEY tanımlı değil, öneriler fallback ile üretilecek.',
+      );
+      this.openAiClient = null;
+      return null;
+    }
+
+    const timeout = this.readNumberConfig('OPENAI_TIMEOUT_MS', 15_000);
+    const maxRetries = this.readNumberConfig('OPENAI_MAX_RETRIES', 2);
+
+    this.openAiClient = new OpenAI({ apiKey, timeout, maxRetries });
+    return this.openAiClient;
+  }
+
+  private readNumberConfig(key: string, fallback: number): number {
+    const raw = this.configService.get<string | number>(key);
+    const parsed = typeof raw === 'number' ? raw : Number(raw);
+
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+  }
+
+  private describeError(error: unknown): string {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    return typeof error === 'string' ? error : 'bilinmeyen hata';
   }
 
   private defaultTimeContext(): TimeContext {
@@ -359,4 +475,44 @@ function toDateString(date: Date) {
 
 function dedupeIds(ids: string[]) {
   return [...new Set(ids)];
+}
+
+function stripObjectIds(text: string) {
+  return text.replace(/\b[a-f0-9]{24}\b/gi, '').replace(/\s{2,}/g, ' ');
+}
+
+function dedupeById<T extends { id: string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  const result: T[] = [];
+
+  for (const item of items) {
+    if (seen.has(item.id)) {
+      continue;
+    }
+    seen.add(item.id);
+    result.push(item);
+  }
+
+  return result;
+}
+
+function parseRecommendation(
+  value: unknown,
+): { id: string; reason?: string } | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const candidate = value as { id?: unknown; reason?: unknown };
+  const id = typeof candidate.id === 'string' ? candidate.id.trim() : '';
+  if (!id) {
+    return null;
+  }
+
+  const reason =
+    typeof candidate.reason === 'string' && candidate.reason.trim().length > 0
+      ? candidate.reason.trim()
+      : undefined;
+
+  return { id, reason };
 }

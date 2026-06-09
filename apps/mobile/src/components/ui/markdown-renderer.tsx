@@ -22,7 +22,9 @@ export function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
           return (
             <View key={`${line}-${index}`} className="flex-row items-start gap-2">
               <Text className="pt-[1px] text-xs text-[--text-muted]">•</Text>
-              <Text className="flex-1 text-xs leading-5 text-[--text-muted]">{bulletMatch[1]}</Text>
+              <Text className="flex-1 text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+                {renderInline(bulletMatch[1])}
+              </Text>
             </View>
           );
         }
@@ -32,17 +34,38 @@ export function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
           return (
             <View key={`${line}-${index}`} className="flex-row items-start gap-2">
               <Text className="text-xs text-[--text-muted]">{`${index + 1}.`}</Text>
-              <Text className="flex-1 text-xs leading-5 text-[--text-muted]">{orderedMatch[1]}</Text>
+              <Text className="flex-1 text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+                {renderInline(orderedMatch[1])}
+              </Text>
             </View>
           );
         }
 
         return (
-          <Text key={`${line}-${index}`} className="text-xs leading-5 text-[--text-muted]">
-            {line}
+          <Text key={`${line}-${index}`} className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+            {renderInline(line)}
           </Text>
         );
       })}
     </View>
   );
+}
+
+function renderInline(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/);
+  if (parts.length === 1) {
+    return text;
+  }
+
+  return parts.map((part, i) => {
+    const bold = part.match(/^\*\*(.+)\*\*$/);
+    if (bold) {
+      return (
+        <Text key={i} className="font-semibold">
+          {bold[1]}
+        </Text>
+      );
+    }
+    return <Text key={i}>{part}</Text>;
+  });
 }

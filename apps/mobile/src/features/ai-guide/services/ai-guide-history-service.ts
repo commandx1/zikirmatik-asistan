@@ -7,6 +7,9 @@ type CatalogDhikr = {
   nameArabic: string;
   transliteration: string;
   meaning: string;
+  virtue?: string;
+  source?: string;
+  recommendedCount?: number;
 };
 
 export function resolveVisibleAiGuideHistory(items: AiGuideHistoryItem[], showAll: boolean) {
@@ -32,6 +35,9 @@ export function buildAiGuideHistoryItems(rows: BackendAiRecommendation[], catalo
           arabic: matched.nameArabic,
           transliteration: matched.transliteration || matched.nameTurkish,
           meaning: matched.meaning,
+          virtue: matched.virtue,
+          source: matched.source,
+          recommendedCount: matched.recommendedCount,
           isPrimary: index === 0
         });
         return acc;
@@ -44,6 +50,7 @@ export function buildAiGuideHistoryItems(rows: BackendAiRecommendation[], catalo
       return {
         id: normalizeObjectId(row._id) ?? row.createdAt,
         prompt: row.freeText?.trim() || "Genel öneri",
+        assistantNote: row.assistantNote?.trim() || undefined,
         createdAt: row.createdAt,
         recommendations
       };

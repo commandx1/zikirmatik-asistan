@@ -26,6 +26,15 @@ export class DhikrLog {
   @Prop({ type: String, trim: true })
   customDhikrArabic?: string;
 
+  @Prop({ type: Types.ObjectId, index: true })
+  aiRecommendationId?: Types.ObjectId;
+
+  @Prop({ type: String, trim: true })
+  aiPrompt?: string;
+
+  @Prop({ type: String, trim: true })
+  aiAssistantNote?: string;
+
   @Prop({ type: Number, required: true, min: 0 })
   count!: number;
 

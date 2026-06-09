@@ -10,6 +10,10 @@ export type BackendDhikrLog = {
   count: number;
   targetCount: number;
   date: string;
+  source?: "manual" | "ai" | "kandil" | "notification";
+  aiRecommendationId?: string;
+  aiPrompt?: string;
+  aiAssistantNote?: string;
   isCompleted: boolean;
   isFavorite?: boolean;
   createdAt?: string;
@@ -21,6 +25,9 @@ export type CreateDhikrLogPayload = {
   customDhikrId?: string;
   customDhikrName?: string;
   customDhikrArabic?: string;
+  aiRecommendationId?: string;
+  aiPrompt?: string;
+  aiAssistantNote?: string;
   count: number;
   targetCount: number;
   date: string;

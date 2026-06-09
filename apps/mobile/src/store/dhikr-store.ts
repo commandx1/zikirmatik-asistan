@@ -3,7 +3,7 @@ import { createJSONStorage, persist, type StateStorage } from "zustand/middlewar
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ZIKIR_ITEMS } from "../features/focus/data";
 import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api-client";
-import type { ZikirItem } from "../features/focus/types";
+import type { AiDhikrContext, ZikirItem } from "../features/focus/types";
 
 type CreateCustomDhikrInput = {
   id?: string;
@@ -24,6 +24,7 @@ type UnsavedProgressSnapshot = {
 type DhikrStore = {
   items: ZikirItem[];
   selectedDhikrId: string;
+  activeAiContext?: AiDhikrContext;
   freeModeCount: number;
   freeModeTarget: number;
   unsavedProgressDhikrIds: string[];
@@ -31,7 +32,7 @@ type DhikrStore = {
   isHydratedFromBackend: boolean;
   lastSavedBackendLog?: BackendDhikrLog;
   syncError?: string;
-  selectDhikr: (id: string) => void;
+  selectDhikr: (id: string, aiContext?: Omit<AiDhikrContext, "dhikrId">) => void;
   clearSelectedDhikr: () => void;
   upsertPersonalDhikr: (item: {
     id: string;
@@ -65,6 +66,11 @@ type DhikrStore = {
       arabic?: string;
       transliteration: string;
       meaning?: string;
+      virtue?: string;
+      contentSource?: string;
+      aiPrompt?: string;
+      aiAssistantNote?: string;
+      aiRecommendationId?: string;
       target: number;
       current?: number;
       lastActivityLabel?: string;
@@ -89,7 +95,7 @@ type DhikrStore = {
   resetSessionScoped: () => void;
 };
 
-export const MAX_DHIKR_TARGET = 999_999_999;
+export const MAX_DHIKR_TARGET = 9999;
 
 function formatLastActivityLabel() {
   const time = new Date().toLocaleTimeString("tr-TR", {
@@ -216,20 +222,29 @@ export const useDhikrStore = create<DhikrStore>()(
   persist((set, get) => ({
     items: INITIAL_ITEMS,
     selectedDhikrId: "",
+    activeAiContext: undefined,
     freeModeCount: 0,
     freeModeTarget: 0,
     unsavedProgressDhikrIds: [],
     unsavedProgressSnapshots: {},
     isHydratedFromBackend: false,
     lastSavedBackendLog: undefined,
-    selectDhikr: (id) => {
+    selectDhikr: (id, aiContext) => {
     if (!get().items.some((item) => item.id === id)) {
       return;
     }
 
-    set({ selectedDhikrId: id });
+    set({
+      selectedDhikrId: id,
+      activeAiContext: aiContext
+        ? {
+            dhikrId: id,
+            ...aiContext
+          }
+        : undefined
+    });
   },
-  clearSelectedDhikr: () => set({ selectedDhikrId: "" }),
+  clearSelectedDhikr: () => set({ selectedDhikrId: "", activeAiContext: undefined }),
   upsertPersonalDhikr: (item) =>
     set((state) => {
       const existing = state.items.find((value) => value.id === item.id);
@@ -297,6 +312,8 @@ export const useDhikrStore = create<DhikrStore>()(
                   arabic: item.arabic,
                   transliteration: item.transliteration,
                   meaning: item.meaning,
+                  virtue: item.virtue,
+                  contentSource: item.contentSource,
                   current: normalizedCurrent,
                   target: normalizedTarget,
                   lastActivityLabel: item.lastActivityLabel,
@@ -361,7 +378,8 @@ export const useDhikrStore = create<DhikrStore>()(
 
       return {
         items: state.items.filter((value) => value.id !== id),
-        selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId
+        selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId,
+        activeAiContext: state.activeAiContext?.dhikrId === id ? undefined : state.activeAiContext
       };
     }),
   clearDhikrProgress: (id) =>
@@ -375,7 +393,8 @@ export const useDhikrStore = create<DhikrStore>()(
             }
           : item
       ),
-      selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId
+      selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId,
+      activeAiContext: state.activeAiContext?.dhikrId === id ? undefined : state.activeAiContext
     })),
   incrementSelected: () =>
     set((state) => {
@@ -538,6 +557,11 @@ export const useDhikrStore = create<DhikrStore>()(
           arabic: item.arabic,
           transliteration: item.transliteration,
           meaning: item.meaning,
+          virtue: item.virtue,
+          contentSource: item.contentSource,
+          aiPrompt: item.aiPrompt ?? (state.activeAiContext?.dhikrId === item.id ? state.activeAiContext.prompt : undefined),
+          aiAssistantNote: item.aiAssistantNote ?? (state.activeAiContext?.dhikrId === item.id ? state.activeAiContext.assistantNote : undefined),
+          aiRecommendationId: item.aiRecommendationId ?? (state.activeAiContext?.dhikrId === item.id ? state.activeAiContext.recommendationId : undefined),
           current: normalizedCurrent,
           target: effectiveTarget,
           lastActivityLabel: item.lastActivityLabel ?? existing?.lastActivityLabel ?? "Henüz başlanmadı",
@@ -552,6 +576,10 @@ export const useDhikrStore = create<DhikrStore>()(
       return {
         items: nextItems,
         selectedDhikrId: hasCurrentSelection ? state.selectedDhikrId : "",
+        activeAiContext:
+          hasCurrentSelection && state.activeAiContext?.dhikrId === state.selectedDhikrId
+            ? state.activeAiContext
+            : undefined,
         isHydratedFromBackend: true,
         syncError: undefined
       };
@@ -596,19 +624,37 @@ export const useDhikrStore = create<DhikrStore>()(
         selectedDhikrId: state.selectedDhikrId
       };
     }),
-  applySavedBackendLog: (log) => set((state) => ({
-    lastSavedBackendLog: log,
-    ...clearUnsavedSnapshot(
-      state.unsavedProgressDhikrIds,
-      state.unsavedProgressSnapshots,
-      log.dhikrId ?? log.customDhikrId
-    )
-  })),
+  applySavedBackendLog: (log) => set((state) => {
+    const targetId = log.dhikrId ?? log.customDhikrId;
+    const items = targetId
+      ? state.items.map((item) =>
+          item.id === targetId
+            ? {
+                ...item,
+                aiPrompt: log.aiPrompt,
+                aiAssistantNote: log.aiAssistantNote,
+                aiRecommendationId: log.aiRecommendationId
+              }
+            : item
+        )
+      : state.items;
+
+    return {
+      items,
+      lastSavedBackendLog: log,
+      ...clearUnsavedSnapshot(
+        state.unsavedProgressDhikrIds,
+        state.unsavedProgressSnapshots,
+        targetId
+      )
+    };
+  }),
   setSyncError: (message) => set({ syncError: message }),
     resetSessionScoped: () =>
       set({
         items: INITIAL_ITEMS,
         selectedDhikrId: "",
+        activeAiContext: undefined,
         freeModeCount: 0,
         freeModeTarget: 0,
         unsavedProgressDhikrIds: [],
@@ -624,6 +670,7 @@ export const useDhikrStore = create<DhikrStore>()(
     partialize: (state) => ({
       items: state.items,
       selectedDhikrId: state.selectedDhikrId,
+      activeAiContext: state.activeAiContext,
       freeModeCount: state.freeModeCount,
       freeModeTarget: state.freeModeTarget,
       unsavedProgressDhikrIds: state.unsavedProgressDhikrIds,

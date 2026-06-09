@@ -58,7 +58,9 @@ export function DhikrContentStack({
         }}
       >
         <Text className="mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Anlam</Text>
-        <Text className="text-sm leading-5 text-[--text-muted]">{meaning}</Text>
+        <Text className="text-sm leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+          {meaning}
+        </Text>
       </View>
     ) : null,
   } as const;

@@ -1,6 +1,7 @@
 import type { ThemeName } from "@zikirmatik/shared";
 
 export const THEME_LABELS: Record<ThemeName, string> = {
+  "sistem": "Sistem",
   "gece-koyu": "Gece Koyu",
   "gece-lacivert": "Gece Lacivert",
   "cami-yesili": "Cami Yeşili",

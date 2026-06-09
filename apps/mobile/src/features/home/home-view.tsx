@@ -1,7 +1,8 @@
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useThemeTokens } from '@zikirmatik/ui'
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
-import { InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { Animated, InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-aware-bottom-sheet-modal'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
@@ -13,10 +14,95 @@ import { DailyEsmaWelcomeModal } from './components/daily-esma-welcome-modal'
 import { EsmaulHusnaSection } from './components/esmaul-husna-section'
 import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
 
-function TopBar() {
+function TapAnywhereToggle({ onPress }: { onPress: () => void }) {
+  const home = useHomeContext()
+  const { tokens } = useThemeTokens()
+  const active = home.tapAnywhereEnabled
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className='h-9 w-9 items-center justify-center rounded-full border'
+      style={{
+        borderColor: active ? tokens.accent : withAlpha(tokens.textPrimary, 0.12),
+        backgroundColor: active ? withAlpha(tokens.accent, 0.15) : 'transparent'
+      }}
+    >
+      <FontAwesome6
+        name='hand-pointer'
+        size={14}
+        color={active ? tokens.accent : tokens.textMuted}
+      />
+    </Pressable>
+  )
+}
+
+function TapAnywhereToast({ message }: { message: string | null }) {
+  const { tokens } = useThemeTokens()
+  const opacity = useRef(new Animated.Value(0)).current
+  const translateY = useRef(new Animated.Value(12)).current
+  const runningAnim = useRef<Animated.CompositeAnimation | null>(null)
+  const [displayMessage, setDisplayMessage] = useState('')
+
+  useEffect(() => {
+    runningAnim.current?.stop()
+
+    if (message) {
+      setDisplayMessage(message)
+      opacity.setValue(0)
+      translateY.setValue(12)
+      runningAnim.current = Animated.parallel([
+        Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+        Animated.timing(translateY, { toValue: 0, duration: 200, useNativeDriver: true })
+      ])
+      runningAnim.current.start()
+    } else {
+      runningAnim.current = Animated.parallel([
+        Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: true }),
+        Animated.timing(translateY, { toValue: 8, duration: 180, useNativeDriver: true })
+      ])
+      runningAnim.current.start()
+    }
+  }, [message, opacity, translateY])
+
+  return (
+    <Animated.View
+      pointerEvents='none'
+      style={{
+        position: 'absolute',
+        top: 128,
+        alignSelf: 'center',
+        opacity,
+        transform: [{ translateY }],
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 24,
+        borderWidth: 1,
+        borderColor: withAlpha(tokens.textPrimary, 0.12),
+        backgroundColor: tokens.card
+      }}
+    >
+      <FontAwesome6 name='hand-pointer' size={12} color={tokens.accent} />
+      <Text style={{ color: tokens.textPrimary, fontSize: 13, fontWeight: '500' }}>
+        {displayMessage}
+      </Text>
+    </Animated.View>
+  )
+}
+
+function TopBar({ onToggleTapAnywhere }: { onToggleTapAnywhere: () => void }) {
   const home = useHomeContext()
 
-  return <PageHeader title='Zikirmatik Asistan' subtitle={`${home.greeting} • Seri ${home.streakLabel}`} />
+  return (
+    <PageHeader
+      title='Zikirmatik Asistan'
+      subtitle={`${home.greeting} • Seri ${home.streakLabel}`}
+      rightAccessory={<TapAnywhereToggle onPress={onToggleTapAnywhere} />}
+    />
+  )
 }
 
 function SelectedDhikrMeaning() {
@@ -319,6 +405,23 @@ export function HomeView() {
   const home = useHomeContext()
   const scrollRef = useRef<ScrollView>(null)
   const esmaSectionYRef = useRef(0)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isMountedRef = useRef(false)
+
+  useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true
+      return
+    }
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    setToastMessage(
+      home.tapAnywhereEnabled
+        ? 'Ekranın her yerine dokunarak sayabilirsin'
+        : 'Sadece yuvarlağa basınca sayar'
+    )
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 2500)
+  }, [home.tapAnywhereEnabled])
   const pendingDailyEsmaStart = useHomeNavigationIntentStore(state => state.pendingDailyEsmaStart)
   const consumeDailyEsmaStart = useHomeNavigationIntentStore(state => state.consumeDailyEsmaStart)
   const esmaListFocusRequestId = useHomeNavigationIntentStore(state => state.esmaListFocusRequestId)
@@ -363,7 +466,7 @@ export function HomeView() {
 
   return (
     <PageLayout frameClassName='relative flex-1 w-full'>
-      <TopBar />
+      <TopBar onToggleTapAnywhere={home.toggleTapAnywhere} />
       <PageScrollView
         scrollRef={scrollRef}
         contentInnerClassName='w-full'
@@ -372,18 +475,20 @@ export function HomeView() {
         onRefresh={home.refresh}
         refreshing={home.isRefreshing}
       >
-        <AppleWatch />
-        <SelectedDhikrMeaning />
-        <FreeModeButton />
-        <View onLayout={event => {
-          esmaSectionYRef.current = event.nativeEvent.layout.y
-        }}>
-          <EsmaulHusnaSection
-            disabled={home.isSelectingEsmaDhikr}
-            selectedTransliteration={home.mainDhikr.transliteration}
-            onSelect={home.onEsmaPress}
-          />
-        </View>
+        <Pressable onPress={home.tapAnywhereEnabled ? home.onCountPress : undefined} style={{ flex: 1 }}>
+          <AppleWatch />
+          <SelectedDhikrMeaning />
+          <FreeModeButton />
+          <View onLayout={event => {
+            esmaSectionYRef.current = event.nativeEvent.layout.y
+          }}>
+            <EsmaulHusnaSection
+              disabled={home.isSelectingEsmaDhikr}
+              selectedTransliteration={home.mainDhikr.transliteration}
+              onSelect={home.onEsmaPress}
+            />
+          </View>
+        </Pressable>
       </PageScrollView>
       <EsmaSelectionModal />
       <DailyEsmaWelcomeModal
@@ -405,6 +510,7 @@ export function HomeView() {
         onContinueWithoutSaving={home.onUnsavedTransitionContinueWithoutSaving}
         onCancel={home.onUnsavedTransitionCancel}
       />
+      <TapAnywhereToast message={toastMessage} />
     </PageLayout>
   )
 }

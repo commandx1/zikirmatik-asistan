@@ -37,6 +37,18 @@ export class CreateDhikrLogDto {
   @IsString()
   customDhikrArabic?: string;
 
+  @IsOptional()
+  @IsMongoId()
+  aiRecommendationId?: string;
+
+  @IsOptional()
+  @IsString()
+  aiPrompt?: string;
+
+  @IsOptional()
+  @IsString()
+  aiAssistantNote?: string;
+
   @IsInt()
   @Min(0)
   count!: number;

@@ -424,14 +424,14 @@ export function useProfile() {
   };
 
   const onReminderHourChange = (value: string) => {
-    setReminderHourDraft(value.replace(/\D+/g, "").slice(0, 2));
+    setReminderHourDraft(value);
     if (reminderTimeError) {
       setReminderTimeError(undefined);
     }
   };
 
   const onReminderMinuteChange = (value: string) => {
-    setReminderMinuteDraft(value.replace(/\D+/g, "").slice(0, 2));
+    setReminderMinuteDraft(value);
     if (reminderTimeError) {
       setReminderTimeError(undefined);
     }
@@ -451,29 +451,11 @@ export function useProfile() {
     setIsSavingReminderTime(true);
 
     try {
-      const syncResult = await syncDailyReminderNotification({
+      await syncDailyReminderNotification({
         enabled: dailyReminderEnabled,
         reminderTime: nextReminderTime,
         requestPermission: false
       });
-
-      if (dailyReminderEnabled && !syncResult.permissionGranted) {
-        setDailyReminderEnabled(false);
-
-        if (authStatus === "authenticated" && session?.userId) {
-          await saveUserPreferences(
-            session.userId,
-            {
-              reminderTime: nextReminderTime,
-              dailyReminder: false
-            },
-            session.accessToken
-          );
-        }
-
-        setIsReminderTimeModalOpen(false);
-        return;
-      }
 
       if (authStatus === "authenticated" && session?.userId) {
         await saveUserPreferences(
@@ -569,55 +551,14 @@ export function useProfile() {
   );
 
   useEffect(() => {
-    let isCancelled = false;
-
-    const run = async () => {
-      const result = await syncDailyReminderNotification({
-        enabled: dailyReminderEnabled,
-        reminderTime,
-        requestPermission: false
-      });
-
-      if (isCancelled) {
-        return;
-      }
-
-      // Migration/safety: enabled preference without OS permission is invalid.
-      if (dailyReminderEnabled && !result.permissionGranted) {
-        setDailyReminderEnabled(false);
-
-        if (authStatus === "authenticated" && session?.userId) {
-          try {
-            await saveUserPreferences(
-              session.userId,
-              {
-                dailyReminder: false,
-                reminderTime
-              },
-              session.accessToken
-            );
-          } catch {
-            // Keep local preference consistent even if backend update fails.
-          }
-        }
-      }
-    };
-
-    void run().catch(() => {
-      // Keep user preference as-is when background sync fails.
-    });
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [
-    authStatus,
-    dailyReminderEnabled,
-    reminderTime,
-    session?.accessToken,
-    session?.userId,
-    setDailyReminderEnabled
-  ]);
+    // OS zamanlamasını tercihle senkronize et. İzin yoksa mevcut
+    // zamanlamaya dokunma; tercih yalnızca kullanıcı değiştirince değişmeli.
+    void syncDailyReminderNotification({
+      enabled: dailyReminderEnabled,
+      reminderTime,
+      requestPermission: false
+    }).catch(() => {});
+  }, [dailyReminderEnabled, reminderTime]);
 
   return {
     displayName: backendUser?.displayName ?? authDisplayName ?? fallbackDisplayName,
