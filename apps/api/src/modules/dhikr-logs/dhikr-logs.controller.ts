@@ -39,7 +39,10 @@ export class DhikrLogsController {
   }
 
   @Get()
-  async findAll(@Query() query: QueryDhikrLogsDto, @CurrentUserId() userId: string) {
+  async findAll(
+    @Query() query: QueryDhikrLogsDto,
+    @CurrentUserId() userId: string,
+  ) {
     query.userId = userId;
     const a = await this.dhikrLogsService.findAll(query);
     return a;

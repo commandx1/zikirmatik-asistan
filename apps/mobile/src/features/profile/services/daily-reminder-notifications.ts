@@ -5,7 +5,20 @@ const DAILY_REMINDER_KIND = "daily-dhikr-reminder";
 const ANDROID_CHANNEL_ID = "daily-reminders";
 const DEFAULT_REMINDER_TIME = "08:00";
 
-export async function syncDailyReminderNotification(input: {
+// Eşzamanlı çağrıları sıraya alır; cancel+schedule bloğu çakışmaz.
+let syncQueue: Promise<unknown> = Promise.resolve();
+
+export function syncDailyReminderNotification(input: {
+  enabled: boolean;
+  reminderTime: string;
+  requestPermission?: boolean;
+}): Promise<{ permissionGranted: boolean; scheduled: boolean }> {
+  const next = syncQueue.then(() => runSync(input));
+  syncQueue = next.catch(() => {});
+  return next;
+}
+
+async function runSync(input: {
   enabled: boolean;
   reminderTime: string;
   requestPermission?: boolean;
@@ -19,7 +32,8 @@ export async function syncDailyReminderNotification(input: {
     input.requestPermission ?? false
   );
   if (!permissionGranted) {
-    await cancelDailyReminderNotifications();
+    // OS izni yoksa mevcut zamanlamaya dokunma — OS zaten teslim etmez.
+    // Tercih, yalnızca kullanıcı açıkça kapatırsa değişmeli.
     return { permissionGranted: false, scheduled: false };
   }
 
