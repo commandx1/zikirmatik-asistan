@@ -29,6 +29,11 @@ export class DhikrLogsService {
       ? payload.dhikrId
       : undefined;
     const dhikrObjectId = dhikrId ? this.asObjectId(dhikrId) : undefined;
+    const aiRecommendationObjectId = hasNonEmptyString(
+      payload.aiRecommendationId,
+    )
+      ? this.asObjectId(payload.aiRecommendationId)
+      : undefined;
     const customDhikrId: string | undefined = hasNonEmptyString(
       payload.customDhikrId,
     )
@@ -64,6 +69,9 @@ export class DhikrLogsService {
       isCompleted: payload.isCompleted ?? false,
       customDhikrName: payload.customDhikrName?.trim() || undefined,
       customDhikrArabic: payload.customDhikrArabic?.trim() || undefined,
+      aiRecommendationId: aiRecommendationObjectId,
+      aiPrompt: payload.aiPrompt?.trim() || undefined,
+      aiAssistantNote: payload.aiAssistantNote?.trim() || undefined,
     };
     if (typeof payload.isFavorite === 'boolean') {
       updateSet.isFavorite = payload.isFavorite;

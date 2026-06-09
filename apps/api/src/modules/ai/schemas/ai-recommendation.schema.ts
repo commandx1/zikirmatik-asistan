@@ -17,6 +17,9 @@ export class AiRecommendation {
   @Prop({ type: String })
   freeText?: string;
 
+  @Prop({ type: String, trim: true })
+  assistantNote?: string;
+
   @Prop(
     raw({
       hour: { type: Number, required: true },

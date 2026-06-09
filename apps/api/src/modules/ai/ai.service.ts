@@ -136,6 +136,7 @@ export class AiService {
     const created = await this.aiRecommendationModel.create({
       userId,
       freeText,
+      assistantNote: reasoning,
       timeContext,
       recommendedDhikrIds: safeRecommendedIds.map(
         (id) => new Types.ObjectId(id),
@@ -151,6 +152,9 @@ export class AiService {
         nameArabic: item.nameArabic,
         transliteration: item.transliteration,
         meaning: item.meaning,
+        virtue: item.virtue,
+        source: item.source,
+        recommendedCount: item.recommendedCount,
       }));
 
     return {
