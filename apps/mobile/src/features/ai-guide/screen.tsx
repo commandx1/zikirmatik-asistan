@@ -1,3 +1,4 @@
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
@@ -85,7 +86,19 @@ export function AiGuideScreen() {
             </View>
           ) : null}
           <LoadingSection visible={guide.isLoading} />
-          {guide.isLoading ? null : (
+          {guide.isLoading ? null : guide.offTopicMessage ? (
+            <View className="mb-4 rounded-xl border border-red-900/60 bg-red-950/40 px-4 py-4">
+              <View className="mb-2 flex-row items-center gap-2">
+                <FontAwesome6 name="circle-exclamation" size={14} color="#f87171" />
+                <Text className="text-[13px] font-semibold text-red-400">
+                  Konu dışı
+                </Text>
+              </View>
+              <Text className="text-[13px] leading-5 text-red-200/80">
+                {guide.offTopicMessage}
+              </Text>
+            </View>
+          ) : (
             <RecommendationsSection
               items={guide.recommendations}
               assistantNote={guide.assistantNote}
@@ -110,6 +123,7 @@ export function AiGuideScreen() {
           onShowAll={showAllDailyEsma}
           onStart={startDailyEsma}
         />
+
       </View>
     </PageLayout>
   );

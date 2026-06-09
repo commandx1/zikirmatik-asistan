@@ -33,6 +33,7 @@ export function useAiGuide() {
   const [isRewardedSheetOpen, setRewardedSheetOpen] = useState(false);
   const [isRewardedRunning, setRewardedRunning] = useState(false);
   const [error, setError] = useState<string>();
+  const [offTopicMessage, setOffTopicMessage] = useState<string>();
   const [recommendationId, setRecommendationId] = useState<string>();
   const [recommendations, setRecommendations] = useState<AiGuideRecommendation[]>([]);
   const [assistantNote, setAssistantNote] = useState<string>();
@@ -242,6 +243,7 @@ export function useAiGuide() {
     async (request: { freeText?: string }) => {
       setIsLoading(true);
       setError(undefined);
+      setOffTopicMessage(undefined);
 
       try {
         if (authStatus !== "authenticated" || !userId) {
@@ -261,6 +263,15 @@ export function useAiGuide() {
             isSpecialDay: false
           }
         }, accessToken);
+
+        if (response.offTopic) {
+          setOffTopicMessage(response.message);
+          setRecommendations([]);
+          setAssistantNote(undefined);
+          setRecommendationId(undefined);
+          setIntentInput("");
+          return;
+        }
 
         setRecommendationId(response.recommendationId);
         const nextAssistantNote = response.reasoning?.trim() || undefined;
@@ -427,6 +438,7 @@ export function useAiGuide() {
     isRewardedRunning,
     isRefreshing,
     error,
+    offTopicMessage,
     recommendationId,
     lastPrompt,
     assistantNote,

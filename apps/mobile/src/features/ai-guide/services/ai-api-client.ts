@@ -12,22 +12,31 @@ export type CreateAiRecommendationPayload = {
   maxRecommendations?: number;
 };
 
-export type CreateAiRecommendationResponse = {
-  recommendationId: string;
-  recommendedIds: string[];
-  reasoning: string;
-  items: Array<{
-    id: string;
-    nameTurkish: string;
-    nameArabic: string;
-    transliteration: string;
-    meaning: string;
-    virtue?: string;
-    source?: string;
-    recommendedCount?: number;
-  }>;
-  usedModel: "openai" | "fallback";
-};
+export type CreateAiRecommendationResponse =
+  | {
+      offTopic: true;
+      message: string;
+      recommendedIds: [];
+      items: [];
+      usedModel: "openai";
+    }
+  | {
+      offTopic?: false;
+      recommendationId: string;
+      recommendedIds: string[];
+      reasoning: string;
+      items: Array<{
+        id: string;
+        nameTurkish: string;
+        nameArabic: string;
+        transliteration: string;
+        meaning: string;
+        virtue?: string;
+        source?: string;
+        recommendedCount?: number;
+      }>;
+      usedModel: "openai" | "fallback";
+    };
 
 export type BackendAiRecommendation = {
   _id: string;
