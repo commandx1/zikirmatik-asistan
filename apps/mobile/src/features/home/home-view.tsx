@@ -1,6 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useThemeTokens } from '@zikirmatik/ui'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import { Animated, InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
@@ -10,9 +10,14 @@ import { PageHeader } from '../../components/ui/page-header'
 import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-transition-modal'
 import { useHomeContext } from './home-context'
 import { AppleWatch } from './components/apple-watch'
-import { DailyEsmaWelcomeModal } from './components/daily-esma-welcome-modal'
-import { EsmaulHusnaSection } from './components/esmaul-husna-section'
 import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
+
+const EsmaulHusnaSection = lazy(() =>
+  import('./components/esmaul-husna-section').then((m) => ({ default: m.EsmaulHusnaSection }))
+)
+const DailyEsmaWelcomeModal = lazy(() =>
+  import('./components/daily-esma-welcome-modal').then((m) => ({ default: m.DailyEsmaWelcomeModal }))
+)
 
 function TapAnywhereToggle({ onPress }: { onPress: () => void }) {
   const home = useHomeContext()
@@ -482,22 +487,26 @@ export function HomeView() {
           <View onLayout={event => {
             esmaSectionYRef.current = event.nativeEvent.layout.y
           }}>
-            <EsmaulHusnaSection
-              disabled={home.isSelectingEsmaDhikr}
-              selectedTransliteration={home.mainDhikr.transliteration}
-              onSelect={home.onEsmaPress}
-            />
+            <Suspense fallback={null}>
+              <EsmaulHusnaSection
+                disabled={home.isSelectingEsmaDhikr}
+                selectedTransliteration={home.mainDhikr.transliteration}
+                onSelect={home.onEsmaPress}
+              />
+            </Suspense>
           </View>
         </Pressable>
       </PageScrollView>
       <EsmaSelectionModal />
-      <DailyEsmaWelcomeModal
-        visible={home.isDailyEsmaWelcomeOpen}
-        items={home.dailyEsmaSuggestions}
-        onDismiss={home.onDailyEsmaDismiss}
-        onShowAll={showAllEsma}
-        onStart={home.onDailyEsmaStart}
-      />
+      <Suspense fallback={null}>
+        <DailyEsmaWelcomeModal
+          visible={home.isDailyEsmaWelcomeOpen}
+          items={home.dailyEsmaSuggestions}
+          onDismiss={home.onDailyEsmaDismiss}
+          onShowAll={showAllEsma}
+          onStart={home.onDailyEsmaStart}
+        />
+      </Suspense>
       <TargetModal />
       <FreeSaveNameModal />
       <UnsavedDhikrTransitionModal

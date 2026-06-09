@@ -1,9 +1,12 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
-import { DailyEsmaWelcomeModal } from "../home/components/daily-esma-welcome-modal";
+
+const DailyEsmaWelcomeModal = lazy(() =>
+  import("../home/components/daily-esma-welcome-modal").then((m) => ({ default: m.DailyEsmaWelcomeModal }))
+);
 import { ESMAUL_HUSNA } from "../focus/data";
 import type { EsmaulHusnaItem } from "../focus/types";
 import { resolveDailyEsmaSuggestions } from "../home/services/daily-esma-suggestion-service";
@@ -116,6 +119,7 @@ export function AiGuideScreen() {
           onConfirm={guide.confirmRewardedAndSubmit}
           onClose={guide.closeRewardedSheet}
         />
+        <Suspense fallback={null}>
         <DailyEsmaWelcomeModal
           visible={isDailyEsmaOpen}
           items={dailyEsmaSuggestions}
@@ -123,6 +127,7 @@ export function AiGuideScreen() {
           onShowAll={showAllDailyEsma}
           onStart={startDailyEsma}
         />
+        </Suspense>
 
       </View>
     </PageLayout>
