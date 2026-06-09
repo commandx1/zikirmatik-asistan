@@ -1,9 +1,22 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
+import { ESMAUL_HUSNA } from "../../focus/data";
 
 const DAILY_REMINDER_KIND = "daily-dhikr-reminder";
 const ANDROID_CHANNEL_ID = "daily-reminders";
 const DEFAULT_REMINDER_TIME = "08:00";
+const ESMA_PER_DAY = 3;
+
+// expo-notifications WEEKLY weekday: 1=Pazar, 2=Pazartesi, ..., 7=Cumartesi
+const TURKISH_DAY_TO_WEEKDAY: Record<string, number> = {
+  Pazar: 1,
+  Pazartesi: 2,
+  Salı: 3,
+  Çarşamba: 4,
+  Perşembe: 5,
+  Cuma: 6,
+  Cumartesi: 7
+};
 
 // Eşzamanlı çağrıları sıraya alır; cancel+schedule bloğu çakışmaz.
 let syncQueue: Promise<unknown> = Promise.resolve();
@@ -41,22 +54,52 @@ async function runSync(input: {
   await ensureAndroidChannel();
   await cancelDailyReminderNotifications();
 
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "Günlük zikir vaktin",
-      body: "Bugünkü zikrini tamamlamak için kısa bir mola ver.",
-      sound: Platform.OS === "ios" ? "default" : undefined,
-      data: { kind: DAILY_REMINDER_KIND }
-    },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DAILY,
-      hour: time.hour,
-      minute: time.minute,
-      ...(Platform.OS === "android" ? { channelId: ANDROID_CHANNEL_ID } : {})
-    }
-  });
+  const weekdayEsmas = buildWeekdayEsmaNames();
+
+  for (let weekday = 1; weekday <= 7; weekday++) {
+    const names = weekdayEsmas.get(weekday) ?? [];
+    const body =
+      names.length > 0
+        ? `Bugünkü esma: ${names.join(", ")}`
+        : "Bugünkü zikrini tamamlamak için kısa bir mola ver.";
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Günlük zikir vaktin",
+        body,
+        sound: Platform.OS === "ios" ? "default" : undefined,
+        data: { kind: DAILY_REMINDER_KIND }
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+        weekday,
+        hour: time.hour,
+        minute: time.minute,
+        ...(Platform.OS === "android" ? { channelId: ANDROID_CHANNEL_ID } : {})
+      }
+    });
+  }
 
   return { permissionGranted: true, scheduled: true };
+}
+
+function buildWeekdayEsmaNames(): Map<number, string[]> {
+  const map = new Map<number, string[]>();
+
+  for (const esma of ESMAUL_HUSNA) {
+    const weekday = TURKISH_DAY_TO_WEEKDAY[esma.dhikrDay];
+    if (!weekday) {
+      continue;
+    }
+
+    const list = map.get(weekday) ?? [];
+    if (list.length < ESMA_PER_DAY) {
+      list.push(esma.transliteration);
+      map.set(weekday, list);
+    }
+  }
+
+  return map;
 }
 
 async function ensureNotificationsPermission(requestPermission: boolean) {

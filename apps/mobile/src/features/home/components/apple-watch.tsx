@@ -1,7 +1,7 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native'
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native'
 import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { useThemeTokens } from '@zikirmatik/ui'
 import type { ThemeTokens } from '@zikirmatik/shared'
@@ -150,10 +150,8 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
     ]
   }))
 
-  const compactCount = useMemo(() => formatCompactCount(home.count), [home.count])
-  const compactTarget = useMemo(() => formatCompactCount(home.target), [home.target])
-  const counterText = useMemo(() => (isComplete ? '✓' : compactCount), [compactCount, isComplete])
-  const regularTextStyle = useMemo(() => resolveRegularTextStyle(fontFamily), [fontFamily])
+  const compactCount = home.count > 0 ? String(home.count) : '0'
+  const compactTarget = home.target > 0 ? String(home.target) : '0'
   const strongTextStyle = useMemo(() => resolveStrongTextStyle(fontFamily), [fontFamily])
   const resetDhikrName = useMemo(
     () => home.mainDhikr.nameTurkish.trim() || home.activeQuickDhikr.trim() || 'Zikir',
@@ -221,30 +219,31 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
                       innerCircleAnimatedStyle
                     ]}
                   >
-                    <Animated.Text
-                      style={[counterAnimatedStyle, strongTextStyle]}
-                      className='text-[40px] font-bold leading-[42px]'
-                    >
-                      {counterText}
-                    </Animated.Text>
-                    {!home.isTargetMode ? null : !isComplete ? (
-                      <Text
-                        className='mt-1 text-[10px]'
-                        style={[{ color: withAlpha(tokens.textPrimary, 0.4) }, regularTextStyle]}
+                    {isComplete ? (
+                      <Animated.Text
+                        style={[counterAnimatedStyle, strongTextStyle]}
+                        className='text-[40px] font-bold leading-[42px]'
                       >
-                        / {compactTarget}
-                      </Text>
+                        ✓
+                      </Animated.Text>
                     ) : (
-                      <Text
-                        className='mt-1 text-[10px] font-semibold tracking-[0.6px]'
-                        style={[{ color: tokens.success }, strongTextStyle]}
-                      >
-                        {compactCount}/{compactTarget}
-                      </Text>
+                      <FontAwesome6
+                        name='fingerprint'
+                        iconStyle='solid'
+                        size={34}
+                        color={tokens.accent}
+                        style={{ opacity: 0.55 }}
+                      />
                     )}
                   </Animated.View>
                 </Animated.View>
               </Pressable>
+
+              <View className='mt-2 mb-0.5 items-center'>
+                <Animated.Text style={[counterAnimatedStyle, strongTextStyle]} className='text-[26px] font-bold leading-[30px]'>
+                  {home.isTargetMode ? `${compactCount}/${compactTarget}` : compactCount}
+                </Animated.Text>
+              </View>
 
               <View className='mt-3 flex-row gap-3'>
                 <Pressable
@@ -330,50 +329,6 @@ function withAlpha(hex: string, alpha: number) {
   const b = Number.parseInt(normalized.slice(4, 6), 16)
 
   return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`
-}
-
-function formatCompactCount(value: number) {
-  if (!Number.isFinite(value)) {
-    return '0'
-  }
-
-  const safe = Math.max(0, Math.floor(value))
-  if (safe < 1_000) {
-    return String(safe)
-  }
-  if (safe < 1_000_000) {
-    return toCompact(safe / 1_000, 'K')
-  }
-  if (safe < 1_000_000_000) {
-    return toCompact(safe / 1_000_000, 'M')
-  }
-  return toCompact(safe / 1_000_000_000, 'B')
-}
-
-function toCompact(base: number, suffix: 'K' | 'M' | 'B') {
-  const rounded = base >= 100 ? Math.round(base) : Math.round(base * 10) / 10
-  const text = Number.isInteger(rounded) ? String(rounded) : String(rounded).replace('.0', '')
-  return `${text}${suffix}`
-}
-
-function resolveRegularTextStyle(fontFamily: string) {
-  if (fontFamily === 'merriweather') {
-    return { fontFamily: 'Merriweather_400Regular', fontWeight: 'normal' as const }
-  }
-
-  if (fontFamily === 'intel-one-mono') {
-    return { fontFamily: 'IntelOneMono_400Regular', fontWeight: 'normal' as const }
-  }
-
-  if (fontFamily === 'finlandica-headline') {
-    return { fontFamily: 'Finlandica_400Regular', fontWeight: 'normal' as const }
-  }
-
-  if (fontFamily === 'indie-flower') {
-    return { fontFamily: 'IndieFlower_400Regular', fontWeight: 'normal' as const }
-  }
-
-  return undefined
 }
 
 function resolveStrongTextStyle(fontFamily: string) {

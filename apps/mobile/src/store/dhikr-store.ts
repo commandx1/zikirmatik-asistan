@@ -95,7 +95,7 @@ type DhikrStore = {
   resetSessionScoped: () => void;
 };
 
-export const MAX_DHIKR_TARGET = 999_999_999;
+export const MAX_DHIKR_TARGET = 9999;
 
 function formatLastActivityLabel() {
   const time = new Date().toLocaleTimeString("tr-TR", {
