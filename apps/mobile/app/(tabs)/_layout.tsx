@@ -6,6 +6,13 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import { useThemePreferences } from "../../src/hooks/use-theme-preferences";
 import { useAuthStore } from "../../src/store/auth-store";
 
+const TAB_FONT_FAMILY_MAP: Record<string, string | undefined> = {
+  merriweather: "Merriweather_400Regular",
+  "intel-one-mono": "IntelOneMono_400Regular",
+  "finlandica-headline": "Finlandica_400Regular",
+  "indie-flower": "IndieFlower_400Regular",
+};
+
 type TabIconProps = {
   focused: boolean;
   name: "house" | "list-ul" | "sparkles" | "moon" | "user";
@@ -37,27 +44,10 @@ export default function TabsLayout() {
   }
 
   const androidTabBarExtraBottom = Platform.OS === "android" ? Math.max(insets.bottom, 8) : 0;
-  const tabLabelFontFamily =
-    fontFamily === "merriweather"
-      ? "Merriweather_400Regular"
-      : fontFamily === "intel-one-mono"
-        ? "IntelOneMono_400Regular"
-        : fontFamily === "finlandica-headline"
-          ? "Finlandica_400Regular"
-          : fontFamily === "indie-flower"
-            ? "IndieFlower_400Regular"
-          : undefined;
-  const tabLabelStyle =
-    tabLabelFontFamily
-      ? {
-          fontSize: 10,
-          fontFamily: tabLabelFontFamily,
-          fontWeight: "normal" as const
-        }
-      : {
-          fontSize: 10,
-          fontWeight: "500" as const
-        };
+  const tabLabelFontFamily = TAB_FONT_FAMILY_MAP[fontFamily];
+  const tabLabelStyle = tabLabelFontFamily
+    ? { fontSize: 10, fontFamily: tabLabelFontFamily, fontWeight: "normal" as const }
+    : { fontSize: 10, fontWeight: "500" as const };
 
   return (
     <View className="flex-1">

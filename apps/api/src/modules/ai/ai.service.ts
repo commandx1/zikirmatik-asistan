@@ -105,6 +105,17 @@ export class AiService {
       'Niyet metnine uygun bir zikir listesi hazırladım.';
     let usedModel: 'openai' | 'fallback' = 'openai';
 
+    if (openAiResult?.offTopic) {
+      return {
+        offTopic: true as const,
+        message:
+          'Ben yalnızca zikir ve dua önerisi yapabilen bir asistanım. Manevi niyetini, hissettiğin bir duyguyu ya da hayatındaki bir konuyu paylaşırsan sana uygun zikirler önereceğim.',
+        recommendedIds: [],
+        items: [],
+        usedModel: 'openai' as const,
+      };
+    }
+
     if (safeRecommendedIds.length === 0) {
       const fallback = fallbackRecommend({
         freeText,
@@ -316,10 +327,12 @@ export class AiService {
 
     const systemInstruction = [
       'Sen bir İslami zikir öneri asistanısın.',
+      'İLK ADIM — konu tespiti: freeText zikir, dua, manevi hal, niyet veya İslami yaşamla (huzur, şükür, bağışlanma, kaygı, rızık, şifa, koruma, sabır, tövbe vb.) alakalı mı?',
+      'Aşağıdaki durumlarda off_topic: true döndür, recommendations dizisini boş bırak, summary yazma: (1) anlamsız/rastgele karakter dizisi (ör. "sllsd", "asdfg", "123abc"), (2) genel sohbet veya selamlama, (3) model/sistem/teknik soru, (4) İslami yaşamla hiç ilgisi olmayan herhangi bir içerik.',
+      'Konu ilgiliyse → off_topic: false yap ve devam et.',
       'YALNIZCA verilen candidateDhikrs listesinden seçim yap; liste dışından ID üretme.',
-      'Önce kullanıcının freeText niyetini/temasını belirle (ör. huzur, şükür, bağışlanma, kaygı, rızık, şifa, koruma).',
-      'Sonra bu niyeti adayların fazilet (virtue), etiket (tags) ve kategori (categories) alanlarıyla eşleştirerek en uygunları seç.',
-      'Zaman bağlamını (timeOfDay, suitableFor) ikincil ve ayırt edici kriter olarak kullan.',
+      'Niyeti adayların fazilet (virtue), etiket (tags) ve kategori (categories) alanlarıyla eşleştirerek en uygunları seç.',
+      'Zaman bağlamını (timeOfDay, suitableFor) ikincil kriter olarak kullan.',
       `En fazla ${input.maxRecommendations} zikir seç ve en uygundan başlayarak sırala.`,
       'Her seçtiğin zikir için recommendations dizisine bir nesne ekle: id (candidate id) ve reason (o zikrin neden seçildiği).',
       "Yalnızca recommendations dizisindeki id'lerden bahset; listede olmayan bir zikri reason veya summary içinde anma.",
@@ -334,6 +347,7 @@ export class AiService {
       recentDhikrIds: input.recentDhikrIds,
       candidateDhikrs: input.candidateDhikrs,
       outputFormat: {
+        off_topic: 'boolean',
         recommendations: [{ id: 'string (candidate id)', reason: 'string' }],
         summary: 'string',
       },
@@ -359,9 +373,14 @@ export class AiService {
         return null;
       }
 
-      let parsed: { recommendations?: unknown; summary?: unknown };
+      let parsed: {
+        off_topic?: unknown;
+        recommendations?: unknown;
+        summary?: unknown;
+      };
       try {
         parsed = JSON.parse(text) as {
+          off_topic?: unknown;
           recommendations?: unknown;
           summary?: unknown;
         };
@@ -370,6 +389,12 @@ export class AiService {
           `OpenAI yanıtı JSON olarak ayrıştırılamadı: ${this.describeError(error)}`,
         );
         return null;
+      }
+
+      const offTopic = parsed.off_topic === true;
+
+      if (offTopic) {
+        return { recommendations: [], summary: undefined, offTopic: true };
       }
 
       if (!Array.isArray(parsed.recommendations)) {
@@ -393,6 +418,7 @@ export class AiService {
       return {
         recommendations,
         summary,
+        offTopic: false,
       };
     } catch (error) {
       this.logger.warn(

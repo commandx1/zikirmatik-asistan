@@ -1,8 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
-import { DailyEsmaWelcomeModal } from "../home/components/daily-esma-welcome-modal";
+
+const DailyEsmaWelcomeModal = lazy(() =>
+  import("../home/components/daily-esma-welcome-modal").then((m) => ({ default: m.DailyEsmaWelcomeModal }))
+);
 import { ESMAUL_HUSNA } from "../focus/data";
 import type { EsmaulHusnaItem } from "../focus/types";
 import { resolveDailyEsmaSuggestions } from "../home/services/daily-esma-suggestion-service";
@@ -85,7 +89,19 @@ export function AiGuideScreen() {
             </View>
           ) : null}
           <LoadingSection visible={guide.isLoading} />
-          {guide.isLoading ? null : (
+          {guide.isLoading ? null : guide.offTopicMessage ? (
+            <View className="mb-4 rounded-xl border border-red-900/60 bg-red-950/40 px-4 py-4">
+              <View className="mb-2 flex-row items-center gap-2">
+                <FontAwesome6 name="circle-exclamation" size={14} color="#f87171" />
+                <Text className="text-[13px] font-semibold text-red-400">
+                  Konu dışı
+                </Text>
+              </View>
+              <Text className="text-[13px] leading-5 text-red-200/80">
+                {guide.offTopicMessage}
+              </Text>
+            </View>
+          ) : (
             <RecommendationsSection
               items={guide.recommendations}
               assistantNote={guide.assistantNote}
@@ -103,6 +119,7 @@ export function AiGuideScreen() {
           onConfirm={guide.confirmRewardedAndSubmit}
           onClose={guide.closeRewardedSheet}
         />
+        <Suspense fallback={null}>
         <DailyEsmaWelcomeModal
           visible={isDailyEsmaOpen}
           items={dailyEsmaSuggestions}
@@ -110,6 +127,8 @@ export function AiGuideScreen() {
           onShowAll={showAllDailyEsma}
           onStart={startDailyEsma}
         />
+        </Suspense>
+
       </View>
     </PageLayout>
   );
