@@ -194,34 +194,24 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
 export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isDeleting, isUpdatingThisItem }: ZikirItemCardProps) {
   const { tokens } = useThemeTokens()
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
   const animMaxHeight = useSharedValue(0)
   const animOpacity = useSharedValue(0)
   const animChevron = useSharedValue(0)
+  const animMenuHeight = useSharedValue(0)
+  const animMenuOpacity = useSharedValue(0)
 
-  const { toggleFavorite, selectDhikr, startDhikrOnHome, deleteDhikr, openUpdateModal } = useZikirlerim()
+  const { toggleFavorite, startDhikrOnHome, deleteDhikr, openUpdateModal } = useZikirlerim()
 
   const progressPct = item.target === 0 ? 0 : Math.min(100, Math.round((item.current / item.target) * 100))
   const accent = resolveAccent(item)
   const targetLabel = item.target > 0 ? String(item.target) : '∞'
   const title = item.nameTurkish || item.transliteration
   const showTransliteration = item.transliteration && item.transliteration !== title
-
-  const updateBorderColor = withAlpha(tokens.accent, 0.42)
-  const updateBackgroundColor = withAlpha(tokens.accent, 0.12)
-  const updateTextColor = tokens.accent
-  const dangerBase = '#EF4444'
-  const deleteBorderColor = withAlpha(dangerBase, 0.58)
-  const deleteBackgroundColor = withAlpha(dangerBase, 0.2)
-  const deleteTextColor = deleteBorderColor
-  const selectIdleBorderColor = withAlpha(tokens.textPrimary, 0.14)
-  const selectIdleBackgroundColor = withAlpha(tokens.bg, 0.85)
-  const selectIdleTextColor = tokens.textPrimary
-  const selectActiveBorderColor = withAlpha(tokens.accent, 0.42)
-  const selectActiveBackgroundColor = withAlpha(tokens.accent, 0.18)
-  const selectActiveTextColor = tokens.accent
-
   const hasDetails = !!(item.arabic || item.meaning || item.virtue || item.contentSource || item.aiPrompt || item.aiAssistantNote)
+
+  const dangerBase = '#EF4444'
 
   const accordionStyle = useAnimatedStyle(() => ({
     maxHeight: animMaxHeight.value,
@@ -233,20 +223,25 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
     transform: [{ rotate: `${animChevron.value * 180}deg` }]
   }))
 
+  const menuStyle = useAnimatedStyle(() => ({
+    maxHeight: animMenuHeight.value,
+    opacity: animMenuOpacity.value,
+    overflow: 'hidden'
+  }))
+
   const toggle = () => {
     const next = !isExpanded
     setIsExpanded(next)
-    animMaxHeight.value = withTiming(next ? 4000 : 0, {
-      duration: next ? EXPAND_DURATION : COLLAPSE_DURATION,
-      easing: Easing.out(Easing.cubic)
-    })
-    animOpacity.value = withTiming(next ? 1 : 0, {
-      duration: next ? EXPAND_DURATION : COLLAPSE_DURATION - 40
-    })
-    animChevron.value = withTiming(next ? 1 : 0, {
-      duration: next ? EXPAND_DURATION : COLLAPSE_DURATION,
-      easing: Easing.out(Easing.cubic)
-    })
+    animMaxHeight.value = withTiming(next ? 4000 : 0, { duration: next ? EXPAND_DURATION : COLLAPSE_DURATION, easing: Easing.out(Easing.cubic) })
+    animOpacity.value = withTiming(next ? 1 : 0, { duration: next ? EXPAND_DURATION : COLLAPSE_DURATION - 40 })
+    animChevron.value = withTiming(next ? 1 : 0, { duration: next ? EXPAND_DURATION : COLLAPSE_DURATION, easing: Easing.out(Easing.cubic) })
+  }
+
+  const toggleMenu = () => {
+    const next = !isMenuOpen
+    setIsMenuOpen(next)
+    animMenuHeight.value = withTiming(next ? 200 : 0, { duration: next ? EXPAND_DURATION : COLLAPSE_DURATION, easing: Easing.out(Easing.cubic) })
+    animMenuOpacity.value = withTiming(next ? 1 : 0, { duration: next ? EXPAND_DURATION : COLLAPSE_DURATION - 40 })
   }
 
   return (
@@ -265,17 +260,59 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
           ) : null}
         </View>
         <Pressable
-          onPress={() => toggleFavorite(item.id)}
+          onPress={toggleMenu}
           className='h-8 w-8 items-center justify-center rounded-full bg-[--bg]'
+          style={isMenuOpen ? { backgroundColor: withAlpha(tokens.textPrimary, 0.1) } : undefined}
         >
-          <FontAwesome6
-            name='star'
-            size={14}
-            color={item.isFavorite ? '#D6A93D' : '#9AA5BD'}
-            iconStyle={item.isFavorite ? 'solid' : 'regular'}
-          />
+          <FontAwesome6 name='ellipsis' size={14} color={tokens.textMuted} />
         </Pressable>
       </View>
+
+      {/* Overflow menu strip */}
+      <Animated.View style={menuStyle}>
+        <View
+          className='mb-3 flex-row items-center gap-2 rounded-xl px-3 py-2.5'
+          style={{ backgroundColor: withAlpha(tokens.textPrimary, 0.04), borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.08) }}
+        >
+          <Pressable
+            onPress={() => { toggleFavorite(item.id) }}
+            className='flex-row items-center gap-1.5 rounded-full border px-3 py-1.5'
+            style={{
+              borderColor: item.isFavorite ? withAlpha('#D6A93D', 0.5) : withAlpha(tokens.textMuted, 0.25),
+              backgroundColor: item.isFavorite ? withAlpha('#D6A93D', 0.12) : withAlpha(tokens.textMuted, 0.07)
+            }}
+          >
+            <FontAwesome6 name='star' size={10} color={item.isFavorite ? '#D6A93D' : tokens.textMuted} iconStyle={item.isFavorite ? 'solid' : 'regular'} />
+            <Text className='text-xs font-semibold' style={{ color: item.isFavorite ? '#D6A93D' : tokens.textMuted }}>
+              {item.isFavorite ? 'Favoride' : 'Favoriye Ekle'}
+            </Text>
+          </Pressable>
+          {item.source === 'personal' ? (
+            <Pressable
+              disabled={isUpdatingThisItem}
+              onPress={() => { toggleMenu(); openUpdateModal(item) }}
+              className={`flex-row items-center gap-1.5 rounded-full border px-3 py-1.5 ${isUpdatingThisItem ? 'opacity-60' : ''}`}
+              style={{ borderColor: withAlpha(tokens.accent, 0.42), backgroundColor: withAlpha(tokens.accent, 0.12) }}
+            >
+              <FontAwesome6 name='pen' size={10} color={tokens.accent} />
+              <Text className='text-xs font-semibold' style={{ color: tokens.accent }}>
+                {isUpdatingThisItem ? 'Güncelleniyor' : 'Güncelle'}
+              </Text>
+            </Pressable>
+          ) : null}
+          <Pressable
+            disabled={isDeleting}
+            onPress={() => { toggleMenu(); setIsDeleteConfirmVisible(true) }}
+            className={`flex-row items-center gap-1.5 rounded-full border px-3 py-1.5 ${isDeleting ? 'opacity-60' : ''}`}
+            style={{ borderColor: withAlpha(dangerBase, 0.5), backgroundColor: withAlpha(dangerBase, 0.12) }}
+          >
+            <FontAwesome6 name='trash' size={10} color={dangerBase} />
+            <Text className='text-xs font-semibold' style={{ color: dangerBase }}>
+              {isDeleting ? 'Siliniyor' : 'Sil'}
+            </Text>
+          </Pressable>
+        </View>
+      </Animated.View>
 
       {/* Progress */}
       <View className='mb-3 flex-row items-center gap-3'>
@@ -288,19 +325,18 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
         {accent.isCompleted ? (
           <View className='flex-row items-center gap-1'>
             <FontAwesome6 name='check' size={11} color='#4CAF7D' />
-            <Text className={`text-xs font-semibold ${accent.countClassName}`}>
-              {item.current}/{targetLabel}
-            </Text>
+            <Text className={`text-xs font-semibold ${accent.countClassName}`}>{item.current}/{targetLabel}</Text>
           </View>
         ) : (
-          <Text className={`text-xs font-semibold ${accent.countClassName}`}>
-            {item.current}/{targetLabel}
-          </Text>
+          <Text className={`text-xs font-semibold ${accent.countClassName}`}>{item.current}/{targetLabel}</Text>
         )}
       </View>
 
       {/* Meta */}
-      <View className='mb-3 flex-row items-center justify-between'>
+      <View
+        className='mb-3 flex-row items-center justify-between pb-3'
+        style={{ borderBottomWidth: 1, borderBottomColor: withAlpha(tokens.textPrimary, 0.07) }}
+      >
         <View className='flex-row items-center gap-1'>
           <FontAwesome6 name='clock' iconStyle='regular' size={12} color='#9AA5BD' />
           <Text className='text-xs text-[--text-muted]'>{item.lastActivityLabel}</Text>
@@ -311,94 +347,42 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
         </View>
       </View>
 
-      {/* Detaylar toggle */}
-      {hasDetails ? (
-        <View className='mb-3 flex-row items-center gap-2'>
-          <Pressable
-            onPress={toggle}
-            className='flex-row items-center gap-1.5 rounded-full border px-3 py-1.5'
-            style={{
-              borderColor: withAlpha(tokens.textMuted, 0.25),
-              backgroundColor: withAlpha(tokens.textMuted, 0.07)
-            }}
-          >
-            <Text className='text-[11px]' style={{ color: tokens.textMuted }}>Detaylar</Text>
-            <Animated.View style={chevronStyle}>
-              <FontAwesome6 name='chevron-down' size={8} color={tokens.textMuted} />
-            </Animated.View>
-          </Pressable>
-
-          {item.aiPrompt ? (
-            <View
-              className='flex-row items-center gap-1 rounded-full border px-2.5 py-1.5'
-              style={{
-                borderColor: withAlpha(tokens.accent, 0.35),
-                backgroundColor: withAlpha(tokens.accent, 0.1)
-              }}
-            >
-              <FontAwesome6 name='sparkles' iconStyle='solid' size={9} color={tokens.accent} />
-              <Text className='text-[10px] font-semibold' style={{ color: tokens.accent }}>
-                AI Önerisi
-              </Text>
-            </View>
-          ) : null}
-        </View>
-      ) : null}
-
       {/* Accordion */}
       <Animated.View style={accordionStyle}>
         <AccordionContent item={item} tokens={tokens} />
       </Animated.View>
 
-      {/* Action buttons */}
+      {/* Footer */}
       <View className='flex-row items-center justify-between gap-2'>
         <View className='flex-row items-center gap-2'>
-          {item.source === 'personal' ? (
+          {hasDetails ? (
             <Pressable
-              disabled={isUpdatingThisItem}
-              onPress={() => openUpdateModal(item)}
-              className={`rounded-full border px-3 py-2 ${isUpdatingThisItem ? 'opacity-60' : ''}`}
-              style={{ borderColor: updateBorderColor, backgroundColor: updateBackgroundColor }}
+              onPress={toggle}
+              className='flex-row items-center gap-1.5 rounded-full border px-3 py-1.5'
+              style={{ borderColor: withAlpha(tokens.textMuted, 0.25), backgroundColor: withAlpha(tokens.textMuted, 0.07) }}
             >
-              <Text className='text-xs font-semibold' style={{ color: updateTextColor }}>
-                {isUpdatingThisItem ? 'Güncelleniyor' : 'Güncelle'}
-              </Text>
+              <Text className='text-[11px]' style={{ color: tokens.textMuted }}>Detay</Text>
+              <Animated.View style={chevronStyle}>
+                <FontAwesome6 name='chevron-down' size={8} color={tokens.textMuted} />
+              </Animated.View>
             </Pressable>
           ) : null}
-
-          <Pressable
-            disabled={isDeleting}
-            onPress={() => setIsDeleteConfirmVisible(true)}
-            className={`rounded-full border px-3 py-2 ${isDeleting ? 'opacity-60' : ''}`}
-            style={{ borderColor: deleteBorderColor, backgroundColor: deleteBackgroundColor }}
-          >
-            <Text className='text-xs font-semibold' style={{ color: deleteTextColor }}>
-              {isDeleting ? 'Siliniyor' : 'Sil'}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => selectDhikr(item.id)}
-            className='rounded-full border px-3 py-2'
-            style={{
-              borderColor: isSelected ? selectActiveBorderColor : selectIdleBorderColor,
-              backgroundColor: isSelected ? selectActiveBackgroundColor : selectIdleBackgroundColor
-            }}
-          >
-            <Text
-              className={`text-xs ${isSelected ? 'font-semibold' : 'font-medium'}`}
-              style={{ color: isSelected ? selectActiveTextColor : selectIdleTextColor }}
+          {item.aiPrompt ? (
+            <View
+              className='flex-row items-center gap-1 rounded-full border px-2.5 py-1.5'
+              style={{ borderColor: withAlpha(tokens.accent, 0.35), backgroundColor: withAlpha(tokens.accent, 0.1) }}
             >
-              {isSelected ? 'Seçili' : 'Seç'}
-            </Text>
-          </Pressable>
+              <Text className='text-[10px] font-semibold' style={{ color: tokens.accent }}>Asistan</Text>
+            </View>
+          ) : null}
         </View>
 
         <Pressable
           onPress={() => startDhikrOnHome(item.id)}
-          className='rounded-full bg-[--accent] px-3 py-2'
+          className='flex-row items-center gap-1.5 rounded-full bg-[--accent] px-3 py-1.5'
         >
-          <Text className='text-xs font-semibold text-[#111827]'>Ana Sayfa'da Başlat</Text>
+          <Text className='text-xs font-semibold text-[#111827]'>Başlat</Text>
+          <FontAwesome6 name='arrow-right' size={9} color='#111827' />
         </Pressable>
       </View>
 
