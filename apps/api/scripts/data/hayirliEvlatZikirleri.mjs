@@ -171,7 +171,7 @@ export const hayirliEvlatZikirleri = {
       tags: ['evlat', 'korunma', 'aile', 'dua'],
       categories: ['genel', 'aile', 'evlat'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['birliktelik öncesi', 'evlat korunması', 'aile duası'],
     },
     {
@@ -189,7 +189,7 @@ export const hayirliEvlatZikirleri = {
       tags: ['evlat', 'dua', 'nesil', 'ihlas-tertibi'],
       categories: ['genel', 'aile', 'evlat'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['3 ihlas sonrası', 'evlat niyeti', 'aile duası'],
     },
     {

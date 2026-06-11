@@ -1600,7 +1600,7 @@ export const esmaulHusnaTemel = {
       virtue:
         'Sınav, ticaret ve hayırlı işlerde rakiplerin önüne geçmek; makamda yükselmek; işlerin hızlanması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'yukselis', 'sinav', 'ticaret'],
+      tags: ['esma', 'esmaul-husna', 'yukselis', 'sınav', 'ticaret'],
       categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'iş-kariyer'],
       timeOfDay: 'any',
       recommendedCount: 100,

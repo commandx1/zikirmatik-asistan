@@ -244,7 +244,7 @@ export const hayirliEv = {
       tags: ['ev', 'eve-giris', 'bereket', 'sekine', 'seytan', 'dua'],
       categories: ['dua', 'ev-hayati', 'gunluk-hayat'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: [
         'eve girişte okuma',
         'evin bereketlenmesi',

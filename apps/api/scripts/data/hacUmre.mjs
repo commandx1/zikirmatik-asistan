@@ -42,7 +42,7 @@ export const hacUmre = {
       tags: ['hac', 'umre', 'tavaf', 'kabe', 'zikir'],
       categories: ['hac', 'zikir'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: ['zilhicce'],
       suitableFor: [
         'tavaf başlangıcı',
@@ -65,7 +65,7 @@ export const hacUmre = {
       tags: ['hac', 'umre', 'tavaf', 'dua', 'kabul'],
       categories: ['hac', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: ['zilhicce'],
       suitableFor: [
         'tavaf sırasında',
@@ -137,7 +137,7 @@ export const hacUmre = {
       tags: ['hac', 'umre', 'mekke', 'harem', 'dua'],
       categories: ['hac', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: ['zilhicce'],
       suitableFor: [
         'Mekke haremîne girişte',

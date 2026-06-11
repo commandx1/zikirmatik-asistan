@@ -1,0 +1,43 @@
+export const keffaretulMeclis = {
+  key: 'keffaret-ul-meclis',
+  label: 'Oturum ve Meclis Duaları',
+  dhikrItems: [
+    {
+      key: 'meclis-istigfar-100',
+      nameArabic: 'رَبِّ اغْفِرْ لِي وَتُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيمُ',
+      nameTurkish: 'Oturumda İstiğfar (× 100)',
+      transliteration: `Rabbicfir lî ve tub aleyye, inneke entet tevvâbür rahîm.`,
+      meaning: `Rabbim! Beni bağışla ve tevbemi kabul et. Şüphesiz sen tevbeleri çok kabul eden, çok merhametli olansın.`,
+      virtue: `İbn Ömer radıyallahu anhümâ şöyle dedi: "Resûlullah'ın (sas) tek bir oturumda kalkmadan önce bu duayı yüz kere söylediği sayılırdı." Oturum bazen günler, bazen anlık karşılaşmalar anlamına gelir. Yüz tekrar, sayının verdiği ritimle birlikte hem zihnin yoğunlaşmasını hem de kalbin yumuşamasını sağlar. "et-Tevvâb" (tevbeleri kabul eden) ve "er-Rahîm" (merhametli) isimleri, bu duanın iki tarafını kurar: günahı fark etmek ve karşılıksız bağışlanmayı bekleyebilmek. Resûlullah'ın günde yüz kez istiğfar etmesi — "günahsız olduğu hâlde" — kulun her zaman bu kapıyı açık tutabileceğini gösterir.`,
+      source: `Buhârî, Deavât, 3 (6307); Müslim, Zikr, 42 (2702)`,
+      tags: ['istiğfar', 'tevbe', 'oturum', 'günlük', 'zikir'],
+      categories: ['istiğfar', 'günlük', 'zikir'],
+      timeOfDay: 'any',
+      recommendedCount: 100,
+      specialDays: [],
+      suitableFor: ['her oturumda', 'günlük istiğfar', 'toplantı sonrası', 'sohbet sonrası'],
+    },
+    {
+      key: 'meclis-keffaret',
+      nameArabic:
+        'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ أَنْتَ أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ',
+      nameTurkish: "Keffâretü'l-Meclis (Oturum Kapanış Duası)",
+      transliteration: `Sübhânekellàhümme ve bihamdike, eşhedü en lâilâhe illâ ente, estağfiruke ve etûbü ileyke.`,
+      meaning: `Ey Allah'ım! Seni, yüceliğine yakışmayan kusurlardan tenzîh eder ve sana hamd ederim. Senden başka ilâh olmadığına şehâdet ederim. Senden bağışlanma diler ve sana tevbe ederim.`,
+      virtue: `Ebû Hüreyre radıyallahu anhın rivâyetine göre Resûlullah (sas) şöyle buyurdu: "Kim bir mecliste oturur ve orada çok boş söz söylerse, o meclisten kalkmadan önce şu duayı okusun: Sübhânekellahümme ve bihamdike... Bu dua, o mecliste yapılan (günahlara) kefaret olur." Bir diğer rivâyette: "Resûlullah (sas) bir mecliste oturduğunda, Kur'ân okuduğunda ve namaz kıldığında mutlaka sonunu bu sözlerle tamamlardı." Dua bir oturumun özet ikrarıdır: tenzîh, şehâdet ve istiğfar. Konuşulanlar arasında farkında olmadan sarf edilen yanlış sözleri, o oturumun sonunda bu duayla kapatmak, geçmiş hasarı giderebileceğini söyleyen nebevî bir reçetedir.`,
+      source: `Tirmizî, Deavât, 39 (3433); Nesâî, Amelü'l-Yevm ve'l-Leyle, nr. 308; Ahmed, Müsned, 6/77`,
+      tags: ['oturum', 'meclis', 'istiğfar', 'kefaret', 'tesbih', 'günlük'],
+      categories: ['istiğfar', 'günlük', 'zikir'],
+      timeOfDay: 'any',
+      recommendedCount: 10,
+      specialDays: [],
+      suitableFor: [
+        'her oturumun sonunda',
+        'toplantı kapanışında',
+        'sohbet bitince',
+        'namaz ve Kur\'an sonrası',
+        'günlük kefaret',
+      ],
+    },
+  ],
+};

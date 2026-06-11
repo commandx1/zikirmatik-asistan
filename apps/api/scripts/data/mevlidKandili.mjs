@@ -117,7 +117,7 @@ export const mevlidKandili = {
       tags: ['mevlid-kandili', 'kuran', 'ayet', 'sabir', 'takva'],
       categories: ['kandil', 'özel gün', 'kuran'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['sabır', 'sebat', 'manevi disiplin'],
     },
     {
@@ -135,7 +135,7 @@ export const mevlidKandili = {
       tags: ['mevlid-kandili', 'kuran', 'ayet', 'salavat', 'peygamber-sevgisi'],
       categories: ['kandil', 'özel gün', 'kuran', 'salavat'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['salavat bilinci', 'peygamber sevgisi', 'kandil gecesi'],
     },
     {

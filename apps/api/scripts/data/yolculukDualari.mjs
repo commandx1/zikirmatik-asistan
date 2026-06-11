@@ -17,7 +17,7 @@ export const yolculukDualari = {
       tags: ['yolculuk', 'seyahat', 'dua', 'sefer', 'korunma'],
       categories: ['yolculuk', 'dua', 'korunma'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'yola çıkış',
@@ -41,7 +41,7 @@ export const yolculukDualari = {
       tags: ['yolculuk', 'veda', 'dua', 'uğurlama', 'emanet'],
       categories: ['yolculuk', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'yolcuya veda ederken',
@@ -65,7 +65,7 @@ export const yolculukDualari = {
       tags: ['yolculuk', 'aile', 'dua', 'uğurlama', 'emanet', 'veda'],
       categories: ['yolculuk', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'aileden ayrılırken',
@@ -160,7 +160,7 @@ export const yolculukDualari = {
       tags: ['yolculuk', 'şehir', 'dua', 'korunma', 'uyum', 'taşınma'],
       categories: ['yolculuk', 'dua', 'korunma'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'yeni şehre varış',

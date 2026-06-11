@@ -232,7 +232,7 @@ export const koruyucu = {
       tags: ['korunma', 'bakara', 'amenerrasulu', 'hidayet'],
       categories: ['genel', 'korunma', 'kuran'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['sabah-akşam tilavet', 'ruhani arınma', 'ev korunması'],
     },
     {

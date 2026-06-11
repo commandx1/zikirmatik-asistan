@@ -50,7 +50,7 @@ export const rizikMulkTertipleri = {
       tags: ['rizik', 'vakia', 'sure', 'bereket'],
       categories: ['genel', 'sure', 'rizik-bereket'],
       timeOfDay: 'night',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['gece virdi', 'geçim bereketi', 'fakirlik korkusu'],
     },
     {

@@ -1,5 +1,9 @@
 import { sabahZikirleri } from './sabahZikirleri.mjs';
 import { aksamZikirleri } from './aksamZikirleri.mjs';
+import { uyku_uyanis } from './uyku-uyanis.mjs';
+import { keffaretulMeclis } from './keffaretulMeclis.mjs';
+import { salavat } from './salavat.mjs';
+import { evGirisCikis } from './evGirisCikis.mjs';
 import { dogalAfetlerdenKorunma } from './dogalAfetlerdenKorunma.mjs';
 import { hastalıkVeŞifa } from './hastalıkVeŞifa.mjs';
 import { cenazeVeTaziye } from './cenazeVeTaziye.mjs';
@@ -51,4 +55,8 @@ export const SOURCE_DATASETS = [
   yolculukDualari,
   sabahZikirleri,
   aksamZikirleri,
+  uyku_uyanis,
+  keffaretulMeclis,
+  salavat,
+  evGirisCikis,
 ];

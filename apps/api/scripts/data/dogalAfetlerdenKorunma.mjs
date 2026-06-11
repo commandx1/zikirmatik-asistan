@@ -17,7 +17,7 @@ export const dogalAfetlerdenKorunma = {
       tags: ['afet', 'deprem', 'korunma', 'dua'],
       categories: ['genel', 'afet', 'korunma'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['deprem korkusu', 'yer sarsıntıları', 'günlük korunma'],
     },
     {
@@ -34,7 +34,7 @@ export const dogalAfetlerdenKorunma = {
       tags: ['afet', 'seyahat', 'korunma', 'dua'],
       categories: ['genel', 'afet', 'korunma'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['seyahat', 'konaklama', 'afet riski'],
     },
     {
@@ -52,7 +52,7 @@ export const dogalAfetlerdenKorunma = {
       tags: ['afet', 'tevekkul', 'yangin', 'sel', 'korunma'],
       categories: ['genel', 'afet', 'korunma'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: [
         'sabah-akşam',
         'aile korunması',
@@ -110,7 +110,7 @@ export const dogalAfetlerdenKorunma = {
       tags: ['afet', 'dua', 'ismi-azam', 'korunma'],
       categories: ['genel', 'afet', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['büyük tehlike', 'afet anı', 'acil sığınma'],
     },
     {
@@ -146,7 +146,7 @@ export const dogalAfetlerdenKorunma = {
       tags: ['afet', 'ruzgar', 'firtina', 'dua'],
       categories: ['genel', 'afet', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['fırtına anı', 'şiddetli rüzgar', 'kasırga korkusu'],
     },
     {
@@ -162,7 +162,7 @@ export const dogalAfetlerdenKorunma = {
       tags: ['afet', 'aile', 'mal', 'korunma'],
       categories: ['genel', 'afet', 'dua'],
       timeOfDay: 'morning',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: ['aile korunması', 'mal emniyeti', 'gün başlangıcı'],
     },
     {

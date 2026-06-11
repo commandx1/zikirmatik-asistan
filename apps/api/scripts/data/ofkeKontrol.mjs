@@ -14,7 +14,7 @@ export const ofkeKontrol = {
       tags: ['öfke', 'sakinleşme', 'seytan', 'korunma', 'dua', 'siginma'],
       categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       suitableFor: [
         'öfke ve sinir kontrolü',
         'ani gazap anları',

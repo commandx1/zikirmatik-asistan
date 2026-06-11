@@ -163,7 +163,7 @@ export const hastalıkVeŞifa = {
       tags: ['şifa', 'hastalık', 'korunma', 'dua', 'kronik-hastalik', 'rukye'],
       categories: ['hastalık', 'şifa', 'korunma', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'ağır ve kronik hastalıktan korunma',
@@ -187,7 +187,7 @@ export const hastalıkVeŞifa = {
       tags: ['şifa', 'afiyet', 'hastalık', 'dua', 'sabah-akşam', 'korunma'],
       categories: ['hastalık', 'şifa', 'dua', 'genel'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'sabah-akşam zikri',
@@ -233,7 +233,7 @@ export const hastalıkVeŞifa = {
       tags: ['şifa', 'hastalık', 'hasta-ziyareti', 'teselli', 'sabır', 'arınma'],
       categories: ['hastalık', 'şifa', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'hasta ziyareti',
@@ -257,7 +257,7 @@ export const hastalıkVeŞifa = {
       tags: ['şifa', 'korunma', 'tevekkül', 'dua', 'bela', 'zikir'],
       categories: ['hastalık', 'şifa', 'korunma', 'zikir'],
       timeOfDay: 'morning',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'sabah zikri',
@@ -281,7 +281,7 @@ export const hastalıkVeŞifa = {
       tags: ['istiğfar', 'tövbe', 'şifa', 'hastalık', 'sabah-akşam', 'seyyidul-istigfar'],
       categories: ['hastalık', 'şifa', 'tövbe', 'istiğfar'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'hastalık döneminde tövbe',

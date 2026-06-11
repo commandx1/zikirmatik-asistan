@@ -16,7 +16,7 @@ export const yemekDualari = {
       tags: ['yemek', 'besmele', 'zikir', 'günlük', 'sünnet'],
       categories: ['yemek', 'zikir', 'günlük'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'her yemekte',
@@ -40,7 +40,7 @@ export const yemekDualari = {
       tags: ['yemek', 'dua', 'bereket', 'başlangıç'],
       categories: ['yemek', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'yemek başlamadan önce',
@@ -63,7 +63,7 @@ export const yemekDualari = {
       tags: ['yemek', 'dua', 'hamd', 'şükür', 'sofra'],
       categories: ['yemek', 'dua', 'şükür'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'yemek bittikten sonra',
@@ -86,7 +86,7 @@ export const yemekDualari = {
       tags: ['yemek', 'dua', 'hamd', 'şükür', 'kısa'],
       categories: ['yemek', 'dua', 'şükür'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'yemek sonrası',
@@ -110,7 +110,7 @@ export const yemekDualari = {
       tags: ['yemek', 'dua', 'günah', 'af', 'şükür'],
       categories: ['yemek', 'dua', 'istiğfar'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'yemek sonrası',
@@ -133,7 +133,7 @@ export const yemekDualari = {
       tags: ['yemek', 'iftar', 'ramazan', 'oruç', 'misafir', 'dua'],
       categories: ['yemek', 'dua', 'ramazan'],
       timeOfDay: 'evening',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: ['ramazan'],
       suitableFor: [
         'iftarda ev sahibine dua',
@@ -157,7 +157,7 @@ export const yemekDualari = {
       tags: ['yemek', 'dua', 'şükür', 'misafir', 'ikram'],
       categories: ['yemek', 'dua', 'şükür'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 10,
       specialDays: [],
       suitableFor: [
         'ikram sonrası',
