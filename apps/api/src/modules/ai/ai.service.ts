@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,6 +9,10 @@ import {
   type DhikrLogDocument,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
+import {
+  EmbeddingService,
+  cosineSimilarity,
+} from '../embedding/embedding.service';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { CreateAiRecommendationDto } from './dto/create-ai-recommendation.dto';
 import { QueryAiRecommendationsDto } from './dto/query-ai-recommendations.dto';
@@ -16,6 +21,10 @@ import {
   AiRecommendation,
   type AiRecommendationDocument,
 } from './schemas/ai-recommendation.schema';
+import {
+  RecommendationCache,
+  type RecommendationCacheDocument,
+} from './schemas/recommendation-cache.schema';
 import { fallbackRecommend } from './utils/fallback-recommender';
 
 type TimeContext = {
@@ -25,16 +34,41 @@ type TimeContext = {
   specialDayName?: string;
 };
 
+type UsedModel = 'openai' | 'fallback' | 'retrieval' | 'cache';
+
+type DhikrLean = Dhikr & { _id: Types.ObjectId };
+
+type Candidate = {
+  id: string;
+  nameTurkish: string;
+  virtue: string;
+  tags: string[];
+  categories: string[];
+  timeOfDay: string;
+  suitableFor: string[];
+};
+
+const SEMANTIC_FALLBACK_REASONING =
+  'Niyetine en yakın bulduğum zikirleri benzerliklerine göre sıraladım.';
+
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
   private openAiClient: OpenAI | null = null;
   private openAiClientResolved = false;
 
+  // Katalog embedding'lerinin bellek-içi cache'i. Her istekte 360×1536 float
+  // DB'den çekmemek için TTL ile yenilenir.
+  private catalogVectors: Array<{ id: string; vector: number[] }> = [];
+  private catalogVectorsLoadedAt = 0;
+
   constructor(
     private readonly configService: ConfigService,
+    private readonly embeddingService: EmbeddingService,
     @InjectModel(AiRecommendation.name)
     private readonly aiRecommendationModel: Model<AiRecommendationDocument>,
+    @InjectModel(RecommendationCache.name)
+    private readonly recommendationCacheModel: Model<RecommendationCacheDocument>,
     @InjectModel(Dhikr.name)
     private readonly dhikrModel: Model<DhikrDocument>,
     @InjectModel(DhikrLog.name)
@@ -56,7 +90,7 @@ export class AiService {
 
     const availableDhikrs = await this.dhikrModel
       .find({ isVerified: true, isActive: true })
-      .lean()
+      .lean<DhikrLean[]>()
       .exec();
 
     if (availableDhikrs.length === 0) {
@@ -65,8 +99,6 @@ export class AiService {
       );
     }
 
-    const recentDhikrIds = await this.getRecentDhikrIds(userId);
-
     const availableIdSet = new Set(
       availableDhikrs.map((item) => item._id.toString()),
     );
@@ -74,36 +106,57 @@ export class AiService {
       availableDhikrs.map((item) => [item._id.toString(), item]),
     );
 
-    const allDhikrs = availableDhikrs.map((item) => ({
-      id: item._id.toString(),
-      nameTurkish: item.nameTurkish,
-      virtue: item.virtue,
-      tags: item.tags,
-      categories: item.categories,
-      timeOfDay: item.timeOfDay,
-      suitableFor: item.suitableFor,
-    }));
+    // Cache anahtarı katalog sürümünü içerir; katalog değişince doğal invalidasyon.
+    const catalogVersion = this.computeCatalogVersion(availableDhikrs);
+    const cacheKey = this.computeCacheKey({
+      freeText,
+      timeContext,
+      maxRecommendations,
+      catalogVersion,
+    });
 
+    // 1) Cache lookup — isabetli ve maliyetsiz dönüş.
+    const cached = await this.recommendationCacheModel
+      .findOne({ cacheKey })
+      .lean()
+      .exec();
+    if (cached) {
+      const cachedIds = cached.recommendedDhikrIds
+        .map((id) => id.toString())
+        .filter((id) => availableIdSet.has(id));
+      if (cachedIds.length > 0) {
+        return this.finalizeRecommendation({
+          userId,
+          freeText,
+          timeContext,
+          reasoning: cached.reasoning || SEMANTIC_FALLBACK_REASONING,
+          safeRecommendedIds: cachedIds,
+          dhikrMapById,
+          usedModel: 'cache',
+        });
+      }
+    }
+
+    const recentDhikrIds = await this.getRecentDhikrIds(userId);
+
+    // 2) Stage A — aday getirimi (embedding veya keyword/zaman tabanlı).
+    const retrieval = await this.retrieveCandidates({
+      freeText,
+      timeContext,
+      recentDhikrIds,
+      availableDhikrs,
+      availableIdSet,
+      dhikrMapById,
+    });
+
+    // 3) Stage B — yalnız daralan aday kümesi üzerinde LLM rerank + off-topic.
     const openAiResult = await this.generateViaOpenAi({
       freeText,
       timeContext,
       recentDhikrIds,
-      candidateDhikrs: allDhikrs,
+      candidateDhikrs: retrieval.candidates,
       maxRecommendations,
     });
-
-    // OpenAI önerilerini yalnızca geçerli adaylarla, id bazında tekilleştirerek
-    // süz. Geçersiz/uydurma bir id düşerse gerekçesi de onunla birlikte düşer;
-    // böylece assistantNote ile recommendedDhikrIds asla ıraksamaz.
-    const rankedRecs = dedupeById(openAiResult?.recommendations ?? [])
-      .filter((rec) => availableIdSet.has(rec.id))
-      .slice(0, maxRecommendations);
-
-    let safeRecommendedIds = rankedRecs.map((rec) => rec.id);
-    let reasoning =
-      this.composeReasoning(openAiResult?.summary, rankedRecs, dhikrMapById) ||
-      'Niyet metnine uygun bir zikir listesi hazırladım.';
-    let usedModel: 'openai' | 'fallback' = 'openai';
 
     if (openAiResult?.offTopic) {
       return {
@@ -116,53 +169,77 @@ export class AiService {
       };
     }
 
-    if (safeRecommendedIds.length === 0) {
-      const fallback = fallbackRecommend({
-        freeText,
-        timeContext,
-        recentDhikrIds,
-        availableDhikrs: availableDhikrs.map((item) => ({
-          _id: item._id.toString(),
-          nameTurkish: item.nameTurkish,
-          tags: item.tags,
-          categories: item.categories,
-          timeOfDay: item.timeOfDay,
-          suitableFor: item.suitableFor,
-        })),
-        maxRecommendations,
-      });
+    // OpenAI önerilerini yalnızca geçerli adaylarla, id bazında tekilleştirerek
+    // süz. Geçersiz/uydurma bir id düşerse gerekçesi de onunla birlikte düşer;
+    // böylece assistantNote ile recommendedDhikrIds asla ıraksamaz.
+    const rankedRecs = dedupeById(openAiResult?.recommendations ?? [])
+      .filter((rec) => availableIdSet.has(rec.id))
+      .slice(0, maxRecommendations);
 
-      safeRecommendedIds = dedupeIds(fallback.recommendedIds)
+    let safeRecommendedIds = rankedRecs.map((rec) => rec.id);
+    let reasoning =
+      this.composeReasoning(openAiResult?.summary, rankedRecs, dhikrMapById) ||
+      'Niyet metnine uygun bir zikir listesi hazırladım.';
+    let usedModel: UsedModel = 'openai';
+
+    // LLM sonuç üretemezse Stage A getirim sırasını doğrudan kullan.
+    if (safeRecommendedIds.length === 0) {
+      safeRecommendedIds = retrieval.candidates
+        .map((candidate) => candidate.id)
         .filter((id) => availableIdSet.has(id))
         .slice(0, maxRecommendations);
-      reasoning = fallback.reasoning || reasoning;
-      usedModel = 'fallback';
+      reasoning = retrieval.reasoning || reasoning;
+      usedModel = retrieval.source === 'semantic' ? 'retrieval' : 'fallback';
     }
 
+    const result = await this.finalizeRecommendation({
+      userId,
+      freeText,
+      timeContext,
+      reasoning,
+      safeRecommendedIds,
+      dhikrMapById,
+      usedModel,
+    });
+
+    // 4) Cache write — off-topic olmayan başarılı sonuçlar.
+    if (safeRecommendedIds.length > 0) {
+      await this.writeCache(cacheKey, safeRecommendedIds, reasoning, usedModel);
+    }
+
+    return result;
+  }
+
+  /**
+   * Öneriyi kalıcılaştırır: aiRecommendation kaydı oluşturur, lastSeenAt
+   * günceller ve yanıt nesnesini kurar. Cache-hit ve normal akış paylaşır.
+   */
+  private async finalizeRecommendation(input: {
+    userId: Types.ObjectId;
+    freeText?: string;
+    timeContext: TimeContext;
+    reasoning: string;
+    safeRecommendedIds: string[];
+    dhikrMapById: Map<string, DhikrLean>;
+    usedModel: UsedModel;
+  }) {
     await this.userModel
-      .updateOne(
-        { _id: userId },
-        {
-          $set: {
-            lastSeenAt: new Date(),
-          },
-        },
-      )
+      .updateOne({ _id: input.userId }, { $set: { lastSeenAt: new Date() } })
       .exec();
 
     const created = await this.aiRecommendationModel.create({
-      userId,
-      freeText,
-      assistantNote: reasoning,
-      timeContext,
-      recommendedDhikrIds: safeRecommendedIds.map(
+      userId: input.userId,
+      freeText: input.freeText,
+      assistantNote: input.reasoning,
+      timeContext: input.timeContext,
+      recommendedDhikrIds: input.safeRecommendedIds.map(
         (id) => new Types.ObjectId(id),
       ),
     });
 
-    const recommendedItems = safeRecommendedIds
-      .map((id) => dhikrMapById.get(id))
-      .filter((item): item is (typeof availableDhikrs)[number] => Boolean(item))
+    const recommendedItems = input.safeRecommendedIds
+      .map((id) => input.dhikrMapById.get(id))
+      .filter((item): item is DhikrLean => Boolean(item))
       .map((item) => ({
         id: item._id.toString(),
         nameTurkish: item.nameTurkish,
@@ -176,11 +253,180 @@ export class AiService {
 
     return {
       recommendationId: created._id.toString(),
-      recommendedIds: safeRecommendedIds,
-      reasoning,
+      recommendedIds: input.safeRecommendedIds,
+      reasoning: input.reasoning,
       items: recommendedItems,
-      usedModel,
+      usedModel: input.usedModel,
     };
+  }
+
+  /**
+   * Stage A — niyet metnine en uygun ~K adayı getirir. Önce embedding
+   * (anlamsal) dener; embedding/sorgu yoksa keyword + zaman tabanlı sıraya düşer.
+   */
+  private async retrieveCandidates(input: {
+    freeText?: string;
+    timeContext: TimeContext;
+    recentDhikrIds: string[];
+    availableDhikrs: DhikrLean[];
+    availableIdSet: Set<string>;
+    dhikrMapById: Map<string, DhikrLean>;
+  }): Promise<{
+    candidates: Candidate[];
+    source: 'semantic' | 'keyword';
+    reasoning: string;
+  }> {
+    const topK = this.readNumberConfig('AI_RETRIEVAL_TOP_K', 20);
+
+    if (input.freeText) {
+      const queryVector = await this.embeddingService.embed(input.freeText);
+      if (queryVector) {
+        const vectors = await this.getCatalogVectors();
+        const scored = vectors
+          .filter((entry) => input.availableIdSet.has(entry.id))
+          .map((entry) => ({
+            id: entry.id,
+            score: cosineSimilarity(queryVector, entry.vector),
+          }))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, topK);
+
+        if (scored.length > 0) {
+          const candidates = scored
+            .map((entry) => input.dhikrMapById.get(entry.id))
+            .filter((item): item is DhikrLean => Boolean(item))
+            .map(toCandidate);
+
+          return {
+            candidates,
+            source: 'semantic',
+            reasoning: SEMANTIC_FALLBACK_REASONING,
+          };
+        }
+      }
+    }
+
+    // Keyword + zaman tabanlı getirim (embedding yok / sorgu yok / vektör yok).
+    const fallback = fallbackRecommend({
+      freeText: input.freeText,
+      timeContext: input.timeContext,
+      recentDhikrIds: input.recentDhikrIds,
+      availableDhikrs: input.availableDhikrs.map((item) => ({
+        _id: item._id.toString(),
+        nameTurkish: item.nameTurkish,
+        tags: item.tags,
+        categories: item.categories,
+        timeOfDay: item.timeOfDay,
+        suitableFor: item.suitableFor,
+      })),
+      maxRecommendations: topK,
+    });
+
+    const candidates = dedupeIds(fallback.recommendedIds)
+      .filter((id) => input.availableIdSet.has(id))
+      .map((id) => input.dhikrMapById.get(id))
+      .filter((item): item is DhikrLean => Boolean(item))
+      .map(toCandidate);
+
+    return { candidates, source: 'keyword', reasoning: fallback.reasoning };
+  }
+
+  /** Katalog embedding'lerini bellek-içi cache'ten (TTL'li) döndürür. */
+  private async getCatalogVectors() {
+    const ttl = this.readNumberConfig('AI_CATALOG_CACHE_TTL_MS', 600_000);
+    const isFresh = Date.now() - this.catalogVectorsLoadedAt < ttl;
+    if (this.catalogVectors.length > 0 && isFresh) {
+      return this.catalogVectors;
+    }
+
+    const docs = await this.dhikrModel
+      .find({ isVerified: true, isActive: true })
+      .select('_id embedding')
+      .lean<Array<{ _id: Types.ObjectId; embedding?: number[] }>>()
+      .exec();
+
+    this.catalogVectors = docs
+      .filter(
+        (doc): doc is { _id: Types.ObjectId; embedding: number[] } =>
+          Array.isArray(doc.embedding) && doc.embedding.length > 0,
+      )
+      .map((doc) => ({ id: doc._id.toString(), vector: doc.embedding }));
+    this.catalogVectorsLoadedAt = Date.now();
+
+    return this.catalogVectors;
+  }
+
+  private computeCatalogVersion(dhikrs: DhikrLean[]): string {
+    let maxUpdated = 0;
+    for (const dhikr of dhikrs) {
+      const updated = dhikr.updatedAt ? new Date(dhikr.updatedAt).getTime() : 0;
+      if (updated > maxUpdated) {
+        maxUpdated = updated;
+      }
+    }
+    return `${dhikrs.length}:${maxUpdated}`;
+  }
+
+  private computeCacheKey(input: {
+    freeText?: string;
+    timeContext: TimeContext;
+    maxRecommendations: number;
+    catalogVersion: string;
+  }): string {
+    const normalizedFreeText = normalizeText(input.freeText ?? '');
+    const timeBucket = this.resolveTimeBucket(input.timeContext);
+    const raw = [
+      normalizedFreeText,
+      timeBucket,
+      String(input.maxRecommendations),
+      input.catalogVersion,
+    ].join('|');
+
+    return createHash('sha256').update(raw).digest('hex');
+  }
+
+  private resolveTimeBucket(timeContext: TimeContext): string {
+    if (timeContext.isSpecialDay) {
+      return `special:${normalizeText(timeContext.specialDayName ?? 'ozel')}`;
+    }
+
+    const hour = timeContext.hour;
+    if (hour >= 5 && hour < 12) {
+      return 'morning';
+    }
+    if (hour >= 12 && hour < 19) {
+      return 'evening';
+    }
+    return 'night';
+  }
+
+  private async writeCache(
+    cacheKey: string,
+    recommendedIds: string[],
+    reasoning: string,
+    usedModel: UsedModel,
+  ) {
+    try {
+      await this.recommendationCacheModel.updateOne(
+        { cacheKey },
+        {
+          $set: {
+            recommendedDhikrIds: recommendedIds.map(
+              (id) => new Types.ObjectId(id),
+            ),
+            reasoning,
+            usedModel,
+          },
+          $setOnInsert: { cacheKey, createdAt: new Date() },
+        },
+        { upsert: true },
+      );
+    } catch (error) {
+      // Cache yazımı best-effort; hata öneri yanıtını bozmamalı.
+      this.logger.warn(
+        `Öneri cache'i yazılamadı: ${this.describeError(error)}`,
+      );
+    }
   }
 
   async listRecommendations(query: QueryAiRecommendationsDto) {
@@ -501,6 +747,34 @@ function toDateString(date: Date) {
 
 function dedupeIds(ids: string[]) {
   return [...new Set(ids)];
+}
+
+function toCandidate(item: DhikrLean): Candidate {
+  return {
+    id: item._id.toString(),
+    nameTurkish: item.nameTurkish,
+    virtue: item.virtue,
+    tags: item.tags,
+    categories: item.categories,
+    timeOfDay: item.timeOfDay,
+    suitableFor: item.suitableFor,
+  };
+}
+
+// Cache anahtarı ve fallback eşleşmesi için Türkçe-duyarlı normalleştirme:
+// küçük harf + aksan sadeleştirme + noktalama temizliği.
+function normalizeText(value: string): string {
+  return value
+    .toLocaleLowerCase('tr-TR')
+    .replace(/ı/g, 'i')
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function stripObjectIds(text: string) {

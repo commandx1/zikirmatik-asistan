@@ -51,6 +51,23 @@ export class Dhikr {
   @Prop({ type: String })
   audioUrl?: string;
 
+  // Anlamsal arama (AI Rehber retrieval aşaması) için önceden hesaplanmış
+  // embedding vektörü. select:false → normal sorgularda taşınmaz, yalnız
+  // AI servisi açıkça ister. Bkz. EmbeddingService.
+  @Prop({ type: [Number], default: undefined, select: false })
+  embedding?: number[];
+
+  // Embedding'in türetildiği kaynak metnin hash'i; metin değişmediyse
+  // güncelleme sırasında yeniden embed etmemek için kullanılır.
+  @Prop({ type: String })
+  embeddingSourceHash?: string;
+
+  @Prop({ type: String })
+  embeddingModel?: string;
+
+  @Prop({ type: Date })
+  embeddingUpdatedAt?: Date;
+
   readonly createdAt!: Date;
   readonly updatedAt!: Date;
 }

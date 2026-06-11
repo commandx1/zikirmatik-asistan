@@ -6,11 +6,17 @@ describe('DhikrsService', () => {
     findOne: jest.fn(),
   };
 
+  const embeddingService = {
+    buildSourceText: jest.fn(),
+    sourceHash: jest.fn(),
+    embed: jest.fn(),
+  };
+
   let service: DhikrsService;
 
   beforeEach(() => {
     dhikrModel.findOne.mockReset();
-    service = new DhikrsService(dhikrModel as never);
+    service = new DhikrsService(dhikrModel as never, embeddingService as never);
   });
 
   it('finds verified active dhikr by transliteration case-insensitively', async () => {

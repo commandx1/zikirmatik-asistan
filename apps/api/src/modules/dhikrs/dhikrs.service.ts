@@ -1,19 +1,34 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
+import { EmbeddingService } from '../embedding/embedding.service';
 import { CreateDhikrDto } from './dto/create-dhikr.dto';
 import { QueryDhikrsDto } from './dto/query-dhikrs.dto';
 import { UpdateDhikrDto } from './dto/update-dhikr.dto';
 import { Dhikr, type DhikrDocument } from './schemas/dhikr.schema';
 
+type EmbeddingFields = {
+  embedding: number[];
+  embeddingSourceHash: string;
+  embeddingModel: string;
+  embeddingUpdatedAt: Date;
+};
+
 @Injectable()
 export class DhikrsService {
+  private readonly logger = new Logger(DhikrsService.name);
+
   constructor(
     @InjectModel(Dhikr.name) private readonly dhikrModel: Model<DhikrDocument>,
+    private readonly embeddingService: EmbeddingService,
   ) {}
 
   async create(payload: CreateDhikrDto) {
-    const created = await this.dhikrModel.create(payload);
+    const embeddingFields = await this.buildEmbeddingFields(payload);
+    const created = await this.dhikrModel.create({
+      ...payload,
+      ...(embeddingFields ?? {}),
+    });
     return created.toObject();
   }
 
@@ -56,9 +71,10 @@ export class DhikrsService {
   }
 
   async update(id: string, payload: UpdateDhikrDto) {
+    const objectId = this.asObjectId(id);
     const dhikr = await this.dhikrModel
       .findByIdAndUpdate(
-        this.asObjectId(id),
+        objectId,
         { $set: payload },
         { returnDocument: 'after' },
       )
@@ -69,7 +85,46 @@ export class DhikrsService {
       throw new NotFoundException('Güncellenecek zikir bulunamadı.');
     }
 
+    // Embedding kaynağı (nameTurkish/suitableFor/tags/categories/virtue)
+    // değiştiyse vektörü yenile. Hash aynıysa gereksiz embedding maliyeti yok.
+    const sourceText = this.embeddingService.buildSourceText(dhikr);
+    const hash = this.embeddingService.sourceHash(sourceText);
+    if (hash !== dhikr.embeddingSourceHash) {
+      const embeddingFields = await this.buildEmbeddingFields(dhikr);
+      if (embeddingFields) {
+        await this.dhikrModel
+          .updateOne({ _id: objectId }, { $set: embeddingFields })
+          .exec();
+        return { ...dhikr, ...embeddingFields };
+      }
+    }
+
     return dhikr;
+  }
+
+  /**
+   * Bir zikir kaydı için embedding alanlarını üretir. OpenAI erişilemezse
+   * null döner ve CRUD embedding'siz devam eder (akış bloklanmaz).
+   */
+  private async buildEmbeddingFields(
+    source: Parameters<EmbeddingService['buildSourceText']>[0],
+  ): Promise<EmbeddingFields | null> {
+    const sourceText = this.embeddingService.buildSourceText(source);
+    const embedding = await this.embeddingService.embed(sourceText);
+
+    if (!embedding) {
+      this.logger.warn(
+        'Zikir için embedding üretilemedi; embedding alanları boş bırakıldı.',
+      );
+      return null;
+    }
+
+    return {
+      embedding,
+      embeddingSourceHash: this.embeddingService.sourceHash(sourceText),
+      embeddingModel: this.embeddingService.model,
+      embeddingUpdatedAt: new Date(),
+    };
   }
 
   async remove(id: string) {
