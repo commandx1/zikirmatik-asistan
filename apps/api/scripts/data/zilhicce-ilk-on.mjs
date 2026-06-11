@@ -14,9 +14,9 @@ export const zilhicceIlkOn = {
       meaning:
         "Allah'tan başka ilah yoktur, O tektir, ortağı yoktur. Mülk O'nundur, hamd O'nadır. Diriltir ve öldürür; hayır O'nun elindedir.",
       virtue:
-        'Tevhid şuurunu güçlendirir, kurban ve teslimiyet bilincini derinleştirir.',
+        "Düzenli okuyan kişilerde kibir ve aşırı kontrol ihtiyacının zamanla yumuşadığı, yerine daha sakin ve teslimiyetçi bir bakış açısının yerleştiği gözlemlenir. Gelecek kaygısı ve çaresizlik hissine karşı güçlü bir manevi denge sağlar; iyinin kaynağının insan çabasının ötesinde olduğunu bilinçaltına işleyerek umudu canlı tutar. Hayat ve ölüm üzerindeki ilahi tasarrufu hatırlattığı için insanı dünya bağımlılığından hafifçe koparır, anlık nimetlere şükürle yöneltir. Şeytan vesvesesine ve nefsani dürtülere karşı günlük bir manevi kalkan işlevi görür; rivayetlerde sabah yüz kez okuyanın o gün vesveseden korunduğu bildirilmiştir. Aynı rivayetlerde yüz hasene kazandırdığı, yüz günahın silinmesine vesile olduğu ve sevap bakımından on köle azat etmeye denk tutulduğu aktarılır. Zilhicce günlerinde okunması özellikle tavsiye edilmiştir; zira bu on günde tekbir, tehlil ve tahmid en faziletli ameller arasında sayılmış, bu zikir ise üçünü birden taşıyan nadir formüllerden biri olarak öne çıkmıştır. İman şuurunu tazelemek, zihinsel dağınıklığı azaltmak ve kalbi tek bir odağa toplamak isteyenler için günlük pratikte sade ama etkili bir araç olarak değer taşır.",
       source: 'Zilhicce fazileti rivayetleri',
-      tags: ['zilhicce', 'tevhid', 'bes-hediye'],
+      tags: ['zilhicce', 'tevhid', 'bes-hediye', 'teslimiyet', 'kibirden kurtulmak', 'manevi huzur'],
       categories: ['zilhicce', 'ozel-gun'],
       timeOfDay: 'any',
       recommendedCount: 100,

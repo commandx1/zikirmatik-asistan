@@ -128,9 +128,9 @@ export const rizikMulkTertipleri = {
         'Allahım, kederden, acizlikten, tembellikten, cimrilikten, borcun baskısından ve insanların kahrından sana sığınırım.',
       virtue:
         'Sabah-akşam okunarak borç ve kaygı yükünü hafifletmeye, psikolojik direnci artırmaya niyet edilir.',
-      source: 'Nebevi dua rivayetleri (Ebu Ümâme hadisi)',
+      source: 'Buhârî, Deavât',
       tags: ['rizik', 'borc', 'kaygi', 'sabir'],
-      categories: ['genel', 'dua', 'rizik-bereket'],
+      categories: ['genel', 'dua', 'rizik-bereket', 'gelecek-kaygisi'],
       timeOfDay: 'any',
       recommendedCount: 2,
       suitableFor: ['sabah-akşam virdi', 'borç baskısı', 'psikolojik direnç'],

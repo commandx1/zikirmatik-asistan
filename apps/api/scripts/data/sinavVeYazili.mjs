@@ -210,6 +210,30 @@ export const sinavVeYazili = {
         'analitik kurgu',
       ],
     },
+    {
+      key: 'sinav-yuktel-hikmete',
+      nameArabic:
+        'يُؤْتِي الْحِكْمَةَ مَن يَشَاءُ وَمَن يُؤْتَ الْحِكْمَةَ فَقَدْ أُوتِيَ خَيْرًا كَثِيرًا',
+      nameTurkish: "Hikmet Ayeti",
+      transliteration:
+        "Yü'til hikmete men yeşâ'. Ve men yü'tel hikmete fe kad ûtiye hayran kesîrâ.",
+      meaning:
+        "Allah hikmeti dilediğine verir. Kime hikmet verilmişse ona gerçekten büyük bir hayır verilmiştir.",
+      virtue:
+        "Bu ayet, bilginin ötesinde bir kavrayışı — hikmeti — Allah'ın doğrudan bağışladığı bir lütuf olarak tanımlar. Sınav hazırlığında bilgi ezberlemek ile o bilgiyi yerli yerinde, doğru şekilde kullanabilmek farklı şeylerdir; ikincisi hikmete daha yakındır. Bu ayeti ilim meclisine başlarken veya sınav öncesinde okumak, öğrenilen bilgilerin zihinsel bağlantılar kurabilecek, sorulara yerinde cevap verebilecek bir kavrayışa dönüşmesi niyetini taşır. Klasik İslam geleneğinde alimler bir derse başlamadan önce bu tür ayetleri okurdu — bilginin sınavında değil, hikmetten nasiplenmede ölçünün Allah'ta olduğunu hatırlamak için.",
+      source: "Bakara Suresi, 269. Ayet",
+      tags: ['sinav', 'hikmet', 'ilim', 'kavrayis', 'kuran', 'egitim'],
+      categories: ['genel', 'egitim', 'sinav'],
+      timeOfDay: 'any',
+      recommendedCount: 3,
+      suitableFor: [
+        'sınav öncesi',
+        'ders çalışmaya başlarken',
+        'kavrayış güçlendirme',
+        'bilgiyi doğru kullanma',
+        'ilim meclisi niyeti',
+      ],
+    },
   ],
   specialDays: [],
 };

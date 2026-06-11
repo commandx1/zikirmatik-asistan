@@ -38,13 +38,20 @@ export const koruyucu = {
       meaning:
         "Allah'ın adıyla; O'nun ismiyle yerde ve gökte hiçbir şey zarar veremez. O her şeyi işitendir, bilendir.",
       virtue:
-        'Sabah-akşam üçer defa okunmasıyla ani bela, musibet, nazar ve manevi zararlara karşı korunma niyeti taşır.',
-      source: 'İbn Mâce, Dua 11; Ebû Dâvûd, Edeb 102-103; Tirmizî, Daavât 40',
-      tags: ['korunma', 'nazar', 'bela', 'dua'],
-      categories: ['genel', 'korunma', 'dua'],
+        `Sabah-akşam üçer defa okuyan kişinin, o gün ya da gece ansızın gelebilecek kaza, bela, zehirlenme ve ani rahatsızlıklara karşı Allah'ın koruması altına girdiği bildirilmiştir. "Lâ yedurru" ifadesi mutlak bir olumsuzlama taşır; yerde ve gökte var olan hiçbir tehlikenin Allah'ın ismi yanında etki edemeyeceğini bildiren bu kesinlik, duayı hem manevi hem psikolojik bir zırha dönüştürür. "Ma'asmihî" (O'nun ismiyle birlikte olan) kaydı, duanın yalnızca telaffuz değil, kalbi hazır bir niyetle okunmasını şart koştuğunu ima eder. Sabah vakti okunması günü, akşam vakti okunması geceyi kapsar; böylece gün boyunca bedenî ve manevi hasara karşı sürekli bir kalkan oluşur. Ani hastalık, kaza veya zehirlenme endişesi taşıyan kişilerin günlük rutinine kolayca yerleştirilebilecek sade ama kapsamlı bir koruma duasıdır.`,
+      source:
+        'Ebû Dâvûd, Edeb, 110; İbn Mâce, Duâ, 16; Tirmizî, Deavât, 13',
+      tags: ['korunma', 'nazar', 'bela', 'dua', 'şifa', 'ani-rahatsızlık', 'kaza'],
+      categories: ['genel', 'korunma', 'dua', 'hastalık'],
       timeOfDay: 'any',
       recommendedCount: 3,
-      suitableFor: ['sabah-akşam', 'ani belalara karşı', 'nazar korunması'],
+      suitableFor: [
+        'sabah-akşam',
+        'ani belalara karşı',
+        'nazar korunması',
+        'ani rahatsızlık ve kaza',
+        'zehirlenme korunması',
+      ],
     },
     {
       key: 'korunma-kelimatillahit-tamme',
@@ -107,10 +114,10 @@ export const koruyucu = {
       meaning:
         'Senden başka hiçbir ilâh yoktur. Seni bütün noksan sıfatlardan tenzih ederim. Gerçekten ben zâlimlerden (kendi nefsine haksızlık edenlerden) oldum.',
       virtue:
-        'Ağır manevi hava, içsel tıkanıklık ve beddua etkisi korkusunda sığınılacak güçlü bir yakarıştır. Ağır travmalar, kederler, çaresizlikler ve her türlü psikolojik darlıktan kurtulmaya vesile olur. Kişinin kendi sınırlarını kabul edip mutlak güce sığınmasını sağlayarak bilişsel yükü hafifletir.',
-      source: 'Enbiyâ Suresi, 87. Ayet / Tirmizî; İbn Sünnî ',
-      tags: ['korunma', 'yunus-duasi', 'vesvese', 'sıkıntı'],
-      categories: ['genel', 'korunma', 'dua'],
+        'Ağır manevi hava, içsel tıkanıklık ve beddua etkisi korkusunda sığınılacak güçlü bir yakarıştır. Ağır travmalar, kederler, çaresizlikler ve her türlü psikolojik darlıktan kurtulmaya vesile olur. Kişinin kendi sınırlarını kabul edip mutlak güce sığınmasını sağlayarak bilişsel yükü hafifletir. Öfke ve hiddet anlarında "innî küntü minez-zâlimîn" (ben kendine zulmedenlerdenim) ifadesi, kişiyi öfkenin sahibi olmaktan çıkarıp kendi hatasını fark eden bir konuma taşır; bu dönüşüm gazabın yoğunluğunu kırar.',
+      source: 'Enbiyâ Suresi, 87. Ayet; Tirmizî; İbn Sünni',
+      tags: ['korunma', 'yunus-duasi', 'vesvese', 'sıkıntı', 'öfke', 'sakinleşme', 'darlık'],
+      categories: ['genel', 'korunma', 'nefis-terbiyesi', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 41,
       suitableFor: [
@@ -118,6 +125,9 @@ export const koruyucu = {
         'vesvese',
         'manevi arınma',
         'darlık anları',
+        'öfke ve hiddet',
+        'çaresizlik ve tıkanıklık',
+        'travma ve keder',
       ],
     },
     {

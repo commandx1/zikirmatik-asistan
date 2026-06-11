@@ -1,4 +1,9 @@
 import { dogalAfetlerdenKorunma } from './dogalAfetlerdenKorunma.mjs';
+import { hastalıkVeŞifa } from './hastalıkVeŞifa.mjs';
+import { hasettenKorunma } from './hasettenKorunma.mjs';
+import { kibirdenKorunma } from './kibirdenKorunma.mjs';
+import { evlilikHuzur } from './evlilikHuzur.mjs';
+import { ofkeKontrol } from './ofkeKontrol.mjs';
 import { esmaRizikBereket, esmaulHusnaTemel } from './esmaulHusnaTemel.mjs';
 import { hayirliEv } from './hayirliEv.mjs';
 import { hayirliEvlatZikirleri } from './hayirliEvlatZikirleri.mjs';
@@ -27,4 +32,9 @@ export const SOURCE_DATASETS = [
   kaygiKriz,
   isHayatiKariyer,
   hayirliEv,
+  kibirdenKorunma,
+  hasettenKorunma,
+  evlilikHuzur,
+  ofkeKontrol,
+  hastalıkVeŞifa,
 ];
