@@ -1,5 +1,12 @@
+import { sabahZikirleri } from './sabahZikirleri.mjs';
+import { aksamZikirleri } from './aksamZikirleri.mjs';
 import { dogalAfetlerdenKorunma } from './dogalAfetlerdenKorunma.mjs';
 import { hastalıkVeŞifa } from './hastalıkVeŞifa.mjs';
+import { cenazeVeTaziye } from './cenazeVeTaziye.mjs';
+import { tovbeIstigfar } from './tovbeIstigfar.mjs';
+import { hacUmre } from './hacUmre.mjs';
+import { yemekDualari } from './yemekDualari.mjs';
+import { yolculukDualari } from './yolculukDualari.mjs';
 import { hasettenKorunma } from './hasettenKorunma.mjs';
 import { kibirdenKorunma } from './kibirdenKorunma.mjs';
 import { evlilikHuzur } from './evlilikHuzur.mjs';
@@ -37,4 +44,11 @@ export const SOURCE_DATASETS = [
   evlilikHuzur,
   ofkeKontrol,
   hastalıkVeŞifa,
+  cenazeVeTaziye,
+  tovbeIstigfar,
+  hacUmre,
+  yemekDualari,
+  yolculukDualari,
+  sabahZikirleri,
+  aksamZikirleri,
 ];

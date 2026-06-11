@@ -29,7 +29,8 @@
       "Bash(echo \"tail PID: $!\")",
       "Read(//tmp/**)",
       "Bash(adb shell *)",
-      "Bash(adb install *)"
+      "Bash(adb install *)",
+      "Bash(pdftotext *)"
     ]
   }
 }
