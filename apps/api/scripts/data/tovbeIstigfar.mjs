@@ -121,4 +121,5 @@ export const tovbeIstigfar = {
       ],
     },
   ],
+  specialDays: [],
 };

@@ -145,4 +145,5 @@ export const sabahZikirleri = {
       suitableFor: ['sabah namazı sonrası', 'günlük sabah duası', 'talebe için', 'rızık için'],
     },
   ],
+  specialDays: [],
 };

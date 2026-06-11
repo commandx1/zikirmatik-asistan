@@ -151,4 +151,5 @@ export const uyku_uyanis = {
       suitableFor: ['yatmadan önce', 'gece istiğfarı', 'günahlara kefaret', 'gece virdi'],
     },
   ],
+  specialDays: [],
 };
