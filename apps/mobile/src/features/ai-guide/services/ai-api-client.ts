@@ -35,7 +35,7 @@ export type CreateAiRecommendationResponse =
         source?: string;
         recommendedCount?: number;
       }>;
-      usedModel: "openai" | "fallback";
+      usedModel: "openai" | "fallback" | "retrieval" | "cache";
     };
 
 export type BackendAiRecommendation = {

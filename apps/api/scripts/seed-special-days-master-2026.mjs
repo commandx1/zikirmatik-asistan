@@ -82,7 +82,7 @@ const dhikrItems = Array.from(canonicalByKey.values());
 const specialDayByComposite = new Map();
 
 for (const dataset of SOURCE_DATASETS) {
-  for (const item of dataset.specialDays) {
+  for (const item of dataset.specialDays || []) {
     const remappedDhikrKeys = uniq(
       (item.dhikrKeys ?? []).map((key) => keyRemap.get(key) ?? key),
     );

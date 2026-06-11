@@ -1,5 +1,7 @@
+/* global console, process */
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { buildEmbeddingFields } from './embedding.mjs';
 
 const DEFAULT_NOTIFY_BEFORE_MINUTES = [1440, 60];
 
@@ -31,6 +33,24 @@ export async function runSpecialDaySeed(dataset) {
       const { key, ...payload } = item;
       const now = new Date();
 
+      const tags = uniq(payload.tags ?? []);
+      const categories = uniq(payload.categories ?? []);
+      const suitableFor = uniq(payload.suitableFor ?? []);
+
+      // Mevcut hash'i oku; kaynak metin değişmediyse yeniden embed etme.
+      const existing = await dhikrsCollection.findOne(
+        {
+          nameTurkish: payload.nameTurkish,
+          transliteration: payload.transliteration,
+        },
+        { projection: { embeddingSourceHash: 1 } },
+      );
+
+      const embeddingFields = await buildEmbeddingFields(
+        { ...payload, tags, categories, suitableFor },
+        existing?.embeddingSourceHash,
+      );
+
       const result = await dhikrsCollection.updateOne(
         {
           nameTurkish: payload.nameTurkish,
@@ -39,12 +59,13 @@ export async function runSpecialDaySeed(dataset) {
         {
           $set: {
             ...payload,
-            tags: uniq(payload.tags ?? []),
-            categories: uniq(payload.categories ?? []),
-            suitableFor: uniq(payload.suitableFor ?? []),
+            tags,
+            categories,
+            suitableFor,
             isVerified: true,
             isActive: true,
             updatedAt: now,
+            ...(embeddingFields ?? {}),
           },
           $setOnInsert: {
             createdAt: now,
