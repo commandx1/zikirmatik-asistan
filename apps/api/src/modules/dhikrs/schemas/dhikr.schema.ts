@@ -5,6 +5,12 @@ export type DhikrDocument = HydratedDocument<Dhikr>;
 
 @Schema({ collection: 'dhikrs', timestamps: true, versionKey: false })
 export class Dhikr {
+  // Seed verisindeki stabil tanımlayıcı. Seed'ler bu key üzerinden upsert
+  // eder; nameTurkish/transliteration düzenlense bile kayıt eşleşmesi bozulmaz.
+  // Elle/admin üzerinden eklenen kayıtlarda bulunmayabilir (sparse).
+  @Prop({ type: String, trim: true })
+  key?: string;
+
   @Prop({ type: String, required: true, trim: true })
   nameArabic!: string;
 
@@ -74,6 +80,7 @@ export class Dhikr {
 
 export const DhikrSchema = SchemaFactory.createForClass(Dhikr);
 
+DhikrSchema.index({ key: 1 }, { unique: true, sparse: true });
 DhikrSchema.index({ tags: 1 });
 DhikrSchema.index({ categories: 1 });
 DhikrSchema.index({ isVerified: 1, isActive: 1 });
