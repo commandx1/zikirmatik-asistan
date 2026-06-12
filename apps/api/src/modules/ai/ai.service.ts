@@ -569,7 +569,11 @@ export class AiService {
       return null;
     }
     const model =
-      this.configService.get<string>('OPENAI_MODEL') || 'gpt-4o-mini';
+      this.configService.get<string>('OPENAI_MODEL') || 'gpt-5.4-mini';
+    // GPT-5 / o-serisi reasoning modelleri chat.completions'ta custom
+    // temperature'ı reddeder (yalnızca varsayılan kabul edilir). Bu yüzden
+    // temperature'ı yalnızca destekleyen modellerde gönderiyoruz.
+    const supportsTemperature = !/^(gpt-5|o\d)/i.test(model);
 
     const systemInstruction = [
       'Sen bir İslami zikir öneri asistanısın.',
@@ -602,10 +606,13 @@ export class AiService {
     try {
       const response = await client.chat.completions.create({
         model,
-        // Düşük temperature: öneri görevi yaratıcılık değil isabet ister.
-        // Varsayılan (~1.0) aynı niyet için her çağrıda farklı/alakasız zikir
-        // seçilmesine yol açıyordu. Env ile ayarlanabilir (varsayılan 0.2).
-        temperature: this.readNumberConfig('OPENAI_TEMPERATURE', 0.2),
+        // Düşük temperature öneri görevinde isabet için tercih edilir (varsayılan
+        // ~1.0 aynı niyet için farklı/alakasız seçimlere yol açıyordu). Reasoning
+        // modelleri custom değeri reddettiğinden yalnızca destekleyen modellerde
+        // gönderiyoruz; env ile ayarlanabilir (varsayılan 0.2).
+        ...(supportsTemperature
+          ? { temperature: this.readNumberConfig('OPENAI_TEMPERATURE', 0.2) }
+          : {}),
         response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: systemInstruction },

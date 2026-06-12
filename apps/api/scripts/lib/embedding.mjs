@@ -1,7 +1,7 @@
 /* global console, process */
 import { createHash } from 'node:crypto';
 
-export const DEFAULT_EMBEDDING_MODEL = 'text-embedding-3-small';
+export const DEFAULT_EMBEDDING_MODEL = 'text-embedding-3-large';
 
 export function embeddingModel() {
   return process.env.OPENAI_EMBEDDING_MODEL?.trim() || DEFAULT_EMBEDDING_MODEL;

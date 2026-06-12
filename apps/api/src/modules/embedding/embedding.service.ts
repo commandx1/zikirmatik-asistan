@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 
-export const DEFAULT_EMBEDDING_MODEL = 'text-embedding-3-small';
+export const DEFAULT_EMBEDDING_MODEL = 'text-embedding-3-large';
 
 type EmbeddingSource = {
   nameTurkish?: string;
