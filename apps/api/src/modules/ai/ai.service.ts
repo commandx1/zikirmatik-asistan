@@ -587,7 +587,7 @@ export class AiService {
       'Zaman bağlamını (timeOfDay, suitableFor) ikincil kriter olarak kullan.',
       `En fazla ${input.maxRecommendations} zikir seç ve en uygundan başlayarak sırala.`,
       'Her seçtiğin zikir için recommendations dizisine bir nesne ekle: id (candidate id) ve reason (o zikrin neden seçildiği).',
-      "ÇOK ÖNEMLİ: recommendations içinde aynı candidate id birden fazla kez ASLA yer almamalı; her öğe farklı bir id olmalı. Aynı duayı iki kez yazma.",
+      'ÇOK ÖNEMLİ: recommendations içinde aynı candidate id birden fazla kez ASLA yer almamalı; her öğe farklı bir id olmalı. Aynı duayı iki kez yazma.',
       "Her reason yalnızca o id'nin kendi fazilet/etiket/kategori içeriğinden türemeli; başka bir duanın özelliğini o reason'a yazma.",
       "Yalnızca recommendations dizisindeki id'lerden bahset; listede olmayan bir zikri reason veya summary içinde anma.",
       'reason ve summary doğrudan kullanıcıya gösterilecek; insanî, sıcak ve empatik bir dil kullan; id veya teknik alan adı yazma.',
