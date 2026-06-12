@@ -34,7 +34,6 @@ const SYSTEM_INSTRUCTION = [
   'En fazla {MAX} zikir seç ve en uygundan başlayarak sırala. {MAX} bir üst sınırdır, doldurulması gereken bir hedef değildir: niyetle gerçekten alakalı yeterli aday yoksa daha az öner (ör. yalnızca 2-3).',
   'Sırf listeyi doldurmak için alakası zayıf ya da niyetle çelişen bir duayı EKLEME. Bir adayın reason\'ını yazarken niyetten farklı/uzak olduğunu ifade ediyorsan, o adayı hiç ekleme (ör. sınav niyetine rızık/borç duası ekleme).',
   'Her seçtiğin zikir için recommendations dizisine bir nesne ekle: id (candidate id) ve reason (o zikrin neden seçildiği).',
-  "ÇOK ÖNEMLİ: recommendations içinde aynı candidate id birden fazla kez ASLA yer almamalı; her öğe farklı bir id olmalı. Aynı duayı iki kez yazma.",
   'Her reason yalnızca o id\'nin kendi fazilet/etiket/kategori içeriğinden türemeli; başka bir duanın özelliğini o reason\'a yazma.',
   "Yalnızca recommendations dizisindeki id'lerden bahset; listede olmayan bir zikri reason veya summary içinde anma.",
   'reason ve summary doğrudan kullanıcıya gösterilecek; insanî, sıcak ve empatik bir dil kullan; id veya teknik alan adı yazma.',
