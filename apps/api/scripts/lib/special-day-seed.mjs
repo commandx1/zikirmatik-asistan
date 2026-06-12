@@ -37,65 +37,62 @@ export async function runSpecialDaySeed(dataset) {
       const categories = uniq(payload.categories ?? []);
       const suitableFor = uniq(payload.suitableFor ?? []);
 
-      // Mevcut hash'i oku; kaynak metin değişmediyse yeniden embed etme.
-      const existing = await dhikrsCollection.findOne(
-        {
-          nameTurkish: payload.nameTurkish,
-          transliteration: payload.transliteration,
-        },
-        { projection: { embeddingSourceHash: 1 } },
-      );
+      if (!key) {
+        throw new Error(
+          `Dhikr key tanımsız: ${payload.nameTurkish}. Upsert için key zorunlu.`,
+        );
+      }
 
+      // Mevcut kaydı bul: önce stabil `key` ile. Bulunamazsa, henüz key'i
+      // olmayan eski kayıtlar için legacy eşleşme (nameTurkish + transliteration)
+      // ile dene; böylece ilk seed'de kopya açmadan eski kayda key backfill edilir.
+      let existing = await dhikrsCollection.findOne(
+        { key },
+        { projection: { _id: 1, embeddingSourceHash: 1 } },
+      );
+      if (!existing) {
+        existing = await dhikrsCollection.findOne(
+          {
+            nameTurkish: payload.nameTurkish,
+            transliteration: payload.transliteration,
+          },
+          { projection: { _id: 1, embeddingSourceHash: 1 } },
+        );
+      }
+
+      // Kaynak metin değişmediyse buildEmbeddingFields null döner (yeniden embed yok).
       const embeddingFields = await buildEmbeddingFields(
         { ...payload, tags, categories, suitableFor },
         existing?.embeddingSourceHash,
       );
 
-      const result = await dhikrsCollection.updateOne(
-        {
-          nameTurkish: payload.nameTurkish,
-          transliteration: payload.transliteration,
-        },
-        {
-          $set: {
-            ...payload,
-            tags,
-            categories,
-            suitableFor,
-            isVerified: true,
-            isActive: true,
-            updatedAt: now,
-            ...(embeddingFields ?? {}),
-          },
-          $setOnInsert: {
-            createdAt: now,
-          },
-          $unset: {
-            key: 1,
-          },
-        },
-        { upsert: true },
-      );
+      const doc = {
+        ...payload,
+        key,
+        tags,
+        categories,
+        suitableFor,
+        isVerified: true,
+        isActive: true,
+        updatedAt: now,
+        ...(embeddingFields ?? {}),
+      };
 
-      if (result.upsertedCount > 0) {
-        dhikrCreatedCount += 1;
-      } else if (result.modifiedCount > 0) {
+      let storedId;
+      if (existing) {
+        await dhikrsCollection.updateOne({ _id: existing._id }, { $set: doc });
         dhikrUpdatedCount += 1;
+        storedId = existing._id;
+      } else {
+        const insertResult = await dhikrsCollection.insertOne({
+          ...doc,
+          createdAt: now,
+        });
+        dhikrCreatedCount += 1;
+        storedId = insertResult.insertedId;
       }
 
-      const stored = await dhikrsCollection.findOne(
-        {
-          nameTurkish: payload.nameTurkish,
-          transliteration: payload.transliteration,
-        },
-        { projection: { _id: 1 } },
-      );
-
-      if (!stored?._id) {
-        throw new Error(`Dhikr bulunamadı: ${payload.nameTurkish}`);
-      }
-
-      dhikrIdMap.set(key, stored._id);
+      dhikrIdMap.set(key, storedId);
     }
 
     for (const item of dataset.specialDays) {
