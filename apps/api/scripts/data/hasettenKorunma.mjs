@@ -13,8 +13,8 @@ export const hasettenKorunma = {
       virtue:
         "Her gün sabah namazının ardından 167 defa zikredildiğinde kalbi ve dili riyadan, kibirden, hasetten ve kötü ahlaktan korur.",
       source: 'Esmâ-i Hüsnâ Literatürü',
-      tags: ['haset', 'kiskanclık', 'korunma', 'riya', 'kibir', 'esma', 'sabah-zikri'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'esma'],
+      tags: ['haset', 'kıskançlık', 'korunma', 'riya', 'kibir', 'esma', 'sabah zikri'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'esma'],
       timeOfDay: 'morning',
       recommendedCount: 167,
       suitableFor: [
@@ -38,8 +38,8 @@ export const hasettenKorunma = {
       virtue:
         "İman edenlere karşı kalpte oluşabilecek kin, nefret ve haset duygularını kökten temizlemek ve kalbi selim kılmak için en etkili Kur'an dualarındandır.",
       source: "Haşir Suresi, 10. Ayet",
-      tags: ['haset', 'kin', 'nefret', 'korunma', 'kalp-temizligi', 'kuran', 'dua'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'kuran'],
+      tags: ['haset', 'kin', 'nefret', 'korunma', 'kalp temizliği', 'kuran', 'dua'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -63,8 +63,8 @@ export const hasettenKorunma = {
       virtue:
         "Özellikle kıskançlık ve haset gibi kötü niyetlerin, kem gözlerin manevi etkilerinden ve hasetçinin şerrinden korunmak için sabah ve akşam 3'er defa okunması önerilir.",
       source: "Felak Suresi (Kur'an-ı Kerim, 113. Sure)",
-      tags: ['haset', 'kiskanclık', 'korunma', 'nazardan-korunma', 'sabah-aksam', 'kuran'],
-      categories: ['genel', 'korunma', 'manevi-destek', 'kuran'],
+      tags: ['haset', 'kıskançlık', 'korunma', 'nazardan korunma', 'sabah akşam', 'kuran'],
+      categories: ['genel', 'korunma', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 3,
       suitableFor: [
@@ -87,8 +87,8 @@ export const hasettenKorunma = {
       virtue:
         "Kıskançlık, haset ve bunların getirdiği içsel daralmalar ile negatif etkilerden korunmak amacıyla günde 7 kez okunması tavsiye edilir.",
       source: "Hadis-i Şerif / İbn Sünni",
-      tags: ['haset', 'kiskanclık', 'korunma', 'tevekkül', 'teslimiyet', 'hasbiye'],
-      categories: ['genel', 'korunma', 'nefis-terbiyesi', 'dua'],
+      tags: ['haset', 'kıskançlık', 'korunma', 'tevekkül', 'teslimiyet', 'hasbiye'],
+      categories: ['genel', 'korunma', 'nefis terbiyesi', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -108,8 +108,8 @@ export const hasettenKorunma = {
       virtue:
         "Günde 100 defa zikredildiğinde kıskançlık, haset ve kötü enerjilere karşı manevi bir koruma kalkanı oluşturur.",
       source: 'Esmâ-i Hüsnâ Literatürü',
-      tags: ['haset', 'kiskanclık', 'korunma', 'kotu-enerji', 'esma'],
-      categories: ['genel', 'korunma', 'manevi-destek', 'esma'],
+      tags: ['haset', 'kıskançlık', 'korunma', 'kötü enerji', 'esma'],
+      categories: ['genel', 'korunma', 'manevi destek', 'esma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -132,8 +132,8 @@ export const hasettenKorunma = {
       virtue:
         "Hasedin kalbde kök salmasının temel mekanizması şudur: insan başkasının sahip olduğuna bakıp 'neden o var bende yok?' sorusunu sorar ve bu sorudan haset filizlenir. Bu dua, tam da o mekanizmayı kesen bir bilişsel çerçeve sunar; zira her nimetin tek kaynağının Allah olduğunu ve kimsenin O'nun takdirini ne engelleyebileceğini ne de değiştirebileceğini ilan eder. Başkasındaki nimet Allah'ın ona özel takdiridir, kendi yokluğu da Allah'ın bilinçli bir kararıdır; bu gerçek içselleştirildiğinde hasedi besleyen kıyaslama zemini ortadan kalkar. Düzenli okuyan kişilerde başkasının başarı ve nimetlerine karşı duyulan içsel sızının zamanla yerini rızaya ve teslimiyet hissine bıraktığı gözlemlenir. Peygamber Efendimiz bu duayı namaz sonrası sürekli okumuştur; günlük namazların ardından tekrar edilmesi, haset duygusunun fark edilip kırılması için güçlü bir rutin oluşturur.",
       source: 'Buhârî; Tirmizî; Nesâî',
-      tags: ['haset', 'kiskanclık', 'korunma', 'teslimiyet', 'rıza', 'namaz-sonrasi', 'dua'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'dua'],
+      tags: ['haset', 'kıskançlık', 'korunma', 'teslimiyet', 'rıza', 'namaz sonrası', 'dua'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 3,
       suitableFor: [

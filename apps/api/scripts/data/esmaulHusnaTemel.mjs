@@ -13,8 +13,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Derecenin hem Allah hem insanlar katında artması; sevilen, sayılan, sözü geçen biri olmak; her türlü şeytan ve nefis şerrinden korunmak; uykuda meleklerin yardımına nail olmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'allah', 'tevhid', 'korunma'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'allah', 'tevhid', 'korunma'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -36,8 +36,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Dünya ve ahirette ilahi sevgi kazanmak; farz namaz ardı 100 zikirle rıza bulmak; 40 gün riyazetle 1000 zikirle kalp gözünün açılması; her arzunun gerçekleşmesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'rahmet', 'merhamet', 'dua'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rahmet'],
+      tags: ['esma', 'esmaul husna', 'rahmet', 'merhamet', 'dua'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rahmet'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -59,8 +59,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Maddi ve manevi bol rızık; belalardan, kazalardan ve afetlerden korunma; uykuda ağlayan/korkan çocukların şifası; ahlak güzelliği ve fiziki iyileşme.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'rahmet', 'rizik', 'sifa'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rahmet', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'rahmet', 'rızık', 'şifa'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rahmet', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -82,8 +82,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Maddi ve manevi güçlü olmak; insanlara sözünü dinletip emir sahibi olmak; her sabah namazı ardı 121 zikirle fakirlikten kalıcı kurtuluş; gizli sırlara ve ilme vakıf olmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'mulk', 'guc', 'rizik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'mülk', 'güç', 'rızık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -105,8 +105,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Maddi-manevi her türlü temizlik; nefsi şehvetten ve manevi hastalıklardan koruma; vesveseden ve şeytanın hilelerinden uzaklaşıp insanlar arasında saygı görmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'temizlik', 'arinma', 'vesvese'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'manevi-arinma'],
+      tags: ['esma', 'esmaul husna', 'temizlik', 'arınma', 'vesvese'],
+      categories: ['genel', 'esma', 'esmaul husna', 'manevi arınma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -128,8 +128,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Korkulardan emin olmak; hastanın üzerine okunduğunda fiziki şifa; kabza yazılıp aç karnına içildiğinde vesvese hastalığının yok olması; her duanın kabule ulaşması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'selamet', 'sifa', 'dua'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'selamet', 'şifa', 'dua'],
+      categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -151,8 +151,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kötü ve bulaşıcı hastalıklara yakalanmamak; dili yalandan, küfürden, riyadan, zinadan, kibirden ve hasetten uzaklaştırmak; kimseye muhtaç olmamak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'iman', 'korunma', 'ahlak'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'iman', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'iman', 'korunma', 'ahlak'],
+      categories: ['genel', 'esma', 'esmaul husna', 'iman', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -174,8 +174,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'İnsanların düşüncelerini ve niyetlerini okumak; unutkanlıktan kurtulmak; yatsı namazı sonrası okuyup uyuyana rüyada olacak hadiselerin bildirilmesi; bela ve musibetten korunma.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'korunma', 'basiret', 'hafiza'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'basiret'],
+      tags: ['esma', 'esmaul husna', 'korunma', 'basiret', 'hafıza'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'basiret'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -197,8 +197,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Düşmanlara ezici üstünlük sağlamak; kendini insanlara sevdirmek; iş ve isteklerin geri çevrilmemesi; evden çıkarken okunduğunda dünya ve ahiret bahtiyarlığı.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'izzet', 'basari', 'sevgi'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'itibar'],
+      tags: ['esma', 'esmaul husna', 'izzet', 'başarı', 'sevgi'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'itibar'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -220,8 +220,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'İsteklerin gerçekleşmesi; insanların ve cinlerin şerrinden emin olmak; düşmanların helaki; "Ya Zülcelali Vel İkram" ile yazıldığında insanlara şirin ve heybetli görünmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'azamet', 'korunma', 'hacet'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'hacet'],
+      tags: ['esma', 'esmaul husna', 'azamet', 'korunma', 'hacet'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'hacet'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -243,8 +243,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'İzzet ve refaha nail olmak; konuşurken muhatapları tesir altında bırakmak; itibar kazanmak; kötü ahlaklı ve haram işleyen kişilerin ıslah olması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'izzet', 'refah', 'itibar'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'itibar'],
+      tags: ['esma', 'esmaul husna', 'izzet', 'refah', 'itibar'],
+      categories: ['genel', 'esma', 'esmaul husna', 'itibar'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -266,8 +266,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'İşlerde üzüntü ve darlıktan kurtulmak; her işte başarı; zor akıl hastalarına yazılıp taşıtıldığında şifa; çözülmesi imkansız görülen işlerin kolayca çözülmesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'yaratilis', 'basari', 'sifa'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'yaratılış', 'başarı', 'şifa'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -289,8 +289,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'İş hayatında olağanüstü başarı ve şöhret; düşmanları yenmek; zihin ve aklın gelişimi; ağır işlerin kolaylaşması; bir sene devamla zikredildiğinde şifacılık yeteneği.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'yaratilis', 'is-hayati', 'zihin'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'is-hayati', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'yaratılış', 'iş hayatı', 'zihin'],
+      categories: ['genel', 'esma', 'esmaul husna', 'iş hayatı', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -312,8 +312,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Maksat ve merama ulaşmak; en zor işleri başarmak; sanatkarlar için yaratıcılık; ruhanilerle irtibat kurmak; sıkıntılardan arınmak; ahlaklı evlat sahibi olmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'yaraticilik', 'evlat', 'basari'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'evlat'],
+      tags: ['esma', 'esmaul husna', 'yaratıcılık', 'evlat', 'başarı'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'evlat'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -334,8 +334,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Günahların bağışlanması ve korunması; hata ve isyanlardan arınma; düşman ve hasımların gözünde görünmez (zararsız) hale gelmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'magfiret', 'tevbe', 'korunma'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'manevi-arinma', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'mağfiret', 'tevbe', 'korunma'],
+      categories: ['genel', 'esma', 'esmaul husna', 'manevi arınma', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -356,13 +356,13 @@ export const esmaulHusnaTemel = {
       virtue:
         'Din düşmanlarının, zalimlerin ve zorbaların kahrından kurtulmak; nefs-i emmarenin isteklerini ve kötü huyları ezmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'korunma', 'nefis', 'kotu-huy'],
+      tags: ['esma', 'esmaul husna', 'korunma', 'nefis', 'kötü huy'],
       categories: [
         'genel',
         'esma',
-        'esmaul-husna',
+        'esmaul husna',
         'korunma',
-        'nefis-terbiyesi',
+        'nefis terbiyesi',
       ],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -384,8 +384,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Sıkıntısız, borçsuz ve son derece konforlu bir yaşam; rızkın artması; mahlukata karşı güçlü ve heybetli görünmek; duaların hızla kabulü.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'rizik', 'borc', 'dua'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'dua'],
+      tags: ['esma', 'esmaul husna', 'rızık', 'borç', 'dua'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -407,8 +407,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Rızık bolluğu; maddi sıkıntıların kalıcı bitişi; zihin açılması; resmi işlerin çözülmesi; sabah namazı öncesi okunup üflendiğinde eve kötülük girmemesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'rizik', 'bereket', 'zihin'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'rızık', 'bereket', 'zihin'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -430,8 +430,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Maddi ve manevi hayır kapılarının açılması; ticarette başarı; darlık çekmemek; kalbin nurlanması; rüyada bilinmeyen sırların gösterilmesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'feth', 'ticaret', 'basari'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'feth', 'ticaret', 'başarı'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -453,8 +453,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'İlim zenginliği; gizli sırlara vakıf olmak; hikmetli konuşma; anlayış ve zeka artışı; ilahi marifete ulaşmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'ilim', 'zeka', 'hikmet'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'egitim'],
+      tags: ['esma', 'esmaul husna', 'ilim', 'zeka', 'hikmet'],
+      categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'eğitim'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -476,13 +476,13 @@ export const esmaulHusnaTemel = {
       virtue:
         'Zalimin zulmünden korunmak; heybet ve celal kazanarak düşman dedikodularını engellemek; nefsani kötü huyları bırakmak; metafizik perdelerin kalkması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'korunma', 'heybet', 'nefis'],
+      tags: ['esma', 'esmaul husna', 'korunma', 'heybet', 'nefis'],
       categories: [
         'genel',
         'esma',
-        'esmaul-husna',
+        'esmaul husna',
         'korunma',
-        'nefis-terbiyesi',
+        'nefis terbiyesi',
       ],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -504,8 +504,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Rızkın genişlemesi ve bereket; korkulardan emin olmak; endişelerin gitmesi; kalp gözünün açılması; keyif ve neşenin artması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'rizik', 'bereket', 'ferahlik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'rızık', 'bereket', 'ferahlik'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -527,8 +527,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kötülerin ve belaların defedilmesi; zalimlerin şerrinden korunmak; düşmanlara karşı her daim üstün ve güçlü görünmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'korunma', 'bela', 'dusman'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'korunma', 'bela', 'düşman'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -549,13 +549,13 @@ export const esmaulHusnaTemel = {
       virtue:
         'İnsanlar arasında ve iş hayatında yükselmek; tevazu sahibi olmak; rızkın artması; düşmanların kalbine korku salmak; fakirlikten korunma.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'yukselis', 'is-hayati', 'rizik'],
+      tags: ['esma', 'esmaul husna', 'yükseliş', 'iş hayatı', 'rızık'],
       categories: [
         'genel',
         'esma',
-        'esmaul-husna',
-        'is-hayati',
-        'rizik-bereket',
+        'esmaul husna',
+        'iş hayatı',
+        'rızık bereket',
       ],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -578,8 +578,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Fakirlik ve zelillikten kurtulmak; gücün ve cesaretin artması; kadri kıymetin yücelmesi; mahlukata karşı heybetli görünmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'izzet', 'cesaret', 'heybet'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'itibar', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'izzet', 'cesaret', 'heybet'],
+      categories: ['genel', 'esma', 'esmaul husna', 'itibar', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -600,8 +600,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Düşmanları zelil etmek; zalim şerrinden emin olmak; haksızlık yapanları hezimete uğratmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'dusman', 'zalim', 'korunma'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'düşman', 'zalim', 'korunma'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -621,8 +621,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Duaların ilahi dergahta hızla kabulü; oruç ve halvetle zikredildiğinde ruhsal hassasiyetin artması ve metafizik algıların açılması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'dua', 'halvet', 'basiret'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'dua', 'basiret'],
+      tags: ['esma', 'esmaul husna', 'dua', 'halvet', 'basiret'],
+      categories: ['genel', 'esma', 'esmaul husna', 'dua', 'basiret'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -643,8 +643,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Acziyetin ortadan kalkması; basiretli ve sezgileri güçlü biri olmak; dünya ve ahiret korkularından tamamen kurtulmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'basiret', 'sezgi', 'korku'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'basiret', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'basiret', 'sezgi', 'korku'],
+      categories: ['genel', 'esma', 'esmaul husna', 'basiret', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -665,8 +665,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Haklı davayı kazanmak; insanlar arasında hak ve adaletle hüküm vermek; olayların iç yüzünü kavrama yeteneği.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'adalet', 'hak', 'hikmet'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'adalet', 'hikmet'],
+      tags: ['esma', 'esmaul husna', 'adalet', 'hak', 'hikmet'],
+      categories: ['genel', 'esma', 'esmaul husna', 'adalet', 'hikmet'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -686,13 +686,13 @@ export const esmaulHusnaTemel = {
       virtue:
         'Adaletli olmak; haklı davayı kazanmak; nefsi terbiye etmek; haram işlerden ve kötü ahlaktan uzak durmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'adalet', 'nefis', 'ahlak'],
+      tags: ['esma', 'esmaul husna', 'adalet', 'nefis', 'ahlak'],
       categories: [
         'genel',
         'esma',
-        'esmaul-husna',
+        'esmaul husna',
         'adalet',
-        'nefis-terbiyesi',
+        'nefis terbiyesi',
       ],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -714,8 +714,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Dileklerin kabulü; kısmet ve rızkın umulmadık yerlerden artması; zor durumların kolayca atlatılması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'lutuf', 'rizik', 'kolaylik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'dua'],
+      tags: ['esma', 'esmaul husna', 'lütuf', 'rızık', 'kolaylık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -736,8 +736,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Hafıza ve idrakin genişlemesi; bilinmeyen, gizemli meselelerin rüya ve ilham yoluyla kişiye aşikar olması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'hafiza', 'idrak', 'ilham'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'basiret'],
+      tags: ['esma', 'esmaul husna', 'hafıza', 'idrak', 'ilham'],
+      categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'basiret'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -758,8 +758,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Ahlak güzelliği; yumuşak huylu olmak; öfke, hiddet ve sinir krizlerinden kurtulup ruhi sükunete ermek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'ahlak', 'ofke', 'sukunet'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'nefis-terbiyesi'],
+      tags: ['esma', 'esmaul husna', 'ahlak', 'öfke', 'sükûnet'],
+      categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'nefis terbiyesi'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -780,8 +780,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Sözünün insanlar üzerinde son derece tesirli ve dinlenir olması; toplum nezdinde büyük heybet ve saygınlık kazanmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'heybet', 'sayginlik', 'soz-etkisi'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'itibar'],
+      tags: ['esma', 'esmaul husna', 'heybet', 'saygınlık', 'söz etkisi'],
+      categories: ['genel', 'esma', 'esmaul husna', 'itibar'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -802,8 +802,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Günahların affı; kötü ahlaktan korunmak; stres ve anksiyeteden kurtulup kalbe derin bir huzur ve sekine indirmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'magfiret', 'huzur', 'stres'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'manevi-arinma', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'mağfiret', 'huzur', 'stres'],
+      categories: ['genel', 'esma', 'esmaul husna', 'manevi arınma', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -824,8 +824,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Verilen nimetlerin şükrünü eda edebilmek; talihin açıklığı; rızıkta ve kazançta bereketin katlanarak artması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'sukur', 'bereket', 'rizik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'şükür', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'şükür', 'bereket', 'rızık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'şükür', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -846,8 +846,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Zilletten, hor görülmekten kurtulmak; ilim ve manevi derecelerin hızla artması; saygınlık elde etmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'ilim', 'sayginlik', 'yukselis'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'itibar'],
+      tags: ['esma', 'esmaul husna', 'ilim', 'saygınlık', 'yükseliş'],
+      categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'itibar'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -868,8 +868,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Maddi ve manevi büyüklük; toplumda sözü dinlenen, hürmet ve tazim gören saygın bir lider konumuna gelmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'liderlik', 'sayginlik', 'itibar'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'liderlik', 'itibar'],
+      tags: ['esma', 'esmaul husna', 'liderlik', 'saygınlık', 'itibar'],
+      categories: ['genel', 'esma', 'esmaul husna', 'liderlik', 'itibar'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -891,8 +891,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Nefsin, canın ve malın korunması; zalimlerin şerrinden emin olmak; düşmanlara karşı her daim üstünlük sağlamak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'korunma', 'mal', 'can'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'korunma', 'mal', 'can'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -913,8 +913,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Muhtaç olunan rızkı kolayca kazanmak; beden gücü elde etmek; darlık ve açlık korkularından emin olmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'rizik', 'beden-gucu', 'korunma'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'rızık', 'beden gücü', 'korunma'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -935,8 +935,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Herkese karşı açık alınlı ve dürüst olmak; korkulardan emin olmak; haksız ithamlardan ve dedikodulardan korunmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'durustluk', 'korunma', 'dedikodu'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'ahlak'],
+      tags: ['esma', 'esmaul husna', 'dürüstlük', 'korunma', 'dedikodu'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'ahlak'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -956,8 +956,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Toplumda manevi heybet kazanmak; düşmanların kötülük yapmaya cesaret edememesi; saygı duyulan biri olmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'heybet', 'sayginlik', 'korunma'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'itibar', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'heybet', 'saygınlık', 'korunma'],
+      categories: ['genel', 'esma', 'esmaul husna', 'itibar', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -977,8 +977,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Cömertlik ve güzel ahlak kazanmak; darlıktan kurtulmak; her türlü maddi-manevi lütfa zahmetsizce ulaşmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'comertlik', 'ahlak', 'lutuf'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'ahlak', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'cömertlik', 'ahlak', 'lütuf'],
+      categories: ['genel', 'esma', 'esmaul husna', 'ahlak', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1000,12 +1000,12 @@ export const esmaulHusnaTemel = {
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
       tags: [
         'esma',
-        'esmaul-husna',
+        'esmaul husna',
         'korunma',
         'kontrol',
         'islerin-ilerlemesi',
       ],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'is-hayati'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'iş hayatı'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1025,8 +1025,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Duaların engelsiz şekilde ilahi huzura kabulü; hayırlı isteklerin hızlıca gerçekleşmesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'dua', 'hacet', 'kabul'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'dua', 'hacet'],
+      tags: ['esma', 'esmaul husna', 'dua', 'hacet', 'kabul'],
+      categories: ['genel', 'esma', 'esmaul husna', 'dua', 'hacet'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1046,8 +1046,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kalp ve gönül ferahlığı; rızık darlığından kurtulmak; ömre, rızka ve berekete genişlik kazandırmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'ferahlik', 'rizik', 'bereket'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'ferahlik', 'rızık', 'bereket'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1067,8 +1067,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Derin ilim ve hikmet sahibi olmak; engellerin kalkması; işlerde en hayırlı ve isabetli kararları verebilmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'hikmet', 'ilim', 'karar'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'hikmet'],
+      tags: ['esma', 'esmaul husna', 'hikmet', 'ilim', 'karar'],
+      categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'hikmet'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1089,13 +1089,13 @@ export const esmaulHusnaTemel = {
       virtue:
         'İnsanlar arasında eşsiz bir sevgi, şefkat ve muhabbet celbi; borçlardan ve maddi sıkıntılardan kurtulmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'sevgi', 'muhabbet', 'borc'],
+      tags: ['esma', 'esmaul husna', 'sevgi', 'muhabbet', 'borç'],
       categories: [
         'genel',
         'esma',
-        'esmaul-husna',
+        'esmaul husna',
         'muhabbet',
-        'rizik-bereket',
+        'rızık bereket',
       ],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -1117,8 +1117,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Şan, şeref ve makam kazanmak; insanların sevgisine nail olmak; kalbin manevi kirlerden temizlenmesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'seref', 'makam', 'temizlik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'itibar', 'manevi-arinma'],
+      tags: ['esma', 'esmaul husna', 'şeref', 'makam', 'temizlik'],
+      categories: ['genel', 'esma', 'esmaul husna', 'itibar', 'manevi arınma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1139,8 +1139,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Alacakları tahsil edebilmek; zalimlerin şerrinden ve iftiralardan hızla kurtulmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'alacak', 'korunma', 'iftira'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'alacak', 'korunma', 'iftira'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1160,8 +1160,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Heybetli görünmek; asi, itaatsiz ve geçimsiz yakınların, eş ve çocukların ıslah olup yola gelmesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'heybet', 'aile', 'islah'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'aile', 'itibar'],
+      tags: ['esma', 'esmaul husna', 'heybet', 'aile', 'islah'],
+      categories: ['genel', 'esma', 'esmaul husna', 'aile', 'itibar'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1181,8 +1181,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Haklı davalarda üstün gelmek; yalan ve batıllardan uzaklaşmak; işlerin doğruluk ve dürüstlük üzere yürümesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'hak', 'adalet', 'durustluk'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'adalet', 'ahlak'],
+      tags: ['esma', 'esmaul husna', 'hak', 'adalet', 'dürüstlük'],
+      categories: ['genel', 'esma', 'esmaul husna', 'adalet', 'ahlak'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1204,8 +1204,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Ani musibetlerden korunmak; rızık kapılarının açılması; düşman üzerine zöhre saatinde beddua için okunması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'tevekkul', 'korunma', 'rizik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'tevekkül', 'korunma', 'rızık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1225,8 +1225,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kansızlık ve fiziki zayıflıktan kurtulmak; yolculuk kazalarından muhafaza olmak; ağır yükleri kolayca kaldırmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'guc', 'sifa', 'yolculuk'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'güç', 'şifa', 'yolculuk'],
+      categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1246,13 +1246,13 @@ export const esmaulHusnaTemel = {
       virtue:
         'Maddi-manevi direnç kazanmak; fakirlikten, zulümden, kötü ahlaktan arınmak; manevi sırlara vakıf olmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'direnc', 'korunma', 'sirlar'],
+      tags: ['esma', 'esmaul husna', 'direnç', 'korunma', 'sırlar'],
       categories: [
         'genel',
         'esma',
-        'esmaul-husna',
+        'esmaul husna',
         'korunma',
-        'manevi-gelisim',
+        'manevi gelişim',
       ],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -1274,8 +1274,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Her işte ilahi yardım görmek; ahiret hesabının kolaylaşması; veli kullar zümresine kabul edilmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'yardim', 'velayet', 'ahiret'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'manevi-gelisim', 'yardim'],
+      tags: ['esma', 'esmaul husna', 'yardım', 'velayet', 'ahiret'],
+      categories: ['genel', 'esma', 'esmaul husna', 'manevi gelişim', 'yardım'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1295,8 +1295,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Ahlakın ve amellerin güzelleşmesi; kazancın helal yoldan genişlemesi; mahlukatın sevgisi; namaz ardı 100 okuma ile salih olmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'hamd', 'ahlak', 'helal-rizik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'ahlak', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'hamd', 'ahlak', 'helal rızık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'ahlak', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1317,8 +1317,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Zekanın olağanüstü kuvvetlenmesi; unutkanlığın tamamen gitmesi; muhatap kalplerin itaat etmesi; hastalıklara şifa.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'zeka', 'hafiza', 'sifa'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'ilim', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'zeka', 'hafıza', 'şifa'],
+      categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1339,8 +1339,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Girişilen işlerde üstün başarı; karar verme güçlüklerini aşmak; başlanan projeleri bitirmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'basari', 'karar', 'proje'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'is-hayati'],
+      tags: ['esma', 'esmaul husna', 'başarı', 'karar', 'proje'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'iş hayatı'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1360,8 +1360,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kaybedilen itibar, mevki ve makamı geri kazanmak; altüst olmuş işlerin yeniden düzene girmesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'itibar', 'makam', 'duzen'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'itibar', 'is-hayati'],
+      tags: ['esma', 'esmaul husna', 'itibar', 'makam', 'düzen'],
+      categories: ['genel', 'esma', 'esmaul husna', 'itibar', 'iş hayatı'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1381,8 +1381,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Şifacılık yeteneklerinin uyanması; kalbin gafletten uyanıp dirilmesi; ağır ve kronik hastalıklardan kurtuluş.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'sifa', 'kalp', 'dirilis'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'manevi-gelisim'],
+      tags: ['esma', 'esmaul husna', 'şifa', 'kalp', 'diriliş'],
+      categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'manevi gelişim'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1402,12 +1402,12 @@ export const esmaulHusnaTemel = {
       virtue:
         'Nefsin harama olan meylini ve şehvetini köreltmek; düşmanların her türlü kötü planını iptal etmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'nefis', 'korunma', 'dusman'],
+      tags: ['esma', 'esmaul husna', 'nefis', 'korunma', 'düşman'],
       categories: [
         'genel',
         'esma',
-        'esmaul-husna',
-        'nefis-terbiyesi',
+        'esmaul husna',
+        'nefis terbiyesi',
         'korunma',
       ],
       timeOfDay: 'any',
@@ -1429,8 +1429,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Genç, zinde ve diri kalmak; bedensel güçlenme; uzun ve sağlıklı ömür; kalbin tevhid nuruyla dolması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'hayat', 'saglik', 'tevhid'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'manevi-gelisim'],
+      tags: ['esma', 'esmaul husna', 'hayat', 'sağlık', 'tevhid'],
+      categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'manevi gelişim'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1452,8 +1452,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Ruhsal ve psikolojik rahatsızlıkların tedavisi; işlerin süreklilik ve istikrar kazanması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'istikrar', 'psikoloji', 'sifa'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'istikrar', 'psikoloji', 'şifa'],
+      categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1473,8 +1473,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kaybedilen değerli şeyleri bulmak; kalbin manevi zenginliği; mevcut nimetlerin elden çıkmasını engellemek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'bulmak', 'nimet', 'manevi-zenginlik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'bulmak', 'nimet', 'manevi zenginlik'],
+      categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1494,8 +1494,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kan basıncının dengelenmesi; şan ve şerefin artması; maddi imkanların genişlemesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'sifa', 'seref', 'rizik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'şifa', 'şeref', 'rızık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1515,8 +1515,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kalbin masivadan arınarak tek ilaha yönelmesi; yalnızlık korkusunu yenmek; tevhid bilincine ulaşmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'tevhid', 'yalnizlik', 'kalp'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'tevhid', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'tevhid', 'yalnızlık', 'kalp'],
+      categories: ['genel', 'esma', 'esmaul husna', 'tevhid', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1536,8 +1536,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Şansın açılması; dertlere derman bulmak; kimseye muhtaç olmadan onurlu ve bağımsız bir yaşam sürmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'bagimsizlik', 'derman', 'samed'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'bağımsızlık', 'derman', 'samed'],
+      categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1557,8 +1557,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Bedensel ve zihinsel güç kazanmak; düşman şerrinden tam koruma; bilimsel çalışmalarda başarı; sol göz sağlığı.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'guc', 'korunma', 'basari'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'güç', 'korunma', 'başarı'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1579,8 +1579,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'İktidar, güç ve nüfuz sahibi olmak; zor işlerin kolayca çözülmesi; omuz ve boyun fıtığı şifası.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'guc', 'nufuz', 'kolaylik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'güç', 'nüfuz', 'kolaylık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1600,8 +1600,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Sınav, ticaret ve hayırlı işlerde rakiplerin önüne geçmek; makamda yükselmek; işlerin hızlanması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'yukselis', 'sınav', 'ticaret'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'iş-kariyer'],
+      tags: ['esma', 'esmaul husna', 'yükseliş', 'sınav', 'ticaret'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'iş kariyer'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1621,8 +1621,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kötü niyetli kişileri geride bırakmak; belaları ertelemek; sağ ayak ve lenf ödemi şifası.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'korunma', 'sifa', 'bela'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'korunma', 'şifa', 'bela'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1642,8 +1642,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Girişilen işlerin sonunun hayırla neticelenmesi; uzun yolculukların kaza belasız tamamlanması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'hayir', 'yolculuk', 'baslangic'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'hayır', 'yolculuk', 'başlangıç'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1663,8 +1663,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Ömrün hayırla tamamlanması; son nefeste imanla göçmek; gizli düşmanların tamamen etkisiz hale gelmesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'iman', 'korunma', 'hayirli-omur'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'iman', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'iman', 'korunma', 'hayırlı ömür'],
+      categories: ['genel', 'esma', 'esmaul husna', 'iman', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1684,8 +1684,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Gizli kalmış işlerin aydınlanması; kalbin nurlanması; rakiplere karşı ezici üstünlük sağlamak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'aydınlanma', 'nur', 'ustunluk'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'başarı'],
+      tags: ['esma', 'esmaul husna', 'aydınlanma', 'nur', 'üstünlük'],
+      categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'başarı'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1705,8 +1705,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Ruhsal derinlik ve manevi olgunluk kazanmak; vesveselerden kalıcı olarak özgürleşmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'maneviyat', 'vesvese', 'olgunluk'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'manevi-arınma'],
+      tags: ['esma', 'esmaul husna', 'maneviyat', 'vesvese', 'olgunluk'],
+      categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'manevi arınma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1726,8 +1726,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Yönetim ve liderlik yeteneği kazanmak; karmaşık işleri kolayca idare etmek; amirler nezdinde dinlenmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'liderlik', 'yonetim', 'itibar'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'iş-kariyer', 'başarı'],
+      tags: ['esma', 'esmaul husna', 'liderlik', 'yönetim', 'itibar'],
+      categories: ['genel', 'esma', 'esmaul husna', 'iş kariyer', 'başarı'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1747,8 +1747,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Mevki ve makamın korunması; haksız suçlamalardan ve iftiralardan uzak kalmak; devlet işlerinin kolaylaşması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'itibar', 'makam', 'korunma'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'iş-kariyer', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'itibar', 'makam', 'korunma'],
+      categories: ['genel', 'esma', 'esmaul husna', 'iş kariyer', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1768,8 +1768,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'İçindeki iyilik yapma arzusunun artması; kazalardan korunmak; ahlakın mükemmelleşmesi.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'iyilik', 'ahlak', 'korunma'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'güzel-ahlak', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'iyilik', 'ahlak', 'korunma'],
+      categories: ['genel', 'esma', 'esmaul husna', 'güzel ahlak', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1789,8 +1789,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Günahlardan samimi tövbeyle sıyrılmak; kötü alışkanlıkları kolayca bırakmak; rızık kapılarının açılması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'tevbe', 'magfiret', 'rizik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'tevbe', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'tevbe', 'mağfiret', 'rızık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'tevbe', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1810,8 +1810,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Zalimlerin şerrinden adalete sığınmak; haksızlığa uğrayanların hakkını ilahi adaletle geri alması.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'adalet', 'korunma', 'haksizlik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'adalet', 'korunma'],
+      tags: ['esma', 'esmaul husna', 'adalet', 'korunma', 'haksızlık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'adalet', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1831,8 +1831,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'İlahi affa nail olmak; kin, nefret ve intikam gibi kalbi yıpratan duygulardan tamamen arınmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'af', 'arınma', 'kalp'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'tevbe', 'manevi-arınma'],
+      tags: ['esma', 'esmaul husna', 'af', 'arınma', 'kalp'],
+      categories: ['genel', 'esma', 'esmaul husna', 'tevbe', 'manevi arınma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1852,8 +1852,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Merhamet ve şefkat duygularının artması; insanlar tarafından sevilip korunmak; öfkenin kontrolü.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'merhamet', 'sefkat', 'ofke'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'güzel-ahlak', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'merhamet', 'şefkat', 'öfke'],
+      categories: ['genel', 'esma', 'esmaul husna', 'güzel ahlak', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: ['merhamet', 'şefkat', 'sevilmek', 'öfke kontrolü'],
@@ -1868,8 +1868,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Maddi güç, mal ve servetin korunması; kimseye borçlu kalmadan huzurlu bir yaşam sürmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'mulk', 'servet', 'borc'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'mülk', 'servet', 'borç'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1889,8 +1889,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Duaların en hızlı şekilde kabulü; insanların gözünde olağanüstü saygınlık ve karizma kazanmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'dua', 'sayginlik', 'ikram'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'dua', 'itibar'],
+      tags: ['esma', 'esmaul husna', 'dua', 'saygınlık', 'ikram'],
+      categories: ['genel', 'esma', 'esmaul husna', 'dua', 'itibar'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: ['dua kabulü', 'saygınlık', 'karizma', 'manevi heybet'],
@@ -1905,8 +1905,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Aile içi geçimsizliklerin ve huzursuzlukların bitmesi; adil kararlar verebilmek; borç ödeme kolaylığı.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'adalet', 'aile', 'borc'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'adalet', 'aile'],
+      tags: ['esma', 'esmaul husna', 'adalet', 'aile', 'borç'],
+      categories: ['genel', 'esma', 'esmaul husna', 'adalet', 'aile'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1926,8 +1926,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kaybolan eşyayı veya insanı bulmak; dargınları barıştırmak; dağınık işleri bir araya getirmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'birlik', 'barisma', 'kayip'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'aile', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'birlik', 'barışma', 'kayip'],
+      categories: ['genel', 'esma', 'esmaul husna', 'aile', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1947,8 +1947,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Maddi-manevi zenginlik; baş ağrısı ve migren ağrılarının şifası.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'zenginlik', 'sifa', 'migren'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'zenginlik', 'şifa', 'migren'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1968,8 +1968,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Büyük zenginliğe ulaşmak; geçim darlığından tamamen kurtulmak; insanlardan bir şey istemeyecek konuma gelmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'zenginlik', 'gecim', 'istiğna'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'zenginlik', 'geçim', 'istiğna'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -1989,8 +1989,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kazaların, belaların engellenmesi; sağ el, başın üstü ve kalp için şifa; zararlı alışkanlıkları bırakmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'korunma', 'sifa', 'aliskanlik'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'korunma', 'şifa', 'alışkanlık'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2010,8 +2010,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Zararlı düşmanların planlarını bozmak; hile yapanların hilelerini kendi başlarına yıkmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'korunma', 'dusman', 'hile'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'korunma', 'adalet'],
+      tags: ['esma', 'esmaul husna', 'korunma', 'düşman', 'hile'],
+      categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'adalet'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2031,8 +2031,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Hastalıklara şifa bulmak; kazancın artması; girişilen her türlü ticari işten büyük kârlar elde etmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'fayda', 'sifa', 'kazanc'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'şifa', 'rizik-bereket'],
+      tags: ['esma', 'esmaul husna', 'fayda', 'şifa', 'kazanç'],
+      categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2052,8 +2052,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Kalbin iman nuruyla dolması; zihin ve basiret açıklığı; doğru yolu kolayca görebilmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'nur', 'hidayet', 'basiret'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'iman', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'nur', 'hidayet', 'basiret'],
+      categories: ['genel', 'esma', 'esmaul husna', 'iman', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2073,8 +2073,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Hidayete ermek; çocukların güzel ahlaklı olması; idrar kesesi ve kalp için fiziki şifa.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'hidayet', 'ahlak', 'sifa'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'iman', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'hidayet', 'ahlak', 'şifa'],
+      categories: ['genel', 'esma', 'esmaul husna', 'iman', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2094,8 +2094,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Sanatta, bilimde ve iş hayatında özgün projeler üretmek; zor işlerin üstesinden gelmek; takdir toplamak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'yaraticilik', 'bilim', 'basari'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'başarı', 'iş-kariyer'],
+      tags: ['esma', 'esmaul husna', 'yaratıcılık', 'bilim', 'başarı'],
+      categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'iş kariyer'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2115,8 +2115,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Ömrün uzun ve bereketli olması; sadır, idrar yolu ve boşaltım için fiziki şifa; gelecek endişesini yenmek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'omur', 'bereket', 'sifa'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'ömür', 'bereket', 'şifa'],
+      categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2136,8 +2136,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Mal, mülk ve toprak sahibi olmak; hayırlı bir neslin devam etmesi; ahiret saadetine ermek.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'mulk', 'nesil', 'ahiret'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'rizik-bereket', 'aile'],
+      tags: ['esma', 'esmaul husna', 'mülk', 'nesil', 'ahiret'],
+      categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'aile'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2157,8 +2157,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Alınan kararlardan pişman olmamak; doğru kararlar vermek; prostat, omurilik ve sağ ayak için fiziki şifa.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'karar', 'irşad', 'sifa'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'huzur', 'şifa'],
+      tags: ['esma', 'esmaul husna', 'karar', 'irşad', 'şifa'],
+      categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'şifa'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2178,8 +2178,8 @@ export const esmaulHusnaTemel = {
       virtue:
         'Zor zamanlarda sabır ve metanet kazanmak; öfkeyi kontrol altına almak; sıkıntılardan kurtulmak.',
       source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
-      tags: ['esma', 'esmaul-husna', 'sabir', 'metanet', 'ofke'],
-      categories: ['genel', 'esma', 'esmaul-husna', 'sabır', 'huzur'],
+      tags: ['esma', 'esmaul husna', 'sabır', 'metanet', 'öfke'],
+      categories: ['genel', 'esma', 'esmaul husna', 'sabır', 'huzur'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -2206,8 +2206,8 @@ export const esmaRizikBereket = {
       virtue:
         'Fakirlikten kurtuluş, maddi güç ve sahip olunan imkanları doğru yönetme niyetiyle okunur.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
-      tags: ['esma', 'rizik', 'bereket', 'maddi-guc'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      tags: ['esma', 'rızık', 'bereket', 'maddi güç'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 91,
       suitableFor: [
@@ -2226,8 +2226,8 @@ export const esmaRizikBereket = {
       virtue:
         'Karşılıksız nimet, borç yükünün hafiflemesi ve rızık artışı niyetiyle zikredilir.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
-      tags: ['esma', 'rizik', 'nimet', 'borc'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      tags: ['esma', 'rızık', 'nimet', 'borç'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 196,
       suitableFor: ['borçlardan kurtulma', 'nimet artışı', 'maddi rahatlama'],
@@ -2241,8 +2241,8 @@ export const esmaRizikBereket = {
       virtue:
         'Bol rızık, darlıkların sona ermesi ve geçim genişliği niyetiyle okunur.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
-      tags: ['esma', 'rizik', 'gecim', 'bolluk'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      tags: ['esma', 'rızık', 'geçim', 'bolluk'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 308,
       suitableFor: ['geçim darlığı', 'iş arayışı', 'rızık bereketi'],
@@ -2256,8 +2256,8 @@ export const esmaRizikBereket = {
       virtue:
         'Kapalı kapıların açılması, iş ve rızık yollarının genişlemesi niyetiyle okunur.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
-      tags: ['esma', 'feth', 'is-kapisi', 'rizik'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      tags: ['esma', 'feth', 'iş kapısı', 'rızık'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 489,
       suitableFor: [
@@ -2276,7 +2276,7 @@ export const esmaRizikBereket = {
         'Kimseye muhtaç olmama, iç ve dış zenginlik bilinci ile maddi ferahlık niyetiyle zikredilir.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
       tags: ['esma', 'zenginlik', 'istiğna', 'bereket'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 1060,
       suitableFor: ['maddi bağımsızlık', 'rızık bereketi', 'alternatif 160'],
@@ -2290,8 +2290,8 @@ export const esmaRizikBereket = {
       virtue:
         'Maddi refah, bolluk ve kişinin ihtiyaçlarının karşılanması niyetiyle okunur.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
-      tags: ['esma', 'zenginlik', 'refah', 'rizik'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      tags: ['esma', 'zenginlik', 'refah', 'rızık'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 1100,
       suitableFor: ['maddi refah', 'gelir artışı', 'alternatif 1337'],
@@ -2305,8 +2305,8 @@ export const esmaRizikBereket = {
       virtue:
         'İşlerin büyümesi, mal ve paranın bereketlenmesi niyetiyle zikredilir.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
-      tags: ['esma', 'genislik', 'islerin-acilmasi', 'bereket'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      tags: ['esma', 'genişlik', 'işlerin açılması', 'bereket'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 72,
       suitableFor: ['iş genişlemesi', 'bereket artışı', 'maddi rahatlama'],
@@ -2320,8 +2320,8 @@ export const esmaRizikBereket = {
       virtue:
         'Kolay rızık, cömertçe verilen nimetler ve hayırlı ikramlar niyetiyle okunur.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
-      tags: ['esma', 'ikram', 'rizik', 'cömertlik'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      tags: ['esma', 'ikram', 'rızık', 'cömertlik'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 270,
       suitableFor: ['kolay rızık', 'nimet artışı', 'bereket'],
@@ -2335,8 +2335,8 @@ export const esmaRizikBereket = {
       virtue:
         'Ev, arsa gibi taşınmaz mülk edinme ve mevcut mülkün korunması niyetiyle zikredilir.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
-      tags: ['esma', 'mulk', 'ev-arsa', 'korunma'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      tags: ['esma', 'mülk', 'ev arsa', 'korunma'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 212,
       suitableFor: ['ev alma', 'mülk edinme', 'mülk korunması'],
@@ -2351,7 +2351,7 @@ export const esmaRizikBereket = {
         'İzzet, refah ve bereket artışı ile sözün tesirinin güçlenmesi niyetiyle okunur.',
       source: 'Esma-ül Hüsna ebced uygulama geleneği',
       tags: ['esma', 'izzet', 'refah', 'bereket'],
-      categories: ['genel', 'esma', 'rizik-bereket'],
+      categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
       recommendedCount: 662,
       suitableFor: ['itibar', 'maddi bereket', 'söz etkisi'],

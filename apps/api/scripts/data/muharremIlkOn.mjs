@@ -16,7 +16,7 @@ export const muharremIlkOn = {
       virtue:
         'Yıl boyunca maddi ve manevi belalardan korunma niyetiyle ilahi himayeye sığınma bilincini güçlendirir. Şeytan, cin, nazar ve manevi baskılara karşı en güçlü korunma ayetlerinden biri kabul edilir.',
       source: 'Bakara 255',
-      tags: ['muharrem', 'hicri-yilbasi', 'korunma', 'güven', 'ayetel-kursi'],
+      tags: ['muharrem', 'hicri yılbaşı', 'korunma', 'güven', 'ayetel kürsi'],
       categories: ['özel gün', 'muharrem', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 360,
@@ -53,7 +53,7 @@ export const muharremIlkOn = {
       virtue:
         'Bedensel ve ruhsal esenlik niyetini güçlendirir; barış ve sükun talebini diri tutar.',
       source: 'Esma-i Hüsna',
-      tags: ['muharrem', 'esma', 'selamet', 'baris'],
+      tags: ['muharrem', 'esma', 'selamet', 'barış'],
       categories: ['özel gün', 'muharrem', 'esma'],
       timeOfDay: 'any',
       recommendedCount: 313,

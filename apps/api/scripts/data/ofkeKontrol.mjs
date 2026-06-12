@@ -11,8 +11,8 @@ export const ofkeKontrol = {
       virtue:
         "Öfkenin kaynağını 'ben' olarak değil 'şeytan' olarak tanımlamak, kişiyi kendi gazabından bilişsel olarak ayrıştırır; 'bu ben değilim, bu bana üflenen bir ateş' farkındalığı gazabın yoğunluğunu anlık olarak düşürür. Peygamber Efendimiz, birbiriyle kavga eden iki adamı görünce tam bu kelimeyi tavsiye etmiş ve 'bu sözü söylese öfkesi geçer' buyurmuştur — bu doğrudan bir nübüvvet reçetesidir. Arapça kelimeleri telaffuz etmek için gereken kısa zihinsel duraklama, beynin öfke tepkisini tetikleyen devre ile karar alma merkezi arasındaki bağı geçici olarak keser; fizyolojik öfke kaskatı daha yayılmadan söner. Düzenli okuyan kişilerde öfkenin tetiklendiği anlarda refleks olarak bu sığınmaya yönelme alışkanlığı gelişir ve zamanla patlamadan önce fark edip frenleyebilme becerisi artar. Şeytanın hemzini (dürtmesini) ve nefhını (kibir üflemesini) doğrudan hedef alan bu formül, öfkenin ardındaki ego şişmesini de aynı anda söndürür; zira gazabın altında çoğunlukla 'bana böyle davranılmaz' biçiminde bir üstünlük iddiası yatar.",
       source: "Buhârî; Müslim",
-      tags: ['öfke', 'sakinleşme', 'seytan', 'korunma', 'dua', 'siginma'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'dua'],
+      tags: ['öfke', 'sakinleşme', 'seytan', 'korunma', 'dua', 'sığınma'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 10,
       suitableFor: [
@@ -36,8 +36,8 @@ export const ofkeKontrol = {
       virtue:
         "Arapça'da 'gayz' (غَيْظ), patlamayan, içe çökerek biriken ve kalpte kıvranmaya devam eden öfkeyi tanımlar; bu dua tam da o susturulmuş, derinlere gömülmüş hiddetin üstüne parmak basar. Duanın üç kademeli yapısı bilinçli bir sıra izler: önce istiğfar (günahı kabul etmek egonun direncini kırar), ardından öfkenin kalpten alınmasının istenmesi, son olarak fitne ve şeytanın gelecekteki saptırmalarından korunma talebi. Bu sıralama, öfkenin hem anlık fizyolojik boyutunu hem de ardından gelen uzun süreli kin ve kırgınlık aşamasını hedef alır. 'Rabbe Muhammedin' ifadesiyle açılması, duayı sıradan bir talep olmaktan çıkarıp nübüvvet şefaatine sığınmak şeklinde konumlandırır ve kişinin Allah'la ilişkisini Hz. Peygamber'in terbiyesi üzerinden kurar. Özellikle bir tartışma ya da haksızlık sonrasında içte biriken ama dışa vurulamayan soğuk öfke için; yatmadan önce veya zihnin hâlâ çözümsüz bir kırgınlıkla döndüğü her anda okunması, kalbi o gece taşımadan uyutmak için güçlü bir araçtır.",
       source: "Taberânî, el-Mu'cemü'l-Kebîr; Ahmed b. Hanbel, Müsned",
-      tags: ['öfke', 'sakinleşme', 'gayz', 'kalp-temizligi', 'fitne', 'dua', 'istigfar'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'dua'],
+      tags: ['öfke', 'sakinleşme', 'gayz', 'kalp temizliği', 'fitne', 'dua', 'istiğfar'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 3,
       suitableFor: [
@@ -61,8 +61,8 @@ export const ofkeKontrol = {
       virtue:
         "Bu dua, öfke kontrolüne dair yapılan çoğu duadan karakteri itibarıyla ayrışır: sakinleşmeyi değil, öfke anında bile dürüst ve adil kalabilmeyi ister. Öfkenin yarattığı en büyük zarar susturmak ya da patlamak değil; hiddet halindeyken söylenen yanlış, abartılı veya haksız sözlerdir. Bu dua, tam da o sözsel çarpıtma mekanizmasına müdahale ederek dilin öfkenin taşıyıcısı haline gelmemesini talep eder. 'Ridâ ve ğadab' ikilisinin bir arada zikredilmesi dikkat çekicidir: insan yalnızca kızgınken değil, memnun ve rahat olduğu anlarda da haktan sapabilir — yüz gözetmek, gereksiz onaylamak veya rahatsızlığı saklamak gibi. Bu dua, duygu durumundan bağımsız tutarlı bir karakter talebidir. Düzenli okuyanlar, tartışma ya da gergin anlarda kelimeleri ölçerken bu niyetin aktif olduğunu hissettiklerini; dilin öfkenin silahına dönüşmeden önce duraklamaya zorlandığını aktarır. Peygamber Efendimiz bu duayı nafile namazlarının ardından okumuştur — yani bu karakter talebi, o günün bitimine değil tamamına yayılmak üzere günlük bir niyet olarak kurgulanmıştır.",
       source: "Nesâî; İbn Mâce",
-      tags: ['öfke', 'adalet', 'hak-soz', 'dil', 'karakter', 'dua', 'namaz-sonrasi'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'dua'],
+      tags: ['öfke', 'adalet', 'hak söz', 'dil', 'karakter', 'dua', 'namaz sonrası'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 3,
       suitableFor: [
@@ -87,7 +87,7 @@ export const ofkeKontrol = {
         "Öfkenin kalbde tutunan kısmı çoğunlukla bir kontrol kaybı hissidir: 'bu böyle olmamalıydı', 'bu haksızlığı düzeltmem gerekiyor', 'sonucu benim elimde olmalı'. Bu zikir, tam da o kontrol talebini Allah'a devreder ve kişiyi kendi iradesinin sınırlarıyla barıştırır. Tevbe Suresi'nin son ayetinde Hz. Peygamber'e en zor anlarda, düşmanların yüz çevirdiği kırılma noktalarında bu sözü söylemesi emredilmiştir; yani dua yalnızca sakinleşme aracı değil, nihayetsiz zorluğun ortasında sığınak bulmaktır. Öfke anında 3 ya da 7 defa yavaşça tekrar etmek, hem nefesi düzenler hem de 'ben çözmek zorundayım' diyen iç sesin yerini 'O yeter' bilincine bırakır. 'Hasbiyallah' söylemenin fizyolojik boyutu da vardır: uzun ve vurgulu heceler diyaframı çalıştırır, parasempatik sistemi devreye sokar. İbn Sünni rivayetinde günde 7 kez sabah-akşam okunması tavsiye edilir; bu rutin, öfkenin tetikleneceği anlara hazırlıklı girmek için zemin kurar ve teslimiyeti alışkanlık düzeyine taşır.",
       source: "Tevbe Suresi, 129. Ayet; Hadis-i Şerif (İbn Sünni)",
       tags: ['öfke', 'sakinleşme', 'tevekkül', 'teslimiyet', 'hasbiye', 'kuran'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'kuran'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -111,8 +111,8 @@ export const ofkeKontrol = {
       virtue:
         "Öfkenin kalpte tutunduğu zemin büyük ölçüde ego iddiasıdır: 'haksızlığa uğradım', 'bana böyle davranılmamalıydı', 'ben daha iyisini hak ediyorum'. İstiğfar bu zemini yerinden söker; çünkü bağışlanma talep etmek 'ben de kusurlu ve muhtaç biriyim' gerçeğini kabul etmektir ve bu kabul egonun şişkinliğini söndürür. Hayy (sonsuz diri) ve Kayyûm (tüm varlığı ayakta tutan) isimlerini öfke anında dilden geçirmek, kişiyi kendi varlığının ne kadar asılı ve kırılgan olduğuyla yüzleştirir; o andan itibaren haksızlık iddiasının ağırlığı küçülür. Bu istiğfarın Tirmizî ve Ebû Dâvûd rivayetlerindeki fazileti büyüktür; hadiste 'savaş meydanından kaçmış olsa bile' ifadesi kullanılır ki bu, en ağır manevi borcun bile silinebileceğine işaret eder. Günde 100 kez okunduğunda yalnızca anlık öfkeyi değil, kalpte birikerek kronik gerginliğe dönüşen arka plan öfkesini de temizler. Tekrarın ritüel etkisi de önemlidir: zihni öfkenin döndüğü kısır döngüden çıkarıp farklı bir odak noktasına taşır.",
       source: "Tirmizî; Ebû Dâvûd",
-      tags: ['öfke', 'istigfar', 'sakinleşme', 'ego', 'tövbe', 'hayy-kayyum', 'dua'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'dua'],
+      tags: ['öfke', 'istiğfar', 'sakinleşme', 'ego', 'tövbe', 'hayy kayyum', 'dua'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -136,8 +136,8 @@ export const ofkeKontrol = {
       virtue:
         "Bu ayetin öfke bağlamındaki en güçlü yanı, sabrı son sıraya koymasıdır: önce namaz (iç denge), sonra iyiliği emretmek, sonra kötülüğe karşı durmak, en sonunda 'başına gelenlere sabret'. Bu sıralama pasif bir teslimiyeti değil; aktif duruşun kaçınılmaz olarak getireceği bedeli karşılama kararlılığını anlatır. 'Azm' (عَزْم) kelimesi da bu kararlılığı vurgular — söz konusu sabır, ruhsal tembellikten değil yüksek azimden beslenir. Haksızlığa uğrayan ve bunu öfkeyle karşılayan kişi için bu ayet somut bir çerçeve sunar: enerjiyi patlamaya değil iyiliğe yönelt, kötülüğe kararlı biçimde dur, ardından kişisel bedele sabret. Özellikle 'vasbir alâ mâ esâbek' kısmını yavaşça birkaç kez tekrar etmek, öfkenin yaktığı ani reaksiyon dürtüsünü söndürür ve kişiyi uzun vadeli kararlılık zeminine taşır. Hz. Lokman'ın oğluna verdiği bu öğüt, öfkeyi bastırmayı değil dönüştürmeyi öğretir; gazap enerjisinin yıkıcı değil inşa edici bir güce çevrilebileceğini gösterir.",
       source: "Lokman Suresi, 17. Ayet",
-      tags: ['öfke', 'sabır', 'haksızlık', 'azim', 'lokman', 'kuran', 'nefis-terbiyesi'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'kuran'],
+      tags: ['öfke', 'sabır', 'haksızlık', 'azim', 'lokman', 'kuran', 'nefis terbiyesi'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 3,
       suitableFor: [

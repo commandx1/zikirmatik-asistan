@@ -11,7 +11,7 @@ export const hayirliEvlatZikirleri = {
       virtue:
         'Evlat isteyenlerin en sık okuduğu Kurani dualardandır; günde en az 7 defa okunması tavsiye edilir.',
       source: 'Enbiyâ Suresi, 21/89',
-      tags: ['evlat', 'hayirli-evlat', 'dua', 'zekeriya'],
+      tags: ['evlat', 'hayırlı evlat', 'dua', 'zekeriya'],
       categories: ['genel', 'aile', 'evlat'],
       timeOfDay: 'any',
       recommendedCount: 7,
@@ -33,7 +33,7 @@ export const hayirliEvlatZikirleri = {
       virtue:
         'Neslin ahlaklı, temiz ve salih olması niyetiyle okunan güçlü ayet dualarındandır.',
       source: 'Âl-i İmrân Suresi, 3/38',
-      tags: ['evlat', 'hayirli-evlat', 'dua', 'nesil'],
+      tags: ['evlat', 'hayırlı evlat', 'dua', 'nesil'],
       categories: ['genel', 'aile', 'evlat'],
       timeOfDay: 'any',
       recommendedCount: 41,
@@ -48,7 +48,7 @@ export const hayirliEvlatZikirleri = {
       virtue:
         'Doğacak çocuğun dindar, hayırlı ve ana-babasına itaatkar olması niyetiyle okunur.',
       source: 'Sâffât Suresi, 37/100',
-      tags: ['evlat', 'hayirli-evlat', 'salih-nesil', 'dua'],
+      tags: ['evlat', 'hayırlı evlat', 'salih nesil', 'dua'],
       categories: ['genel', 'aile', 'evlat'],
       timeOfDay: 'any',
       recommendedCount: 41,
@@ -83,7 +83,7 @@ export const hayirliEvlatZikirleri = {
       virtue:
         'Bebeğin hayırlı ve ahlaklı yetişmesi, hamilelik sürecinin kolay geçmesi niyetiyle okunur.',
       source: 'Âl-i İmrân Suresi, 3/35',
-      tags: ['evlat', 'hamilelik', 'dua', 'adanmislik'],
+      tags: ['evlat', 'hamilelik', 'dua', 'adanmışlık'],
       categories: ['genel', 'aile', 'evlat'],
       timeOfDay: 'any',
       recommendedCount: 7,
@@ -98,7 +98,7 @@ export const hayirliEvlatZikirleri = {
       virtue:
         'Yaratılış sürecinde ilahi ilme sığınma niyetiyle; 3 ay geceleri 1267 tekrar tertibi aktarılmıştır.',
       source: 'Hicr Suresi, 15/86',
-      tags: ['evlat', 'yaratilis', 'hamilelik', 'ayet'],
+      tags: ['evlat', 'yaratılış', 'hamilelik', 'ayet'],
       categories: ['genel', 'aile', 'evlat'],
       timeOfDay: 'night',
       recommendedCount: 1267,
@@ -150,7 +150,7 @@ export const hayirliEvlatZikirleri = {
       virtue:
         'Tövbe ve istiğfarın, ilahi rızık ve evlat nimetinin kapılarını açan anahtarlardan olduğu aktarılır.',
       source: 'Nûh Suresi 71/10-12; hadis rivayetleri',
-      tags: ['evlat', 'istigfar', 'tevbe', 'dua'],
+      tags: ['evlat', 'istiğfar', 'tevbe', 'dua'],
       categories: ['genel', 'aile', 'evlat'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -186,7 +186,7 @@ export const hayirliEvlatZikirleri = {
       virtue:
         'Eşlerin birliktelik öncesinde besmele ve 3 İhlas sonrası yaptığı dua tertiplerindendir.',
       source: 'Bilal Eren, Açıklamalı Büyük Dua Hazinesi',
-      tags: ['evlat', 'dua', 'nesil', 'ihlas-tertibi'],
+      tags: ['evlat', 'dua', 'nesil', 'ihlas tertibi'],
       categories: ['genel', 'aile', 'evlat'],
       timeOfDay: 'any',
       recommendedCount: 10,

@@ -16,8 +16,8 @@ export const hayirliEv = {
       virtue:
         "Ev arama sürecinde, yeni bir eve taşınırken ya da hayırlı bir konut edinmek amacıyla okunur. Yerleşilen mekânın maddi ve manevi bereketle dolmasına vesile olur. Bu dua, mekânı yalnızca fiziksel bir barınak olarak değil; huzur, şükür ve ibadet yuvası olarak inşa etme niyetinin ifadesidir. Hz. Nuh'un tufandan kurtulurken yaptığı yakarışa dayanan bu dua, kişiye yerleşeceği yerde ilahi himaye ve nimet talep etmeyi öğretir. Düzenli okunması, evi salt bir mülk edinme sürecinden çıkarıp manevi bir ev kurma bilinciyle buluşturur.",
       source: "Kur'an-ı Kerim, Mü'minûn Suresi, 23/29",
-      tags: ['ev', 'bereket', 'yerlesim', 'konut', 'tasinma', 'yeni-ev', 'dua'],
-      categories: ['dua', 'ev-hayati', 'bereket', 'gunluk-hayat'],
+      tags: ['ev', 'bereket', 'yerleşim', 'konut', 'taşınma', 'yeni ev', 'dua'],
+      categories: ['dua', 'ev hayatı', 'bereket', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -42,8 +42,8 @@ export const hayirliEv = {
       virtue:
         "Mülkün gerçek sahibinin Allah olduğunu, onun dilediğine vereceğini ikrar eden bu ayet; helal yoldan ev veya mülk edinmek isteyenler için güçlü bir dua zemini oluşturur. Kul bu ayeti okurken 'Vehhâb' ve 'Mâlikü'l-Mülk' isimlerine sığınarak dilediği mülkü yalnızca O'ndan talep eder. Borç yükünü hafifletmek, maddi darlıkları aşmak ve helal kazançla huzurlu bir yuvaya kavuşmak niyetiyle okunması tavsiye edilir. Düzenli okunması, kişide mülke karşı denge ve kanaat bilinci oluştururken rızkın genişlemesi için ilahi kapıların aralanmasına vesile olur.",
       source: "Kur'an-ı Kerim, Âl-i İmrân Suresi, 3/26",
-      tags: ['ev', 'mulk', 'bereket', 'helal-kazanc', 'borc', 'rizik', 'dua'],
-      categories: ['dua', 'ev-hayati', 'bereket', 'rizik', 'gunluk-hayat'],
+      tags: ['ev', 'mülk', 'bereket', 'helal kazanç', 'borç', 'rızık', 'dua'],
+      categories: ['dua', 'ev hayatı', 'bereket', 'rızık', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -69,8 +69,8 @@ export const hayirliEv = {
         "Peygamber Efendimiz'in, Uhud Dağı kadar borcu olanların dahi borçlarından kurtulup mülk sahibi olabilmeleri için tavsiye ettiği, senedi sahih bir yakarıştır. Âl-i İmrân 26. ayetinin dua formuna, Allah'ın dünya ve ahirette Rahman ve Rahim oluşuna dair ikrarın ve yalnızca O'nun merhametine sığınma niyazının eklenmesiyle oluşur. Maddi darlık ve borç baskısı altındaki kimselerin, hiçbir vasıtaya ya da insana muhtaç kalmadan yalnızca ilahi rahmete yaslanarak hem rızkın hem de mülkün kapılarını aralamak için okuyacakları en sahih dualardan biridir.",
       source:
         "Taberânî, el-Mu'cemü's-Sağîr, 1/202; Hâkim, el-Müstedrek, 1/721; Heysemî, No: 17397",
-      tags: ['ev', 'borc', 'mulk', 'bereket', 'rahmet', 'rizik', 'dua'],
-      categories: ['dua', 'ev-hayati', 'bereket', 'rizik', 'gunluk-hayat'],
+      tags: ['ev', 'borç', 'mülk', 'bereket', 'rahmet', 'rızık', 'dua'],
+      categories: ['dua', 'ev hayatı', 'bereket', 'rızık', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 41,
       suitableFor: [
@@ -95,8 +95,8 @@ export const hayirliEv = {
       virtue:
         'Günahların affına, yaşanılan hanenin dünyada genişlemesine, kabirde ve ahirette (cennette) ise ferah ve huzurlu kılınmasına vesile olan kapsamlı bir duadır. Yalnızca dünyevi bir mülk talebi değil; manevi arınma, mekan ferahlığı ve rızık bereketi taleplerini tek bir niyazda birleştiren özlü bir yakarıştır. Dar veya sıkışık bir mekânda yaşayanlar, taşınmayı düşünenler ya da evini genişletmek isteyenler için günlük zikre eklenmesi tavsiye edilir.',
       source: 'İmam Nevevî, el-Ezkâr, sh. 118; Tirmizî, Deavât, 121',
-      tags: ['ev', 'bereket', 'magfiret', 'rizik', 'mesken', 'dua'],
-      categories: ['dua', 'ev-hayati', 'bereket', 'rizik', 'gunluk-hayat'],
+      tags: ['ev', 'bereket', 'mağfiret', 'rızık', 'mesken', 'dua'],
+      categories: ['dua', 'ev hayatı', 'bereket', 'rızık', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 33,
       suitableFor: [
@@ -121,8 +121,8 @@ export const hayirliEv = {
       virtue:
         "Borçsuz yerleşmek, mülk edinmek ve geniş haneye sahip olmak için Allah'ın 'Vehhâb' ismine sığınarak okunur. Hz. Süleyman'ın Allah'tan özel bir ihsan olarak talep ettiği bu dua; mülk, bereket ve af niyetiyle okuyanlar için güçlü bir vesile kabul edilir.",
       source: "Kur'an-ı Kerim, Sâd Suresi, 38/35",
-      tags: ['ev', 'mulk', 'magfiret', 'vehhab', 'suleyman', 'kuran', 'dua'],
-      categories: ['dua', 'ev-hayati', 'kuran-duasi', 'mulk', 'gunluk-hayat'],
+      tags: ['ev', 'mülk', 'mağfiret', 'vehhab', 'suleyman', 'kuran', 'dua'],
+      categories: ['dua', 'ev hayatı', 'kuran duası', 'mülk', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -147,7 +147,7 @@ export const hayirliEv = {
         "Helal birikim, haramdan korunma, başkasına muhtaç kalmadan ev sahibi olmak için okunur. Tekli sayılarda (1, 3, 7, 11…) okunması önerilir. İmam Gazalî'nin derlediği bu dua; hem dünyevi yeterliliği hem de manevi arınmayı birlikte talep eden kapsamlı bir yakarıştır.",
       source: 'İmam Gazalî, Zenginlik Duaları Derlemesi',
       tags: ['ev', 'helal', 'zenginlik', 'gazali', 'iktifa', 'dua', 'istiğna'],
-      categories: ['dua', 'ev-hayati', 'bereket', 'rizik', 'gunluk-hayat'],
+      categories: ['dua', 'ev hayatı', 'bereket', 'rızık', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 11,
       suitableFor: [
@@ -171,8 +171,8 @@ export const hayirliEv = {
       virtue:
         "Ev satın almak, yeni bir mülk edinmek ya da hayırlı bir girişime adım atmak isteyenlerin 7 gün boyunca günde 41 defa okuması tavsiye edilen özel bir virddir. Allah'ın 'Mübdiu' (her şeyi başlatan, ilk var eden) ismine sığınarak yeni bir başlangıcın—hayırlı bir evin—kapısı açılmak istenir.",
       source: 'Geleneksel Havas Kaynakları',
-      tags: ['ev', 'mulk', 'mubdiu', 'esma', 'havas', 'vird', 'dua'],
-      categories: ['dua', 'ev-hayati', 'esmaul-husna', 'mulk', 'gunluk-hayat'],
+      tags: ['ev', 'mülk', 'mubdiu', 'esma', 'havas', 'vird', 'dua'],
+      categories: ['dua', 'ev hayatı', 'esmaul husna', 'mülk', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 41,
       suitableFor: [
@@ -195,8 +195,8 @@ export const hayirliEv = {
       virtue:
         'Ev arama sürecinde karşılaşılabilecek her türlü beşeri, maddi ve bürokratik engeli aşmak, işleri kolaylaştırmak niyetiyle okunur. Kâlpleri açma ve kapıları kolaylaştırma vasfıyla bilinen bu ayet; taşınma, satın alma ve sözleşme süreçlerinde okunması önerilir.',
       source: "Kur'an-ı Kerim, Tâhâ Suresi, 20/25-28",
-      tags: ['ev', 'kolaylik', 'engel', 'kuran', 'taha', 'dua'],
-      categories: ['dua', 'ev-hayati', 'kuran-duasi', 'gunluk-hayat'],
+      tags: ['ev', 'kolaylık', 'engel', 'kuran', 'taha', 'dua'],
+      categories: ['dua', 'ev hayatı', 'kuran duası', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -219,8 +219,8 @@ export const hayirliEv = {
       virtue:
         'Maddi imkânsızlıkları aşarak helal yoldan ev sahibi olmak isteyenlerin, borçların yükünden kurtulmak için sıklıkla tekrar etmesi gereken nebevi bir duadır. Sabah-akşam sürekli okunduğunda maddi darlığa karşı kalkan olduğu rivayet edilmiştir.',
       source: 'Tirmizî, Daavât, 121',
-      tags: ['ev', 'helal', 'rizik', 'borctan-kurtulma', 'hz-ali', 'dua'],
-      categories: ['dua', 'ev-hayati', 'bereket', 'rizik', 'gunluk-hayat'],
+      tags: ['ev', 'helal', 'rızık', 'borçtan kurtulma', 'hz ali', 'dua'],
+      categories: ['dua', 'ev hayatı', 'bereket', 'rızık', 'günlük hayat'],
       timeOfDay: 'morning',
       recommendedCount: 3,
       suitableFor: [
@@ -241,8 +241,8 @@ export const hayirliEv = {
       virtue:
         'Satın alınan ya da yaşanılan evin bereketlenmesi, şeytanın o haneden uzaklaşması ve aile bireylerine sekine gelmesi niyetiyle her eve girişte okunur. Eve girişte okunması, şeytanın o haneye girememesine vesile olduğu bildirilmiştir.',
       source: 'Ebû Dâvûd, Edeb, 113; Nûr Suresi, 24/61',
-      tags: ['ev', 'eve-giris', 'bereket', 'sekine', 'seytan', 'dua'],
-      categories: ['dua', 'ev-hayati', 'gunluk-hayat'],
+      tags: ['ev', 'eve giriş', 'bereket', 'sekine', 'seytan', 'dua'],
+      categories: ['dua', 'ev hayatı', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 10,
       suitableFor: [
@@ -265,8 +265,8 @@ export const hayirliEv = {
       virtue:
         "Allah'ın en yüce isimlerini (Hannân, Mennân, Bedî', Zel-celâl, Hay, Kayyûm) barındıran bu duanın, meşru her türlü hacetin ve ev talebinin kabulü için en etkili vesilelerden biri olduğu bildirilmiştir. İsm-i Azam olarak rivayet edilen hadis dualarından biridir.",
       source: 'Sahih Hadis Kaynaklarından Derlenen Virdler',
-      tags: ['ev', 'ismi-azam', 'hac', 'dua', 'hay', 'kayyum', 'hacet'],
-      categories: ['dua', 'ev-hayati', 'ismi-azam', 'hacet', 'gunluk-hayat'],
+      tags: ['ev', 'ismi azam', 'hac', 'dua', 'hay', 'kayyum', 'hacet'],
+      categories: ['dua', 'ev hayatı', 'ismi azam', 'hacet', 'günlük hayat'],
       timeOfDay: 'any',
       recommendedCount: 3,
       suitableFor: [

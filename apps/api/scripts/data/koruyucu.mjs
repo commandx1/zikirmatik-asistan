@@ -17,7 +17,7 @@ export const koruyucu = {
         'Peygamber Efendimizin büyü, nazar, sihir ve vesveseye karşı en çok okuduğu korunma sureleridir.',
       source:
         "Buhârî, Ehâdîsü'l-Enbiyâ 10; Tirmizî, Tıb 16; Nesâî, İstiâze 37; Ebû Dâvûd",
-      tags: ['korunma', 'nazar', 'buyu', 'vesvese', 'felak', 'nas'],
+      tags: ['korunma', 'nazar', 'büyü', 'vesvese', 'felak', 'nas'],
       categories: ['genel', 'korunma', 'nazar'],
       timeOfDay: 'any',
       recommendedCount: 3,
@@ -41,12 +41,12 @@ export const koruyucu = {
         `Sabah-akşam üçer defa okuyan kişinin, o gün ya da gece ansızın gelebilecek kaza, bela, zehirlenme ve ani rahatsızlıklara karşı Allah'ın koruması altına girdiği bildirilmiştir. "Lâ yedurru" ifadesi mutlak bir olumsuzlama taşır; yerde ve gökte var olan hiçbir tehlikenin Allah'ın ismi yanında etki edemeyeceğini bildiren bu kesinlik, duayı hem manevi hem psikolojik bir zırha dönüştürür. "Ma'asmihî" (O'nun ismiyle birlikte olan) kaydı, duanın yalnızca telaffuz değil, kalbi hazır bir niyetle okunmasını şart koştuğunu ima eder. Sabah vakti okunması günü, akşam vakti okunması geceyi kapsar; böylece gün boyunca bedenî ve manevi hasara karşı sürekli bir kalkan oluşur. Ani hastalık, kaza veya zehirlenme endişesi taşıyan kişilerin günlük rutinine kolayca yerleştirilebilecek sade ama kapsamlı bir koruma duasıdır.`,
       source:
         'Ebû Dâvûd, Edeb, 110; İbn Mâce, Duâ, 16; Tirmizî, Deavât, 13',
-      tags: ['korunma', 'nazar', 'bela', 'dua', 'şifa', 'ani-rahatsızlık', 'kaza'],
+      tags: ['korunma', 'nazar', 'bela', 'dua', 'şifa', 'ani rahatsızlık', 'kaza'],
       categories: ['genel', 'korunma', 'dua', 'hastalık'],
       timeOfDay: 'any',
       recommendedCount: 3,
       suitableFor: [
-        'sabah-akşam',
+        'sabah akşam',
         'ani belalara karşı',
         'nazar korunması',
         'ani rahatsızlık ve kaza',
@@ -81,7 +81,7 @@ export const koruyucu = {
       virtue:
         'Haksız beddua, düşman korkusu ve ruhani darlıklarda müminin sığınacağı en büyük tevekkül zikirlerindendir.',
       source: 'Âl-i İmrân 3/173; Buhârî, Tefsir 13',
-      tags: ['korunma', 'tevekkul', 'beddua', 'korku'],
+      tags: ['korunma', 'tevekkül', 'beddua', 'korku'],
       categories: ['genel', 'korunma', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -116,8 +116,8 @@ export const koruyucu = {
       virtue:
         'Ağır manevi hava, içsel tıkanıklık ve beddua etkisi korkusunda sığınılacak güçlü bir yakarıştır. Ağır travmalar, kederler, çaresizlikler ve her türlü psikolojik darlıktan kurtulmaya vesile olur. Kişinin kendi sınırlarını kabul edip mutlak güce sığınmasını sağlayarak bilişsel yükü hafifletir. Öfke ve hiddet anlarında "innî küntü minez-zâlimîn" (ben kendine zulmedenlerdenim) ifadesi, kişiyi öfkenin sahibi olmaktan çıkarıp kendi hatasını fark eden bir konuma taşır; bu dönüşüm gazabın yoğunluğunu kırar.',
       source: 'Enbiyâ Suresi, 87. Ayet; Tirmizî; İbn Sünni',
-      tags: ['korunma', 'yunus-duasi', 'vesvese', 'sıkıntı', 'öfke', 'sakinleşme', 'darlık'],
-      categories: ['genel', 'korunma', 'nefis-terbiyesi', 'dua'],
+      tags: ['korunma', 'yunus duası', 'vesvese', 'sıkıntı', 'öfke', 'sakinleşme', 'darlık'],
+      categories: ['genel', 'korunma', 'nefis terbiyesi', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 41,
       suitableFor: [
@@ -142,7 +142,7 @@ export const koruyucu = {
       virtue:
         'İçsel vesvese, ani korkular ve ruhî bunalımlara karşı günlük korunma virdi olarak okunur.',
       source: 'Celaleddin-i Süyuti; İmam-ı Gazali',
-      tags: ['korunma', 'vesvese', 'zikir', 'sukunet'],
+      tags: ['korunma', 'vesvese', 'zikir', 'sükûnet'],
       categories: ['genel', 'korunma', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 33,
@@ -160,7 +160,7 @@ export const koruyucu = {
       virtue:
         'Nazar, haset ve haksız bedduaların ruhani ağırlığına karşı arınma niyetiyle okunur.',
       source: 'Manevi şifa kaynakları ve dua mecmuaları',
-      tags: ['korunma', 'sifa', 'nazar', 'haset'],
+      tags: ['korunma', 'şifa', 'nazar', 'haset'],
       categories: ['genel', 'korunma', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 7,
@@ -190,8 +190,8 @@ export const koruyucu = {
       virtue:
         'Maddi-manevi sıkıntılar, nazar ve beddua etkilerinden arınmaya yönelik istiğfar tertibidir.',
       source: 'İmam-ı Rabbani, Mektubat',
-      tags: ['korunma', 'istigfar', 'arinma', 'beddua'],
-      categories: ['genel', 'korunma', 'istigfar'],
+      tags: ['korunma', 'istiğfar', 'arınma', 'beddua'],
+      categories: ['genel', 'korunma', 'istiğfar'],
       timeOfDay: 'any',
       recommendedCount: 70,
       suitableFor: ['günlük istiğfar', 'beddua korkusu', 'manevi temizlik'],
@@ -207,7 +207,7 @@ export const koruyucu = {
       virtue:
         'Sabah okunması halinde ani tehlikeler, kötü düşünceler ve ruhani musibetlerden korunma niyeti taşır.',
       source: "Şeyh Sihâbüddin Sühreverdi, Avarifü'l-Maarif",
-      tags: ['korunma', 'tehlike', 'sabah-virdi', 'dua'],
+      tags: ['korunma', 'tehlike', 'sabah virdi', 'dua'],
       categories: ['genel', 'korunma', 'dua'],
       timeOfDay: 'morning',
       recommendedCount: 3,
@@ -233,7 +233,7 @@ export const koruyucu = {
       categories: ['genel', 'korunma', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 10,
-      suitableFor: ['sabah-akşam tilavet', 'ruhani arınma', 'ev korunması'],
+      suitableFor: ['sabah akşam tilavet', 'ruhani arınma', 'ev korunması'],
     },
     {
       key: 'korunma-nisa-100-ayet-tertibi',
@@ -247,7 +247,7 @@ export const koruyucu = {
       virtue:
         'Geleneksel havass uygulamalarında güçlü manevi blokajları çözmek için okunan tertipler arasında zikredilir.',
       source: 'Nisâ Suresi, 4/100',
-      tags: ['korunma', 'nisa', 'ayet', 'buyu'],
+      tags: ['korunma', 'nisa', 'ayet', 'büyü'],
       categories: ['genel', 'korunma', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,

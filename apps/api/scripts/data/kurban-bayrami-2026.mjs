@@ -17,7 +17,7 @@ export const kurbanBayrami = {
         'Teşrik günlerinde farz namazların ardından tekbir getirmek bayram şuurunu canlı tutar.',
       source: 'Teşrik tekbirleri geleneği',
       tags: [
-        'kurban-bayrami',
+        'kurban bayramı',
         'tesrik',
         'tekbir',
         'gönle huzur',
@@ -39,7 +39,7 @@ export const kurbanBayrami = {
         'Kalbi arındırır, şükür duygusunu artırır ve bayram günlerinde manevi dengeyi destekler. Bayram günü 300 kere okunup ölmüşlerin ruhuna bağışlandığında her müminin kabrine bin nur girer, okuyan kişi vefat ettiğinde de kabrine bin nur verilir. Günde yüz defa okuyan kişinin günahları deniz köpüğü kadar olsa bile bağışlanır.',
       source: 'Bayram sabahı tavsiye tesbihat',
       tags: [
-        'kurban-bayrami',
+        'kurban bayramı',
         'tesbih',
         'hastalıktan korunma',
         'rızık ve bereket',
@@ -64,7 +64,7 @@ export const kurbanBayrami = {
       virtue:
         'İbadetlerdeki eksiklikler için tevbe bilincini güçlendirir ve kalpte arınma sağlar.',
       source: 'Bayram günü istiğfar tavsiyesi',
-      tags: ['kurban-bayrami', 'istigfar', 'tevbe'],
+      tags: ['kurban bayramı', 'istiğfar', 'tevbe'],
       categories: ['özel gün', 'bayram'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -82,7 +82,7 @@ export const kurbanBayrami = {
       virtue:
         'Kurban ibadetini şükür ve teslimiyet boyutuyla tamamlar, nimetin sahibini hatırlatır.',
       source: 'Kurban ibadeti sonrası şükür duaları',
-      tags: ['kurban-bayrami', 'şükür', 'dua'],
+      tags: ['kurban bayramı', 'şükür', 'dua'],
       categories: ['özel gün', 'bayram'],
       timeOfDay: 'any',
       recommendedCount: 7,
@@ -97,7 +97,7 @@ export const kurbanBayrami = {
       virtue:
         'Tevekkül bilincini artırır, endişe ve dağınıklık halinde kalbi dengelemeye yardımcı olur.',
       source: 'Tevekkül zikirleri',
-      tags: ['kurban-bayrami', 'tevekkül', 'hasbiye'],
+      tags: ['kurban bayramı', 'tevekkül', 'hasbiye'],
       categories: ['özel gün', 'bayram'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -115,7 +115,7 @@ export const kurbanBayrami = {
       virtue:
         'Tevekkül bilincini derinleştirir; kalpte emniyet ve teslimiyet hissini artırır.',
       source: 'Hasbiye rivayetleri',
-      tags: ['kurban-bayrami', 'hasbiye', 'tevekkül', 'dua'],
+      tags: ['kurban bayramı', 'hasbiye', 'tevekkül', 'dua'],
       categories: ['özel gün', 'bayram', 'dua', 'tevekkül'],
       timeOfDay: 'any',
       recommendedCount: 100,

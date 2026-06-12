@@ -14,7 +14,7 @@ export const hastalıkVeŞifa = {
       virtue:
         `Resulullah Efendimiz (sas), aile fertlerinden biri hastalandığında ya da yanına bir hasta getirildiğinde sağ eliyle hastayı sıvazlayarak bu duayı okurdu; bu yönüyle en sahih şifâ duaları arasında birinci sıradadır. "Rabbe'n-nâs" hitabıyla başlaması, bütün mahlûkatın Rabbiyle birebir diyalogu temsil eder ve hastalığın Allah'ın iradesinden bağımsız olmadığını hatırlatır. "Eşfi ve ente'ş-şâfî" cümlesi, tıbbın ve ilaçların gerçek şifâ kaynağı değil yalnızca vesile olduğunu kalbe yerleştirir; bu bilinç tedavi sürecindeki paniği azaltır. "Lâ şifâe illâ şifâuke" ifadesi, hastada tam bir tevekkül ve teslimiyetin oluşmasını sağlar; bu duruş iyileşme sürecini hem ruhen hem bedenen destekler. Son cümle "şifâen lâ yuğâdiru sekamâ", yarım ya da geçici değil hastalığı kökünden silecek kalıcı ve tam bir şifâ talep eder. Hasta ziyaretlerinde, yatarken ya da acı hissedilen bölgeye el koyarak üç kez okunması sünnettir.`,
       source: 'Buhârî, Merdâ, 20; Müslim, Selâm, 46; Ebû Dâvûd, Tıbb, 18-19',
-      tags: ['şifa', 'hastalık', 'dua', 'rukye', 'hasta-ziyareti'],
+      tags: ['şifa', 'hastalık', 'dua', 'rukye', 'hasta ziyareti'],
       categories: ['hastalık', 'şifa', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 3,
@@ -38,7 +38,7 @@ export const hastalıkVeŞifa = {
       virtue:
         `Peygamber Efendimiz (sas) bu duayı yara, çıban veya lokal bir cilt rahatsızlığı olan kişiye uygularken okurdu; önce toprağı parmak ucuyla tükürüğüyle ıslatır, ardından yaralı bölgeye hafifçe sürer ve bu sözleri söylerdi. Duanın başındaki "Bismillâh", tüm etkinin ilahî iradeye dayandığını tescil eder; toprak ve tükürük yalnızca birer vesile, gerçek fail ise yalnızca Allah'tır. "Turbetü ardınâ" ifadesi, Hz. Peygamber'in kullandığı Medine toprağına atıfla o anın ruhani atmosferini yansıtır; hastalık sırasında yaratılmışın en basit unsurlarıyla bile şifâ gelebildiğini gösterir. "Bi-izni rabbinâ" kaydı, bu uygulamayı herhangi bir sihirden kesinlikle ayırır; tüm etkinlik Allah'ın iznine bağlıdır. Yara, çıban, cilt iltihabı ve lokal ağrılarda uygulanabilen bu sünnet, hem fiziki bir temas hem de manevi bir dua olarak iki boyutu birleştirir.`,
       source: 'Buhârî, Tıbb, 38; Müslim, Selâm, 54; Ebû Dâvûd, Tıbb, 19',
-      tags: ['şifa', 'hastalık', 'rukye', 'yara', 'cilt', 'nebevi-tıp'],
+      tags: ['şifa', 'hastalık', 'rukye', 'yara', 'cilt', 'nebevi tıp'],
       categories: ['hastalık', 'şifa', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 3,
@@ -88,7 +88,7 @@ export const hastalıkVeŞifa = {
         `Hz. Peygamber (sas), eceli henüz gelmemiş bir hastanın yanında bu duanın yedi kez ihlasla okunmasının Allah'ın o hastayı afiyet üzere kıldıracağını müjdelemiştir. "Allah'ül-Azîm" ile "Rabbe'l-Arşi'l-Azîm" sıfatlarının ard arda zikredilmesi, en büyük hastalığın bile karşısında küçük kaldığı sonsuz bir kudrete çıkılan bir kapıdır. Dua yalnızca şifâyı değil Allah'ın yüce adını ve Arş'ın büyüklüğünü de hatırlatır; bu bilinç hem hasta hem de ziyaret eden için derin bir teslimiyet ve ümit hissi oluşturur. Hasta ziyaretinde yedi kez okunması, tekrarın duayı mekanikleştirmediğini, aksine her seferinde yeni bir niyet ve huşuyu davet ettiğini gösterir. Doğrudan "yeşfiyeke — sana şifâ versin" ifadesiyle spesifik kişiye yönelik olması, bu duayı genel dua formüllerinden ayırır ve hasta için yapılan birebir bir şefaat niteliği taşır.`,
       source:
         'Ebû Dâvûd, Cenâiz, 8; Tirmizî, Tıbb, 32; Ahmed bin Hanbel, Müsned, 1/239',
-      tags: ['şifa', 'hastalık', 'hasta-ziyareti', 'dua', 'arş'],
+      tags: ['şifa', 'hastalık', 'hasta ziyareti', 'dua', 'arş'],
       categories: ['hastalık', 'şifa', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 7,
@@ -136,7 +136,7 @@ export const hastalıkVeŞifa = {
       virtue:
         `Hz. Eyyûb (as), yıllarca süren ağır hastalık, yoksulluk ve yalnızlık içinde bu duayı etmiş; Allah (cc) duasını kabul ederek kendisini şifâya kavuşturmuş ve hepsinin yerine misliyle ihsanda bulunmuştur. Duanın gücü, şikâyet değil teslim içermesinde yatar: "messe" (dokundu, vardı) fiili hastalığı Allah'a şeffafça arz eder, ardından "ente erhamü'r-râhimîn" ile hüküm tamamen O'nun merhametine bırakılır. Bu yapı, kronik ya da uzun soluklu hastalıklarda çöken ümidi yeniden ayağa kaldırır; çünkü en çaresiz andaki tek gerçeği — Allah'ın sonsuz rahmetini — hatırlatır. Hz. Eyyûb'un sabrı Kur'an'da "ne güzel kul" diye övüldüğü için bu duayı okumak, aynı zamanda o sabra ve teslimiyete ortak olmak niyeti taşır. Uzun süreli hastalık, kronik ağrı veya iyileşme umudunun tükendiği anlarda günde defalarca okunabilir; kısa ama derin anlamıyla her tekrarda kalbi yeni bir huzura açar.`,
       source: "Kur'an-ı Kerîm, Enbiyâ Sûresi, 21/83",
-      tags: ['şifa', 'hastalık', 'sabır', 'dua', 'eyyub', 'kronik-hastalik', 'umut'],
+      tags: ['şifa', 'hastalık', 'sabır', 'dua', 'eyyub', 'kronik hastalık', 'umut'],
       categories: ['hastalık', 'şifa', 'dua', 'sabır'],
       timeOfDay: 'any',
       recommendedCount: 3,
@@ -160,7 +160,7 @@ export const hastalıkVeŞifa = {
       virtue:
         `Hz. Peygamber (sas) bu duayı namazlarında düzenli olarak okumuş; tedavisi güç, sosyal izolasyona yol açan ve kalıcı hasar bırakan hastalıklara karşı özel bir sığınak olarak tavsiye etmiştir. Dört hastalığın birlikte zikredilmesi, koruma talebinin yalnızca anlık semptomları değil, uzun soluklu ve yıkıcı hastalık tablolarını kapsadığını gösterir. "Ve min seyyi'il-eskâm" ifadesiyle dua açık uçlu hale gelir; adı sanı bilinmeyen, kronik veya dejeneratif tüm kötü hastalıkları da içine alır. Sabah namazının ardından okunması, güne ilahi bir koruma kalkanıyla başlamayı sağlar. Ağır ve kronik hastalığı olan bireylerin yakınları da onlar adına bu duayı okuyabilir.`,
       source: 'Ebû Dâvûd, Salât, 367; Nesâî, İstiâze, 36',
-      tags: ['şifa', 'hastalık', 'korunma', 'dua', 'kronik-hastalik', 'rukye'],
+      tags: ['şifa', 'hastalık', 'korunma', 'dua', 'kronik hastalık', 'rukye'],
       categories: ['hastalık', 'şifa', 'korunma', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 10,
@@ -184,7 +184,7 @@ export const hastalıkVeŞifa = {
       virtue:
         `Hz. Peygamber (sas) bu duayı sabah-akşam hiç aksatmadan okumuş; bir sahabiye "Bu dünyada senden daha hayırlı bir şey istenip istenilemeyeceğini sormama gerek yok" diyerek afiyetin ne denli kuşatıcı bir nimet olduğunu hatırlatmıştır. "Âfiyet" kelimesi sözlükte bedenî sağlık, ruhsal esenlik, ilişkilerde barış ve maddi güveni tek çatı altında toplar; bu yüzden dua hem fiziksel hastalığa hem de her türlü olumsuz duruma karşı kapsamlı bir taleptur. "Fi'd-dünyâ ve'l-âhirah" kaydı, duanın yalnızca bu dünyadaki bedenle sınırlı kalmadığını, öteki dünya için de bir iyilik talebi içerdiğini ortaya koyar. Kısa ama anlam yoğunluğu yüksek yapısı, hastalık dönemlerinde yorgun ve halsiz bir kalbin bile rahatlıkla dile getirebileceği bir yakarış sunar. Sabah uyanırken ve akşam yatmadan önce tekrar etmek sünnettir.`,
       source: 'Ebû Dâvûd, Edeb, 110; Tirmizî, Deavât, 85',
-      tags: ['şifa', 'afiyet', 'hastalık', 'dua', 'sabah-akşam', 'korunma'],
+      tags: ['şifa', 'afiyet', 'hastalık', 'dua', 'sabah akşam', 'korunma'],
       categories: ['hastalık', 'şifa', 'dua', 'genel'],
       timeOfDay: 'any',
       recommendedCount: 10,
@@ -230,7 +230,7 @@ export const hastalıkVeŞifa = {
       virtue:
         `Hz. Peygamber (sas) hasta ziyaretine gittiğinde hastanın yanında bu sözleri söylerdi; bu yönüyle hasta ziyaretinin asli adabından ve en önemli manevi dokunuşlarından biridir. "Lâ be'se" (bir şey yok) ifadesi, rahatsızlığın hastanın gözünde büyümesini önleyen ve gerçek bir huzur telkin eden teminattır. "Tahûrun" (temizleyici, arındırıcı) kelimesi ise hastalığın salt bir azap değil, günahları döken ilahî bir arınma fırsatı olduğunu bildirir; bu bakış açısı, hastanın morali ve kabullenme kapasitesi üzerinde derin bir etki bırakır. İnşallah kaydı, şifânın Allah'ın dilemesine bağlı olduğunu hatırlatır ve gerçekçi bir ümit çerçevesi kurar. Hasta ziyaretine gidildiğinde bizzat hastanın yanında söylenmesi sünnettir; hasta kendi kendine de tekrarlayabilir.`,
       source: 'Buhârî, Merdâ, 10, 14',
-      tags: ['şifa', 'hastalık', 'hasta-ziyareti', 'teselli', 'sabır', 'arınma'],
+      tags: ['şifa', 'hastalık', 'hasta ziyareti', 'teselli', 'sabır', 'arınma'],
       categories: ['hastalık', 'şifa', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 10,
@@ -278,7 +278,7 @@ export const hastalıkVeŞifa = {
       virtue:
         `"Seyyidü'l-İstiğfar" yani istiğfarların efendisi olarak anılan bu dua, hastalık döneminde vicdanın yükünü hafifletme ve Allah'la ilişkiyi yenileme açısından özel bir anlam taşır. İslam'da hastalığın günahların dökülmesine vesile olduğu bildirilir; bu dua, o sürecin bilinçli bir teslimiyetle yaşanmasını sağlar. "Ene alâ ahdike ve va'dike mesteta'tü" cümlesi, kulun zaafını ve sınırlılığını Allah'ın önünde dürüstçe kabul etmesidir; bu kabul, içsel çatışmayı azaltır ve ruha sükûnet getirir. "Ebûu leke bi-ni'metike aleyye" ifadesi, hastalık içinde dahi nimeti tanıyan bir şükür bilincidir; bu bakış açısı, zorlu süreçlerde anlam bulma kapasitesini artırır. Sabah okuyan akşama, akşam okuyan sabaha ulaşamazsa şehit olarak vefat edeceğini bizzat Hz. Peygamber müjdelemiştir; bu müjde duanın ağırlığını ve değerini en açık biçimde ortaya koyar.`,
       source: 'Buhârî, Deavât, 2; Tirmizî, Deavât, 15',
-      tags: ['istiğfar', 'tövbe', 'şifa', 'hastalık', 'sabah-akşam', 'seyyidul-istigfar'],
+      tags: ['istiğfar', 'tövbe', 'şifa', 'hastalık', 'sabah akşam', 'seyyidul istiğfar'],
       categories: ['hastalık', 'şifa', 'tövbe', 'istiğfar'],
       timeOfDay: 'any',
       recommendedCount: 10,

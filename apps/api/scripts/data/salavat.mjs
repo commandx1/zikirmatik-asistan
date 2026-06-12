@@ -33,7 +33,7 @@ export const salavat = {
       virtue: `Evs b. Evs radıyallahu anhdan rivâyet edildiğine göre Resûlullah (sas) şöyle buyurdu: "Günlerin en faziletlisi Cuma günüdür. O gün Âdem aleyhisselâm yaratıldı, o gün vefat etti; o gün sûr üflenecek, o gün büyük sarsıntı olacak. O gün bana çok salavat getirin; zira salavatlarınız bana arz edilir." Sahabeler: 'Bedenin çürüdükten sonra salavatımız nasıl arz edilir?' diye sorduklarında, Resûlullah: 'Allah yeryüzüne nebilerin bedenlerini yemeyi haram kılmıştır' buyurdu. Bir başka rivâyette "Kim bana Cuma günü seksen salavat getirirse, seksen yıllık günahı bağışlanır" hadisi de bu günün özel değerine işaret eder.`,
       source: `Ebû Dâvûd, Salât, 207 (1531); İbn Mâce, İkâme, 79 (1636); sahîh`,
       tags: ['salavat', 'cuma', 'haftalık', 'özel gün'],
-      categories: ['salavat', 'günlük', 'özel-günler'],
+      categories: ['salavat', 'günlük', 'özel günler'],
       timeOfDay: 'any',
       recommendedCount: 80,
       specialDays: ['cuma'],

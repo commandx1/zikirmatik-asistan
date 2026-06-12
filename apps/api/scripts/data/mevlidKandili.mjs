@@ -15,7 +15,7 @@ export const mevlidKandili = {
       virtue:
         'Salavat-ı Şerife, kalbi Resûlullah sevgisiyle dirilten en bereketli zikirlerdendir. Kişiye manevi huzur, gönül ferahlığı ve iç sükûnet kazandırır. Peygamber Efendimiz’e yapılan her salavatın rahmet kapılarını açtığı rivayet edilmiştir. Salavat, duaların kabulüne vesile olan kıymetli ameller arasında görülür. Sürekli salavat getiren kimsenin kalbi yumuşar, dili güzelleşir ve manevi bağı kuvvetlenir. Sıkıntı anlarında salavat okumak, kalbe teselli ve umut verir. Günahlara kefaret ve derecelerin yükselmesine vesile olduğu bildirilmiştir. Salavat, kişinin hayatına bereket ve nur katan bir ibadet olarak kabul edilir. Meleklerin salavat ehline dua ettiği ve rahmetle yaklaştığı rivayet edilir. Resûlullah’a sevgiyle getirilen her salavat, müminin kalbini Allah’a daha yakın hâle getirir.',
       source: 'Salavat fazileti rivayetleri',
-      tags: ['kurban-bayrami', 'salavat'],
+      tags: ['kurban bayramı', 'salavat'],
       categories: ['özel gün', 'bayram'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -49,7 +49,7 @@ export const mevlidKandili = {
       virtue:
         'Kulun acziyetini kabul ederek mutlak güç ve kudreti Allaha havale etmesini sağlar; tevekkül ve teslimiyet bilincini güçlendirir.',
       source: 'Havkale fazileti rivayetleri',
-      tags: ['mevlid-kandili', 'havkale', 'tevekkül', 'teslimiyet'],
+      tags: ['mevlid kandili', 'havkale', 'tevekkül', 'teslimiyet'],
       categories: ['kandil', 'özel gün', 'tevekkül'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -73,7 +73,7 @@ export const mevlidKandili = {
       virtue:
         'Ümit, teselli ve rahmet vurgusunu güçlendirir; kalbe ferahlık ve teslimiyet kazandırır.',
       source: 'Duha Suresi',
-      tags: ['mevlid-kandili', 'kuran', 'sure', 'teselli'],
+      tags: ['mevlid kandili', 'kuran', 'sure', 'teselli'],
       categories: ['kandil', 'özel gün', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 50,
@@ -91,7 +91,7 @@ export const mevlidKandili = {
       virtue:
         'Kalbi vesvese ve dağınıklıktan korumaya yardımcı olur; zikri huzurla sürdürmek için manevi korunma bilinci kazandırır. Obsesif kompulsif eğilimler, panik anındaki kontrol kaybı kaygısı ve zihne musallat olan tekrarlayıcı olumsuz düşüncelere (vesveselere) karşı zihnel bir kalkan işlevi görür.',
       source: 'Müminun 97-98',
-      tags: ['mevlid-kandili', 'dua', 'korunma', 'siginma'],
+      tags: ['mevlid kandili', 'dua', 'korunma', 'sığınma'],
       categories: ['kandil', 'özel gün', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 33,
@@ -114,7 +114,7 @@ export const mevlidKandili = {
       virtue:
         'Sabır, sebat ve takva bilincini güçlendirir; kandil gecesinde nefis muhasebesine ve manevi diriliğe destek olur.',
       source: 'Âl-i İmran 200',
-      tags: ['mevlid-kandili', 'kuran', 'ayet', 'sabir', 'takva'],
+      tags: ['mevlid kandili', 'kuran', 'ayet', 'sabır', 'takva'],
       categories: ['kandil', 'özel gün', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 10,
@@ -132,7 +132,7 @@ export const mevlidKandili = {
       virtue:
         'Peygambere salavat bilincini kuvvetlendirir; Mevlid Kandili gecesinde sünnete bağlılık ve muhabbeti artırır.',
       source: 'Ahzab 56',
-      tags: ['mevlid-kandili', 'kuran', 'ayet', 'salavat', 'peygamber-sevgisi'],
+      tags: ['mevlid kandili', 'kuran', 'ayet', 'salavat', 'peygamber sevgisi'],
       categories: ['kandil', 'özel gün', 'kuran', 'salavat'],
       timeOfDay: 'any',
       recommendedCount: 10,
@@ -150,7 +150,7 @@ export const mevlidKandili = {
       virtue:
         'Peygamber sevgisini artırır, sünnete bağlılığı güçlendirir ve kalpte rahmet-bereket bilincini canlı tutar.',
       source: 'Salavat fazileti rivayetleri',
-      tags: ['mevlid-kandili', 'salavat', 'bereket', 'peygamber-sevgisi'],
+      tags: ['mevlid kandili', 'salavat', 'bereket', 'peygamber sevgisi'],
       categories: ['kandil', 'özel gün', 'salavat'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -168,8 +168,8 @@ export const mevlidKandili = {
       virtue:
         'Tevbe, pişmanlık ve ilahi merhamet talebini derinleştirir; nefis muhasebesini güçlendirir.',
       source: 'Araf 23',
-      tags: ['mevlid-kandili', 'dua', 'tevbe', 'merhamet'],
-      categories: ['kandil', 'özel gün', 'dua', 'istigfar'],
+      tags: ['mevlid kandili', 'dua', 'tevbe', 'merhamet'],
+      categories: ['kandil', 'özel gün', 'dua', 'istiğfar'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: ['tevbe', 'pişmanlık', 'merhamet talebi'],
@@ -185,7 +185,7 @@ export const mevlidKandili = {
       virtue:
         'Sabrı, sığınmayı ve rahmet ümidini güçlendirir; sıkıntı anlarında kalbi teslimiyete yöneltir.',
       source: 'Enbiyâ Suresi 83. ayet',
-      tags: ['mevlid-kandili', 'dua', 'sabir', 'rahmet'],
+      tags: ['mevlid kandili', 'dua', 'sabır', 'rahmet'],
       categories: ['kandil', 'özel gün', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -203,7 +203,7 @@ export const mevlidKandili = {
       virtue:
         'Tek bir okunuşta yetmiş bin salavatın manevi sevabına eşdeğer kabul edilen salavat tertibidir.',
       source: 'Salavat mecmuaları',
-      tags: ['mevlid-kandili', 'salavat', 'kemal', 'bereket'],
+      tags: ['mevlid kandili', 'salavat', 'kemal', 'bereket'],
       categories: ['kandil', 'özel gün', 'salavat'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -221,7 +221,7 @@ export const mevlidKandili = {
       virtue:
         "Üç kez okunduğunda tüm muhabbet ehlinin salavatlarının toplamına ve Delailü'l-Hayrat okumaya denk sayılan bir salavat tertibidir.",
       source: 'Salavat mecmuaları',
-      tags: ['mevlid-kandili', 'salavat', 'delail', 'muhabbet'],
+      tags: ['mevlid kandili', 'salavat', 'delail', 'muhabbet'],
       categories: ['kandil', 'özel gün', 'salavat'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -244,7 +244,7 @@ export const mevlidKandili = {
       virtue:
         'Nur-u Zatiyye salavatı olarak bilinir; yüz bin salavat kuvvetinde zihni aydınlattığı kabul edilir.',
       source: 'Salavat mecmuaları',
-      tags: ['mevlid-kandili', 'salavat', 'nur', 'tefekkür'],
+      tags: ['mevlid kandili', 'salavat', 'nur', 'tefekkür'],
       categories: ['kandil', 'özel gün', 'salavat'],
       timeOfDay: 'any',
       recommendedCount: 10,
@@ -268,7 +268,7 @@ export const mevlidKandili = {
       virtue:
         'Kapalı kapıları açan, hakka yardım eden ve hidayet yolunu gösteren en kuvvetli salavatlardan kabul edilir.',
       source: 'Salavat mecmuaları',
-      tags: ['mevlid-kandili', 'salavat', 'feth', 'hidayet'],
+      tags: ['mevlid kandili', 'salavat', 'feth', 'hidayet'],
       categories: ['kandil', 'özel gün', 'salavat'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -286,7 +286,7 @@ export const mevlidKandili = {
       virtue:
         'Denizler mürekkep, ağaçlar kalem olsa sevabının yazılamayacağı nakledilen yüce bir salavat tertibidir.',
       source: 'Salavat mecmuaları',
-      tags: ['mevlid-kandili', 'salavat', 'ehlibeyt', 'muhabbet'],
+      tags: ['mevlid kandili', 'salavat', 'ehlibeyt', 'muhabbet'],
       categories: ['kandil', 'özel gün', 'salavat'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -305,7 +305,7 @@ export const mevlidKandili = {
         "Yatmadan önce açıktan yüz kez okunduğunda Peygamber'i rüyada görmeye vesile kılındığı nakledilir.",
       source: 'Salavat mecmuaları',
       tags: [
-        'mevlid-kandili',
+        'mevlid kandili',
         'berat-kandili',
         'salavat',
         'ruya',
@@ -333,7 +333,7 @@ export const mevlidKandili = {
       virtue:
         'Günde en az 41 kez okunduğunda düğümleri çözen, kederleri gideren ve hastalara şifa vesilesi olan salavat olarak aktarılır.',
       source: 'Salavat mecmuaları',
-      tags: ['mevlid-kandili', 'salavat', 'ferahlik', 'sifa'],
+      tags: ['mevlid kandili', 'salavat', 'ferahlik', 'şifa'],
       categories: ['kandil', 'özel gün', 'salavat', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 41,
@@ -359,7 +359,7 @@ export const mevlidKandili = {
       virtue:
         'Korku, bela, deprem ve afetlerden korunmaya vesile bir kalkan duası olarak aktarılır.',
       source: 'Salavat mecmuaları',
-      tags: ['mevlid-kandili', 'salavat', 'korunma', 'münciye'],
+      tags: ['mevlid kandili', 'salavat', 'korunma', 'münciye'],
       categories: ['kandil', 'özel gün', 'salavat', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 41,
@@ -377,7 +377,7 @@ export const mevlidKandili = {
       virtue:
         'Dil, kalp ve şükür boyutunu birlikte canlandırır; geceyi zikirle ihyaya destek olur.',
       source: 'Tesbih ve tahmid zikirleri',
-      tags: ['mevlid-kandili', 'tesbih', 'tahmid'],
+      tags: ['mevlid kandili', 'tesbih', 'tahmid'],
       categories: ['kandil', 'özel gün', 'tesbih'],
       timeOfDay: 'any',
       recommendedCount: 100,
@@ -395,7 +395,7 @@ export const mevlidKandili = {
       virtue:
         'Peygamber ahlakına yönelmeyi, Allah sevgisini ve salih amel niyetini güçlendirir.',
       source: 'Tirmizi, Deavat',
-      tags: ['mevlid-kandili', 'dua', 'muhabbet'],
+      tags: ['mevlid kandili', 'dua', 'muhabbet'],
       categories: ['kandil', 'özel gün', 'dua'],
       timeOfDay: 'night',
       recommendedCount: 100,

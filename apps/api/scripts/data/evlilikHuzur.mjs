@@ -23,7 +23,7 @@ export const evlilikHuzur = {
         'kuran',
         'aile',
       ],
-      categories: ['genel', 'aile-iliskisi', 'manevi-destek', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'manevi destek', 'kuran'],
       timeOfDay: 'morning',
       recommendedCount: 7,
       suitableFor: [
@@ -56,7 +56,7 @@ export const evlilikHuzur = {
         'kuran',
         'dua',
       ],
-      categories: ['genel', 'aile-iliskisi', 'manevi-destek', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'manevi destek', 'kuran'],
       timeOfDay: 'morning',
       recommendedCount: 7,
       suitableFor: [
@@ -89,7 +89,7 @@ export const evlilikHuzur = {
         'aile',
         'dua',
       ],
-      categories: ['genel', 'aile-iliskisi', 'nefis-terbiyesi', 'dua'],
+      categories: ['genel', 'aile ilişkisi', 'nefis terbiyesi', 'dua'],
       timeOfDay: 'morning',
       recommendedCount: 7,
       suitableFor: [
@@ -122,7 +122,7 @@ export const evlilikHuzur = {
         'kuran',
         'barış',
       ],
-      categories: ['genel', 'aile-iliskisi', 'manevi-destek', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -155,7 +155,7 @@ export const evlilikHuzur = {
         'kuran',
         'aile',
       ],
-      categories: ['genel', 'aile-iliskisi', 'manevi-destek', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -188,7 +188,7 @@ export const evlilikHuzur = {
         'kuran',
         'aile',
       ],
-      categories: ['genel', 'aile-iliskisi', 'manevi-destek', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -218,7 +218,7 @@ export const evlilikHuzur = {
         'kuran',
         'aile',
       ],
-      categories: ['genel', 'aile-iliskisi', 'manevi-destek', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 41,
       suitableFor: [
@@ -243,7 +243,7 @@ export const evlilikHuzur = {
         "Bu dua Hz. İbrahim'indir — peygamberlerin atası, yuva kurmak ve nesil yetiştirmek üzerine en derin tecrübeyi yaşamış bir isim. Duanın yapısı, bir ebeveynin önceliklerini sıralar: önce kendi namaz hayatı, sonra çocukların namaz hayatı, sonra duanın kabulü talebi, sonra kıyamet gününde bağışlanma. 'Mukîme's-salâti' ifadesi önemlidir — namaz kılan değil namazda 'ikâme eden' (ayakta tutan, sabitleyen, düzenli yaşayan) olmak istenir. Aile içinde namaz birliği, ortak bir ritim ve değer sistemi kurar; bu ritmin yokluğunda evlilik ilişkisi de çoğunlukla yüzeysel kalır. Her sabah bu niyetle okunduğunda hem ebeveyn hem çocuklar için manevi sorumluluk bilinci tazelenir. 'Yevme yekûmul hısâb' kısmı duayı ahiret perspektifine bağlar: evlilik ve aile sadece dünya konforunu değil hesap gününü de kapsayan bir emanettir.",
       source: 'İbrâhim Suresi, 40-41. Ayetler',
       tags: ['evlilik', 'nesil', 'namaz', 'aile', 'ibadet', 'kuran', 'dua'],
-      categories: ['genel', 'aile-iliskisi', 'nefis-terbiyesi', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'nefis terbiyesi', 'kuran'],
       timeOfDay: 'morning',
       recommendedCount: 7,
       suitableFor: [
@@ -268,7 +268,7 @@ export const evlilikHuzur = {
         "Bu ayet boşanma hükümlerinin tam ortasına yerleştirilmiştir; Allah çiftlere en gerilimli anlarda bile 'birbirinize verdiğiniz iyiliği ve lütfu unutmayın' hatırlatmasını yapar. 'Fadl' kelimesi tek bir iyiliği değil — paylaşılan güzel anları, karşılıklı fedakârlıkları, sevgi nöbetlerini, zorlukta yanyana durulan dönemleri — bütünüyle kapsar. Psikoloji araştırmalarında 'olumsuz duygu baskısı' (negative sentiment override) adı verilen bir mekanizma tanımlanır: çiftler yoğun çatışma dönemlerinde partnerin pozitif davranışlarını bile olumsuz okuma eğilimine girerler; ortak tarihte ne kadar fazla iyi an olursa olsun akılda yalnızca şikâyetler kalır. Bu ayet tam o mekanizmayı kırmak için ilahi bir komuttur. 'İnnallâhe bimâ ta'melûne basîr' — Allah sadece şu anki çatışmayı değil, birbirinize yaptığınız her iyiliği de görür; bu hatırlatma hem kişiyi ihsana teşvik eder hem de karşıdakinin gözden kaçan iyiliklerini yeniden fark etmeye davet eder.",
       source: 'Bakara Suresi, 237. Ayet',
       tags: ['evlilik', 'fadl', 'ihsan', 'boşanma', 'çatışma', 'kuran', 'aile'],
-      categories: ['genel', 'aile-iliskisi', 'manevi-destek', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -301,7 +301,7 @@ export const evlilikHuzur = {
         'kuran',
         'aile',
       ],
-      categories: ['genel', 'aile-iliskisi', 'nefis-terbiyesi', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'nefis terbiyesi', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -334,7 +334,7 @@ export const evlilikHuzur = {
         'kuran',
         'aile',
       ],
-      categories: ['genel', 'aile-iliskisi', 'kaygi-yonetimi', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'kaygı yönetimi', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -357,7 +357,7 @@ export const evlilikHuzur = {
         "Evlilikte kırgınlık ve küskünlük dönemleri çoğunlukla iki katmanlıdır: Allah'a karşı işlenen kusurlar ve eşe karşı işlenen kusurlar. Bu ayet birinci katmanı — Allah'a dönüşü — doğrudan ele alır: 'evvâb' kelimesi tekrar tekrar dönen, yönelen kişiyi tanımlar; bu Allah'a karşı yapılan dönüşün sürekliliğine işaret eder. İlişkide hasarın büyük çoğunluğu aslında kişinin kendi iç dünyasındaki arızadan beslenir — sabırsızlık, bencillik, kibir, haksızlık — bunların hepsi Allah'a karşı da bir kusurdur. Bu ayet her gün tövbe ve dönüş niyetiyle okunduğunda hem kişiyi Allah'la yüzleştirir hem de o iç arızayı tamir etmeye zemin hazırlar. İç tamir dışa yansır; eşe karşı af ve yumuşama çoğunlukla Allah'a yönelişteki samimiyetin bir eseridir.",
       source: 'İsrâ Suresi, 25. Ayet',
       tags: ['evlilik', 'tövbe', 'af', 'evvabin', 'dönüş', 'kuran', 'aile'],
-      categories: ['genel', 'aile-iliskisi', 'nefis-terbiyesi', 'kuran'],
+      categories: ['genel', 'aile ilişkisi', 'nefis terbiyesi', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -386,9 +386,9 @@ export const evlilikHuzur = {
         'allah-sevgisi',
         'aile',
         'dua',
-        'namaz-sonrasi',
+        'namaz sonrası',
       ],
-      categories: ['genel', 'aile-iliskisi', 'nefis-terbiyesi', 'dua'],
+      categories: ['genel', 'aile ilişkisi', 'nefis terbiyesi', 'dua'],
       timeOfDay: 'morning',
       recommendedCount: 3,
       suitableFor: [

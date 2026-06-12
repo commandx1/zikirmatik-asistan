@@ -14,8 +14,8 @@ export const isHayatiKariyer = {
       virtue:
         'Yeni başlayan görev veya projelerde istikrarı korumak, zorluklar karşısında yılmamak, kurumsal dürüstlük ve profesyonel itibarı güçlendirmek için okunur.',
       source: "Tirmizî, De'avât, 23; Diyanet Haber Kayıtları",
-      tags: ['is-hayati', 'kariyer', 'sebat', 'durustluk', 'dua'],
-      categories: ['genel', 'is-hayati', 'kariyer', 'dua'],
+      tags: ['iş hayatı', 'kariyer', 'sebat', 'dürüstlük', 'dua'],
+      categories: ['genel', 'iş hayatı', 'kariyer', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -38,8 +38,8 @@ export const isHayatiKariyer = {
       virtue:
         'Borç yükünden ve maddi sıkıntıdan kurtulmak, iş hayatında helal ve bereketli kazanç elde etmek, bağımsız ve kimseye muhtaç olmayan bir duruş kazanmak için tavsiye edilir.',
       source: "Hz. Ali'den rivayet; Tirmizî, Daavât, 121",
-      tags: ['is-hayati', 'helal-rizik', 'borc', 'bereket', 'dua'],
-      categories: ['genel', 'is-hayati', 'kariyer', 'dua'],
+      tags: ['iş hayatı', 'helal rızık', 'borç', 'bereket', 'dua'],
+      categories: ['genel', 'iş hayatı', 'kariyer', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 70,
       suitableFor: [
@@ -63,15 +63,15 @@ export const isHayatiKariyer = {
         'Ticari başarı, iş hayatında kalıcı bolluk ve bereket, maddi darboğazlardan çıkış ve helal kazanç bilincini güçlendirmek için sıklıkla okunması tavsiye edilir.',
       source: "İmam-ı Azam Ebû Hanife'nin Bereket Duası",
       tags: [
-        'is-hayati',
+        'iş hayatı',
         'ticari-basari',
         'bereket',
         'bolluk',
-        'helal-rizik',
+        'helal rızık',
         'esma',
         'dua',
       ],
-      categories: ['genel', 'is-hayati', 'kariyer', 'rizik', 'esma', 'dua'],
+      categories: ['genel', 'iş hayatı', 'kariyer', 'rızık', 'esma', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -94,8 +94,8 @@ export const isHayatiKariyer = {
       virtue:
         'İş arayanların hayırlı bir iş bulması, çalışanların kariyer basamaklarında yükselmesi, yönetim kademelerinde güven ve itibar kazanması niyetiyle namazlardan sonra okunur.',
       source: 'Yusuf Suresi, 12/54-56',
-      tags: ['is-hayati', 'kariyer', 'terfi', 'yonetim', 'itibar', 'kuran'],
-      categories: ['genel', 'is-hayati', 'kariyer', 'kuran'],
+      tags: ['iş hayatı', 'kariyer', 'terfi', 'yönetim', 'itibar', 'kuran'],
+      categories: ['genel', 'iş hayatı', 'kariyer', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -118,8 +118,8 @@ export const isHayatiKariyer = {
       virtue:
         'Mevcut başarıların ve kariyer kazanımlarının korunması, işteki refah ve bereketin süreklilik kazanması için şükür bilinciyle okunur.',
       source: 'İbrahim Suresi, 14/7',
-      tags: ['is-hayati', 'sukur', 'bereket', 'nimet-artisi', 'kuran'],
-      categories: ['genel', 'is-hayati', 'kariyer', 'rizik', 'kuran'],
+      tags: ['iş hayatı', 'şükür', 'bereket', 'nimet artışı', 'kuran'],
+      categories: ['genel', 'iş hayatı', 'kariyer', 'rızık', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -140,15 +140,15 @@ export const isHayatiKariyer = {
         'Günde 351 defa zikredildiğinde çalışanların insanlar ve iş arkadaşları arasında saygınlığının artmasına, rızkının genişlemesine ve makamının yükselmesine vesile olması niyetiyle okunur.',
       source: 'Esmâ-ül Hüsnâ',
       tags: [
-        'is-hayati',
+        'iş hayatı',
         'kariyer',
         'terfi',
         'itibar',
-        'sayginlik',
-        'rizik',
+        'saygınlık',
+        'rızık',
         'esma',
       ],
-      categories: ['genel', 'is-hayati', 'kariyer', 'rizik', 'esma'],
+      categories: ['genel', 'iş hayatı', 'kariyer', 'rızık', 'esma'],
       timeOfDay: 'any',
       recommendedCount: 351,
       suitableFor: [

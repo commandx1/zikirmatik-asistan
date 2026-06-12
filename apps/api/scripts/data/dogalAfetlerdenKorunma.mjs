@@ -49,12 +49,12 @@ export const dogalAfetlerdenKorunma = {
       virtue:
         'Sabah-akşam okunduğunda okuyanı, ailesini ve malını ani felaket, yangın, sel ve musibetlerden korumaya yönelik güçlü tevekkül duasıdır.',
       source: "Kenzü'l-Ummâl (Hadis No: 3432); İbnü's-Sünnî (Amelü'l-Yevm)",
-      tags: ['afet', 'tevekkul', 'yangin', 'sel', 'korunma'],
+      tags: ['afet', 'tevekkül', 'yangın', 'sel', 'korunma'],
       categories: ['genel', 'afet', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 10,
       suitableFor: [
-        'sabah-akşam',
+        'sabah akşam',
         'aile korunması',
         'ani felaketlerden sığınma',
       ],
@@ -71,7 +71,7 @@ export const dogalAfetlerdenKorunma = {
       virtue:
         'Şiddetli gök gürültüsü, fırtına ve yıldırım anlarında atmosferik afetlere karşı okunur.',
       source: "İmam Mâlik (Muvatta, Sefer, 40); Ra'd Suresi 13. ayet tefsiri",
-      tags: ['afet', 'firtina', 'yildirim', 'tesbih'],
+      tags: ['afet', 'fırtına', 'yıldırım', 'tesbih'],
       categories: ['genel', 'afet', 'korunma'],
       timeOfDay: 'any',
       recommendedCount: 3,
@@ -89,7 +89,7 @@ export const dogalAfetlerdenKorunma = {
       virtue:
         'Her sabah üç defa okunması halinde yangın, boğulma, ani ölüm ve beklenmedik afetlere karşı korunma niyeti taşır.',
       source: 'Şeyh Şihâbüddin Sühreverdi hazretlerinin evradı',
-      tags: ['afet', 'sabah-virdi', 'yangin', 'korunma'],
+      tags: ['afet', 'sabah virdi', 'yangın', 'korunma'],
       categories: ['genel', 'afet', 'korunma'],
       timeOfDay: 'morning',
       recommendedCount: 3,
@@ -107,7 +107,7 @@ export const dogalAfetlerdenKorunma = {
       virtue:
         "İçinde İsm-i A'zamı barındırdığı rivayet edilen yakarış olarak, afet ve büyük tehlike anlarında duanın süratle kabulü niyetiyle okunur.",
       source: 'Tirmizî (Deavât, 82); Ebû Dâvûd (Salât, 368)',
-      tags: ['afet', 'dua', 'ismi-azam', 'korunma'],
+      tags: ['afet', 'dua', 'ismi azam', 'korunma'],
       categories: ['genel', 'afet', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 10,
@@ -125,7 +125,7 @@ export const dogalAfetlerdenKorunma = {
       virtue:
         'Deprem, semavi afetler ve şiddetli doğa olaylarında ilahi rahmete sığınma niyetiyle okunur.',
       source: 'Tirmizî (Deavât, 48); Ahmed b. Hanbel (Müsned, II, 116)',
-      tags: ['afet', 'rahmet', 'siginma', 'dua'],
+      tags: ['afet', 'rahmet', 'sığınma', 'dua'],
       categories: ['genel', 'afet', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 3,
@@ -143,7 +143,7 @@ export const dogalAfetlerdenKorunma = {
       virtue:
         'Kasırga, hortum ve şiddetli rüzgarların yıkıcı afete dönüşmemesi için okunan Nebevi duadır.',
       source: 'Sahih-i Müslim (İstiskâ, 15)',
-      tags: ['afet', 'ruzgar', 'firtina', 'dua'],
+      tags: ['afet', 'rüzgar', 'fırtına', 'dua'],
       categories: ['genel', 'afet', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 10,

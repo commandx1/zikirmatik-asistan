@@ -16,8 +16,8 @@ export const kibirdenKorunma = {
       virtue:
         "Namaz başlangıcında düzenli okuyan kişilerde şeytanın vesvese ve kibir kanallarına karşı içsel bir direnç oluştuğu gözlemlenir. Özellikle ego şişmesi, büyüklenme hissi ve başkalarını küçümseme eğilimlerine karşı günlük bir manevi bariyer işlevi görür. Kişiyi benlik iddiasından çıkarıp Allah huzurunda sıfır noktasına taşıdığı için ibadet kalitesini de doğrudan etkiler. Boş ilham, anlamsız kuruntu ve kalbî nefeslerden kaynaklanan zihinsel gürültüye karşı koruyucu bir sığınma kalıbıdır. Ahmed b. Hanbel'in naklettiği rivayetlerde Peygamber Efendimiz bu duayı nafile namazlarının başında sürekli okumuştur; bu süreklilik, kibre karşı mücadelenin tek seferlik değil günlük bir pratik gerektirdiğine işaret eder. Kibir yalnızca dışa vurulan bir tavır değil; kalbin içinde sessizce şişen bir hal olduğu için bu dua kalbî bir temizlik niyetiyle de ayrıca okunabilir.",
       source: 'Ahmed b. Hanbel, Müsned; Abdurrezzak, Musannef',
-      tags: ['kibir', 'korunma', 'seytan', 'namaz-basi', 'dua', 'siginma'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'dua'],
+      tags: ['kibir', 'korunma', 'seytan', 'namaz başı', 'dua', 'sığınma'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 7,
       suitableFor: [
@@ -41,8 +41,8 @@ export const kibirdenKorunma = {
       virtue:
         "Kibir, ego içinden doğan bir karakter kusuru değil; dışarıdan üflenerek şişirilen yapay bir balon gibi çalışır. Bu dua, tam da o şişirme mekanizmasını hedef alarak egonun gerçek boyutuna geri dönmesine zemin hazırlar. Özellikle başarı, övgü veya üstünlük anlarından sonra kalpte beliren sessiz büyüklenme hissini fark edip söndürmek için güçlü bir araçtır. Düzenli okuyan kişilerde başkalarını değersizleştirme refleksinin ve sosyal karşılaştırma eğiliminin zamanla zayıfladığı gözlemlenir. Kibrin tetiklendiği sosyal anlarda — alim biriyle karşılaşınca, küçük gördüğü biriyle muhatap olunca, rekabet hissedilince — bir an için bu duayı içten tekrar etmek, zihnin üstünlük şemasını kırar ve yeniden sıfır noktasına çeker. Tasavvuf geleneğinde mahviyet (hiçlik) eğitiminin temel sığınma dualarından biri olarak kullanılır; nefsin sahte büyüklük iddiasını ('ben yaptım', 'ben bildim') Allah'a iade etme niyetiyle okunduğunda etkisi derinleşir.",
       source: 'Tasavvuf Literatürü',
-      tags: ['kibir', 'korunma', 'tevazu', 'nefis-terbiyesi', 'dua', 'mahviyet'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'dua'],
+      tags: ['kibir', 'korunma', 'tevazu', 'nefis terbiyesi', 'dua', 'mahviyet'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 33,
       suitableFor: [
@@ -63,8 +63,8 @@ export const kibirdenKorunma = {
       virtue:
         "Her gün sabah namazının ardından 167 defa zikredildiğinde, dilin yalan ve kötü sözlerden temizlenmesine, kalbin ise riya, kibir, haset ve kötü ahlaktan tamamen arınmasına vesile olur.",
       source: 'Esmâ-i Hüsnâ Literatürü',
-      tags: ['kibir', 'korunma', 'tevazu', 'riya', 'haset', 'esma', 'dil-temizligi'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'esma'],
+      tags: ['kibir', 'korunma', 'tevazu', 'riya', 'haset', 'esma', 'dil temizliği'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'esma'],
       timeOfDay: 'morning',
       recommendedCount: 167,
       suitableFor: [
@@ -85,8 +85,8 @@ export const kibirdenKorunma = {
       virtue:
         "Günde 100 defa okunduğunda kalbin manevi hastalıklarını tedavi eder, nefsi şehevi arzulardan temizler, vesveseleri giderir ve ahlakı güzelleştirir.",
       source: 'Esmâ-i Hüsnâ Literatürü',
-      tags: ['kibir', 'korunma', 'nefis-terbiyesi', 'kalp-temizligi', 'vesvese', 'esma'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'esma'],
+      tags: ['kibir', 'korunma', 'nefis terbiyesi', 'kalp temizliği', 'vesvese', 'esma'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'esma'],
       timeOfDay: 'any',
       recommendedCount: 100,
       suitableFor: [
@@ -110,8 +110,8 @@ export const kibirdenKorunma = {
       virtue:
         "Egonun ve kibrin yarattığı yapay darlıkları, içsel huzursuzlukları ve tıkanıklıkları gidererek ruhu ferahlatan ve anında sükunet veren güçlü bir zikirdir.",
       source: 'Lalegül Dergisi',
-      tags: ['kibir', 'korunma', 'tevhid', 'tenzih', 'hamd', 'ferahlama', 'sukunet'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'dua'],
+      tags: ['kibir', 'korunma', 'tevhid', 'tenzih', 'hamd', 'ferahlama', 'sükûnet'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'dua'],
       timeOfDay: 'any',
       recommendedCount: 33,
       suitableFor: [
@@ -133,8 +133,8 @@ export const kibirdenKorunma = {
       virtue:
         "Bireyin kendi nefsiyle ve egosuyla giriştiği amansız mücadelede, şahsi iradenin acizliğini idrak etmesini ve ilahi iradenin galibiyetine sığınmasını sağlar.",
       source: "Yusuf Suresi, 21. Ayet; Manevi Reçeteler",
-      tags: ['kibir', 'korunma', 'teslimiyet', 'ilahi-irade', 'acziyet', 'kuran'],
-      categories: ['genel', 'nefis-terbiyesi', 'manevi-destek', 'kuran'],
+      tags: ['kibir', 'korunma', 'teslimiyet', 'ilahi irade', 'acziyet', 'kuran'],
+      categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'kuran'],
       timeOfDay: 'any',
       recommendedCount: 33,
       suitableFor: [
