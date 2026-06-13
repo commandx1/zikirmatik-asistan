@@ -86,6 +86,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="theme-selector" />
         <Stack.Screen name="font-selector" />
+        <Stack.Screen name="collections" />
       </Stack>
     </RootProviders>
   );
