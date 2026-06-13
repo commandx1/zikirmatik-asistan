@@ -66,9 +66,7 @@ export class DhikrCollectionsService {
       .exec();
 
     // Restore seed ordering (MongoDB $in does not guarantee order)
-    const idOrder = new Map(
-      col.dhikrIds.map((id, i) => [id.toString(), i]),
-    );
+    const idOrder = new Map(col.dhikrIds.map((id, i) => [id.toString(), i]));
     const orderedDhikrs = dhikrDocs.sort(
       (a, b) =>
         (idOrder.get(a._id.toString()) ?? 0) -

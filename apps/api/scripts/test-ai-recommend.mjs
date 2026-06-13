@@ -1,8 +1,7 @@
 /* global console, process */
 /**
- * AI Rehber öneri pipeline'ını (Stage A embedding retrieval + Stage B LLM rerank)
- * DB'ye yazmadan, terminalden test etmek için araç. Prod akışıyla (ai.service.ts)
- * birebir aynı sistem prompt'u, modeli ve parametreleri kullanır.
+ * AI Rehber öneri pipeline'ını (Stage A: LLM intent extraction + MongoDB score,
+ * Stage B: LLM rerank) DB'ye yazmadan, terminalden test etmek için araç.
  *
  * Kullanım:
  *   node scripts/test-ai-recommend.mjs "kaygılıyım huzur bulmak istiyorum"
@@ -10,40 +9,56 @@
  *   node scripts/test-ai-recommend.mjs                                   # hazır örnek set
  *
  * Ayarlanabilir (env veya .env):
- *   OPENAI_MODEL (vars: gpt-5.4-mini) | AI_RETRIEVAL_TOP_K (20) | AI_MAX_REC (5)
- *   SHOW_CANDIDATES=1  -> getirilen tüm adayları skorlarıyla göster
+ *   OPENAI_MODEL (varsayılan: gpt-4.1-mini) | AI_MAX_REC (5)
+ *   SHOW_CANDIDATES=1  → Stage A'dan gelen adayları skorlarıyla göster
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { embed } from './lib/embedding.mjs';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sistem prompt'u — ai.service.ts:574-588 ile BİREBİR aynı tutulmalı.
-// İyileştirmeleri burada deneyip beğenince ai.service.ts'e taşıyacağız.
+// ai.service.ts:KNOWN_SUITABLE_FOR ile BİREBİR aynı tutulmalı.
 // ─────────────────────────────────────────────────────────────────────────────
-const SYSTEM_INSTRUCTION = [
+const KNOWN_SUITABLE_FOR = [
+  'sabah', 'akşam', 'uyku öncesi', 'uyandıktan sonra', 'yemek öncesi', 'yemek sonrası',
+  'yolculuk', 'hastalık', 'şifa', 'kaygı', 'üzüntü', 'korku', 'haset', 'öfke',
+  'namaz sonrası', 'cuma', 'zilhicce', 'muharrem', 'cenaze', 'hac', 'umre',
+  'evlilik', 'rızık', 'sınav', 'istiğfar', 'tevbe', 'sabır', 'şükür', 'koruma', 'bereket',
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sistem prompt'ları — ai.service.ts ile BİREBİR aynı tutulmalı.
+// ─────────────────────────────────────────────────────────────────────────────
+const INTENT_SYSTEM_PROMPT = [
+  'Sen bir İslami zikir arama asistanısın.',
+  'Kullanıcının Türkçe metninden zikir arama niyetini çıkar.',
+  `suitableFor için yalnızca şu listeden eşleşenleri kullan: ${KNOWN_SUITABLE_FOR.join(', ')}.`,
+  'timeOfDay: sabah (05-12) → "morning", öğle-akşam (12-19) → "evening", gece (19-05) → "night", belirsiz → null.',
+  'tags ve categories için metinde geçen İslami temaları Türkçe yaz (ör. "şükür", "namaz", "hac").',
+  'Yalnızca JSON döndür: { "suitableFor": string[], "tags": string[], "categories": string[], "timeOfDay": string|null }',
+].join(' ');
+
+const RERANK_SYSTEM_INSTRUCTION = [
   'Sen bir İslami zikir öneri asistanısın.',
   'İLK ADIM — konu tespiti: freeText zikir, dua, manevi hal, niyet veya İslami yaşamla (huzur, şükür, bağışlanma, kaygı, rızık, şifa, koruma, sabır, tövbe vb.) alakalı mı?',
-  'Aşağıdaki durumlarda off_topic: true döndür, recommendations dizisini boş bırak, summary yazma: (1) anlamsız/rastgele karakter dizisi (ör. "sllsd", "asdfg", "123abc"), (2) genel sohbet veya selamlama, (3) model/sistem/teknik soru, (4) İslami yaşamla hiç ilgisi olmayan herhangi bir içerik.',
+  'Aşağıdaki durumlarda off_topic: true döndür, recommendations dizisini boş bırak, summary yazma: (1) anlamsız/rastgele karakter dizisi (ör. "sllsd", "asdfg", "123abc"), (2) genel sohbet, selamlama veya asistana yönelik iltifat/kısa tepki (ör. "harikasın", "teşekkürler", "süper", "iyi iş", "nasılsın"), (3) model/sistem/teknik soru, (4) İslami yaşamla hiç ilgisi olmayan herhangi bir içerik. Adayların içeriğinden bağlam çıkarıp freeText\'i İslami niyet gibi yorumlama; karar her zaman freeText\'e göre verilmeli.',
   'Konu ilgiliyse → off_topic: false yap ve devam et.',
   'YALNIZCA verilen candidateDhikrs listesinden seçim yap; liste dışından ID üretme.',
   'Niyeti adayların fazilet (virtue), etiket (tags) ve kategori (categories) alanlarıyla eşleştirerek en uygunları seç.',
-  'Niyete EN DOĞRUDAN hitap eden duaları öncele (ör. şifa isteyene doğrudan şifa/afiyet duaları). İstiğfar, tövbe veya genel zikir gibi yalnızca dolaylı/teğet ilgili olanları üst sıralara koyma; ancak doğrudan adaylar yetersizse ve alt sıralarda ekle.',
-  'Duanın kime yönelik olduğuna dikkat et: kullanıcı kendisi için istiyorsa kendine yönelik (birinci şahıs) duaları tercih et; başkası ya da hasta ziyareti için olanları kullanıcı bunu açıkça belirtmedikçe önceleme.',
+  'Niyete EN DOĞRUDAN hitap eden duaları öncele (ör. şifa isteyene doğrudan şifa/afiyet duaları). İstiğfar, tövbe veya genel zikir gibi yalnızca dolaylı/teğet ilgili olanları üst sıralara koyma; ancak doğrudan adaylar yetersizse alt sıralarda ekle.',
+  'Duanın kime yönelik olduğuna dikkat et: kullanıcı kendisi için istiyorsa birinci şahıs duaları tercih et; başkası için olanları kullanıcı bunu açıkça belirtmedikçe önceleme.',
   'Zaman bağlamını (timeOfDay, suitableFor) ikincil kriter olarak kullan.',
-  'En fazla {MAX} zikir seç ve en uygundan başlayarak sırala. {MAX} bir üst sınırdır, doldurulması gereken bir hedef değildir: niyetle gerçekten alakalı yeterli aday yoksa daha az öner (ör. yalnızca 2-3).',
-  'Sırf listeyi doldurmak için alakası zayıf ya da niyetle çelişen bir duayı EKLEME. Bir adayın reason\'ını yazarken niyetten farklı/uzak olduğunu ifade ediyorsan, o adayı hiç ekleme (ör. sınav niyetine rızık/borç duası ekleme).',
-  'Her seçtiğin zikir için recommendations dizisine bir nesne ekle: id (candidate id) ve reason (o zikrin neden seçildiği).',
-  'Her reason yalnızca o id\'nin kendi fazilet/etiket/kategori içeriğinden türemeli; başka bir duanın özelliğini o reason\'a yazma.',
-  "Yalnızca recommendations dizisindeki id'lerden bahset; listede olmayan bir zikri reason veya summary içinde anma.",
+  'En fazla {MAX} zikir seç ve en uygundan başlayarak sırala. {MAX} bir üst sınırdır, doldurulması gereken bir hedef değildir.',
+  'Sırf listeyi doldurmak için alakası zayıf bir duayı EKLEME.',
+  'Her seçtiğin zikir için recommendations dizisine bir nesne ekle: id (candidate id) ve reason.',
+  "Her reason yalnızca o id'nin kendi fazilet/etiket/kategori içeriğinden türemeli.",
   'reason ve summary doğrudan kullanıcıya gösterilecek; insanî, sıcak ve empatik bir dil kullan; id veya teknik alan adı yazma.',
-  'summary, kullanıcının niyetini anlayan 2-3 cümlelik sıcak bir girişdir: önce niyeti/hissi kabul et, sonra bu seçimlerin neden yardımcı olabileceğini kısaca belirt. Belirli zikir/dua isimleri içermez.',
+  'summary, kullanıcının niyetini anlayan 2-3 cümlelik sıcak ve destekleyici bir girişdir: önce niyeti veya hissi samimiyetle kabul et; uygun yerlerde "inşallah", "Allah kabul etsin", "maşallah", "Allah kolaylık versin" gibi İslami ifadeler kullan; ardından bu seçimlerin neden yardımcı olabileceğini umut verici ve dua dolu bir dille belirt. Belirli zikir/dua isimleri içermez.',
   'Yalnızca JSON döndür.',
 ];
 
 const DEFAULT_QUERIES = [
   'çok kaygılıyım, içim huzursuz',
-  'Allah’a şükretmek istiyorum',
+  "Allah'a şükretmek istiyorum",
   'günahlarımdan tövbe etmek istiyorum',
   'sınavım var, başarı ve kolaylık için dua',
   'asdfgh123', // off-topic kontrolü
@@ -72,35 +87,95 @@ function loadEnvFiles(paths) {
   }
 }
 
-function cosineSimilarity(a, b) {
-  const length = Math.min(a.length, b.length);
-  if (length === 0) return 0;
-  let dot = 0;
-  let normA = 0;
-  let normB = 0;
-  for (let i = 0; i < length; i += 1) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-  if (normA === 0 || normB === 0) return 0;
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+function modelSupportsTemperature(model) {
+  return !/^(gpt-5|o\d)/i.test(model);
 }
 
-function toCandidate(item) {
+function toCandidate(doc) {
   return {
-    id: item._id.toString(),
-    nameTurkish: item.nameTurkish,
-    virtue: item.virtue,
-    tags: item.tags,
-    categories: item.categories,
-    timeOfDay: item.timeOfDay,
-    suitableFor: item.suitableFor,
+    id: doc._id.toString(),
+    nameTurkish: doc.nameTurkish,
+    virtue: doc.virtue,
+    tags: doc.tags ?? [],
+    categories: doc.categories ?? [],
+    timeOfDay: doc.timeOfDay,
+    suitableFor: doc.suitableFor ?? [],
   };
 }
 
-function modelSupportsTemperature(model) {
-  return !/^(gpt-5|o\d)/i.test(model);
+async function extractIntent(openai, model, freeText) {
+  try {
+    const response = await openai.chat.completions.create({
+      model,
+      ...(modelSupportsTemperature(model) ? { temperature: 0 } : {}),
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: INTENT_SYSTEM_PROMPT },
+        { role: 'user', content: freeText },
+      ],
+    });
+    const text = response.choices?.[0]?.message?.content;
+    if (!text) return null;
+    const parsed = JSON.parse(text);
+    return {
+      suitableFor: Array.isArray(parsed.suitableFor) ? parsed.suitableFor : [],
+      tags: Array.isArray(parsed.tags) ? parsed.tags : [],
+      categories: Array.isArray(parsed.categories) ? parsed.categories : [],
+      timeOfDay: typeof parsed.timeOfDay === 'string' ? parsed.timeOfDay : null,
+      _tokens: response.usage,
+    };
+  } catch (err) {
+    console.log(`  ⚠ Intent extraction başarısız: ${err.message}`);
+    return null;
+  }
+}
+
+async function getMongodbCandidates(dhikrs, intent, timeContext) {
+  if (
+    intent &&
+    (intent.suitableFor.length > 0 ||
+      intent.tags.length > 0 ||
+      intent.categories.length > 0 ||
+      intent.timeOfDay)
+  ) {
+    const scored = dhikrs.map((doc) => {
+      const sfMatch = (doc.suitableFor ?? []).filter((v) =>
+        intent.suitableFor.includes(v),
+      ).length;
+      const tagMatch = (doc.tags ?? []).filter((v) =>
+        intent.tags.includes(v),
+      ).length;
+      const catMatch = (doc.categories ?? []).filter((v) =>
+        intent.categories.includes(v),
+      ).length;
+      const timeMatch =
+        intent.timeOfDay && doc.timeOfDay === intent.timeOfDay ? 2 : 0;
+      const score = sfMatch * 3 + tagMatch * 2 + catMatch * 1 + timeMatch;
+      return { doc, score };
+    });
+
+    scored.sort((a, b) =>
+      b.score !== a.score
+        ? b.score - a.score
+        : (b.doc.recommendedCount ?? 0) - (a.doc.recommendedCount ?? 0),
+    );
+
+    return scored.slice(0, 10);
+  }
+
+  // Zaman tabanlı fallback
+  const hour = timeContext.hour;
+  const timeOfDay =
+    hour >= 5 && hour < 12 ? 'morning' : hour >= 12 && hour < 19 ? 'evening' : 'night';
+
+  const filtered = dhikrs
+    .filter(
+      (d) => d.timeOfDay === timeOfDay || d.timeOfDay === 'any',
+    )
+    .sort((a, b) => (b.recommendedCount ?? 0) - (a.recommendedCount ?? 0))
+    .slice(0, 10);
+
+  return filtered.map((doc) => ({ doc, score: 0 }));
 }
 
 async function main() {
@@ -109,8 +184,7 @@ async function main() {
   const queries = process.argv.slice(2);
   const finalQueries = queries.length > 0 ? queries : DEFAULT_QUERIES;
 
-  const model = process.env.OPENAI_MODEL?.trim() || 'gpt-5.4-mini';
-  const topK = Number(process.env.AI_RETRIEVAL_TOP_K) || 20;
+  const model = process.env.OPENAI_MODEL?.trim() || 'gpt-4.1-mini';
   const maxRec = Number(process.env.AI_MAX_REC) || 5;
   const showCandidates = process.env.SHOW_CANDIDATES === '1';
 
@@ -128,40 +202,28 @@ async function main() {
   await mongoose.connect(process.env.MONGODB_URI.trim(), { autoIndex: false });
 
   console.log(
-    `\nModel: ${model}  |  topK: ${topK}  |  maxRec: ${maxRec}  |  temperature: ${
-      modelSupportsTemperature(model) ? '0.2' : '(gönderilmiyor)'
+    `\nModel: ${model}  |  maxRec: ${maxRec}  |  temperature: ${
+      modelSupportsTemperature(model) ? '0.2 (rerank) / 0 (intent)' : '(gönderilmiyor)'
     }\n`,
   );
 
   try {
-    const dhikrs = mongoose.connection.collection('dhikrs');
-    const catalog = await dhikrs
+    const dhikrsColl = mongoose.connection.collection('dhikrs');
+    const catalog = await dhikrsColl
       .find(
         { isVerified: true, isActive: true },
         {
           projection: {
-            nameTurkish: 1,
-            nameArabic: 1,
-            transliteration: 1,
-            meaning: 1,
-            virtue: 1,
-            source: 1,
-            tags: 1,
-            categories: 1,
-            timeOfDay: 1,
-            suitableFor: 1,
-            embedding: 1,
+            nameTurkish: 1, nameArabic: 1, transliteration: 1,
+            meaning: 1, virtue: 1, source: 1,
+            tags: 1, categories: 1, timeOfDay: 1, suitableFor: 1,
+            recommendedCount: 1,
           },
         },
       )
       .toArray();
 
-    const withVectors = catalog.filter(
-      (d) => Array.isArray(d.embedding) && d.embedding.length > 0,
-    );
-    console.log(
-      `Katalog: ${catalog.length} aktif/doğrulanmış, ${withVectors.length} embedding'li.\n`,
-    );
+    console.log(`Katalog: ${catalog.length} aktif/doğrulanmış dhikr.\n`);
 
     const now = new Date();
     const timeContext = {
@@ -177,34 +239,33 @@ async function main() {
 
       const started = Date.now();
 
-      // ── Stage A: embedding retrieval ──
-      const queryVector = await embed(freeText);
-      if (!queryVector) {
-        console.log('  ⚠ Sorgu embedding üretilemedi, atlanıyor.\n');
-        continue;
+      // ── Stage A-1: Intent extraction ──
+      const intent = await extractIntent(openai, model, freeText);
+      if (intent) {
+        console.log(`\n  [Stage A-1] Intent: suitableFor=[${intent.suitableFor.join(', ')}] tags=[${intent.tags.join(', ')}] categories=[${intent.categories.join(', ')}] timeOfDay=${intent.timeOfDay ?? 'null'}`);
+        console.log(`              Tokens: ${intent._tokens?.prompt_tokens ?? '?'} in / ${intent._tokens?.completion_tokens ?? '?'} out`);
+      } else {
+        console.log('\n  [Stage A-1] Intent extraction başarısız → zaman tabanlı fallback');
       }
 
-      const scored = withVectors
-        .map((d) => ({ doc: d, score: cosineSimilarity(queryVector, d.embedding) }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, topK);
+      // ── Stage A-2: MongoDB score ──
+      const scoredCandidates = await getMongodbCandidates(catalog, intent, timeContext);
 
       if (showCandidates) {
-        console.log(`\n  [Stage A] Getirilen ${scored.length} aday (skorla):`);
-        scored.forEach((s, idx) => {
+        console.log(`\n  [Stage A-2] Top ${scoredCandidates.length} aday (skor):`);
+        scoredCandidates.forEach((s, idx) => {
           console.log(
-            `    ${String(idx + 1).padStart(2)}. ${s.score.toFixed(4)}  ${s.doc.nameTurkish}`,
+            `    ${String(idx + 1).padStart(2)}. score=${s.score}  ${s.doc.nameTurkish}  [${(s.doc.suitableFor ?? []).join(', ')}]`,
           );
         });
       }
 
-      const candidateDhikrs = scored.map((s) => toCandidate(s.doc));
-      // Görüntüleme için tam döküman (LLM'e gönderilen sade candidate'tan ayrı).
-      const fullById = new Map(scored.map((s) => [s.doc._id.toString(), s.doc]));
+      const candidateDhikrs = scoredCandidates.map((s) => toCandidate(s.doc));
+      const fullById = new Map(scoredCandidates.map((s) => [s.doc._id.toString(), s.doc]));
 
       // ── Stage B: LLM rerank ──
-      const systemInstruction = SYSTEM_INSTRUCTION.join(' ').replace(
-        '{MAX}',
+      const systemInstruction = RERANK_SYSTEM_INSTRUCTION.join(' ').replace(
+        /\{MAX\}/g,
         String(maxRec),
       );
       const promptPayload = {
@@ -238,7 +299,7 @@ async function main() {
         usage = response.usage;
         parsed = JSON.parse(response.choices?.[0]?.message?.content ?? '{}');
       } catch (error) {
-        console.log(`  ⚠ LLM çağrısı başarısız: ${error.message}\n`);
+        console.log(`  ⚠ LLM rerank başarısız: ${error.message}\n`);
         continue;
       }
 
@@ -250,9 +311,7 @@ async function main() {
       } else {
         console.log(`\n  📝 ÖZET: ${parsed.summary ?? '(yok)'}`);
         console.log('\n  ✅ ÖNERİLER:');
-        const recs = Array.isArray(parsed.recommendations)
-          ? parsed.recommendations
-          : [];
+        const recs = Array.isArray(parsed.recommendations) ? parsed.recommendations : [];
         recs.forEach((r, idx) => {
           const doc = fullById.get(r.id);
           const name = doc ? doc.nameTurkish : `⚠ LİSTE DIŞI ID (${r.id})`;
@@ -261,8 +320,7 @@ async function main() {
           console.log(`     💡 Neden: ${r.reason ?? ''}`);
           if (doc) {
             if (doc.nameArabic) console.log(`     ﷽  ${doc.nameArabic}`);
-            if (doc.transliteration)
-              console.log(`     🔤 Okunuş: ${doc.transliteration}`);
+            if (doc.transliteration) console.log(`     🔤 Okunuş: ${doc.transliteration}`);
             if (doc.meaning) console.log(`     📖 Anlam: ${doc.meaning}`);
             if (doc.virtue) console.log(`     ✨ Fazilet: ${doc.virtue}`);
             if (doc.source) console.log(`     📚 Kaynak: ${doc.source}`);
@@ -272,7 +330,7 @@ async function main() {
       }
 
       console.log(
-        `\n  ⏱ ${elapsed}ms  |  token: ${usage?.prompt_tokens ?? '?'} in / ${
+        `\n  ⏱ ${elapsed}ms  |  rerank token: ${usage?.prompt_tokens ?? '?'} in / ${
           usage?.completion_tokens ?? '?'
         } out\n`,
       );
