@@ -9,10 +9,6 @@ import {
   type DhikrLogDocument,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
-import {
-  EmbeddingService,
-  cosineSimilarity,
-} from '../embedding/embedding.service';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { CreateAiRecommendationDto } from './dto/create-ai-recommendation.dto';
 import { QueryAiRecommendationsDto } from './dto/query-ai-recommendations.dto';
@@ -25,7 +21,6 @@ import {
   RecommendationCache,
   type RecommendationCacheDocument,
 } from './schemas/recommendation-cache.schema';
-import { fallbackRecommend } from './utils/fallback-recommender';
 
 type TimeContext = {
   hour: number;
@@ -38,6 +33,13 @@ type UsedModel = 'openai' | 'fallback' | 'retrieval' | 'cache';
 
 type DhikrLean = Dhikr & { _id: Types.ObjectId };
 
+type DhikrIntent = {
+  suitableFor: string[];
+  tags: string[];
+  categories: string[];
+  timeOfDay: string | null;
+};
+
 type Candidate = {
   id: string;
   nameTurkish: string;
@@ -48,8 +50,42 @@ type Candidate = {
   suitableFor: string[];
 };
 
-const SEMANTIC_FALLBACK_REASONING =
-  'Niyetine en yakın bulduğum zikirleri benzerliklerine göre sıraladım.';
+const MONGO_FALLBACK_REASONING =
+  'Niyetine en uygun zikirleri sana göre seçtim.';
+
+// Dhikr suitableFor alanındaki bilinen değerler — intent extraction prompt'unda kullanılır.
+const KNOWN_SUITABLE_FOR = [
+  'sabah',
+  'akşam',
+  'uyku öncesi',
+  'uyandıktan sonra',
+  'yemek öncesi',
+  'yemek sonrası',
+  'yolculuk',
+  'hastalık',
+  'şifa',
+  'kaygı',
+  'üzüntü',
+  'korku',
+  'haset',
+  'öfke',
+  'namaz sonrası',
+  'cuma',
+  'zilhicce',
+  'muharrem',
+  'cenaze',
+  'hac',
+  'umre',
+  'evlilik',
+  'rızık',
+  'sınav',
+  'istiğfar',
+  'tevbe',
+  'sabır',
+  'şükür',
+  'koruma',
+  'bereket',
+];
 
 @Injectable()
 export class AiService {
@@ -57,14 +93,8 @@ export class AiService {
   private openAiClient: OpenAI | null = null;
   private openAiClientResolved = false;
 
-  // Katalog embedding'lerinin bellek-içi cache'i. Her istekte 360×1536 float
-  // DB'den çekmemek için TTL ile yenilenir.
-  private catalogVectors: Array<{ id: string; vector: number[] }> = [];
-  private catalogVectorsLoadedAt = 0;
-
   constructor(
     private readonly configService: ConfigService,
-    private readonly embeddingService: EmbeddingService,
     @InjectModel(AiRecommendation.name)
     private readonly aiRecommendationModel: Model<AiRecommendationDocument>,
     @InjectModel(RecommendationCache.name)
@@ -88,26 +118,8 @@ export class AiService {
     const timeContext = payload.timeContext ?? this.defaultTimeContext();
     const freeText = payload.freeText?.trim() || undefined;
 
-    const availableDhikrs = await this.dhikrModel
-      .find({ isVerified: true, isActive: true })
-      .lean<DhikrLean[]>()
-      .exec();
-
-    if (availableDhikrs.length === 0) {
-      throw new NotFoundException(
-        'Öneri için aktif ve doğrulanmış zikir bulunamadı.',
-      );
-    }
-
-    const availableIdSet = new Set(
-      availableDhikrs.map((item) => item._id.toString()),
-    );
-    const dhikrMapById = new Map(
-      availableDhikrs.map((item) => [item._id.toString(), item]),
-    );
-
     // Cache anahtarı katalog sürümünü içerir; katalog değişince doğal invalidasyon.
-    const catalogVersion = this.computeCatalogVersion(availableDhikrs);
+    const catalogVersion = await this.getCatalogVersion();
     const cacheKey = this.computeCacheKey({
       freeText,
       timeContext,
@@ -121,16 +133,23 @@ export class AiService {
       .lean()
       .exec();
     if (cached) {
-      const cachedIds = cached.recommendedDhikrIds
-        .map((id) => id.toString())
-        .filter((id) => availableIdSet.has(id));
-      if (cachedIds.length > 0) {
+      const cachedIdStrings = cached.recommendedDhikrIds.map((id) =>
+        id.toString(),
+      );
+      const cachedDhikrs = await this.loadDhikrsByIds(cachedIdStrings);
+      if (cachedDhikrs.length > 0) {
+        const validIds = cachedIdStrings.filter((id) =>
+          cachedDhikrs.some((d) => d._id.toString() === id),
+        );
+        const dhikrMapById = new Map(
+          cachedDhikrs.map((d) => [d._id.toString(), d]),
+        );
         return this.finalizeRecommendation({
           userId,
           freeText,
           timeContext,
-          reasoning: cached.reasoning || SEMANTIC_FALLBACK_REASONING,
-          safeRecommendedIds: cachedIds,
+          reasoning: cached.reasoning || MONGO_FALLBACK_REASONING,
+          safeRecommendedIds: validIds,
           dhikrMapById,
           usedModel: 'cache',
         });
@@ -139,22 +158,31 @@ export class AiService {
 
     const recentDhikrIds = await this.getRecentDhikrIds(userId);
 
-    // 2) Stage A — aday getirimi (embedding veya keyword/zaman tabanlı).
-    const retrieval = await this.retrieveCandidates({
-      freeText,
+    // 2) freeText'ten yapılandırılmış intent çıkar (LLM çağrısı #1).
+    const intent = freeText ? await this.extractIntent(freeText) : null;
+
+    // 3) MongoDB aggregation ile aday getirimi.
+    const candidates = await this.getMongodbCandidates(
+      intent,
       timeContext,
       recentDhikrIds,
-      availableDhikrs,
-      availableIdSet,
-      dhikrMapById,
-    });
+    );
 
-    // 3) Stage B — yalnız daralan aday kümesi üzerinde LLM rerank + off-topic.
+    if (candidates.length === 0) {
+      throw new NotFoundException(
+        'Öneri için aktif ve doğrulanmış zikir bulunamadı.',
+      );
+    }
+
+    const candidateIdSet = new Set(candidates.map((c) => c._id.toString()));
+    const dhikrMapById = new Map(candidates.map((c) => [c._id.toString(), c]));
+
+    // 4) LLM rerank + off-topic tespiti (LLM çağrısı #2).
     const openAiResult = await this.generateViaOpenAi({
       freeText,
       timeContext,
       recentDhikrIds,
-      candidateDhikrs: retrieval.candidates,
+      candidateDhikrs: candidates.map(toCandidate),
       maxRecommendations,
     });
 
@@ -169,11 +197,8 @@ export class AiService {
       };
     }
 
-    // OpenAI önerilerini yalnızca geçerli adaylarla, id bazında tekilleştirerek
-    // süz. Geçersiz/uydurma bir id düşerse gerekçesi de onunla birlikte düşer;
-    // böylece assistantNote ile recommendedDhikrIds asla ıraksamaz.
     const rankedRecs = dedupeById(openAiResult?.recommendations ?? [])
-      .filter((rec) => availableIdSet.has(rec.id))
+      .filter((rec) => candidateIdSet.has(rec.id))
       .slice(0, maxRecommendations);
 
     let safeRecommendedIds = rankedRecs.map((rec) => rec.id);
@@ -182,14 +207,13 @@ export class AiService {
       'Niyet metnine uygun bir zikir listesi hazırladım.';
     let usedModel: UsedModel = 'openai';
 
-    // LLM sonuç üretemezse Stage A getirim sırasını doğrudan kullan.
+    // LLM sonuç üretemezse MongoDB sırasını doğrudan kullan.
     if (safeRecommendedIds.length === 0) {
-      safeRecommendedIds = retrieval.candidates
-        .map((candidate) => candidate.id)
-        .filter((id) => availableIdSet.has(id))
+      safeRecommendedIds = candidates
+        .map((c) => c._id.toString())
         .slice(0, maxRecommendations);
-      reasoning = retrieval.reasoning || reasoning;
-      usedModel = retrieval.source === 'semantic' ? 'retrieval' : 'fallback';
+      reasoning = MONGO_FALLBACK_REASONING;
+      usedModel = 'fallback';
     }
 
     const result = await this.finalizeRecommendation({
@@ -202,12 +226,200 @@ export class AiService {
       usedModel,
     });
 
-    // 4) Cache write — off-topic olmayan başarılı sonuçlar.
+    // 5) Cache write — off-topic olmayan başarılı sonuçlar.
     if (safeRecommendedIds.length > 0) {
       await this.writeCache(cacheKey, safeRecommendedIds, reasoning, usedModel);
     }
 
     return result;
+  }
+
+  /**
+   * LLM'e tek bir çağrıyla kullanıcı metninden yapılandırılmış intent çıkarır.
+   * Hata veya OPENAI_API_KEY eksikliğinde null döner; çağıran MongoDB
+   * zaman tabanlı fallback'e geçer.
+   */
+  private async extractIntent(freeText: string): Promise<DhikrIntent | null> {
+    const client = this.getOpenAiClient();
+    if (!client) return null;
+
+    const model =
+      this.configService.get<string>('OPENAI_MODEL') || 'gpt-4.1-mini';
+    const supportsTemperature = !/^(gpt-5|o\d)/i.test(model);
+
+    const systemPrompt = [
+      'Sen bir İslami zikir arama asistanısın.',
+      'Kullanıcının Türkçe metninden zikir arama niyetini çıkar.',
+      `suitableFor için yalnızca şu listeden eşleşenleri kullan: ${KNOWN_SUITABLE_FOR.join(', ')}.`,
+      'timeOfDay: sabah (05-12) → "morning", öğle-akşam (12-19) → "evening", gece (19-05) → "night", belirsiz → null.',
+      'tags ve categories için metinde geçen İslami temaları Türkçe yaz (ör. "şükür", "namaz", "hac").',
+      'Yalnızca JSON döndür: { "suitableFor": string[], "tags": string[], "categories": string[], "timeOfDay": string|null }',
+    ].join(' ');
+
+    try {
+      const response = await client.chat.completions.create({
+        model,
+        ...(supportsTemperature ? { temperature: 0 } : {}),
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: freeText },
+        ],
+      });
+
+      const text = response.choices?.[0]?.message?.content;
+      if (!text) return null;
+
+      const parsed = JSON.parse(text) as Partial<DhikrIntent>;
+      return {
+        suitableFor: Array.isArray(parsed.suitableFor)
+          ? parsed.suitableFor.filter((v): v is string => typeof v === 'string')
+          : [],
+        tags: Array.isArray(parsed.tags)
+          ? parsed.tags.filter((v): v is string => typeof v === 'string')
+          : [],
+        categories: Array.isArray(parsed.categories)
+          ? parsed.categories.filter((v): v is string => typeof v === 'string')
+          : [],
+        timeOfDay:
+          typeof parsed.timeOfDay === 'string' ? parsed.timeOfDay : null,
+      };
+    } catch (error) {
+      this.logger.warn(
+        `Intent çıkarılamadı, fallback kullanılacak: ${this.describeError(error)}`,
+      );
+      return null;
+    }
+  }
+
+  /**
+   * MongoDB aggregation ile intent'e göre skorlayarak top-10 aday döndürür.
+   * intent null ise (freeText yok veya çıkarım başarısız) zaman tabanlı filtre uygular.
+   */
+  private async getMongodbCandidates(
+    intent: DhikrIntent | null,
+    timeContext: TimeContext,
+    recentDhikrIds: string[],
+  ): Promise<DhikrLean[]> {
+    const recentObjectIds = recentDhikrIds
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+
+    const baseMatch: Record<string, unknown> = {
+      isVerified: true,
+      isActive: true,
+      ...(recentObjectIds.length > 0 ? { _id: { $nin: recentObjectIds } } : {}),
+    };
+
+    const hasIntent =
+      intent &&
+      (intent.suitableFor.length > 0 ||
+        intent.tags.length > 0 ||
+        intent.categories.length > 0 ||
+        intent.timeOfDay);
+
+    if (hasIntent) {
+      const scoreFields: unknown[] = [
+        {
+          $multiply: [
+            3,
+            {
+              $size: {
+                $ifNull: [
+                  { $setIntersection: ['$suitableFor', intent.suitableFor] },
+                  [],
+                ],
+              },
+            },
+          ],
+        },
+        {
+          $multiply: [
+            2,
+            {
+              $size: {
+                $ifNull: [{ $setIntersection: ['$tags', intent.tags] }, []],
+              },
+            },
+          ],
+        },
+        {
+          $multiply: [
+            1,
+            {
+              $size: {
+                $ifNull: [
+                  { $setIntersection: ['$categories', intent.categories] },
+                  [],
+                ],
+              },
+            },
+          ],
+        },
+      ];
+
+      if (intent.timeOfDay) {
+        scoreFields.push({
+          $cond: [{ $eq: ['$timeOfDay', intent.timeOfDay] }, 2, 0],
+        });
+      }
+
+      return this.dhikrModel
+        .aggregate<DhikrLean>([
+          { $match: baseMatch },
+          { $addFields: { _score: { $sum: scoreFields } } },
+          { $sort: { _score: -1, recommendedCount: -1 } },
+          { $limit: 10 },
+        ])
+        .exec();
+    }
+
+    // Zaman tabanlı fallback: timeOfDay filtresi + popülerlik sırası.
+    const timeOfDay = this.resolveTimeOfDay(timeContext);
+    const fallbackFilter = {
+      ...baseMatch,
+      timeOfDay: { $in: [timeOfDay, 'any'] },
+    };
+    return this.dhikrModel
+
+      .find(fallbackFilter as Record<string, unknown>)
+      .sort({ recommendedCount: -1 })
+      .limit(10)
+      .lean<DhikrLean[]>()
+      .exec();
+  }
+
+  /** Belirli ID'lere sahip, aktif ve doğrulanmış dhikrleri döndürür. */
+  private async loadDhikrsByIds(ids: string[]): Promise<DhikrLean[]> {
+    const objectIds = ids
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+    if (objectIds.length === 0) return [];
+
+    return this.dhikrModel
+      .find({ _id: { $in: objectIds }, isVerified: true, isActive: true })
+      .lean<DhikrLean[]>()
+      .exec();
+  }
+
+  /** Katalog sürümü: aggregate ile count + maxUpdatedAt (tüm dokümanları çekmez). */
+  private async getCatalogVersion(): Promise<string> {
+    const result = await this.dhikrModel
+      .aggregate<{ count: number; maxUpdated: Date | null }>([
+        { $match: { isVerified: true, isActive: true } },
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 },
+            maxUpdated: { $max: '$updatedAt' },
+          },
+        },
+      ])
+      .exec();
+    const row = result[0];
+    return row
+      ? `${row.count}:${row.maxUpdated ? new Date(row.maxUpdated).getTime() : 0}`
+      : '0:0';
   }
 
   /**
@@ -260,113 +472,6 @@ export class AiService {
     };
   }
 
-  /**
-   * Stage A — niyet metnine en uygun ~K adayı getirir. Önce embedding
-   * (anlamsal) dener; embedding/sorgu yoksa keyword + zaman tabanlı sıraya düşer.
-   */
-  private async retrieveCandidates(input: {
-    freeText?: string;
-    timeContext: TimeContext;
-    recentDhikrIds: string[];
-    availableDhikrs: DhikrLean[];
-    availableIdSet: Set<string>;
-    dhikrMapById: Map<string, DhikrLean>;
-  }): Promise<{
-    candidates: Candidate[];
-    source: 'semantic' | 'keyword';
-    reasoning: string;
-  }> {
-    const topK = this.readNumberConfig('AI_RETRIEVAL_TOP_K', 20);
-
-    if (input.freeText) {
-      const queryVector = await this.embeddingService.embed(input.freeText);
-      if (queryVector) {
-        const vectors = await this.getCatalogVectors();
-        const scored = vectors
-          .filter((entry) => input.availableIdSet.has(entry.id))
-          .map((entry) => ({
-            id: entry.id,
-            score: cosineSimilarity(queryVector, entry.vector),
-          }))
-          .sort((a, b) => b.score - a.score)
-          .slice(0, topK);
-
-        if (scored.length > 0) {
-          const candidates = scored
-            .map((entry) => input.dhikrMapById.get(entry.id))
-            .filter((item): item is DhikrLean => Boolean(item))
-            .map(toCandidate);
-
-          return {
-            candidates,
-            source: 'semantic',
-            reasoning: SEMANTIC_FALLBACK_REASONING,
-          };
-        }
-      }
-    }
-
-    // Keyword + zaman tabanlı getirim (embedding yok / sorgu yok / vektör yok).
-    const fallback = fallbackRecommend({
-      freeText: input.freeText,
-      timeContext: input.timeContext,
-      recentDhikrIds: input.recentDhikrIds,
-      availableDhikrs: input.availableDhikrs.map((item) => ({
-        _id: item._id.toString(),
-        nameTurkish: item.nameTurkish,
-        tags: item.tags,
-        categories: item.categories,
-        timeOfDay: item.timeOfDay,
-        suitableFor: item.suitableFor,
-      })),
-      maxRecommendations: topK,
-    });
-
-    const candidates = dedupeIds(fallback.recommendedIds)
-      .filter((id) => input.availableIdSet.has(id))
-      .map((id) => input.dhikrMapById.get(id))
-      .filter((item): item is DhikrLean => Boolean(item))
-      .map(toCandidate);
-
-    return { candidates, source: 'keyword', reasoning: fallback.reasoning };
-  }
-
-  /** Katalog embedding'lerini bellek-içi cache'ten (TTL'li) döndürür. */
-  private async getCatalogVectors() {
-    const ttl = this.readNumberConfig('AI_CATALOG_CACHE_TTL_MS', 600_000);
-    const isFresh = Date.now() - this.catalogVectorsLoadedAt < ttl;
-    if (this.catalogVectors.length > 0 && isFresh) {
-      return this.catalogVectors;
-    }
-
-    const docs = await this.dhikrModel
-      .find({ isVerified: true, isActive: true })
-      .select('_id embedding')
-      .lean<Array<{ _id: Types.ObjectId; embedding?: number[] }>>()
-      .exec();
-
-    this.catalogVectors = docs
-      .filter(
-        (doc): doc is { _id: Types.ObjectId; embedding: number[] } =>
-          Array.isArray(doc.embedding) && doc.embedding.length > 0,
-      )
-      .map((doc) => ({ id: doc._id.toString(), vector: doc.embedding }));
-    this.catalogVectorsLoadedAt = Date.now();
-
-    return this.catalogVectors;
-  }
-
-  private computeCatalogVersion(dhikrs: DhikrLean[]): string {
-    let maxUpdated = 0;
-    for (const dhikr of dhikrs) {
-      const updated = dhikr.updatedAt ? new Date(dhikr.updatedAt).getTime() : 0;
-      if (updated > maxUpdated) {
-        maxUpdated = updated;
-      }
-    }
-    return `${dhikrs.length}:${maxUpdated}`;
-  }
-
   private computeCacheKey(input: {
     freeText?: string;
     timeContext: TimeContext;
@@ -390,13 +495,13 @@ export class AiService {
       return `special:${normalizeText(timeContext.specialDayName ?? 'ozel')}`;
     }
 
+    return this.resolveTimeOfDay(timeContext);
+  }
+
+  private resolveTimeOfDay(timeContext: TimeContext): string {
     const hour = timeContext.hour;
-    if (hour >= 5 && hour < 12) {
-      return 'morning';
-    }
-    if (hour >= 12 && hour < 19) {
-      return 'evening';
-    }
+    if (hour >= 5 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 19) return 'evening';
     return 'night';
   }
 
@@ -422,7 +527,6 @@ export class AiService {
         { upsert: true },
       );
     } catch (error) {
-      // Cache yazımı best-effort; hata öneri yanıtını bozmamalı.
       this.logger.warn(
         `Öneri cache'i yazılamadı: ${this.describeError(error)}`,
       );
@@ -487,8 +591,6 @@ export class AiService {
       .lean()
       .exec();
 
-    // Seçilen zikrin popülerlik sayacını best-effort artır; hata seçim
-    // yanıtını bozmamalı.
     try {
       await this.dhikrModel
         .updateOne({ _id: selectedDhikrId }, { $inc: { recommendedCount: 1 } })
@@ -526,24 +628,16 @@ export class AiService {
         const name = dhikrMapById.get(rec.id)?.nameTurkish?.trim();
         const reason = rec.reason ? stripObjectIds(rec.reason).trim() : '';
 
-        if (name && reason) {
-          return `- **${name}:** ${reason}`;
-        }
-        if (name) {
-          return `- **${name}**`;
-        }
+        if (name && reason) return `- **${name}:** ${reason}`;
+        if (name) return `- **${name}**`;
         return reason ? `- ${reason}` : null;
       })
       .filter((line): line is string => Boolean(line));
 
     const parts: string[] = [];
     const cleanSummary = summary?.trim();
-    if (cleanSummary) {
-      parts.push(cleanSummary);
-    }
-    if (lines.length > 0) {
-      parts.push(lines.join('\n'));
-    }
+    if (cleanSummary) parts.push(cleanSummary);
+    if (lines.length > 0) parts.push(lines.join('\n'));
 
     return parts.join('\n\n');
   }
@@ -552,27 +646,14 @@ export class AiService {
     freeText?: string;
     timeContext: TimeContext;
     recentDhikrIds: string[];
-    candidateDhikrs: Array<{
-      id: string;
-      nameTurkish: string;
-      tags: string[];
-      categories: string[];
-      timeOfDay: string;
-      suitableFor: string[];
-      virtue: string;
-    }>;
+    candidateDhikrs: Candidate[];
     maxRecommendations: number;
   }) {
     const client = this.getOpenAiClient();
+    if (!client) return null;
 
-    if (!client) {
-      return null;
-    }
     const model =
-      this.configService.get<string>('OPENAI_MODEL') || 'gpt-5.4-mini';
-    // GPT-5 / o-serisi reasoning modelleri chat.completions'ta custom
-    // temperature'ı reddeder (yalnızca varsayılan kabul edilir). Bu yüzden
-    // temperature'ı yalnızca destekleyen modellerde gönderiyoruz.
+      this.configService.get<string>('OPENAI_MODEL') || 'gpt-4.1-mini';
     const supportsTemperature = !/^(gpt-5|o\d)/i.test(model);
 
     const systemInstruction = [
@@ -582,14 +663,13 @@ export class AiService {
       'Konu ilgiliyse → off_topic: false yap ve devam et.',
       'YALNIZCA verilen candidateDhikrs listesinden seçim yap; liste dışından ID üretme.',
       'Niyeti adayların fazilet (virtue), etiket (tags) ve kategori (categories) alanlarıyla eşleştirerek en uygunları seç.',
-      'Niyete EN DOĞRUDAN hitap eden duaları öncele (ör. şifa isteyene doğrudan şifa/afiyet duaları). İstiğfar, tövbe veya genel zikir gibi yalnızca dolaylı/teğet ilgili olanları üst sıralara koyma; ancak doğrudan adaylar yetersizse ve alt sıralarda ekle.',
-      'Duanın kime yönelik olduğuna dikkat et: kullanıcı kendisi için istiyorsa kendine yönelik (birinci şahıs) duaları tercih et; başkası ya da hasta ziyareti için olanları kullanıcı bunu açıkça belirtmedikçe önceleme.',
+      'Niyete EN DOĞRUDAN hitap eden duaları öncele (ör. şifa isteyene doğrudan şifa/afiyet duaları). İstiğfar, tövbe veya genel zikir gibi yalnızca dolaylı/teğet ilgili olanları üst sıralara koyma; ancak doğrudan adaylar yetersizse alt sıralarda ekle.',
+      'Duanın kime yönelik olduğuna dikkat et: kullanıcı kendisi için istiyorsa birinci şahıs duaları tercih et; başkası için olanları kullanıcı bunu açıkça belirtmedikçe önceleme.',
       'Zaman bağlamını (timeOfDay, suitableFor) ikincil kriter olarak kullan.',
-      `En fazla ${input.maxRecommendations} zikir seç ve en uygundan başlayarak sırala. ${input.maxRecommendations} bir üst sınırdır, doldurulması gereken bir hedef değildir: niyetle gerçekten alakalı yeterli aday yoksa daha az öner (ör. yalnızca 2-3).`,
-      `Sırf listeyi doldurmak için alakası zayıf ya da niyetle çelişen bir duayı EKLEME. Bir adayın reason'ını yazarken niyetten farklı/uzak olduğunu ifade ediyorsan, o adayı hiç ekleme (ör. sınav niyetine rızık/borç duası ekleme).`,
-      'Her seçtiğin zikir için recommendations dizisine bir nesne ekle: id (candidate id) ve reason (o zikrin neden seçildiği).',
-      "Her reason yalnızca o id'nin kendi fazilet/etiket/kategori içeriğinden türemeli; başka bir duanın özelliğini o reason'a yazma.",
-      "Yalnızca recommendations dizisindeki id'lerden bahset; listede olmayan bir zikri reason veya summary içinde anma.",
+      `En fazla ${input.maxRecommendations} zikir seç ve en uygundan başlayarak sırala. ${input.maxRecommendations} bir üst sınırdır, doldurulması gereken bir hedef değildir.`,
+      'Sırf listeyi doldurmak için alakası zayıf bir duayı EKLEME.',
+      'Her seçtiğin zikir için recommendations dizisine bir nesne ekle: id (candidate id) ve reason.',
+      "Her reason yalnızca o id'nin kendi fazilet/etiket/kategori içeriğinden türemeli.",
       'reason ve summary doğrudan kullanıcıya gösterilecek; insanî, sıcak ve empatik bir dil kullan; id veya teknik alan adı yazma.',
       'summary, kullanıcının niyetini anlayan 2-3 cümlelik sıcak bir girişdir: önce niyeti/hissi kabul et, sonra bu seçimlerin neden yardımcı olabileceğini kısaca belirt. Belirli zikir/dua isimleri içermez.',
       'Yalnızca JSON döndür.',
@@ -610,10 +690,6 @@ export class AiService {
     try {
       const response = await client.chat.completions.create({
         model,
-        // Düşük temperature öneri görevinde isabet için tercih edilir (varsayılan
-        // ~1.0 aynı niyet için farklı/alakasız seçimlere yol açıyordu). Reasoning
-        // modelleri custom değeri reddettiğinden yalnızca destekleyen modellerde
-        // gönderiyoruz; env ile ayarlanabilir (varsayılan 0.2).
         ...(supportsTemperature
           ? { temperature: this.readNumberConfig('OPENAI_TEMPERATURE', 0.2) }
           : {}),
@@ -636,11 +712,7 @@ export class AiService {
         summary?: unknown;
       };
       try {
-        parsed = JSON.parse(text) as {
-          off_topic?: unknown;
-          recommendations?: unknown;
-          summary?: unknown;
-        };
+        parsed = JSON.parse(text) as typeof parsed;
       } catch (error) {
         this.logger.warn(
           `OpenAI yanıtı JSON olarak ayrıştırılamadı: ${this.describeError(error)}`,
@@ -648,9 +720,7 @@ export class AiService {
         return null;
       }
 
-      const offTopic = parsed.off_topic === true;
-
-      if (offTopic) {
+      if (parsed.off_topic === true) {
         return { recommendations: [], summary: undefined, offTopic: true };
       }
 
@@ -672,11 +742,7 @@ export class AiService {
           ? stripObjectIds(parsed.summary).trim() || undefined
           : undefined;
 
-      return {
-        recommendations,
-        summary,
-        offTopic: false,
-      };
+      return { recommendations, summary, offTopic: false };
     } catch (error) {
       this.logger.warn(
         `OpenAI öneri çağrısı başarısız oldu, fallback kullanılacak: ${this.describeError(error)}`,
@@ -686,9 +752,7 @@ export class AiService {
   }
 
   private getOpenAiClient(): OpenAI | null {
-    if (this.openAiClientResolved) {
-      return this.openAiClient;
-    }
+    if (this.openAiClientResolved) return this.openAiClient;
 
     this.openAiClientResolved = true;
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
@@ -711,21 +775,16 @@ export class AiService {
   private readNumberConfig(key: string, fallback: number): number {
     const raw = this.configService.get<string | number>(key);
     const parsed = typeof raw === 'number' ? raw : Number(raw);
-
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
   }
 
   private describeError(error: unknown): string {
-    if (error instanceof Error) {
-      return error.message;
-    }
-
+    if (error instanceof Error) return error.message;
     return typeof error === 'string' ? error : 'bilinmeyen hata';
   }
 
   private defaultTimeContext(): TimeContext {
     const now = new Date();
-
     return {
       hour: now.getHours(),
       dayOfWeek: now.getDay(),
@@ -735,16 +794,11 @@ export class AiService {
 
   private async ensureUserExists(userId: Types.ObjectId) {
     const exists = await this.userModel.exists({ _id: userId });
-    if (!exists) {
-      throw new NotFoundException('Kullanıcı bulunamadı.');
-    }
+    if (!exists) throw new NotFoundException('Kullanıcı bulunamadı.');
   }
 
   private asObjectId(rawId: string, message: string) {
-    if (!Types.ObjectId.isValid(rawId)) {
-      throw new NotFoundException(message);
-    }
-
+    if (!Types.ObjectId.isValid(rawId)) throw new NotFoundException(message);
     return new Types.ObjectId(rawId);
   }
 }
@@ -754,10 +808,6 @@ function toDateString(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
-}
-
-function dedupeIds(ids: string[]) {
-  return [...new Set(ids)];
 }
 
 function toCandidate(item: DhikrLean): Candidate {
@@ -772,8 +822,6 @@ function toCandidate(item: DhikrLean): Candidate {
   };
 }
 
-// Cache anahtarı ve fallback eşleşmesi için Türkçe-duyarlı normalleştirme:
-// küçük harf + aksan sadeleştirme + noktalama temizliği.
 function normalizeText(value: string): string {
   return value
     .toLocaleLowerCase('tr-TR')
@@ -795,30 +843,22 @@ function stripObjectIds(text: string) {
 function dedupeById<T extends { id: string }>(items: T[]): T[] {
   const seen = new Set<string>();
   const result: T[] = [];
-
   for (const item of items) {
-    if (seen.has(item.id)) {
-      continue;
-    }
+    if (seen.has(item.id)) continue;
     seen.add(item.id);
     result.push(item);
   }
-
   return result;
 }
 
 function parseRecommendation(
   value: unknown,
 ): { id: string; reason?: string } | null {
-  if (!value || typeof value !== 'object') {
-    return null;
-  }
+  if (!value || typeof value !== 'object') return null;
 
   const candidate = value as { id?: unknown; reason?: unknown };
   const id = typeof candidate.id === 'string' ? candidate.id.trim() : '';
-  if (!id) {
-    return null;
-  }
+  if (!id) return null;
 
   const reason =
     typeof candidate.reason === 'string' && candidate.reason.trim().length > 0
