@@ -1,6 +1,8 @@
 export const kaygiKriz = {
   key: 'sikinti-kaygi-kriz-zikirleri',
   label: 'Sıkıntı, Kaygı ve Kriz Anı Zikirleri',
+  category: 'dua',
+  description: 'Sıkıntı, kaygı ve kriz anlarında okunacak teselli ve kurtuluş duaları.',
   dhikrItems: [
     {
       key: 'sikinti-insirah-suresi',
@@ -580,6 +582,56 @@ export const kaygiKriz = {
         'haksızlık karşısında direnç',
         'teslimiyet güçlendirme',
         'sabah zikri',
+      ],
+    },
+    {
+      key: 'sikinti-inni-abduk-ibnu-abduk',
+      nameArabic:
+        'اللَّهُمَّ إِنِّي عَبْدُكَ، ابْنُ عَبْدِكَ، ابْنُ أَمَتِكَ، نَاصِيَتِي بِيَدِكَ، مَاضٍ فِيَّ حُكْمُكَ، عَدْلٌ فِيَّ قَضَاؤُكَ، أَسْأَلُكَ بِكُلِّ اسْمٍ هُوَ لَكَ سَمَّيْتَ بِهِ نَفْسَكَ أَوْ أَنْزَلْتَهُ فِي كِتَابِكَ أَوْ عَلَّمْتَهُ أَحَدًا مِنْ خَلْقِكَ أَوِ اسْتَأْثَرْتَ بِهِ فِي عِلْمِ الْغَيْبِ عِنْدَكَ، أَنْ تَجْعَلَ الْقُرْآنَ رَبِيعَ قَلْبِي، وَنُورَ صَدْرِي، وَجَلَاءَ حُزْنِي، وَذَهَابَ هَمِّي',
+      nameTurkish: 'Üzüntü ve Keder Duası — Kur\'an\'ı Kalbin Baharı Kıl',
+      transliteration:
+        "Allâhümme innî abdük, ibnu abdük, ibnu emetike, nâsiyetî bi-yadike, mâdin fiyye hukmük, adlün fiyye kadâük, es'elüke bi-külli ismin hüve lek, semmeyte bihi nefseke, aw enzeltehü fî kitâbike, aw allemtehû ahaden min halkıke, aw ista'serte bihi fî ilmil-ğaybi indek, en tec'alel-Kur'âne rabî'a kalbî, ve nûra sadrî, ve celâe huznî, ve zehâba hemmî.",
+      meaning:
+        "Allahım! Ben senin kulunum, erkek kulunun oğluyum, kadın kulunun oğluyum. Alnım senin elindedir. Hakkımda senin hükmün geçerlidir; hakkımdaki takdirin adâlettir. Kendini isimlendirdiğin, Kitabında indirdiğin, yarattıklarından birine öğrettiğin yahut katındaki gayb ilminde kendine has kıldığın her isminle senden şunu istiyorum: Kur'ân'ı kalbimin baharı, göğsümün nuru, hüznümün cilâsı ve sıkıntımın gidişi kıl.",
+      virtue:
+        "Hz. Peygamber şöyle buyurdu: 'Hangi kul bu sıkıntı duasını okursa, Allah onun sıkıntısını ve hüznünü giderir, yerine ferah verir.' Sahabîler 'Ya Rasûlallah! Bunu öğrenmeli miyiz?' diye sorunca: 'Evet, işitenin bunu öğrenmesi gerekir' buyurdu. (Ahmed; sahih — Elbânî, Silsiletü's-Sahîha). Duanın merkezi cümlesi: 'Kur'ân'ı kalbimin baharı kıl.' Bahar, tazelenme ve dirilme mevsimidir; kış üzerinden geçen, ama tahrip etmeden geçen bir sürecin ardından gelir. Bu dua, Kur'ân'ın tedavi edici gücünü doğrudan kalbe ve göğse yerleştirmeyi talep eder.",
+      source:
+        "Ahmed, Müsned, 1/391; Elbânî sahih dedi, Silsiletü's-Sahîha nr. 199; Hısnu'l-Muslim nr. 120",
+      tags: ['üzüntü', 'keder', 'sıkıntı', 'kuran', 'kalp', 'teselli', 'dua'],
+      categories: ['genel', 'kaygı yönetimi', 'teselli', 'kuran'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      suitableFor: [
+        'derin üzüntü ve keder anında',
+        'kalp sıkışması ve bunalımda',
+        'Kur\'an ile şifa için',
+        'uykusuz kalan gecelerde',
+        'kayıp, ayrılık veya hayal kırıklığında',
+      ],
+    },
+    {
+      key: 'sikinti-inni-euzu-minel-hemmi',
+      nameArabic:
+        'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ',
+      nameTurkish: 'Sekiz Şeyden Sığınma Duası — Kaygı ve Keder',
+      transliteration:
+        "Allâhümme innî eûzü bike minel-hemmi vel-hüzni, vel-aczi vel-keseli, vel-buhli vel-cübni, ve dala'id-deyni ve ğalebetir-ricâl.",
+      meaning:
+        "Allahım! Kaygı ve üzüntüden, acizlik ve tembellikten, cimrilik ve korkaklıktan, borcun ezici ağırlığından ve insanların bana galip gelmesinden sana sığınırım.",
+      virtue:
+        "Hz. Peygamber bu duayı çokça okurdu; Buhârî'nin kaydına göre Hz. Enes'ten aktarılmıştır. Sekiz şey, dört karşıt çift: hemm (geleceğe dair kaygı) ve hüzn (geçmişe dair üzüntü) — zaman ekseni; acz (yetersizlik) ve kesel (iradesizlik) — enerji ekseni; buhl (korkudan bağlamamak) ve cübn (hareketten kaçmak) — cesaret ekseni; deyn (borç yükü) ve galebet-i ricâl (insanların baskısı) — sosyal baskı ekseni. Bu dua, ruh hastalıklarını kategorize eden ilk tipolojilerden biridir — bunlardan korunmak için Allah'a sığınmak, hem tevekkül hem de öz farkındalık pratiğidir.",
+      source:
+        "Buhârî, Daavât, nr. 6369; Ebu Dâvûd, Vitir, nr. 1555; Ahmed; Hısnu'l-Muslim nr. 121",
+      tags: ['kaygı', 'üzüntü', 'acizlik', 'borç', 'sığınma', 'sekiz şey', 'istiaze'],
+      categories: ['genel', 'kaygı yönetimi', 'koruyucu', 'günlük'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      suitableFor: [
+        'sabah kalkarken günlük koruyucu zikir',
+        'kaygı ve panik anında',
+        'borç ve maddi baskı altında',
+        'tembellik ve motivasyon eksikliğinde',
+        'insanların baskısı hissedildiğinde',
       ],
     },
   ],

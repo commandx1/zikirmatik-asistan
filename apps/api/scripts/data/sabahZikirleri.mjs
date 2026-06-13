@@ -1,6 +1,8 @@
 export const sabahZikirleri = {
   key: 'sabah-zikirleri',
   label: 'Sabah Zikirleri',
+  category: 'gunluk',
+  description: 'Sabah vaktinin bereketi için okunması tavsiye edilen zikirler ve dualar.',
   dhikrItems: [
     {
       key: 'sabah-subhanallah-bihamdihi',

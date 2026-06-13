@@ -1,6 +1,8 @@
 export const evlilikHuzur = {
   key: 'evlilik-huzur',
   label: 'Evlilikte Huzur ve Eşle Geçim Duaları',
+  category: 'hayat',
+  description: 'Evlilik ve aile huzuru için okunacak dualar.',
   dhikrItems: [
     {
       key: 'evlilik-rum-21',

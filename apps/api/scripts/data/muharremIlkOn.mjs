@@ -3,6 +3,8 @@ import { keyMap } from './keyMap.mjs'
 export const muharremIlkOn = {
   key: 'muharrem-ilk-on-2026',
   label: 'Muharrem İlk 10 Gün 2026',
+  category: 'ibadet',
+  description: 'Muharrem\'in ilk on gününe ait oruç, aşure ve zikirler.',
   dhikrItems: [
     {
       key: keyMap.AYETEL_KURSI,

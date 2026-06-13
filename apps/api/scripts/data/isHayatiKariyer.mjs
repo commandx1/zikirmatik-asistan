@@ -1,6 +1,8 @@
 export const isHayatiKariyer = {
   key: 'is-hayati-zikirleri',
   label: 'İş Hayatı ve Kariyer Zikirleri',
+  category: 'hayat',
+  description: 'İş hayatında başarı, bereket ve helal kazanç için okunacak dualar.',
   dhikrItems: [
     {
       key: 'is-allahumme-inni-eselukes-sebate',

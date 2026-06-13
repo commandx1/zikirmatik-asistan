@@ -1,6 +1,8 @@
 export const ofkeKontrol = {
   key: 'ofke-kontrol',
   label: 'Öfke Kontrolü ve Sakinleşme Duaları',
+  category: 'hayat',
+  description: 'Öfke anında sakinleşmek için Hz. Peygamber\'in öğrettiği yöntemler ve dualar.',
   dhikrItems: [
     {
       key: 'ofke-euzubillah',

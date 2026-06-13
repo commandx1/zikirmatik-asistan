@@ -1,6 +1,8 @@
 export const esmaulHusnaTemel = {
   key: 'esmaul-husna-temel-liste',
   label: 'Esmaül Hüsna Temel Liste',
+  category: 'ibadet',
+  description: 'Allah\'ın 99 güzel isminin Türkçe anlamları ve kısa açıklamaları.',
   dhikrItems: [
     {
       key: 'esmaul-husna-allah',
@@ -2196,6 +2198,8 @@ export const esmaulHusnaTemel = {
 export const esmaRizikBereket = {
   key: 'esma-rizik-ve-bereket-zikirleri',
   label: 'Esma-ül Hüsna Rızık ve Bereket Zikirleri',
+  category: 'ibadet',
+  description: 'Rızık ve bereket konusunda öne çıkan Esmaül Hüsna isimleri.',
   dhikrItems: [
     {
       key: 'esma-ya-melik',

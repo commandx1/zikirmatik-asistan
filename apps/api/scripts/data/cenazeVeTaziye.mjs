@@ -1,6 +1,8 @@
 export const cenazeVeTaziye = {
   key: 'cenaze-ve-taziye',
   label: 'Cenaze ve Taziye Duaları',
+  category: 'ibadet',
+  description: 'Cenaze namazı, defin ve taziyede okunacak dualar.',
   dhikrItems: [
     {
       key: 'cenaze-namaz-duasi-uzun',

@@ -1,6 +1,8 @@
 export const sinavVeYazili = {
   key: 'sinav-ve-yazili-zikirleri',
   label: 'Sınav ve Yazılı Süreçleri Zikirleri',
+  category: 'hayat',
+  description: 'Sınav ve yazılı öncesinde okunacak dualar.',
   dhikrItems: [
     {
       key: 'sinav-rabbi-edhilni',

@@ -234,6 +234,9 @@ importers:
       react-native-google-mobile-ads:
         specifier: ^15.6.0
         version: 15.8.3(expo@54.0.34)(react@19.1.0)
+      react-native-pager-view:
+        specifier: ^8.0.2
+        version: 8.0.2(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       react-native-purchases:
         specifier: ^9.3.0
         version: 9.15.2(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
@@ -5910,6 +5913,12 @@ packages:
       react: '*'
       react-native: '*'
 
+  react-native-pager-view@8.0.2:
+    resolution: {integrity: sha512-Y8All2BbjidI4ZIF9kBOIIoldkqrY/2FXapHZMdjwD+ByXhiOWTFenPs5rq9KRN5uAH/gOXtQCqHLxQDNBQRiQ==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+
   react-native-purchases@9.15.2:
     resolution: {integrity: sha512-cAGChbjDp1os6Xc8Wfg83w2ey/Xm/Uq5znoRlXwSW4a/Q8f2gCXLikBfH0bOC+diAkwapN70PwKkP12iGYptyg==}
     peerDependencies:
@@ -10936,7 +10945,7 @@ snapshots:
       postcss-value-parser: 4.2.0
       schema-utils: 3.3.0
       semver: 7.7.4
-      webpack: 5.96.1(esbuild@0.25.0)
+      webpack: 5.96.1
 
   css-select@5.2.2:
     dependencies:
@@ -13897,6 +13906,11 @@ snapshots:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.1.0)
 
+  react-native-pager-view@8.0.2(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.1.0)
+
   react-native-purchases@9.15.2(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0):
     dependencies:
       '@revenuecat/purchases-js-hybrid-mappings': 17.55.1
@@ -14544,7 +14558,7 @@ snapshots:
 
   style-loader@4.0.0(webpack@5.96.1):
     dependencies:
-      webpack: 5.96.1(esbuild@0.25.0)
+      webpack: 5.96.1
 
   sucrase@3.35.1:
     dependencies:
@@ -14651,7 +14665,7 @@ snapshots:
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       terser: 5.46.2
-      webpack: 5.96.1(esbuild@0.25.0)
+      webpack: 5.96.1
     optionalDependencies:
       esbuild: 0.25.0
 
@@ -14662,6 +14676,14 @@ snapshots:
       schema-utils: 4.3.3
       terser: 5.46.2
       webpack: 5.106.0
+
+  terser-webpack-plugin@5.5.0(webpack@5.96.1):
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.31
+      jest-worker: 27.5.1
+      schema-utils: 4.3.3
+      terser: 5.46.2
+      webpack: 5.96.1
 
   terser@5.46.2:
     dependencies:
@@ -15124,6 +15146,36 @@ snapshots:
       schema-utils: 4.3.3
       tapable: 2.3.3
       terser-webpack-plugin: 5.5.0(webpack@5.106.0)
+      watchpack: 2.5.1
+      webpack-sources: 3.4.1
+    transitivePeerDependencies:
+      - '@swc/core'
+      - esbuild
+      - uglify-js
+
+  webpack@5.96.1:
+    dependencies:
+      '@types/eslint-scope': 3.7.7
+      '@types/estree': 1.0.8
+      '@webassemblyjs/ast': 1.14.1
+      '@webassemblyjs/wasm-edit': 1.14.1
+      '@webassemblyjs/wasm-parser': 1.14.1
+      acorn: 8.16.0
+      browserslist: 4.28.2
+      chrome-trace-event: 1.0.4
+      enhanced-resolve: 5.21.1
+      es-module-lexer: 1.7.0
+      eslint-scope: 5.1.1
+      events: 3.3.0
+      glob-to-regexp: 0.4.1
+      graceful-fs: 4.2.11
+      json-parse-even-better-errors: 2.3.1
+      loader-runner: 4.3.2
+      mime-types: 2.1.35
+      neo-async: 2.6.2
+      schema-utils: 3.3.0
+      tapable: 2.3.3
+      terser-webpack-plugin: 5.5.0(webpack@5.96.1)
       watchpack: 2.5.1
       webpack-sources: 3.4.1
     transitivePeerDependencies:

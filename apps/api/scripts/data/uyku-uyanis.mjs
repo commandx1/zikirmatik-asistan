@@ -1,6 +1,8 @@
 export const uyku_uyanis = {
   key: 'uyku uyanış',
   label: 'Uyku ve Uyanış Zikirleri',
+  category: 'gunluk',
+  description: 'Uyku öncesi ve uyanış anına ait Hz. Peygamber\'den gelen dualar.',
   dhikrItems: [
     // ─── UYKUDAN UYANINCA ──────────────────────────────────────────────────────
 

@@ -1,6 +1,8 @@
 export const evGirisCikis = {
   key: 'ev-giris-cikis',
   label: 'Ev, Cami ve Yola Çıkış Duaları',
+  category: 'gunluk',
+  description: 'Eve girerken, çıkarken ve camiye girip çıkarken okunacak dualar.',
   dhikrItems: [
     {
       key: 'ev-cikis-bismillah-tevekkul',
@@ -86,6 +88,32 @@ export const evGirisCikis = {
         'ibadet ortamına girerken',
         'şeytanı uzaklaştırmak için',
         'rahmet dilemek için',
+      ],
+    },
+    {
+      key: 'cami-cikis-dua',
+      nameArabic:
+        'بِسْمِ اللَّهِ وَالصَّلَاةُ وَالسَّلَامُ عَلَى رَسُولِ اللَّهِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ، اللَّهُمَّ اعْصِمْنِي مِنَ الشَّيْطَانِ الرَّجِيمِ',
+      nameTurkish: 'Camiden Çıkarken Duası',
+      transliteration:
+        "Bismillâh ves-salâtu ves-selâmu alâ rasûlillâh. Allâhümme innî es'elüke min fadlik. Allâhümme'sımnî mineş-şeytânir-racîm.",
+      meaning:
+        "Allah'ın adıyla (çıkarım). Salât ve selam, Rasûlullah'ın üzerine olsun. Allah'ım! Senin lütfundan isterim. Allah'ım! Beni kovulmuş şeytandan koru.",
+      virtue:
+        "Hz. Peygamber camiden çıkarken bu duayı okurdu. Camiye girerken 'rahmet kapılarını aç' denir; çıkarken ise cami dışından istenecek lütuf ve açık dünyaya çıkışta şeytandan korunma talep edilir. Cümlelerin sırası tesadüfî değildir: besmele ve salavat ile başlanır — Allah'a sığınma ve Peygamber'e bağlılık; ardından 'min fadlik' — nerede, ne şekilde gelirse gelsin Allah'ın lütfunu istemek; son olarak şeytan istiazesi. Cami çıkışı, ibadet havasından günlük yaşama geçiş noktasıdır; bu dua o geçişi koruma altına alır.",
+      source:
+        "Ebû Dâvûd, Salât, 28, nr. 465; İbn Mâce, Mesâcid, nr. 772; sahih (Hısnu'l-Muslim nr. 21)",
+      tags: ['cami', 'çıkış', 'lütuf', 'şeytan', 'koruma', 'dua'],
+      categories: ['günlük', 'koruyucu', 'cami'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: [
+        'camiden çıkarken',
+        'namaz sonrası dışarı çıkarken',
+        'ibadet ortamından ayrılırken',
+        'şeytandan korunma ve lütuf talebi',
+        'cami girişi duasıyla birlikte tamamlayıcı pratik',
       ],
     },
   ],

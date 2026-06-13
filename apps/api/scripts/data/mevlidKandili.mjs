@@ -3,6 +3,8 @@ import { keyMap } from './keyMap.mjs';
 export const mevlidKandili = {
   key: 'mevlid-kandili-2026',
   label: 'Mevlid Kandili 2026',
+  category: 'ibadet',
+  description: 'Mevlid Kandili\'ne ait özel zikirler ve dualar.',
   dhikrItems: [
     {
       key: keyMap.SALAVAT_SERIF,

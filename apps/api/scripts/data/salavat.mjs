@@ -1,6 +1,8 @@
 export const salavat = {
   key: 'salavat',
   label: 'Salavat ve Selam',
+  category: 'dua',
+  description: 'Hz. Peygamber\'e salavat getirme formları ve faziletleri.',
   dhikrItems: [
     {
       key: 'salavat-ibrahimiyye',

@@ -1,0 +1,104 @@
+export const vitrKunutu = {
+  key: 'vitr-kunutu',
+  label: 'Vitir Namazı Kunut Duaları',
+  category: 'namaz',
+  description: 'Vitir namazına ait kunut duaları ve vitir sonrası zikir.',
+  dhikrItems: [
+    {
+      key: 'vitr-kunut-hdini-fimen',
+      nameArabic:
+        'اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ، وَعَافِنِي فِيمَنْ عَافَيْتَ، وَتَوَلَّنِي فِيمَنْ تَوَلَّيْتَ، وَبَارِكْ لِي فِيمَا أَعْطَيْتَ، وَقِنِي شَرَّ مَا قَضَيْتَ، فَإِنَّكَ تَقْضِي وَلَا يُقْضَىٰ عَلَيْكَ، وَإِنَّهُ لَا يَذِلُّ مَنْ وَالَيْتَ، وَلَا يَعِزُّ مَنْ عَادَيْتَ، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ',
+      nameTurkish: 'Vitir Kunut Duası — Temel Form',
+      transliteration:
+        "Allâhümme'hdini fîmen hedeyt, ve âfinî fîmen âfeyt, ve tevellenî fîmen tevelleyt, ve bârik lî fîmâ a'tayt, ve kınî şerra mâ kadayt, fe-inneke takdî ve lâ yukdâ aleyke, ve innehû lâ yezillü men vâleyt, ve lâ ye'izzü men âdeyt, tebârakte Rabbenâ ve te'âleyt.",
+      meaning:
+        "Allahım! Hidâyet verdiklerinin arasında beni de hidâyet üzere sâbit kıl. Âfiyet verdiklerinin arasında bana da âfiyet ver. İşlerini üstlendiklerinin arasında benim de işimi üstlen. Verdiğini benim için bereketli kıl. Takdir ettiğin şeylerin şerrinden beni koru. Şüphesiz sen hükmedersin, senin hükmünü bozacak kimse yoktur. Kimi dost edinirsen zelil olmaz; kimi düşman edinirsen de asla aziz olamaz. Rabbimiz, sen mübârek ve yücesin.",
+      virtue:
+        "Hasan ibn Ali'nin rivayetine göre Hz. Peygamber bu duayı vitir kunutunda okumayı öğretti (Ebu Dâvûd, Tirmizî, Nesâî, İbn Mâce; sahih). Kunut, 'boyun eğmek, itaat etmek' demektir — vitir namazının tek rekâtına özgü secde öncesi dua makamıdır. Bu dua beş temel talepten oluşur: hidayet, âfiyet, velâyet (sahiplenme), bereket, şerden korunma. Ardından gelen 'fe-inneke takdî' — 'sen hükmedersin, sana hükmedilmez' — kişiyi kendi arzularından koparır; duanın kabulü de reddi de Allah'ın hükmüne bırakılır. Son cümle: 'Tebârakte Rabbenâ' — dua, Allah'ı yüceltmekle kapanır; talep bitişi değil, hamd bitişidir.",
+      source:
+        "Ebu Dâvûd, Vitir, nr. 1425; Tirmizî, Vitir 10, nr. 464; Nesâî, Kıyâmü'l-Leyl; İbn Mâce; sahih — Sahih-i Tirmizî (1/144); İrvâü'l-Ğalîl (2/172); Hısnu'l-Muslim nr. 116",
+      tags: ['vitir', 'kunut', 'namaz', 'hidayet', 'âfiyet', 'dua', 'gece'],
+      categories: ['ibadet', 'namaz', 'vitir', 'gece namazı', 'dua'],
+      timeOfDay: 'night',
+      recommendedCount: 1,
+      suitableFor: [
+        'vitir namazında kunut makamında',
+        'yatsı namazından sonra vitir',
+        'gece namazında (teheccüd) vitir',
+        'beş temel talebi bir arada Allah\'a sunmak için',
+        'namaz içi kapsamlı dua olarak',
+      ],
+    },
+    {
+      key: 'vitr-kunut-euzu-biridake',
+      nameArabic:
+        'اللَّهُمَّ إِنِّي أَعُوذُ بِرِضَاكَ مِنْ سَخَطِكَ، وَبِمُعَافَاتِكَ مِنْ عُقُوبَتِكَ، وَأَعُوذُ بِكَ مِنْكَ، لَا أُحْصِي ثَنَاءً عَلَيْكَ أَنْتَ كَمَا أَثْنَيْتَ عَلَىٰ نَفْسِكَ',
+      nameTurkish: 'Vitir Kunut Duası — Senden Sana Sığınma',
+      transliteration:
+        "Allâhümme innî eûzü bi-ridâke min sehatike, ve bi-muâfâtike min ukûbetike, ve eûzü bike minke, lâ uhsî senâen aleyke ente kemâ esnâyte alâ nefsik.",
+      meaning:
+        "Allahım! Öfkenden rızana, cezalandırmandan bağışlamana sığınırım. Senden, sana sığınırım. Sana olan övgüleri sayamam; sen, kendini övdüğün gibisin.",
+      virtue:
+        "Hz. Ali'den rivayet edildiğine göre Hz. Peygamber bu duayı kunut ve secdede okurdu (Müslim, sünen sahipleri). En derin cümlesi: 'eûzü bike minke' — senden sana sığınırım. Sığınma makamı olan Allah'tan başka bir sığınak yoksa, sığınan da O'na gider; kaçış yok, dönüş var. Bu cümle mistik derinliğiyle öne çıkar — Allah'ın gazabından korkuyor ama kaçacak yer yine Allah. Son cümle: 'lâ uhsî senâen aleyke' — 'övgülerini sayamam' — dua, yetersizliğin itirafıyla biter; 'ne diyeceğimi de tam bilemiyorum, ama sen zaten biliyorsun.'",
+      source:
+        "Müslim, Salât, nr. 486; Ebu Dâvûd, Vitir; Tirmizî; sahih — Sahih-i Tirmizî (3/180); Hısnu'l-Muslim nr. 117",
+      tags: ['vitir', 'kunut', 'namaz', 'istiaze', 'rıza', 'sığınma', 'gece'],
+      categories: ['ibadet', 'namaz', 'vitir', 'istiaze', 'tevbe'],
+      timeOfDay: 'night',
+      recommendedCount: 1,
+      suitableFor: [
+        'vitir namazında ilk kunut duasından sonra',
+        'secdede derin istiğfar',
+        'Allah\'ın öfkesinden korkma anında',
+        'teolojik derinliği olan pratik bir dua olarak',
+      ],
+    },
+    {
+      key: 'vitr-kunut-iyyake-nabudu',
+      nameArabic:
+        'اللَّهُمَّ إِيَّاكَ نَعْبُدُ وَلَكَ نُصَلِّي وَنَسْجُدُ وَإِلَيْكَ نَسْعَىٰ وَنَحْفِدُ، نَرْجُو رَحْمَتَكَ وَنَخْشَىٰ عَذَابَكَ، إِنَّ عَذَابَكَ بِالْكَافِرِينَ مُلْحِقٌ، اللَّهُمَّ إِنَّا نَسْتَعِينُكَ وَنَسْتَغْفِرُكَ وَنُثْنِي عَلَيْكَ الْخَيْرَ وَلَا نَكْفُرُكَ، وَنُؤْمِنُ بِكَ وَنَخْلَعُ وَنَتْرُكُ مَنْ يَكْفُرُكَ',
+      nameTurkish: 'Vitir Kunut Duası — Cemaat Kunutu (Uzun Form)',
+      transliteration:
+        "Allâhümme iyyâke na'budü ve leke nüsallî ve nescüdü ve ileyke nes'â ve nahfid, nercû rahmeteke ve nahşâ azâbeke, inne azâbeke bil-kâfirîne mulhık. Allâhümme innâ nesta'înüke ve nestağfiruke ve nüsnî aleykel-hayre ve lâ nekfuruke ve nü'minü bike ve nahlau ve netrukümen yekfuruk.",
+      meaning:
+        "Allahım! Ancak sana ibâdet ederiz, senin için namaz kılar ve secde ederiz. Yalnızca sana yönelir ve koşarız. Rahmetini umar, azabından korkarız. Azabın kâfirlere mutlaka erişir. Allahım! Senden yardım ve mağfiret dileriz. Seni hayırla överiz, seni inkâr etmeyiz. Sana îmân ederiz. Seni inkâr edenlerden uzak durur ve onları terk ederiz.",
+      virtue:
+        "Ömer ibn el-Hattâb'a Hz. Peygamber'den mevkuf sahih bir senedle nakledilen bu kunut duası, cemaat namazlarında yüksek sesle okunmak üzere özellikle kullanılmıştır (Beyhakî; sahih sened — Elbânî, İrvâü'l-Ğalîl 2/170). 'Iyyâke na'budü' — Fatiha'nın anahtarı ile başlar; ama bu sefer çoğul: 'Biz'. Bireysel ibadetten cemaat şuuruna geçiş. 'Nahlau ve netrukümen yekfuruk' — 'seni inkâr edeni terk ederiz' — bu cümle akidede beraat bildirisidir; imanın sınırını çizmek, iyilik kadar önemlidir.",
+      source:
+        "Beyhakî, Sünenü'l-Kübrâ, 2/211; Hz. Ömer'den sahih mevkuf; Elbânî, İrvâü'l-Ğalîl (2/170); Hısnu'l-Muslim nr. 118",
+      tags: ['vitir', 'kunut', 'namaz', 'cemaat', 'ibadet', 'iman', 'istiğfar'],
+      categories: ['ibadet', 'namaz', 'vitir', 'cemaat', 'iman'],
+      timeOfDay: 'night',
+      recommendedCount: 1,
+      suitableFor: [
+        'vitir namazında cemaat kunutu',
+        'imamın yüksek sesle okuduğu kunut',
+        'tek başına uzun kunut formu',
+        'iman bildirisi ve beraat niyetiyle',
+        'Ömer\'in Hz. Peygamber\'den öğrendiği pratik',
+      ],
+    },
+    {
+      key: 'vitr-selamdan-sonra-subhanelmelikil-kuddus',
+      nameArabic: 'سُبْحَانَ الْمَلِكِ الْقُدُّوسِ',
+      nameTurkish: 'Vitir Selâmından Sonra Zikir',
+      transliteration: "Sübhânel-Melikil-Kuddûs (×3, üçüncüsü uzatılır) — Rabbel-melâiketi ver-rûh.",
+      meaning:
+        "Her türlü noksanlıklardan uzak, mutlak hükümdar olan (Allah'ı) tüm noksanlıklardan tenzih ederim (3 kez) — Meleklerin ve Ruh'un Rabbi.",
+      virtue:
+        "Hz. Peygamber vitir namazından selâm verdikten sonra 'Sübhânel-Melikil-Kuddûs'ü üç kez söyler, üçüncüsünde sesini yükseltir ve 'Rabbel-melâiketi ver-rûh' ziyâdesini eklerdi (Nesâî, Dârekutnî; sahih). 'Melik' — mutlak hükümdar; 'Kuddûs' — tüm şirkten, ortaktan, benzerden mutlak anlamda arınmış. Gece namazının son zikridir; ses yükseltilmesi hem bir coşku hem de uyuyan evin ve gecenin o kelimeyi duyması için bir davettir. Üçüncüde ses çıkarmak, 'Kuddûs' olan Allah'ın büyüklüğünü gecenin sessizliğine haykırmaktır.",
+      source:
+        "Nesâî, Kıyâmü'l-Leyl ve't-Tetavvu', nr. 1699; Dârekutnî, 2/31; sahih — Zâdu'l-Meâd; Hısnu'l-Muslim nr. 119",
+      tags: ['vitir', 'selam sonrası', 'zikir', 'tesbih', 'gece', 'namaz'],
+      categories: ['ibadet', 'namaz', 'vitir', 'gece namazı', 'zikir'],
+      timeOfDay: 'night',
+      recommendedCount: 3,
+      suitableFor: [
+        'vitir namazından selâm verdikten hemen sonra',
+        'gece namazı bitiş zikriri olarak',
+        'üçüncüde sesi yükselterek',
+        'kunut duaları ile birlikte vitir setini tamamlamak',
+      ],
+    },
+  ],
+};

@@ -1,8 +1,10 @@
-import { keyMap } from './keyMap.mjs'
+import { keyMap } from './keyMap.mjs';
 
 export const rizikMulkTertipleri = {
   key: 'rizik-ve-mulk-tertipleri',
   label: 'Rızık ve Mülk Tertipleri',
+  category: 'hayat',
+  description: 'Rızık genişliği ve bereket için okunacak dualar ve zikirler.',
   dhikrItems: [
     {
       key: 'rizik-kombinasyon-ya-gani-ya-mugni',
@@ -200,6 +202,109 @@ export const rizikMulkTertipleri = {
       timeOfDay: 'any',
       recommendedCount: 1100,
       suitableFor: ['iş kolaylığı', 'bereket artışı', 'itibar'],
+    },
+    {
+      key: 'rizik-kfini-bihalali-an-harami',
+      nameArabic:
+        'اللَّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ',
+      nameTurkish: 'Helal Rızık ve Borçtan Kurtuluş Duası',
+      transliteration:
+        "Allâhümme'kfinî bihalâlike an harâmike ve ağninî bifazlike ammen sivâke.",
+      meaning:
+        "Allah'ım! Bana helalinle yetindir ve haramından koru. Fazlınla beni senden başkasına muhtaç etme.",
+      virtue:
+        "Hz. Ali bu duayı borcunu ödeyemeyen bir köleye öğretmiş ve 'üzerinde dağ kadar borç olsa bile Allah sana ödemede yardım eder' demiştir. Duanın iki cümlesi birbiriyle bütünleşir: birincisi helalin yetmesini ister (harama sürüklenmeden geçinme), ikincisi Allah'ın fazlının yetmesini ister (başka kapılara muhtaç olmama). 'Ammen sivâke' (senden başkasına muhtaç etme) ifadesi özellikle güçlüdür — maddi sıkıntının en acı tarafı çoğu zaman başkalarına el açmak, onların yardımına mahkum olmak hissidir; bu dua tam da o bağımlılığı hedef alır. Sabah-akşam okunmaya uygundur; dar bir günde de, sıkıntı geçtikten sonra da.",
+      source: 'Tirmizî, Deavât; El-Ezkar, Cilt 1',
+      tags: ['rızık', 'borç', 'helal kazanç', 'istiğna', 'dua'],
+      categories: ['genel', 'dua', 'rızık bereket'],
+      timeOfDay: 'any',
+      recommendedCount: 3,
+      suitableFor: [
+        'borç baskısı ve ödeyememe',
+        'haramdan korunarak helal rızık talebi',
+        'başkasına muhtaç olmaktan kurtulma',
+        'geçim sıkıntısı',
+        'sabah-akşam virdi',
+      ],
+    },
+    {
+      key: 'rizik-carsiya-girerken-istiaze',
+      nameArabic:
+        'بِسْمِ اللَّهِ اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَٰذِهِ السُّوقِ وَخَيْرَ مَا فِيهَا وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ مَا فِيهَا اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أُصِيبَ فِيهَا يَمِينًا فَاجِرَةً أَوْ صَفْقَةً خَاسِرَةً',
+      nameTurkish: 'Çarşıda Yanlış İşten Korunma Duası',
+      transliteration:
+        "Bismillâh. Allâhümme innî es'elüke hayra hâzihis-sûkı ve hayra mâ fîhâ, ve eûzü bike min şerrihâ ve şerri mâ fîhâ. Allâhümme innî eûzü bike en usîbe fîhâ yemînen fâciraten ev safekaten hâsiraten.",
+      meaning:
+        "Bismillah. Allah'ım! Senden bu çarşının hayrını ve buradaki hayırlı şeyi isterim; çarşının şerrinden ve buradaki kötülüklerden sana sığınırım. Allah'ım! Bu çarşıda yalan yere yemin etmekten ve zarar veren bir alışveriş yapmaktan sana sığınırım.",
+      virtue:
+        "Büreyde rivayetinde gelen bu dua, çarşı ortamının getirdiği iki temel tehlikeyi adres alır: yalan yere yemin ('yemînen fâcire') ve kötü alışveriş ('safekaten hâsire'). Ticarette en sık düşülen tuzaklar bunlardır — sattığını abartmak, malı olduğundan iyi göstermek için yemin etmek; ya da aceleci bir kararla hem dünya hem ahiret açısından zararlı bir işe girmek. Dua, kişiyi bu iki tuzağa karşı hem uyarıyor hem de Allah'a sığındırıyor. Sabah çarşıya açılacak bir esnaf, işe gidecek biri veya önemli bir ticari karar öncesinde okunması güçlü bir niyet belirleyicisidir.",
+      source: 'Hâkim, el-Müstedrek; El-Ezkar Cilt 2',
+      tags: [
+        'rızık',
+        'ticaret',
+        'çarşı',
+        'helal kazanç',
+        'korunma',
+        'iş hayatı',
+      ],
+      categories: ['genel', 'dua', 'rızık bereket'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      suitableFor: [
+        'çarşı veya iş yerine girerken',
+        'ticari karar öncesi',
+        'helal kazanç ve doğru alışveriş',
+        'yalan yeminden ve zararlı işten korunma',
+        'esnaf günlük başlangıcı',
+      ],
+    },
+    {
+      key: 'rizik-talak-men-yettekillah',
+      nameArabic:
+        'وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',
+      nameTurkish: 'Beklenmedik Rızık Ayeti',
+      transliteration:
+        "Ve men yettekıllâhe yec'al lehû mahrecâ, ve yerzukhü min haysu lâ yahtesib, ve men yetevekkel alallâhi fe-hüve hasbüh.",
+      meaning:
+        "Kim Allah'tan korkarsa, Allah ona bir çıkış yolu açar ve onu hesaba katmadığı yerden rızıklandırır. Kim Allah'a tevekkül ederse, O ona yeter.",
+      virtue:
+        "'Min haysu lâ yahtesib' (hesaba katmadığı yerden) ifadesi bu ayetin özüdür: çıkış göremediğin, kapıların kapandığını hissettiğin anda açılacak olan yol, senin planlamadığın bir yönden gelecek. Bu bir teselli değil, ilahi bir kanun bildirimidir — ve kanun, takvaya, yani Allah'a karşı dikkatli ve dürüst olmaya bağlı. Takva maddi imkânı değil sınıflandırılmayı değil, kalpte Allah gözetimini sürdürmeyi ifade eder. Ayeti okuyan kişi hem rızık talebi yapıyor hem de o rızkın şartını — takvayı — zihninde tazelemiş oluyor. Tevekkülü hatırlatan son cümle, insanın kendi çabasını bırakması değil, sonucu Allah'a havale etmesi anlamındadır.",
+      source: "Kur'an-ı Kerim, Talak Suresi 65:2-3",
+      tags: ['rızık', 'tevekkül', 'takva', 'çıkış yolu', 'bereket', 'kuran'],
+      categories: ['genel', 'ayet', 'rızık bereket'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      suitableFor: [
+        'çıkış yolu görememe ve çaresizlik',
+        'beklenmedik yoldan rızık için dua',
+        'geçim sıkıntısında tevekkül',
+        'kapıların kapandığı hissi',
+        'maddi zorlukta sabır ve iman tazeleme',
+      ],
+    },
+    {
+      key: 'rizik-nuh-istigfar-rizk',
+      nameArabic:
+        'فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا يُرْسِلِ السَّمَاءَ عَلَيْكُم مِّدْرَارًا وَيُمْدِدْكُم بِأَمْوَالٍ وَبَنِينَ وَيَجْعَل لَّكُمْ جَنَّاتٍ وَيَجْعَل لَّكُمْ أَنْهَارًا',
+      nameTurkish: "Hz. Nuh'un İstiğfar ve Rızık Ayeti",
+      transliteration:
+        "Fe-guletü'stağfirû Rabbekum innehu kâne Ğaffârâ, yürsilis-semâe aleykum midrârâ, ve yümdidkum bi-emvâlin ve benîne ve yec'al lekum cennâtin ve yec'al lekum enhârâ.",
+      meaning:
+        'Dedim ki: Rabbinizden bağışlanma dileyin; O çok bağışlayandır. Üzerinize gökten bol yağmur göndersin; mallarınızı ve çocuklarınızı artırsın, sizin için bahçeler ve ırmaklar yaratsın.',
+      virtue:
+        "Hz. Nuh aleyhisselamın kavmine söylediği bu sözler, istiğfarın maddi hayata doğrudan bir yansıması olduğunu açıkça ortaya koyuyor: 'yağmur, mal, nesil, bahçe, ırmak' — hepsi somut, dünyevi, elle tutulur nimetler. İstiğfarın bu bağlamda ne anlam taşıdığı önemlidir: günahların kalbi kirlettiğini, kirli bir kalbin bereketi tutamadığını, ama tövbeyle açılan kalbin hem ilahi rahmete hem de maddi genişliğe kapı olduğunu anlatıyor. 'Ğaffâr' ismi — çok ve tekrar tekrar bağışlayan — bu bağlamda özellikle teselli edicidir: ne kadar birikmiş olursa olsun bağışlama kapısı açıktır. Maddi sıkıntıların ardında manevi bir tıkanıklık olup olmadığını sorgulayanlar için bu ayet, hem teşhis hem de ilaç sunuyor.",
+      source: "Kur'an-ı Kerim, Nuh Suresi 71:10-12",
+      tags: ['rızık', 'istiğfar', 'bereket', 'tövbe', 'nuh', 'kuran'],
+      categories: ['genel', 'ayet', 'rızık bereket'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      suitableFor: [
+        'maddi sıkıntıda istiğfarla bereket talebi',
+        'rızık darlığı ve geçim zorluğu',
+        'tövbe ve istiğfarı rızıkla ilişkilendirme',
+        'manevi temizlenme ile maddi açılım',
+        'düzensiz veya azalan gelir',
+      ],
     },
   ],
   specialDays: [],

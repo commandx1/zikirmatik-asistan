@@ -15,6 +15,7 @@ import { hasettenKorunma } from './hasettenKorunma.mjs';
 import { kibirdenKorunma } from './kibirdenKorunma.mjs';
 import { evlilikHuzur } from './evlilikHuzur.mjs';
 import { ofkeKontrol } from './ofkeKontrol.mjs';
+import { barismaVeSulh } from './barismaVeSulh.mjs';
 import { esmaRizikBereket, esmaulHusnaTemel } from './esmaulHusnaTemel.mjs';
 import { hayirliEv } from './hayirliEv.mjs';
 import { hayirliEvlatZikirleri } from './hayirliEvlatZikirleri.mjs';
@@ -24,6 +25,17 @@ import { koruyucu } from './koruyucu.mjs';
 import { kurbanBayrami } from './kurban-bayrami-2026.mjs';
 import { mevlidKandili } from './mevlidKandili.mjs';
 import { muharremIlkOn } from './muharremIlkOn.mjs';
+import { gunlukTesbih } from './gunlukTesbih.mjs';
+import { haksizlikVeMulkKoruma } from './haksizlikVeMulkKoruma.mjs';
+import { istihareDuasi } from './istihareDuasi.mjs';
+import { orucRamazan } from './orucRamazan.mjs';
+import { namazSonrasiZikir } from './namazSonrasiZikir.mjs';
+import { ezanDualari } from './ezanDualari.mjs';
+import { gunlukSunnetDualari } from './gunlukSunnetDualari.mjs';
+import { namazDualari } from './namazDualari.mjs';
+import { vitrKunutu } from './vitrKunutu.mjs';
+import { ozluSunnetDualari } from './ozluSunnetDualari.mjs';
+import { imanSaglamligi } from './imanSaglamligi.mjs';
 import { rizikMulkTertipleri } from './rizikMulkTertipleri.mjs';
 import { sinavVeYazili } from './sinavVeYazili.mjs';
 import { zilhicceIlkOn } from './zilhicce-ilk-on.mjs';
@@ -36,6 +48,17 @@ export const SOURCE_DATASETS = [
   sinavVeYazili,
   esmaulHusnaTemel,
   esmaRizikBereket,
+  gunlukTesbih,
+  haksizlikVeMulkKoruma,
+  istihareDuasi,
+  orucRamazan,
+  namazSonrasiZikir,
+  ezanDualari,
+  gunlukSunnetDualari,
+  namazDualari,
+  vitrKunutu,
+  ozluSunnetDualari,
+  imanSaglamligi,
   rizikMulkTertipleri,
   hayirliEvlatZikirleri,
   koruyucu,
@@ -47,6 +70,7 @@ export const SOURCE_DATASETS = [
   hasettenKorunma,
   evlilikHuzur,
   ofkeKontrol,
+  barismaVeSulh,
   hastalıkVeŞifa,
   cenazeVeTaziye,
   tovbeIstigfar,

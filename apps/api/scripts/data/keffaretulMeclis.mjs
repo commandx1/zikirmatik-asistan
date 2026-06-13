@@ -1,6 +1,8 @@
 export const keffaretulMeclis = {
   key: 'keffaret-ul-meclis',
   label: 'Oturum ve Meclis Duaları',
+  category: 'gunluk',
+  description: 'Bir meclisten ya da toplantıdan kalkarken okunacak kefaret duası.',
   dhikrItems: [
     {
       key: 'meclis-istigfar-100',

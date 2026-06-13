@@ -1,6 +1,8 @@
 export const yemekDualari = {
   key: 'yemek-dualari',
   label: 'Yemek ve İçme Duaları',
+  category: 'gunluk',
+  description: 'Yemek öncesinde ve sonrasında okunacak şükür ve bereket duaları.',
   dhikrItems: [
     {
       key: 'yemek-besmele',

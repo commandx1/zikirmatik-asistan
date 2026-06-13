@@ -3,6 +3,8 @@ import { keyMap } from './keyMap.mjs'
 export const kibirdenKorunma = {
   key: 'kibirden-korunma',
   label: 'Kibirden Korunma Duaları',
+  category: 'koruma',
+  description: 'Kibre ve ucba düşmekten korunmak için okunacak dualar.',
   dhikrItems: [
     {
       key: keyMap.SEYTAN_HEMZI_NEFHI,

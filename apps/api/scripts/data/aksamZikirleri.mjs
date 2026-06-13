@@ -1,6 +1,8 @@
 export const aksamZikirleri = {
   key: 'aksam-zikirleri',
   label: 'Akşam Zikirleri',
+  category: 'gunluk',
+  description: 'Akşam vaktinin bereketi için okunması tavsiye edilen zikirler ve dualar.',
   dhikrItems: [
     {
       key: 'aksam-emsena',

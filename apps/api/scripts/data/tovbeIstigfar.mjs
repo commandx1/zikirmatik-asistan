@@ -1,6 +1,8 @@
 export const tovbeIstigfar = {
   key: 'tovbe-istigfar',
   label: 'Tövbe ve İstiğfâr Duaları',
+  category: 'dua',
+  description: 'Tövbe ve istiğfar için Hz. Peygamber\'den gelen en değerli dualar.',
   dhikrItems: [
     {
       key: 'istigfar-rabbigfirli',

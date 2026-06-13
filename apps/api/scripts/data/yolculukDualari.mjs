@@ -1,6 +1,8 @@
 export const yolculukDualari = {
   key: 'yolculuk-dualari',
   label: 'Yolculuk ve Seyahat Duaları',
+  category: 'ibadet',
+  description: 'Yolculuk başlangıcında, süresince ve varışta okunacak dualar.',
   dhikrItems: [
     {
       key: 'yolculuk-seferin-duasi',

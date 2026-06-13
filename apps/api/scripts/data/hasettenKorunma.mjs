@@ -3,6 +3,8 @@ import { keyMap } from './keyMap.mjs'
 export const hasettenKorunma = {
   key: 'hasetten-korunma',
   label: 'Haset ve Kıskançlıktan Korunma Duaları',
+  category: 'koruma',
+  description: 'Haset ve kıskançlıktan korunmak için Hz. Peygamber\'den gelen dualar.',
   dhikrItems: [
     {
       key: 'haset-ya-mumin',

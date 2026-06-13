@@ -3,6 +3,8 @@ import { keyMap } from './keyMap.mjs'
 export const hayirliEv = {
   key: 'hayirli-ev',
   label: 'Hayırlı Ev Sahibi Olmak',
+  category: 'hayat',
+  description: 'Evi bereket ve huzurla doldurmak için okunacak dualar.',
   dhikrItems: [
     {
       key: keyMap.MUMINUN_29,

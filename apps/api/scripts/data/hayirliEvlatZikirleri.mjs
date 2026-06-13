@@ -1,6 +1,8 @@
 export const hayirliEvlatZikirleri = {
   key: 'hayirli-evlat-zikirleri',
   label: 'Hayırlı Evlat Zikirleri',
+  category: 'hayat',
+  description: 'Hayırlı evlat için dua etmeyi öğreten ve bu amaca özel zikirler.',
   dhikrItems: [
     {
       key: 'evlat-rabbi-la-tezerni',

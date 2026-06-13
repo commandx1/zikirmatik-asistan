@@ -3,6 +3,8 @@ import { keyMap } from './keyMap.mjs'
 export const kurbanBayrami = {
   key: 'kurban-bayrami-2026',
   label: 'Kurban Bayramı 2026',
+  category: 'ibadet',
+  description: 'Kurban Bayramı\'na ait tekbir ve özel dualar.',
   dhikrItems: [
     {
       key: keyMap.TESRIK_TEKBIRI,

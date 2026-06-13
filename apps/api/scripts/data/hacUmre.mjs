@@ -1,6 +1,8 @@
 export const hacUmre = {
   key: 'hac-umre',
   label: 'Hac ve Umre Zikirleri',
+  category: 'ibadet',
+  description: 'Hac ve umre ibadetlerinde okunacak dualar.',
   dhikrItems: [
     {
       key: 'hac-telbiye',

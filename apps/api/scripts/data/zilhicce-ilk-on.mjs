@@ -3,6 +3,8 @@ import { keyMap } from './keyMap.mjs'
 export const zilhicceIlkOn = {
   key: 'zilhicce-ilk-10',
   label: 'Zilhicce İlk 10 Gün 2026',
+  category: 'ibadet',
+  description: 'Zilhicce\'nin ilk on gününe ait özel zikirler ve ibadetler.',
   dhikrItems: [
     {
       key: keyMap.VAHDEHU_LA,
