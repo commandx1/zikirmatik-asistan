@@ -1,5 +1,7 @@
+import { useRef } from "react";
 import { Text, View } from "react-native";
 import { BottomActionFooter } from "../../components/ui/bottom-action-footer";
+import { useThemeTransition } from "../../contexts/theme-transition-context";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { PrimaryCtaButton } from "../../components/ui/primary-cta-button";
 import { SelectorHeader } from "./components/selector-header";
@@ -9,6 +11,15 @@ import { useThemeSelector } from "./hooks/use-theme-selector";
 
 export function ThemeSelectorScreen() {
   const selector = useThemeSelector();
+  const { triggerTransition } = useThemeTransition();
+  const selectedCardRef = useRef<View>(null);
+
+  function handleSave() {
+    if (!selector.hasThemeChanges) return;
+    selectedCardRef.current?.measureInWindow((x, y, width, height) => {
+      triggerTransition(x + width / 2, y + height / 2, () => selector.saveThemeChanges());
+    });
+  }
 
   return (
     <PageLayout>
@@ -32,6 +43,7 @@ export function ThemeSelectorScreen() {
               options={selector.themes}
               selected={selector.draftThemeName}
               onSelect={selector.setDraftThemeName}
+              selectedCardRef={selectedCardRef}
             />
             {selector.lockedThemeMessage ? (
               <View className="rounded-xl border border-[#C8972A]/30 bg-[#C8972A]/10 px-4 py-3">
@@ -45,7 +57,7 @@ export function ThemeSelectorScreen() {
           {selector.hasThemeChanges ? (
             <PrimaryCtaButton
               label="Değişiklikleri Kaydet"
-              onPress={selector.saveThemeChanges}
+              onPress={handleSave}
               textClassName="text-[15px]"
             />
           ) : null}

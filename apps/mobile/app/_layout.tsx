@@ -10,6 +10,7 @@ import { Merriweather_400Regular, Merriweather_700Bold, useFonts } from "@expo-g
 import { IntelOneMono_400Regular, IntelOneMono_700Bold } from "@expo-google-fonts/intel-one-mono";
 import { Finlandica_400Regular, Finlandica_700Bold } from "@expo-google-fonts/finlandica";
 import { IndieFlower_400Regular } from "@expo-google-fonts/indie-flower";
+import { ThemeTransitionProvider } from "../src/contexts/theme-transition-context";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
 import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
@@ -71,7 +72,9 @@ function RootProviders({ children }: { children: ReactNode }) {
         textFontFamily={resolvedFontFamily}
         textFontFamilyStrong={resolvedStrongFontFamily}
       >
-        {children}
+        <ThemeTransitionProvider>
+          {children}
+        </ThemeTransitionProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
