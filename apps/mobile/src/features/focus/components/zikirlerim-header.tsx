@@ -1,8 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
-import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { Pressable } from 'react-native'
-import { useThemeTokens } from '@zikirmatik/ui'
 import { PageHeader } from '../../../components/ui/page-header'
 import { createUserDhikr } from '../../dhikrs/services/user-dhikrs-api-client'
 import { useAuthStore } from '../../../store/auth-store'
@@ -10,8 +8,6 @@ import { useDhikrStore } from '../../../store/dhikr-store'
 import { ZikirFormModal } from './zikir-form-modal'
 
 export function ZikirlerimHeader() {
-  const router = useRouter()
-  const { tokens } = useThemeTokens()
   const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
   const removePersonalDhikr = useDhikrStore(state => state.removePersonalDhikr)
   const authStatus = useAuthStore(state => state.status)
@@ -66,15 +62,6 @@ export function ZikirlerimHeader() {
     <>
       <PageHeader
         title='Zikirlerim'
-        leftAccessory={
-          <Pressable
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onPress={() => router.push('/collections' as any)}
-            className='h-9 w-9 items-center justify-center rounded-full border border-white/10'
-          >
-            <FontAwesome6 name='border-all' size={14} color={tokens.textMuted} />
-          </Pressable>
-        }
         rightAccessory={
           <Pressable
             onPress={() => {
