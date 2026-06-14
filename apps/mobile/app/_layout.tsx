@@ -1,6 +1,6 @@
 import "../global.css";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Stack } from "expo-router";
 import { Text, TextInput } from "react-native";
 import * as Notifications from "expo-notifications";
@@ -11,6 +11,8 @@ import { IntelOneMono_400Regular, IntelOneMono_700Bold } from "@expo-google-font
 import { Finlandica_400Regular, Finlandica_700Bold } from "@expo-google-fonts/finlandica";
 import { IndieFlower_400Regular } from "@expo-google-fonts/indie-flower";
 import { ThemeTransitionProvider } from "../src/contexts/theme-transition-context";
+import { ForceUpdateModal } from "../src/components/ui/force-update-modal";
+import { fetchMinRequiredVersion, isUpdateRequired } from "../src/lib/app-config";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
 import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
@@ -37,6 +39,7 @@ function RootProviders({ children }: { children: ReactNode }) {
     ? (colorScheme === "dark" ? "saf-siyah" : "acik-mod")
     : themeName;
   const themeStoreHydrated = useThemeStore((s) => s.hasHydrated);
+  const [forceUpdate, setForceUpdate] = useState(false);
   const [fontsLoaded] = useFonts({
     Merriweather_400Regular,
     Merriweather_700Bold,
@@ -54,6 +57,15 @@ function RootProviders({ children }: { children: ReactNode }) {
   const resolvedStrongFontFamily = resolveGlobalStrongFontFamily(fontFamily, fontsLoaded);
 
   useEffect(() => {
+    fetchMinRequiredVersion().then((minVersion) => {
+      console.log(minVersion, 'MIN VERSION')
+      if (minVersion && isUpdateRequired(minVersion)) {
+        setForceUpdate(true);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     // Some RN builds expose readonly defaults on native text components.
     // Keep this best-effort so startup never crashes if mutation is blocked.
     safeSetDefaultTextStyle(Text, resolvedFontFamily);
@@ -65,18 +77,21 @@ function RootProviders({ children }: { children: ReactNode }) {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        themeName={effectiveThemeName}
-        fontSize="medium"
-        textFontFamily={resolvedFontFamily}
-        textFontFamilyStrong={resolvedStrongFontFamily}
-      >
-        <ThemeTransitionProvider>
-          {children}
-        </ThemeTransitionProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider
+          themeName={effectiveThemeName}
+          fontSize="medium"
+          textFontFamily={resolvedFontFamily}
+          textFontFamilyStrong={resolvedStrongFontFamily}
+        >
+          <ThemeTransitionProvider>
+            {children}
+          </ThemeTransitionProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+      <ForceUpdateModal visible={forceUpdate} />
+    </>
   );
 }
 

@@ -10,4 +10,11 @@ export class AppController {
       timestamp: new Date().toISOString(),
     };
   }
+
+  @Get('app-config')
+  getAppConfig() {
+    return {
+      minVersion: process.env.APP_MIN_VERSION ?? '0',
+    };
+  }
 }
