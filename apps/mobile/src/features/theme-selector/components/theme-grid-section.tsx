@@ -8,7 +8,7 @@ type ThemeGridSectionProps = {
   options: ThemeOption[];
   selected: ThemeName;
   onSelect: (theme: ThemeName) => void;
-  selectedCardRef?: RefObject<View>;
+  selectedCardRef?: RefObject<View | null>;
 };
 
 export function ThemeGridSection({ options, selected, onSelect, selectedCardRef }: ThemeGridSectionProps) {
