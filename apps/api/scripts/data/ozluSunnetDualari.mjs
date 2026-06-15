@@ -296,6 +296,56 @@ export const ozluSunnetDualari = {
       ],
     },
     {
+      key: 'ozlu-rabbena-atina-haseneten',
+      nameArabic:
+        'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+      nameTurkish: 'Dünya ve Ahirette İyilik Duası',
+      transliteration:
+        "Rabbenâ âtinâ fiddünyâ haseneten ve fil âhireti haseneten ve kınâ azâben nâr.",
+      meaning:
+        "Rabbimiz! Bize dünyada da ahirette de iyilik ver. Bizi cehennem azabından koru.",
+      virtue:
+        "Enes ibni Mâlik aktarır: Hz. Peygamber bu duayı çok severdi. Enes, yalnızca tek bir dua etmek istediğinde bunu okurdu; birkaç dua edecekse aralarında mutlaka buna da yer verirdi (Müslim; El-Ezkar nr. 1149). Bakara 201. ayet olan bu dua hem Kuranî hem sünnî zeminde dünyanın ve ahiretin özeti olan üç talep içerir: dünyada iyilik (sağlık, huzur, helal rızık), ahirette iyilik (cennet), cehennemden korunma. 'Haseneh' kelimesi sınırlanmamış — her türlü iyiliği kapsar. Hz. Peygamber'in en sevdiği dua olması, onun genişliğini gösterir.",
+      source:
+        "Buhârî, Deavât, nr. 6389; Müslim, Zikir ve Dua, nr. 2690; Kur'an, Bakara 2:201; El-Ezkar nr. 1149",
+      tags: ['dua', 'dünya', 'ahiret', 'iyilik', 'cehennem', 'kapsamlı', 'özlü'],
+      categories: ['genel', 'dua', 'özlü dualar', 'günlük hayat'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      suitableFor: [
+        'günlük tek dua olarak',
+        'namaz aralarında',
+        'kısa ama kapsamlı dua arayan herkes için',
+        'Hz. Peygamber\'in en sevdiği dua',
+        'her yaştan Müslüman için temel',
+      ],
+    },
+    {
+      key: 'ozlu-acz-kesel-cubn-herem-kabir-fitne',
+      nameArabic:
+        'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ وَالْجُبْنِ وَالْهَرَمِ وَالْبُخْلِ وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ وَأَعُوذُ بِكَ مِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ',
+      nameTurkish: 'Âcizlik, Tembellik, Korkaklık, İhtiyarlık ve Kabir Azabından Sığınma',
+      transliteration:
+        "Allâhümme innî eûzü bike minel-aczi vel-keseli vel-cübni vel-heremi vel-buhli, ve eûzü bike min azâbil-kabri, ve eûzü bike min fitnetil-mahyâ vel-memât.",
+      meaning:
+        "Allah'ım! Âcizlikten, tembellikten, korkaklıktan, ihtiyarlayıp güçsüz düşmekten ve cimrilikten sana sığınırım. Kabir azabından sana sığınırım. Hayat ve ölüm fitnesinden sana sığınırım.",
+      virtue:
+        "Enes ibni Mâlik'ten rivayet edildiğine göre Hz. Peygamber bu duayı çokça okurdu (Buhârî, Müslim; El-Ezkar nr. 1154). Üç sığınma bloğu: (1) nefsin zayıflıkları — acz (yetenek yoksunluğu), kesel (iradesizlik), cübn (korkaklık), herem (güçsüz yaşlılık), buhl (cimrilik); (2) kabir azabı; (3) mahyâ/memat fitnesi — yaşarken dine zarar veren şeyler ile can çekişme anının sınavı. Bu bloklar, bir Müslümanın dünyada ve ahirette karşılaşabileceği iç ve dış tehlikelerin özet haritasıdır.",
+      source:
+        "Buhârî, Cihad, nr. 2823; Müslim, Zikir, nr. 2706; El-Ezkar, İmam Nevevi, nr. 1154",
+      tags: ['sığınma', 'âcizlik', 'tembellik', 'kabir', 'fitne', 'istiaze', 'kapsamlı'],
+      categories: ['genel', 'istiaze', 'özlü dualar', 'korunma'],
+      timeOfDay: 'any',
+      recommendedCount: 3,
+      suitableFor: [
+        'sabah duaları arasında',
+        'tembellik ve erteleme sorununuz varsa',
+        'kabir azabından korunma niyetiyle',
+        'hayatın sınavlarından önce kalkan olarak',
+        'günlük kapsamlı istiaze pratiği',
+      ],
+    },
+    {
       key: 'ozlu-magfiratul-evsa',
       nameArabic:
         'اللَّهُمَّ مَغْفِرَتُكَ أَوْسَعُ مِنْ ذُنُوبِي وَرَحْمَتُكَ أَرْجَى عِنْدِي مِنْ عَمَلِي',

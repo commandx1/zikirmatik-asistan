@@ -96,6 +96,46 @@ export const namazDualari = {
       ],
     },
     {
+      key: 'namaz-ruku-secde-subbutun-kuddus',
+      nameArabic: 'سُبُّوحٌ قُدُّوسٌ رَبُّ الْمَلَائِكَةِ وَالرُّوحِ',
+      nameTurkish: 'Rükû ve Secdede — Sübbûhün Kuddûsün',
+      transliteration: "Sübbûhün kuddûsün Rabbül-melâiketi verrûh.",
+      meaning: "Her noksanlıktan tamamıyla münezzeh, her kusurdan tamamen arınmış, mukaddes olan; meleklerin ve Ruh'un Rabbidir.",
+      virtue:
+        "Hz. Âişe'den rivayet edildiğine göre Hz. Peygamber rükû ve secdelerinde bu zikri okurdu (Müslim, nr. 487). 'Sübbûhün' ve 'kuddûsün' — her ikisi de Allah'ın sıfatlarından; ama 'sübbûh' O'nun kendi kendini her noksanlıktan tenzih etmesini, 'kuddûs' ise O'nun maddiyatın ve yaratılmışların her türlü kirinden mutlak arılığını anlatır. 'Rabbül-melâiketi verrûh' eklemesi melekler ve Cebrail'in Rabbine nispet ederek O'nun egemenliğini evrenin görünmez boyutuna taşır. Tesbihten farklı, daha seçkin ve az okunan bu form; Sübhâne Rabbiyal-Azîm ile dönüşümlü kullanılabilir.",
+      source: "Müslim, Salât, nr. 487; El-Ezkar, İmam Nevevi, nr. 134 (Âişe radıyallahu anhâdan)",
+      tags: ['namaz', 'rükû', 'secde', 'tesbih', 'tenzih', 'melekler'],
+      categories: ['ibadet', 'namaz', 'farz'],
+      timeOfDay: 'any',
+      recommendedCount: 3,
+      suitableFor: [
+        'rükûda ve secdede',
+        'Sübhâne Rabbiyal-Azîm ile dönüşümlü',
+        'daha derin bir tenzih formu olarak',
+        'nafile namazlarda uzatmak için',
+      ],
+    },
+    {
+      key: 'namaz-ruku-secde-zilceberut',
+      nameArabic: 'سُبْحَانَ ذِي الْجَبَرُوتِ وَالْمَلَكُوتِ وَالْكِبْرِيَاءِ وَالْعَظَمَةِ',
+      nameTurkish: 'Rükû ve Secdede — Sübhâne Zilceberûti',
+      transliteration: "Sübhâne zil-ceberûti vel-melekûti vel-kibriyâi vel-azameh.",
+      meaning: "Sonsuz kudretin, uçsuz bucaksız mülkün, büyüklüğün ve azametin sahibi olan Allah'ı tüm noksanlıklardan tenzih ederim.",
+      virtue:
+        "Avf ibni Mâlik'in rivayetine göre Hz. Peygamber, Bakara-Nisâ-Âl-i İmrân surelerini tek rekâtta okuduğu uzun bir gece namazında rükûunu kıyamı kadar uzatmış ve bu zikri okumuştur; secdede de aynı zikri tekrar etmiştir (Ebu Dâvûd, Nesâî; sahih). 'Ceberût-melekût-kibriyâ-azame' — Allah'ın sonsuz kudreti, görünmez egemenlik âlemi, mutlak büyüklüğü ve azameti. Bu dört sıfatı bir arada zikretmek, kişiyi kendi küçüklüğünün derinliğine götürür. Nafile namazlarda veya teheccüdde uzun rükû-secde yapmak isteyenler için.",
+      source: "Ebu Dâvûd, Salât, nr. 873; Nesâî, Tatbîk, nr. 1048; sahih — El-Ezkar, İmam Nevevi, nr. 148",
+      tags: ['namaz', 'rükû', 'secde', 'tesbih', 'azamet', 'kudret', 'teheccüd'],
+      categories: ['ibadet', 'namaz', 'nafile', 'teheccüd'],
+      timeOfDay: 'any',
+      recommendedCount: 3,
+      suitableFor: [
+        'rükûda ve secdede',
+        'teheccüd ve nafile namazlarda',
+        'uzun rükû-secde formları için',
+        'azamet ve kudret zikriyle kıyam uzatmak',
+      ],
+    },
+    {
       key: 'namaz-tasmia-tahmid',
       nameArabic:
         'سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ — رَبَّنَا وَلَكَ الْحَمْدُ حَمْدًا كَثِيرًا طَيِّبًا مُبَارَكًا فِيهِ',

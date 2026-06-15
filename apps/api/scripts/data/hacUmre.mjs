@@ -125,6 +125,46 @@ export const hacUmre = {
       ],
     },
     {
+      key: 'hac-zemzem-duasi',
+      nameArabic:
+        'اللَّهُمَّ إِنَّهُ بَلَغَنِي أَنَّ رَسُولَكَ قَالَ مَاءُ زَمْزَمَ لِمَا شُرِبَ لَهُ اللَّهُمَّ إِنِّي أَشْرَبُهُ لِتَغْفِرَ لِي فَاغْفِرْ لِي',
+      nameTurkish: 'Zemzem İçerken Dua',
+      transliteration:
+        "Allâhümme innehû beleganî enne resûleke sallallahu aleyhi ve sellem kàle: 'Mâüz zemzeme limâ şuribe leh.' Allâhümme ve innî eşrabuhû litağfira lî — ve burada niyet edilir — fağfirlî vef'al.",
+      meaning:
+        "Allahım! Resûlünün 'Zemzem suyu ne niyetle içilirse o faydayı sağlar' buyurduğunu öğrendim. Allahım! Ben bunu —beni bağışlaman için içiyorum— bağışla beni ve dilediğimi ver.",
+      virtue:
+        "Resûlullah (sas) 'Zemzem suyu ne niyetle içilirse o faydayı sağlar' buyurdu; İmam Nevevi bu niyeti açıkça dile getirmenin müstehap olduğunu belirtti (El-Ezkar nr. 563). 'Limâ şuribe leh' — içildiği niyet neyse o — ilkesi, zemzemi içerken kalbin yönelişini bilinçli kılmanın önemini vurgular. Günahların affı, şifa, ilim, rızık gibi ihtiyaçlar için içilir; bu niyetler açıkça Allah'a arz edilir.",
+      source:
+        "İbn Mâce, Menâsik, 78 (3062); Beyhakî, Sünen-i Kübra, 5/202; El-Ezkar nr. 563",
+      tags: ['hac', 'umre', 'zemzem', 'su', 'dua', 'niyet'],
+      categories: ['hac', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: ['zilhicce'],
+      suitableFor: ['zemzem içerken', 'hac veya umre sırasında', 'Mekke ziyareti'],
+    },
+    {
+      key: 'hac-medine-veda-duasi',
+      nameArabic:
+        'اللَّهُمَّ لَا تَجْعَلْ هَذَا آخِرَ الْعَهْدِ بِحَرَمِ رَسُولِكَ وَيَسِّرْ لِيَ الْعَوْدَ إِلَى الْحَرَمَيْنِ سَبِيلًا سَهْلًا',
+      nameTurkish: 'Medine\'den Ayrılırken Vedâ Duası',
+      transliteration:
+        "Allâhümme lâ tec'al hâzâ âhiral ahdi biharami Resûlike, ve yessir liyal avde ilel harameyni sebîlen sehleten bimennike ve fazlike, verzuknil afve vel âfiyete fiddîni veddünyâ vel âhirati, ve ruddenâ sâlimîne gânimîne ilâ evtâninâ âminîn.",
+      meaning:
+        "Allahım! Bu ziyâretimi Resûlünün harem-i şerîfine son ziyâretim yapma. Lütuf ve keremınle bana Mekke ve Medîne'ye kolay bir şekilde tekrar gelmeyi nasîp eyle. Din, dünya ve ahirette af ve afiyet ver. Bizi yurtlarımıza sağ salim, kazançlı ve güven içinde geri çevir.",
+      virtue:
+        "Medîne'den ayrılan hacı veya ziyaretçinin Mescid-i Nebevî'ye vedâ namazını kılıp bu duayı okuması sünnettir (El-Ezkar nr. 564). 'Lâ tec'al hâzâ âhiral ahdi' — bunu son kez yapma — cümlesi, kutsal mekânla ayrılığın acısını ve tekrar kavuşma özlemini Allah'a teslim eder. 'Sâlimîne gânimîne' (sağ ve kazançlı dönme) ifadesi hacın yalnızca bedensel değil manevi bir kazanç yolculuğu olduğunu özetler.",
+      source:
+        "Hâkim, el-Müstedrek, 1/485; İbn Sünnî, Amelü'l-Yevm ve'l-Leyle, nr. 527; El-Ezkar nr. 564",
+      tags: ['hac', 'medine', 'mescid-i nebi', 'veda', 'dua', 'seyahat'],
+      categories: ['hac', 'dua', 'yolculuk'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: ['zilhicce'],
+      suitableFor: ['Medine\'den ayrılırken', 'hac sonrası vedâ', 'Mescid-i Nebi vedası'],
+    },
+    {
       key: 'hac-mekke-hareminde',
       nameArabic:
         'اللَّهُمَّ هَذَا حَرَمُكَ وَأَمْنُكَ فَحَرِّمْنِي عَلَى النَّارِ وَأَمِّنِّي مِنْ عَذَابِكَ يَوْمَ تَبْعَثُ عِبَادَكَ وَاجْعَلْنِي مِنْ أَوْلِيَائِكَ وَأَهْلِ طَاعَتِكَ',

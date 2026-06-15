@@ -143,5 +143,43 @@ export const gunlukSunnetDualari = {
         'temizlenme bilincini pekiştirmek için',
       ],
     },
+    {
+      key: 'aksirirken-elhamdulillah',
+      nameArabic: 'الْحَمْدُ لِلَّهِ عَلَى كُلِّ حَالٍ',
+      nameTurkish: 'Aksırırken Hamd',
+      transliteration: 'Elhamdülillâhi alâ külli hâl.',
+      meaning: 'Her durumda Allah\'a hamd olsun.',
+      virtue:
+        `Resûlullah (sas) aksıran kimsenin "elhamdülillâh" veya daha kâmil versiyonuyla "elhamdülillâhi alâ külli hâl" demesini emretti (El-Ezkar nr. 760, Ebu Davud nr. 5031). Aksırıktan sonra hamd eden kimseye yanındakinin "yerhamükellâh" (Allah sana merhamet etsin) demesi sünnet; aksıran hamd etmezse teşmit (yerhamükellâh) yapılmaz. Aksırığın hamdla karşılanması, bedenin zindeleştiği her anı Allah'a yönelmek için fırsata çevirmektir.`,
+      source:
+        'Buhârî, Edeb, 125 (6224); Müslim, Zühd, 54 (2991); El-Ezkar nr. 760 (Ebu Hureyre)',
+      tags: ['aksırma', 'hamd', 'günlük sünnet', 'etiquette', 'zikir'],
+      categories: ['günlük sünnet', 'zikir', 'adab'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['aksırırken', 'günlük sünnet pratiği', 'her an'],
+    },
+    {
+      key: 'aksirma-teshmit-cevabi',
+      nameArabic: 'يَهْدِيكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ',
+      nameTurkish: 'Teşmite Cevap — Yehdîkümullah',
+      transliteration: 'Yehdîkümullâhu ve yuslihu bâleküm.',
+      meaning: 'Allah sizi hidâyette kılsın ve kalbinizi ıslâh etsin.',
+      virtue:
+        'Aksıran "elhamdülillâh" deyince yanındakinin "yerhamükellâh" (Allah sana merhamet etsin) demesi sünnet. Buna karşılık aksıranın bu dua ile cevap vermesi gerekir (El-Ezkar nr. 754, Ebu Davud nr. 5031). Üçlü bu zikir seti — hamd, teşmit, cevap — Peygamber Efendimizin örnek gösterdiği sosyal sünnetin en küçük ama en sık uygulanan halkalarından biridir.',
+      source:
+        'Buhârî, Edeb, 126 (6225); Tirmizî, Edeb, 2 (2742); El-Ezkar nr. 754 (Ebu Hureyre)',
+      tags: ['aksırma', 'teşmit', 'günlük sünnet', 'etiquette', 'zikir'],
+      categories: ['günlük sünnet', 'zikir', 'adab'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: [
+        'teşmite cevap',
+        'aksırma sonrası dua zinciri',
+        'günlük sünnet pratiği',
+      ],
+    },
   ],
 };

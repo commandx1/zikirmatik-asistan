@@ -146,6 +146,46 @@ export const sabahZikirleri = {
       specialDays: [],
       suitableFor: ['sabah namazı sonrası', 'günlük sabah duası', 'talebe için', 'rızık için'],
     },
+    {
+      key: 'sabah-mulk-kibriya-azamet',
+      nameArabic:
+        'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ عَزَّ وَجَلَّ وَالْحَمْدُ لِلَّهِ وَالْكِبْرِيَاءُ وَالْعَظَمَةُ لِلَّهِ',
+      nameTurkish: 'Sabah — Mülk, Kibriya ve Azamet Allah\'ındır',
+      transliteration:
+        "Asbahnâ ve asbahal mülkü lillâhi azze ve celle, vel hamdü lillâhi, vel kibriyâü vel azametü lillâhi, vel halku vel emru vel leylü ven nehâru vemâ sekene fîhimâ lillâhi teâlâ. Allâhümmec'al evvele hâzen nehâri salâhan, ve evsetahû necâhan, ve âhirahû felâhen, yâ erhamar râhimîn.",
+      meaning:
+        "Biz sabaha çıktık; Azîz ve Celîl olan Allah'ın mülkü de sabaha çıktı. Hamd Allah'a mahsustur. Büyüklük ve azamet Allah'a aittir. Yaratmak, emretmek, gece ile gündüz ve onlarda barınan her şey Allah Teâlâ'nındır. Allahım! Bu günün başlangıcını iyilik, ortasını kurtuluş, sonunu da felahlı kıl. Ey merhametlilerin en merhametlisi!",
+      virtue:
+        "Abdullah ibni Ebî Evfâ Resûlullah'ın (sas) sabah olunca bu duayı okuduğunu rivâyet etmiştir (El-Ezkar nr. 225). Üç katlı bir ikrar: önce mülkün sahibini (Allah'ı), ardından kibriya ve azameti, sonra yaratma ve yönetme hakkını Allah'a teslim eder. Dua, varoluşun tamamını — gece, gündüz ve içindekiler — Allah'ın kudretine bağlar. Ardından gelen 'salâhen-necâhen-felâhen' üçlemesi günü üç zaman dilimiyle çerçeveler: sabahın salâhı (iyilik), öğlenin necahı (kurtuluş), akşamın felahı (tam kurtuluş).",
+      source:
+        "Ebû Dâvûd, Edeb, 106 (5084); El-Ezkar nr. 225 (Abdullah ibni Ebî Evfâ)",
+      tags: ['sabah', 'dua', 'mülk', 'hamd', 'günlük'],
+      categories: ['sabah akşam', 'dua', 'günlük'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'günlük açılış', 'kapsamlı sabah tesbihi'],
+    },
+    {
+      key: 'sabah-nimet-afiyet-setr',
+      nameArabic:
+        'اللَّهُمَّ إِنِّي أَصْبَحْتُ مِنْكَ فِي نِعْمَةٍ وَعَافِيَةٍ وَسِتْرٍ فَأَتِمَّ نِعْمَتَكَ عَلَيَّ وَعَافِيَتَكَ وَسِتْرَكَ فِي الدُّنْيَا وَالْآخِرَةِ',
+      nameTurkish: 'Sabah — Nimet, Afiyet ve Setr\'in Tamamlanması Duası',
+      transliteration:
+        "Allâhümme innî asbahtü minke fî ni'metin ve âfiyetin ve setrin, fe etimme ni'meteke aleyye ve âfiyeteke ve setreke fiddünyâ vel âhireh.",
+      meaning:
+        "Allahım! Ben sabaha senin nimetinle, afiyetinle ve örtünle ulaştım. Bana olan nimetini, afiyetini ve örtünü dünyada ve ahirette tamamla.",
+      virtue:
+        "İbn Abbas radıyallahu anhümâ rivâyet eder ki Resûlullah (sas) bu duayı sabah akşam üç defa okudu (El-Ezkar nr. 232). Üç talep kulun ihtiyacının özüdür: 'ni'met' (her türlü hayır ve lütuf), 'âfiyet' (bedende, dinde, akılda sağlık ve selamet), 'setr' (günahlarının örtülmesi, ailesinin ve şerefinin korunması). 'Fe etimme' — tamamla — ifadesi mevcut lütufların eksik kaldığını kabul eden bir tevazu içerir; Allah'ın başladığı iyiliği noksan bırakmayacağına duyulan tevekküldür.",
+      source:
+        "Nesâî, es-Sünenü'l-Kübrâ, VIII, 278; El-Ezkar nr. 232 (Abdullah ibni Abbâs)",
+      tags: ['sabah', 'dua', 'nimet', 'afiyet', 'setr', 'korunma'],
+      categories: ['sabah akşam', 'dua', 'korunma'],
+      timeOfDay: 'morning',
+      recommendedCount: 3,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'akşam duası', 'günlük korunma'],
+    },
   ],
   specialDays: [],
 };

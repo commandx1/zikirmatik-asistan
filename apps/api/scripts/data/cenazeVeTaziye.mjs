@@ -145,5 +145,52 @@ export const cenazeVeTaziye = {
         'acı paylaşımı',
       ],
     },
+    {
+      key: 'cenaze-namaz-duasi-rabbi',
+      nameArabic:
+        'اللَّهُمَّ أَنْتَ رَبُّهَا وَأَنْتَ خَلَقْتَهَا وَأَنْتَ هَدَيْتَهَا لِلْإِسْلَامِ وَأَنْتَ قَبَضْتَ رُوحَهَا وَأَنْتَ أَعْلَمُ بِسِرِّهَا وَعَلَانِيَتِهَا، جِئْنَاكَ شُفَعَاءَ لَهُ فَاغْفِرْ لَهُ',
+      nameTurkish: 'Cenaze Namazı — Allahım Sen Onun Rabbisin',
+      transliteration:
+        "Allàhümme ente rabbühâ ve ente halaktehâ ve ente hedeytehâ lil-İslâmi ve ente kabazte rûhehâ ve ente a'lemü bisirrihâ ve alâniyetihâ, ci'nâke şüfeâe lehû fağfir leh.",
+      meaning:
+        "Allah'ım! Sen onun Rabbisin, onu sen yarattın, sen İslâm'a sen hidayet ettin. Rûhunu da sen aldın. Onun gizli ve açık hallerini en iyi sen bilirsin. Sana ona şefaatçi olarak geldik; onu bağışla.",
+      virtue:
+        "Hz. Ebu Hureyre'den rivayet edildiğine göre Hz. Peygamber cenaze namazında bu duayı okudu (Ebu Dâvûd, İbn Mâce; El-Ezkar nr. 474). Bu dua, cenaze namazının özüdür: ilk cümle Allah'ın o kulun hayatı üzerindeki mutlak hâkimiyetini beş boyutuyla ikrar eder (Rabbi, yaratıcı, hidayet eden, ruh alan, her şeyi bilen). 'Ci'nâke şüfeâe lehû' — 'Sana ona şefaatçi olarak geldik' — cemaat olarak namaz kılmanın anlamını özetler: bir topluluk, günahlar için değil yalnızca şefaat için toplanmaktadır. 3. tekbir sonrası okunur.",
+      source:
+        "Ebu Dâvûd, Cenâiz, nr. 3200; İbn Mâce, Cenâiz, nr. 1498; El-Ezkar, İmam Nevevi, nr. 474",
+      tags: ['cenaze', 'namaz', 'dua', 'şefaat', 'mağfiret'],
+      categories: ['cenaze', 'dua', 'ibadet'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: [
+        'cenaze namazında 3. tekbir sonrası',
+        'uzun cenaze duası yerine alternatif',
+        'şefaat niyetiyle',
+        'cemaatle cenaze namazında',
+      ],
+    },
+    {
+      key: 'cenaze-gecerken-zikir',
+      nameArabic: 'سُبْحَانَ الْحَيِّ الَّذِي لَا يَمُوتُ',
+      nameTurkish: 'Cenaze Geçerken Zikir',
+      transliteration: "Sübhânel-hayyillezî lâ yemût.",
+      meaning: "Her zaman diri olan ve hiçbir zaman ölmeyecek olan Allah'ı tüm noksanlıklardan tenzih ederim.",
+      virtue:
+        "Yanından cenaze geçen ya da cenaze gören kimsenin bu zikri okuması müstehaptır (El-Ezkar, İmam Nevevi, s. 433). Cenaze, ölüm gerçeğini hatırlatır; bu kısa zikir, o hatırlatmaya Allah'ın ezeli ve ebedi hayatını hatırlayarak karşılık vermektir. 'Hayyillezî lâ yemût' — 'hiç ölmeyecek olan Diri' — yalnızca Allah'a ait bir sıfat. Her şey ölümlü, O ölümsüzdür. Ani bir cenaze karşısında kişiyi tefekkür alanına taşıyan, çok kısa ama çok derin bir zikir.",
+      source: "El-Ezkar, İmam Nevevi (Cenaze bölümü, bölüm 26)",
+      tags: ['cenaze', 'ölüm', 'tefekkür', 'zikir', 'tenzih', 'günlük'],
+      categories: ['cenaze', 'zikir', 'tefekkür'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: [
+        'yanından cenaze geçerken',
+        'cenaze aracı görünce',
+        'ölüm haberi alınca',
+        'mezarlıkta gezerken',
+        'ölüm tefekkürü için',
+      ],
+    },
   ],
 };

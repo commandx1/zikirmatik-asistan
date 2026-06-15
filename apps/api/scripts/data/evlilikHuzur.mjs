@@ -371,6 +371,31 @@ export const evlilikHuzur = {
       ],
     },
     {
+      key: 'evlilik-zifaf-hayra-dua',
+      nameArabic:
+        'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا وَخَيْرَ مَا جَبَلْتَهَا عَلَيْهِ وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ مَا جَبَلْتَهَا عَلَيْهِ',
+      nameTurkish: 'Zifaf Öncesi — Eşin Hayrına Dua',
+      transliteration:
+        "Allâhümme innî es'elüke hayrahâ ve hayra mâ cebeltehâ aleyhi, ve eûzü bike min şerrihâ ve şerri mâ cebeltehâ aleyhi.",
+      meaning:
+        "Allah'ım! Senden onun hayrını ve onda yarattığın huy ile özelliklerin hayrını niyâz ederim. Onun şerrinden ve onda yarattığın huy ile özelliklerin şerrinden Sana sığınırım.",
+      virtue:
+        "Resûlullah (sas) eşiyle ilk karşılaşırken alnından tutup bu duayı okumasını tavsiye etti (El-Ezkar nr. 810). Dua, yeni evlenen kişinin tüm beklentilerini Allah'a bırakmasını sağlar: eşin karakterindeki hayrı istemek, şerrinden korunmak. 'Cebeltehâ aleyhi' (onda yarattıklarının) ifadesi, Allah'ın insanı fıtrat ve mizaçla donattığını hatırlatır; eşin iyi hallerinin ilahi bir lütuf, zor hallerinin ise sabır gerektiren bir sınav olduğunu kabul eder. Evliliğin ilk anında okunan bu dua, ilişkiyi Allah'ın rızası ve tevekkül ekseninde kurar.",
+      source:
+        "Ebû Dâvûd, Nikâh, 44-45, nr. 2160; İbn Mâce, Nikâh, 27, nr. 1918; El-Ezkar nr. 810 (Abdullah ibni Amr ibni'l-Âs)",
+      tags: ['evlilik', 'zifaf', 'nikah', 'dua', 'eş', 'tevekkül'],
+      categories: ['evlilik', 'aile', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: [
+        'zifaf gecesi',
+        'eşiyle ilk karşılaşma',
+        'yeni evlilik',
+        'nikah sonrası',
+      ],
+    },
+    {
       key: 'evlilik-hubbeke-muaz',
       nameArabic:
         'اللَّهُمَّ إِنِّي أَسْأَلُكَ حُبَّكَ وَحُبَّ مَن يُحِبُّكَ وَالْعَمَلَ الَّذِي يُبَلِّغُنِي حُبَّكَ، اللَّهُمَّ اجْعَلْ حُبَّكَ أَحَبَّ إِلَيَّ مِن نَفْسِي وَأَهْلِي وَمِنَ الْمَاءِ الْبَارِدِ',

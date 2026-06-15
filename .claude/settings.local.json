@@ -31,7 +31,15 @@
       "Bash(adb shell *)",
       "Bash(adb install *)",
       "Bash(pdftotext *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(grep -v \".js$\")",
+      "Bash(grep -A5 \"^[0-9]\\\\{2,3\\\\}\\\\.\")",
+      "Bash(grep -A8 \"^[0-9]\\\\{2,3\\\\}\\\\.\")",
+      "Bash(grep -A8 \"^[0-9]\\\\{3,4\\\\}\\\\.\")",
+      "Bash(grep -E \"^[0-9]{2,4}\\\\.|Arapça:|transliteration:|subhanallah|tesbih|hamd|tahmidul|kuddus|allahumme|bismillah\" -i)",
+      "Bash(grep -E \"^[0-9]{3,4}\\\\.\")"
     ]
   }
 }
