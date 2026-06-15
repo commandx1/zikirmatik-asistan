@@ -68,7 +68,7 @@ export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
       <View style={[styles.itemsContainer, { bottom: tabBarHeight + 12 }]}>
         <Animated.View style={kutuphaneStyle}>
           <Pressable
-            onPress={() => handleNavigate("/collections")}
+            onPress={() => handleNavigate("/(tabs)/collections")}
             style={[styles.card, { backgroundColor: tokens.card, borderColor: "rgba(255,255,255,0.09)" }]}
           >
             <FontAwesome6 name="book-open" size={15} color={tokens.accent} iconStyle="solid" />

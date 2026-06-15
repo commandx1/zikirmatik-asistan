@@ -106,12 +106,13 @@ export default function TabsLayout() {
           name="profile"
           options={{
             title: "Daha Fazla",
-            tabBarButton: ({ style }) => (
+            tabBarButton: ({ style, accessibilityState }) => (
               <Pressable
                 style={[style, { alignItems: "center", justifyContent: "center" }]}
                 onPress={() => setMoreMenuOpen((v) => !v)}
                 accessibilityRole="button"
                 accessibilityLabel="Daha Fazla"
+                accessibilityState={accessibilityState}
               >
                 <FontAwesome6
                   name="ellipsis"

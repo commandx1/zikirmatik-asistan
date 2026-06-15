@@ -284,7 +284,7 @@ function formatGoogleClientConfigSummary({
 
 function buildDevGoogleIdentityToken() {
   const email =
-    process.env.EXPO_PUBLIC_DEV_GOOGLE_EMAIL?.trim() || 'serhatbelen7@gmail.com';
+    process.env.EXPO_PUBLIC_DEV_GOOGLE_EMAIL?.trim() || 's10155641@gmail.com';
   const displayName =
     process.env.EXPO_PUBLIC_DEV_GOOGLE_NAME?.trim() || 'Serhat Belen';
   const stableSub =

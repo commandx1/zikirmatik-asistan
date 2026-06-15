@@ -194,7 +194,7 @@ function oneMonthLaterIso() {
   return date.toISOString();
 }
 
-export function toRevenueCatMessage(error: unknown) {
+export function toRevenueCatMessage(error: unknown): string | undefined {
   if (error instanceof RevenueCatClientError || error instanceof SubscriptionsApiError) {
     return error.message;
   }
@@ -202,7 +202,7 @@ export function toRevenueCatMessage(error: unknown) {
   if (typeof error === "object" && error && "code" in error) {
     const code = (error as { code?: string | number }).code;
     if (code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
-      return "Satın alma iptal edildi.";
+      return undefined;
     }
   }
 

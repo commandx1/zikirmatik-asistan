@@ -256,7 +256,8 @@ export function useProfile() {
         closePremiumSheet();
       }
     } catch (error) {
-      setPremiumError(toRevenueCatMessage(error));
+      const msg = toRevenueCatMessage(error);
+      if (msg) setPremiumError(msg);
     } finally {
       setIsActivatingPremium(false);
     }
@@ -280,7 +281,8 @@ export function useProfile() {
         setPremiumError("Aktif abonelik bulunamadı.");
       }
     } catch (error) {
-      setPremiumError(toRevenueCatMessage(error));
+      const msg = toRevenueCatMessage(error);
+      if (msg) setPremiumError(msg);
     } finally {
       setIsRestoringPremium(false);
     }

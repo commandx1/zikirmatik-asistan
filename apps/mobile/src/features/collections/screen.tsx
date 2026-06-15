@@ -1,15 +1,18 @@
 import { useRouter } from "expo-router";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { ActivityIndicator, FlatList, Platform, Text, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { PageHeader } from "../../components/ui/page-header";
 import { PageLayout } from "../../components/ui/page-layout";
+import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
+import { usePremiumSheet } from "../../hooks/use-premium-sheet";
+import { useProfileStore } from "../../store/profile-store";
 import { CollectionCard } from "./components/collection-card";
 import { CollectionCategoryFilter } from "./components/collection-category-filter";
 import { useCollections } from "./hooks/use-collections";
-import { COLLECTION_CATEGORIES } from "./types";
+import { COLLECTION_CATEGORIES, FREE_COLLECTION_KEYS } from "./types";
 import type { CollectionCategory } from "./types";
 import type { BackendCollection } from "./services/collections-api-client";
 
@@ -21,9 +24,20 @@ export function CollectionsScreen() {
     32 + (Platform.OS === "android" ? Math.max(insets.bottom, 0) : insets.bottom);
 
   const pagerRef = useRef<PagerView>(null);
+  const isPremium = useProfileStore((s) => s.isPremium);
+  const premiumSheet = usePremiumSheet();
 
-  const { collections, activeCategory, setActiveCategory, isLoading, error, refresh } =
+  const { collections: rawCollections, activeCategory, setActiveCategory, isLoading, error, refresh } =
     useCollections();
+
+  const collections = useMemo(() => {
+    if (isPremium) return rawCollections;
+    return [...rawCollections].sort((a, b) => {
+      const aFree = FREE_COLLECTION_KEYS.has(a.key) ? 0 : 1;
+      const bFree = FREE_COLLECTION_KEYS.has(b.key) ? 0 : 1;
+      return aFree - bFree;
+    });
+  }, [isPremium, rawCollections]);
 
   function handleFilterChange(cat: CollectionCategory | "all") {
     const idx = COLLECTION_CATEGORIES.findIndex((c) => c.key === cat);
@@ -59,13 +73,23 @@ export function CollectionsScreen() {
           contentContainerStyle={{ paddingHorizontal: 6, paddingBottom: bottomPadding }}
           onRefresh={refresh}
           refreshing={isLoading}
-          renderItem={({ item }) => (
-            <CollectionCard
-              item={item}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onPress={() => router.push(`/collections/${item.key}` as any)}
-            />
-          )}
+          renderItem={({ item }) => {
+            const isLocked = !isPremium && !FREE_COLLECTION_KEYS.has(item.key);
+            return (
+              <CollectionCard
+                item={item}
+                isLocked={isLocked}
+                onPress={() => {
+                  if (isLocked) {
+                    premiumSheet.open();
+                    return;
+                  }
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  router.push(`/collections/${item.key}` as any);
+                }}
+              />
+            );
+          }}
           ListEmptyComponent={
             <View className="mt-16 items-center">
               <Text className="text-[--text-muted]">Koleksiyon bulunamadı.</Text>
@@ -96,6 +120,17 @@ export function CollectionsScreen() {
       >
         {COLLECTION_CATEGORIES.map((cat) => renderPage(cat.key))}
       </PagerView>
+      <ProfilePremiumSheet
+        visible={premiumSheet.isOpen}
+        selectedPlan={premiumSheet.plan}
+        isActivating={premiumSheet.isActivating}
+        isRestoring={premiumSheet.isRestoring}
+        error={premiumSheet.error}
+        onSelectPlan={premiumSheet.setPlan}
+        onStartPremium={premiumSheet.activate}
+        onRestorePremium={premiumSheet.restore}
+        onClose={premiumSheet.close}
+      />
     </PageLayout>
   );
 }
