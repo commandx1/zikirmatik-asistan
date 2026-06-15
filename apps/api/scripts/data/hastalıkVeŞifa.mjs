@@ -269,6 +269,148 @@ export const hastalıkVeŞifa = {
       ],
     },
     {
+      key: 'sifa-isfi-abdek',
+      nameArabic:
+        'اللَّهُمَّ اشْفِ عَبْدَكَ يَنْكَأُ لَكَ عَدُوًّا أَوْ يَمْشِي لَكَ إِلَى صَلَاةٍ',
+      nameTurkish: 'Hasta Ziyaretinde Okunacak Şifa Duası',
+      transliteration:
+        'Allàhümmeşfi abdeke, yenkeü leke adüvven, ev yemşî leke ilâ salâtin.',
+      meaning:
+        'Allahım! Senin yolunda düşmanlarınla savaşacak veya sana ibâdet etmek için yürüyüp namaza gidecek olan bu kuluna şifâ ver.',
+      virtue:
+        'Hz. Peygamber (sas), hasta ziyaretine gidenin bu duayı okumasını tavsiye etmiştir. Dua, hastanın şifa için iki değerli amelin vesilesi sayıldığını ima eder: Allah yolunda güçlü olmak ve namaza yürümek. El-Ezkar nr. 406.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 406; Ebû Dâvûd, Tıb',
+      tags: ['şifa', 'hasta ziyareti', 'dua', 'iyileşme'],
+      categories: ['hastalık', 'şifa', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      specialDays: [],
+      suitableFor: [
+        'hasta ziyaretinde',
+        'yakını için şifa duası',
+        'sağlığa kavuşma niyetiyle',
+      ],
+    },
+    {
+      key: 'sifa-sefallahu-sekameke',
+      nameArabic:
+        'شَفَى اللَّهُ سَقَمَكَ وَغَفَرَ ذَنْبَكَ وَعَافَاكَ فِي دِينِكَ وَجِسْمِكَ إِلَى مُدَّةِ أَجَلِكَ',
+      nameTurkish: 'Hz. Peygamberin Hastaya Okuduğu Şifa Duası',
+      transliteration:
+        'Şefallâhü sekameke ve gafere zenbeke ve âfâke fî dînike ve cismike ilâ müddeti ecelike.',
+      meaning:
+        'Allah sana şifâ versin, günahını affetsin. Yaşadığın sürece dinine esenlik, bedenine âfiyet versin.',
+      virtue:
+        'Hz. Peygamber (sas), Selmân el-Fârisî radıyallahu anh hastalandığında onu ziyarete gidip bu duayı okudu. Dua üç boyutu birlikte kapsar: bedeni şifa, manevi af ve hayat boyu afiyet. "İlâ müddeti ecelike" (ecelinin sonuna kadar) ifadesi, yaşanan her günün Allah\'ın lütfuyla geçtiğini vurgular. El-Ezkar nr. 413.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 413; İbn Sünni, Amelü\'l-Yevm, nr. 393',
+      tags: ['şifa', 'hastalık', 'dua', 'Hz. Peygamber duası', 'teselli'],
+      categories: ['hastalık', 'şifa', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      specialDays: [],
+      suitableFor: [
+        'hasta ziyaretinde',
+        'sağlık duası olarak',
+        'yakın için şifa niyetiyle',
+      ],
+    },
+    {
+      key: 'sifa-uizuke-billahil-ehad',
+      nameArabic:
+        'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ أُعِيذُكَ بِاللَّهِ الْأَحَدِ الصَّمَدِ الَّذِي لَمْ يَلِدْ وَلَمْ يُولَدْ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ مِنْ شَرِّ مَا تَجِدُ',
+      nameTurkish: 'Hastalıktan Korunma Duası — İhlâs Özü',
+      transliteration:
+        'Bismillâhirrahmânirrahîm. Uîzüke billâhil ehadis samedillezî lem yelid velem yûled ve lemyekün lehû küfüven ahad, min şerri mâ tecid.',
+      meaning:
+        'Rahmân ve Rahîm olan Allah\'ın adıyla. Doğurmayan, doğurulmayan ve hiçbir şey kendisine denk olmayan Bir Allah\'tan, seni rahatsız eden şu hastalığın şerrinden korumasını dilerim.',
+      virtue:
+        'Hz. Peygamber Hz. Osman hasta iken bu duayı okurdu; kalkarken şöyle buyurdu: "Ey Osman! Sen her zaman bu duâyı oku. Hastalıktan Allah\'a sığınmak için böyle bir duâ bulamazsınız." İhlâs suresinin tevhid özünü hastalığın şerrinden sığınma formülüyle birleştirir. El-Ezkar nr. 414.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 414; İbn Sünni, Amelü\'l-Yevm, nr. 392',
+      tags: ['şifa', 'hastalık', 'İhlâs', 'tevhid', 'dua', 'Osman rivayeti', 'rukye'],
+      categories: ['hastalık', 'şifa', 'dua', 'rukye'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      specialDays: [],
+      suitableFor: [
+        'hastalık döneminde günlük',
+        'manevi korunma olarak',
+        'hasta için okunacak rukye',
+        'ağrı ve rahatsızlık anında',
+      ],
+    },
+    {
+      key: 'sifa-bismillahil-kebir-irkin',
+      nameArabic:
+        'بِسْمِ اللَّهِ الْكَبِيرِ أَعُوذُ بِاللَّهِ الْعَظِيمِ مِنْ شَرِّ عِرْقٍ نَعَّارٍ وَمِنْ شَرِّ حَرِّ النَّارِ',
+      nameTurkish: 'Ateşli Hastalık ve Baş Ağrısı Duası',
+      transliteration:
+        'Bismillâhil kebîr, neûzü billâhil azîm min şerri ırkin ne\'âr, ve min şerri harrin nâr.',
+      meaning:
+        'Büyük Allah\'ın adıyla şifâ dilerim. Kanı şiddetle pompalayan damarın şerrinden ve ateşin verdiği harâretin şerrinden azamet sahibi Allah\'a sığınırım.',
+      virtue:
+        'Hz. Peygamber (sas) ashâbına hissettikleri ağrılara ve ateşli hastalıklara karşı bu duayı öğretirdi (İbni Abbâs rivayeti). "Irk ne\'âr" (kanı gürültüyle pompalayan damar) ifadesi yüksek ateş ve şiddetli baş ağrısının kaynağına işaret eder. Fatiha ve Muavvizât ile birlikte okunması tavsiye edilir. El-Ezkar nr. 416.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 416; İbn Sünni, Amelü\'l-Yevm',
+      tags: ['şifa', 'ateş', 'baş ağrısı', 'sıtma', 'dua', 'hastalık'],
+      categories: ['hastalık', 'şifa', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 3,
+      specialDays: [],
+      suitableFor: [
+        'ateşli hastalıkta',
+        'şiddetli baş ağrısında',
+        'sıtma ve enfeksiyonda',
+        'yüksek ateşte çocuk için',
+      ],
+    },
+    {
+      key: 'sifa-eınni-gamerâtil-mevt',
+      nameArabic:
+        'اللَّهُمَّ أَعِنِّي عَلَى غَمَرَاتِ الْمَوْتِ وَسَكَرَاتِ الْمَوْتِ',
+      nameTurkish: 'Ölüm Sıkıntısında Yardım İsteme Duası',
+      transliteration:
+        'Allàhümme eınnî alâ gamerâtil mevti ve sekerâtil mevti.',
+      meaning:
+        'Allahım, ölümün şiddet ve sıkıntılarına karşı bana yardım eyle.',
+      virtue:
+        'Hz. Peygamber (sas) vefât edeceği sırada yanında durduğu su kabına elini daldırıp yüzünü ıslatırken bu duayı okurdu (Hz. Aişe rivayeti). "Gamerât" (dalga dalga gelen şiddet) ve "sekerât" (ölümün sarhoşluğu gibi bilinç kararan hal) ölümün en ağır aşamalarını tanımlar. Ağır hastanın bizzat ya da yanındakilerin bu duayı okuması müstehaptır. El-Ezkar nr. 430.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 430; Tirmizî, Daavât; İbn Sünni',
+      tags: ['ölüm', 'hasta', 'şifa', 'son anlar', 'yardım isteme', 'ağır hasta'],
+      categories: ['hastalık', 'ölüm', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 3,
+      specialDays: [],
+      suitableFor: [
+        'ağır hasta yanında',
+        'ölüm döşeğinde okunacak',
+        'son dönem hastalıkta',
+        'yakını için',
+      ],
+    },
+    {
+      key: 'sifa-elhikni-birrefik',
+      nameArabic:
+        'اللَّهُمَّ اغْفِرْ لِي وَارْحَمْنِي وَأَلْحِقْنِي بِالرَّفِيقِ الْأَعْلَى',
+      nameTurkish: 'Son Nefeste Hz. Peygamberin Duası',
+      transliteration:
+        'Allâhümmağfir lî verhamnî ve elhıknî birrefîki\'l-a\'lâ.',
+      meaning:
+        'Allahım! Günahlarımı bağışla, bana merhamet eyle ve beni refîk-i a\'lâ\'ya (yüce dostların yanına) ilet.',
+      virtue:
+        'Hz. Peygamber (sas) son saatlerinde Hz. Âişe\'ye yaslanarak bu duayı okudu. "Refîki\'l-a\'lâ" peygamberlerin, sıddıkların, şehitlerin ve sâlihlerin makamıdır. Bu dua, son nefeste dilden düşürülmemesi önerilen ve en yüce menzile kavuşmayı talep eden bir niyet beyanıdır. El-Ezkar nr. 431.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 431; Buhârî, Merdâ 19; Müslim, Selâm 46',
+      tags: ['ölüm', 'son anlar', 'şifa', 'af', 'teslimiyet', 'refik-i ala'],
+      categories: ['hastalık', 'ölüm', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 3,
+      specialDays: [],
+      suitableFor: [
+        'son nefeste okunacak',
+        'ağır hasta yanında',
+        'ölüm döşeğinde',
+        'yakını vefat ederken',
+      ],
+    },
+    {
       key: 'sifa-seyyidul-istigfar',
       nameArabic:
         'اللّٰهُمَّ أَنْتَ رَبِّي لَا إِلٰهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ وَأَنَا عَلٰى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',

@@ -186,6 +186,205 @@ export const sabahZikirleri = {
       specialDays: [],
       suitableFor: ['sabah duası', 'akşam duası', 'günlük korunma'],
     },
+    {
+      key: 'sabah-fatires-semavati',
+      nameArabic:
+        'اللَّهُمَّ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ أَنْتَ رَبُّ كُلِّ شَيْءٍ وَالْمَلَائِكَةُ يَشْهَدُونَ أَنَّكَ لَا إِلَهَ إِلَّا أَنْتَ فَإِنَّا نَعُوذُ بِكَ مِنْ شَرِّ أَنْفُسِنَا وَمِنْ شَرِّ الشَّيْطَانِ الرَّجِيمِ وَشِرْكِهِ',
+      nameTurkish: 'Fâtıres Semâvâti — Gökleri ve Yeri Yaratan Sabah Duası',
+      transliteration:
+        "Allàhümme fâtıres semâvâti velardı, âlimel gaybi veşşehâdeti, ente Rabbü külli şey'in velmelâiketü yeşhedûne enneke lâilâhe illâ ente. Feinnâ neûzü bike min şerri enfüsinâ vemin şerriş şeytânir racîmi ve şirkihî, veen nakterife sûen alâ enfüsinâ ev necürrahû ilâ müslimin.",
+      meaning:
+        "Ey gökleri ve yeri hiç yoktan yaratan, görünür ve görünmez her şeyi bilen Allahım! Sen her şeyin Rabbisin, senden başka ilâh bulunmadığına melekler de şâhitlik ederler. Biz nefislerimizin şerrinden, kovulmuş şeytanın şerrinden ve onun şirkinden, kendimiz veya Müslümanlar aleyhine kötü işler yapmaktan sana sığınırız.",
+      virtue:
+        "Sahâbe Resûlullah'a (sas) 'Bize sabahleyin, akşamleyin ve yatağa yatınca okuyacağımız bir zikir öğret' dedi; Resûlullah bu duayı emretti (El-Ezkar nr. 210). Tekil formu Hz. Ebû Bekir'in isteğiyle gelmiş (nr. 209), bu çoğul form ise sahâbenin toplu talebiyle. İki boyutlu sığınmayı bir arada taşır: nefsin içten getirdiği kötülüğe ve şeytanın dışarıdan sunduğu şirk tuzağına karşı. 'Veen nakterife sûen alâ enfüsinâ ev necürrahû ilâ müslimin' cümlesi —kendimizin ya da başka bir Müslümanın aleyhine kötü iş yapmaktan sığınma— bu duayı diğer sabah zikirlerin den ayıran toplumsal bilinç ekler. Sabah, akşam ve yatarken okunması tavsiye edilmiştir.",
+      source:
+        "Ebû Dâvûd, Edeb, 110 (5083); Tirmizî, Deavât, 16 (3393); El-Ezkar nr. 209-210",
+      tags: ['sabah', 'akşam', 'dua', 'koruma', 'nefis', 'şeytan', 'günlük'],
+      categories: ['sabah akşam', 'koruma', 'dua'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'akşam duası', 'yatarken dua', 'günlük korunma'],
+    },
+    {
+      key: 'sabah-mulk-rabbilalemin',
+      nameArabic:
+        'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ فَتْحَهُ وَنَصْرَهُ وَنُورَهُ وَبَرَكَتَهُ وَهُدَاهُ',
+      nameTurkish: 'Sabah — Günün Hayrını, Fethini, Nurunu ve Bereketini İsteme',
+      transliteration:
+        "Asbahnâ ve asbahal mülkü lillâhi Rabbil âlemîn. Allàhümme innî es'elüke hayra hâzel yevmi fethahû ve nasrahû ve nûrahû ve bereketehû ve hüdâhü. Ve eûzü bike min şerri mâ fîhi ve şerri mâ ba'dehû.",
+      meaning:
+        "Biz sabaha ulaştık; bütün kâinat âlemlerin Rabbinin mülkü olarak sabaha ulaştı. Allahım! Senden bu günün hayrını, günü fethini (açılımını), zaferini, nurunu, bereketini ve hidayetini isterim. Bu günün ve sonraki günlerin şerrinden de sana sığınırım.",
+      virtue:
+        "Ebû Mâlik el-Eş'arî radıyallahu anh, Resûlullah'ın (sas) sabah 'Asbahnâ ve asbahal mülkü lillâhi Rabbil âlemîn' diye zikretmesini emrettiğini rivâyet etti; akşama girilince ise 'Emseynâ...' başlangıcıyla devam edilir (El-Ezkar nr. 219). 'Fethan' (açılım), 'nasran' (zafer), 'nûran' (nur), 'bereket' ve 'hüdâ' (hidayet) — beş unsur günün tamamı için istenir. Bu dua, sabahın ilk anında günü her boyutuyla Allah'a bağlar; hem tevekkülü hem de niyet tazelemesini bir cümlede yerine getirir.",
+      source:
+        "Ebû Dâvûd, Edeb, 106 (5084); Nesâî, Amelü'l-Yevm; El-Ezkar nr. 219",
+      tags: ['sabah', 'dua', 'bereket', 'hidayet', 'günlük', 'fetih'],
+      categories: ['sabah akşam', 'dua', 'günlük'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'günlük açılış', 'bereket için', 'hidayet için'],
+    },
+    {
+      key: 'sabah-afini-fi-bedeni',
+      nameArabic:
+        'اللَّهُمَّ عَافِنِي فِي بَدَنِي اللَّهُمَّ عَافِنِي فِي سَمْعِي اللَّهُمَّ عَافِنِي فِي بَصَرِي لَا إِلَهَ إِلَّا أَنْتَ اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ',
+      nameTurkish: 'Beden, İşitme ve Görme Âfiyeti Duası (Sabah-Akşam × 3)',
+      transliteration:
+        "Allàhümme âfinî fî bedenî. Allàhümme âfinî fî sem'î. Allàhümme âfinî fî basarî. Lâilâhe illâ ente. Allàhümme innî eûzü bike minel küfri vel fakri. Allàhümme innî eûzü bike min azâbil kabr.",
+      meaning:
+        "Allahım! Bedenime âfiyet ver. Allahım! İşitmeme âfiyet ver. Allahım! Görme gücüme âfiyet ver. Senden başka ilâh yoktur. Allahım! Küfürden ve fakirlikten sana sığınırım. Allahım! Kabir azabından sana sığınırım.",
+      virtue:
+        "Abdurrahman ibn Ebî Bekre, babasının her sabah ve akşam bu duayı üç defa tekrarladığını görünce sebebini sorar. Ebû Bekre radıyallahu anh: 'Ben Resûlullah'ın (sas) böyle duâ ettiğini duyduğumdan beri ihmâl etmiyorum; onun sünneti üzere yaşamayı seviyorum' der (El-Ezkar nr. 220). Dua üç katmanda âfiyet talep eder: beden (fiziksel sağlık), sem' (işitme — hakikati duyan kulak), basar (görme — dünyayı doğru okuyan göz). Arkasından küfür, fakirlik ve kabir azabından sığınma gelir; bu üçlü, dünya ve ahiretin en ağır tehlikelerini tek seferde kapatır.",
+      source:
+        "Ebû Dâvûd, Edeb, 110 (5090); Nesâî, İstiâze; El-Ezkar nr. 220",
+      tags: ['sabah', 'akşam', 'dua', 'âfiyet', 'sağlık', 'korunma'],
+      categories: ['sabah akşam', 'âfiyet', 'koruma', 'dua'],
+      timeOfDay: 'morning',
+      recommendedCount: 3,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'akşam duası', 'sağlık için', 'korunma'],
+    },
+    {
+      key: 'sabah-rum-tesbihi',
+      nameArabic:
+        'فَسُبْحَانَ اللَّهِ حِينَ تُمْسُونَ وَحِينَ تُصْبِحُونَ وَلَهُ الْحَمْدُ فِي السَّمَاوَاتِ وَالْأَرْضِ وَعَشِيًّا وَحِينَ تُظْهِرُونَ يُخْرِجُ الْحَيَّ مِنَ الْمَيِّتِ وَيُخْرِجُ الْمَيِّتَ مِنَ الْحَيِّ',
+      nameTurkish: 'Rum Suresi 17-19 — Kaçırılan Zikirleri Telafi Ayetleri',
+      transliteration:
+        "Fesübhânellâhi hîne tümsûne ve hîne tusbihûn. Ve lehül hamdü fissemâvâti vel ardı ve aşiyyen ve hîne tuzhirûn. Yuhricül hayye minel meyyiti ve yuhricül meyyite minel hayyi ve yuhyil arda ba'de mevtihâ ve kezâlike tuhracûn.",
+      meaning:
+        "Akşama erdiğinizde ve sabaha ulaştığınızda Allah'ı tesbih edin. Göklerde ve yerde hamd O'na mahsustur. Gündüzün sonunda ve öğleye eriştiğinizde de O'nu tesbih edin. O ölüden diriyi, diriden ölüyü çıkarır; yeryüzünü ölümünün ardından diriltir. Siz de kabirlerinizden böyle çıkarılacaksınız.",
+      virtue:
+        "İbn Abbas radıyallahu anhümâ, Resûlullah'ın (sas) şöyle buyurduğunu rivâyet etti: 'Bir kimse sabaha ulaştığında bu âyet-i kerîmeleri okursa, o gün kaçırdığı zikir ve ibadetlerin sevabını kazanır. Kim de bu âyet-i kerîmeleri akşama erince okursa, o gece kaçırdığı sevapları kazanır' (El-Ezkar nr. 221). Rum suresinin bu üç ayeti, tesbih ve hamdi sabah, akşam, öğle ve ikindi vakitlerine yayarak günün tamamını Allah'ı anma vakti kılar. 'Ölüden diriyi çıkarır' cümlesi diriliş inancını günlük döngünün içine yerleştirir.",
+      source:
+        "Tirmizî, Tefsir, 31 (3133); Ebû Dâvûd, Edeb; El-Ezkar nr. 221",
+      tags: ['sabah', 'akşam', 'kur\'an', 'rum', 'tesbih', 'telafi'],
+      categories: ['sabah akşam', 'kur\'an', 'tesbih'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'akşam duası', 'kaçırılan zikirleri telafi', 'kur\'an okuma'],
+    },
+    {
+      key: 'sabah-subhane-la-kuvvete',
+      nameArabic:
+        'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ مَا شَاءَ اللَّهُ كَانَ وَمَا لَمْ يَشَأْ لَمْ يَكُنْ أَعْلَمُ أَنَّ اللَّهَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+      nameTurkish: 'Sabah — Havkale ve Meşîet ile Korunma Duası',
+      transliteration:
+        "Sübhânallâhi ve bihamdihî, lâ havle velâ kuvvete illâ billâh, mâşâallahu kâne, vemâ lem yeşe' lem yekün. A'lemü ennallâhe alâ külli şey'in kadîrun ve ennallâhe kad ehâta bikülli şey'in ilmen.",
+      meaning:
+        "Allah'ı yüceliğine yakışmayan sıfatlardan tenzîh eder ve O'na hamd ederim. Günahtan kaçmak ve ibadet etmek için güç ancak Allah'ın yardımıyla kazanılabilir. Allah'ın dilediği olur, dilemediği olmaz. Bilirim ki Allah her şeye kâdirdir ve ilmiyle her şeyi kuşatmıştır.",
+      virtue:
+        "Resûlullah (sas) bu duayı kızlarından birine öğreterek şöyle buyurdu: 'Sabaha ulaştığında bu zikri söylersen akşama kadar kötülüklerden korunursun. Kim de akşama erdiğinde bu zikri söylerse sabaha kadar korunur' (El-Ezkar nr. 222). Dua dört katmandan oluşur: tesbih (Allah'ı tenzîh), havkale (gücün yalnız Allah'tan olduğunun kabulü), meşîet (Allah'ın iradesinin mutlaklığı) ve ilim-kudret ikrarı. 'Lâ havle velâ kuvvete illâ billâh' tek başına Buhârî'de 'Arş'ın hazinelerinden bir hazine' olarak nitelendirilmiştir; diğer cümlelerle birleşince kapsamlı bir sabah kalkanı oluşturur.",
+      source:
+        "İbn Sünnî, Amelü'l-Yevm; El-Ezkar nr. 222 (Peygamber kızlarından biri rivayeti)",
+      tags: ['sabah', 'akşam', 'tesbih', 'havkale', 'koruma', 'dua'],
+      categories: ['sabah akşam', 'tesbih', 'koruma', 'dua'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'akşam duası', 'koruma', 'tevekkül'],
+    },
+    {
+      key: 'sabah-euzu-billahis-semii-hasr',
+      nameArabic:
+        'أَعُوذُ بِاللَّهِ السَّمِيعِ الْعَلِيمِ مِنَ الشَّيْطَانِ الرَّجِيمِ ثُمَّ يَقْرَأُ ثَلَاثَ آيَاتٍ مِنْ آخِرِ سُورَةِ الْحَشْرِ',
+      nameTurkish: 'Haşr Sûresi Son 3 Ayet (× 3)',
+      transliteration:
+        "Eûzü billâhis semîil alîmi mineş şeytânir racîm. (3 kez) Ardından Haşr sûresinin son 3 âyeti: Hüvallâhüllezî lâilâhe illâ hü, âlimül ğaybi veşşehâdeh, hüver rahmânür rahîm. Hüvallâhüllezî lâilâhe illâ hü, elmelikül kuddûsüs selâmül mü'minül müheyminül azîzül cebbârul mütekebbir, sübhânallâhi ammâ yüşrikûn. Hüvallâhül hâlikul bâriül musavviru lehül esmâül husnâ, yüsebbihu lehü mâ fissemâvâti vel ard, vehüvel azîzül hakîm.",
+      meaning:
+        "Her şeyi işiten ve bilen Allah'a kovulmuş şeytandan sığınırım. (3 kez) Ardından Haşr sûresinin son 3 ayeti okunur: O, gaybı ve görünürü bilen Allah'tır... (tam metin)",
+      virtue:
+        "Ma'kıl ibn Yesâr radıyallahu anh, Resûlullah'ın (sas) şöyle buyurduğunu rivâyet etti: 'Kim sabah olunca üç defa bu sığınma duasını okuyup ardından Haşr sûresinin son üç âyetini okusa, Allah Teâlâ'nın görevlendirdiği yetmiş bin melek akşama kadar ona hayır kazandırmak ve şerden uzak tutmak için duâ eder. O gün ölürse şehit olarak ölür. Kim de bunu akşam okusa yetmiş bin melek sabaha kadar aynı şekilde duâ eder' (El-Ezkar nr. 226). Namaz kıldıran imamların sabah ve akşam namazlarından sonra bu ayetleri okuması bu rivayetten kaynaklanır.",
+      source:
+        "Tirmizî, Fedâilü'l-Kur'ân, 22 (2922); Ebû Dâvûd, Edeb; El-Ezkar nr. 226",
+      tags: ['sabah', 'akşam', 'haşr', 'koruma', 'melek', 'kur\'an'],
+      categories: ['sabah akşam', 'koruma', 'kur\'an'],
+      timeOfDay: 'morning',
+      recommendedCount: 3,
+      specialDays: [],
+      suitableFor: ['sabah zikri', 'akşam zikri', 'koruma', 'namaz sonrası'],
+    },
+    {
+      key: 'sabah-fecetil-hayri',
+      nameArabic:
+        'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَجْأَةِ الْخَيْرِ وَأَعُوذُ بِكَ مِنْ فَجْأَةِ الشَّرِّ',
+      nameTurkish: 'Sabah — Ansızın Gelen Hayır Talebi ve Şerden Sığınma',
+      transliteration:
+        "Allàhümme innî es'elüke min fec'etil hayri ve eûzü bike min fec'etiş şerri.",
+      meaning:
+        "Allahım! Senden ansızın gelen hayrı niyâz ederim. Şerrin ansızın gelmesinden ise sana sığınırım.",
+      virtue:
+        "Enes radıyallahu anh, Resûlullah'ın (sas) sabaha ve akşama eriştiğinde bu duayı okuduğunu rivâyet etti (El-Ezkar nr. 228). Ebû Ya'lâ el-Mevsılî'nin Müsned'ine göre Peygamber Efendimiz gerekçesini şöyle açıkladı: 'Çünkü insanoğlu sabaha ulaştığında ve akşama erdiğinde başına ansızın ne geleceğini bilemez.' 'Fec'e' (ansızın gelme) kavramı hayır için talep, şer için sığınma olarak iki yönde çerçevelenir; bilinmezliği Allah'a teslim etmek, tevekkülün pratik formülüdür.",
+      source:
+        "Ebû Ya'lâ, Müsned; İbn Sünnî, Amelü'l-Yevm; El-Ezkar nr. 228",
+      tags: ['sabah', 'akşam', 'dua', 'tevekkül', 'korunma'],
+      categories: ['sabah akşam', 'dua', 'korunma'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'akşam duası', 'belirsizlik karşısında', 'tevekkül'],
+    },
+    {
+      key: 'sabah-rabbiyallahu-tevekkel',
+      nameArabic:
+        'رَبِّيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ لَا إِلَهَ إِلَّا اللَّهُ الْعَلِيُّ الْعَظِيمُ مَا شَاءَ اللَّهُ كَانَ أَعْلَمُ أَنَّ اللَّهَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+      nameTurkish: 'Sabah-Akşam Tevekkül Duası — Cenneti Müjdeli',
+      transliteration:
+        "Rabbiyallâhu, tevekkeltü alellahi, lâilâhe illâ hü, aleyhi tevekkeltü, vehüve Rabbül arşil azîm. Lâilâhe illallâhül aliyyül azîm. Mâşâallâhü kâne vemâ lem yeşe' lem yekün. A'lemü ennellâhe alâ külli şey'in kadîr, ve ennallâhe kad ehâta bikülli şey'in ilmen.",
+      meaning:
+        "Rabbim Allah'tır. Allah'tan başka ilâh yoktur. Ben yalnız O'na tevekkül ettim. O muhteşem Arş'ın sahibidir. Yüce ve büyük Allah'tan başka ilâh yoktur. Allah'ın dilediği olur, dilemediği olmaz. Bilirim ki Allah her şeye kâdirdir ve ilmiyle her şeyi kuşatmıştır.",
+      virtue:
+        "Büreyde ibn el-Husayb radıyallahu anh, Resûlullah'ın (sas) şöyle buyurduğunu rivâyet etti: 'Bir kimse sabaha ulaştığında ve akşama erdiğinde bu zikri okur, ardından ölürse cennete girer' (El-Ezkar nr. 234). Dua beş ikrarı arka arkaya sıralar: rabbin Allah oluşu, tevhîd, tevekkülün yalnız Allah'a yönelmesi, meşîet (Allah'ın mutlak iradesi) ve Allah'ın kudret ile ilminin sonsuzluğu. Bu ikrarları sabah ve akşama yerleştirmek, günü hem güvence altına alır hem de cennete giden yolun temel taşlarını hatırlatır.",
+      source:
+        "İbn Sünnî, Amelü'l-Yevm; El-Ezkar nr. 234 (Büreyde ibn el-Husayb rivayeti)",
+      tags: ['sabah', 'akşam', 'tevekkül', 'cennet', 'tevhid', 'dua'],
+      categories: ['sabah akşam', 'tevekkül', 'dua'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'akşam duası', 'tevekkül zikri', 'cennet talebi'],
+    },
+    {
+      key: 'sabah-vehebtü-nefsi',
+      nameArabic: 'اللَّهُمَّ إِنِّي قَدْ وَهَبْتُ نَفْسِي وَعِرْضِي لَكَ',
+      nameTurkish: 'Sabah — Nefs ve Şerefi Allah\'a Bağışlama Duası',
+      transliteration:
+        "Allàhümme innî kad vehebtü nefsî ve ırdî leke.",
+      meaning:
+        "Allahım! Ben nefsimi ve şeref ile itibarımı sana bağışladım.",
+      virtue:
+        "Resûlullah (sas), Ebû Damdam'ı örnek göstererek şöyle buyurdu: 'Biriniz Ebû Damdam gibi olamaz mı? O sabah olunca bu duayı yapar, sonra kendisine sövene sövmez, haksızlık edene haksızlık etmez, onu dövene el kaldırmazdı' (El-Ezkar nr. 235). Bu dua, sabahın başında saygınlık kaygısını Allah'a teslim etmenin en kısa formülüdür: 'nefsimi ve itibarımı sana bağışladım' demek, günün olası hakaretlerine ve haksızlıklarına karşı önceden zırh kuşanmaktır. İnsan onurunu Allah nezdinde güvence altına alarak dünyevi tepkileri gevşetir.",
+      source:
+        "Ebû Dâvûd, Edeb; El-Ezkar nr. 235 (Enes ibn Mâlik rivayeti)",
+      tags: ['sabah', 'dua', 'sabır', 'nefs', 'şeref', 'teslimiyet'],
+      categories: ['sabah akşam', 'dua', 'nefis terbiyesi'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['sabah duası', 'sabır için', 'hakaret anında', 'nefis terbiyesi'],
+    },
+    {
+      key: 'sabah-mumin-ayetulkursi',
+      nameArabic:
+        'حم تَنزِيلُ الْكِتَابِ مِنَ اللَّهِ الْعَزِيزِ الْعَلِيمِ + آيَةُ الْكُرْسِيِّ',
+      nameTurkish: 'Mümin Suresi İlk 3 Ayet + Ayetü\'l-Kürsî (Sabah-Akşam)',
+      transliteration:
+        "Hâ-Mîm. Tenzîlül kitâbi minellâhil azîzil alîm. Ğâfiriz zenbi ve kàbilittevbi şedîdil ikàbi zît tavl, lâilâhe illâ hû, ileyhil masîr. (Mümin 1-3) ardından Âyetü'l-Kürsî (Bakara 255).",
+      meaning:
+        "Hâ-Mîm. Bu kitap, güçlü ve her şeyi bilen Allah tarafından indirilmiştir. O, günahı bağışlayan, tövbeyi kabul eden, cezası şiddetli, lütuf sahibi olandır; O'ndan başka ilâh yoktur. Dönüş ancak O'nadır. (ardından Âyetü'l-Kürsî okunur)",
+      virtue:
+        "Ebû Hüreyre radıyallahu anh, Resûlullah'ın (sas) şöyle buyurduğunu rivâyet etti: 'Bir kimse sabaha girince Mümin sûresinin ilk üç âyeti ile Âyetü'l-kürsî'yi okursa akşama kadar bu âyetler sâyesinde korunur. Kim de bu âyetleri akşam okursa sabaha kadar bu âyetler sâyesinde korunur' (El-Ezkar nr. 237). Mümin'in ilk üç ayeti Allah'ın birbirini tamamlayan sıfatlarını —güç, ilim, affetme, tövbeyi kabul etme, şiddetli ceza ve lütuf— art arda öne çıkarır. Âyetü'l-Kürsî ise tevhîdin en yoğun ifadesi olarak gün boyunca güçlü bir kalkan işlevi görür.",
+      source:
+        "Tirmizî, Fedâil; El-Ezkar nr. 237 (Ebû Hüreyre rivayeti)",
+      tags: ['sabah', 'akşam', 'kur\'an', 'mümin', 'ayetülkürsi', 'koruma'],
+      categories: ['sabah akşam', 'kur\'an', 'koruma'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: ['sabah zikri', 'akşam zikri', 'koruma', 'kur\'an okuma'],
+    },
   ],
   specialDays: [],
 };

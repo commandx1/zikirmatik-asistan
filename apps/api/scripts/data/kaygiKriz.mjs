@@ -610,6 +610,98 @@ export const kaygiKriz = {
       ],
     },
     {
+      key: 'sikinti-kerimul-azim',
+      nameArabic:
+        'لَا إِلَهَ إِلَّا اللَّهُ الْكَرِيمُ الْعَظِيمُ سُبْحَانَهُ وَتَبَارَكَ اللَّهُ رَبُّ الْعَرْشِ الْعَظِيمِ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
+      nameTurkish: 'Ali\'ye Öğretilen Sıkıntı Zikri',
+      transliteration:
+        'Lâilâhe illallahul kerîmül azîm, sübhânehû ve tebârekellâhu Rabbül Arşil azîm, elhamdülillâhi Rabbil âlemîn.',
+      meaning:
+        'Hiçbir karşılık beklemeden veren yüce Allah\'tan başka ilâh yoktur. O, yüceliğine yakışmayan kusurlardan çok uzaktır. Muazzam Arş\'ın sahibi olan Allah yücelerin yücesidir. Âlemlerin Rabbi olan Allah\'a hamd olsun.',
+      virtue:
+        'Resûlullah (sas), Hz. Ali\'ye bu zikri öğretmiş ve başına sıkıntı ya da dayanılması güç bir üzüntü geldiğinde okumasını emretmiştir. Abdullah ibni Ca\'fer bu zikri başkalarına da öğretir, ateşli hastalığa yakalananlara okuyup üfler, evlenen kızlarına da ezberletirdi. El-Ezkar nr. 361.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 361; Hâkim; İbn Sünni, Amelü\'l-Yevm',
+      tags: ['sıkıntı', 'keder', 'sığınma', 'zikir', 'Ali rivayeti'],
+      categories: ['kaygı yönetimi', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      suitableFor: [
+        'sıkıntı ve keder anında',
+        'ateşli hastalıkta okunacak',
+        'manevi yük altında',
+        'zor kararlar öncesinde',
+      ],
+    },
+    {
+      key: 'korku-huvellahu-rabbi',
+      nameArabic:
+        'هُوَ اللَّهُ اللَّهُ رَبِّي لَا شَرِيكَ لَهُ',
+      nameTurkish: 'Korku Anı Tevhid Zikri',
+      transliteration:
+        'Hüvellâhu, Allâhu Rabbî, lâ şerîke lehû.',
+      meaning:
+        'Allah O\'dur. Allah benim Rabbimdir. O\'nun ortağı yoktur.',
+      virtue:
+        'Hz. Peygamber (sas) bir şeyden korktuğu zaman bu zikri okurdu (Sevbân rivayeti). Kısa ama güçlü bir tevhid beyanıdır; korku ve dehşet anında kalbi doğrudan Allah\'a bağlar. El-Ezkar nr. 367.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 367; Taberânî, el-Mu\'cemü\'l-Kebîr',
+      tags: ['korku', 'tevhid', 'sığınma', 'kısa zikir', 'dehşet'],
+      categories: ['kaygı yönetimi', 'koruyucu'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      suitableFor: [
+        'ani korku ve dehşet anında',
+        'panik anında',
+        'gece korkusunda',
+        'beklenmedik tehlike hissinde',
+      ],
+    },
+    {
+      key: 'tehlike-bismillah-havkale',
+      nameArabic:
+        'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ الْعَلِيِّ الْعَظِيمِ',
+      nameTurkish: 'Tehlike Anında Besmeleli Havkale',
+      transliteration:
+        'Bismillâhirrahmânirrahîm. Velâ havle velâ kuvvete illâ billâhil aliyyil azîm.',
+      meaning:
+        'Rahmân ve Rahîm olan Allah\'ın adıyla. Günahtan kaçacak güç, ibâdet edecek kuvvet ancak yüce ve ulu Allah\'ın yardımıyla kazanılabilir.',
+      virtue:
+        'Resûlullah (sas) Hz. Ali\'ye şöyle öğretti: "Ey Ali! Sana bir tehlikeye düştüğün zaman okuyacağın bir söz öğreteyim mi?" ve ardından bu sözleri öğretti: "Bir tehlikeye düştüğünde şu sözleri söyle; Allah o sözlerin bereketiyle dilediği kadar belâları giderir." El-Ezkar nr. 370.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 370; İbn Sünni, Amelü\'l-Yevm, nr. 356',
+      tags: ['tehlike', 'korku', 'sığınma', 'havkale', 'besmele', 'kriz'],
+      categories: ['kaygı yönetimi', 'koruyucu', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      suitableFor: [
+        'tehlike hissedildiğinde',
+        'acil durum anında',
+        'kriz başlangıcında',
+        'tehdit altında',
+      ],
+    },
+    {
+      key: 'korku-topluluktan-nuhurihim',
+      nameArabic:
+        'اللَّهُمَّ إِنَّا نَجْعَلُكَ فِي نُحُورِهِمْ وَنَعُوذُ بِكَ مِنْ شُرُورِهِمْ',
+      nameTurkish: 'Bir Topluluktan Korunma Duası',
+      transliteration:
+        'Allàhümme innâ nec\'alüke fî nuhûrihim ve neûzü bike min şürûrihim.',
+      meaning:
+        'Allahım! Senden onların önünü kesmeni istiyoruz. Onların verecekleri zarardan sana sığınıyoruz.',
+      virtue:
+        'Hz. Peygamber (sas) bir topluluktan kuşkulandığı ya da tehdit algıladığı zaman bu duayı okurdu (Ebû Mûsâ el-Eş\'arî rivayeti). "Nec\'alüke fî nuhûrihim" ifadesi "Allah\'ı onların önüne/boğazlarına koyuyoruz" anlamında mecâzî bir sığınak; Allah\'ın kulu ile tehdit arasına girmesini talep eder. El-Ezkar nr. 371.',
+      source: 'El-Ezkar, İmam Nevevi, nr. 371; Ebû Dâvûd, Vitir 30 (nr. 1537)',
+      tags: ['korku', 'topluluk', 'sığınma', 'tehdit', 'korunma', 'baskı'],
+      categories: ['kaygı yönetimi', 'koruyucu'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      suitableFor: [
+        'kalabalıkta tedirginlik hissinde',
+        'baskı altında kalındığında',
+        'tehdit sezildiğinde',
+        'zorbalık ve sosyal baskı anında',
+      ],
+    },
+    {
       key: 'sikinti-inni-euzu-minel-hemmi',
       nameArabic:
         'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَالْعَجْزِ وَالْكَسَلِ، وَالْبُخْلِ وَالْجُبْنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ',
