@@ -128,9 +128,9 @@ export const gunlukSunnetDualari = {
       meaning:
         "Allah'tan başka hak ilah olmadığına, O'nun bir olduğuna ve ortağı bulunmadığına şehadet ederim. Muhammed'in O'nun kulu ve elçisi olduğuna da şehadet ederim. Allah'ım! Beni çok tevbe edenlerden ve temizlenenlerden kıl.",
       virtue:
-        "Hz. Ömer'den rivayet edildiğine göre Hz. Peygamber şöyle buyurdu: 'Abdest alıp ardından bu şehadeti okuyan kimseye cennetin sekiz kapısı açılır, dilediğinden girer.' (Müslim). Abdest, bedensel temizlik; şehadet, kalbin tazelenişi; 'minet-tevvâbîn' duası ise manevi temizliğin devamı için taleptir. Bu üçü birlikte, abdestin beden-kalp-dua üçgenini tamamlar.",
+        "Hz. Ömer'den rivayet edildiğine göre Hz. Peygamber şöyle buyurdu: 'Abdest alıp ardından bu şehadeti okuyan kimseye cennetin sekiz kapısı açılır, dilediğinden girer.' (Müslim). Abdest, bedensel temizlik; şehadet, kalbin tazelenişi; 'minet-tevvâbîn' duası ise manevi temizliğin devamı için taleptir. Bu üçü birlikte, abdestin beden-kalp-dua üçgenini tamamlar. İmam Nevevi, abdest sonrası bu şehadetten hemen ardından Sübhânekellâhümme duasının (bkz. Keffâretü'l-Meclis) da okunmasını tavsiye etmiştir (El-Ezkar nr. 78, Ebu Said el-Hudri rivayeti).",
       source:
-        "Müslim, Tahâret, nr. 234; Tirmizî, Tahâret, nr. 55; Nesâî, Tahâret; Hısnu'l-Muslim nr. 13-14",
+        "Müslim, Tahâret, nr. 234; Tirmizî, Tahâret, nr. 55; Nesâî, Tahâret; Hısnu'l-Muslim nr. 13-14; El-Ezkar nr. 77",
       tags: ['abdest', 'şehadet', 'temizlik', 'cennet', 'günlük', 'sünnet'],
       categories: ['günlük hayat', 'ibadet', 'sünnet duaları', 'namaz'],
       timeOfDay: 'any',

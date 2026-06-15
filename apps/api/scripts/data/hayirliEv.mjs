@@ -95,13 +95,14 @@ export const hayirliEv = {
       meaning:
         "Allah'ım! Günahımı bağışla, evimi genişlet ve rızkımı bereketlendir.",
       virtue:
-        'Günahların affına, yaşanılan hanenin dünyada genişlemesine, kabirde ve ahirette (cennette) ise ferah ve huzurlu kılınmasına vesile olan kapsamlı bir duadır. Yalnızca dünyevi bir mülk talebi değil; manevi arınma, mekan ferahlığı ve rızık bereketi taleplerini tek bir niyazda birleştiren özlü bir yakarıştır. Dar veya sıkışık bir mekânda yaşayanlar, taşınmayı düşünenler ya da evini genişletmek isteyenler için günlük zikre eklenmesi tavsiye edilir.',
-      source: 'İmam Nevevî, el-Ezkâr, sh. 118; Tirmizî, Deavât, 121',
-      tags: ['ev', 'bereket', 'mağfiret', 'rızık', 'mesken', 'dua'],
-      categories: ['dua', 'ev hayatı', 'bereket', 'rızık', 'günlük hayat'],
+        `Günahların affına, yaşanılan hanenin dünyada genişlemesine, kabirde ve ahirette (cennette) ise ferah ve huzurlu kılınmasına vesile olan kapsamlı bir duadır. Yalnızca dünyevi bir mülk talebi değil; manevi arınma, mekan ferahlığı ve rızık bereketi taleplerini tek bir niyazda birleştiren özlü bir yakarıştır. Ebu Musa el-Eş'ari rivayet eder: Hz. Peygamber bu duayı abdest alırken okudu. Ebu Musa "Bu duanın kapsamadığı bir şey kaldı mı?" diye şaşkınlıkla sordu (El-Ezkar nr. 82). Üç talebin yoğunluğu bu şaşkınlığı anlaşılır kılar: af + ev/kabir genişliği + rızık bereketi. Dar veya sıkışık bir mekânda yaşayanlar, taşınmayı düşünenler ya da her abdest sonrası kapsamlı bir dua arayanlar için tavsiye edilir.`,
+      source: 'İmam Nevevî, el-Ezkâr, nr. 82 (Ebu Musa el-Eş\'ari); Tirmizî, Deavât, 121',
+      tags: ['ev', 'bereket', 'mağfiret', 'rızık', 'mesken', 'dua', 'abdest'],
+      categories: ['dua', 'ev hayatı', 'bereket', 'rızık', 'günlük hayat', 'ibadet'],
       timeOfDay: 'any',
       recommendedCount: 33,
       suitableFor: [
+        'abdest alırken',
         'ev genişletme',
         'dar mekân',
         'taşınma niyeti',
