@@ -27,6 +27,9 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
         </View>
 
         <View className="relative z-10 mb-4">
+          {item.title ? (
+            <Text className="mb-1 mt-1 px-0.5 text-sm font-semibold text-[--text-primary]">{item.title}</Text>
+          ) : null}
           <DhikrContentStack
             arabic={item.arabic}
             transliteration={item.transliteration}
@@ -55,6 +58,9 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
       </View>
 
       <View className="mb-4">
+        {item.title ? (
+          <Text className="mb-1 mt-1 px-0.5 text-sm font-semibold text-[--text-primary]">{item.title}</Text>
+        ) : null}
         <DhikrContentStack
           arabic={item.arabic}
           transliteration={item.transliteration}

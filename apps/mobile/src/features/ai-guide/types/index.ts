@@ -1,5 +1,6 @@
 export type AiGuideRecommendation = {
   id: string;
+  title?: string;
   chipEmoji: string;
   chipLabel: string;
   arabic: string;

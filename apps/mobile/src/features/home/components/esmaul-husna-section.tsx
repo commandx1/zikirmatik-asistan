@@ -65,7 +65,7 @@ export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, 
                   return (
                     <Pressable
                       key={item.transliteration}
-                      disabled={disabled}
+                      disabled={disabled || isSelected}
                       onPress={() => onSelect(item)}
                       className='flex-1 flex-row items-center px-3 py-2'
                       style={{

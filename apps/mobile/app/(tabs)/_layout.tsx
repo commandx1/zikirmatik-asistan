@@ -1,5 +1,5 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, usePathname } from "expo-router";
 import { useState } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,6 +41,10 @@ export default function TabsLayout() {
   const { fontFamily } = useThemePreferences();
   const authStatus = useAuthStore((s) => s.status);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isMoreMenuRoute = !["/home", "/focus", "/ai-guide", "/special-days"].some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
 
   if (authStatus !== "authenticated") {
     return <Redirect href="/auth" />;
@@ -53,7 +57,7 @@ export default function TabsLayout() {
     ? { fontSize: 10, fontFamily: tabLabelFontFamily, fontWeight: "normal" as const }
     : { fontSize: 10, fontWeight: "500" as const };
 
-  const dahaFazlaColor = moreMenuOpen ? tokens.accent : tokens.textPrimary;
+  const dahaFazlaColor = (moreMenuOpen || isMoreMenuRoute) ? tokens.accent : tokens.textPrimary;
 
   return (
     <View className="flex-1">
@@ -119,7 +123,7 @@ export default function TabsLayout() {
                   size={19}
                   color={dahaFazlaColor}
                   iconStyle="solid"
-                  style={{ opacity: moreMenuOpen ? 1 : 0.6, marginBottom: 2 }}
+                  style={{ opacity: (moreMenuOpen || isMoreMenuRoute) ? 1 : 0.6, marginBottom: 2 }}
                 />
                 <Text style={{ ...tabLabelStyle, color: dahaFazlaColor }}>
                   Daha Fazla

@@ -1,26 +1,147 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
+import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Pressable, Text, View } from 'react-native'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
+import { DhikrResumeModal } from '../../components/ui/dhikr-resume-modal'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
 import { ThemedCard } from '../../components/ui/themed-card'
+import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-transition-modal'
+import { useDhikrStartGuard } from '../../hooks/use-dhikr-start-guard'
+import { useAuthStore } from '../../store/auth-store'
 import { useDhikrStore } from '../../store/dhikr-store'
+import { createDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
 import { useSpecialDayDetail } from './hooks/use-special-day-detail'
+import type { BackendSpecialDayDetail } from './services/special-days-api-client'
 
 type SpecialDayDetailScreenProps = {
   id: string
 }
 
+type PendingStart = {
+  item: BackendSpecialDayDetail['recommendedDhikrs'][number]
+  target: number
+  progressCount: number
+}
+
+function toDateKey(value: Date) {
+  const year = value.getFullYear()
+  const month = String(value.getMonth() + 1).padStart(2, '0')
+  const day = String(value.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
   const router = useRouter()
   const { tokens } = useThemeTokens()
+
   const dhikrItems = useDhikrStore(state => state.items)
+  const selectedDhikrId = useDhikrStore(state => state.selectedDhikrId)
+  const upsertDhikrSnapshot = useDhikrStore(state => state.upsertDhikrSnapshot)
   const selectDhikr = useDhikrStore(state => state.selectDhikr)
   const setSelectedTarget = useDhikrStore(state => state.setSelectedTarget)
   const setSelectedCount = useDhikrStore(state => state.setSelectedCount)
+  const unsavedProgressDhikrIds = useDhikrStore(state => state.unsavedProgressDhikrIds)
+  const freeModeCount = useDhikrStore(state => state.freeModeCount)
+  const discardUnsavedProgress = useDhikrStore(state => state.discardUnsavedProgress)
+  const clearFreeModeSession = useDhikrStore(state => state.clearFreeModeSession)
+  const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
+  const activeAiContext = useDhikrStore(state => state.activeAiContext)
+
+  const authStatus = useAuthStore(s => s.status)
+  const sessionUserId = useAuthStore(s => s.session?.userId)
+  const sessionAccessToken = useAuthStore(s => s.session?.accessToken)
+
   const detail = useSpecialDayDetail(id)
+  const guard = useDhikrStartGuard()
+
+  const [pendingStart, setPendingStart] = useState<PendingStart | null>(null)
+  const [isSavingUnsaved, setIsSavingUnsaved] = useState(false)
+  const [unsavedSaveError, setUnsavedSaveError] = useState<string | null>(null)
+
+  const startDhikr = (item: PendingStart['item'], target: number, progressCount: number) => {
+    guard.guardedStart({
+      id: item.id,
+      dhikrName: item.nameTurkish,
+      onFresh: () => {
+        upsertDhikrSnapshot({
+          id: item.id,
+          source: 'ready',
+          nameTurkish: item.nameTurkish,
+          arabic: item.nameArabic,
+          transliteration: item.transliteration,
+          meaning: item.meaning,
+          current: 0,
+          target,
+          lastActivityLabel: 'Henüz başlanmadı',
+          streakDays: 0,
+          isFavorite: false,
+        })
+        selectDhikr(item.id)
+        setSelectedTarget(target)
+        setSelectedCount(0)
+        router.push('/(tabs)/home')
+      },
+      onContinue: () => {
+        selectDhikr(item.id)
+        setSelectedTarget(target)
+        setSelectedCount(progressCount)
+        router.push('/(tabs)/home')
+      }
+    })
+  }
+
+  const handleStartPress = (item: PendingStart['item'], target: number, progressCount: number) => {
+    const isSameTarget = item.id === selectedDhikrId
+    const hasUnsaved = !isSameTarget && (
+      selectedDhikrId
+        ? unsavedProgressDhikrIds.includes(selectedDhikrId)
+        : freeModeCount > 0
+    )
+    if (hasUnsaved) {
+      setPendingStart({ item, target, progressCount })
+      setUnsavedSaveError(null)
+      return
+    }
+    startDhikr(item, target, progressCount)
+  }
+
+  const handleUnsavedSaveAndContinue = async () => {
+    if (!pendingStart || isSavingUnsaved) return
+    const selectedDhikr = dhikrItems.find(d => d.id === selectedDhikrId)
+    if (!selectedDhikr || authStatus !== 'authenticated' || !sessionUserId) {
+      setUnsavedSaveError('Kaydetmek için giriş yapmalısın.')
+      return
+    }
+    setIsSavingUnsaved(true)
+    setUnsavedSaveError(null)
+    const count = Math.max(0, Math.floor(selectedDhikr.current))
+    const safeCount = selectedDhikr.target > 0 ? Math.min(selectedDhikr.target, count) : count
+    const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target
+    const aiCtx = activeAiContext?.dhikrId === selectedDhikr.id
+      ? { source: 'ai' as const, aiRecommendationId: activeAiContext.recommendationId, aiPrompt: activeAiContext.prompt, aiAssistantNote: activeAiContext.assistantNote }
+      : { source: 'manual' as const }
+    const isObjectId = /^[a-f\d]{24}$/i.test(selectedDhikr.id)
+    const dateKey = toDateKey(new Date())
+    try {
+      const savedLog = await createDhikrLog(
+        isObjectId
+          ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted, isFavorite: selectedDhikr.isFavorite }
+          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: selectedDhikr.nameTurkish || selectedDhikr.transliteration, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
+        sessionAccessToken
+      )
+      applySavedBackendLog(savedLog)
+      const { item, target, progressCount } = pendingStart
+      setPendingStart(null)
+      startDhikr(item, target, progressCount)
+    } catch (e) {
+      setUnsavedSaveError(e instanceof Error ? e.message : 'Zikir kaydedilemedi.')
+    } finally {
+      setIsSavingUnsaved(false)
+    }
+  }
 
   return (
     <PageLayout>
@@ -125,12 +246,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
 
                       <View className='mt-4 flex-row items-center justify-end'>
                         <Pressable
-                          onPress={() => {
-                            selectDhikr(item.id)
-                            setSelectedTarget(target)
-                            setSelectedCount(progressCount)
-                            router.push('/(tabs)/home')
-                          }}
+                          onPress={() => handleStartPress(item, target, progressCount)}
                           className='rounded-full bg-[--accent] px-4 py-2'
                         >
                           <Text className='text-xs font-semibold' style={{ color: tokens.bg }}>
@@ -145,6 +261,38 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
             </>
           )}
         </PageScrollView>
+
+        <UnsavedDhikrTransitionModal
+          visible={Boolean(pendingStart)}
+          dhikrName={dhikrItems.find(d => d.id === selectedDhikrId)?.nameTurkish ?? ''}
+          count={dhikrItems.find(d => d.id === selectedDhikrId)?.current ?? freeModeCount}
+          isSaving={isSavingUnsaved}
+          error={unsavedSaveError}
+          onSaveAndContinue={handleUnsavedSaveAndContinue}
+          onContinueWithoutSaving={() => {
+            const pending = pendingStart!
+            setPendingStart(null)
+            setUnsavedSaveError(null)
+            if (selectedDhikrId) {
+              discardUnsavedProgress(selectedDhikrId)
+            } else {
+              clearFreeModeSession()
+            }
+            startDhikr(pending.item, pending.target, pending.progressCount)
+          }}
+          onCancel={() => {
+            setPendingStart(null)
+            setUnsavedSaveError(null)
+          }}
+        />
+        <DhikrResumeModal
+          visible={guard.isGuardOpen}
+          dhikrName={guard.guardDhikrName}
+          currentCount={guard.guardCurrentCount}
+          onContinue={guard.onGuardContinue}
+          onFresh={guard.onGuardFresh}
+          onCancel={guard.onGuardCancel}
+        />
       </View>
     </PageLayout>
   )

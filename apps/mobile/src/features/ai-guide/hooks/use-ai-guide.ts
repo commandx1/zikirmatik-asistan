@@ -278,6 +278,7 @@ export function useAiGuide() {
         const mappedItems = markFirstPrimary(
           response.items.map((item, index) => ({
             id: item.id,
+            title: item.nameTurkish,
             chipEmoji: index === 0 ? "💆" : "✨",
             chipLabel: index === 0 ? "Senin için birincil öneri" : "Asistan önerisi",
             repeatLabel: index === 0 ? "Öncelikli" : undefined,

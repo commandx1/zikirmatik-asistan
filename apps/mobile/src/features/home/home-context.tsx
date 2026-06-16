@@ -41,6 +41,20 @@ type PendingDhikrTransition =
   | { kind: 'quick'; label: string }
   | { kind: 'esma'; item: EsmaulHusnaItem }
 
+type EsmaResumePendingDhikr = {
+  _id: string
+  nameTurkish: string
+  nameArabic: string
+  transliteration: string
+  meaning: string
+  recommendedCount: number
+}
+
+type EsmaResumePending = {
+  dhikr: EsmaResumePendingDhikr
+  currentCount: number
+}
+
 type HomeContextValue = {
   greeting: string
   streakLabel: string
@@ -72,10 +86,7 @@ type HomeContextValue = {
   unsavedTransitionDhikrName: string
   unsavedTransitionCount: number
   unsavedTransitionError: string | null
-  isEsmaSelectionModalOpen: boolean
   isSelectingEsmaDhikr: boolean
-  selectedEsmaForConfirmation?: EsmaulHusnaItem
-  esmaSelectionError: string | null
   isDailyEsmaWelcomeOpen: boolean
   dailyEsmaSuggestions: EsmaulHusnaItem[]
   freeSaveNameDraft: string
@@ -90,6 +101,11 @@ type HomeContextValue = {
   onTargetDraftChange: (value: string) => void
   onTargetCancel: () => void
   onTargetSubmit: () => void
+  isTargetDowngradeWarningOpen: boolean
+  targetDowngradePendingTarget: number
+  targetDowngradeCurrentCount: number
+  onTargetDowngradeConfirm: () => void
+  onTargetDowngradeCancel: () => void
   onChangeDhikrPress: () => void
   onCloseDhikrPicker: () => void
   onSelectDhikr: (id: string) => void
@@ -113,8 +129,12 @@ type HomeContextValue = {
   onUnsavedTransitionContinueWithoutSaving: () => void
   onStartFreeMode: () => void
   onEsmaPress: (item: EsmaulHusnaItem) => void
-  onEsmaSelectCancel: () => void
-  onEsmaSelectConfirm: () => void
+  isEsmaResumeGuardOpen: boolean
+  esmaResumeGuardDhikrName: string
+  esmaResumeGuardCurrentCount: number
+  onEsmaResumeGuardContinue: () => void
+  onEsmaResumeGuardFresh: () => void
+  onEsmaResumeGuardCancel: () => void
   onDailyEsmaDismiss: () => void
   onDailyEsmaShowAll: () => void
   onDailyEsmaStart: (item: EsmaulHusnaItem) => void
@@ -179,13 +199,13 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [freeSaveMeaningDraft, setFreeSaveMeaningDraft] = useState('')
   const [freeSaveNameError, setFreeSaveNameError] = useState<string | null>(null)
   const [freeSaveTargetDraft, setFreeSaveTargetDraft] = useState('')
-  const [selectedEsmaForConfirmation, setSelectedEsmaForConfirmation] = useState<EsmaulHusnaItem | undefined>(undefined)
   const [pendingFreeSaveTransition, setPendingFreeSaveTransition] = useState<PendingDhikrTransition | null>(null)
   const [isSelectingEsmaDhikr, setIsSelectingEsmaDhikr] = useState(false)
-  const [esmaSelectionError, setEsmaSelectionError] = useState<string | null>(null)
+  const [esmaResumePending, setEsmaResumePending] = useState<EsmaResumePending | null>(null)
   const [dailyEsmaSuggestions, setDailyEsmaSuggestions] = useState<EsmaulHusnaItem[]>([])
   const [isDailyEsmaWelcomeOpen, setDailyEsmaWelcomeOpen] = useState(false)
   const [checkedDailyEsmaWelcomeKey, setCheckedDailyEsmaWelcomeKey] = useState('')
+  const [pendingDowngradeTarget, setPendingDowngradeTarget] = useState<number | null>(null)
   const [isSavingLog, setIsSavingLog] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [streakDays, setStreakDays] = useState(0)
@@ -328,7 +348,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     isCreatingDhikr ||
     isFreeSaveNameModalOpen ||
     Boolean(pendingDhikrTransition) ||
-    Boolean(selectedEsmaForConfirmation) ||
+    isSelectingEsmaDhikr ||
     Boolean(pendingNavigationDailyEsmaStart) ||
     esmaListFocusRequestId > 0
 
@@ -401,6 +421,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       const nextTarget = !Number.isNaN(parsed) && parsed > 0 ? Math.min(parsed, MAX_DHIKR_TARGET) : 0
 
       if (selectedDhikr) {
+        if (nextTarget > 0 && nextTarget < selectedDhikr.current) {
+          setPendingDowngradeTarget(nextTarget)
+          setIsEditingTarget(false)
+          return
+        }
         if (nextTarget > 0) {
           setSelectedTarget(nextTarget)
         }
@@ -409,6 +434,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         return
       }
 
+      if (nextTarget > 0 && nextTarget < freeCount) {
+        setPendingDowngradeTarget(nextTarget)
+        setIsEditingTarget(false)
+        return
+      }
       setFreeModeTarget(nextTarget)
       setTargetDraft(String(nextTarget > 0 ? nextTarget : 100))
       setIsEditingTarget(false)
@@ -513,50 +543,62 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       freeAutoDhikrNameRef.current = undefined
     }
 
-    const closeEsmaSelection = () => {
-      if (isSelectingEsmaDhikr) {
-        return
-      }
-
-      setSelectedEsmaForConfirmation(undefined)
-      setEsmaSelectionError(null)
+    const applyEsmaFresh = (dhikr: EsmaResumePendingDhikr) => {
+      upsertDhikrSnapshot({
+        id: dhikr._id,
+        source: 'ready',
+        nameTurkish: dhikr.nameTurkish,
+        arabic: dhikr.nameArabic,
+        transliteration: dhikr.transliteration || dhikr.nameTurkish,
+        meaning: dhikr.meaning,
+        current: 0,
+        target: dhikr.recommendedCount,
+        lastActivityLabel: 'Henüz başlanmadı',
+        streakDays: 0,
+        isFavorite: false
+      })
+      selectDhikr(dhikr._id)
+      setActiveQuickDhikr(dhikr.nameTurkish || dhikr.transliteration)
+      clearFreeAutoDhikrRefs()
+      liveFreeCountRef.current = 0
+      clearFreeModeSession()
+      setDemoCompleted(false)
+      setEsmaResumePending(null)
     }
 
-    const confirmEsmaSelection = () => {
-      if (!selectedEsmaForConfirmation || isSelectingEsmaDhikr) {
-        return
-      }
+    const applyEsmaContinue = (dhikr: EsmaResumePendingDhikr) => {
+      selectDhikr(dhikr._id)
+      setActiveQuickDhikr(dhikr.nameTurkish || dhikr.transliteration)
+      clearFreeAutoDhikrRefs()
+      liveFreeCountRef.current = 0
+      clearFreeModeSession()
+      setDemoCompleted(false)
+      setEsmaResumePending(null)
+    }
 
+    const startEsmaDhikr = (item: EsmaulHusnaItem) => {
+      if (isSelectingEsmaDhikr) return
       setIsSelectingEsmaDhikr(true)
-      setEsmaSelectionError(null)
       setSyncError(undefined)
-
-      void findVerifiedActiveDhikrByTransliteration(selectedEsmaForConfirmation.transliteration)
+      void findVerifiedActiveDhikrByTransliteration(item.transliteration)
         .then(dhikr => {
-          upsertDhikrSnapshot({
-            id: dhikr._id,
-            source: 'ready',
-            nameTurkish: dhikr.nameTurkish,
-            arabic: dhikr.nameArabic,
-            transliteration: dhikr.transliteration || dhikr.nameTurkish,
-            meaning: dhikr.meaning,
-            current: 0,
-            target: dhikr.recommendedCount,
-            lastActivityLabel: 'Henüz başlanmadı',
-            streakDays: 0,
-            isFavorite: false
-          })
-          selectDhikr(dhikr._id)
-          setActiveQuickDhikr(dhikr.nameTurkish || dhikr.transliteration)
-          clearFreeAutoDhikrRefs()
-          liveFreeCountRef.current = 0
-          clearFreeModeSession()
-          setDemoCompleted(false)
-          setSelectedEsmaForConfirmation(undefined)
+          if (dhikr._id === selectedDhikrId) {
+            applyEsmaContinue(dhikr)
+            return
+          }
+
+          const storeItem = items.find(i => i.id === dhikr._id)
+          const hasProgress = Boolean(storeItem && storeItem.current > 0)
+
+          if (hasProgress) {
+            setEsmaResumePending({ dhikr, currentCount: storeItem?.current ?? 0 })
+            return
+          }
+
+          applyEsmaFresh(dhikr)
         })
         .catch((error: unknown) => {
           const message = error instanceof Error ? error.message : 'Esma zikri bulunamadı.'
-          setEsmaSelectionError(message)
           setSyncError(message)
         })
         .finally(() => {
@@ -582,8 +624,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       }
 
       if (transition.kind === 'esma') {
-        setSelectedEsmaForConfirmation(transition.item)
-        setEsmaSelectionError(null)
+        startEsmaDhikr(transition.item)
         return
       }
 
@@ -719,10 +760,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       unsavedTransitionDhikrName: selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || activeFreeModeTitle || FREE_MODE_LABEL,
       unsavedTransitionCount: selectedDhikr?.current ?? freeCount,
       unsavedTransitionError,
-      isEsmaSelectionModalOpen: Boolean(selectedEsmaForConfirmation),
       isSelectingEsmaDhikr,
-      selectedEsmaForConfirmation,
-      esmaSelectionError,
       isDailyEsmaWelcomeOpen,
       dailyEsmaSuggestions,
       freeSaveNameDraft,
@@ -737,11 +775,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         }
 
         if (!selectedDhikr) {
-          const nextRawCount = liveFreeCountRef.current + 1
+          const prevCount = liveFreeCountRef.current
+          const nextRawCount = prevCount + 1
           const nextCount = freeTarget > 0 ? Math.min(freeTarget, nextRawCount) : nextRawCount
           liveFreeCountRef.current = nextCount
           incrementFreeMode()
-          if (hapticsEnabled) {
+          if (hapticsEnabled && nextCount !== prevCount) {
             Vibration.vibrate(25)
           }
 
@@ -755,7 +794,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         liveSelectedCountRef.current = nextCount
 
         incrementSelected()
-        if (hapticsEnabled) {
+        if (hapticsEnabled && nextCount !== baseCount) {
           Vibration.vibrate(25)
         }
       },
@@ -949,8 +988,18 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       onEsmaPress: item => {
         requestDhikrTransition({ kind: 'esma', item })
       },
-      onEsmaSelectCancel: closeEsmaSelection,
-      onEsmaSelectConfirm: confirmEsmaSelection,
+      isEsmaResumeGuardOpen: Boolean(esmaResumePending),
+      esmaResumeGuardDhikrName: esmaResumePending?.dhikr.nameTurkish ?? '',
+      esmaResumeGuardCurrentCount: esmaResumePending?.currentCount ?? 0,
+      onEsmaResumeGuardFresh: () => {
+        if (!esmaResumePending) return
+        applyEsmaFresh(esmaResumePending.dhikr)
+      },
+      onEsmaResumeGuardContinue: () => {
+        if (!esmaResumePending) return
+        applyEsmaContinue(esmaResumePending.dhikr)
+      },
+      onEsmaResumeGuardCancel: () => setEsmaResumePending(null),
       onDailyEsmaDismiss: markDailyEsmaWelcomeSeen,
       onDailyEsmaShowAll: markDailyEsmaWelcomeSeen,
       onDailyEsmaStart: item => {
@@ -960,6 +1009,28 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       onUnsavedTransitionCancel: closeUnsavedTransition,
       onUnsavedTransitionSaveAndContinue: saveAndContinueUnsavedTransition,
       onUnsavedTransitionContinueWithoutSaving: continueUnsavedTransition,
+      isTargetDowngradeWarningOpen: pendingDowngradeTarget !== null,
+      targetDowngradePendingTarget: pendingDowngradeTarget ?? 0,
+      targetDowngradeCurrentCount: selectedDhikr ? selectedDhikr.current : freeCount,
+      onTargetDowngradeConfirm: () => {
+        if (pendingDowngradeTarget === null) return
+        if (selectedDhikr) {
+          setSelectedTarget(pendingDowngradeTarget)
+          setTargetDraft(String(pendingDowngradeTarget))
+        } else {
+          setFreeModeTarget(pendingDowngradeTarget)
+          setTargetDraft(String(pendingDowngradeTarget))
+        }
+        setPendingDowngradeTarget(null)
+      },
+      onTargetDowngradeCancel: () => {
+        setPendingDowngradeTarget(null)
+        setTargetDraft(String(
+          selectedDhikr
+            ? (selectedDhikr.target > 0 ? selectedDhikr.target : 33)
+            : (freeTarget > 0 ? freeTarget : 100)
+        ))
+      },
       tapAnywhereEnabled,
       toggleTapAnywhere
     }
@@ -983,9 +1054,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     freeSaveMeaningDraft,
     freeSaveNameError,
     freeSaveTargetDraft,
-    selectedEsmaForConfirmation,
     isSelectingEsmaDhikr,
-    esmaSelectionError,
+    esmaResumePending,
     incrementFreeMode,
     incrementSelected,
     isSavingLog,
@@ -998,6 +1068,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     pendingFreeSaveTransition,
     markDailyEsmaWelcomeSeen,
     pendingDhikrTransition,
+    pendingDowngradeTarget,
     upsertDhikrSnapshot,
     items,
     personalDhikrs,

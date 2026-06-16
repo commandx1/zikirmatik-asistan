@@ -4,6 +4,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import { Animated, InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
+import { DhikrResumeModal } from '../../components/ui/dhikr-resume-modal'
 import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-aware-bottom-sheet-modal'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
@@ -179,66 +180,6 @@ function FreeModeButton() {
   )
 }
 
-function EsmaSelectionModal() {
-  const home = useHomeContext()
-  const { tokens } = useThemeTokens()
-  const selectedEsma = home.selectedEsmaForConfirmation
-
-  return (
-    <Modal
-      visible={home.isEsmaSelectionModalOpen}
-      transparent
-      animationType='fade'
-      onRequestClose={home.onEsmaSelectCancel}
-    >
-      <View className='flex-1 items-center justify-center bg-black/50 px-6'>
-        <View
-          className='w-full max-w-[340px] rounded-2xl p-5'
-          style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.1), backgroundColor: tokens.card }}
-        >
-          <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
-            Esmayı seç
-          </Text>
-          <Text className='mb-4 text-sm leading-5' style={{ color: tokens.textMuted }}>
-            {selectedEsma?.transliteration
-              ? `${selectedEsma.transliteration} esmasını zikir olarak seçmek istediğine emin misin?`
-              : 'Bu esmayı zikir olarak seçmek istediğine emin misin?'}
-          </Text>
-          {home.esmaSelectionError ? (
-            <Text className='mb-3 text-xs text-[#F97373]'>{home.esmaSelectionError}</Text>
-          ) : null}
-          <View className='flex-row justify-end gap-2'>
-            <Pressable
-              disabled={home.isSelectingEsmaDhikr}
-              onPress={home.onEsmaSelectCancel}
-              className='rounded-full px-4 py-2'
-              style={{
-                borderWidth: 1,
-                borderColor: withAlpha(tokens.textPrimary, 0.2),
-                opacity: home.isSelectingEsmaDhikr ? 0.56 : 1
-              }}
-            >
-              <Text className='text-sm font-medium' style={{ color: tokens.textPrimary }}>
-                Vazgeç
-              </Text>
-            </Pressable>
-            <Pressable
-              disabled={home.isSelectingEsmaDhikr}
-              onPress={home.onEsmaSelectConfirm}
-              className='rounded-full px-4 py-2'
-              style={{ backgroundColor: tokens.accent, opacity: home.isSelectingEsmaDhikr ? 0.72 : 1 }}
-            >
-              <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
-                {home.isSelectingEsmaDhikr ? 'Seçiliyor...' : 'Seç'}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  )
-}
-
 function TargetModal() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
@@ -287,6 +228,65 @@ function TargetModal() {
             >
               <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
                 Kaydet
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
+function TargetDowngradeWarningModal() {
+  const home = useHomeContext()
+  const { tokens } = useThemeTokens()
+
+  return (
+    <Modal
+      visible={home.isTargetDowngradeWarningOpen}
+      transparent
+      animationType='fade'
+      onRequestClose={home.onTargetDowngradeCancel}
+    >
+      <View className='flex-1 items-center justify-center bg-black/55 px-6'>
+        <View
+          className='w-full max-w-[340px] rounded-2xl p-5'
+          style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.12), backgroundColor: tokens.card }}
+        >
+          <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
+            Sayım kırpılacak
+          </Text>
+          <Text className='text-sm leading-5' style={{ color: tokens.textMuted }}>
+            Mevcut sayımın{' '}
+            <Text className='font-semibold' style={{ color: tokens.textPrimary }}>
+              {home.targetDowngradeCurrentCount}
+            </Text>{' '}
+            adet. Yeni hedef{' '}
+            <Text className='font-semibold' style={{ color: tokens.textPrimary }}>
+              {home.targetDowngradePendingTarget}
+            </Text>{' '}
+            olarak uygulandığında sayımın{' '}
+            <Text className='font-semibold' style={{ color: tokens.textPrimary }}>
+              {home.targetDowngradePendingTarget}
+            </Text>{' '}
+            adede indirilecek.
+          </Text>
+          <View className='mt-5 gap-2'>
+            <Pressable
+              onPress={home.onTargetDowngradeConfirm}
+              className='h-11 items-center justify-center rounded-full px-4'
+              style={{ backgroundColor: tokens.accent }}
+            >
+              <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
+                Yine de Uygula
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={home.onTargetDowngradeCancel}
+              className='h-10 items-center justify-center rounded-full px-4'
+            >
+              <Text className='text-sm font-medium' style={{ color: tokens.textMuted }}>
+                İptal
               </Text>
             </Pressable>
           </View>
@@ -497,7 +497,14 @@ export function HomeView() {
           </View>
         </Pressable>
       </PageScrollView>
-      <EsmaSelectionModal />
+      <DhikrResumeModal
+        visible={home.isEsmaResumeGuardOpen}
+        dhikrName={home.esmaResumeGuardDhikrName}
+        currentCount={home.esmaResumeGuardCurrentCount}
+        onContinue={home.onEsmaResumeGuardContinue}
+        onFresh={home.onEsmaResumeGuardFresh}
+        onCancel={home.onEsmaResumeGuardCancel}
+      />
       <Suspense fallback={null}>
         <DailyEsmaWelcomeModal
           visible={home.isDailyEsmaWelcomeOpen}
@@ -508,6 +515,7 @@ export function HomeView() {
         />
       </Suspense>
       <TargetModal />
+      <TargetDowngradeWarningModal />
       <FreeSaveNameModal />
       <UnsavedDhikrTransitionModal
         visible={home.isUnsavedTransitionModalOpen}

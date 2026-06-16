@@ -2,7 +2,11 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { DhikrResumeModal } from "../../components/ui/dhikr-resume-modal";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
+import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
+import { useAuthStore } from "../../store/auth-store";
+import { createDhikrLog } from "../dhikrs/services/dhikr-logs-api-client";
 
 const DailyEsmaWelcomeModal = lazy(() =>
   import("../home/components/daily-esma-welcome-modal").then((m) => ({ default: m.DailyEsmaWelcomeModal }))
@@ -20,16 +24,118 @@ import { RecommendationsSection } from "./components/recommendations-section";
 import { RewardedGateSheet } from "./components/rewarded-gate-sheet";
 import { TopBar } from "./components/top-bar";
 import { useAiGuide } from "./hooks/use-ai-guide";
+import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
+import { useDhikrStore } from "../../store/dhikr-store";
+import type { AiGuideRecommendation } from "./types";
+
+function toDateKey(value: Date) {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 export function AiGuideScreen() {
   const router = useRouter();
   const guide = useAiGuide();
+  const guard = useDhikrStartGuard();
+  const clearDhikrProgress = useDhikrStore(s => s.clearDhikrProgress);
+  const storeItems = useDhikrStore(s => s.items);
+  const selectedDhikrId = useDhikrStore(s => s.selectedDhikrId);
+  const activeAiContext = useDhikrStore(s => s.activeAiContext);
+  const unsavedProgressDhikrIds = useDhikrStore(s => s.unsavedProgressDhikrIds);
+  const freeModeCount = useDhikrStore(s => s.freeModeCount);
+  const discardUnsavedProgress = useDhikrStore(s => s.discardUnsavedProgress);
+  const clearFreeModeSession = useDhikrStore(s => s.clearFreeModeSession);
+  const applySavedBackendLog = useDhikrStore(s => s.applySavedBackendLog);
+  const authStatus = useAuthStore(s => s.status);
+  const sessionUserId = useAuthStore(s => s.session?.userId);
+  const sessionAccessToken = useAuthStore(s => s.session?.accessToken);
   const scrollRef = useRef<ScrollView>(null);
+  const loadingSectionY = useRef(0);
   const [isDailyEsmaOpen, setDailyEsmaOpen] = useState(false);
+  const [pendingRecommendation, setPendingRecommendation] = useState<AiGuideRecommendation | null>(null);
+  const [isSavingUnsaved, setIsSavingUnsaved] = useState(false);
+  const [unsavedSaveError, setUnsavedSaveError] = useState<string | null>(null);
+
+  const proceedWithRecommendation = (item: AiGuideRecommendation) => {
+    guard.guardedStart({
+      id: item.id,
+      dhikrName: item.title ?? item.transliteration,
+      onFresh: () => {
+        clearDhikrProgress(item.id);
+        guide.selectRecommendation(item);
+        router.push("/(tabs)/home");
+      },
+      onContinue: () => {
+        guide.selectRecommendation(item);
+        router.push("/(tabs)/home");
+      }
+    });
+  };
+
+  const handleSelectRecommendation = (item: AiGuideRecommendation) => {
+    const isSameTarget = item.id === selectedDhikrId;
+    const hasUnsaved = !isSameTarget && (
+      selectedDhikrId
+        ? unsavedProgressDhikrIds.includes(selectedDhikrId)
+        : freeModeCount > 0
+    );
+
+    if (hasUnsaved) {
+      setPendingRecommendation(item);
+      setUnsavedSaveError(null);
+      return;
+    }
+
+    proceedWithRecommendation(item);
+  };
+
+  const handleUnsavedSaveAndContinue = async () => {
+    const item = pendingRecommendation;
+    if (!item || isSavingUnsaved) return;
+
+    const selectedDhikr = storeItems.find(d => d.id === selectedDhikrId);
+    if (!selectedDhikr || authStatus !== "authenticated" || !sessionUserId) {
+      setUnsavedSaveError("Kaydetmek için giriş yapmalısın.");
+      return;
+    }
+
+    setIsSavingUnsaved(true);
+    setUnsavedSaveError(null);
+
+    const count = Math.max(0, Math.floor(selectedDhikr.current));
+    const safeCount = selectedDhikr.target > 0 ? Math.min(selectedDhikr.target, count) : count;
+    const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target;
+    const aiCtx = activeAiContext?.dhikrId === selectedDhikr.id
+      ? { source: "ai" as const, aiRecommendationId: activeAiContext.recommendationId, aiPrompt: activeAiContext.prompt, aiAssistantNote: activeAiContext.assistantNote }
+      : { source: "manual" as const };
+    const isObjectId = /^[a-f\d]{24}$/i.test(selectedDhikr.id);
+    const dateKey = toDateKey(new Date());
+
+    try {
+      const savedLog = await createDhikrLog(
+        isObjectId
+          ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted, isFavorite: selectedDhikr.isFavorite }
+          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: selectedDhikr.nameTurkish || selectedDhikr.transliteration, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
+        sessionAccessToken
+      );
+      applySavedBackendLog(savedLog);
+      setPendingRecommendation(null);
+      proceedWithRecommendation(item);
+    } catch (e) {
+      setUnsavedSaveError(e instanceof Error ? e.message : "Zikir kaydedilemedi.");
+    } finally {
+      setIsSavingUnsaved(false);
+    }
+  };
 
   useEffect(() => {
     if (guide.isLoading) {
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 120);
+      setTimeout(
+        () => scrollRef.current?.scrollTo({ y: Math.max(0, loadingSectionY.current - 16), animated: true }),
+        120,
+      );
     }
   }, [guide.isLoading]);
   const dailyEsmaSuggestions = useMemo(() => resolveDailyEsmaSuggestions(ESMAUL_HUSNA, new Date()), []);
@@ -88,7 +194,9 @@ export function AiGuideScreen() {
               <Text className="text-[12px] text-[#fecaca]">{guide.error}</Text>
             </View>
           ) : null}
-          <LoadingSection visible={guide.isLoading} />
+          <View onLayout={(e) => { loadingSectionY.current = e.nativeEvent.layout.y; }}>
+            <LoadingSection visible={guide.isLoading} />
+          </View>
           {guide.isLoading ? null : guide.offTopicMessage ? (
             <View className="mb-4 rounded-xl border border-red-900/60 bg-red-950/40 px-4 py-4">
               <View className="mb-2 flex-row items-center gap-2">
@@ -105,10 +213,7 @@ export function AiGuideScreen() {
             <RecommendationsSection
               items={guide.recommendations}
               assistantNote={guide.assistantNote}
-              onSelectRecommendation={(item) => {
-                guide.selectRecommendation(item);
-                router.push("/(tabs)/home");
-              }}
+              onSelectRecommendation={handleSelectRecommendation}
             />
           )}
         </PageScrollView>
@@ -118,6 +223,37 @@ export function AiGuideScreen() {
           isRunning={guide.isRewardedRunning}
           onConfirm={guide.confirmRewardedAndSubmit}
           onClose={guide.closeRewardedSheet}
+        />
+        <UnsavedDhikrTransitionModal
+          visible={Boolean(pendingRecommendation)}
+          dhikrName={storeItems.find(d => d.id === selectedDhikrId)?.nameTurkish ?? ""}
+          count={storeItems.find(d => d.id === selectedDhikrId)?.current ?? freeModeCount}
+          isSaving={isSavingUnsaved}
+          error={unsavedSaveError}
+          onSaveAndContinue={handleUnsavedSaveAndContinue}
+          onContinueWithoutSaving={() => {
+            const item = pendingRecommendation!;
+            setPendingRecommendation(null);
+            setUnsavedSaveError(null);
+            if (selectedDhikrId) {
+              discardUnsavedProgress(selectedDhikrId);
+            } else {
+              clearFreeModeSession();
+            }
+            proceedWithRecommendation(item);
+          }}
+          onCancel={() => {
+            setPendingRecommendation(null);
+            setUnsavedSaveError(null);
+          }}
+        />
+        <DhikrResumeModal
+          visible={guard.isGuardOpen}
+          dhikrName={guard.guardDhikrName}
+          currentCount={guard.guardCurrentCount}
+          onContinue={guard.onGuardContinue}
+          onFresh={guard.onGuardFresh}
+          onCancel={guard.onGuardCancel}
         />
         <Suspense fallback={null}>
         <DailyEsmaWelcomeModal

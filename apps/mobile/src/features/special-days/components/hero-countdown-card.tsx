@@ -2,7 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect } from "react";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   Easing,
   cancelAnimation,
@@ -29,6 +29,7 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
   const pulseProgress = useSharedValue(0);
   const shimmerProgress = useSharedValue(0);
   const badgeFloatProgress = useSharedValue(0);
+  const borderRotation = useSharedValue(0);
 
   useEffect(() => {
     if (isTodaySpecial) {
@@ -43,21 +44,29 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
         -1,
         true
       );
+      borderRotation.value = withRepeat(
+        withTiming(360, { duration: 4000, easing: Easing.linear }),
+        -1,
+        false
+      );
     } else {
       cancelAnimation(pulseProgress);
       cancelAnimation(shimmerProgress);
       cancelAnimation(badgeFloatProgress);
+      cancelAnimation(borderRotation);
       pulseProgress.value = 0;
       shimmerProgress.value = 0;
       badgeFloatProgress.value = 0;
+      borderRotation.value = 0;
     }
 
     return () => {
       cancelAnimation(pulseProgress);
       cancelAnimation(shimmerProgress);
       cancelAnimation(badgeFloatProgress);
+      cancelAnimation(borderRotation);
     };
-  }, [badgeFloatProgress, isTodaySpecial, pulseProgress, shimmerProgress]);
+  }, [badgeFloatProgress, borderRotation, isTodaySpecial, pulseProgress, shimmerProgress]);
 
   const cardPulseAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: interpolate(pulseProgress.value, [0, 1], [1, 1.01]) }],
@@ -71,60 +80,121 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
     transform: [{ translateX: interpolate(shimmerProgress.value, [0, 1], [-230, 340]) }, { rotateZ: "14deg" }],
   }));
 
-  const badgeFloatAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: interpolate(badgeFloatProgress.value, [0, 1], [0, -3]) }],
+  const borderRotateStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${borderRotation.value}deg` }],
   }));
 
   const accentTransparent = withAlpha(tokens.accent, 0);
   const accentSoft = withAlpha(tokens.accent, 0.12);
   const accentStrong = withAlpha(tokens.accent, 0.3);
+  const cardBg = withAlpha(tokens.accent, 0.12);
 
-  return (
-    <Pressable
-      onPress={() => onPressDetail(data.id)}
-      disabled={data.isLocked}
-      className={data.isLocked ? "opacity-60" : undefined}
-    >
-      <Animated.View style={isTodaySpecial ? cardPulseAnimatedStyle : undefined}>
-        <ThemedCard
-          className="rounded-[24px] p-6"
-          borderClassName={isTodaySpecial ? "border-[--accent]/60" : "border-white/10"}
-          elevated
-          style={{
-            shadowColor: isTodaySpecial ? tokens.accent : "#000000",
-            shadowOpacity: isTodaySpecial ? 0.44 : 0.28,
-            shadowRadius: isTodaySpecial ? 24 : 20,
-            shadowOffset: { width: 0, height: 6 },
-            backgroundColor: isTodaySpecial
-              ? withAlpha(tokens.accent, 0.12)
-              : "rgba(255,255,255,0.06)",
-          }}
+  const cardContent = (
+    <>
+      <View className="z-10 flex-row items-center justify-between gap-2">
+        <ThemedTag label={data.badge} variant="accent" className="self-start px-3 py-[7px]" />
+      </View>
+      {data.isLocked ? (
+        <View className="z-10 mt-2 self-start">
+          <ThemedTag label="Premium Kilidi" className="bg-[--bg] px-3 py-[6px]" />
+        </View>
+      ) : null}
+      <View className="z-10 mb-6 mt-4">
+        <Text
+          className="text-2xl leading-[34px] font-semibold tracking-tight text-[--text-primary]"
+          numberOfLines={2}
         >
-          {/* Glass sheen overlay */}
-          <LinearGradient
-            pointerEvents="none"
-            colors={["rgba(255,255,255,0.10)", "rgba(255,255,255,0.03)", "rgba(255,255,255,0.00)"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={{ position: "absolute", inset: 0, borderRadius: 24 }}
-          />
-          {isTodaySpecial ? (
-            <>
+          {data.title}
+        </Text>
+        <Text className="pt-1 text-sm leading-5 text-[--text-muted]">
+          {data.dateLabel}
+        </Text>
+      </View>
+      <CountdownStrip segments={data.countdown} />
+      <View
+        className={`z-10 mt-4 flex-row items-center justify-center gap-2 rounded-full px-3 py-2 ${
+          isTodaySpecial ? "bg-[--bg]/70" : ""
+        }`}
+      >
+        <FontAwesome6
+          name="calendar-day"
+          iconStyle="regular"
+          size={12}
+          color={isTodaySpecial ? tokens.textPrimary : tokens.textMuted}
+        />
+        <Text className={`text-xs leading-5 ${isTodaySpecial ? "text-[--text-primary]" : "text-[--text-muted]"}`}>
+          Kalan: {data.remaining}
+        </Text>
+      </View>
+    </>
+  );
+
+  if (isTodaySpecial) {
+    return (
+      <Pressable
+        onPress={() => onPressDetail(data.id)}
+        disabled={data.isLocked}
+        className={data.isLocked ? "opacity-60" : undefined}
+      >
+        <Animated.View
+          style={[
+            cardPulseAnimatedStyle,
+            {
+              borderRadius: 24,
+              shadowColor: tokens.accent,
+              shadowOpacity: 0.44,
+              shadowRadius: 24,
+              shadowOffset: { width: 0, height: 6 },
+              elevation: 12,
+              backgroundColor: cardBg,
+            },
+          ]}
+        >
+          {/* Gradient border wrapper — overflow:hidden clips the rotating gradient */}
+          <View style={{ borderRadius: 24, overflow: "hidden", padding: 1.5 }}>
+            {/* Rotating gradient that forms the border */}
+            <Animated.View style={[StyleSheet.absoluteFillObject, styles.gradientCenter]}>
+              <Animated.View style={[styles.gradientSquare, borderRotateStyle]}>
+                <LinearGradient
+                  colors={[
+                    withAlpha(tokens.accent, 0.15),
+                    tokens.accent,
+                    "rgba(255,255,255,0.82)",
+                    tokens.accent,
+                    withAlpha(tokens.accent, 0.15),
+                    tokens.accent,
+                    "rgba(255,255,255,0.82)",
+                    tokens.accent,
+                    withAlpha(tokens.accent, 0.15),
+                  ]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={StyleSheet.absoluteFillObject}
+                />
+              </Animated.View>
+            </Animated.View>
+
+            {/* Inner card content — opaque background hides gradient except at the 1.5px border margin */}
+            <View style={{ borderRadius: 22.5, overflow: "hidden", backgroundColor: tokens.card }}>
+              {/* Accent tint overlay */}
+              <View style={[StyleSheet.absoluteFillObject, { backgroundColor: cardBg, borderRadius: 22.5 }]} />
+              {/* Glass sheen */}
+              <LinearGradient
+                pointerEvents="none"
+                colors={["rgba(255,255,255,0.10)", "rgba(255,255,255,0.03)", "rgba(255,255,255,0.00)"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+                style={{ position: "absolute", inset: 0, borderRadius: 22.5 }}
+              />
+              {/* Animated glows */}
               <Animated.View pointerEvents="none" className="absolute inset-0" style={glowAnimatedStyle}>
                 <View className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[--accent]/28" />
                 <View className="absolute -bottom-16 -left-10 h-44 w-44 rounded-full bg-[--accent]/14" />
               </Animated.View>
+              {/* Shimmer */}
               <Animated.View
                 pointerEvents="none"
-                style={[
-                  {
-                    position: "absolute",
-                    top: -36,
-                    bottom: -36,
-                    width: 170,
-                  },
-                  shimmerAnimatedStyle,
-                ]}
+                style={[{ position: "absolute", top: -36, bottom: -36, width: 170 }, shimmerAnimatedStyle]}
               >
                 <LinearGradient
                   colors={[accentTransparent, accentSoft, accentStrong, accentSoft, accentTransparent]}
@@ -133,66 +203,59 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
                   style={{ flex: 1 }}
                 />
               </Animated.View>
-            </>
-          ) : null}
-          <DecorativePattern />
-
-          <View className="z-10 flex-row items-center justify-between gap-2">
-            <ThemedTag label={data.badge} variant="accent" className="self-start px-3 py-[7px]" />
-            {isTodaySpecial ? (
-              <Animated.View style={badgeFloatAnimatedStyle}>
-                <ThemedTag
-                  label="Bugünün Özel Günü"
-                  variant="primary"
-                  className="border-[--accent]/40 bg-[--bg]/75 px-3 py-[7px]"
-                  textClassName="text-[--text-primary]"
-                  leading={<FontAwesome6 name="sparkles" iconStyle="solid" size={10} color={tokens.accent} />}
-                />
-              </Animated.View>
-            ) : null}
-          </View>
-          {data.isLocked ? (
-            <View className="z-10 mt-2 self-start">
-              <ThemedTag label="Premium Kilidi" className="bg-[--bg] px-3 py-[6px]" />
+              <DecorativePattern />
+              <View style={{ padding: 24 }}>
+                {cardContent}
+              </View>
             </View>
-          ) : null}
-
-          <View className="z-10 mb-6 mt-4">
-            <Text
-              className={`text-2xl leading-[34px] font-semibold tracking-tight ${
-                isTodaySpecial ? "text-white" : "text-[--text-primary]"
-              }`}
-              numberOfLines={2}
-            >
-              {data.title}
-            </Text>
-            <Text className={`pt-1 text-sm leading-5 ${isTodaySpecial ? "text-[--text-primary]" : "text-[--text-muted]"}`}>
-              {data.dateLabel}
-            </Text>
           </View>
+        </Animated.View>
+      </Pressable>
+    );
+  }
 
-          <CountdownStrip segments={data.countdown} />
-
-          <View
-            className={`z-10 mt-4 flex-row items-center justify-center gap-2 rounded-full px-3 py-2 ${
-              isTodaySpecial ? "bg-[--bg]/70" : ""
-            }`}
-          >
-            <FontAwesome6
-              name="calendar-day"
-              iconStyle="regular"
-              size={12}
-              color={isTodaySpecial ? tokens.textPrimary : tokens.textMuted}
-            />
-            <Text className={`text-xs leading-5 ${isTodaySpecial ? "text-[--text-primary]" : "text-[--text-muted]"}`}>
-              Kalan: {data.remaining}
-            </Text>
-          </View>
-        </ThemedCard>
-      </Animated.View>
+  return (
+    <Pressable
+      onPress={() => onPressDetail(data.id)}
+      disabled={data.isLocked}
+      className={data.isLocked ? "opacity-60" : undefined}
+    >
+      <ThemedCard
+        className="rounded-[24px] p-6"
+        borderClassName="border-white/10"
+        elevated
+        style={{
+          shadowColor: "#000000",
+          shadowOpacity: 0.28,
+          shadowRadius: 20,
+          shadowOffset: { width: 0, height: 6 },
+          backgroundColor: "rgba(255,255,255,0.06)",
+        }}
+      >
+        <LinearGradient
+          pointerEvents="none"
+          colors={["rgba(255,255,255,0.10)", "rgba(255,255,255,0.03)", "rgba(255,255,255,0.00)"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={{ position: "absolute", inset: 0, borderRadius: 24 }}
+        />
+        <DecorativePattern />
+        {cardContent}
+      </ThemedCard>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  gradientCenter: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  gradientSquare: {
+    width: "250%",
+    aspectRatio: 1,
+  },
+});
 
 function withAlpha(hex: string, alpha: number) {
   const normalized = hex.replace("#", "");

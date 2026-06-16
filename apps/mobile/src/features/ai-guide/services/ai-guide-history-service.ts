@@ -29,6 +29,7 @@ export function buildAiGuideHistoryItems(rows: BackendAiRecommendation[], catalo
 
         acc.push({
           id: matched._id,
+          title: matched.nameTurkish,
           chipEmoji: index === 0 ? "💆" : "✨",
           chipLabel: index === 0 ? "Senin için birincil öneri" : "Asistan önerisi",
           repeatLabel: index === 0 ? "Öncelikli" : undefined,
