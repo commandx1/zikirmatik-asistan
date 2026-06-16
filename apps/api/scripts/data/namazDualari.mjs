@@ -20,7 +20,7 @@ export const namazDualari = {
       tags: ['namaz', 'iftitah', 'tesbih', 'hamd', 'tevhid', 'başlangıç'],
       categories: ['ibadet', 'namaz', 'farz'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'namazın başında iftitah tekbirinden sonra',
         'her farz ve nafile namazda',
@@ -44,7 +44,7 @@ export const namazDualari = {
       tags: ['namaz', 'iftitah', 'tevhid', 'teslimiyet', 'En\'am 162', 'gece namazı'],
       categories: ['ibadet', 'namaz', 'nafile'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'gece namazı (teheccüd) iftitahı',
         'nafile namazlarda alternif iftitah',
@@ -151,7 +151,7 @@ export const namazDualari = {
       tags: ['namaz', 'rükûdan kalkış', 'tasmia', 'tahmid', 'hamd', 'farz'],
       categories: ['ibadet', 'namaz', 'farz'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'rükûdan doğrulurken',
         'imamın ardından cemaatle',
@@ -196,7 +196,7 @@ export const namazDualari = {
       tags: ['namaz', 'iki secde arası', 'dua', 'mağfiret', 'rızık', 'hidayet'],
       categories: ['ibadet', 'namaz', 'farz', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'iki secde arasındaki oturuşta',
         'altı ihtiyacı tek duada sormak için',
@@ -219,7 +219,7 @@ export const namazDualari = {
       tags: ['namaz', 'secde', 'istiğfar', 'mağfiret', 'günahlar', 'tevbe'],
       categories: ['ibadet', 'namaz', 'istiğfar', 'tevbe'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'secdede kapsamlı istiğfar için',
         'Sübhâne Rabbiyal-A\'lâ\'dan sonra',
@@ -243,7 +243,7 @@ export const namazDualari = {
       tags: ['namaz', 'teşehhüd', 'tahiyyat', 'şehadet', 'salavat', 'farz'],
       categories: ['ibadet', 'namaz', 'farz', 'iman'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'namazın her ka\'desinde (oturuşta)',
         'iki ve dört rekâtlı namazlarda',
@@ -267,7 +267,7 @@ export const namazDualari = {
       tags: ['namaz', 'salavat', 'teşehhüd', 'Hz. Peygamber', 'farz', 'şefaat'],
       categories: ['ibadet', 'namaz', 'salavat', 'farz'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'teşehhüdden hemen sonra',
         'son ka\'dede zorunlu',
@@ -291,7 +291,7 @@ export const namazDualari = {
       tags: ['namaz', 'selam öncesi', 'istiaze', 'kabir', 'deccal', 'fitne', 'koruma'],
       categories: ['ibadet', 'namaz', 'korunma', 'istiaze'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'namazda selâmdan hemen önce',
         'salavat-ı İbrahimiyye\'den sonra',
@@ -315,7 +315,7 @@ export const namazDualari = {
       tags: ['namaz', 'selam öncesi', 'istiğfar', 'mağfiret', 'tevbe', 'günahlar'],
       categories: ['ibadet', 'namaz', 'istiğfar', 'tevbe'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'namazda selâmdan hemen önce',
         'dört şeyden sığınma duasıyla dönüşümlü',
@@ -337,7 +337,7 @@ export const namazDualari = {
       tags: ['namaz', 'selam öncesi', 'zikir', 'şükür', 'ibadet', 'yardım dilemek'],
       categories: ['ibadet', 'namaz', 'zikir', 'şükür'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'namazda selâmdan hemen önce',
         'her namazda sabitleşmiş pratik olarak',

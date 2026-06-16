@@ -39,10 +39,40 @@ import { imanSaglamligi } from './imanSaglamligi.mjs';
 import { rizikMulkTertipleri } from './rizikMulkTertipleri.mjs';
 import { sinavVeYazili } from './sinavVeYazili.mjs';
 import { zilhicceIlkOn } from './zilhicce-ilk-on.mjs';
+import { regaibKandili } from './regaibKandili.mjs';
+import { miracKandili } from './miracKandili.mjs';
+import { beratKandili } from './beratKandili.mjs';
+import { kadirGecesi } from './kadirGecesi.mjs';
+import { ramazanBayrami } from './ramazanBayrami.mjs';
+import { ucAylarBaslangic } from './ucAylarBaslangic.mjs';
+import { recepAyi } from './recepAyi.mjs';
+import { sabanAyi } from './sabanAyi.mjs';
+import { ramazanGirisi } from './ramazanGirisi.mjs';
+import { zilkadeAyi } from './zilkadeAyi.mjs';
+import { mevlidHaftasi } from './mevlidHaftasi.mjs';
+import { eyyamibiyd } from './eyyamibiyd.mjs';
+import { eyyamisud } from './eyyamisud.mjs';
+import { saferAyi } from './saferAyi.mjs';
+import { ramazanGunleri } from './ramazanGunleri.mjs';
 
 export const SOURCE_DATASETS = [
+  ucAylarBaslangic,
+  recepAyi,
+  regaibKandili,
+  miracKandili,
+  beratKandili,
+  sabanAyi,
+  ramazanGirisi,
+  ramazanGunleri,
+  kadirGecesi,
+  ramazanBayrami,
+  zilkadeAyi,
   zilhicceIlkOn,
   kurbanBayrami,
+  eyyamibiyd,
+  eyyamisud,
+  saferAyi,
+  mevlidHaftasi,
   mevlidKandili,
   muharremIlkOn,
   sinavVeYazili,

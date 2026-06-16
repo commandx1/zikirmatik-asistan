@@ -42,7 +42,7 @@ export const orucRamazan = {
       tags: ['ramazan', 'hilal', 'yeni ay', 'iman', 'selâmet', 'dua'],
       categories: ['genel', 'ibadet', 'manevi destek', 'dua'],
       timeOfDay: 'evening',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'Ramazan hilalini görünce okunacak dua',
         'yeni ay duası',
@@ -65,7 +65,7 @@ export const orucRamazan = {
       tags: ['oruç', 'iftar', 'ramazan', 'şükür', 'dua'],
       categories: ['genel', 'ibadet', 'şükür', 'dua'],
       timeOfDay: 'evening',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'iftar açarken okunacak dua',
         'oruç açılışında şükür',
@@ -88,7 +88,7 @@ export const orucRamazan = {
       tags: ['oruç', 'iftar', 'ramazan', 'istiğfar', 'mağfiret', 'dua'],
       categories: ['genel', 'ibadet', 'tövbe', 'dua'],
       timeOfDay: 'evening',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'iftar açarken okunacak dua',
         'oruç bitiminde mağfiret talebi',
@@ -111,7 +111,7 @@ export const orucRamazan = {
       tags: ['oruç', 'iftar', 'ramazan', 'ev sahipliği', 'bereket', 'dua'],
       categories: ['genel', 'ibadet', 'aile', 'dua'],
       timeOfDay: 'evening',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'iftara ev sahipliği yapanlar için dua',
         'misafir ağırlarken şükür',

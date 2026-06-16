@@ -19,7 +19,7 @@ export const ozluSunnetDualari = {
       tags: ['hidayet', 'takva', 'iffet', 'gönül zenginliği', 'özlü dua', 'her zaman'],
       categories: ['genel', 'günlük', 'özlü dualar', 'karakter'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'sabah kalkarken günlük niyet olarak',
         'her durumda okunabilir özlü dua',
@@ -43,7 +43,7 @@ export const ozluSunnetDualari = {
       tags: ['mağfiret', 'rahmet', 'âfiyet', 'rızık', 'yeni Müslüman', 'özlü dua'],
       categories: ['genel', 'günlük', 'özlü dualar', 'temel'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'her zaman, her yerde',
         'sabah-akşam temel dua olarak',
@@ -67,7 +67,7 @@ export const ozluSunnetDualari = {
       tags: ['kalp', 'itaat', 'yönlendirme', 'özlü dua', 'namaz', 'her zaman'],
       categories: ['genel', 'günlük', 'özlü dualar', 'kalp'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'namaz öncesi kalbi hazırlamak için',
         'ibadet tembelliği hissedildiğinde',
@@ -92,7 +92,7 @@ export const ozluSunnetDualari = {
       tags: ['mağfiret', 'günahlar', 'tevbe', 'kapsamlı', 'özlü dua', 'her zaman'],
       categories: ['genel', 'istiğfar', 'tevbe', 'özlü dualar'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'gün sonunda günahların affı için',
         'istiğfar niyetiyle her zaman',
@@ -115,7 +115,7 @@ export const ozluSunnetDualari = {
       tags: ['istiaze', 'günahlar', 'ihmal', 'özlü dua', 'her zaman'],
       categories: ['genel', 'istiğfar', 'korunma', 'özlü dualar'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'günlük hesap veya muhasebe anında',
         'gece yatmadan önce',
@@ -139,7 +139,7 @@ export const ozluSunnetDualari = {
       tags: ['nimet', 'âfiyet', 'korunma', 'gazap', 'ceza', 'özlü dua'],
       categories: ['genel', 'korunma', 'şükür', 'özlü dualar'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'şükür ve koruma bir arada istendiğinde',
         'sahip olunanların kaybedilmemesi için',
@@ -163,7 +163,7 @@ export const ozluSunnetDualari = {
       tags: ['takva', 'ilim', 'kalp', 'nefis', 'dua', 'âcizlik', 'kapsamlı'],
       categories: ['genel', 'karakter', 'ilim', 'özlü dualar'],
       timeOfDay: 'morning',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'sabah zikirlerinde önemli pratik',
         'ilim talebi ve takvâ kazanımı için',
@@ -211,7 +211,7 @@ export const ozluSunnetDualari = {
       tags: ['sevgi', 'Allah sevgisi', 'dua', 'Hz. Dâvûd', 'amel', 'özlü'],
       categories: ['genel', 'maneviyat', 'sevgi', 'özlü dualar'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'manevî sevgi derinleştirmek için',
         'Allah sevgisinin pratik karşılığı için',
@@ -236,7 +236,7 @@ export const ozluSunnetDualari = {
       tags: ['kapsamlı', 'peygamber duaları', 'özet', 'la havle', 'her zaman'],
       categories: ['genel', 'özlü dualar', 'kapsamlı', 'salavat'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'bütün Hz. Peygamber dualarını bir arada istemek için',
         'hangi dua okuyacağını bilmediğinde',
@@ -261,7 +261,7 @@ export const ozluSunnetDualari = {
       tags: ['kulluk', 'dua', 'kalp', 'dil', 'tevbe', 'kapsamlı', 'rabbim'],
       categories: ['genel', 'kulluk', 'özlü dualar', 'tevbe', 'kalp'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'kapsamlı kulluk duası olarak sabah veya akşam',
         'kalp ve dil ıslahı için',
@@ -286,7 +286,7 @@ export const ozluSunnetDualari = {
       tags: ['hayır', 'şer', 'cennet', 'cehennem', 'kapsamlı', 'özlü dua'],
       categories: ['genel', 'özlü dualar', 'cennet', 'kapsamlı'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'ne isteyeceğini bilmediğinde kapsamlı dua',
         'sabah veya akşam her şeyi Allah\'a bırakmak için',

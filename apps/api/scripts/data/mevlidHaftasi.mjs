@@ -1,0 +1,126 @@
+import { keyMap } from './keyMap.mjs';
+
+export const mevlidHaftasi = {
+  key: 'mevlid-haftasi-2026',
+  label: 'Mevlid Haftası 2026',
+  category: 'ibadet',
+  description:
+    "12 Rebiülevvel 1448 (24 Ağustos 2026) Mevlid Kandili etrafındaki mübarek hafta. Peygamber Efendimiz'in doğumunu salavat, muhabbet ve şükürle anma günleri.",
+  dhikrItems: [],
+  specialDays: [
+    {
+      name: 'Mevlid Haftası — 1. Gün',
+      type: 'özel gün',
+      date: '2026-08-20',
+      hijriDate: '7 Rebiülevvel 1448',
+      description:
+        "Mevlid Kandili'ne 4 gün kala: Peygamber sevgisini salavat ve muhabbet zikirleriyle besle.",
+      eventKey: 'mevlid-haftasi-2026',
+      dayIndex: 1,
+      dayCount: 7,
+      priority: 130,
+      dhikrKeys: [
+        keyMap.SALAVAT_SERIF,
+        keyMap.SELLIM_BARIK,
+        keyMap.AHZAB_56,
+        keyMap.KEMALILLAHI,
+        keyMap.MEVLID_HAMD,
+      ],
+    },
+    {
+      name: 'Mevlid Haftası — 2. Gün',
+      type: 'özel gün',
+      date: '2026-08-21',
+      hijriDate: '8 Rebiülevvel 1448',
+      description:
+        "Mevlid Kandili'ne 3 gün kala: Salavat ve sığınma zikirlerini artırma günü.",
+      eventKey: 'mevlid-haftasi-2026',
+      dayIndex: 2,
+      dayCount: 7,
+      priority: 130,
+      dhikrKeys: [
+        keyMap.SALAVAT_SERIF,
+        keyMap.MUNCIYE,
+        keyMap.SELLIM_BARIK,
+        keyMap.TEFRICIYE_SALAVATI,
+        keyMap.MEVLID_RAHMET,
+      ],
+    },
+    {
+      name: 'Mevlid Haftası — 3. Gün',
+      type: 'özel gün',
+      date: '2026-08-22',
+      hijriDate: '9 Rebiülevvel 1448',
+      description:
+        "Mevlid Kandili'ne 2 gün kala: Salavat-ı Fatih ve muhabbet zikirleriyle hazırlık.",
+      eventKey: 'mevlid-haftasi-2026',
+      dayIndex: 3,
+      dayCount: 7,
+      priority: 130,
+      dhikrKeys: [
+        keyMap.SALAVAT_SERIF,
+        keyMap.SALAVAT_FATIH,
+        keyMap.DELAIL_HAYRAT,
+        keyMap.MEVLID_HAMD,
+        keyMap.MEVLID_RAHMET,
+      ],
+    },
+    {
+      name: 'Mevlid Haftası — 4. Gün',
+      type: 'özel gün',
+      date: '2026-08-23',
+      hijriDate: '10 Rebiülevvel 1448',
+      description:
+        "Mevlid Kandili öncesi son hazırlık günü: istiğfar ve salavat ile gönlü temizle.",
+      eventKey: 'mevlid-haftasi-2026',
+      dayIndex: 4,
+      dayCount: 7,
+      priority: 132,
+      dhikrKeys: [
+        keyMap.SALAVAT_SERIF,
+        keyMap.ISTIGFAR,
+        keyMap.NUR_ZATIYYE,
+        keyMap.SELLIM_BARIK,
+        keyMap.KEMALILLAHI,
+      ],
+    },
+    {
+      name: 'Mevlid Haftası — 6. Gün',
+      type: 'özel gün',
+      date: '2026-08-25',
+      hijriDate: '13 Rebiülevvel 1448',
+      description:
+        "Mevlid Kandili'nin ertesi: Kandil sevincini salavat ve hamdla sürdür.",
+      eventKey: 'mevlid-haftasi-2026',
+      dayIndex: 6,
+      dayCount: 7,
+      priority: 128,
+      dhikrKeys: [
+        keyMap.SALAVAT_SERIF,
+        keyMap.HZ_FATIMA_SALAVATI,
+        keyMap.MEVLID_HAMD,
+        keyMap.MEVLID_RAHMET,
+        keyMap.AHZAB_56,
+      ],
+    },
+    {
+      name: 'Mevlid Haftası — 7. Gün',
+      type: 'özel gün',
+      date: '2026-08-26',
+      hijriDate: '14 Rebiülevvel 1448',
+      description:
+        "Mevlid haftasının son günü: Peygamber muhabbetini salavat ve duayla mühürle.",
+      eventKey: 'mevlid-haftasi-2026',
+      dayIndex: 7,
+      dayCount: 7,
+      priority: 126,
+      dhikrKeys: [
+        keyMap.SALAVAT_SERIF,
+        keyMap.TEFRICIYE_SALAVATI,
+        keyMap.MEVLID_RAHMET,
+        keyMap.SELLIM_BARIK,
+        keyMap.MEVLID_HAMD,
+      ],
+    },
+  ],
+};

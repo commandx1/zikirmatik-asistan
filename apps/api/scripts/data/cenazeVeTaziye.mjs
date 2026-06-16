@@ -161,7 +161,7 @@ export const cenazeVeTaziye = {
       tags: ['cenaze', 'namaz', 'dua', 'şefaat', 'mağfiret'],
       categories: ['cenaze', 'dua', 'ibadet'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       specialDays: [],
       suitableFor: [
         'cenaze namazında 3. tekbir sonrası',
@@ -182,7 +182,7 @@ export const cenazeVeTaziye = {
       tags: ['cenaze', 'ölüm', 'tefekkür', 'zikir', 'tenzih', 'günlük'],
       categories: ['cenaze', 'zikir', 'tefekkür'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       specialDays: [],
       suitableFor: [
         'yanından cenaze geçerken',

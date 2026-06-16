@@ -20,7 +20,7 @@ export const gunlukSunnetDualari = {
       tags: ['elbise', 'giyinme', 'hamd', 'günlük', 'nimet', 'şükür'],
       categories: ['günlük hayat', 'şükür', 'sünnet duaları'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'her sabah giyinirken',
         'herhangi bir kıyafeti giyerken',
@@ -45,7 +45,7 @@ export const gunlukSunnetDualari = {
       tags: ['yeni elbise', 'giyinme', 'dua', 'günlük', 'şükür'],
       categories: ['günlük hayat', 'şükür', 'sünnet duaları'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'yeni bir kıyafet alınca veya giyilince',
         'alışverişten sonra giyinirken',
@@ -66,7 +66,7 @@ export const gunlukSunnetDualari = {
       tags: ['yeni elbise', 'dua', 'tebrik', 'günlük', 'hayır dua'],
       categories: ['günlük hayat', 'sosyal', 'sünnet duaları'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'birine yeni elbisesi için hayır dua',
         'yeni alışveriş yapan birini tebrik',
@@ -89,7 +89,7 @@ export const gunlukSunnetDualari = {
       tags: ['tuvalet', 'korunma', 'şeytan', 'günlük', 'sünnet'],
       categories: ['günlük hayat', 'korunma', 'sünnet duaları'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'tuvalete her girişte',
         'günlük zorunlu pratik',
@@ -110,7 +110,7 @@ export const gunlukSunnetDualari = {
       tags: ['tuvalet', 'istiğfar', 'af', 'günlük', 'sünnet'],
       categories: ['günlük hayat', 'istiğfar', 'sünnet duaları'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'tuvaletten çıktıktan hemen sonra',
         'günlük temel sünnet',
@@ -134,7 +134,7 @@ export const gunlukSunnetDualari = {
       tags: ['abdest', 'şehadet', 'temizlik', 'cennet', 'günlük', 'sünnet'],
       categories: ['günlük hayat', 'ibadet', 'sünnet duaları', 'namaz'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'abdest aldıktan hemen sonra',
         'cennetin kapılarını aralamak için',
@@ -156,7 +156,7 @@ export const gunlukSunnetDualari = {
       tags: ['aksırma', 'hamd', 'günlük sünnet', 'etiquette', 'zikir'],
       categories: ['günlük sünnet', 'zikir', 'adab'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       specialDays: [],
       suitableFor: ['aksırırken', 'günlük sünnet pratiği', 'her an'],
     },
@@ -173,7 +173,7 @@ export const gunlukSunnetDualari = {
       tags: ['aksırma', 'teşmit', 'günlük sünnet', 'etiquette', 'zikir'],
       categories: ['günlük sünnet', 'zikir', 'adab'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       specialDays: [],
       suitableFor: [
         'teşmite cevap',

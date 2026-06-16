@@ -7,6 +7,24 @@ export const muharremIlkOn = {
   description: 'Muharrem\'in ilk on gününe ait oruç, aşure ve zikirler.',
   dhikrItems: [
     {
+      key: keyMap.ASURE_DUASI,
+      nameArabic:
+        'اَلْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ وَالصَّلَاةُ وَالسَّلَامُ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ أَجْمَعِينَ اللَّهُمَّ أَنْتَ الْأَبَدِيُّ الْقَدِيمُ الْحَيُّ الْكَرِيمُ الْحَنَّانُ الْمَنَّانُ وَهَذِهِ سَنَةٌ جَدِيدَةٌ أَسْأَلُكَ فِيهَا الْعِصْمَةَ مِنَ الشَّيْطَانِ الرَّجِيمِ وَالْعَوْنَ عَلَى هَذِهِ النَّفْسِ الْأَمَّارَةِ بِالسُّوءِ وَالِاشْتِغَالَ بِمَا يُقَرِّبُنِي إِلَيْكَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ وَصَلَّى اللَّهُ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِهِ وَصَحْبِهِ وَأَهْلِ بَيْتِهِ أَجْمَعِينَ',
+      nameTurkish: 'Aşure Günü Duası',
+      transliteration:
+        "Elhamdü lillâhi rabbil âlemîn. Vessalâtü vesselâmü alâ seyyidinâ Muhammedin ve alâ âlihî ve sahbihî ecmaîn. Allâhümme entel ebediyyül kadîmül hayyül kerîmül hannânül mennân. Ve hâzihî senetün cedîdetün es'elüke fîhel ismete mineşşeytânirracîm vel avne alâ hâzihin nefsil emmârati bis-sûi vel iştiğâli bimâ yukarribünî ileyke. Yâ zel-celâli vel-ikrâm. Bi-rahmetike yâ erhamer-râhimîn. Ve sallâllâhü alâ seyyidinâ Muhammedin ve alâ âlihî ve sahbihî ve ehl-i beytihî ecmaîn.",
+      meaning:
+        "Hamd, âlemlerin Rabbi Allah'a mahsustur. Salat ve selam Efendimiz Muhammed'e, ailesine ve tüm ashabına olsun. Allah'ım! Sen Ebedî, Kadîm, Hayy, Kerîm, Hannân ve Mennânsın. Bu yeni senede beni kovulmuş şeytandan korumanı, kötülüğü çok isteyen nefsime karşı yardım etmeni ve beni Sana yaklaştıran amellerle meşgul kılmanı niyaz ediyorum. Ey Celâl ve İkrâm Sahibi! Rahmetinle muamele eyle, ey merhametlilerin en merhametlisi!",
+      virtue:
+        "Aşure gününde yeni hicri yılın başında okunan hususi duadır. Yıl boyunca şeytanın vesveselerinden korunmayı, nefis-i emmâreye karşı ilahi yardımı ve salih amellerle meşgul olmayı talep eder.",
+      source: "Şihâbüddîn es-Sühreverdî; Allâme Safûrî, Nüzhetü'l-mecâlis",
+      tags: ['aşure', 'muharrem', 'yılbaşı', 'nefis', 'şeytan', 'dua'],
+      categories: ['dua', 'ibadet', 'özel gün'],
+      timeOfDay: ['sabah', 'ogle'],
+      recommendedCount: 1,
+      suitableFor: ['herkes'],
+    },
+    {
       key: keyMap.AYETEL_KURSI,
       nameArabic:
         'اللّٰهُ لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
@@ -123,11 +141,97 @@ export const muharremIlkOn = {
       virtue:
         'İman ikrarını yeniler; Aşure gününde tevhid ve teslimiyet şuurunu pekiştirir.',
       source: 'Kelime-i şehadet geleneği',
-      tags: ['muharrem', 'asure', 'iman', 'sehadet'],
+      tags: ['muharrem', 'aşure', 'iman', 'şehadet'],
       categories: ['özel gün', 'muharrem', 'tevhid'],
       timeOfDay: 'any',
       recommendedCount: 33,
       suitableFor: ['aşure günü', 'iman tazeleme', 'muharrem ilk 10'],
+    },
+    {
+      key: keyMap.HASBIYALLAH_VEKIL,
+      nameArabic:
+        'حَسْبِيَ اللَّهُ وَنِعْمَ الْوَكِيلُ نِعْمَ الْمَوْلَى وَنِعْمَ النَّصِيرُ',
+      nameTurkish: 'Hasbiyallah Vekil Zikri',
+      transliteration:
+        'Hasbiyallahü ve ni\'mel vekîl. Ni\'mel mevlâ ve ni\'men-nasîr.',
+      meaning:
+        'Allah bana yeter, O ne güzel vekildir. O ne güzel mevladır ve ne güzel yardımcıdır.',
+      virtue:
+        'Aşure günü tevekkül, ilahi koruma ve yardım bilincini güçlendirmek için 70 kez okunur. Allah\'a tam teslimiyetin ve O\'nun yeterliliğinin ikrarıdır.',
+      source:
+        "Yusuf Tavaslı; Mustafa Ertuğrul, Dua Hazinesi; Kenzü'n-necâh",
+      tags: ['aşure', 'muharrem', 'tevekkül', 'korunma', 'yardım'],
+      categories: ['dua', 'zikir', 'özel gün'],
+      timeOfDay: 'any',
+      recommendedCount: 70,
+      suitableFor: ['aşure günü', 'tevekkül', 'ilahi yardım talebi', 'korunma'],
+    },
+    {
+      key: keyMap.SUBHANALLAHI_MIZAN,
+      nameArabic:
+        'سُبْحَانَ اللَّهِ مِلْءَ الْمِيزَانِ وَمُنْتَهَى الْعِلْمِ وَمَبْلَغَ الرِّضَا وَزِنَةَ الْعَرْشِ',
+      nameTurkish: 'Sübhanallahi Mil\'el Mizan Zikri',
+      transliteration:
+        "Sübhanallahi mil'el mîzân ve müntehe'l-ilmi ve meble'ğar-rızâ ve zinete'l-arş.",
+      meaning:
+        'Allah\'ı, mizanı dolduracak kadar, ilmin son sınırına kadar, rızanın ulaştığı yere kadar ve arşın ağırlığınca tenzih ederim.',
+      virtue:
+        'Aşure günü okunması tavsiye edilen bu zikir, sonsuz bir tesbih ikrarıdır; Allah\'ın büyüklüğünü insan aklının ötesindeki ölçülerle ifade eder. 10 kez okunur.',
+      source:
+        "Şeyh Ebu'l-Bekā el-Ömerî; Muhammed Ebu'l-Yüsr Âbidîn, el-Evrâdü'd-dâime",
+      tags: ['aşure', 'muharrem', 'tesbih', 'arş', 'mizan'],
+      categories: ['zikir', 'tesbih', 'özel gün'],
+      timeOfDay: 'any',
+      recommendedCount: 10,
+      suitableFor: ['aşure günü', 'tesbih', 'tefekkür', 'muharrem ilk 10'],
+    },
+    {
+      key: keyMap.ASURE_ENBIYA_DUASI,
+      nameArabic:
+        'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ اللَّهُمَّ يَا مُفَرِّجَ كُلِّ كَرْبٍ وَيَا قَابِلَ تَوْبَةِ آدَمَ يَوْمَ عَاشُورَاءَ وَيَا رَافِعَ إِدْرِيسَ وَيَا مُسْكِنَ سَفِينَةِ نُوحٍ وَيَا غِيَاثَ إِبْرَاهِيمَ وَيَا مُفَرِّجَ كَرْبِ أَيُّوبَ وَيَا جَابِرَ كَسْرِ يُوسُفَ وَيَا مُحْيِيَ يُونُسَ مِنَ الْحُوتِ يَوْمَ عَاشُورَاءَ فَرِّجْ عَنَّا كَمَا فَرَّجْتَ عَنْ أَنْبِيَائِكَ وَأَوْلِيَائِكَ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ',
+      nameTurkish: 'Aşure Günü Enbiya Duası',
+      transliteration:
+        "Bismillâhirrahmânirrahîm. Allâhümme yâ müferrica külli kerbin ve yâ kâbile tevbeti Âdeme yevme âşûrâ. Ve yâ râfia İdrîse ve yâ müskine sefîneti Nûhiin ve yâ ğıyâse İbrâhîme ve yâ müferrice kerbi Eyyûbe ve yâ câbire kesri Yûsüfe ve yâ mühyiye Yûnüse mine'l-hûti yevme âşûrâ'. Ferric annâ kemâ ferrâcte an enbiyâike ve evliyâike birahmetike yâ erhamerrâhimîn.",
+      meaning:
+        "Allah'ım! Her sıkıntıyı gideren, Aşure günü Âdem'in tevbesini kabul eden, İdris'i yücelten, Nuh'un gemisini dindiren, İbrahim'in imdadına yetişen, Eyyüb'ün sıkıntısını gideren, Yusuf'un kırıklığını saran ve Yunus'u Aşure günü balıktan kurtaran Sensin. Rahmetinle peygamberlerine ve velilerine yaptığın gibi bizden de sıkıntıyı gider, ey merhametlilerin en merhametlisi!",
+      virtue:
+        "Aşure gününe özel bu dua, yedi peygamberin Aşure günündeki mucizelerini ve kurtuluşlarını anarak ilahi yardım talep eder. Her peygamberin adından güç ve şefaat dilenir.",
+      source: 'Lalegül Dergisi',
+      tags: ['aşure', 'muharrem', 'enbiya', 'kurtuluş', 'şefaat', 'dua'],
+      categories: ['dua', 'ibadet', 'özel gün'],
+      timeOfDay: ['sabah', 'ogle'],
+      recommendedCount: 1,
+      suitableFor: [
+        'aşure günü',
+        'sıkıntı giderme',
+        'kurtuluş niyeti',
+        'enbiya vesilesi',
+      ],
+    },
+    {
+      key: keyMap.FATIHA_SURESI,
+      nameArabic:
+        'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ الرَّحْمَنِ الرَّحِيمِ مَالِكِ يَوْمِ الدِّينِ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الْضَّالِّينَ',
+      nameTurkish: 'Fatiha Suresi',
+      transliteration:
+        "Bismillâhirrahmânirrahîm. Elhamdü lillâhi rabbil âlemîn. Errahmânirrahîm. Mâliki yevmiddîn. İyyâke na'büdü ve iyyâke nesta'în. İhdinessırâtel müstakîm. Sırâtallezîne en'amte aleyhim. Ğayril mağdûbi aleyhim ve leddâllîn.",
+      meaning:
+        "Rahman ve Rahim Allah'ın adıyla. Hamd, âlemlerin Rabbi Allah'a mahsustur. Rahman'dır, Rahim'dir. Din gününün sahibidir. Yalnız Sana ibadet eder, yalnız Senden yardım dileriz. Bizi doğru yola ilet. Nimet verdiklerinin yoluna; gazaba uğrayanların ve sapıkların yoluna değil.",
+      virtue:
+        "Aşure günü gül suyu ritüelinde 7 kez okunur; yıl boyunca berekete vesile olur. Fatiha, Kur'an'ın özü ve açılışıdır; her duanın başı ve sonudur. Sahih kaynaklarda Aşure günü bu sure üzerine özel amel rivayetleri mevcuttur.",
+      source:
+        "Fatiha Suresi (Kur'an 1:1-7); Muhammed Ebu'l-Yüsr Âbidîn, el-Evrâdü'd-dâime, sh. 93",
+      tags: ['aşure', 'muharrem', 'fatiha', 'kuran', 'dua', 'bereket'],
+      categories: ['kuran', 'dua', 'özel gün'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      suitableFor: [
+        'aşure günü',
+        'bereket niyeti',
+        'gül suyu ritüeli',
+        'dua başlangıcı',
+        'herkes',
+      ],
     },
   ],
   specialDays: [
@@ -237,19 +341,25 @@ export const muharremIlkOn = {
       dayIndex: 9,
       dayCount: 10,
       priority: 160,
-      dhikrKeys: [keyMap.SELAMUN_KAVLEN],
+      dhikrKeys: [keyMap.SELAMUN_KAVLEN, keyMap.SEHADET, keyMap.IHLAS],
     },
     {
       name: '10 Muharrem (Aşure)',
       type: 'özel gün',
       date: '2026-06-25',
       hijriDate: '10 Muharrem 1448',
-      description: 'Aşure gününde iman ikrarı ve ihlasla mühürleme.',
+      description: 'Aşure gününde enbiya vesilesiyle kurtuluş duası ve zikir.',
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 10,
       dayCount: 10,
       priority: 170,
-      dhikrKeys: [keyMap.SEHADET, keyMap.IHLAS],
+      dhikrKeys: [
+        keyMap.ASURE_DUASI,
+        keyMap.HASBIYALLAH_VEKIL,
+        keyMap.SUBHANALLAHI_MIZAN,
+        keyMap.ASURE_ENBIYA_DUASI,
+        keyMap.IHLAS,
+      ],
     },
   ],
 };

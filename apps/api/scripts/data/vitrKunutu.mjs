@@ -20,7 +20,7 @@ export const vitrKunutu = {
       tags: ['vitir', 'kunut', 'namaz', 'hidayet', 'âfiyet', 'dua', 'gece'],
       categories: ['ibadet', 'namaz', 'vitir', 'gece namazı', 'dua'],
       timeOfDay: 'night',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'vitir namazında kunut makamında',
         'yatsı namazından sonra vitir',
@@ -45,7 +45,7 @@ export const vitrKunutu = {
       tags: ['vitir', 'kunut', 'namaz', 'istiaze', 'rıza', 'sığınma', 'gece'],
       categories: ['ibadet', 'namaz', 'vitir', 'istiaze', 'tevbe'],
       timeOfDay: 'night',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'vitir namazında ilk kunut duasından sonra',
         'secdede derin istiğfar',
@@ -69,7 +69,7 @@ export const vitrKunutu = {
       tags: ['vitir', 'kunut', 'namaz', 'cemaat', 'ibadet', 'iman', 'istiğfar'],
       categories: ['ibadet', 'namaz', 'vitir', 'cemaat', 'iman'],
       timeOfDay: 'night',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'vitir namazında cemaat kunutu',
         'imamın yüksek sesle okuduğu kunut',

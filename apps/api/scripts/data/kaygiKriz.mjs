@@ -600,7 +600,7 @@ export const kaygiKriz = {
       tags: ['üzüntü', 'keder', 'sıkıntı', 'kuran', 'kalp', 'teselli', 'dua'],
       categories: ['genel', 'kaygı yönetimi', 'teselli', 'kuran'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'derin üzüntü ve keder anında',
         'kalp sıkışması ve bunalımda',
@@ -717,7 +717,7 @@ export const kaygiKriz = {
       tags: ['kaygı', 'üzüntü', 'acizlik', 'borç', 'sığınma', 'sekiz şey', 'istiaze'],
       categories: ['genel', 'kaygı yönetimi', 'koruyucu', 'günlük'],
       timeOfDay: 'morning',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'sabah kalkarken günlük koruyucu zikir',
         'kaygı ve panik anında',

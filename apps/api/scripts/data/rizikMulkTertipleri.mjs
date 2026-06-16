@@ -249,7 +249,7 @@ export const rizikMulkTertipleri = {
       ],
       categories: ['genel', 'dua', 'rızık bereket'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'çarşı veya iş yerine girerken',
         'ticari karar öncesi',

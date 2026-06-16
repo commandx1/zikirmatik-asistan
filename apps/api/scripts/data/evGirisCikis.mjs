@@ -106,7 +106,7 @@ export const evGirisCikis = {
       tags: ['cami', 'çıkış', 'lütuf', 'şeytan', 'koruma', 'dua'],
       categories: ['günlük', 'koruyucu', 'cami'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       specialDays: [],
       suitableFor: [
         'camiden çıkarken',
@@ -128,7 +128,7 @@ export const evGirisCikis = {
       tags: ['cami', 'giriş', 'çıkış', 'besmele', 'salavat', 'günlük'],
       categories: ['günlük', 'ibadet', 'cami'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       specialDays: [],
       suitableFor: [
         'camiye girerken',
@@ -150,7 +150,7 @@ export const evGirisCikis = {
       tags: ['cami', 'çıkış', 'şeytan', 'iblis', 'koruma', 'dua'],
       categories: ['günlük', 'koruyucu', 'cami'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       specialDays: [],
       suitableFor: [
         'camiden çıkarken',

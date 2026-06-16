@@ -40,7 +40,7 @@ export const haksizlikVeMulkKoruma = {
       tags: ['mülk', 'koruma', 'can', 'mal', 'din', 'rıza', 'bereket', 'evden çıkış'],
       categories: ['genel', 'korunma', 'mülk', 'dua'],
       timeOfDay: 'morning',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'evden çıkarken can ve mal koruması',
         'işe veya yolculuğa çıkarken',

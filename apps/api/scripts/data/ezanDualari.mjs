@@ -19,7 +19,7 @@ export const ezanDualari = {
       tags: ['ezan', 'namaz', 'la havle', 'tekrar', 'günlük', 'müezzin'],
       categories: ['ibadet', 'namaz', 'ezan', 'günlük'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'ezan okunurken',
         'beş vakit ezan dinlenirken',
@@ -43,7 +43,7 @@ export const ezanDualari = {
       tags: ['ezan', 'şehadet', 'iman', 'rıza', 'İslam', 'günlük'],
       categories: ['ibadet', 'namaz', 'ezan', 'iman', 'günlük'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'ezanda şehadet duyulduğunda',
         'imanı tazeleme',
@@ -67,7 +67,7 @@ export const ezanDualari = {
       tags: ['ezan', 'şefaat', 'peygamber', 'vesile', 'makam-ı mahmud', 'günlük'],
       categories: ['ibadet', 'namaz', 'ezan', 'salavat', 'günlük'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'ezan bittikten hemen sonra',
         'şefaat için pratik güvence',
@@ -90,7 +90,7 @@ export const ezanDualari = {
       tags: ['ezan', 'kamet', 'dua', 'kabul', 'müstecâb', 'günlük'],
       categories: ['ibadet', 'namaz', 'ezan', 'dua', 'günlük'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'ezan ile kamet arasında',
         'camide veya evde namazı beklerken',

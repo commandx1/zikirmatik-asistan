@@ -16,7 +16,7 @@ export const imanSaglamligi = {
       tags: ['iman', 'şüphe', 'vesvese', 'şeytan', 'istiaze', 'inanç'],
       categories: ['iman', 'korunma', 'vesvese'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'iman hakkında şüpheli düşünceler geldiğinde',
         'zihin kontrolsüz sorular ürettiğinde',
@@ -60,7 +60,7 @@ export const imanSaglamligi = {
       tags: ['iman', 'şüphe', 'kuran', 'hadid', 'Allah\'ın sıfatları', 'vesvese'],
       categories: ['iman', 'kuran', 'vesvese', 'korunma'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'iman şüphesi anında teolojik çapa olarak',
         'Allah\'ı anlayamama hissinde',

@@ -386,7 +386,7 @@ export const evlilikHuzur = {
       tags: ['evlilik', 'zifaf', 'nikah', 'dua', 'eş', 'tevekkül'],
       categories: ['evlilik', 'aile', 'dua'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       specialDays: [],
       suitableFor: [
         'zifaf gecesi',

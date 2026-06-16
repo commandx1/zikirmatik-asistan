@@ -44,7 +44,7 @@ export const namazSonrasiZikir = {
       tags: ['namaz', 'ayetel kursi', 'cennet', 'korunma', 'namaz sonrası', 'kurân'],
       categories: ['ibadet', 'namaz', 'kurân', 'korunma', 'günlük'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'her farz namazdan sonra',
         'cennet kapısını aralamak için',
@@ -68,7 +68,7 @@ export const namazSonrasiZikir = {
       tags: ['namaz', 'tehlil', 'tevhid', 'tevekkül', 'namaz sonrası', 'günlük'],
       categories: ['ibadet', 'namaz', 'zikir', 'günlük'],
       timeOfDay: 'any',
-      recommendedCount: 1,
+      recommendedCount: 7,
       suitableFor: [
         'her farz namazdan sonra',
         'namazın ardından tevhid ikrarı',
