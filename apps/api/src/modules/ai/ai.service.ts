@@ -86,6 +86,9 @@ const KNOWN_SUITABLE_FOR = [
   'şükür',
   'koruma',
   'bereket',
+  'aile huzuru',
+  'aile',
+  'evlat',
 ];
 
 @Injectable()
