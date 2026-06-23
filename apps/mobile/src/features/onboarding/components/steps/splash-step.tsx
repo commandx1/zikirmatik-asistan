@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
+import logo from "../../../../assets/zikirmatik-asistan-logo-badge.png";
 import { BottomCta } from "../onboarding-primitives";
 import { useOnboardingFlowContext } from "../../context/onboarding-flow-context";
 
@@ -20,12 +21,11 @@ export function SplashStep() {
       </View>
 
       <View className="flex-1 items-center justify-center px-8">
-        <View
-          className="mb-8 h-28 w-28 items-center justify-center rounded-full bg-[#C8972A]"
-          style={{ boxShadow: "0 0 40px rgba(200,151,42,0.5)" }}
-        >
-          <Text className="text-[50px] text-[#0F1B2D]">🤲</Text>
-        </View>
+        <Image
+          source={logo}
+          className="mb-6 h-56 w-56"
+          resizeMode="contain"
+        />
 
         <Text className="text-center text-[52px] font-bold leading-[58px] text-[#F0EDE6]">
           Zikirmatik{"\n"}Rehber
