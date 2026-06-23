@@ -434,5 +434,29 @@ export const hastalıkVeŞifa = {
         'manevi arınma',
       ],
     },
+    {
+      key: 'sifa-lekad-caekum-rasulun',
+      nameArabic:
+        'لَقَدْ جَاءَكُمْ رَسُولٌ مِنْ أَنْفُسِكُمْ عَزِيزٌ عَلَيْهِ مَا عَنِتُّمْ حَرِيصٌ عَلَيْكُمْ بِالْمُؤْمِنِينَ رَؤُوفٌ رَحِيمٌ',
+      nameTurkish: 'Tevbe Suresi 128. Ayet — Şefaat ve Bela Korunma',
+      transliteration:
+        "Lekad câekum rasûlun min enfusikum azîzun aleyhi mâ anittum harîsun aleykum bi'l-mu'minîne raûfun rahîm.",
+      meaning:
+        'Andolsun, size kendi içinizden öyle bir peygamber gelmiştir ki, sizin sıkıntıya uğramanız ona çok ağır gelir. O size çok düşkündür, müminlere karşı çok şefkatlidir, merhametlidir.',
+      virtue:
+        "Her türlü bela, musibet, salgın hastalık ve virüslerden korunmak, Peygamberimizin şefaatine nail olmak amacıyla vird edinilir. Bu ayet, Hz. Peygamber'in müminlere olan engin şefkatini ve onların iyiliğine duyduğu derin özeni açıklar; 'azîzun aleyhi mâ anittum' ifadesi yani 'sizin sıkıntıya uğramanız ona çok ağır gelir' cümlesi, Peygamber'in ümmetini koruma ve şefaat etme isteğinin en güçlü ifadelerinden biridir. Salgın ve bela dönemlerinde bu ayetin okunması, Peygamber'in manevi himayesine sığınmak ve onun şefaatini talep etmek için geleneksel bir vird olarak aktarılmıştır.",
+      source: 'Tevbe Sûresi, 9/128',
+      tags: ['şefaat', 'bela', 'salgın', 'hastalık', 'peygamber', 'korunma', 'ayet'],
+      categories: ['hastalık', 'şifa', 'korunma', 'kuran'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      specialDays: [],
+      suitableFor: [
+        'salgın hastalık ve virüsten korunma',
+        'bela ve musibetten korunma',
+        'peygamberin şefaatine vesile',
+        'hastalık döneminde manevi sığınak',
+      ],
+    },
   ],
 };

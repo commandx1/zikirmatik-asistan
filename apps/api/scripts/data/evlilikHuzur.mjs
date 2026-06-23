@@ -249,6 +249,8 @@ export const evlilikHuzur = {
       timeOfDay: 'morning',
       recommendedCount: 7,
       suitableFor: [
+        'aile huzuru',
+        'yuva huzuru',
         'aile içi ibadet düzeni',
         'çocukların namaz terbiyesi',
         'yuva huzuru ve manevi iklim',

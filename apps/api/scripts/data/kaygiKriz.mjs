@@ -726,6 +726,28 @@ export const kaygiKriz = {
         'insanların baskısı hissedildiğinde',
       ],
     },
+    {
+      key: 'kaygi-ud-uni-estecib-lekum',
+      nameArabic:
+        'وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ',
+      nameTurkish: "Ud'ûnî Estecib Lekum — Dua Kabulü Ayeti",
+      transliteration: "Ve kâle rabbukum ud'ûnî estecib lekum.",
+      meaning:
+        'Rabbiniz şöyle buyurdu: Bana dua edin, size cevap vereyim (duanızı kabul edeyim).',
+      virtue:
+        "Duanın kabul edileceğine dair sarsılmaz bir inanç geliştirmek, ümitsizliği ve çaresizlik hissini yok etmek amacıyla vird edinilir. Bu ayet, Allah'ın kuluna verdiği açık ve kayıtsız bir sözdür; 'estecib lekum' — size cevap vereyim — ifadesi, duanın karşılıksız kalmayacağının ilahi güvencesidir. Kaygı ve bunalım anlarında en büyük çaresizlik, sesin duyulmadığı hissidir; bu ayet tam o noktada devreye girer: dua edenin önünde açık bir kapı olduğunu, Allah'ın dinlediğini ve karşılık vereceğini hatırlatır. Ümitsizliğin en yoğun olduğu anlarda bu ayetin tekrarlanması, zihnin 'kimse duymaz' döngüsünü kırarak teslimiyete ve huzura kapı açar.",
+      source: "Mü'min (Gâfir) Sûresi, 40/60",
+      tags: ['dua', 'kabul', 'ümit', 'tevekkül', 'ümitsizlik', 'ayet'],
+      categories: ['genel', 'kaygı yönetimi', 'dua', 'iman'],
+      timeOfDay: 'any',
+      recommendedCount: 40,
+      suitableFor: [
+        'ümitsizlik ve çaresizlik anında',
+        'duanın kabulüne inanç tazelemek için',
+        'kaygı ve bunalım döneminde',
+        'Allah\'a sığınma ve tevekkül',
+      ],
+    },
   ],
   specialDays: [],
 };
