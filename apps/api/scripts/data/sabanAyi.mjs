@@ -73,24 +73,6 @@ export const sabanAyi = {
       recommendedCount: 1,
       suitableFor: ['herkes'],
     },
-    {
-      key: keyMap.SABAN_SALAVATI,
-      nameArabic:
-        'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ فِي الْأَرْوَاحِ وَصَلِّ عَلَى جَسَدِ مُحَمَّدٍ فِي الْأَجْسَادِ وَصَلِّ عَلَى قَبْرِ مُحَمَّدٍ فِي الْقُبُورِ',
-      nameTurkish: 'Şaban Salavat-ı Şerifi — Ruh, Ceset ve Kabir Salavat',
-      transliteration:
-        'Allahümme salli alâ Muhammedin fil-ervâh. Ve salli alâ cesedi Muhammedin fil-ecsâd. Ve salli alâ kabri Muhammedin fil-kubûr.',
-      meaning:
-        "Allah'ım! Ruhlar arasında Hz. Muhammed'in ruhuna, bedenler arasında O'nun bedenine, kabirler arasında O'nun kabrine salat eyle.",
-      virtue:
-        "Şaban ayının 27. gecesi kılınan iki rekatlık namazın ardından 100 defa okunur. Nebevi şefaate doğrudan ulaştırdığı belirtilen hususi salavattır.",
-      source: 'Şaban-ı Şerif Risalesi',
-      tags: ['şaban', 'salavat', '27. gece', 'şefaat'],
-      categories: ['salavat', 'ibadet'],
-      timeOfDay: ['gece', 'yatsi'],
-      recommendedCount: 100,
-      suitableFor: ['herkes'],
-    },
   ],
   specialDays: [
     {

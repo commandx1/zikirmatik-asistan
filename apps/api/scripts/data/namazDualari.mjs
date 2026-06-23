@@ -252,30 +252,6 @@ export const namazDualari = {
       ],
     },
     {
-      key: 'namaz-salavat-i-ibrahimiyye',
-      nameArabic:
-        'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ',
-      nameTurkish: 'Salavât-ı İbrâhimiyye — Teşehhüdden Sonra',
-      transliteration:
-        "Allâhümme salli alâ Muhammadin ve alâ âli Muhammed, kemâ salleyte alâ İbrâhîme ve alâ âli İbrâhîm, inneke Hamîdün Mecîd. Allâhümme bârik alâ Muhammadin ve alâ âli Muhammed, kemâ bârakte alâ İbrâhîme ve alâ âli İbrâhîm, inneke Hamîdün Mecîd.",
-      meaning:
-        "Allahım! İbrahim'i ve İbrahim'in âilesini meleklerinin yanında methettiğin gibi, Muhammed'i ve Muhammed'in âilesini de methet. Şüphesiz sen çok övülensin, şeref sahibisin. Allahım! İbrahim'in âilesini mübârek kıldığın gibi, Muhammed'i ve Muhammed'in âilesini de mübârek kıl. Şüphesiz sen çok övülensin, şeref sahibisin.",
-      virtue:
-        "Sahabîler Hz. Peygamber'e 'Sana nasıl salavat getirelim?' diye sordu; Peygamber bu formu öğretti (Buhârî). 'İbrâhîm gibi' kıyaslaması küçümseme değil, tanınan bir mükemmellik standardıyla talep etmektir — tıpkı 'İbrâhîm makamını sana nasıl verdiysen, Muhammed'e de ver' demek gibi. Namaz içi salavat, teşehhüdden sonra zorunludur; her namazda, günde en az beş kez Hz. Peygamber adına Allah'a bu talep iletilir.",
-      source:
-        "Buhârî, Enbiyâ, nr. 3370; Müslim, Salât, nr. 406; Hısnu'l-Muslim nr. 53",
-      tags: ['namaz', 'salavat', 'teşehhüd', 'Hz. Peygamber', 'farz', 'şefaat'],
-      categories: ['ibadet', 'namaz', 'salavat', 'farz'],
-      timeOfDay: 'any',
-      recommendedCount: 7,
-      suitableFor: [
-        'teşehhüdden hemen sonra',
-        'son ka\'dede zorunlu',
-        'selâm verilmeden önce',
-        'namaz içi tam salavat formu',
-      ],
-    },
-    {
       key: 'namaz-selamdan-once-kabir-fitne-istiaze',
       nameArabic:
         'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ وَمِنْ عَذَابِ جَهَنَّمَ وَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ وَمِنْ شَرِّ فِتْنَةِ الْمَسِيحِ الدَّجَّالِ',
