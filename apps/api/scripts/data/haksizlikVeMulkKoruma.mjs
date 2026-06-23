@@ -95,5 +95,28 @@ export const haksizlikVeMulkKoruma = {
         'bir kişinin süregelen zulmünden korunma',
       ],
     },
+    {
+      key: 'haksizlik-fedea-rabbehu-magluban',
+      nameArabic: 'فَدَعَا رَبَّهُ أَنِّي مَغْلُوبٌ فَانتَصِرْ',
+      nameTurkish: "Hz. Nuh'un Nusret Duası",
+      transliteration: 'Fedeâ rabbehu ennî mağlûbun fentasir.',
+      meaning:
+        "Bunun üzerine (Nuh) Rabbine: 'Doğrusu ben yenik düştüm, bana yardım et' diye yalvardı.",
+      virtue:
+        "Çaresiz kalındığında, düşman baskısı altında ezilindiğinde, gücün tükendiği anlarda ilahi nusret ve zafer elde etmek amacıyla çekilir. Hz. Nuh, yüzyıllarca davetine kulak verilmediğinde ve baskı dayanılmaz hale geldiğinde bu sözlerle Rabbine sığınmıştır; Allah da ona nusretiyle karşılık vermiştir. 'Mağlûbun' — ben yenildim — kelimesi dürüst bir teslimiyeti, 'fentasir' — sen yardım et — ise aktif bir ilahi müdahale talebini ifade eder. Haksız bir güce karşı mücadeleyi sürdürmekte zorlanırken, çaresizlik içinde insan yardımından değil doğrudan Allah'ın nusretinden medet ummak isteyenler için yoğun bir sığınma duasıdır.",
+      source: 'Kamer Sûresi, 54/10',
+      tags: ['nusret', 'çaresizlik', 'zafer', 'düşman', 'haksızlık', 'dua', 'nuh'],
+      categories: ['genel', 'korunma', 'haksızlık', 'acil dua'],
+      timeOfDay: 'any',
+      recommendedCount: 10,
+      suitableFor: [
+        'çaresizlik',
+        'çaresizlik anında ilahi yardım',
+        'düşman baskısından kurtulma',
+        'güç tükendiğinde nusret talebi',
+        'adaletsiz güce karşı çaresizlik',
+        'haksız muameleye maruz kalınca',
+      ],
+    },
   ],
 };

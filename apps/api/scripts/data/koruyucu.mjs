@@ -238,6 +238,24 @@ export const koruyucu = {
       suitableFor: ['sabah akşam tilavet', 'ruhani arınma', 'ev korunması'],
     },
     {
+      key: 'korunma-ve-ufevvidu-emri-ilallah',
+      nameArabic:
+        'وَأُفَوِّضُ أَمْرِي إِلَى اللّٰهِ إِنَّ اللّٰهَ بَصِيرٌ بِالْعِبَادِ',
+      nameTurkish: 'Ve Üfevvidü Emrî İlallâh',
+      transliteration:
+        'Ve üfevvidü emrî ilallâh, innallâhe basîrun bil-ıbâd.',
+      meaning:
+        "Ben işimi Allah'a havale ediyorum. Şüphesiz Allah, kullarını hakkıyla görendir.",
+      virtue:
+        "İnsanların hilelerinden, tuzaklarından ve her türlü haksızlıktan korunmak, tam bir teslimiyetle iç huzuru ve emniyeti bulmak için vird edinilir. Bu ayet, Hz. Mûsâ'nın kavminden bir müminin Firavun'un baskısına karşı söylediği ve Allah'a tam teslimiyetle sığındığı andaki duasıdır; haksızlığa uğrayan, kandırılmak ya da ezilmek korkusu taşıyan kişiler için güçlü bir manevî kalkan ve iç sükûnet kaynağıdır.",
+      source: "Mü'min (Gâfir) Sûresi, 40/44",
+      tags: ['korunma', 'tevekkül', 'haksızlık', 'teslimiyet', 'dua'],
+      categories: ['genel', 'korunma', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 40,
+      suitableFor: ['haksızlık', 'insan hilesi', 'tevekkül', 'iç huzur', 'koruma'],
+    },
+    {
       key: 'korunma-nisa-100-ayet-tertibi',
       nameArabic:
         'وَمَنْ يَخْرُجْ مِنْ بَيْتِهِ مُهَاجِرًا إِلَى اللّٰهِ وَرَسُولِهِ ثُمَّ يُدْرِكْهُ الْمَوْتُ فَقَدْ وَقَعَ أَجْرُهُ عَلَى اللّٰهِ',
