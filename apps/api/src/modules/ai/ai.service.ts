@@ -3,7 +3,9 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
-import OpenAI from 'openai';
+import { generateText, stepCountIs, tool } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { z } from 'zod';
 import {
   DhikrLog,
   type DhikrLogDocument,
@@ -29,18 +31,11 @@ type TimeContext = {
   specialDayName?: string;
 };
 
-type UsedModel = 'openai' | 'fallback' | 'retrieval' | 'cache';
+type UsedModel = 'openai' | 'fallback' | 'cache';
 
 type DhikrLean = Dhikr & { _id: Types.ObjectId };
 
-type DhikrIntent = {
-  suitableFor: string[];
-  tags: string[];
-  categories: string[];
-  timeOfDay: string | null;
-};
-
-type Candidate = {
+type SearchResult = {
   id: string;
   nameTurkish: string;
   virtue: string;
@@ -50,10 +45,16 @@ type Candidate = {
   suitableFor: string[];
 };
 
+type AgentResult = {
+  ids: string[];
+  summary: string;
+  items: Array<{ id: string; reason: string }>;
+  offTopic?: boolean;
+};
+
 const MONGO_FALLBACK_REASONING =
   'Niyetine en uygun zikirleri sana göre seçtim.';
 
-// Dhikr suitableFor alanındaki bilinen değerler — intent extraction prompt'unda kullanılır.
 const KNOWN_SUITABLE_FOR = [
   'sabah',
   'akşam',
@@ -90,8 +91,6 @@ const KNOWN_SUITABLE_FOR = [
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
-  private openAiClient: OpenAI | null = null;
-  private openAiClientResolved = false;
 
   constructor(
     private readonly configService: ConfigService,
@@ -118,7 +117,6 @@ export class AiService {
     const timeContext = payload.timeContext ?? this.defaultTimeContext();
     const freeText = payload.freeText?.trim() || undefined;
 
-    // Cache anahtarı katalog sürümünü içerir; katalog değişince doğal invalidasyon.
     const catalogVersion = await this.getCatalogVersion();
     const cacheKey = this.computeCacheKey({
       freeText,
@@ -158,35 +156,16 @@ export class AiService {
 
     const recentDhikrIds = await this.getRecentDhikrIds(userId);
 
-    // 2) freeText'ten yapılandırılmış intent çıkar (LLM çağrısı #1).
-    const intent = freeText ? await this.extractIntent(freeText) : null;
-
-    // 3) MongoDB aggregation ile aday getirimi.
-    const candidates = await this.getMongodbCandidates(
-      intent,
-      timeContext,
-      recentDhikrIds,
-    );
-
-    if (candidates.length === 0) {
-      throw new NotFoundException(
-        'Öneri için aktif ve doğrulanmış zikir bulunamadı.',
-      );
-    }
-
-    const candidateIdSet = new Set(candidates.map((c) => c._id.toString()));
-    const dhikrMapById = new Map(candidates.map((c) => [c._id.toString(), c]));
-
-    // 4) LLM rerank + off-topic tespiti (LLM çağrısı #2).
-    const openAiResult = await this.generateViaOpenAi({
+    // 2) Agent loop — tek LLM çağrısı zinciriyle arama + seçim.
+    const agentResult = await this.runRecommendationAgent({
       freeText,
       timeContext,
       recentDhikrIds,
-      candidateDhikrs: candidates.map(toCandidate),
       maxRecommendations,
     });
 
-    if (openAiResult?.offTopic) {
+    // 3) Off-topic tespiti.
+    if (agentResult?.offTopic) {
       return {
         offTopic: true as const,
         message:
@@ -197,21 +176,47 @@ export class AiService {
       };
     }
 
-    const rankedRecs = dedupeById(openAiResult?.recommendations ?? [])
-      .filter((rec) => candidateIdSet.has(rec.id))
-      .slice(0, maxRecommendations);
+    // 4) Agent seçimini doğrula ve dhikr detaylarını yükle.
+    let safeRecommendedIds: string[] = [];
+    let dhikrMapById: Map<string, DhikrLean> = new Map();
+    let reasoning = MONGO_FALLBACK_REASONING;
+    let usedModel: UsedModel = 'fallback';
 
-    let safeRecommendedIds = rankedRecs.map((rec) => rec.id);
-    let reasoning =
-      this.composeReasoning(openAiResult?.summary, rankedRecs, dhikrMapById) ||
-      'Niyet metnine uygun bir zikir listesi hazırladım.';
-    let usedModel: UsedModel = 'openai';
-
-    // LLM sonuç üretemezse MongoDB sırasını doğrudan kullan.
-    if (safeRecommendedIds.length === 0) {
-      safeRecommendedIds = candidates
-        .map((c) => c._id.toString())
+    if (agentResult && agentResult.ids.length > 0) {
+      const selectedDhikrs = await this.loadDhikrsByIds(agentResult.ids);
+      const tempMap = new Map(selectedDhikrs.map((d) => [d._id.toString(), d]));
+      const validIds = agentResult.ids
+        .filter((id) => tempMap.has(id))
         .slice(0, maxRecommendations);
+
+      if (validIds.length > 0) {
+        safeRecommendedIds = validIds;
+        dhikrMapById = tempMap;
+        reasoning = this.composeReasoning(
+          agentResult.summary,
+          agentResult.items,
+          tempMap,
+        );
+        usedModel = 'openai';
+      }
+    }
+
+    // 5) Fallback — agent boş dönerse zaman tabanlı MongoDB sorgusu.
+    if (safeRecommendedIds.length === 0) {
+      const fallbackCandidates = await this.getTimeBasedCandidates(
+        timeContext,
+        recentDhikrIds,
+        maxRecommendations,
+      );
+      if (fallbackCandidates.length === 0) {
+        throw new NotFoundException(
+          'Öneri için aktif ve doğrulanmış zikir bulunamadı.',
+        );
+      }
+      safeRecommendedIds = fallbackCandidates.map((c) => c._id.toString());
+      dhikrMapById = new Map(
+        fallbackCandidates.map((c) => [c._id.toString(), c]),
+      );
       reasoning = MONGO_FALLBACK_REASONING;
       usedModel = 'fallback';
     }
@@ -226,7 +231,7 @@ export class AiService {
       usedModel,
     });
 
-    // 5) Cache write — off-topic olmayan başarılı sonuçlar.
+    // 6) Cache write — off-topic olmayan başarılı sonuçlar.
     if (safeRecommendedIds.length > 0) {
       await this.writeCache(cacheKey, safeRecommendedIds, reasoning, usedModel);
     }
@@ -235,72 +240,151 @@ export class AiService {
   }
 
   /**
-   * LLM'e tek bir çağrıyla kullanıcı metninden yapılandırılmış intent çıkarır.
-   * Hata veya OPENAI_API_KEY eksikliğinde null döner; çağıran MongoDB
-   * zaman tabanlı fallback'e geçer.
+   * Vercel AI SDK ile tek LLM turunda arama + seçim döngüsü çalıştırır.
+   * LLM üç araçtan birini (searchDhikrs / selectRecommendations / reportOffTopic) kullanarak
+   * kendi stratejisini belirler; gerekirse searchDhikrs'i farklı parametrelerle tekrar çağırabilir.
+   * OPENAI_API_KEY yoksa veya çağrı başarısız olursa null döner → fallback devreye girer.
    */
-  private async extractIntent(freeText: string): Promise<DhikrIntent | null> {
-    const client = this.getOpenAiClient();
-    if (!client) return null;
-
-    const model =
-      this.configService.get<string>('OPENAI_MODEL') || 'gpt-4.1-mini';
-    const supportsTemperature = !/^(gpt-5|o\d)/i.test(model);
-
-    const systemPrompt = [
-      'Sen bir İslami zikir arama asistanısın.',
-      'Kullanıcının Türkçe metninden zikir arama niyetini çıkar.',
-      `suitableFor için yalnızca şu listeden eşleşenleri kullan: ${KNOWN_SUITABLE_FOR.join(', ')}.`,
-      'timeOfDay: sabah (05-12) → "morning", öğle-akşam (12-19) → "evening", gece (19-05) → "night", belirsiz → null.',
-      'tags ve categories için metinde geçen İslami temaları Türkçe yaz (ör. "şükür", "namaz", "hac").',
-      'Yalnızca JSON döndür: { "suitableFor": string[], "tags": string[], "categories": string[], "timeOfDay": string|null }',
-    ].join(' ');
-
-    try {
-      const response = await client.chat.completions.create({
-        model,
-        ...(supportsTemperature ? { temperature: 0 } : {}),
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: freeText },
-        ],
-      });
-
-      const text = response.choices?.[0]?.message?.content;
-      if (!text) return null;
-
-      const parsed = JSON.parse(text) as Partial<DhikrIntent>;
-      return {
-        suitableFor: Array.isArray(parsed.suitableFor)
-          ? parsed.suitableFor.filter((v): v is string => typeof v === 'string')
-          : [],
-        tags: Array.isArray(parsed.tags)
-          ? parsed.tags.filter((v): v is string => typeof v === 'string')
-          : [],
-        categories: Array.isArray(parsed.categories)
-          ? parsed.categories.filter((v): v is string => typeof v === 'string')
-          : [],
-        timeOfDay:
-          typeof parsed.timeOfDay === 'string' ? parsed.timeOfDay : null,
-      };
-    } catch (error) {
+  private async runRecommendationAgent(input: {
+    freeText?: string;
+    timeContext: TimeContext;
+    recentDhikrIds: string[];
+    maxRecommendations: number;
+  }): Promise<AgentResult | null> {
+    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+    if (!apiKey) {
       this.logger.warn(
-        `Intent çıkarılamadı, fallback kullanılacak: ${this.describeError(error)}`,
+        'OPENAI_API_KEY tanımlı değil, öneriler fallback ile üretilecek.',
       );
       return null;
     }
+
+    const modelName =
+      this.configService.get<string>('OPENAI_MODEL') ?? 'gpt-4.1-mini';
+    const openaiProvider = createOpenAI({ apiKey });
+    const timeOfDay = this.resolveTimeOfDay(input.timeContext);
+
+    const systemPrompt = [
+      'Sen bir İslami zikir öneri asistanısın.',
+      '',
+      '**GÖREVİN:**',
+      'Kullanıcının niyetine, haline veya duygusal durumuna göre searchDhikrs aracıyla uygun zikirleri bul; ardından selectRecommendations ile seçimini raporla.',
+      '',
+      '**OFF-TOPIC TESPİTİ — yalnızca şu durumlarda reportOffTopic çağır:**',
+      '- Anlamsız/rastgele karakter dizileri (ör. "sllsd", "asdfg", "123abc")',
+      '- Genel sohbet, selamlama, kısa tepki veya iltifat (ör. "teşekkürler", "harikasın", "nasılsın")',
+      '- Model, sistem veya teknik sorular',
+      '- İslami yaşam, manevi hal, duygu veya niyetle HİÇBİR bağlantısı olmayan içerik',
+      '',
+      '**NORMAL AKIŞ:**',
+      "1. freeText null ise → searchDhikrs'i timeOfDay ile çağır, genel zaman önerisi yap.",
+      '2. freeText varsa → niyeti analiz et, uygun parametrelerle searchDhikrs çağır.',
+      "3. Sonuç zayıfsa (3'ten az veya alakasız) → farklı/daha geniş parametrelerle tekrar searchDhikrs çağır.",
+      '4. En uygun zikirleri seç → selectRecommendations çağır.',
+      '',
+      '**searchDhikrs PARAMETRELERİ:**',
+      `- suitableFor: Yalnızca şu listeden eşleşenleri kullan: ${KNOWN_SUITABLE_FOR.join(', ')}`,
+      '- tags: Metinde geçen İslami temalar (ör. "şükür", "sabır", "şifa")',
+      '- categories: Kategoriler',
+      `- timeOfDay: Şu anki zaman dilimi "${timeOfDay}" — niyete göre arama yapıyorsan öncelik niyette; yalnızca zaman tabanlı öneride bu alanı kullan`,
+      '',
+      '**SEÇİM KRİTERLERİ:**',
+      '- Niyete EN DOĞRUDAN hitap eden zikirleri öncele; dolaylı/teğet ilgilileri alta koy',
+      "- YALNIZCA searchDhikrs'ten dönen id'leri kullan, liste dışından ID üretme",
+      `- Maksimum ${input.maxRecommendations} zikir; doldurmak için alakasız ekleme yapma`,
+      '',
+      '**selectRecommendations YAZIM KURALLARI:**',
+      '- summary: Kullanıcının niyetini samimiyetle kabul eden sıcak 2-3 cümle. "inşallah", "Allah kabul etsin", "maşallah" gibi ifadeler kullan. Zikir ismi yazma.',
+      '- reason: Her zikir için fazilet/etiket içeriğinden türeyen 1-2 cümle. Doğrudan kullanıcıya yönelik, insani ve sıcak bir dil kullan.',
+    ].join('\n');
+
+    let agentResult: AgentResult | null = null;
+    let offTopicDetected = false;
+
+    try {
+      await generateText({
+        model: openaiProvider(modelName),
+        stopWhen: stepCountIs(4),
+        system: systemPrompt,
+        prompt: JSON.stringify({
+          freeText: input.freeText ?? null,
+          timeContext: input.timeContext,
+          recentDhikrIds: input.recentDhikrIds,
+          maxRecommendations: input.maxRecommendations,
+        }),
+        tools: {
+          searchDhikrs: tool({
+            description:
+              "MongoDB'den niyete göre zikir ara. Sonuç yetersizse farklı parametrelerle tekrar çağır.",
+            inputSchema: z.object({
+              suitableFor: z.array(z.string()).optional(),
+              tags: z.array(z.string()).optional(),
+              categories: z.array(z.string()).optional(),
+              timeOfDay: z
+                .enum(['morning', 'evening', 'night', 'any'])
+                .optional(),
+              limit: z.number().int().min(1).max(10).optional(),
+            }),
+            execute: async (params) => {
+              return this.searchDhikrsForAgent(params, input.recentDhikrIds);
+            },
+          }),
+          selectRecommendations: tool({
+            description:
+              'Seçilen zikirleri ve gerekçelerini raporla. Görev bu araçla tamamlanır.',
+            inputSchema: z.object({
+              dhikrIds: z.array(z.string()),
+              summary: z.string(),
+              items: z.array(z.object({ id: z.string(), reason: z.string() })),
+            }),
+            execute: (params) => {
+              agentResult = {
+                ids: params.dhikrIds,
+                summary: params.summary,
+                items: params.items,
+              };
+              return { success: true };
+            },
+          }),
+          reportOffTopic: tool({
+            description:
+              'Kullanıcı içeriği zikir/dua/manevi konularla ilgili değilse çağır.',
+            inputSchema: z.object({ reason: z.string().optional() }),
+            execute: () => {
+              offTopicDetected = true;
+              return { acknowledged: true };
+            },
+          }),
+        },
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Agent çalıştırılamadı, fallback kullanılacak: ${this.describeError(error)}`,
+      );
+      return null;
+    }
+
+    if (offTopicDetected) {
+      return { ids: [], summary: '', items: [], offTopic: true };
+    }
+    return agentResult;
   }
 
   /**
-   * MongoDB aggregation ile intent'e göre skorlayarak top-10 aday döndürür.
-   * intent null ise (freeText yok veya çıkarım başarısız) zaman tabanlı filtre uygular.
+   * Agent'ın searchDhikrs tool'unda çalışan MongoDB sorgusu.
+   * LLM'in verdiği parametrelere göre skor tabanlı aggregation veya
+   * parametresiz popülerlik sıralaması döndürür.
    */
-  private async getMongodbCandidates(
-    intent: DhikrIntent | null,
-    timeContext: TimeContext,
+  private async searchDhikrsForAgent(
+    params: {
+      suitableFor?: string[];
+      tags?: string[];
+      categories?: string[];
+      timeOfDay?: string;
+      limit?: number;
+    },
     recentDhikrIds: string[],
-  ): Promise<DhikrLean[]> {
+  ): Promise<SearchResult[]> {
     const recentObjectIds = recentDhikrIds
       .filter((id) => Types.ObjectId.isValid(id))
       .map((id) => new Types.ObjectId(id));
@@ -311,80 +395,117 @@ export class AiService {
       ...(recentObjectIds.length > 0 ? { _id: { $nin: recentObjectIds } } : {}),
     };
 
-    const hasIntent =
-      intent &&
-      (intent.suitableFor.length > 0 ||
-        intent.tags.length > 0 ||
-        intent.categories.length > 0 ||
-        intent.timeOfDay);
+    const limit = Math.min(params.limit ?? 10, 10);
+    const hasSuitableFor = (params.suitableFor?.length ?? 0) > 0;
+    const hasTags = (params.tags?.length ?? 0) > 0;
+    const hasCategories = (params.categories?.length ?? 0) > 0;
+    const hasTimeOfDay = !!params.timeOfDay && params.timeOfDay !== 'any';
 
-    if (hasIntent) {
-      const scoreFields: unknown[] = [
-        {
+    if (hasSuitableFor || hasTags || hasCategories || hasTimeOfDay) {
+      const scoreFields: unknown[] = [];
+
+      if (hasSuitableFor) {
+        scoreFields.push({
           $multiply: [
             3,
             {
               $size: {
                 $ifNull: [
-                  { $setIntersection: ['$suitableFor', intent.suitableFor] },
+                  {
+                    $setIntersection: ['$suitableFor', params.suitableFor!],
+                  },
                   [],
                 ],
               },
             },
           ],
-        },
-        {
+        });
+      }
+      if (hasTags) {
+        scoreFields.push({
           $multiply: [
             2,
             {
               $size: {
-                $ifNull: [{ $setIntersection: ['$tags', intent.tags] }, []],
+                $ifNull: [{ $setIntersection: ['$tags', params.tags!] }, []],
               },
             },
           ],
-        },
-        {
+        });
+      }
+      if (hasCategories) {
+        scoreFields.push({
           $multiply: [
             1,
             {
               $size: {
                 $ifNull: [
-                  { $setIntersection: ['$categories', intent.categories] },
+                  {
+                    $setIntersection: ['$categories', params.categories!],
+                  },
                   [],
                 ],
               },
             },
           ],
-        },
-      ];
-
-      if (intent.timeOfDay) {
+        });
+      }
+      if (hasTimeOfDay) {
         scoreFields.push({
-          $cond: [{ $eq: ['$timeOfDay', intent.timeOfDay] }, 2, 0],
+          $cond: [{ $eq: ['$timeOfDay', params.timeOfDay] }, 2, 0],
         });
       }
 
-      return this.dhikrModel
+      const results = await this.dhikrModel
         .aggregate<DhikrLean>([
           { $match: baseMatch },
           { $addFields: { _score: { $sum: scoreFields } } },
           { $sort: { _score: -1, recommendedCount: -1 } },
-          { $limit: 10 },
+          { $limit: limit },
         ])
         .exec();
+
+      return results.map(toSearchResult);
     }
 
-    // Zaman tabanlı fallback: timeOfDay filtresi + popülerlik sırası.
-    const timeOfDay = this.resolveTimeOfDay(timeContext);
-    const fallbackFilter = {
-      ...baseMatch,
-      timeOfDay: { $in: [timeOfDay, 'any'] },
-    };
-    return this.dhikrModel
-
-      .find(fallbackFilter as Record<string, unknown>)
+    const results = await this.dhikrModel
+      .find(baseMatch)
       .sort({ recommendedCount: -1 })
-      .limit(10)
+      .limit(limit)
+      .lean<DhikrLean[]>()
+      .exec();
+
+    return results.map(toSearchResult);
+  }
+
+  /** Agent başarısız olduğunda veya OPENAI_API_KEY yokken kullanılan zaman tabanlı fallback. */
+  private async getTimeBasedCandidates(
+    timeContext: TimeContext,
+    recentDhikrIds: string[],
+    limit: number,
+  ): Promise<DhikrLean[]> {
+    const recentObjectIds = recentDhikrIds
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+
+    const timeOfDay = this.resolveTimeOfDay(timeContext);
+
+    const timeOfDayValues: Array<'morning' | 'evening' | 'night' | 'any'> = [
+      timeOfDay as 'morning' | 'evening' | 'night',
+      'any',
+    ];
+
+    return this.dhikrModel
+      .find({
+        isVerified: true,
+        isActive: true,
+        timeOfDay: { $in: timeOfDayValues },
+        ...(recentObjectIds.length > 0
+          ? { _id: { $nin: recentObjectIds } }
+          : {}),
+      })
+      .sort({ recommendedCount: -1 })
+      .limit(limit)
       .lean<DhikrLean[]>()
       .exec();
   }
@@ -620,13 +741,13 @@ export class AiService {
 
   private composeReasoning(
     summary: string | undefined,
-    recs: Array<{ id: string; reason?: string }>,
+    items: Array<{ id: string; reason: string }>,
     dhikrMapById: Map<string, { nameTurkish: string }>,
   ): string {
-    const lines = recs
-      .map((rec) => {
-        const name = dhikrMapById.get(rec.id)?.nameTurkish?.trim();
-        const reason = rec.reason ? stripObjectIds(rec.reason).trim() : '';
+    const lines = items
+      .map((item) => {
+        const name = dhikrMapById.get(item.id)?.nameTurkish?.trim();
+        const reason = item.reason ? stripObjectIds(item.reason).trim() : '';
 
         if (name && reason) return `- **${name}:** ${reason}`;
         if (name) return `- **${name}**`;
@@ -640,136 +761,6 @@ export class AiService {
     if (lines.length > 0) parts.push(lines.join('\n'));
 
     return parts.join('\n\n');
-  }
-
-  private async generateViaOpenAi(input: {
-    freeText?: string;
-    timeContext: TimeContext;
-    recentDhikrIds: string[];
-    candidateDhikrs: Candidate[];
-    maxRecommendations: number;
-  }) {
-    const client = this.getOpenAiClient();
-    if (!client) return null;
-
-    const model =
-      this.configService.get<string>('OPENAI_MODEL') || 'gpt-4.1-mini';
-    const supportsTemperature = !/^(gpt-5|o\d)/i.test(model);
-
-    const systemInstruction = [
-      'Sen bir İslami zikir öneri asistanısın.',
-      'İLK ADIM — konu tespiti: freeText zikir, dua, manevi hal, niyet veya İslami yaşamla (huzur, şükür, bağışlanma, kaygı, rızık, şifa, koruma, sabır, tövbe vb.) alakalı mı?',
-      'Aşağıdaki durumlarda off_topic: true döndür, recommendations dizisini boş bırak, summary yazma: (1) anlamsız/rastgele karakter dizisi (ör. "sllsd", "asdfg", "123abc"), (2) genel sohbet, selamlama veya asistana yönelik iltifat/kısa tepki (ör. "harikasın", "teşekkürler", "süper", "iyi iş", "nasılsın"), (3) model/sistem/teknik soru, (4) İslami yaşamla hiç ilgisi olmayan herhangi bir içerik. Adayların içeriğinden bağlam çıkarıp freeText\'i İslami niyet gibi yorumlama; karar her zaman freeText\'e göre verilmeli.',
-      'Konu ilgiliyse → off_topic: false yap ve devam et.',
-      'YALNIZCA verilen candidateDhikrs listesinden seçim yap; liste dışından ID üretme.',
-      'Niyeti adayların fazilet (virtue), etiket (tags) ve kategori (categories) alanlarıyla eşleştirerek en uygunları seç.',
-      'Niyete EN DOĞRUDAN hitap eden duaları öncele (ör. şifa isteyene doğrudan şifa/afiyet duaları). İstiğfar, tövbe veya genel zikir gibi yalnızca dolaylı/teğet ilgili olanları üst sıralara koyma; ancak doğrudan adaylar yetersizse alt sıralarda ekle.',
-      'Duanın kime yönelik olduğuna dikkat et: kullanıcı kendisi için istiyorsa birinci şahıs duaları tercih et; başkası için olanları kullanıcı bunu açıkça belirtmedikçe önceleme.',
-      'Zaman bağlamını (timeOfDay, suitableFor) ikincil kriter olarak kullan.',
-      `En fazla ${input.maxRecommendations} zikir seç ve en uygundan başlayarak sırala. ${input.maxRecommendations} bir üst sınırdır, doldurulması gereken bir hedef değildir.`,
-      'Sırf listeyi doldurmak için alakası zayıf bir duayı EKLEME.',
-      'Her seçtiğin zikir için recommendations dizisine bir nesne ekle: id (candidate id) ve reason.',
-      "Her reason yalnızca o id'nin kendi fazilet/etiket/kategori içeriğinden türemeli.",
-      'reason ve summary doğrudan kullanıcıya gösterilecek; insanî, sıcak ve empatik bir dil kullan; id veya teknik alan adı yazma.',
-      'summary, kullanıcının niyetini anlayan 2-3 cümlelik sıcak ve destekleyici bir girişdir: önce niyeti veya hissi samimiyetle kabul et; uygun yerlerde "inşallah", "Allah kabul etsin", "maşallah", "Allah kolaylık versin" gibi İslami ifadeler kullan; ardından bu seçimlerin neden yardımcı olabileceğini umut verici ve dua dolu bir dille belirt. Belirli zikir/dua isimleri içermez.',
-      'Yalnızca JSON döndür.',
-    ].join(' ');
-
-    const promptPayload = {
-      freeText: input.freeText,
-      timeContext: input.timeContext,
-      recentDhikrIds: input.recentDhikrIds,
-      candidateDhikrs: input.candidateDhikrs,
-      outputFormat: {
-        off_topic: 'boolean',
-        recommendations: [{ id: 'string (candidate id)', reason: 'string' }],
-        summary: 'string',
-      },
-    };
-
-    try {
-      const response = await client.chat.completions.create({
-        model,
-        ...(supportsTemperature
-          ? { temperature: this.readNumberConfig('OPENAI_TEMPERATURE', 0.2) }
-          : {}),
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: systemInstruction },
-          { role: 'user', content: JSON.stringify(promptPayload) },
-        ],
-      });
-
-      const text = response.choices?.[0]?.message?.content;
-      if (!text) {
-        this.logger.warn('OpenAI yanıtı boş döndü, fallback kullanılacak.');
-        return null;
-      }
-
-      let parsed: {
-        off_topic?: unknown;
-        recommendations?: unknown;
-        summary?: unknown;
-      };
-      try {
-        parsed = JSON.parse(text) as typeof parsed;
-      } catch (error) {
-        this.logger.warn(
-          `OpenAI yanıtı JSON olarak ayrıştırılamadı: ${this.describeError(error)}`,
-        );
-        return null;
-      }
-
-      if (parsed.off_topic === true) {
-        return { recommendations: [], summary: undefined, offTopic: true };
-      }
-
-      if (!Array.isArray(parsed.recommendations)) {
-        this.logger.warn(
-          'OpenAI yanıtında geçerli recommendations dizisi yok, fallback kullanılacak.',
-        );
-        return null;
-      }
-
-      const recommendations = parsed.recommendations
-        .map((item) => parseRecommendation(item))
-        .filter((item): item is { id: string; reason?: string } =>
-          Boolean(item),
-        );
-
-      const summary =
-        typeof parsed.summary === 'string' && parsed.summary.trim().length > 0
-          ? stripObjectIds(parsed.summary).trim() || undefined
-          : undefined;
-
-      return { recommendations, summary, offTopic: false };
-    } catch (error) {
-      this.logger.warn(
-        `OpenAI öneri çağrısı başarısız oldu, fallback kullanılacak: ${this.describeError(error)}`,
-      );
-      return null;
-    }
-  }
-
-  private getOpenAiClient(): OpenAI | null {
-    if (this.openAiClientResolved) return this.openAiClient;
-
-    this.openAiClientResolved = true;
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-
-    if (!apiKey) {
-      this.logger.warn(
-        'OPENAI_API_KEY tanımlı değil, öneriler fallback ile üretilecek.',
-      );
-      this.openAiClient = null;
-      return null;
-    }
-
-    const timeout = this.readNumberConfig('OPENAI_TIMEOUT_MS', 15_000);
-    const maxRetries = this.readNumberConfig('OPENAI_MAX_RETRIES', 2);
-
-    this.openAiClient = new OpenAI({ apiKey, timeout, maxRetries });
-    return this.openAiClient;
   }
 
   private readNumberConfig(key: string, fallback: number): number {
@@ -810,7 +801,7 @@ function toDateString(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-function toCandidate(item: DhikrLean): Candidate {
+function toSearchResult(item: DhikrLean): SearchResult {
   return {
     id: item._id.toString(),
     nameTurkish: item.nameTurkish,
@@ -838,32 +829,4 @@ function normalizeText(value: string): string {
 
 function stripObjectIds(text: string) {
   return text.replace(/\b[a-f0-9]{24}\b/gi, '').replace(/\s{2,}/g, ' ');
-}
-
-function dedupeById<T extends { id: string }>(items: T[]): T[] {
-  const seen = new Set<string>();
-  const result: T[] = [];
-  for (const item of items) {
-    if (seen.has(item.id)) continue;
-    seen.add(item.id);
-    result.push(item);
-  }
-  return result;
-}
-
-function parseRecommendation(
-  value: unknown,
-): { id: string; reason?: string } | null {
-  if (!value || typeof value !== 'object') return null;
-
-  const candidate = value as { id?: unknown; reason?: unknown };
-  const id = typeof candidate.id === 'string' ? candidate.id.trim() : '';
-  if (!id) return null;
-
-  const reason =
-    typeof candidate.reason === 'string' && candidate.reason.trim().length > 0
-      ? candidate.reason.trim()
-      : undefined;
-
-  return { id, reason };
 }
