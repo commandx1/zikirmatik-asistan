@@ -22,7 +22,7 @@ export const muharremIlkOn = {
       categories: ['dua', 'ibadet', 'özel gün'],
       timeOfDay: ['sabah', 'ogle'],
       recommendedCount: 1,
-      suitableFor: ['herkes'],
+      suitableFor: ['aşure günü'],
     },
     {
       key: keyMap.AYETEL_KURSI,
