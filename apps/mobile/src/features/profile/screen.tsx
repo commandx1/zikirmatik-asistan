@@ -33,8 +33,6 @@ export function ProfileScreen() {
             <ProfileSettingsSections
               purposeLabel={profile.purposeLabel}
               personalCityLabel={profile.personalCityLabel}
-              themeLabel={profile.themeLabel}
-              fontLabel={profile.fontLabel}
               reminderTime={profile.reminderTime}
               dailyReminderEnabled={profile.dailyReminderEnabled}
               kandilNotificationsEnabled={profile.kandilNotificationsEnabled}

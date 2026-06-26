@@ -20,7 +20,6 @@ import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
 import { useOnboardingStore } from "../../../store/onboarding-store";
 import { useProfileStore } from "../../../store/profile-store";
-import { FONT_LABELS } from "../../../theme/fonts";
 import { THEME_LABELS } from "../../../theme/labels";
 import { PURPOSE_OPTIONS } from "../../onboarding/onboarding-data";
 
@@ -28,7 +27,7 @@ type PremiumPlan = "monthly" | "annual";
 
 export function useProfile() {
   const router = useRouter();
-  const { themeName, fontFamily, hydrateAppearance } = useThemePreferences();
+  const { hydrateAppearance } = useThemePreferences();
 
   const fallbackDisplayName = useProfileStore((s) => s.displayName);
   const memberSinceLabel = useProfileStore((s) => s.memberSinceLabel);
@@ -591,8 +590,6 @@ export function useProfile() {
     kandilNotificationsEnabled,
     adhanNotificationsEnabled,
     hapticsEnabled,
-    themeLabel: THEME_LABELS[themeName],
-    fontLabel: FONT_LABELS[fontFamily],
     isPremiumSheetOpen,
     isActivatingPremium,
     isRestoringPremium,

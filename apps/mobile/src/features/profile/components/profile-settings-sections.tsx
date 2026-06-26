@@ -9,8 +9,6 @@ import { ProfileToggleRow } from "./profile-toggle-row";
 type ProfileSettingsSectionsProps = {
   purposeLabel: string;
   personalCityLabel: string;
-  themeLabel: string;
-  fontLabel: string;
   reminderTime: string;
   dailyReminderEnabled: boolean;
   kandilNotificationsEnabled: boolean;
@@ -32,8 +30,6 @@ type ProfileSettingsSectionsProps = {
 export function ProfileSettingsSections({
   purposeLabel,
   personalCityLabel,
-  themeLabel,
-  fontLabel,
   reminderTime,
   dailyReminderEnabled,
   kandilNotificationsEnabled,
@@ -75,8 +71,8 @@ export function ProfileSettingsSections({
       <View>
         <ProfileSectionTitle label="Kişiselleştirme" />
         <ProfileSettingsCard>
-          <ProfileLinkRow label="Tema Seçimi" iconName="moon" value={themeLabel} onPress={onPressTheme} bottomBorder />
-          <ProfileLinkRow label="Yazı Tipi" iconName="font" value={fontLabel} onPress={onPressFont} bottomBorder />
+          <ProfileLinkRow label="Tema Seçimi" iconName="moon" onPress={onPressTheme} bottomBorder />
+          <ProfileLinkRow label="Yazı Tipi" iconName="font" onPress={onPressFont} bottomBorder />
           <ProfileToggleRow
             label="Titreşim"
             iconName="mobile-screen"
