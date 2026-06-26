@@ -28,15 +28,6 @@ export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
     success: "#49BA8C",
     border: "#25483A"
   },
-  "osmanli-bordo": {
-    bg: "#2B0F16",
-    card: "#4A1E2A",
-    textPrimary: "#FCEFF3",
-    textMuted: "#D5AFC0",
-    accent: "#D4AF37",
-    success: "#62C89D",
-    border: "#6A2F40"
-  },
   "col-kumulu": {
     bg: "#2A2015",
     card: "#3C2E1F",

@@ -4,7 +4,6 @@ export const THEME_LABELS: Record<ThemeName, string> = {
   "gece-koyu": "Gece Koyu",
   "gece-lacivert": "Gece Lacivert",
   "cami-yesili": "Cami Yeşili",
-  "osmanli-bordo": "Osmanlı Bordo",
   "col-kumulu": "Çöl Kumulu",
   "kum-tasi-minimal": "Kum Taşı Minimal",
   "zumrut-mermer": "Zümrüt Mermer",

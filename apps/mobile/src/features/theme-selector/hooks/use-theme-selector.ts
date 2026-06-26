@@ -29,7 +29,6 @@ const THEME_NAMES: ThemeName[] = [
   "karadeniz",
   "zumrut-mermer",
   // Sıcak koyu
-  "osmanli-bordo",
   "col-kumulu",
   "altin-varak",
   "safran",
@@ -65,13 +64,6 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
     dotColor: "#C8972A",
     dotBorder: "#C8972A",
     isPremiumLocked: false
-  },
-  "osmanli-bordo": {
-    swatchBg: "#2B0F16",
-    swatchInner: "#4A1E2A",
-    dotColor: "#D4AF37",
-    dotBorder: "#D4AF37",
-    isPremiumLocked: true
   },
   "col-kumulu": {
     swatchBg: "#2A2015",
