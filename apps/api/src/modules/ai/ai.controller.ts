@@ -29,6 +29,11 @@ export class AiController {
     return this.aiService.createRecommendation(payload);
   }
 
+  @Get('quota')
+  getDailyQuota(@CurrentUserId() userId: string) {
+    return this.aiService.getDailyQuota(userId);
+  }
+
   @Get('recommendations')
   listRecommendations(
     @Query() query: QueryAiRecommendationsDto,

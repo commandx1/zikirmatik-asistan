@@ -1,5 +1,10 @@
 import { createHash } from 'node:crypto';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
@@ -89,6 +94,7 @@ const KNOWN_SUITABLE_FOR = [
   'aile huzuru',
   'aile',
   'evlat',
+  'aşure günü',
 ];
 
 @Injectable()
@@ -114,7 +120,28 @@ export class AiService {
       payload.userId,
       'Geçersiz kullanıcı kimliği.',
     );
-    await this.ensureUserExists(userId);
+    const user = await this.ensureUserExists(userId);
+
+    let dailyFreeUsed = 0;
+    if (!user.isPremium) {
+      const now = new Date();
+      const todayStart = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+      );
+      dailyFreeUsed = await this.aiRecommendationModel.countDocuments({
+        userId,
+        createdAt: { $gte: todayStart },
+      });
+      if (dailyFreeUsed >= 2) {
+        throw new ForbiddenException({
+          code: 'DAILY_LIMIT_REACHED',
+          message:
+            "Günlük ücretsiz öneri hakkın doldu. Premium'a geçerek sınırsız öneri alabilirsin.",
+          used: dailyFreeUsed,
+          limit: 2,
+        });
+      }
+    }
 
     const maxRecommendations = payload.maxRecommendations ?? 5;
     const timeContext = payload.timeContext ?? this.defaultTimeContext();
@@ -145,7 +172,7 @@ export class AiService {
         const dhikrMapById = new Map(
           cachedDhikrs.map((d) => [d._id.toString(), d]),
         );
-        return this.finalizeRecommendation({
+        const result = await this.finalizeRecommendation({
           userId,
           freeText,
           timeContext,
@@ -154,6 +181,7 @@ export class AiService {
           dhikrMapById,
           usedModel: 'cache',
         });
+        return { ...result, dailyFreeUsed: dailyFreeUsed + 1 };
       }
     }
 
@@ -239,7 +267,7 @@ export class AiService {
       await this.writeCache(cacheKey, safeRecommendedIds, reasoning, usedModel);
     }
 
-    return result;
+    return { ...result, dailyFreeUsed: dailyFreeUsed + 1 };
   }
 
   /**
@@ -657,6 +685,27 @@ export class AiService {
     }
   }
 
+  async getDailyQuota(userId: string) {
+    const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
+    const user = await this.userModel.findById(userObjectId).lean().exec();
+    if (!user) throw new NotFoundException('Kullanıcı bulunamadı.');
+
+    if (user.isPremium) {
+      return { used: 0, limit: null, isPremium: true };
+    }
+
+    const now = new Date();
+    const todayStart = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
+    const used = await this.aiRecommendationModel.countDocuments({
+      userId: userObjectId,
+      createdAt: { $gte: todayStart },
+    });
+
+    return { used, limit: 2, isPremium: false };
+  }
+
   async listRecommendations(query: QueryAiRecommendationsDto) {
     const filter: Record<string, unknown> = {};
 
@@ -787,8 +836,9 @@ export class AiService {
   }
 
   private async ensureUserExists(userId: Types.ObjectId) {
-    const exists = await this.userModel.exists({ _id: userId });
-    if (!exists) throw new NotFoundException('Kullanıcı bulunamadı.');
+    const user = await this.userModel.findById(userId).lean().exec();
+    if (!user) throw new NotFoundException('Kullanıcı bulunamadı.');
+    return user;
   }
 
   private asObjectId(rawId: string, message: string) {
