@@ -16,7 +16,14 @@ async function loadMobileAdsModule() {
 
 async function ensureInitialized(module: typeof import("react-native-google-mobile-ads")) {
   if (!initializePromise) {
-    initializePromise = module.default().initialize();
+    // İslami-uygun (aile dostu) reklam için içerik derecesini "Genel" ile sınırla;
+    // bu çağrı initialize()'dan önce yapılmalı.
+    initializePromise = module
+      .default()
+      .setRequestConfiguration({
+        maxAdContentRating: module.MaxAdContentRating.G
+      })
+      .then(() => module.default().initialize());
   }
 
   await initializePromise;
