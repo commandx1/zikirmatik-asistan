@@ -18,6 +18,7 @@ export type ThemeName =
   | "peygamber-mavisi"
   | "altin-varak"
   | "lacivert-indigo"
+  | "su-dalgasi"
   //| "premium-doku";
 
 export type FontSize = "small" | "medium" | "large";

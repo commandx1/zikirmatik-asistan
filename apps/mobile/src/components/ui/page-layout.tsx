@@ -15,6 +15,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { resolveThemeBackgroundImage } from "../../theme/background-image";
 import { GalaksiGirdabiBg } from "../../theme/galaksi-girdabi-bg";
+import { SuDalgasiBg } from "../../theme/su-dalgasi-bg";
 
 type PageLayoutProps = PropsWithChildren<{
   backgroundClassName?: string;
@@ -39,7 +40,7 @@ export function PageLayout({
   const { tokens, themeName } = useThemeTokens();
   const gradient = tokens.bgGradient;
   const backgroundImage = resolveThemeBackgroundImage(themeName);
-  const isAnimated = themeName === "galaksi-girdabi";
+  const isAnimated = themeName === "galaksi-girdabi" || themeName === "su-dalgasi";
   const showGradient = !isAnimated && !backgroundImage && gradient && gradient.colors.length >= 2;
 
   return (
@@ -47,7 +48,8 @@ export function PageLayout({
       {backgroundImage ? (
         <ImageBackground source={backgroundImage} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
       ) : null}
-      {isAnimated ? <GalaksiGirdabiBg /> : null}
+      {themeName === "galaksi-girdabi" ? <GalaksiGirdabiBg /> : null}
+      {themeName === "su-dalgasi" ? <SuDalgasiBg /> : null}
       {isAnimated ? (
         <View
           pointerEvents="none"

@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import type { AppFontFamily } from "../../../store/theme-store";
 import { resolveThemeBackgroundImage } from "../../../theme/background-image";
 import { GalaksiGirdabiBg } from "../../../theme/galaksi-girdabi-bg";
+import { SuDalgasiBg } from "../../../theme/su-dalgasi-bg";
 import { THEME_STRAP_COLORS } from "../../../theme/strap-colors";
 
 type SelectorPreviewCardProps = {
@@ -25,7 +26,7 @@ const PREVIEW_ARABIC = "سُبْحَانَ اللّٰهِ وَبِحَمْدِه
 
 export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "default" }: SelectorPreviewCardProps) {
   const backgroundImage = resolveThemeBackgroundImage(themeName);
-  const isAnimated = themeName === "galaksi-girdabi";
+  const isAnimated = themeName === "galaksi-girdabi" || themeName === "su-dalgasi";
   const gradient = tokens.bgGradient;
   const showGradient = Boolean(!isAnimated && !backgroundImage && gradient && gradient.colors.length >= 2);
   const regularTextStyle =
@@ -68,7 +69,8 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
                 {backgroundImage ? (
                   <ImageBackground source={backgroundImage} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
                 ) : null}
-                {isAnimated ? <GalaksiGirdabiBg /> : null}
+                {themeName === "galaksi-girdabi" ? <GalaksiGirdabiBg /> : null}
+                {themeName === "su-dalgasi" ? <SuDalgasiBg /> : null}
                 {showGradient ? (
                   <LinearGradient
                     colors={gradient!.colors}

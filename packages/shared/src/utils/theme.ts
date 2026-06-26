@@ -164,6 +164,15 @@ export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
     success: "#4DC49A",
     border: "#142E4E"
   },
+  "su-dalgasi": {
+    bg: "#050C18",
+    card: "#0A1628",
+    textPrimary: "#E8F4FF",
+    textMuted: "#7AAAC8",
+    accent: "#4ABACC",
+    success: "#4DC49A",
+    border: "#142238"
+  },
   "lacivert-indigo": {
     bg: "#08091A",
     card: "#0F1130",
