@@ -222,7 +222,7 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
                     {isComplete ? (
                       <Animated.Text
                         style={[counterAnimatedStyle, strongTextStyle]}
-                        className='text-[40px] font-bold leading-[42px]'
+                        className='text-5xl font-bold leading-[42px]'
                       >
                         ✓
                       </Animated.Text>
@@ -240,7 +240,7 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
               </Pressable>
 
               <View className='mt-2 mb-0.5 items-center'>
-                <Animated.Text style={[counterAnimatedStyle, strongTextStyle]} className='text-[26px] font-bold leading-[30px]'>
+                <Animated.Text style={[counterAnimatedStyle, strongTextStyle]} className='text-3xl font-bold leading-[30px]'>
                   {home.isTargetMode ? `${compactCount}/${compactTarget}` : compactCount}
                 </Animated.Text>
               </View>

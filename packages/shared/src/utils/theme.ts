@@ -180,21 +180,17 @@ export const FONT_SCALE: Record<FontSize, number> = {
 };
 
 const NAMED_FONT_BASE: FontTokens["named"] = {
-  xs: 10.5,
-  sm: 12.25,
-  base: 14,
-  lg: 15.75,
-  xl: 17.5,
-  "2xl": 21,
-  "3xl": 24.5,
-  "4xl": 31.5,
-  "5xl": 42,
-  "6xl": 52.5
+  xs: 12,
+  sm: 14,
+  base: 16,
+  lg: 18,
+  xl: 20,
+  "2xl": 24,
+  "3xl": 28,
+  "4xl": 36,
+  "5xl": 48,
+  "6xl": 60
 };
-
-const PIXEL_FONT_BASE = [
-  10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 25, 26, 28, 30, 32, 34, 42, 50, 52, 64
-];
 
 const LINE_HEIGHT_BASE = [20, 34, 48, 58];
 
@@ -224,15 +220,11 @@ export function resolveFontTokens(fontSize?: string): FontTokens {
     Object.entries(NAMED_FONT_BASE).map(([key, size]) => [key, roundTo2(size * scale)])
   ) as FontTokens["named"];
 
-  const px = Object.fromEntries(
-    PIXEL_FONT_BASE.map((size) => [String(size), roundTo2(size * scale)])
-  );
-
   const leading = Object.fromEntries(
     LINE_HEIGHT_BASE.map((size) => [String(size), roundTo2(size * scale)])
   );
 
-  return { scale, named, px, leading };
+  return { scale, named, leading };
 }
 
 function roundTo2(value: number) {

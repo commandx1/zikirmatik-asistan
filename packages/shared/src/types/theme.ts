@@ -52,6 +52,5 @@ export type FontTokens = {
     "5xl": number;
     "6xl": number;
   };
-  px: Record<string, number>;
   leading: Record<string, number>;
 };

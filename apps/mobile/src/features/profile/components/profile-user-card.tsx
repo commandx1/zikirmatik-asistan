@@ -53,16 +53,16 @@ export function ProfileUserCard({
       <Text className="mb-1 px-2 text-2xl leading-[34px] font-semibold tracking-tight text-center text-[--text-primary]" numberOfLines={2}>
         {displayName}
       </Text>
-      <Text className="mb-3 text-[13px] leading-[18px] text-[--text-muted]">{memberSinceLabel}</Text>
+      <Text className="mb-3 text-sm leading-[18px] text-[--text-muted]">{memberSinceLabel}</Text>
 
       {isPremium ? (
         <View className="flex-row items-center gap-1.5 rounded-full bg-[--accent] px-4 py-1.5 shadow-md shadow-[#C8972A]/30">
           <FontAwesome6 name="star" iconStyle="solid" size={11} color="#0F1B2D" />
-          <Text className="text-[12px] font-bold text-[#0F1B2D]" style={strongTextStyle}>Premium</Text>
+          <Text className="text-sm font-bold text-[#0F1B2D]" style={strongTextStyle}>Premium</Text>
         </View>
       ) : (
         <Pressable onPress={onPressUpgrade} className="rounded-full border border-[--accent]/20 bg-[--accent]/10 px-5 py-2">
-          <Text className="text-[13px] font-semibold text-[--accent]">Premium'a Geç</Text>
+          <Text className="text-sm font-semibold text-[--accent]">Premium'a Geç</Text>
         </Pressable>
       )}
     </View>

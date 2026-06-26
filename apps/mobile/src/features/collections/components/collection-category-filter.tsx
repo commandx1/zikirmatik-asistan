@@ -53,7 +53,7 @@ export function CollectionCategoryFilter({ activeCategory, onChange }: Props) {
             ].join(" ")}
           >
             <Text
-              className="text-[13px] font-medium"
+              className="text-sm font-medium"
               style={{ color: isActive ? tokens.bg : tokens.textMuted }}
             >
               {cat.label}

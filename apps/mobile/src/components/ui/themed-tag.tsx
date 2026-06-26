@@ -28,7 +28,7 @@ export function ThemedTag({ label, leading, onPress, variant = "soft", className
   const content = (
     <>
       {leading ? <View>{leading}</View> : null}
-      <Text className={["text-[11px] font-medium", TEXT_CLASSNAMES[variant], textClassName ?? ""].join(" ")}>{label}</Text>
+      <Text className={["text-xs font-medium", TEXT_CLASSNAMES[variant], textClassName ?? ""].join(" ")}>{label}</Text>
     </>
   );
 

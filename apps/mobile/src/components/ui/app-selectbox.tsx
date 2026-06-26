@@ -46,7 +46,7 @@ export function AppSelectBox({
         }}
       >
         <View className="flex-row items-center justify-between">
-          <Text style={{ color: selectedLabel ? tokens.textPrimary : withAlpha(tokens.textMuted, 0.85) }} className="text-[14px]">
+          <Text style={{ color: selectedLabel ? tokens.textPrimary : withAlpha(tokens.textMuted, 0.85) }} className="text-base">
             {selectedLabel ?? placeholder}
           </Text>
           <FontAwesome6 name="chevron-down" size={14} color={tokens.textMuted} />
@@ -88,7 +88,7 @@ export function AppSelectBox({
                         backgroundColor: isActive ? withAlpha(tokens.accent, 0.12) : tokens.card
                       }}
                     >
-                      <Text className="text-[14px] font-medium" style={{ color: isActive ? tokens.accent : tokens.textPrimary }}>
+                      <Text className="text-base font-medium" style={{ color: isActive ? tokens.accent : tokens.textPrimary }}>
                         {option.label}
                       </Text>
                     </Pressable>

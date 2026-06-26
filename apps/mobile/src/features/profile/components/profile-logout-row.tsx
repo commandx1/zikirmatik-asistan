@@ -9,7 +9,7 @@ export function ProfileLogoutRow({ onPress }: ProfileLogoutRowProps) {
     <Pressable onPress={onPress} className="flex-row items-center justify-start p-4">
       <View className="flex-row items-center gap-3">
         <View className="h-8 w-8" />
-        <Text className="text-[14px] font-medium text-[#EF4444]">Çıkış Yap</Text>
+        <Text className="text-base font-medium text-[#EF4444]">Çıkış Yap</Text>
       </View>
     </Pressable>
   );

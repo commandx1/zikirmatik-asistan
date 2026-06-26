@@ -49,11 +49,11 @@ export function LocationStep() {
           />
         </View>
 
-        <Text className="text-[12px] leading-[18px] text-[#9A9080]">
+        <Text className="text-sm leading-[18px] text-[#9A9080]">
           Namaz vakti ve hatırlatmalar bu şehir üzerinden planlanır.
         </Text>
 
-        {flow.submitError ? <Text className="mt-3 text-[12px] text-[#ffb4b4]">{flow.submitError}</Text> : null}
+        {flow.submitError ? <Text className="mt-3 text-sm text-[#ffb4b4]">{flow.submitError}</Text> : null}
       </ScrollView>
 
       <BottomCta label="Devam" onPress={flow.onNext} disabled={!hasCity} />

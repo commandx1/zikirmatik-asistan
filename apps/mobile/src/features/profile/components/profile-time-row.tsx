@@ -21,10 +21,10 @@ export function ProfileTimeRow({ label, value, bottomBorder = false, onPress }: 
         >
           <FontAwesome6 name="clock" iconStyle="regular" size={14} color={tokens.accent} />
         </View>
-        <Text className="text-[14px] font-medium text-[--text-primary]">{label}</Text>
+        <Text className="text-base font-medium text-[--text-primary]">{label}</Text>
       </View>
       <View className="rounded-md bg-white/5 px-2 py-1">
-        <Text className="text-[13px] font-medium text-[--text-primary]">{value}</Text>
+        <Text className="text-sm font-medium text-[--text-primary]">{value}</Text>
       </View>
     </Pressable>
   );

@@ -37,8 +37,8 @@ export function ProfilePersonalInfoModal({
       <Pressable className="absolute inset-0 bg-black/60" onPress={onClose} />
       <View className="rounded-t-[28px] border-t border-white/10 bg-[--card] p-5">
         <View className="mb-5 h-1.5 w-12 self-center rounded-full bg-white/20" />
-        <Text className="text-[20px] font-semibold text-[--text-primary]">Kişisel Bilgiler</Text>
-        <Text className="mt-1 text-[13px] text-[--text-muted]">
+        <Text className="text-xl font-semibold text-[--text-primary]">Kişisel Bilgiler</Text>
+        <Text className="mt-1 text-sm text-[--text-muted]">
           Amaç ve şehir bilgini güncelleyebilirsin.
         </Text>
 
@@ -76,14 +76,14 @@ export function ProfilePersonalInfoModal({
             disabled={isSaving}
             className={`flex-1 rounded-xl border border-white/15 py-3 ${isSaving ? "opacity-60" : ""}`}
           >
-            <Text className="text-center text-[14px] font-semibold text-[--text-muted]">Vazgeç</Text>
+            <Text className="text-center text-base font-semibold text-[--text-muted]">Vazgeç</Text>
           </Pressable>
           <Pressable
             onPress={onSave}
             disabled={!canSave || isSaving}
             className={`flex-1 rounded-xl bg-[--accent] py-3 ${!canSave || isSaving ? "opacity-60" : ""}`}
           >
-            <Text className="text-center text-[14px] font-semibold text-[#0F1B2D]">
+            <Text className="text-center text-base font-semibold text-[#0F1B2D]">
               {isSaving ? "Kaydediliyor..." : "Kaydet"}
             </Text>
           </Pressable>

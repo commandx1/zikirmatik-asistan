@@ -19,9 +19,9 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
           <ThemedTag
             label={item.chipLabel}
             variant="accent"
-            leading={<Text className="text-[10px]">{item.chipEmoji}</Text>}
+            leading={<Text className="text-xs">{item.chipEmoji}</Text>}
             className="px-2.5 py-1"
-            textClassName="text-[10px]"
+            textClassName="text-xs"
           />
           <Text className="text-xs font-semibold text-[--text-muted]">{item.repeatLabel}</Text>
         </View>
@@ -51,9 +51,9 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
         <ThemedTag
           label={item.chipLabel}
           variant="primary"
-          leading={<Text className="text-[10px]">{item.chipEmoji}</Text>}
+          leading={<Text className="text-xs">{item.chipEmoji}</Text>}
           className="px-2 py-1"
-          textClassName="text-[10px]"
+          textClassName="text-xs"
         />
       </View>
 
@@ -85,7 +85,7 @@ function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
     <View className="mt-3 gap-2">
       {item.virtue ? (
         <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-          <Text className="mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Fazilet</Text>
+          <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Fazilet</Text>
           <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
             {item.virtue}
           </Text>
@@ -95,7 +95,7 @@ function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
         <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
           {item.source ? (
             <>
-              <Text className="mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Kaynak</Text>
+              <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Kaynak</Text>
               <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
                 {item.source}
               </Text>

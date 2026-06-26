@@ -26,13 +26,13 @@ export function RewardedGateSheet({ visible, isRunning = false, freeUsedToday, f
           <View className="mb-3 h-14 w-14 items-center justify-center rounded-full bg-[--accent]/15">
             <FontAwesome6 name="gift" size={18} color="#C8972A" />
           </View>
-          <Text className="text-center text-[20px] font-bold text-[--text-primary]">Öneriyi Aç</Text>
-          <Text className="mt-2 text-center text-[13px] leading-5 text-[--text-muted]">
+          <Text className="text-center text-xl font-bold text-[--text-primary]">Öneriyi Aç</Text>
+          <Text className="mt-2 text-center text-sm leading-5 text-[--text-muted]">
             Asistan önerilerini görmek için ödüllü reklamı izle.
           </Text>
           <View className="mt-3 flex-row items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5">
             <FontAwesome6 name="circle-check" size={11} color="#C8972A" />
-            <Text className="text-[12px] font-medium text-[--text-muted]">
+            <Text className="text-sm font-medium text-[--text-muted]">
               Bugün {freeLimit - freeUsedToday}/{freeLimit} ücretsiz hakkın kaldı
             </Text>
           </View>
@@ -43,13 +43,13 @@ export function RewardedGateSheet({ visible, isRunning = false, freeUsedToday, f
           disabled={isRunning}
           className={`mb-3 rounded-xl bg-[--accent] py-3.5 ${isRunning ? "opacity-60" : ""}`}
         >
-          <Text className="text-center text-[15px] font-bold text-[#0F1B2D]">
+          <Text className="text-center text-base font-bold text-[#0F1B2D]">
             {isRunning ? "Hazırlanıyor..." : "Reklam İzle ve Devam Et"}
           </Text>
         </Pressable>
 
         <Pressable onPress={onClose} disabled={isRunning} className={`rounded-xl border border-white/10 py-3 ${isRunning ? "opacity-50" : ""}`}>
-          <Text className="text-center text-[14px] font-semibold text-[--text-muted]">Vazgeç</Text>
+          <Text className="text-center text-base font-semibold text-[--text-muted]">Vazgeç</Text>
         </Pressable>
       </View>
     </View>

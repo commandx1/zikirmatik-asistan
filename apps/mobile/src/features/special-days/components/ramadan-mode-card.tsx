@@ -33,11 +33,11 @@ export function RamadanModeCard({ enabled, showCta = true, onToggle }: RamadanMo
 
       <View className="relative z-10 flex-row rounded-xl border border-white/5 bg-[--bg]/30 px-4 py-3">
         <View className="flex-1 items-center border-r border-white/10">
-          <Text className="text-[10px] uppercase tracking-[1px] text-[--text-muted]">Sahur</Text>
+          <Text className="text-xs uppercase tracking-[1px] text-[--text-muted]">Sahur</Text>
           <Text className="pt-1 text-lg font-semibold text-[--text-primary]">04:23</Text>
         </View>
         <View className="flex-1 items-center">
-          <Text className="text-[10px] uppercase tracking-[1px] text-[--text-muted]">İftar</Text>
+          <Text className="text-xs uppercase tracking-[1px] text-[--text-muted]">İftar</Text>
           <Text className="pt-1 text-lg font-semibold text-[--text-primary]">19:45</Text>
         </View>
       </View>

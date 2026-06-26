@@ -38,7 +38,7 @@ export function CollectionCard({ item, onPress, isLocked = false }: Props) {
       {isLocked ? (
         <View className="absolute right-2 top-2 z-10 flex-row items-center gap-1 rounded-full border border-[--accent]/30 bg-[--accent]/15 px-2 py-1">
           <FontAwesome6 name="lock" size={8} color="#C8972A" />
-          <Text className="text-[9px] font-bold uppercase tracking-[0.5px] text-[--accent]">Premium</Text>
+          <Text className="text-xs font-bold uppercase tracking-[0.5px] text-[--accent]">Premium</Text>
         </View>
       ) : null}
 
@@ -52,15 +52,15 @@ export function CollectionCard({ item, onPress, isLocked = false }: Props) {
       </View>
 
       <Text
-        className="mb-1 text-[14px] font-semibold leading-5 text-[--text-primary]"
+        className="mb-1 text-base font-semibold leading-5 text-[--text-primary]"
         numberOfLines={2}
       >
         {item.label}
       </Text>
 
       <View className="mt-auto flex-row items-center justify-between pt-2">
-        <Text className="text-[11px] text-[--text-muted]">{categoryLabel}</Text>
-        <Text className="text-[11px] text-[--text-muted]">
+        <Text className="text-xs text-[--text-muted]">{categoryLabel}</Text>
+        <Text className="text-xs text-[--text-muted]">
           {item.dhikrCount} zikir
         </Text>
       </View>

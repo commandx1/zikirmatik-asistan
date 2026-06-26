@@ -33,7 +33,7 @@ export function ProfileToggleRow({
         >
           <FontAwesome6 name={iconName} size={14} color={iconColor ?? tokens.accent} />
         </View>
-        <Text className="text-[14px] font-medium text-[--text-primary]">{label}</Text>
+        <Text className="text-base font-medium text-[--text-primary]">{label}</Text>
       </View>
       <TogglePill
         checked={value}

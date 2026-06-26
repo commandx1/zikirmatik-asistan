@@ -163,7 +163,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
         >
           {detail?.description ? (
             <ThemedCard className="mb-5 rounded-2xl px-4 py-3" accent="accentSoft">
-              <Text className="text-[13px] leading-5 text-[--text-muted]">
+              <Text className="text-sm leading-5 text-[--text-muted]">
                 {detail.description}
               </Text>
             </ThemedCard>
@@ -177,17 +177,17 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
                 elevated
               >
                 <View className="mb-1 flex-row items-center justify-between">
-                  <Text className="text-[11px] font-semibold uppercase tracking-[0.8px] text-[--text-muted]">
+                  <Text className="text-xs font-semibold uppercase tracking-[0.8px] text-[--text-muted]">
                     {index + 1}/{detail.dhikrs.length}
                   </Text>
                   <View className="rounded-full bg-[--accent]/10 px-2.5 py-0.5">
-                    <Text className="text-[11px] font-medium text-[--accent]">
+                    <Text className="text-xs font-medium text-[--accent]">
                       {dhikr.recommendedCount}×
                     </Text>
                   </View>
                 </View>
 
-                <Text className="text-[15px] font-semibold text-[--text-primary]">
+                <Text className="text-base font-semibold text-[--text-primary]">
                   {dhikr.nameTurkish}
                 </Text>
 
@@ -198,7 +198,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
                 />
 
                 {dhikr.source ? (
-                  <Text className="mt-3 text-[11px] leading-4 text-[--text-muted]">
+                  <Text className="mt-3 text-xs leading-4 text-[--text-muted]">
                     {dhikr.source}
                   </Text>
                 ) : null}

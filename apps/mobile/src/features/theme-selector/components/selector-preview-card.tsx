@@ -50,7 +50,7 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
 
   return (
     <View className="items-center">
-      <Text className="mb-2 text-[11px] font-semibold uppercase tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
+      <Text className="mb-2 text-xs font-semibold uppercase tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
         Önizleme
       </Text>
 
@@ -94,10 +94,10 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
                       backgroundColor: withAlpha(tokens.textPrimary, 0.06)
                     }}
                   >
-                    <Text className="text-[32px] font-bold" style={[{ color: tokens.textPrimary }, strongTextStyle]}>
+                    <Text className="text-4xl font-bold" style={[{ color: tokens.textPrimary }, strongTextStyle]}>
                       {PREVIEW_COUNT}
                     </Text>
-                    <Text className="text-[10px]" style={[{ color: withAlpha(tokens.textPrimary, 0.55) }, regularTextStyle]}>
+                    <Text className="text-xs" style={[{ color: withAlpha(tokens.textPrimary, 0.55) }, regularTextStyle]}>
                       {PREVIEW_COUNT}/{PREVIEW_TARGET}
                     </Text>
                   </View>
@@ -126,7 +126,7 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
             backgroundColor: withAlpha(tokens.bg, 0.9)
           }}
         >
-          <Text className="mb-1 text-[11px] font-semibold uppercase tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
+          <Text className="mb-1 text-xs font-semibold uppercase tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
             Zikir Detayı
           </Text>
           <View className="mt-3 gap-2">
@@ -211,7 +211,7 @@ function PreviewDhikrBlock({
         backgroundColor: withAlpha(tokens.textPrimary, 0.04)
       }}
     >
-      <Text className="mb-1 text-[10px] font-semibold uppercase tracking-[0.9px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
+      <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
         {title}
       </Text>
       <Text

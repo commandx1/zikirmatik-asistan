@@ -26,8 +26,8 @@ export function AuthScreen() {
     <PageLayout>
       <View className="flex-1 justify-center px-6">
         <View className="rounded-3xl border border-[--card-border] bg-[--card] p-6">
-          <Text className="text-[28px] font-bold text-[--text-primary]">Zikirmatik Asistan</Text>
-          <Text className="mt-3 text-[15px] leading-6 text-[--text-muted]">
+          <Text className="text-3xl font-bold text-[--text-primary]">Zikirmatik Asistan</Text>
+          <Text className="mt-3 text-base leading-6 text-[--text-muted]">
             Hesabını güvenle bağla, zikir verilerin cihazlar arasında senkron kalsın.
           </Text>
 
@@ -35,7 +35,7 @@ export function AuthScreen() {
             <AppButton label={primaryCta} size="lg" disabled={status === "authenticating"} onPress={() => void signInWithRequiredProvider()} />
           </View>
 
-          {authError ? <Text className="mt-4 text-[13px] leading-5 text-[#F97316]">{authError}</Text> : null}
+          {authError ? <Text className="mt-4 text-sm leading-5 text-[#F97316]">{authError}</Text> : null}
         </View>
       </View>
     </PageLayout>

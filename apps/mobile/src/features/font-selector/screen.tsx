@@ -113,7 +113,7 @@ export function FontSelectorScreen() {
             <PrimaryCtaButton
               label="Değişiklikleri Kaydet"
               onPress={() => setFontFamily(draftFontFamily)}
-              textClassName="text-[15px]"
+              textClassName="text-base"
             />
           ) : null}
         </BottomActionFooter>

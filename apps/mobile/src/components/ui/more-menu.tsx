@@ -72,7 +72,7 @@ export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
             style={[styles.card, { backgroundColor: tokens.card, borderColor: "rgba(255,255,255,0.09)" }]}
           >
             <FontAwesome6 name="book-open" size={15} color={tokens.accent} iconStyle="solid" />
-            <Text style={[styles.cardLabel, { color: tokens.textPrimary }]}>Koleksiyonlar</Text>
+            <Text className="text-base font-semibold" style={{ color: tokens.textPrimary }}>Koleksiyonlar</Text>
           </Pressable>
         </Animated.View>
 
@@ -82,7 +82,7 @@ export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
             style={[styles.card, { backgroundColor: tokens.card, borderColor: "rgba(255,255,255,0.09)" }]}
           >
             <FontAwesome6 name="user" size={15} color={tokens.accent} iconStyle="regular" />
-            <Text style={[styles.cardLabel, { color: tokens.textPrimary }]}>Profil</Text>
+            <Text className="text-base font-semibold" style={{ color: tokens.textPrimary }}>Profil</Text>
           </Pressable>
         </Animated.View>
       </View>
@@ -114,9 +114,5 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
     elevation: 8,
-  },
-  cardLabel: {
-    fontSize: 14,
-    fontWeight: "600",
   },
 });

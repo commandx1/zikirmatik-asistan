@@ -19,7 +19,7 @@ export function SpecialDaysScreen() {
           <View className="gap-6 px-5 pb-8">
             {specialDays.error ? (
               <View className="rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 px-4 py-3">
-                <Text className="text-[12px] text-[#fecaca]">{specialDays.error}</Text>
+                <Text className="text-sm text-[#fecaca]">{specialDays.error}</Text>
               </View>
             ) : null}
             <HeroCountdownCard

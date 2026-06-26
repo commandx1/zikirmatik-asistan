@@ -21,8 +21,8 @@ function BenefitItem({ title, description }: { title: string; description: strin
         <FontAwesome6 name='check' size={12} color='#C8972A' />
       </View>
       <View className='flex-1'>
-        <Text className='text-[14px] font-semibold text-[--text-primary]'>{title}</Text>
-        <Text className='mt-0.5 text-[12px] text-[--text-muted]'>{description}</Text>
+        <Text className='text-base font-semibold text-[--text-primary]'>{title}</Text>
+        <Text className='mt-0.5 text-sm text-[--text-muted]'>{description}</Text>
       </View>
     </View>
   )
@@ -78,10 +78,10 @@ export function ProfilePremiumSheet({
           <View className='mb-4 h-16 w-16 items-center justify-center rounded-full bg-[--accent]'>
             <FontAwesome6 name='crown' size={24} color='#0F1B2D' />
           </View>
-          <Text className='mb-2 text-[24px] font-bold text-[--text-primary]' style={strongTextStyle}>
+          <Text className='mb-2 text-2xl font-bold text-[--text-primary]' style={strongTextStyle}>
             Premium'a Geç
           </Text>
-          <Text className='text-center text-[14px] text-[--text-muted]' style={regularTextStyle}>
+          <Text className='text-center text-base text-[--text-muted]' style={regularTextStyle}>
             Manevi yolculuğunuzu Asistan destekli rehberlik ve özel içeriklerle derinleştirin.
           </Text>
         </View>
@@ -100,7 +100,7 @@ export function ProfilePremiumSheet({
             className={`flex-1 rounded-lg py-2.5 ${selectedPlan === 'monthly' ? 'bg-[--accent]' : ''}`}
           >
             <Text
-              className={`text-center text-[13px] font-semibold ${
+              className={`text-center text-sm font-semibold ${
                 selectedPlan === 'monthly' ? 'text-[#0F1B2D]' : 'text-[--text-muted]'
               }`}
               style={strongTextStyle}
@@ -114,7 +114,7 @@ export function ProfilePremiumSheet({
             className={`flex-1 rounded-lg py-2.5 ${selectedPlan === 'annual' ? 'bg-[--accent]' : ''}`}
           >
             <Text
-              className={`text-center text-[13px] font-bold ${
+              className={`text-center text-sm font-bold ${
                 selectedPlan === 'annual' ? 'text-[#0F1B2D]' : 'text-[--text-muted]'
               }`}
               style={strongTextStyle}
@@ -124,14 +124,14 @@ export function ProfilePremiumSheet({
           </Pressable>
         </View>
 
-        {error ? <Text className='mb-3 text-center text-[12px] text-[#fca5a5]'>{error}</Text> : null}
+        {error ? <Text className='mb-3 text-center text-sm text-[#fca5a5]'>{error}</Text> : null}
 
         <Pressable
           onPress={onStartPremium}
           disabled={isActivating || isRestoring}
           className={`mb-3 rounded-xl bg-[--accent] py-4 ${isActivating || isRestoring ? 'opacity-60' : ''}`}
         >
-          <Text className='text-center text-[16px] font-bold text-[#0F1B2D]' style={strongTextStyle}>
+          <Text className='text-center text-lg font-bold text-[#0F1B2D]' style={strongTextStyle}>
             {isActivating ? 'Aktifleştiriliyor...' : 'Hemen Başla'}
           </Text>
         </Pressable>
@@ -141,13 +141,13 @@ export function ProfilePremiumSheet({
           disabled={isActivating || isRestoring}
           className={`mb-2 py-2 ${isActivating || isRestoring ? 'opacity-60' : ''}`}
         >
-          <Text className='text-center text-[13px] font-medium text-[--text-muted]' style={regularTextStyle}>
+          <Text className='text-center text-sm font-medium text-[--text-muted]' style={regularTextStyle}>
             {isRestoring ? 'Geri Yükleniyor...' : 'Satın Alımı Geri Yükle'}
           </Text>
         </Pressable>
 
         <Pressable onPress={onClose} className='py-2'>
-          <Text className='text-center text-[13px] font-medium text-[--text-muted]' style={regularTextStyle}>
+          <Text className='text-center text-sm font-medium text-[--text-muted]' style={regularTextStyle}>
             Belki Daha Sonra
           </Text>
         </Pressable>

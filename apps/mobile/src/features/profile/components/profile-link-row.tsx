@@ -39,11 +39,11 @@ export function ProfileLinkRow({
         >
           <FontAwesome6 name={iconName} size={14} color={resolvedIconColor} />
         </View>
-        <Text className="text-[14px] font-medium text-[--text-primary]">{label}</Text>
+        <Text className="text-base font-medium text-[--text-primary]">{label}</Text>
       </View>
 
       <View className="flex-row items-center gap-2">
-        {value ? <Text className={`text-[13px] ${valueClassName}`}>{value}</Text> : null}
+        {value ? <Text className={`text-sm ${valueClassName}`}>{value}</Text> : null}
         <FontAwesome6 name={rightIconName} size={12} color={tokens.textMuted} iconStyle={rightIconRegular ? "regular" : "solid"} style={{ opacity: 0.72 }} />
       </View>
     </Pressable>

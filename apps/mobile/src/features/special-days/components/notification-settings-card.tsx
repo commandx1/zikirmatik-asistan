@@ -20,7 +20,7 @@ export function NotificationSettingsCard({ enabled, onToggle }: NotificationSett
         </View>
         <View className="flex-1">
           <Text className="text-sm font-medium text-[--text-primary]">Kandil bildirimlerini al</Text>
-          <Text className="pt-1 text-[11px] text-[--text-muted]">Kandilden 1 gün ve 1 saat önce bildirim</Text>
+          <Text className="pt-1 text-xs text-[--text-muted]">Kandilden 1 gün ve 1 saat önce bildirim</Text>
         </View>
       </View>
 

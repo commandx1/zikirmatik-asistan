@@ -194,7 +194,7 @@ export function AiGuideScreen() {
           />
           {guide.error ? (
             <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3">
-              <Text className="text-[12px] text-[#fecaca]">{guide.error}</Text>
+              <Text className="text-sm text-[#fecaca]">{guide.error}</Text>
             </View>
           ) : null}
           <View onLayout={(e) => { loadingSectionY.current = e.nativeEvent.layout.y; }}>
@@ -204,11 +204,11 @@ export function AiGuideScreen() {
             <View className="mb-4 rounded-xl border border-red-900/60 bg-red-950/40 px-4 py-4">
               <View className="mb-2 flex-row items-center gap-2">
                 <FontAwesome6 name="circle-exclamation" size={14} color="#f87171" />
-                <Text className="text-[13px] font-semibold text-red-400">
+                <Text className="text-sm font-semibold text-red-400">
                   Konu dışı
                 </Text>
               </View>
-              <Text className="text-[13px] leading-5 text-red-200/80">
+              <Text className="text-sm leading-5 text-red-200/80">
                 {guide.offTopicMessage}
               </Text>
             </View>

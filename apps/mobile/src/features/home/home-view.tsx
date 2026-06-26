@@ -92,7 +92,7 @@ function TapAnywhereToast({ message }: { message: string | null }) {
       }}
     >
       <FontAwesome6 name='hand-pointer' size={12} color={tokens.accent} />
-      <Text style={{ color: tokens.textPrimary, fontSize: 13, fontWeight: '500' }}>
+      <Text className="text-sm" style={{ color: tokens.textPrimary, fontWeight: '500' }}>
         {displayMessage}
       </Text>
     </Animated.View>
@@ -134,12 +134,12 @@ function SelectedDhikrMeaning() {
           backgroundColor: withAlpha(tokens.card, 0.92)
         }}
       >
-        <Text className='mb-1 text-[11px] font-semibold uppercase tracking-[1.1px]' style={{ color: tokens.textMuted }}>
+        <Text className='mb-1 text-xs font-semibold uppercase tracking-[1.1px]' style={{ color: tokens.textMuted }}>
           Zikir Detayı
         </Text>
         {shouldShowTitleOnly ? (
           <View className='mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2'>
-            <Text className='mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--text-muted]'>
+            <Text className='mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]'>
               Başlık
             </Text>
             <Text className='text-sm leading-5 text-[--text-primary]'>{title}</Text>

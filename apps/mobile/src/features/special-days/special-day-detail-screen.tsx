@@ -162,7 +162,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
         >
           {detail.error ? (
             <View className='mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3'>
-              <Text className='text-[12px] text-[#fecaca]'>{detail.error}</Text>
+              <Text className='text-sm text-[#fecaca]'>{detail.error}</Text>
             </View>
           ) : null}
 
@@ -188,7 +188,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
               </ThemedCard>
 
               <ThemedCard className='mt-4 rounded-2xl p-4' borderClassName='border-white/5'>
-                <Text className='text-[11px] font-semibold uppercase tracking-[1px] text-[--text-muted]'>
+                <Text className='text-xs font-semibold uppercase tracking-[1px] text-[--text-muted]'>
                   Günün Teması
                 </Text>
                 <Text className='mt-1 text-base font-semibold text-[--text-primary]'>{detail.detail.themeTitle}</Text>
@@ -212,7 +212,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                       <View className='flex-row items-start justify-between gap-3'>
                         <Text className='flex-1 text-base font-semibold text-[--text-primary]'>{item.nameTurkish}</Text>
                         <Text
-                          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                          className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
                             isCompleted ? 'bg-[--success]/15 text-[--success]' : 'bg-[--accent]/15 text-[--accent]'
                           }`}
                         >

@@ -7,7 +7,7 @@ type ProfileSectionTitleProps = {
 
 export function ProfileSectionTitle({ label, accent = false }: ProfileSectionTitleProps) {
   return (
-    <Text className={`mb-2 px-1 text-[13px] font-semibold uppercase tracking-[1.1px] ${accent ? "text-[--accent]" : "text-[--text-muted]"}`}>
+    <Text className={`mb-2 px-1 text-sm font-semibold uppercase tracking-[1.1px] ${accent ? "text-[--accent]" : "text-[--text-muted]"}`}>
       {label}
     </Text>
   );

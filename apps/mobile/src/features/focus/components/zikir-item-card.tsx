@@ -95,7 +95,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
           }}
         >
           <Text
-            className='mb-1 text-[10px] font-semibold uppercase tracking-[0.9px]'
+            className='mb-1 text-xs font-semibold uppercase tracking-[0.9px]'
             style={{ color: tokens.textMuted }}
           >
             Anlam
@@ -116,7 +116,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
           }}
         >
           <Text
-            className='mb-1 text-[10px] font-semibold uppercase tracking-[0.9px]'
+            className='mb-1 text-xs font-semibold uppercase tracking-[0.9px]'
             style={{ color: tokens.textMuted }}
           >
             Fazilet
@@ -137,7 +137,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
           }}
         >
           <Text
-            className='mb-1 text-[10px] font-semibold uppercase tracking-[0.9px]'
+            className='mb-1 text-xs font-semibold uppercase tracking-[0.9px]'
             style={{ color: tokens.textMuted }}
           >
             Kaynak
@@ -159,7 +159,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
         >
           <FontAwesome6 name='sparkles' iconStyle='solid' size={9} color={tokens.accent} />
           <Text
-            className='text-[10px] font-medium'
+            className='text-xs font-medium'
             style={{ color: tokens.accent, maxWidth: 220 }}
             numberOfLines={1}
             ellipsizeMode='tail'
@@ -179,7 +179,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
           }}
         >
           <Text
-            className='mb-1.5 text-[10px] font-semibold uppercase tracking-[0.9px]'
+            className='mb-1.5 text-xs font-semibold uppercase tracking-[0.9px]'
             style={{ color: tokens.accent }}
           >
             Asistan Notu
@@ -361,7 +361,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
               className='flex-row items-center gap-1.5 rounded-full border px-3 py-1.5'
               style={{ borderColor: withAlpha(tokens.textMuted, 0.25), backgroundColor: withAlpha(tokens.textMuted, 0.07) }}
             >
-              <Text className='text-[11px]' style={{ color: tokens.textMuted }}>Detay</Text>
+              <Text className='text-xs' style={{ color: tokens.textMuted }}>Detay</Text>
               <Animated.View style={chevronStyle}>
                 <FontAwesome6 name='chevron-down' size={8} color={tokens.textMuted} />
               </Animated.View>
@@ -372,7 +372,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
               className='flex-row items-center gap-1 rounded-full border px-2.5 py-1.5'
               style={{ borderColor: withAlpha(tokens.accent, 0.35), backgroundColor: withAlpha(tokens.accent, 0.1) }}
             >
-              <Text className='text-[10px] font-semibold' style={{ color: tokens.accent }}>Asistan</Text>
+              <Text className='text-xs font-semibold' style={{ color: tokens.accent }}>Asistan</Text>
             </View>
           ) : null}
         </View>

@@ -136,7 +136,7 @@ export function OnboardingPreferencesScreen() {
             <PrimaryCtaButton
               label={isSaving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
               onPress={onSave}
-              textClassName="text-[15px]"
+              textClassName="text-base"
             />
           ) : null}
         </BottomActionFooter>

@@ -31,7 +31,6 @@ describe("theme resolvers", () => {
 
     expect(small.named.base).toBeLessThan(medium.named.base);
     expect(large.named.base).toBeGreaterThan(medium.named.base);
-    expect(medium.px["16"]).toBe(16);
     expect(medium.leading["34"]).toBe(34);
   });
 });

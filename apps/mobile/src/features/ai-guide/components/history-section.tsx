@@ -64,13 +64,13 @@ export function HistorySection({
                 <Text className="flex-1 text-sm font-semibold text-[--text-primary]" numberOfLines={1}>
                   {item.prompt}
                 </Text>
-                <Text className="text-[11px] text-[--text-muted]">{formatHistoryDate(item.createdAt)}</Text>
+                <Text className="text-xs text-[--text-muted]">{formatHistoryDate(item.createdAt)}</Text>
               </View>
               <Text className="text-xs leading-5 text-[--text-muted]" numberOfLines={2}>
                 {names || "Öneri bulunamadı"}
               </Text>
               <View className="mt-3 flex-row items-center justify-between">
-                <Text className="text-[11px] font-medium text-[--text-muted]">
+                <Text className="text-xs font-medium text-[--text-muted]">
                   {item.recommendations.length} öneri
                 </Text>
                 <Text className="text-xs font-semibold text-[--accent]">

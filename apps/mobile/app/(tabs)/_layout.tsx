@@ -54,8 +54,8 @@ export default function TabsLayout() {
   const tabBarHeight = 74 + (Platform.OS === "android" ? androidTabBarExtraBottom : insets.bottom);
   const tabLabelFontFamily = TAB_FONT_FAMILY_MAP[fontFamily];
   const tabLabelStyle = tabLabelFontFamily
-    ? { fontSize: 10, fontFamily: tabLabelFontFamily, fontWeight: "normal" as const }
-    : { fontSize: 10, fontWeight: "500" as const };
+    ? { fontSize: 12, fontFamily: tabLabelFontFamily, fontWeight: "normal" as const }
+    : { fontSize: 12, fontWeight: "500" as const };
 
   const dahaFazlaColor = (moreMenuOpen || isMoreMenuRoute) ? tokens.accent : tokens.textPrimary;
 

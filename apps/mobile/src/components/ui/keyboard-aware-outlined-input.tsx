@@ -39,7 +39,7 @@ export function KeyboardAwareOutlinedInput({
   placeholderTextColor = "rgba(154,144,128,0.7)",
   containerClassName = "rounded-xl border border-white/10 bg-[#162236]",
   contentClassName = "flex-row items-center px-4 py-3.5",
-  inputClassName = "flex-1 text-[14px] text-[#F0EDE6]"
+  inputClassName = "flex-1 text-base text-[#F0EDE6]"
 }: KeyboardAwareOutlinedInputProps) {
   useEffect(() => {
     if (!onKeyboardStateChange) {
@@ -78,7 +78,7 @@ export function KeyboardAwareOutlinedInput({
   return (
     <View className={containerClassName}>
       <View className={contentClassName}>
-        {leftIcon ? <Text className="mr-3 text-[15px] text-[#9A9080]">{leftIcon}</Text> : null}
+        {leftIcon ? <Text className="mr-3 text-base text-[#9A9080]">{leftIcon}</Text> : null}
         <TextInput
           value={value}
           onChangeText={onChangeText}

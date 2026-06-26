@@ -14,28 +14,6 @@
 .text-5xl { font-size: var(--font-5xl); font-family: var(--app-font-family); }
 .text-6xl { font-size: var(--font-6xl); font-family: var(--app-font-family); }
 
-.text-\[10px\] { font-size: var(--font-10); font-family: var(--app-font-family); }
-.text-\[11px\] { font-size: var(--font-11); font-family: var(--app-font-family); }
-.text-\[12px\] { font-size: var(--font-12); font-family: var(--app-font-family); }
-.text-\[13px\] { font-size: var(--font-13); font-family: var(--app-font-family); }
-.text-\[14px\] { font-size: var(--font-14); font-family: var(--app-font-family); }
-.text-\[15px\] { font-size: var(--font-15); font-family: var(--app-font-family); }
-.text-\[16px\] { font-size: var(--font-16); font-family: var(--app-font-family); }
-.text-\[17px\] { font-size: var(--font-17); font-family: var(--app-font-family); }
-.text-\[18px\] { font-size: var(--font-18); font-family: var(--app-font-family); }
-.text-\[20px\] { font-size: var(--font-20); font-family: var(--app-font-family); }
-.text-\[22px\] { font-size: var(--font-22); font-family: var(--app-font-family); }
-.text-\[24px\] { font-size: var(--font-24); font-family: var(--app-font-family); }
-.text-\[25px\] { font-size: var(--font-25); font-family: var(--app-font-family); }
-.text-\[26px\] { font-size: var(--font-26); font-family: var(--app-font-family); }
-.text-\[28px\] { font-size: var(--font-28); font-family: var(--app-font-family); }
-.text-\[30px\] { font-size: var(--font-30); font-family: var(--app-font-family); }
-.text-\[32px\] { font-size: var(--font-32); font-family: var(--app-font-family); }
-.text-\[34px\] { font-size: var(--font-34); font-family: var(--app-font-family); }
-.text-\[42px\] { font-size: var(--font-42); font-family: var(--app-font-family); }
-.text-\[50px\] { font-size: var(--font-50); font-family: var(--app-font-family); }
-.text-\[52px\] { font-size: var(--font-52); font-family: var(--app-font-family); }
-.text-\[64px\] { font-size: var(--font-64); font-family: var(--app-font-family); }
 
 .font-semibold { font-family: var(--app-font-family-strong); }
 .font-bold { font-family: var(--app-font-family-strong); }

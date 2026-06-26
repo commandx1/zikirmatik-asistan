@@ -27,16 +27,16 @@ export function SplashStep() {
           resizeMode="contain"
         />
 
-        <Text className="text-center text-[52px] font-bold leading-[58px] text-[#F0EDE6]">
+        <Text className="text-center text-5xl font-bold leading-[58px] text-[#F0EDE6]">
           Zikirmatik{"\n"}Rehber
         </Text>
-        <Text className="mb-16 mt-3 text-center text-[15px] font-medium text-[#9A9080]">
+        <Text className="mb-16 mt-3 text-center text-base font-medium text-[#9A9080]">
           Akıllı Tesbihat Asistanın
         </Text>
       </View>
 
       <View className="pb-12">
-        <Text className="text-center text-[11px] text-[#9A9080]/50">v1.0.0</Text>
+        <Text className="text-center text-xs text-[#9A9080]/50">v1.0.0</Text>
       </View>
 
       <BottomCta label="Başla" onPress={flow.onNext} />

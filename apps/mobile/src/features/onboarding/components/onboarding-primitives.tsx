@@ -41,9 +41,9 @@ type StepHeadingProps = {
 export function StepHeading({ title, subtitle, centered = true }: StepHeadingProps) {
   return (
     <View className="mb-6">
-      <Text className={cx("text-[26px] font-bold leading-[34px] text-[#F0EDE6]", centered && "text-center")}>{title}</Text>
+      <Text className={cx("text-3xl font-bold leading-[34px] text-[#F0EDE6]", centered && "text-center")}>{title}</Text>
       {subtitle ? (
-        <Text className={cx("mt-2 text-[13px] text-[#9A9080]", centered && "text-center")}>{subtitle}</Text>
+        <Text className={cx("mt-2 text-sm text-[#9A9080]", centered && "text-center")}>{subtitle}</Text>
       ) : null}
     </View>
   );
@@ -91,11 +91,11 @@ export function CardOption({ icon, title, subtitle, active = false, onPress }: C
     >
       <View className="flex-row items-center gap-4">
         <View className={cx("h-14 w-14 items-center justify-center rounded-full", active ? "bg-[#C8972A]/20" : "bg-white/5")}>
-          <Text className={cx("text-[25px]", active ? "text-[#C8972A]" : "text-[#F0EDE6]")}>{icon}</Text>
+          <Text className={cx("text-3xl", active ? "text-[#C8972A]" : "text-[#F0EDE6]")}>{icon}</Text>
         </View>
         <View className="flex-1">
-          <Text className="mb-1 text-[15px] font-semibold text-[#F0EDE6]">{title}</Text>
-          <Text className="text-[11px] text-[#9A9080]">{subtitle}</Text>
+          <Text className="mb-1 text-base font-semibold text-[#F0EDE6]">{title}</Text>
+          <Text className="text-xs text-[#9A9080]">{subtitle}</Text>
         </View>
       </View>
     </Pressable>

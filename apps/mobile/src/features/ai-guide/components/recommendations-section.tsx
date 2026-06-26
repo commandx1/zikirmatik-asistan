@@ -35,7 +35,7 @@ export function RecommendationsSection({ items, assistantNote, onSelectRecommend
 
       {assistantNote ? (
         <View className="mb-4 rounded-2xl border border-[--accent]/20 bg-[--accent]/5 px-4 py-3">
-          <Text className="mb-1 text-[10px] font-semibold uppercase tracking-[0.9px] text-[--accent]">Asistan Notu</Text>
+          <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--accent]">Asistan Notu</Text>
           <MarkdownRenderer markdown={assistantNote} />
         </View>
       ) : null}

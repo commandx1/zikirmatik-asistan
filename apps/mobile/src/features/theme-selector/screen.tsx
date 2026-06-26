@@ -29,11 +29,11 @@ export function ThemeSelectorScreen() {
           <View className="gap-8">
             {selector.isPremium ? (
               <View className="rounded-xl border border-[#C8972A]/30 bg-[#C8972A]/10 px-4 py-3">
-                <Text className="text-[12px] font-semibold text-[#EAC46B]">Premium üyelik aktif: tüm temalar açık.</Text>
+                <Text className="text-sm font-semibold text-[#EAC46B]">Premium üyelik aktif: tüm temalar açık.</Text>
               </View>
             ) : (
               <View className="rounded-xl border border-white/10 bg-[--card] px-4 py-3">
-                <Text className="text-[12px] font-semibold text-[--text-primary]">
+                <Text className="text-sm font-semibold text-[--text-primary]">
                   Bazı temalar Premium ile açılır.
                 </Text>
               </View>
@@ -47,7 +47,7 @@ export function ThemeSelectorScreen() {
             />
             {selector.lockedThemeMessage ? (
               <View className="rounded-xl border border-[#C8972A]/30 bg-[#C8972A]/10 px-4 py-3">
-                <Text className="text-[12px] text-[#EAC46B]">{selector.lockedThemeMessage}</Text>
+                <Text className="text-sm text-[#EAC46B]">{selector.lockedThemeMessage}</Text>
               </View>
             ) : null}
           </View>
@@ -58,7 +58,7 @@ export function ThemeSelectorScreen() {
             <PrimaryCtaButton
               label="Değişiklikleri Kaydet"
               onPress={handleSave}
-              textClassName="text-[15px]"
+              textClassName="text-base"
             />
           ) : null}
         </BottomActionFooter>

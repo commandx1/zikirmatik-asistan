@@ -41,7 +41,7 @@ export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, 
           backgroundColor: withAlpha(tokens.card, 0.92)
         }}
       >
-        <Text className='mb-3 text-[11px] font-semibold uppercase tracking-[1.1px]' style={{ color: tokens.textMuted }}>
+        <Text className='mb-3 text-xs font-semibold uppercase tracking-[1.1px]' style={{ color: tokens.textMuted }}>
           Esmaül Hüsna
         </Text>
         <View className='overflow-hidden rounded-xl' style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.1) }}>

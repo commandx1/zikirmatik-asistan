@@ -29,7 +29,7 @@ function UpcomingDayCard({ day, onPress }: { day: UpcomingDayViewModel; onPress:
                 </View>
               ) : null}
             </View>
-            <Text className="mt-1 text-[11px] leading-5 text-[--text-muted]">{day.dateLabel}</Text>
+            <Text className="mt-1 text-xs leading-5 text-[--text-muted]">{day.dateLabel}</Text>
           </View>
         </View>
 

@@ -61,10 +61,6 @@ export function ThemeProvider({ themeName, fontSize, textFontFamily, textFontFam
         "--leading-58": `${value.fontTokens.leading["58"]}px`
       } as Record<string, string>;
 
-      Object.entries(value.fontTokens.px).forEach(([size, scaled]) => {
-        fontVariables[`--font-${size}`] = `${scaled}px`;
-      });
-
       return vars({
         "--bg": value.tokens.bg,
         "--card": value.tokens.card,
