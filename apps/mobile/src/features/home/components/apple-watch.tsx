@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native'
 import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { useThemeTokens } from '@zikirmatik/ui'
 import type { ThemeTokens } from '@zikirmatik/shared'
+import { THEME_STRAP_COLORS } from '../../../theme/strap-colors'
 import Animated, {
   Easing,
   Extrapolation,
@@ -74,7 +75,7 @@ function ProgressRing({ progress, accent, trackColor }: { progress: number; acce
 export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
   const router = useRouter()
   const [isResetConfirmVisible, setIsResetConfirmVisible] = useState(false)
-  const { tokens: activeTokens } = useThemeTokens()
+  const { tokens: activeTokens, themeName } = useThemeTokens()
   const { fontFamily } = useThemePreferences()
   const tokens = previewTokens ?? activeTokens
   const home = useHomeContext()
@@ -89,7 +90,7 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
   const innerCompleteBg = withAlpha(tokens.success, 0.15)
   const innerIdleBorder = withAlpha(tokens.textPrimary, 0.1)
   const innerCompleteBorder = withAlpha(tokens.success, 0.45)
-  const strapColor = withAlpha(tokens.textMuted, 0.6)
+  const strapColor = THEME_STRAP_COLORS[themeName]
   const watchCaseColor = withAlpha(tokens.border, 0.85)
   const screenColor = withAlpha(tokens.bg, 0.96)
   const sideButtonPrimary = withAlpha(tokens.textMuted, 0.75)

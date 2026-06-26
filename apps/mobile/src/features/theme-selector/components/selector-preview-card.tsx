@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import type { AppFontFamily } from "../../../store/theme-store";
 import { resolveThemeBackgroundImage } from "../../../theme/background-image";
 import { GalaksiGirdabiBg } from "../../../theme/galaksi-girdabi-bg";
+import { THEME_STRAP_COLORS } from "../../../theme/strap-colors";
 
 type SelectorPreviewCardProps = {
   themeName: ThemeName;
@@ -56,7 +57,7 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
 
       <View className="w-full rounded-[24px] border-2 border-dashed p-5" style={{ borderColor: withAlpha(tokens.accent, 0.4), backgroundColor: tokens.card }}>
         <View className="items-center">
-          <View className="h-[52px] w-[124px] rounded-t-[18px]" style={{ backgroundColor: withAlpha(tokens.textMuted, 0.6) }} />
+          <View className="h-[52px] w-[124px] rounded-t-[18px]" style={{ backgroundColor: THEME_STRAP_COLORS[themeName] }} />
 
           <View className="relative z-10 -mt-3">
             <View
@@ -115,7 +116,7 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
             <View className="absolute -right-2 top-[104px] h-5 w-1 rounded-r-full bg-[#7F7F7F]" />
           </View>
 
-          <View className="-mt-3 h-[58px] w-[124px] rounded-b-[18px]" style={{ backgroundColor: withAlpha(tokens.textMuted, 0.6) }} />
+          <View className="-mt-3 h-[58px] w-[124px] rounded-b-[18px]" style={{ backgroundColor: THEME_STRAP_COLORS[themeName] }} />
         </View>
 
         <View
