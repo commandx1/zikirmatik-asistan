@@ -6,9 +6,7 @@ export const HERO_CARD: HeroCardViewModel = {
   title: "Mevlid Kandili",
   dateLabel: "13 Eylül 2025, Perşembe",
   countdown: [
-    { value: "03", label: "Gün" },
-    { value: "14", label: "Sa" },
-    { value: "22", label: "Dk" }
+    { value: "03", label: "GÜN" }
   ],
   remaining: "3 gün",
   isLocked: false,

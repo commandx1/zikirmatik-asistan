@@ -36,13 +36,14 @@ export function useSpecialDays() {
         accessToken,
       );
       if (response.hero) {
+        const days = daysUntil(response.hero.date);
         setHeroCard({
           id: response.hero.id,
           badge: response.hero.badge,
           title: response.hero.name,
           dateLabel: response.hero.dateLabel,
-          countdown: response.hero.countdown,
-          remaining: response.hero.remainingLabel,
+          countdown: [{ value: String(days), label: "GÜN" }],
+          remaining: formatDaysRemaining(days),
           isLocked: response.hero.isLocked,
           isTodaySpecial: response.hero.source === "today",
         });
@@ -83,7 +84,7 @@ function mapUpcomingDay(item: BackendSpecialDayHomeItem & { remainingLabel: stri
     icon,
     title: item.name,
     dateLabel: formatDayLabel(item.date),
-    remaining: item.remainingLabel,
+    remaining: formatDaysRemaining(daysUntil(item.date)),
     isLocked: item.isLocked,
   };
 }
@@ -106,4 +107,18 @@ function toDateKey(value: Date) {
   const month = String(value.getMonth() + 1).padStart(2, "0");
   const day = String(value.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function daysUntil(isoDate: string): number {
+  const now = new Date();
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const parts = isoDate.split("-").map(Number);
+  const targetUtc = Date.UTC(parts[0], parts[1] - 1, parts[2]);
+  return Math.max(0, Math.round((targetUtc - todayUtc) / 86_400_000));
+}
+
+function formatDaysRemaining(days: number): string {
+  if (days === 0) return "Bugün";
+  if (days === 1) return "1 gün";
+  return `${days} gün`;
 }
