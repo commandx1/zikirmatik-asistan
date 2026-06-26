@@ -36,7 +36,7 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
           ? styles.previewFinlandicaRegular
           : previewFontFamily === "indie-flower"
             ? styles.previewIndieFlowerRegular
-        : undefined;
+        : styles.previewDefault;
   const strongTextStyle =
     previewFontFamily === "merriweather"
       ? styles.previewMerriweatherStrong
@@ -46,7 +46,7 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
           ? styles.previewFinlandicaStrong
           : previewFontFamily === "indie-flower"
             ? styles.previewIndieFlowerStrong
-        : undefined;
+        : styles.previewDefault;
 
   return (
     <View className="items-center">
@@ -231,6 +231,9 @@ function PreviewDhikrBlock({
 }
 
 const styles = StyleSheet.create({
+  previewDefault: {
+    fontFamily: ""
+  },
   previewMerriweatherRegular: {
     fontFamily: "Merriweather_400Regular"
   },
