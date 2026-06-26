@@ -97,7 +97,7 @@ export function FontSelectorScreen() {
                             ? { fontFamily: "Finlandica_400Regular" }
                             : item.id === "indie-flower"
                               ? { fontFamily: "IndieFlower_400Regular" }
-                            : undefined
+                            : { fontFamily: "" }
                     }
                   >
                     {item.sample}
