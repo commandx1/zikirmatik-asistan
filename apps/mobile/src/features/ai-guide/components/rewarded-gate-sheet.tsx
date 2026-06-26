@@ -4,11 +4,13 @@ import { Pressable, Text, View } from "react-native";
 type RewardedGateSheetProps = {
   visible: boolean;
   isRunning?: boolean;
+  freeUsedToday: number;
+  freeLimit: number;
   onConfirm: () => void;
   onClose: () => void;
 };
 
-export function RewardedGateSheet({ visible, isRunning = false, onConfirm, onClose }: RewardedGateSheetProps) {
+export function RewardedGateSheet({ visible, isRunning = false, freeUsedToday, freeLimit, onConfirm, onClose }: RewardedGateSheetProps) {
   if (!visible) {
     return null;
   }
@@ -28,6 +30,12 @@ export function RewardedGateSheet({ visible, isRunning = false, onConfirm, onClo
           <Text className="mt-2 text-center text-[13px] leading-5 text-[--text-muted]">
             Asistan önerilerini görmek için ödüllü reklamı izle.
           </Text>
+          <View className="mt-3 flex-row items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5">
+            <FontAwesome6 name="circle-check" size={11} color="#C8972A" />
+            <Text className="text-[12px] font-medium text-[--text-muted]">
+              Bugün {freeLimit - freeUsedToday}/{freeLimit} ücretsiz hakkın kaldı
+            </Text>
+          </View>
         </View>
 
         <Pressable

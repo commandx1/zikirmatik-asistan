@@ -26,6 +26,8 @@ import { TopBar } from "./components/top-bar";
 import { useAiGuide } from "./hooks/use-ai-guide";
 import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
 import { useDhikrStore } from "../../store/dhikr-store";
+import { usePremiumSheet } from "../../hooks/use-premium-sheet";
+import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
 import type { AiGuideRecommendation } from "./types";
 
 function toDateKey(value: Date) {
@@ -37,7 +39,8 @@ function toDateKey(value: Date) {
 
 export function AiGuideScreen() {
   const router = useRouter();
-  const guide = useAiGuide();
+  const premiumSheet = usePremiumSheet();
+  const guide = useAiGuide(premiumSheet.open);
   const guard = useDhikrStartGuard();
   const clearDhikrProgress = useDhikrStore(s => s.clearDhikrProgress);
   const storeItems = useDhikrStore(s => s.items);
@@ -221,6 +224,8 @@ export function AiGuideScreen() {
         <RewardedGateSheet
           visible={guide.isRewardedSheetOpen}
           isRunning={guide.isRewardedRunning}
+          freeUsedToday={guide.freeUsedToday}
+          freeLimit={guide.freeDailyLimit}
           onConfirm={guide.confirmRewardedAndSubmit}
           onClose={guide.closeRewardedSheet}
         />
@@ -265,6 +270,17 @@ export function AiGuideScreen() {
         />
         </Suspense>
 
+        <ProfilePremiumSheet
+          visible={premiumSheet.isOpen}
+          selectedPlan={premiumSheet.plan}
+          isActivating={premiumSheet.isActivating}
+          isRestoring={premiumSheet.isRestoring}
+          error={premiumSheet.error}
+          onSelectPlan={premiumSheet.setPlan}
+          onStartPremium={premiumSheet.activate}
+          onRestorePremium={premiumSheet.restore}
+          onClose={premiumSheet.close}
+        />
       </View>
     </PageLayout>
   );

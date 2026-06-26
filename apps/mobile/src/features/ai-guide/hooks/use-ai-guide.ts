@@ -7,7 +7,10 @@ import { useDhikrStore } from "../../../store/dhikr-store";
 import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-client";
 import {
   AiApiError,
+  DAILY_LIMIT_REACHED_CODE,
+  FREE_DAILY_LIMIT,
   createAiRecommendation,
+  getAiDailyQuota,
   listAiRecommendations,
   selectAiRecommendation
 } from "../services/ai-api-client";
@@ -25,7 +28,7 @@ type LastAiGuideResult = {
   recommendations: AiGuideRecommendation[];
 };
 
-export function useAiGuide() {
+export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [intentInput, setIntentInput] = useState("");
   const [showInfo, setShowInfo] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +47,8 @@ export function useAiGuide() {
   const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
   const [pendingRequest, setPendingRequest] = useState<{ freeText?: string } | null>(null);
   const [isPremiumVerified, setIsPremiumVerified] = useState(false);
+  const [freeUsedToday, setFreeUsedToday] = useState(0);
+  const [quotaConfirmed, setQuotaConfirmed] = useState(false);
 
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
@@ -69,6 +74,8 @@ export function useAiGuide() {
     setPendingRequest(null);
     setRewardedSheetOpen(false);
     setRewardedRunning(false);
+    setFreeUsedToday(0);
+    setQuotaConfirmed(false);
   }, [authStatus, cacheKey]);
 
   const hydrateLastResultFromCache = useCallback(async () => {
@@ -112,10 +119,14 @@ export function useAiGuide() {
       return false;
     }
 
-    const [recommendationRows, catalog] = await Promise.all([
+    const [recommendationRows, catalog, quota] = await Promise.all([
       listAiRecommendations(accessToken),
-      listVerifiedActiveDhikrs()
+      listVerifiedActiveDhikrs(),
+      getAiDailyQuota(accessToken)
     ]);
+
+    setFreeUsedToday(Math.min(quota.used, FREE_DAILY_LIMIT));
+    setQuotaConfirmed(true);
 
     const nextHistoryItems = buildAiGuideHistoryItems(recommendationRows, catalog);
     setHistoryItems(nextHistoryItems);
@@ -319,9 +330,17 @@ export function useAiGuide() {
             // ignore cache write errors
           });
         }
+
+        if (typeof response.dailyFreeUsed === "number") {
+          setFreeUsedToday(response.dailyFreeUsed);
+          setQuotaConfirmed(true);
+        }
+
         setIntentInput("");
       } catch (error) {
-        if (error instanceof AiApiError) {
+        if (error instanceof AiApiError && error.code === DAILY_LIMIT_REACHED_CODE) {
+          onOpenPremiumSheet?.();
+        } else if (error instanceof AiApiError) {
           setError(error.message);
         } else {
           setError("Asistan önerisi alınamadı. Lütfen tekrar deneyin.");
@@ -344,6 +363,11 @@ export function useAiGuide() {
 
     if (await shouldBypassRewardGate()) {
       await executeRecommendationRequest(request);
+      return;
+    }
+
+    if (quotaConfirmed && freeUsedToday >= FREE_DAILY_LIMIT) {
+      onOpenPremiumSheet?.();
       return;
     }
 
@@ -448,6 +472,8 @@ export function useAiGuide() {
     visibleHistoryItems,
     isHistoryExpanded,
     canExpandHistory: historyItems.length > 2,
+    freeUsedToday,
+    freeDailyLimit: FREE_DAILY_LIMIT,
     closeInfo,
     toggleInfo,
     applyPrompt,

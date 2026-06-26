@@ -36,7 +36,11 @@ export type CreateAiRecommendationResponse =
         recommendedCount?: number;
       }>;
       usedModel: "openai" | "fallback" | "retrieval" | "cache";
+      dailyFreeUsed?: number;
     };
+
+export const DAILY_LIMIT_REACHED_CODE = "DAILY_LIMIT_REACHED";
+export const FREE_DAILY_LIMIT = 2;
 
 export type BackendAiRecommendation = {
   _id: string;
@@ -52,7 +56,8 @@ export class AiApiError extends Error {
   constructor(
     public readonly kind: "transient" | "terminal",
     message: string,
-    public readonly status?: number
+    public readonly status?: number,
+    public readonly code?: string
   ) {
     super(message);
     this.name = "AiApiError";
@@ -80,6 +85,19 @@ export async function selectAiRecommendation(
   return requestJson(`/v1/ai/recommendations/${recommendationId}/select`, {
     method: "PATCH",
     body: { selectedDhikrId },
+    accessToken
+  });
+}
+
+export type AiDailyQuota = {
+  used: number;
+  limit: number | null;
+  isPremium: boolean;
+};
+
+export async function getAiDailyQuota(accessToken?: string): Promise<AiDailyQuota> {
+  return requestJson<AiDailyQuota>("/v1/ai/quota", {
+    method: "GET",
     accessToken
   });
 }
@@ -126,7 +144,8 @@ async function requestJson<TResponse>(
 
     if (!response.ok) {
       const message = extractErrorMessage(data, "Asistan servisi şu anda yanıt veremiyor.");
-      throw new AiApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
+      const code = extractErrorCode(data);
+      throw new AiApiError(response.status >= 500 ? "transient" : "terminal", message, response.status, code);
     }
 
     return (data ?? {}) as TResponse;
@@ -157,6 +176,12 @@ function unwrapDataEnvelope(payload: unknown) {
   }
 
   return (payload as { data: unknown }).data;
+}
+
+function extractErrorCode(payload: unknown): string | undefined {
+  if (!payload || typeof payload !== "object") return undefined;
+  const candidate = payload as { code?: unknown };
+  return typeof candidate.code === "string" ? candidate.code : undefined;
 }
 
 function extractErrorMessage(payload: unknown, fallback: string) {

@@ -87,9 +87,10 @@ export function ProfilePremiumSheet({
         </View>
 
         <View className='mb-8 gap-4'>
-          <BenefitItem title='Reklamsız Asistan Rehberliği' description='Ödüllü reklam beklemeden anında öneri al.' />
-          <BenefitItem title='Detaylı İstatistikler' description='Geçmişe dönük tüm manevi kayıtlarınıza erişim.' />
-          <BenefitItem title='Tüm Temaların Kilidini Aç' description='Tüm görünüm seçeneklerini sınırsız kullan.' />
+          <BenefitItem title='Reklamsız Deneyim' description='Uygulama genelinde hiç reklam görmeden kullan.' />
+          <BenefitItem title='Sınırsız Asistan Önerisi' description='Günlük limit olmadan istediğin kadar öneri al.' />
+          <BenefitItem title='Tüm Koleksiyonlar' description="Hısnu\'l-Muslim ve tüm dua koleksiyonlarına tam erişim." />
+          <BenefitItem title='Sınırsız Özelleştirme' description='Tüm temalar ve yazı tipleri, hiçbir kısıtlama olmadan.' />
         </View>
 
         <View className='mb-6 flex-row rounded-xl border border-white/5 bg-[--bg] p-1'>
