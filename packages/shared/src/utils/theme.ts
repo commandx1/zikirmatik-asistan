@@ -164,6 +164,15 @@ export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
     success: "#4DC49A",
     border: "#142E4E"
   },
+  "hilal-gecesi": {
+    bg: "#030710",
+    card: "#07101F",
+    textPrimary: "#E8EFFF",
+    textMuted: "#6B80A8",
+    accent: "#B8C8E8",
+    success: "#4DC49A",
+    border: "#0F1A30"
+  },
   "su-dalgasi": {
     bg: "#050C18",
     card: "#0A1628",

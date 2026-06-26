@@ -16,6 +16,7 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import { resolveThemeBackgroundImage } from "../../theme/background-image";
 import { GalaksiGirdabiBg } from "../../theme/galaksi-girdabi-bg";
 import { SuDalgasiBg } from "../../theme/su-dalgasi-bg";
+import { HilalGecesiBg } from "../../theme/hilal-gecesi-bg";
 
 type PageLayoutProps = PropsWithChildren<{
   backgroundClassName?: string;
@@ -40,7 +41,7 @@ export function PageLayout({
   const { tokens, themeName } = useThemeTokens();
   const gradient = tokens.bgGradient;
   const backgroundImage = resolveThemeBackgroundImage(themeName);
-  const isAnimated = themeName === "galaksi-girdabi" || themeName === "su-dalgasi";
+  const isAnimated = themeName === "galaksi-girdabi" || themeName === "su-dalgasi" || themeName === "hilal-gecesi";
   const showGradient = !isAnimated && !backgroundImage && gradient && gradient.colors.length >= 2;
 
   return (
@@ -50,6 +51,7 @@ export function PageLayout({
       ) : null}
       {themeName === "galaksi-girdabi" ? <GalaksiGirdabiBg /> : null}
       {themeName === "su-dalgasi" ? <SuDalgasiBg /> : null}
+      {themeName === "hilal-gecesi" ? <HilalGecesiBg /> : null}
       {isAnimated ? (
         <View
           pointerEvents="none"

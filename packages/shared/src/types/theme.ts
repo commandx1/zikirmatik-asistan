@@ -19,6 +19,7 @@ export type ThemeName =
   | "altin-varak"
   | "lacivert-indigo"
   | "su-dalgasi"
+  | "hilal-gecesi"
   //| "premium-doku";
 
 export type FontSize = "small" | "medium" | "large";
