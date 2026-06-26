@@ -1,5 +1,4 @@
 export type ThemeName =
-  | "sistem"
   | "gece-koyu"
   | "gece-lacivert"
   | "cami-yesili"
@@ -13,8 +12,11 @@ export type ThemeName =
   | "derin-mavi"
   | "gul-bahcesi"
   | "saf-siyah"
-  | "acik-mod"
   | "galaksi-girdabi"
+  | "karadeniz"
+  | "safran"
+  | "tekke"
+  | "peygamber-mavisi"
   //| "premium-doku";
 
 export type FontSize = "small" | "medium" | "large";

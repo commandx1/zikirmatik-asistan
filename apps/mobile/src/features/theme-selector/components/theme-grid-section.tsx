@@ -25,7 +25,7 @@ export function ThemeGridSection({ options, selected, onSelect, selectedCardRef 
               ref={isSelected ? selectedCardRef : undefined}
               collapsable={false}
               onPress={() => onSelect(option.id)}
-              className={`relative w-[48.5%] items-center gap-2 rounded-2xl border bg-[--card] p-3 ${isSelected ? "border-[--accent]" : "border-white/5"} ${isLocked ? "opacity-85" : ""}`}
+              className={`relative w-[48.5%] items-center rounded-2xl border bg-[--card] p-3 ${isSelected ? "border-[--accent]" : "border-white/5"} ${isLocked ? "opacity-85" : ""}`}
             >
               {isSelected ? (
                 <View className="absolute right-2 top-2 z-10 h-5 w-5 items-center justify-center rounded-full bg-[--accent]">
@@ -47,7 +47,6 @@ export function ThemeGridSection({ options, selected, onSelect, selectedCardRef 
                   <View className="h-3 w-3 rounded-full" style={{ backgroundColor: option.dotColor }} />
                 </View>
               </View>
-              <Text className="text-sm font-medium text-[--text-primary]">{option.label}</Text>
             </Pressable>
           );
         })}

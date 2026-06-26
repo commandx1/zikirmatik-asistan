@@ -1,15 +1,6 @@
 import type { FontSize, FontTokens, ThemeName, ThemeTokens } from "../types/theme";
 
 export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
-  "sistem": {
-    bg: "#050505",
-    card: "#141414",
-    textPrimary: "#F7F7F7",
-    textMuted: "#A0A0A0",
-    accent: "#D2A038",
-    success: "#4CB98E",
-    border: "#242424"
-  },
   "gece-koyu": {
     bg: "#0B1423",
     card: "#162236",
@@ -132,15 +123,6 @@ export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
     success: "#4CB98E",
     border: "#242424"
   },
-  "acik-mod": {
-    bg: "#F8FAFF",
-    card: "#FFFFFF",
-    textPrimary: "#172339",
-    textMuted: "#5D6F8C",
-    accent: "#B88724",
-    success: "#2EA77B",
-    border: "#DFE6F1"
-  },
   "galaksi-girdabi": {
     bg: "#080514",
     card: "#12092A",
@@ -154,6 +136,42 @@ export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
       start: { x: 0, y: 0 },
       end: { x: 1, y: 1 }
     }
+  },
+  "karadeniz": {
+    bg: "#0A1510",
+    card: "#14261C",
+    textPrimary: "#E6F5EE",
+    textMuted: "#88AF9C",
+    accent: "#5EA87A",
+    success: "#4DC28A",
+    border: "#1E3E2A"
+  },
+  "safran": {
+    bg: "#180E04",
+    card: "#2A1A09",
+    textPrimary: "#FAF0E2",
+    textMuted: "#C8A478",
+    accent: "#E87820",
+    success: "#5EC490",
+    border: "#40220C"
+  },
+  "tekke": {
+    bg: "#0E0B1F",
+    card: "#17102E",
+    textPrimary: "#EAE5FA",
+    textMuted: "#A896C8",
+    accent: "#7A58B2",
+    success: "#4DBB8E",
+    border: "#2C1E48"
+  },
+  "peygamber-mavisi": {
+    bg: "#060F1E",
+    card: "#0C1B30",
+    textPrimary: "#EAF2FF",
+    textMuted: "#84ACC8",
+    accent: "#3E8FD4",
+    success: "#4DC49A",
+    border: "#142E4E"
   },
   /* "premium-doku": {
     bg: "#0C131A",

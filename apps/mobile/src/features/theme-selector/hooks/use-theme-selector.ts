@@ -1,6 +1,5 @@
 import { resolveThemeTokens, type ThemeTokens, type ThemeName } from "@zikirmatik/shared";
 import { useEffect, useMemo, useState } from "react";
-import { useReactiveColorScheme } from "../../../hooks/use-reactive-color-scheme";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useProfileStore } from "../../../store/profile-store";
 import { THEME_LABELS } from "../../../theme/labels";
@@ -16,33 +15,34 @@ export type ThemeOption = {
 };
 
 const THEME_NAMES: ThemeName[] = [
-  "sistem",
+  // Gece mavi
   "gece-koyu",
   "gece-lacivert",
+  "derin-mavi",
+  "peygamber-mavisi",
+  // Siyah
+  "saf-gece-amoled",
+  "saf-siyah",
+  // Yeşil
   "cami-yesili",
+  "karadeniz",
+  "zumrut-mermer",
+  // Sıcak koyu
   "osmanli-bordo",
   "col-kumulu",
-  "kum-tasi-minimal",
-  "zumrut-mermer",
-  "saf-gece-amoled",
+  "safran",
+  "gul-bahcesi",
+  // Mor
+  "galaksi-girdabi",
+  "tekke",
+  // Açık
   "ay-isigi",
   "klasik-bej",
-  "derin-mavi",
-  "gul-bahcesi",
-  "saf-siyah",
-  "acik-mod",
-  "galaksi-girdabi",
+  "kum-tasi-minimal",
   //"premium-doku"
 ];
 
 const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
-  "sistem": {
-    swatchBg: "#1C1C1C",
-    swatchInner: "#F0F0F0",
-    dotColor: "#C8972A",
-    dotBorder: "#C8972A",
-    isPremiumLocked: false
-  },
   "gece-koyu": {
     swatchBg: "#0F1B2D",
     swatchInner: "#162236",
@@ -134,19 +134,40 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
     dotBorder: "#C8972A",
     isPremiumLocked: false
   },
-  "acik-mod": {
-    swatchBg: "#FFFFFF",
-    swatchInner: "#F3F4F6",
-    dotColor: "#0F1B2D",
-    dotBorder: "#0F1B2D",
-    isPremiumLocked: false
-  },
   "galaksi-girdabi": {
     swatchBg: "#080514",
     swatchInner: "#1A0842",
     dotColor: "#8B5CF6",
     dotBorder: "#8B5CF6",
     isPremiumLocked: true
+  },
+  "karadeniz": {
+    swatchBg: "#0A1510",
+    swatchInner: "#14261C",
+    dotColor: "#5EA87A",
+    dotBorder: "#5EA87A",
+    isPremiumLocked: false
+  },
+  "safran": {
+    swatchBg: "#180E04",
+    swatchInner: "#2A1A09",
+    dotColor: "#E87820",
+    dotBorder: "#E87820",
+    isPremiumLocked: false
+  },
+  "tekke": {
+    swatchBg: "#0E0B1F",
+    swatchInner: "#17102E",
+    dotColor: "#7A58B2",
+    dotBorder: "#7A58B2",
+    isPremiumLocked: false
+  },
+  "peygamber-mavisi": {
+    swatchBg: "#060F1E",
+    swatchInner: "#0C1B30",
+    dotColor: "#3E8FD4",
+    dotBorder: "#3E8FD4",
+    isPremiumLocked: false
   },
   /* "premium-doku": {
     swatchBg: "#101A22",
@@ -160,7 +181,6 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
 export function useThemeSelector() {
   const { themeName, setThemeName } = useThemePreferences();
   const isPremium = useProfileStore((s) => s.isPremium);
-  const colorScheme = useReactiveColorScheme();
   const [draftThemeName, setDraftThemeName] = useState<ThemeName>(themeName);
   const [lockedThemeMessage, setLockedThemeMessage] = useState<string>();
 
@@ -178,13 +198,9 @@ export function useThemeSelector() {
     };
   }) as ThemeOption[];
 
-  const resolvedDraftThemeName = draftThemeName === "sistem"
-    ? (colorScheme === "dark" ? "saf-siyah" : "acik-mod")
-    : draftThemeName;
-
   const draftThemeTokens: ThemeTokens = useMemo(
-    () => resolveThemeTokens(resolvedDraftThemeName),
-    [resolvedDraftThemeName]
+    () => resolveThemeTokens(draftThemeName),
+    [draftThemeName]
   );
 
   const hasThemeChanges = draftThemeName !== themeName;
