@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
+import type { ThemeName } from "@zikirmatik/shared";
 import { BottomActionFooter } from "../../components/ui/bottom-action-footer";
 import { useThemeTransition } from "../../contexts/theme-transition-context";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
@@ -13,6 +14,12 @@ export function ThemeSelectorScreen() {
   const selector = useThemeSelector();
   const { triggerTransition } = useThemeTransition();
   const selectedCardRef = useRef<View>(null);
+  const scrollRef = useRef<ScrollView>(null);
+
+  function handleSelectTheme(themeId: ThemeName) {
+    selector.setDraftThemeName(themeId);
+    scrollRef.current?.scrollTo({ y: 70, animated: true });
+  }
 
   function handleSave() {
     if (!selector.hasThemeChanges) return;
@@ -25,7 +32,7 @@ export function ThemeSelectorScreen() {
     <PageLayout>
       <View className="flex-1 w-full">
         <SelectorHeader title="Tema Seçimi" subtitle="Uygulamanın görünümünü kişiselleştir" showBackButton />
-        <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={24}>
+        <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={24} scrollRef={scrollRef}>
           <View className="gap-8">
             {selector.isPremium ? (
               <View className="rounded-xl border border-[#C8972A]/30 bg-[#C8972A]/10 px-4 py-3">
@@ -42,7 +49,7 @@ export function ThemeSelectorScreen() {
             <ThemeGridSection
               options={selector.themes}
               selected={selector.draftThemeName}
-              onSelect={selector.setDraftThemeName}
+              onSelect={handleSelectTheme}
               selectedCardRef={selectedCardRef}
             />
             {selector.lockedThemeMessage ? (
