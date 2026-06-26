@@ -173,6 +173,20 @@ export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
     success: "#4DC49A",
     border: "#142E4E"
   },
+  "lacivert-indigo": {
+    bg: "#08091A",
+    card: "#0F1130",
+    textPrimary: "#E8EAFF",
+    textMuted: "#8890C8",
+    accent: "#7B82F0",
+    success: "#4DC49A",
+    border: "#1C2050",
+    bgGradient: {
+      colors: ["#05060F", "#08091A", "#0D1028"],
+      start: { x: 0, y: 0 },
+      end: { x: 1, y: 1 }
+    }
+  },
   "altin-varak": {
     bg: "#110E05",
     card: "#1E1A0A",

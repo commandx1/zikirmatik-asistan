@@ -19,5 +19,6 @@ export const THEME_STRAP_COLORS: Record<ThemeName, string> = {
   "safran":             "#883010",
   "tekke":              "#341C68",
   "peygamber-mavisi":   "#143C6A",
+  "lacivert-indigo":    "#1E2260",
   "altin-varak":        "#6A4C10",
 };

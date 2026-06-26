@@ -2,7 +2,6 @@ export type ThemeName =
   | "gece-koyu"
   | "gece-lacivert"
   | "cami-yesili"
-  | "osmanli-bordo"
   | "col-kumulu"
   | "kum-tasi-minimal"
   | "zumrut-mermer"
@@ -18,6 +17,7 @@ export type ThemeName =
   | "tekke"
   | "peygamber-mavisi"
   | "altin-varak"
+  | "lacivert-indigo"
   //| "premium-doku";
 
 export type FontSize = "small" | "medium" | "large";

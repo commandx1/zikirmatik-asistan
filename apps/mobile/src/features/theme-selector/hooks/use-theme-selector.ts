@@ -20,6 +20,7 @@ const THEME_NAMES: ThemeName[] = [
   "gece-lacivert",
   "derin-mavi",
   "peygamber-mavisi",
+  "lacivert-indigo",
   // Siyah
   "saf-gece-amoled",
   "saf-siyah",
@@ -169,6 +170,13 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
     dotColor: "#3E8FD4",
     dotBorder: "#3E8FD4",
     isPremiumLocked: false
+  },
+  "lacivert-indigo": {
+    swatchBg: "#08091A",
+    swatchInner: "#0F1130",
+    dotColor: "#7B82F0",
+    dotBorder: "#7B82F0",
+    isPremiumLocked: true
   },
   "altin-varak": {
     swatchBg: "#110E05",
