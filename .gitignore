@@ -22,3 +22,4 @@ apps/mobile/android/local.properties
 apps/mobile/android/keystore.properties
 apps/promo-video
 .claude
+store-assets
