@@ -19,5 +19,6 @@ export const THEME_LABELS: Record<ThemeName, string> = {
   "safran": "Safran",
   "tekke": "Tekke",
   "peygamber-mavisi": "Peygamber Mavisi",
+  "altin-varak": "Altın Varak",
   //"premium-doku": "Premium Doku"
 };

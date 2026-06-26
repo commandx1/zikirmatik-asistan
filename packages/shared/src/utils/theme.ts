@@ -173,6 +173,20 @@ export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
     success: "#4DC49A",
     border: "#142E4E"
   },
+  "altin-varak": {
+    bg: "#110E05",
+    card: "#1E1A0A",
+    textPrimary: "#FBF0D5",
+    textMuted: "#BF9F50",
+    accent: "#EFC030",
+    success: "#5CC490",
+    border: "#332B0E",
+    bgGradient: {
+      colors: ["#0D0B03", "#110E05", "#1A1508"],
+      start: { x: 0, y: 0 },
+      end: { x: 1, y: 1 }
+    }
+  },
   /* "premium-doku": {
     bg: "#0C131A",
     card: "#16222C",

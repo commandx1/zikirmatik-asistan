@@ -30,6 +30,7 @@ const THEME_NAMES: ThemeName[] = [
   // Sıcak koyu
   "osmanli-bordo",
   "col-kumulu",
+  "altin-varak",
   "safran",
   "gul-bahcesi",
   // Mor
@@ -168,6 +169,13 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
     dotColor: "#3E8FD4",
     dotBorder: "#3E8FD4",
     isPremiumLocked: false
+  },
+  "altin-varak": {
+    swatchBg: "#110E05",
+    swatchInner: "#1E1A0A",
+    dotColor: "#EFC030",
+    dotBorder: "#EFC030",
+    isPremiumLocked: true
   },
   /* "premium-doku": {
     swatchBg: "#101A22",

@@ -17,6 +17,7 @@ export type ThemeName =
   | "safran"
   | "tekke"
   | "peygamber-mavisi"
+  | "altin-varak"
   //| "premium-doku";
 
 export type FontSize = "small" | "medium" | "large";
