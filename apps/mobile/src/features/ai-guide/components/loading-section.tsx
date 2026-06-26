@@ -4,108 +4,78 @@ import { Text, View } from "react-native";
 import Animated, {
   cancelAnimation,
   Easing,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { ThemedCard } from "../../../components/ui/themed-card";
 
 const STEPS = [
-  "Mesajınız analiz ediliyor",
-  "Zikirler taranıyor",
-  "Size uygun zikirler belirleniyor",
-  "Öneriler hazırlanıyor",
+  "Mesajınız analiz ediliyor...",
+  "Zikirler taranıyor...",
+  "Size uygun zikirler belirleniyor...",
+  "Öneriler hazırlanıyor...",
 ] as const;
 
-const STEP_DELAYS = [1400, 2900, 5000] as const;
+const STEP_DELAYS = [2050, 3550, 5650] as const;
 
-type StepStatus = "pending" | "active" | "completed";
-
-function StepItem({ label, status }: { label: string; status: StepStatus }) {
+function Spinner() {
   const rotation = useSharedValue(0);
-  const checkScale = useSharedValue(0);
-  const checkOpacity = useSharedValue(0);
-  const labelOpacity = useSharedValue(status === "active" ? 1 : 0.35);
 
   useEffect(() => {
-    if (status === "active") {
-      rotation.value = withRepeat(
-        withTiming(360, { duration: 900, easing: Easing.linear }),
-        -1,
-        false,
-      );
-      labelOpacity.value = withTiming(1, { duration: 250 });
-    } else if (status === "completed") {
-      cancelAnimation(rotation);
-      rotation.value = 0;
-      checkScale.value = withSpring(1, { damping: 12, stiffness: 180 });
-      checkOpacity.value = withTiming(1, { duration: 250 });
-      labelOpacity.value = withTiming(0.45, { duration: 300 });
-    }
+    rotation.value = withRepeat(
+      withTiming(360, { duration: 900, easing: Easing.linear }),
+      -1,
+      false,
+    );
+    return () => cancelAnimation(rotation);
+  }, [rotation]);
 
-    return () => {
-      cancelAnimation(rotation);
-    };
-  }, [status, rotation, checkScale, checkOpacity, labelOpacity]);
-
-  const spinStyle = useAnimatedStyle(() => ({
+  const style = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
-  const checkStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: checkScale.value }],
-    opacity: checkOpacity.value,
-  }));
+  return (
+    <Animated.View style={style}>
+      <View
+        style={{
+          width: 16,
+          height: 16,
+          borderRadius: 8,
+          borderWidth: 2,
+          borderColor: "rgba(214, 169, 61, 0.25)",
+          borderTopColor: "#D6A93D",
+        }}
+      />
+    </Animated.View>
+  );
+}
 
-  const labelStyle = useAnimatedStyle(() => ({
-    opacity: labelOpacity.value,
-  }));
+function FadingStepLabel({ step }: { step: number }) {
+  const [displayed, setDisplayed] = useState(step);
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    if (step === displayed) return;
+
+    opacity.value = withTiming(0, { duration: 220 }, (finished) => {
+      if (finished) {
+        runOnJS(setDisplayed)(step);
+        opacity.value = withTiming(1, { duration: 280 });
+      }
+    });
+  }, [step]);
+
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
   return (
-    <View className="flex-row items-center gap-3 py-1">
-      <View className="h-6 w-6 items-center justify-center">
-        {status === "pending" ? (
-          <View
-            style={{
-              width: 14,
-              height: 14,
-              borderRadius: 7,
-              borderWidth: 1.5,
-              borderColor: "rgba(255, 255, 255, 0.2)",
-            }}
-          />
-        ) : status === "active" ? (
-          <Animated.View style={spinStyle}>
-            <View
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: 8,
-                borderWidth: 2,
-                borderColor: "rgba(214, 169, 61, 0.25)",
-                borderTopColor: "#D6A93D",
-              }}
-            />
-          </Animated.View>
-        ) : (
-          <Animated.View style={checkStyle}>
-            <FontAwesome6 name="circle-check" iconStyle="solid" size={16} color="#4ade80" />
-          </Animated.View>
-        )}
-      </View>
-
-      <Animated.View style={labelStyle}>
-        <Text
-          className={`text-sm leading-5 ${
-            status === "active" ? "font-semibold text-[--text-primary]" : "text-[--text-muted]"
-          }`}
-        >
-          {label}
-        </Text>
-      </Animated.View>
-    </View>
+    <Animated.View style={style}>
+      <Text className="text-sm font-semibold text-[--text-primary]">
+        {STEPS[displayed]}
+      </Text>
+    </Animated.View>
   );
 }
 
@@ -181,16 +151,9 @@ export function LoadingSection({ visible }: LoadingSectionProps) {
       </View>
 
       <ThemedCard className="mb-4 rounded-[20px] px-5 py-4" accent="accentSoft">
-        <View className="gap-1">
-          {STEPS.map((label, index) => (
-            <StepItem
-              key={label}
-              label={label}
-              status={
-                index < activeStep ? "completed" : index === activeStep ? "active" : "pending"
-              }
-            />
-          ))}
+        <View className="flex-row items-center gap-3">
+          <Spinner />
+          <FadingStepLabel step={activeStep} />
         </View>
       </ThemedCard>
 
