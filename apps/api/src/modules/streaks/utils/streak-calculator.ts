@@ -1,84 +1,60 @@
-export type StreakMetrics = {
+import { shiftDateKey } from '../../../common/utils/date-keys';
+
+export type CompletionStreak = {
   currentStreak: number;
   longestStreak: number;
-  lastActiveDate?: string;
-  totalDaysActive: number;
 };
 
-export function calculateStreakMetrics(rawDates: string[]): StreakMetrics {
-  const uniqueSorted = Array.from(new Set(rawDates)).sort();
-
-  if (uniqueSorted.length === 0) {
-    return {
-      currentStreak: 0,
-      longestStreak: 0,
-      totalDaysActive: 0,
-    };
+/**
+ * Completion-based streak.
+ *
+ * @param completedDates  YYYY-MM-DD keys of days that had at least one completed
+ *                        dhikr log (order/duplicates irrelevant).
+ * @param todayKey        today's YYYY-MM-DD key (in the app timezone).
+ *
+ * - `longestStreak`: the longest run of consecutive completed days.
+ * - `currentStreak`: consecutive completed days anchored to today, or to
+ *   yesterday if today is not yet completed (grace period); otherwise 0.
+ */
+export function calculateCompletionStreak(
+  completedDates: string[],
+  todayKey: string,
+): CompletionStreak {
+  const completed = new Set(completedDates);
+  if (completed.size === 0) {
+    return { currentStreak: 0, longestStreak: 0 };
   }
+
+  const sorted = Array.from(completed).sort();
 
   let longest = 1;
   let rolling = 1;
-
-  for (let i = 1; i < uniqueSorted.length; i += 1) {
-    const prev = parseDate(uniqueSorted[i - 1]);
-    const curr = parseDate(uniqueSorted[i]);
-
-    if (!prev || !curr) {
-      continue;
-    }
-
-    const diff = dayDiff(prev, curr);
-
-    if (diff === 1) {
+  for (let i = 1; i < sorted.length; i += 1) {
+    if (shiftDateKey(sorted[i - 1], 1) === sorted[i]) {
       rolling += 1;
-    } else if (diff > 1) {
+    } else {
       rolling = 1;
     }
-
     if (rolling > longest) {
       longest = rolling;
     }
   }
 
-  let current = 1;
+  let anchor: string | null = null;
+  if (completed.has(todayKey)) {
+    anchor = todayKey;
+  } else if (completed.has(shiftDateKey(todayKey, -1))) {
+    anchor = shiftDateKey(todayKey, -1);
+  }
 
-  for (let i = uniqueSorted.length - 1; i > 0; i -= 1) {
-    const prev = parseDate(uniqueSorted[i - 1]);
-    const curr = parseDate(uniqueSorted[i]);
-
-    if (!prev || !curr) {
-      break;
-    }
-
-    const diff = dayDiff(prev, curr);
-
-    if (diff === 1) {
+  let current = 0;
+  if (anchor) {
+    let cursor = anchor;
+    while (completed.has(cursor)) {
       current += 1;
-      continue;
+      cursor = shiftDateKey(cursor, -1);
     }
-
-    break;
   }
 
-  return {
-    currentStreak: current,
-    longestStreak: longest,
-    totalDaysActive: uniqueSorted.length,
-    lastActiveDate: uniqueSorted[uniqueSorted.length - 1],
-  };
-}
-
-function parseDate(date: string) {
-  const [year, month, day] = date
-    .split('-')
-    .map((value) => Number.parseInt(value, 10));
-  if (!year || !month || !day) {
-    return null;
-  }
-
-  return new Date(Date.UTC(year, month - 1, day));
-}
-
-function dayDiff(a: Date, b: Date) {
-  return Math.floor((b.getTime() - a.getTime()) / 86_400_000);
+  return { currentStreak: current, longestStreak: longest };
 }

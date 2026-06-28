@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
+import { StreaksService } from '../streaks/streaks.service';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { CreateDhikrLogBulkDto } from './dto/create-dhikr-log-bulk.dto';
 import { CreateDhikrLogDto } from './dto/create-dhikr-log.dto';
@@ -21,7 +22,23 @@ export class DhikrLogsService {
     private readonly dhikrLogModel: Model<DhikrLogDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Dhikr.name) private readonly dhikrModel: Model<DhikrDocument>,
+    private readonly streaksService: StreaksService,
   ) {}
+
+  /**
+   * Best-effort streak refresh after a log write. Never throws — a streak
+   * recalculation failure must not fail the dhikr log write itself.
+   */
+  private async safeRecalcStreak(userId?: string) {
+    if (!userId) {
+      return;
+    }
+    try {
+      await this.streaksService.recalculateForUser(userId);
+    } catch {
+      // intentionally swallowed
+    }
+  }
 
   async create(payload: CreateDhikrLogDto) {
     const userObjectId = this.asObjectId(payload.userId);
@@ -103,6 +120,8 @@ export class DhikrLogsService {
       .lean()
       .exec();
 
+    await this.safeRecalcStreak(payload.userId);
+
     return created;
   }
 
@@ -157,6 +176,8 @@ export class DhikrLogsService {
       date: item.date,
     }));
     const items = await this.dhikrLogModel.find({ $or: keys }).lean().exec();
+
+    await this.safeRecalcStreak(payload.items[0]?.userId);
 
     return {
       insertedCount: result.upsertedCount,

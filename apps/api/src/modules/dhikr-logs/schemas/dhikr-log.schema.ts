@@ -46,10 +46,10 @@ export class DhikrLog {
 
   @Prop({
     type: String,
-    enum: ['manual', 'ai', 'kandil', 'notification'],
+    enum: ['manual', 'ai', 'special-day', 'notification'],
     default: 'manual',
   })
-  source!: 'manual' | 'ai' | 'kandil' | 'notification';
+  source!: 'manual' | 'ai' | 'special-day' | 'notification';
 
   @Prop({ type: Boolean, default: false })
   isCompleted!: boolean;

@@ -6,8 +6,9 @@ import {
   type DhikrLogDocument,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { User, type UserDocument } from '../users/schemas/user.schema';
+import { istanbulDateKey } from '../../common/utils/date-keys';
 import { Streak, type StreakDocument } from './schemas/streak.schema';
-import { calculateStreakMetrics } from './utils/streak-calculator';
+import { calculateCompletionStreak } from './utils/streak-calculator';
 
 @Injectable()
 export class StreaksService {
@@ -27,26 +28,48 @@ export class StreaksService {
       .lean()
       .exec();
 
-    if (!streak) {
-      return {
-        userId,
-        currentStreak: 0,
-        longestStreak: 0,
-        totalDaysActive: 0,
-      };
+    if (streak) {
+      return streak;
     }
 
-    return streak;
+    // Lazy backfill: a user can have logs but no streak document yet (the
+    // collection was previously never written). Compute & persist on first read.
+    const hasLogs = await this.dhikrLogModel.exists({ userId: objectId });
+    if (hasLogs) {
+      return this.recalculateForUser(userId);
+    }
+
+    return {
+      userId,
+      currentStreak: 0,
+      longestStreak: 0,
+      totalDaysActive: 0,
+    };
   }
 
   async recalculateForUser(userId: string) {
     const objectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
     await this.ensureUserExists(objectId);
 
-    const activeDates = await this.dhikrLogModel.distinct('date', {
-      userId: objectId,
-    });
-    const metrics = calculateStreakMetrics(activeDates);
+    const [allDates, completedDates] = await Promise.all([
+      this.dhikrLogModel.distinct('date', { userId: objectId }),
+      this.dhikrLogModel.distinct('date', {
+        userId: objectId,
+        isCompleted: true,
+      }),
+    ]);
+
+    const todayKey = istanbulDateKey(new Date());
+    const { currentStreak, longestStreak } = calculateCompletionStreak(
+      completedDates,
+      todayKey,
+    );
+    const sortedActive = allDates.slice().sort();
+    const totalDaysActive = sortedActive.length;
+    const lastActiveDate =
+      sortedActive.length > 0
+        ? sortedActive[sortedActive.length - 1]
+        : undefined;
 
     const updated = await this.streakModel
       .findOneAndUpdate(
@@ -54,10 +77,10 @@ export class StreaksService {
         {
           $set: {
             userId: objectId,
-            currentStreak: metrics.currentStreak,
-            longestStreak: metrics.longestStreak,
-            totalDaysActive: metrics.totalDaysActive,
-            lastActiveDate: metrics.lastActiveDate,
+            currentStreak,
+            longestStreak,
+            totalDaysActive,
+            lastActiveDate,
           },
         },
         { upsert: true, returnDocument: 'after' },

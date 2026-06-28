@@ -19,5 +19,6 @@ import { Streak, StreakSchema } from './schemas/streak.schema';
   ],
   controllers: [StreaksController],
   providers: [StreaksService],
+  exports: [StreaksService],
 })
 export class StreaksModule {}

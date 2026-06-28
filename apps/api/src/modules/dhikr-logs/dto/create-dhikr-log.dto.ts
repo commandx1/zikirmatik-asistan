@@ -13,7 +13,7 @@ import {
 const LOG_SOURCE = {
   manual: 'manual',
   ai: 'ai',
-  kandil: 'kandil',
+  specialDay: 'special-day',
   notification: 'notification',
 } as const;
 
@@ -64,7 +64,7 @@ export class CreateDhikrLogDto {
 
   @IsOptional()
   @IsEnum(LOG_SOURCE)
-  source?: 'manual' | 'ai' | 'kandil' | 'notification';
+  source?: 'manual' | 'ai' | 'special-day' | 'notification';
 
   @IsOptional()
   @IsBoolean()
