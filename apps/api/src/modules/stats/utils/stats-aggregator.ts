@@ -115,7 +115,7 @@ export type RawDailyDoc = { _id: string; count: number; completed: number };
 export type RawKeyedDoc = { _id: number | null; count: number };
 export type RawSourceDoc = { _id: StatsSourceKey | null; count: number };
 export type RawTopDhikrDoc = {
-  dhikrId?: unknown;
+  dhikrId?: { toString(): string } | null;
   customDhikrId?: string | null;
   customName?: string | null;
   dhikrName?: string | null;
