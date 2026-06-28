@@ -4,7 +4,11 @@
 
 export type StatsSourceKey = 'manual' | 'ai' | 'special-day' | 'notification';
 
-export type StatsDailyPoint = { date: string; count: number; completed: number };
+export type StatsDailyPoint = {
+  date: string;
+  count: number;
+  completed: number;
+};
 export type StatsHeatmapPoint = { date: string; count: number };
 export type StatsDistributionPoint = { key: number; count: number };
 export type StatsSourceBreakdown = Record<StatsSourceKey, number>;
@@ -213,8 +217,7 @@ function mapTopDhikrs(docs: RawTopDhikrDoc[]): StatsTopDhikr[] {
       (doc.dhikrId != null ? String(doc.dhikrId) : undefined) ??
       (doc.customDhikrId ? String(doc.customDhikrId) : undefined) ??
       'unknown';
-    const label =
-      doc.dhikrName?.trim() || doc.customName?.trim() || 'Zikir';
+    const label = doc.dhikrName?.trim() || doc.customName?.trim() || 'Zikir';
     return {
       key,
       label,

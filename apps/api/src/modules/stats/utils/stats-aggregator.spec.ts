@@ -19,7 +19,9 @@ describe('shiftDateKey', () => {
 describe('istanbulDateKey', () => {
   it('formats an instant as the Istanbul calendar day', () => {
     // 2026-06-26T22:30:00Z is already 2026-06-27 01:30 in Istanbul (UTC+3)
-    expect(istanbulDateKey(new Date('2026-06-26T22:30:00Z'))).toBe('2026-06-27');
+    expect(istanbulDateKey(new Date('2026-06-26T22:30:00Z'))).toBe(
+      '2026-06-27',
+    );
   });
 });
 
@@ -120,7 +122,9 @@ describe('buildStatsSummary', () => {
   it('normalizes distributions to fixed length', () => {
     expect(summary.weekdayDistribution).toHaveLength(7);
     expect(summary.hourDistribution).toHaveLength(24);
-    expect(summary.weekdayDistribution.find((p) => p.key === 6)?.count).toBe(150);
+    expect(summary.weekdayDistribution.find((p) => p.key === 6)?.count).toBe(
+      150,
+    );
     expect(summary.hourDistribution.find((p) => p.key === 9)?.count).toBe(100);
   });
 
