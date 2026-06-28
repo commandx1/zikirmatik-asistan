@@ -49,6 +49,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
   const clearFreeModeSession = useDhikrStore(state => state.clearFreeModeSession)
   const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
   const activeAiContext = useDhikrStore(state => state.activeAiContext)
+  const setSelectedSource = useDhikrStore(state => state.setSelectedSource)
 
   const authStatus = useAuthStore(s => s.status)
   const sessionUserId = useAuthStore(s => s.session?.userId)
@@ -80,12 +81,14 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
           isFavorite: false,
         })
         selectDhikr(item.id)
+        setSelectedSource('special-day')
         setSelectedTarget(target)
         setSelectedCount(0)
         router.push('/(tabs)/home')
       },
       onContinue: () => {
         selectDhikr(item.id)
+        setSelectedSource('special-day')
         setSelectedTarget(target)
         setSelectedCount(progressCount)
         router.push('/(tabs)/home')
@@ -120,16 +123,16 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
     const count = Math.max(0, Math.floor(selectedDhikr.current))
     const safeCount = selectedDhikr.target > 0 ? Math.min(selectedDhikr.target, count) : count
     const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target
-    const aiCtx = activeAiContext?.dhikrId === selectedDhikr.id
-      ? { source: 'ai' as const, aiRecommendationId: activeAiContext.recommendationId, aiPrompt: activeAiContext.prompt, aiAssistantNote: activeAiContext.assistantNote }
-      : { source: 'manual' as const }
+    const sourceMeta = activeAiContext?.dhikrId === selectedDhikr.id
+      ? { source: 'special-day' as const, aiRecommendationId: activeAiContext.recommendationId, aiPrompt: activeAiContext.prompt, aiAssistantNote: activeAiContext.assistantNote }
+      : { source: 'special-day' as const }
     const isObjectId = /^[a-f\d]{24}$/i.test(selectedDhikr.id)
     const dateKey = toDateKey(new Date())
     try {
       const savedLog = await createDhikrLog(
         isObjectId
-          ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted, isFavorite: selectedDhikr.isFavorite }
-          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: selectedDhikr.nameTurkish || selectedDhikr.transliteration, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
+          ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...sourceMeta, isCompleted, isFavorite: selectedDhikr.isFavorite }
+          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: selectedDhikr.nameTurkish || selectedDhikr.transliteration, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...sourceMeta, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
         sessionAccessToken
       )
       applySavedBackendLog(savedLog)

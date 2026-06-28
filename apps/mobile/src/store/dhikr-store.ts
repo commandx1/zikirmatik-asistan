@@ -25,6 +25,7 @@ type DhikrStore = {
   items: ZikirItem[];
   selectedDhikrId: string;
   activeAiContext?: AiDhikrContext;
+  selectedSource?: 'special-day';
   freeModeCount: number;
   freeModeTarget: number;
   unsavedProgressDhikrIds: string[];
@@ -90,6 +91,7 @@ type DhikrStore = {
       isFavorite?: boolean;
     }>
   ) => void;
+  setSelectedSource: (source: 'special-day' | undefined) => void;
   applySavedBackendLog: (log: BackendDhikrLog) => void;
   setSyncError: (message?: string) => void;
   resetSessionScoped: () => void;
@@ -223,6 +225,7 @@ export const useDhikrStore = create<DhikrStore>()(
     items: INITIAL_ITEMS,
     selectedDhikrId: "",
     activeAiContext: undefined,
+    selectedSource: undefined,
     freeModeCount: 0,
     freeModeTarget: 0,
     unsavedProgressDhikrIds: [],
@@ -241,10 +244,12 @@ export const useDhikrStore = create<DhikrStore>()(
             dhikrId: id,
             ...aiContext
           }
-        : undefined
+        : undefined,
+      selectedSource: undefined,
     });
   },
-  clearSelectedDhikr: () => set({ selectedDhikrId: "", activeAiContext: undefined }),
+  clearSelectedDhikr: () => set({ selectedDhikrId: "", activeAiContext: undefined, selectedSource: undefined }),
+  setSelectedSource: (source) => set({ selectedSource: source }),
   upsertPersonalDhikr: (item) =>
     set((state) => {
       const existing = state.items.find((value) => value.id === item.id);

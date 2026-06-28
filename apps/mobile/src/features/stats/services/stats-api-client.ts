@@ -1,31 +1,21 @@
 import { Platform } from "react-native";
+import type { StatsSummary } from "@zikirmatik/shared";
 
-export type BackendStreak = {
-  userId: string;
-  currentStreak: number;
-  longestStreak: number;
-  totalDaysActive: number;
-  lastActiveDate?: string;
-};
-
-export class StreaksApiError extends Error {
+export class StatsApiError extends Error {
   constructor(
     public readonly kind: "transient" | "terminal",
     message: string,
     public readonly status?: number
   ) {
     super(message);
-    this.name = "StreaksApiError";
+    this.name = "StatsApiError";
   }
 }
 
 const API_BASE_URL = resolveApiBaseUrl();
 
-export async function getUserStreak(
-  userId: string,
-  accessToken?: string
-): Promise<BackendStreak> {
-  return requestJson<BackendStreak>(`/v1/streaks/${userId}`, accessToken);
+export async function getStatsSummary(accessToken?: string): Promise<StatsSummary> {
+  return requestJson<StatsSummary>("/v1/stats/summary", accessToken);
 }
 
 function resolveApiBaseUrl() {
@@ -62,16 +52,16 @@ async function requestJson<TResponse>(
 
     if (!response.ok) {
       const message = extractErrorMessage(data, "İstatistik verisi alınamadı.");
-      throw new StreaksApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
+      throw new StatsApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
     }
 
     return (data ?? {}) as TResponse;
   } catch (error) {
-    if (error instanceof StreaksApiError) {
+    if (error instanceof StatsApiError) {
       throw error;
     }
 
-    throw new StreaksApiError("transient", "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.");
+    throw new StatsApiError("transient", "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.");
   }
 }
 

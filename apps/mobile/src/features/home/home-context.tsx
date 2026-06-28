@@ -6,7 +6,8 @@ import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
 import { useProfileStore } from '../../store/profile-store'
 import { ESMAUL_HUSNA } from '../focus/data'
 import type { EsmaulHusnaItem, ZikirSource } from '../focus/types'
-import { createDhikrLog, listDhikrLogsByUser, type BackendDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
+import { createDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
+import { getUserStreak } from './services/streaks-api-client'
 import { findVerifiedActiveDhikrByTransliteration } from '../dhikrs/services/dhikrs-api-client'
 import { createUserDhikr } from '../dhikrs/services/user-dhikrs-api-client'
 import {
@@ -168,6 +169,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const unsavedProgressDhikrIds = useDhikrStore(state => state.unsavedProgressDhikrIds)
   const discardUnsavedProgress = useDhikrStore(state => state.discardUnsavedProgress)
   const activeAiContext = useDhikrStore(state => state.activeAiContext)
+  const selectedSource = useDhikrStore(state => state.selectedSource)
+  const setSelectedSource = useDhikrStore(state => state.setSelectedSource)
   const authDisplayName = useAuthStore(state => state.session?.displayName)
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
@@ -261,8 +264,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const logs = await listDhikrLogsByUser(sessionUserId, undefined, undefined, sessionAccessToken)
-      setStreakDays(calculateCompletionStreakDays(logs))
+      const streak = await getUserStreak(sessionUserId, sessionAccessToken)
+      setStreakDays(streak.currentStreak)
     } catch {
       // Keep the existing streak value when network is unavailable.
     }
@@ -493,9 +496,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
               aiPrompt: activeAiContext.prompt,
               aiAssistantNote: activeAiContext.assistantNote
             }
-          : {
-              source: 'manual' as const
-            }
+          : selectedSource === 'special-day'
+            ? { source: 'special-day' as const }
+            : { source: 'manual' as const }
       const payload = isObjectId(selectedDhikr.id)
         ? {
             userId: sessionUserId,
@@ -527,6 +530,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           sessionAccessToken
         )
         applySavedBackendLog(savedLog)
+        setSelectedSource(undefined)
         return true
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : 'Zikir kaydı kaydedilemedi.'
@@ -1118,58 +1122,6 @@ function toDateKey(value: Date) {
   const month = String(value.getMonth() + 1).padStart(2, '0')
   const day = String(value.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
-}
-
-function calculateCompletionStreakDays(logs: BackendDhikrLog[]) {
-  if (logs.length === 0) {
-    return 0
-  }
-
-  const completionByDay = new Map<string, boolean>()
-  const hasIncompleteOnlyByDay = new Map<string, boolean>()
-
-  for (const log of logs) {
-    const hasCompleted = completionByDay.get(log.date) ?? false
-    const hasIncompleteOnly = hasIncompleteOnlyByDay.get(log.date) ?? false
-
-    if (log.isCompleted) {
-      completionByDay.set(log.date, true)
-      hasIncompleteOnlyByDay.set(log.date, false)
-      continue
-    }
-
-    if (!hasCompleted) {
-      hasIncompleteOnlyByDay.set(log.date, hasIncompleteOnly || true)
-    }
-  }
-
-  const today = startOfDay(new Date())
-  const todayKey = toDateKey(today)
-  const todayCompleted = completionByDay.get(todayKey) === true
-  const todayIncompleteOnly = hasIncompleteOnlyByDay.get(todayKey) === true
-
-  if (todayIncompleteOnly && !todayCompleted) {
-    return 0
-  }
-
-  let cursor = todayCompleted ? today : new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
-  let streak = 0
-
-  while (true) {
-    const key = toDateKey(cursor)
-    if (completionByDay.get(key) !== true) {
-      break
-    }
-
-    streak += 1
-    cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() - 1)
-  }
-
-  return streak
-}
-
-function startOfDay(value: Date) {
-  return new Date(value.getFullYear(), value.getMonth(), value.getDate())
 }
 
 function buildNextAutoFreeTitle(

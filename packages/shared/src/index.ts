@@ -1,5 +1,6 @@
 export * from "./types/theme";
 export * from "./types/domain";
+export * from "./types/stats";
 export * from "./utils/theme";
 export * from "./utils/format";
 export * from "./utils/date";

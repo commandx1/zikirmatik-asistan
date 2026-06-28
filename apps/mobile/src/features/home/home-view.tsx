@@ -166,14 +166,15 @@ function FreeModeButton() {
   }
 
   return (
-    <View className='mb-4 px-5'>
+    <View className='mb-3 items-center'>
       <Pressable
         onPress={home.onStartFreeMode}
-        className='rounded-full border px-4 py-3'
+        className='flex-row items-center gap-2 rounded-full border px-4 py-2'
         style={{ borderColor: withAlpha(tokens.textPrimary, 0.2), backgroundColor: withAlpha(tokens.card, 0.72) }}
       >
-        <Text className='text-center text-sm font-semibold' style={{ color: tokens.textPrimary }}>
-          Serbest Moda Geç
+        <FontAwesome6 name='plus' size={11} color={tokens.textMuted} />
+        <Text className='text-xs font-semibold' style={{ color: tokens.textPrimary }}>
+          Serbest Mod
         </Text>
       </Pressable>
     </View>
@@ -481,9 +482,9 @@ export function HomeView() {
         refreshing={home.isRefreshing}
       >
         <Pressable onPress={home.tapAnywhereEnabled ? home.onCountPress : undefined} style={{ flex: 1 }}>
+          <FreeModeButton />
           <AppleWatch />
           <SelectedDhikrMeaning />
-          <FreeModeButton />
           <View onLayout={event => {
             esmaSectionYRef.current = event.nativeEvent.layout.y
           }}>
