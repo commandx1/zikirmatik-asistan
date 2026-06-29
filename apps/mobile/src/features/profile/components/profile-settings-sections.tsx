@@ -18,6 +18,7 @@ type ProfileSettingsSectionsProps = {
   onPressManageSubscription: () => void;
   onPressRateApp: () => void;
   onPressSendFeedback: () => void;
+  onPressTourReplay: () => void;
   onPressLogout: () => void;
   onPressDeleteAccount: () => void;
   onToggleDailyReminder: (value: boolean) => void;
@@ -37,6 +38,7 @@ export function ProfileSettingsSections({
   onPressManageSubscription,
   onPressRateApp,
   onPressSendFeedback,
+  onPressTourReplay,
   onPressLogout,
   onPressDeleteAccount,
   onToggleDailyReminder,
@@ -107,6 +109,7 @@ export function ProfileSettingsSections({
         <ProfileSettingsCard>
           {/*<ProfileLinkRow label="Dini Danışman Notu" iconName="book-open" value="İçeriklerimiz hakkında" bottomBorder />
           <ProfileLinkRow label="Gizlilik Politikası" iconName="shield-halved" bottomBorder />*/}
+          <ProfileLinkRow label="Uygulamayı Tanıt" iconName="circle-question" bottomBorder onPress={onPressTourReplay} />
           <ProfileLinkRow label="Uygulamayı Oyla" iconName="star" rightIconRegular bottomBorder onPress={onPressRateApp} />
           <ProfileLinkRow label="Geri Bildirim Gönder" iconName="comment-dots" rightIconRegular bottomBorder onPress={onPressSendFeedback} />
           <ProfileLogoutRow onPress={onPressLogout} />

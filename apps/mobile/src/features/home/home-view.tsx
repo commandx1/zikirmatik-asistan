@@ -3,6 +3,9 @@ import { useThemeTokens } from '@zikirmatik/ui'
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import { Animated, InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { useOnboardingStore } from '../../store/onboarding-store'
+import { useTour } from '../../features/tour/use-tour'
+import { TOUR_REF_WATCH, TOUR_REF_TAP_ANYWHERE } from '../../features/tour/tour-steps'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { DhikrResumeModal } from '../../components/ui/dhikr-resume-modal'
 import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-aware-bottom-sheet-modal'
@@ -20,13 +23,14 @@ const DailyEsmaWelcomeModal = lazy(() =>
   import('./components/daily-esma-welcome-modal').then((m) => ({ default: m.DailyEsmaWelcomeModal }))
 )
 
-function TapAnywhereToggle({ onPress }: { onPress: () => void }) {
+function TapAnywhereToggle({ onPress, spotlightRef }: { onPress: () => void; spotlightRef?: React.RefObject<View | null> }) {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
   const active = home.tapAnywhereEnabled
 
   return (
     <Pressable
+      ref={spotlightRef}
       onPress={onPress}
       className='h-9 w-9 items-center justify-center rounded-full border'
       style={{
@@ -99,14 +103,20 @@ function TapAnywhereToast({ message }: { message: string | null }) {
   )
 }
 
-function TopBar({ onToggleTapAnywhere }: { onToggleTapAnywhere: () => void }) {
+function TopBar({
+  onToggleTapAnywhere,
+  tapAnywhereRef,
+}: {
+  onToggleTapAnywhere: () => void;
+  tapAnywhereRef?: React.RefObject<View | null>;
+}) {
   const home = useHomeContext()
 
   return (
     <PageHeader
       title='Zikirmatik Asistan'
       subtitle={`${home.greeting} • Seri ${home.streakLabel}`}
-      rightAccessory={<TapAnywhereToggle onPress={onToggleTapAnywhere} />}
+      rightAccessory={<TapAnywhereToggle onPress={onToggleTapAnywhere} spotlightRef={tapAnywhereRef} />}
     />
   )
 }
@@ -414,6 +424,24 @@ export function HomeView() {
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isMountedRef = useRef(false)
+  const appleWatchRef = useRef<View>(null)
+  const tapAnywhereRef = useRef<View>(null)
+  const { startTour, registerRef } = useTour()
+  const isOnboardingCompleted = useOnboardingStore((s) => s.isCompleted)
+  const isTourCompleted = useOnboardingStore((s) => s.isTourCompleted)
+
+  useEffect(() => {
+    registerRef(TOUR_REF_WATCH, appleWatchRef)
+    registerRef(TOUR_REF_TAP_ANYWHERE, tapAnywhereRef)
+  }, [registerRef])
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!isOnboardingCompleted || isTourCompleted) return
+      const timer = setTimeout(() => startTour(), 600)
+      return () => clearTimeout(timer)
+    }, [isOnboardingCompleted, isTourCompleted, startTour])
+  )
 
   useEffect(() => {
     if (!isMountedRef.current) {
@@ -472,7 +500,7 @@ export function HomeView() {
 
   return (
     <PageLayout frameClassName='relative flex-1 w-full'>
-      <TopBar onToggleTapAnywhere={home.toggleTapAnywhere} />
+      <TopBar onToggleTapAnywhere={home.toggleTapAnywhere} tapAnywhereRef={tapAnywhereRef} />
       <PageScrollView
         scrollRef={scrollRef}
         contentInnerClassName='w-full'
@@ -483,7 +511,7 @@ export function HomeView() {
       >
         <Pressable onPress={home.tapAnywhereEnabled ? home.onCountPress : undefined} style={{ flex: 1 }}>
           <FreeModeButton />
-          <AppleWatch />
+          <AppleWatch spotlightRef={appleWatchRef} />
           <SelectedDhikrMeaning />
           <View onLayout={event => {
             esmaSectionYRef.current = event.nativeEvent.layout.y

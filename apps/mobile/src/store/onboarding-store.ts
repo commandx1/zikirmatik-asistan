@@ -9,6 +9,7 @@ type OnboardingState = {
   hasHydrated: boolean;
   purpose: string;
   city: string;
+  isTourCompleted: boolean;
   setStep: (step: number) => void;
   completeOnboarding: () => void;
   resetOnboarding: () => void;
@@ -16,6 +17,8 @@ type OnboardingState = {
   setCity: (city: string) => void;
   applyBackendSnapshot: (payload: { purpose?: string; city?: string; isCompleted?: boolean }) => void;
   markHydrated: () => void;
+  completeTour: () => void;
+  resetTour: () => void;
 };
 
 const safeAsyncStorage: StateStorage = {
@@ -50,6 +53,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       hasHydrated: false,
       purpose: "habit",
       city: "",
+      isTourCompleted: false,
       setStep: (step) => set({ step }),
       completeOnboarding: () => set({ isCompleted: true, step: 3 }),
       resetOnboarding: () =>
@@ -76,7 +80,9 @@ export const useOnboardingStore = create<OnboardingState>()(
             step: isCompleted ? 3 : 1
           };
         }),
-      markHydrated: () => set({ hasHydrated: true })
+      markHydrated: () => set({ hasHydrated: true }),
+      completeTour: () => set({ isTourCompleted: true }),
+      resetTour: () => set({ isTourCompleted: false })
     }),
     {
       name: "onboarding-store-v4",
@@ -85,7 +91,8 @@ export const useOnboardingStore = create<OnboardingState>()(
         step: state.step,
         isCompleted: state.isCompleted,
         purpose: state.purpose,
-        city: state.city
+        city: state.city,
+        isTourCompleted: state.isTourCompleted
       }),
       onRehydrateStorage: () => (state) => {
         state?.markHydrated();

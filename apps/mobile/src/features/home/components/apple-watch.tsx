@@ -1,6 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useRouter } from 'expo-router'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native'
 import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { useThemeTokens } from '@zikirmatik/ui'
@@ -31,7 +31,8 @@ const INNER_RING_SIZE = 122
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
 type AppleWatchProps = {
-  previewTokens?: ThemeTokens
+  previewTokens?: ThemeTokens;
+  spotlightRef?: RefObject<View | null>;
 }
 
 function ProgressRing({ progress, accent, trackColor }: { progress: number; accent: string; trackColor: string }) {
@@ -72,7 +73,7 @@ function ProgressRing({ progress, accent, trackColor }: { progress: number; acce
   )
 }
 
-export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
+export function AppleWatch({ previewTokens, spotlightRef }: AppleWatchProps = {}) {
   const router = useRouter()
   const [isResetConfirmVisible, setIsResetConfirmVisible] = useState(false)
   const { tokens: activeTokens, themeName } = useThemeTokens()
@@ -162,7 +163,7 @@ export function AppleWatch({ previewTokens }: AppleWatchProps = {}) {
   const onResetConfirmPress = () => setIsResetConfirmVisible(true)
 
   return (
-    <View className='mb-8 items-center'>
+    <View ref={spotlightRef} className='mb-8 items-center'>
       <View className='h-[64px] w-[168px] rounded-t-[26px]' style={{ backgroundColor: strapColor }} />
 
       <View className='relative z-10 -mt-5'>

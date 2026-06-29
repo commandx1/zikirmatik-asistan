@@ -19,6 +19,8 @@ import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { THEME_LABELS } from "../../../theme/labels";
+import { useOnboardingStore } from "../../../store/onboarding-store";
+import { useTour } from "../../tour/use-tour";
 
 type PremiumPlan = "monthly" | "annual";
 
@@ -46,6 +48,8 @@ export function useProfile() {
   const session = useAuthStore((s) => s.session);
   const authDisplayName = useAuthStore((s) => s.session?.displayName);
   const signOut = useAuthStore((s) => s.signOut);
+  const resetTour = useOnboardingStore((s) => s.resetTour);
+  const { startTour } = useTour();
 
   const [isPremiumSheetOpen, setPremiumSheetOpen] = useState(false);
   const [backendUser, setBackendUser] = useState<BackendUser>();
@@ -148,6 +152,11 @@ export function useProfile() {
   const onLogout = async () => {
     await signOut();
     router.replace("/auth");
+  };
+
+  const tourReplay = () => {
+    resetTour();
+    setTimeout(() => startTour(), 100);
   };
 
   const openDeleteAccountModal = () => setIsDeleteAccountModalOpen(true);
@@ -550,6 +559,7 @@ export function useProfile() {
     setPremiumPlan,
     activatePremium,
     restorePremium,
+    tourReplay,
     onLogout,
     isDeleteAccountModalOpen,
     isDeletingAccount,

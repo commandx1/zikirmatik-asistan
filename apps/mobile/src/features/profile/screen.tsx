@@ -42,6 +42,7 @@ export function ProfileScreen() {
               onPressManageSubscription={profile.manageSubscription}
               onPressRateApp={profile.rateApp}
               onPressSendFeedback={profile.sendFeedback}
+              onPressTourReplay={profile.tourReplay}
               onPressLogout={profile.onLogout}
               onPressDeleteAccount={profile.openDeleteAccountModal}
               onToggleDailyReminder={profile.onToggleDailyReminder}
