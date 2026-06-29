@@ -12,14 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { ThemedCard } from "../../../components/ui/themed-card";
 
-const STEPS = [
-  "Mesajınız analiz ediliyor...",
-  "Zikirler taranıyor...",
-  "Size uygun zikirler belirleniyor...",
-  "Öneriler hazırlanıyor...",
-] as const;
-
-const STEP_DELAYS = [2050, 3550, 5650] as const;
+const DEFAULT_STEP_MESSAGE = "Hazırlanıyor...";
 
 function Spinner() {
   const rotation = useSharedValue(0);
@@ -53,27 +46,27 @@ function Spinner() {
   );
 }
 
-function FadingStepLabel({ step }: { step: number }) {
-  const [displayed, setDisplayed] = useState(step);
+function FadingStepLabel({ message }: { message: string }) {
+  const [displayed, setDisplayed] = useState(message);
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    if (step === displayed) return;
+    if (message === displayed) return;
 
     opacity.value = withTiming(0, { duration: 220 }, (finished) => {
       if (finished) {
-        runOnJS(setDisplayed)(step);
+        runOnJS(setDisplayed)(message);
         opacity.value = withTiming(1, { duration: 280 });
       }
     });
-  }, [step]);
+  }, [message, displayed, opacity]);
 
   const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
   return (
     <Animated.View style={style}>
       <Text className="text-sm font-semibold text-[--text-primary]">
-        {STEPS[displayed]}
+        {displayed}
       </Text>
     </Animated.View>
   );
@@ -118,29 +111,10 @@ function SkeletonCard({ visible }: { visible: boolean }) {
 
 type LoadingSectionProps = {
   visible: boolean;
+  stepMessage?: string;
 };
 
-export function LoadingSection({ visible }: LoadingSectionProps) {
-  const [activeStep, setActiveStep] = useState(0);
-
-  useEffect(() => {
-    if (!visible) {
-      setActiveStep(0);
-      return;
-    }
-
-    setActiveStep(0);
-    const t1 = setTimeout(() => setActiveStep(1), STEP_DELAYS[0]);
-    const t2 = setTimeout(() => setActiveStep(2), STEP_DELAYS[1]);
-    const t3 = setTimeout(() => setActiveStep(3), STEP_DELAYS[2]);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
-  }, [visible]);
-
+export function LoadingSection({ visible, stepMessage }: LoadingSectionProps) {
   if (!visible) return null;
 
   return (
@@ -153,7 +127,7 @@ export function LoadingSection({ visible }: LoadingSectionProps) {
       <ThemedCard className="mb-4 rounded-[20px] px-5 py-4" accent="accentSoft">
         <View className="flex-row items-center gap-3">
           <Spinner />
-          <FadingStepLabel step={activeStep} />
+          <FadingStepLabel message={stepMessage || DEFAULT_STEP_MESSAGE} />
         </View>
       </ThemedCard>
 

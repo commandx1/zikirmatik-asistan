@@ -14,6 +14,7 @@ import {
   listAiRecommendations,
   selectAiRecommendation
 } from "../services/ai-api-client";
+import { createAiProgressSocket } from "../services/ai-progress-socket";
 import { showRewardedAdGate } from "../services/rewarded-ad-gate";
 import { buildAiGuideHistoryItems, resolveVisibleAiGuideHistory } from "../services/ai-guide-history-service";
 import { useProfileStore } from "../../../store/profile-store";
@@ -49,6 +50,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [isPremiumVerified, setIsPremiumVerified] = useState(false);
   const [freeUsedToday, setFreeUsedToday] = useState(0);
   const [quotaConfirmed, setQuotaConfirmed] = useState(false);
+  const [loadingStep, setLoadingStep] = useState("");
 
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
@@ -253,8 +255,18 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const executeRecommendationRequest = useCallback(
     async (request: { freeText?: string }) => {
       setIsLoading(true);
+      setLoadingStep("");
       setError(undefined);
       setOffTopicMessage(undefined);
+
+      const progressSocket = createAiProgressSocket();
+      let socketId: string | undefined;
+      try {
+        socketId = await progressSocket.connect();
+        progressSocket.onStep(({ message }) => setLoadingStep(message));
+      } catch {
+        // socket bağlanamazsa silent devam
+      }
 
       try {
         if (authStatus !== "authenticated" || !userId) {
@@ -268,6 +280,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           userId,
           freeText: request.freeText,
           maxRecommendations: 3,
+          socketId,
           timeContext: {
             hour: now.getHours(),
             dayOfWeek: now.getDay(),
@@ -346,7 +359,9 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           setError("Asistan önerisi alınamadı. Lütfen tekrar deneyin.");
         }
       } finally {
+        progressSocket.disconnect();
         setIsLoading(false);
+        setLoadingStep("");
       }
     },
     [accessToken, authStatus, cacheKey, userId]
@@ -459,6 +474,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     intentInput,
     showInfo,
     isLoading,
+    loadingStep,
     isRewardedSheetOpen,
     isRewardedRunning,
     isRefreshing,

@@ -198,7 +198,7 @@ export function AiGuideScreen() {
             </View>
           ) : null}
           <View onLayout={(e) => { loadingSectionY.current = e.nativeEvent.layout.y; }}>
-            <LoadingSection visible={guide.isLoading} />
+            <LoadingSection visible={guide.isLoading} stepMessage={guide.loadingStep} />
           </View>
           {guide.isLoading ? null : guide.offTopicMessage ? (
             <View className="mb-4 rounded-xl border border-red-900/60 bg-red-950/40 px-4 py-4">

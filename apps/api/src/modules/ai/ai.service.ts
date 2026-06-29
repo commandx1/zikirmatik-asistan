@@ -17,6 +17,7 @@ import {
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
 import { User, type UserDocument } from '../users/schemas/user.schema';
+import { AiProgressGateway } from './ai-progress.gateway';
 import { CreateAiRecommendationDto } from './dto/create-ai-recommendation.dto';
 import { QueryAiRecommendationsDto } from './dto/query-ai-recommendations.dto';
 import { SelectAiRecommendationDto } from './dto/select-ai-recommendation.dto';
@@ -190,6 +191,7 @@ export class AiService {
   private readonly logger = new Logger(AiService.name);
 
   constructor(
+    private readonly progressGateway: AiProgressGateway,
     private readonly configService: ConfigService,
     @InjectModel(AiRecommendation.name)
     private readonly aiRecommendationModel: Model<AiRecommendationDocument>,
@@ -203,13 +205,28 @@ export class AiService {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
+  private emitStep(socketId: string | undefined, key: string, message: string) {
+    if (socketId) {
+      this.progressGateway.emitStep(socketId, key, message);
+    }
+  }
+
   async createRecommendation(payload: CreateAiRecommendationDto) {
+    const startedAt = Date.now();
     const userId = this.asObjectId(
       payload.userId,
       'Geçersiz kullanıcı kimliği.',
     );
+    const freeText = payload.freeText?.trim() || undefined;
+    const socketId = payload.socketId;
+    this.emitStep(socketId, 'analyzing', 'Niyetin analiz ediliyor...');
+    this.logger.log(
+      `[start] userId=${userId.toString()} freeText=${freeText ? `"${freeText.slice(0, 60)}"` : '(yok)'}`,
+    );
+
     const user = await this.ensureUserExists(userId);
 
+    // ── Quota ──────────────────────────────────────────────────────────────
     let dailyFreeUsed = 0;
     if (!user.isPremium) {
       const now = new Date();
@@ -221,6 +238,7 @@ export class AiService {
         createdAt: { $gte: todayStart },
       });
       if (dailyFreeUsed >= 2) {
+        this.logger.log(`[quota] LIMIT_REACHED used=${dailyFreeUsed}/2`);
         throw new ForbiddenException({
           code: 'DAILY_LIMIT_REACHED',
           message:
@@ -229,12 +247,15 @@ export class AiService {
           limit: 2,
         });
       }
+      this.logger.log(`[quota] ok free=${dailyFreeUsed + 1}/2`);
+    } else {
+      this.logger.log(`[quota] ok premium — sınırsız`);
     }
 
     const maxRecommendations = payload.maxRecommendations ?? 5;
     const timeContext = payload.timeContext ?? this.defaultTimeContext();
-    const freeText = payload.freeText?.trim() || undefined;
 
+    // ── Cache lookup ────────────────────────────────────────────────────────
     const catalogVersion = await this.getCatalogVersion();
     const cacheKey = this.computeCacheKey({
       freeText,
@@ -242,8 +263,8 @@ export class AiService {
       maxRecommendations,
       catalogVersion,
     });
+    this.logger.log(`[cache] lookup key=${cacheKey.slice(0, 12)}…`);
 
-    // 1) Cache lookup — isabetli ve maliyetsiz dönüş.
     const cached = await this.recommendationCacheModel
       .findOne({ cacheKey })
       .lean()
@@ -254,6 +275,9 @@ export class AiService {
       );
       const cachedDhikrs = await this.loadDhikrsByIds(cachedIdStrings);
       if (cachedDhikrs.length > 0) {
+        this.logger.log(
+          `[cache] HIT → ${cachedDhikrs.length} zikir (${Date.now() - startedAt}ms)`,
+        );
         const validIds = cachedIdStrings.filter((id) =>
           cachedDhikrs.some((d) => d._id.toString() === id),
         );
@@ -269,22 +293,30 @@ export class AiService {
           dhikrMapById,
           usedModel: 'cache',
         });
+        this.logger.log(`[done] cache path — ${Date.now() - startedAt}ms`);
         return { ...result, dailyFreeUsed: dailyFreeUsed + 1 };
       }
     }
+    this.logger.log(`[cache] MISS`);
 
     const recentDhikrIds = await this.getRecentDhikrIds(userId);
 
-    // 2) Agent loop — tek LLM çağrısı zinciriyle arama + seçim.
+    // ── Agent ───────────────────────────────────────────────────────────────
+    this.emitStep(socketId, 'thinking', 'Zikir veritabanı hazırlanıyor...');
+    this.logger.log(`[agent] başlatılıyor…`);
     const agentResult = await this.runRecommendationAgent({
       freeText,
       timeContext,
       recentDhikrIds,
       maxRecommendations,
+      socketId,
     });
 
-    // 3) Off-topic tespiti.
+    // ── Off-topic ───────────────────────────────────────────────────────────
     if (agentResult?.offTopic) {
+      this.logger.log(
+        `[off-topic] tespit edildi — ${Date.now() - startedAt}ms`,
+      );
       return {
         offTopic: true as const,
         message:
@@ -295,13 +327,16 @@ export class AiService {
       };
     }
 
-    // 4) Agent seçimini doğrula ve dhikr detaylarını yükle.
+    // ── Validate ────────────────────────────────────────────────────────────
     let safeRecommendedIds: string[] = [];
     let dhikrMapById: Map<string, DhikrLean> = new Map();
     let reasoning = MONGO_FALLBACK_REASONING;
     let usedModel: UsedModel = 'fallback';
 
     if (agentResult && agentResult.ids.length > 0) {
+      this.logger.log(
+        `[validate] agent ${agentResult.ids.length} id seçti → DB'de doğrulanıyor`,
+      );
       const selectedDhikrs = await this.loadDhikrsByIds(agentResult.ids);
       const tempMap = new Map(selectedDhikrs.map((d) => [d._id.toString(), d]));
       const validIds = agentResult.ids
@@ -309,6 +344,9 @@ export class AiService {
         .slice(0, maxRecommendations);
 
       if (validIds.length > 0) {
+        this.logger.log(
+          `[validate] ok — ${validIds.length}/${agentResult.ids.length} id geçerli`,
+        );
         safeRecommendedIds = validIds;
         dhikrMapById = tempMap;
         reasoning = this.composeReasoning(
@@ -317,11 +355,15 @@ export class AiService {
           tempMap,
         );
         usedModel = 'openai';
+      } else {
+        this.logger.warn(`[validate] tüm id'ler geçersiz → fallback'e düşüyor`);
       }
     }
 
-    // 5) Fallback — agent boş dönerse zaman tabanlı MongoDB sorgusu.
+    // ── Fallback ────────────────────────────────────────────────────────────
     if (safeRecommendedIds.length === 0) {
+      this.emitStep(socketId, 'fallback', 'Genel öneriler hazırlanıyor...');
+      this.logger.log(`[fallback] zaman tabanlı MongoDB sorgusu başlatılıyor`);
       const fallbackCandidates = await this.getTimeBasedCandidates(
         timeContext,
         recentDhikrIds,
@@ -332,6 +374,7 @@ export class AiService {
           'Öneri için aktif ve doğrulanmış zikir bulunamadı.',
         );
       }
+      this.logger.log(`[fallback] ${fallbackCandidates.length} zikir bulundu`);
       safeRecommendedIds = fallbackCandidates.map((c) => c._id.toString());
       dhikrMapById = new Map(
         fallbackCandidates.map((c) => [c._id.toString(), c]),
@@ -340,6 +383,11 @@ export class AiService {
       usedModel = 'fallback';
     }
 
+    // ── Finalize ────────────────────────────────────────────────────────────
+    this.emitStep(socketId, 'finalizing', 'Öneriler hazırlanıyor...');
+    this.logger.log(
+      `[finalize] model=${usedModel} count=${safeRecommendedIds.length}`,
+    );
     const result = await this.finalizeRecommendation({
       userId,
       freeText,
@@ -350,11 +398,15 @@ export class AiService {
       usedModel,
     });
 
-    // 6) Cache write — off-topic olmayan başarılı sonuçlar.
+    // ── Cache write ─────────────────────────────────────────────────────────
     if (safeRecommendedIds.length > 0) {
       await this.writeCache(cacheKey, safeRecommendedIds, reasoning, usedModel);
+      this.logger.log(`[cache] yazıldı`);
     }
 
+    this.logger.log(
+      `[done] model=${usedModel} count=${safeRecommendedIds.length} — ${Date.now() - startedAt}ms`,
+    );
     return { ...result, dailyFreeUsed: dailyFreeUsed + 1 };
   }
 
@@ -369,6 +421,7 @@ export class AiService {
     timeContext: TimeContext;
     recentDhikrIds: string[];
     maxRecommendations: number;
+    socketId?: string;
   }): Promise<AgentResult | null> {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
@@ -379,7 +432,7 @@ export class AiService {
     }
 
     const modelName =
-      this.configService.get<string>('OPENAI_MODEL') ?? 'gpt-4.1-mini';
+      this.configService.get<string>('OPENAI_MODEL') ?? 'gpt-5-mini';
     const openaiProvider = createOpenAI({ apiKey });
     const timeOfDay = this.resolveTimeOfDay(input.timeContext);
 
@@ -413,12 +466,13 @@ export class AiService {
       `- Maksimum ${input.maxRecommendations} zikir; doldurmak için alakasız ekleme yapma`,
       '',
       '**selectRecommendations YAZIM KURALLARI:**',
-      '- summary: Kullanıcının niyetini samimiyetle kabul eden sıcak 2-3 cümle. "inşallah", "Allah kabul etsin", "maşallah" gibi ifadeler kullan. Zikir ismi yazma.',
+      '- summary: Kullanıcının niyetini samimiyetle kabul eden sıcak 3-5 cümle. "inşallah", "Allah kabul etsin", "maşallah" gibi ifadeler kullan. Zikir ismi yazma.',
       '- reason: Her zikir için fazilet/etiket içeriğinden türeyen 1-2 cümle. Doğrudan kullanıcıya yönelik, insani ve sıcak bir dil kullan.',
     ].join('\n');
 
     let agentResult: AgentResult | null = null;
     let offTopicDetected = false;
+    let searchCallCount = 0;
 
     try {
       await generateText({
@@ -431,6 +485,12 @@ export class AiService {
           recentDhikrIds: input.recentDhikrIds,
           maxRecommendations: input.maxRecommendations,
         }),
+        onStepFinish: ({ stepNumber, toolCalls, finishReason }) => {
+          const tools = toolCalls?.map((t) => t.toolName).join(', ') || '-';
+          this.logger.debug(
+            `[agent step ${stepNumber}] tools=[${tools}] finish=${finishReason}`,
+          );
+        },
         tools: {
           searchDhikrs: tool({
             description:
@@ -445,7 +505,22 @@ export class AiService {
               limit: z.number().int().min(1).max(10).optional(),
             }),
             execute: async (params) => {
-              return this.searchDhikrsForAgent(params, input.recentDhikrIds);
+              const stepKey = searchCallCount === 0 ? 'searching' : 'widening';
+              const stepMsg =
+                searchCallCount === 0
+                  ? 'Zikirler taranıyor...'
+                  : 'Arama genişletiliyor...';
+              this.emitStep(input.socketId, stepKey, stepMsg);
+              searchCallCount++;
+              this.logger.log(
+                `[agent:searchDhikrs] categories=[${params.categories?.join(', ') ?? ''}] tags=[${params.tags?.join(', ') ?? ''}] suitableFor=[${params.suitableFor?.join(', ') ?? ''}] timeOfDay=${params.timeOfDay ?? '-'}`,
+              );
+              const results = await this.searchDhikrsForAgent(
+                params,
+                input.recentDhikrIds,
+              );
+              this.logger.log(`[agent:searchDhikrs] → ${results.length} sonuç`);
+              return results;
             },
           }),
           selectRecommendations: tool({
@@ -457,6 +532,14 @@ export class AiService {
               items: z.array(z.object({ id: z.string(), reason: z.string() })),
             }),
             execute: (params) => {
+              this.emitStep(
+                input.socketId,
+                'selecting',
+                'Sana en uygun zikirler seçiliyor...',
+              );
+              this.logger.log(
+                `[agent:selectRecommendations] ${params.dhikrIds.length} zikir seçildi`,
+              );
               agentResult = {
                 ids: params.dhikrIds,
                 summary: params.summary,
@@ -469,7 +552,10 @@ export class AiService {
             description:
               'Kullanıcı içeriği zikir/dua/manevi konularla ilgili değilse çağır.',
             inputSchema: z.object({ reason: z.string().optional() }),
-            execute: () => {
+            execute: (params) => {
+              this.logger.log(
+                `[agent:reportOffTopic] reason="${params.reason ?? '-'}"`,
+              );
               offTopicDetected = true;
               return { acknowledged: true };
             },

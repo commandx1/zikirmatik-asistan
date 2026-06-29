@@ -10,6 +10,7 @@ export type CreateAiRecommendationPayload = {
     specialDayName?: string;
   };
   maxRecommendations?: number;
+  socketId?: string;
 };
 
 export type CreateAiRecommendationResponse =

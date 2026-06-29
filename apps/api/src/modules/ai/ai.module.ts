@@ -7,6 +7,7 @@ import {
 import { Dhikr, DhikrSchema } from '../dhikrs/schemas/dhikr.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { AiController } from './ai.controller';
+import { AiProgressGateway } from './ai-progress.gateway';
 import { AiService } from './ai.service';
 import {
   AiRecommendation,
@@ -28,6 +29,6 @@ import {
     ]),
   ],
   controllers: [AiController],
-  providers: [AiService],
+  providers: [AiService, AiProgressGateway],
 })
 export class AiModule {}

@@ -45,4 +45,8 @@ export class CreateAiRecommendationDto {
   @Min(1)
   @Max(5)
   maxRecommendations?: number;
+
+  @IsOptional()
+  @IsString()
+  socketId?: string;
 }
