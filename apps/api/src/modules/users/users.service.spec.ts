@@ -29,6 +29,7 @@ describe('UsersService', () => {
       noopModel,
       noopModel,
       noopModel,
+      noopModel,
     );
   });
 

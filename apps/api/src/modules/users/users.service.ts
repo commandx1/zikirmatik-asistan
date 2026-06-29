@@ -14,6 +14,7 @@ import { DhikrLog } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Streak } from '../streaks/schemas/streak.schema';
 import { Subscription } from '../subscriptions/schemas/subscription.schema';
 import { UserDhikr } from '../user-dhikrs/schemas/user-dhikr.schema';
+import { AuthIdentity } from '../auth/schemas/auth-identity.schema';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +29,8 @@ export class UsersService {
     private readonly subscriptionModel: Model<Subscription>,
     @InjectModel(UserDhikr.name)
     private readonly userDhikrModel: Model<UserDhikr>,
+    @InjectModel(AuthIdentity.name)
+    private readonly authIdentityModel: Model<AuthIdentity>,
   ) {}
 
   async createUser(payload: CreateUserDto) {
@@ -217,6 +220,7 @@ export class UsersService {
       this.streakModel.deleteMany({ userId: objectId }),
       this.subscriptionModel.deleteMany({ userId: objectId }),
       this.aiRecommendationModel.deleteMany({ userId: objectId }),
+      this.authIdentityModel.deleteMany({ userId: objectId }),
     ]);
     await this.userModel.findByIdAndDelete(objectId);
   }

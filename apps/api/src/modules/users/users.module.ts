@@ -20,6 +20,10 @@ import {
   UserDhikr,
   UserDhikrSchema,
 } from '../user-dhikrs/schemas/user-dhikr.schema';
+import {
+  AuthIdentity,
+  AuthIdentitySchema,
+} from '../auth/schemas/auth-identity.schema';
 
 @Module({
   imports: [
@@ -30,6 +34,7 @@ import {
       { name: Streak.name, schema: StreakSchema },
       { name: Subscription.name, schema: SubscriptionSchema },
       { name: UserDhikr.name, schema: UserDhikrSchema },
+      { name: AuthIdentity.name, schema: AuthIdentitySchema },
     ]),
   ],
   controllers: [UsersController],
