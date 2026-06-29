@@ -16,13 +16,28 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ai.service.ts:KNOWN_SUITABLE_FOR ile BİREBİR aynı tutulmalı.
+// ai.service.ts:KNOWN_CATEGORIES ile BİREBİR aynı tutulmalı.
 // ─────────────────────────────────────────────────────────────────────────────
-const KNOWN_SUITABLE_FOR = [
-  'sabah', 'akşam', 'uyku öncesi', 'uyandıktan sonra', 'yemek öncesi', 'yemek sonrası',
-  'yolculuk', 'hastalık', 'şifa', 'kaygı', 'üzüntü', 'korku', 'haset', 'öfke',
-  'namaz sonrası', 'cuma', 'zilhicce', 'muharrem', 'cenaze', 'hac', 'umre',
-  'evlilik', 'rızık', 'sınav', 'istiğfar', 'tevbe', 'sabır', 'şükür', 'koruma', 'bereket',
+const KNOWN_CATEGORIES = [
+  'acil dua', 'adab', 'adalet', 'afet', 'ahlak', 'aile', 'aile ilişkisi',
+  'akşam', 'arefe', 'ayet', 'basiret', 'bayram', 'başarı', 'bereket', 'cami',
+  'cemaat', 'cenaze', 'cennet', 'dua', 'egitim', 'esma', 'esmaul husna', 'ev',
+  'ev hayatı', 'evlat', 'evlilik', 'ezan', 'eğitim', 'farz', 'gece namazı',
+  'gelecek kaygısı', 'genel', 'günlük', 'günlük hayat', 'günlük sünnet',
+  'güzel ahlak', 'hac', 'hacet', 'haksızlık', 'hamd', 'hastalık', 'hidayet',
+  'hikmet', 'huzur', 'ibadet', 'ilim', 'ilişkiler', 'iman', 'ismi azam',
+  'istiaze', 'istikamet', 'istiğfar', 'itibar', 'iş hayatı', 'iş kariyer',
+  'kalp', 'kandil', 'kapsamlı', 'karakter', 'kariyer', 'kaygı yönetimi',
+  'koruma', 'korunma', 'koruyucu', 'kulluk', "kur'an", 'kuran', 'kuran duası',
+  'kurân', 'liderlik', 'manevi arınma', 'manevi destek', 'manevi gelişim',
+  'maneviyat', 'muhabbet', 'muharrem', 'mülk', 'nafile', 'namaz', 'nazar',
+  'nefis terbiyesi', 'oruç', 'rahmet', 'ramazan', 'rukye', 'rızık',
+  'rızık bereket', 'sabah akşam', 'sabır', 'salavat', 'sevgi', 'sinav',
+  'sosyal', 'sure', 'sünnet duaları', 'sıkıntı', 'sınav', 'tefekkür',
+  'teheccüd', 'temel', 'tesbih', 'teselli', 'tevbe', 'tevekkül', 'tevhid',
+  'tövbe', 'umut', 'uyku uyanış', 'vesvese', 'vitir', 'yardım', 'yemek',
+  'yolculuk', 'zikir', 'zilhicce', 'âfiyet', 'ölüm', 'özel gün', 'özel günler',
+  'özlü dualar', 'şifa', 'şükür',
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -31,9 +46,10 @@ const KNOWN_SUITABLE_FOR = [
 const INTENT_SYSTEM_PROMPT = [
   'Sen bir İslami zikir arama asistanısın.',
   'Kullanıcının Türkçe metninden zikir arama niyetini çıkar.',
-  `suitableFor için yalnızca şu listeden eşleşenleri kullan: ${KNOWN_SUITABLE_FOR.join(', ')}.`,
+  `categories için yalnızca şu listeden eşleşenleri kullan: ${KNOWN_CATEGORIES.join(', ')}.`,
+  'suitableFor: zikrin uygun olduğu durumlar (ör. "hasta", "yolcu", "anne").',
   'timeOfDay: sabah (05-12) → "morning", öğle-akşam (12-19) → "evening", gece (19-05) → "night", belirsiz → null.',
-  'tags ve categories için metinde geçen İslami temaları Türkçe yaz (ör. "şükür", "namaz", "hac").',
+  'tags için metinde geçen İslami temaları Türkçe yaz (ör. "şükür", "namaz", "hac").',
   'Yalnızca JSON döndür: { "suitableFor": string[], "tags": string[], "categories": string[], "timeOfDay": string|null }',
 ].join(' ');
 
@@ -150,7 +166,7 @@ async function getMongodbCandidates(dhikrs, intent, timeContext) {
       ).length;
       const timeMatch =
         intent.timeOfDay && doc.timeOfDay === intent.timeOfDay ? 2 : 0;
-      const score = sfMatch * 3 + tagMatch * 2 + catMatch * 1 + timeMatch;
+      const score = catMatch * 3 + tagMatch * 2 + sfMatch * 1 + timeMatch;
       return { doc, score };
     });
 
