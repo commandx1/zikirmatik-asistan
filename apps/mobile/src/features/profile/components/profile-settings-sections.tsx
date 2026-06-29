@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { ProfileLinkRow } from "./profile-link-row";
 import { ProfileLogoutRow } from "./profile-logout-row";
 import { ProfileSectionTitle } from "./profile-section-title";
@@ -7,13 +7,10 @@ import { ProfileTimeRow } from "./profile-time-row";
 import { ProfileToggleRow } from "./profile-toggle-row";
 
 type ProfileSettingsSectionsProps = {
-  purposeLabel: string;
-  personalCityLabel: string;
   reminderTime: string;
   dailyReminderEnabled: boolean;
   kandilNotificationsEnabled: boolean;
   hapticsEnabled: boolean;
-  onPressPersonalInfo: () => void;
   onPressTheme: () => void;
   onPressFont: () => void;
   onPressReminderTime: () => void;
@@ -22,19 +19,17 @@ type ProfileSettingsSectionsProps = {
   onPressRateApp: () => void;
   onPressSendFeedback: () => void;
   onPressLogout: () => void;
+  onPressDeleteAccount: () => void;
   onToggleDailyReminder: (value: boolean) => void;
   onToggleKandilNotification: (value: boolean) => void;
   onToggleHaptics: (value: boolean) => void;
 };
 
 export function ProfileSettingsSections({
-  purposeLabel,
-  personalCityLabel,
   reminderTime,
   dailyReminderEnabled,
   kandilNotificationsEnabled,
   hapticsEnabled,
-  onPressPersonalInfo,
   onPressTheme,
   onPressFont,
   onPressReminderTime,
@@ -43,31 +38,13 @@ export function ProfileSettingsSections({
   onPressRateApp,
   onPressSendFeedback,
   onPressLogout,
+  onPressDeleteAccount,
   onToggleDailyReminder,
   onToggleKandilNotification,
   onToggleHaptics
 }: ProfileSettingsSectionsProps) {
   return (
     <View className="gap-6">
-      <View>
-        <ProfileSectionTitle label="Kişisel Bilgiler" />
-        <ProfileSettingsCard>
-          <ProfileLinkRow
-            label="Amaç"
-            iconName="bullseye"
-            value={purposeLabel}
-            onPress={onPressPersonalInfo}
-            bottomBorder
-          />
-          <ProfileLinkRow
-            label="Şehir"
-            iconName="location-dot"
-            value={personalCityLabel}
-            onPress={onPressPersonalInfo}
-          />
-        </ProfileSettingsCard>
-      </View>
-
       <View>
         <ProfileSectionTitle label="Kişiselleştirme" />
         <ProfileSettingsCard>
@@ -133,6 +110,18 @@ export function ProfileSettingsSections({
           <ProfileLinkRow label="Uygulamayı Oyla" iconName="star" rightIconRegular bottomBorder onPress={onPressRateApp} />
           <ProfileLinkRow label="Geri Bildirim Gönder" iconName="comment-dots" rightIconRegular bottomBorder onPress={onPressSendFeedback} />
           <ProfileLogoutRow onPress={onPressLogout} />
+        </ProfileSettingsCard>
+      </View>
+
+      <View>
+        <ProfileSectionTitle label="Hesap" />
+        <ProfileSettingsCard>
+          <Pressable onPress={onPressDeleteAccount} className="flex-row items-center justify-start p-4">
+            <View className="flex-row items-center gap-3">
+              <View className="h-8 w-8" />
+              <Text className="text-base font-medium" style={{ color: "#EF4444" }}>Hesabı Sil</Text>
+            </View>
+          </Pressable>
         </ProfileSettingsCard>
       </View>
 

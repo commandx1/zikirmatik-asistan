@@ -4,9 +4,8 @@ import { AppState, Linking, Platform } from "react-native";
 import {
   getUserById,
   saveUserPreferences,
-  saveUserOnboarding,
-  type BackendUser,
-  UsersApiError
+  deleteUser,
+  type BackendUser
 } from "../../users/services/users-api-client";
 import {
   isRevenueCatConfigured,
@@ -18,10 +17,8 @@ import {
 import { syncDailyReminderNotification } from "../services/daily-reminder-notifications";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
-import { useOnboardingStore } from "../../../store/onboarding-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { THEME_LABELS } from "../../../theme/labels";
-import { PURPOSE_OPTIONS } from "../../onboarding/onboarding-data";
 
 type PremiumPlan = "monthly" | "annual";
 
@@ -49,10 +46,6 @@ export function useProfile() {
   const session = useAuthStore((s) => s.session);
   const authDisplayName = useAuthStore((s) => s.session?.displayName);
   const signOut = useAuthStore((s) => s.signOut);
-  const onboardingPurpose = useOnboardingStore((s) => s.purpose);
-  const onboardingCity = useOnboardingStore((s) => s.city);
-  const setOnboardingPurpose = useOnboardingStore((s) => s.setPurpose);
-  const setOnboardingCity = useOnboardingStore((s) => s.setCity);
 
   const [isPremiumSheetOpen, setPremiumSheetOpen] = useState(false);
   const [backendUser, setBackendUser] = useState<BackendUser>();
@@ -61,11 +54,6 @@ export function useProfile() {
   const [isRestoringPremium, setIsRestoringPremium] = useState(false);
   const [premiumPlan, setPremiumPlan] = useState<PremiumPlan>("annual");
   const [premiumError, setPremiumError] = useState<string>();
-  const [isPersonalInfoModalOpen, setIsPersonalInfoModalOpen] = useState(false);
-  const [draftPurpose, setDraftPurpose] = useState(onboardingPurpose);
-  const [draftCity, setDraftCity] = useState(onboardingCity || city || "");
-  const [isSavingPersonalInfo, setIsSavingPersonalInfo] = useState(false);
-  const [personalInfoError, setPersonalInfoError] = useState<string>();
   const [isReminderTimeModalOpen, setIsReminderTimeModalOpen] = useState(false);
   const [reminderHourDraft, setReminderHourDraft] = useState("08");
   const [reminderMinuteDraft, setReminderMinuteDraft] = useState("00");
@@ -73,6 +61,8 @@ export function useProfile() {
   const [reminderTimeError, setReminderTimeError] = useState<string>();
   const [shouldSyncPremiumOnForeground, setShouldSyncPremiumOnForeground] = useState(false);
   const [feedbackError, setFeedbackError] = useState<string>();
+  const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const syncBackendUser = useCallback(async () => {
     if (authStatus !== "authenticated" || !session?.userId) {
@@ -158,6 +148,20 @@ export function useProfile() {
   const onLogout = async () => {
     await signOut();
     router.replace("/auth");
+  };
+
+  const openDeleteAccountModal = () => setIsDeleteAccountModalOpen(true);
+  const closeDeleteAccountModal = () => setIsDeleteAccountModalOpen(false);
+  const deleteAccount = async () => {
+    if (!session?.userId) return;
+    setIsDeletingAccount(true);
+    try {
+      await deleteUser(session.userId, session.accessToken);
+      await signOut();
+      router.replace("/auth");
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   const syncPremiumFromRevenueCat = useCallback(
@@ -341,70 +345,6 @@ export function useProfile() {
     syncPremiumFromRevenueCat
   ]);
 
-  const purposeValue = backendUser?.onboarding?.purpose ?? onboardingPurpose;
-  const personalCityValue =
-    backendUser?.onboarding?.city ??
-    backendUser?.city ??
-    (onboardingCity || city);
-  const purposeLabel = getPurposeLabel(purposeValue);
-  const hasPersonalInfoChanges =
-    draftPurpose !== purposeValue ||
-    draftCity.trim() !== personalCityValue.trim();
-  const canSavePersonalInfo = draftCity.trim().length > 0 && hasPersonalInfoChanges && !isSavingPersonalInfo;
-
-  const openPersonalInfoModal = () => {
-    setDraftPurpose(purposeValue);
-    setDraftCity(personalCityValue);
-    setPersonalInfoError(undefined);
-    setIsPersonalInfoModalOpen(true);
-  };
-
-  const closePersonalInfoModal = () => {
-    if (isSavingPersonalInfo) {
-      return;
-    }
-    setPersonalInfoError(undefined);
-    setIsPersonalInfoModalOpen(false);
-  };
-
-  const savePersonalInfo = async () => {
-    const trimmedCity = draftCity.trim();
-    if (!trimmedCity) {
-      setPersonalInfoError("Lütfen şehir seç.");
-      return;
-    }
-
-    setPersonalInfoError(undefined);
-    setIsSavingPersonalInfo(true);
-
-    try {
-      if (authStatus === "authenticated" && session?.userId) {
-        const updatedUser = await saveUserOnboarding(
-          session.userId,
-          {
-            purpose: draftPurpose,
-            city: trimmedCity
-          },
-          session.accessToken
-        );
-        setBackendUser(updatedUser);
-      }
-
-      setOnboardingPurpose(draftPurpose);
-      setOnboardingCity(trimmedCity);
-      hydrateFromBackend({ city: trimmedCity });
-      setIsPersonalInfoModalOpen(false);
-    } catch (error) {
-      if (error instanceof UsersApiError) {
-        setPersonalInfoError(error.message);
-      } else {
-        setPersonalInfoError("Kişisel bilgiler güncellenemedi. Lütfen tekrar dene.");
-      }
-    } finally {
-      setIsSavingPersonalInfo(false);
-    }
-  };
-
   const normalizedReminderDraft = `${normalizeTimeUnit(reminderHourDraft)}:${normalizeTimeUnit(reminderMinuteDraft)}`;
   const canSaveReminderTime = normalizedReminderDraft !== reminderTime && !isSavingReminderTime;
 
@@ -570,19 +510,11 @@ export function useProfile() {
         : memberSinceLabel,
     isPremium: backendUser?.isPremium ?? isPremium,
     city: backendUser?.city ?? city,
-    purposeLabel,
-    personalCityLabel: personalCityValue,
-    isPersonalInfoModalOpen,
     isReminderTimeModalOpen,
-    draftPurpose,
-    draftCity,
     reminderHourDraft,
     reminderMinuteDraft,
-    isSavingPersonalInfo,
     isSavingReminderTime,
-    personalInfoError,
     reminderTimeError,
-    canSavePersonalInfo,
     canSaveReminderTime,
     language,
     reminderTime,
@@ -603,11 +535,6 @@ export function useProfile() {
     onToggleHaptics,
     goThemeSelector,
     goFontSelector,
-    openPersonalInfoModal,
-    closePersonalInfoModal,
-    setDraftPurpose,
-    setDraftCity,
-    savePersonalInfo,
     openReminderTimeModal,
     closeReminderTimeModal,
     onReminderHourChange,
@@ -623,7 +550,12 @@ export function useProfile() {
     setPremiumPlan,
     activatePremium,
     restorePremium,
-    onLogout
+    onLogout,
+    isDeleteAccountModalOpen,
+    isDeletingAccount,
+    openDeleteAccountModal,
+    closeDeleteAccountModal,
+    deleteAccount
   };
 }
 
@@ -649,10 +581,6 @@ function parseReminderTime(value: string) {
   }
 
   return { hour, minute, isValid: true };
-}
-
-function getPurposeLabel(value: string) {
-  return PURPOSE_OPTIONS.find((item) => item.id === value)?.title ?? "Belirtilmedi";
 }
 
 function toMemberSinceLabel(isoDate: string) {

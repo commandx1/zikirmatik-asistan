@@ -82,6 +82,10 @@ export async function saveUserPreferences(
   });
 }
 
+export async function deleteUser(userId: string, accessToken?: string): Promise<void> {
+  await requestJson<void>(`/v1/users/${userId}`, { method: "DELETE", accessToken });
+}
+
 function resolveApiBaseUrl() {
   const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
   if (configured) {
@@ -96,7 +100,7 @@ function resolveApiBaseUrl() {
 async function requestJson<TResponse>(
   path: string,
   options: {
-    method: "GET" | "PATCH";
+    method: "GET" | "PATCH" | "DELETE";
     body?: unknown;
     accessToken?: string;
   }

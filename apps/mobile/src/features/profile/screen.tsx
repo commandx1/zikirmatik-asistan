@@ -2,7 +2,7 @@ import { View } from "react-native";
 import { ConfirmModal } from "../../components/ui/confirm-modal";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { ProfileHeader } from "./components/profile-header";
-import { ProfilePersonalInfoModal } from "./components/profile-personal-info-modal";
+import { ProfileDeleteAccountModal } from "./components/profile-delete-account-modal";
 import { ProfilePremiumSheet } from "./components/profile-premium-sheet";
 import { ProfileReminderTimeModal } from "./components/profile-reminder-time-modal";
 import { ProfileSettingsSections } from "./components/profile-settings-sections";
@@ -31,13 +31,10 @@ export function ProfileScreen() {
               onPressUpgrade={profile.openPremiumSheet}
             />
             <ProfileSettingsSections
-              purposeLabel={profile.purposeLabel}
-              personalCityLabel={profile.personalCityLabel}
               reminderTime={profile.reminderTime}
               dailyReminderEnabled={profile.dailyReminderEnabled}
               kandilNotificationsEnabled={profile.kandilNotificationsEnabled}
               hapticsEnabled={profile.hapticsEnabled}
-              onPressPersonalInfo={profile.openPersonalInfoModal}
               onPressTheme={profile.goThemeSelector}
               onPressFont={profile.goFontSelector}
               onPressReminderTime={profile.openReminderTimeModal}
@@ -46,6 +43,7 @@ export function ProfileScreen() {
               onPressRateApp={profile.rateApp}
               onPressSendFeedback={profile.sendFeedback}
               onPressLogout={profile.onLogout}
+              onPressDeleteAccount={profile.openDeleteAccountModal}
               onToggleDailyReminder={profile.onToggleDailyReminder}
               onToggleKandilNotification={profile.setKandilNotificationsEnabled}
               onToggleHaptics={profile.onToggleHaptics}
@@ -53,18 +51,6 @@ export function ProfileScreen() {
             {/* <ProfileAppVersion /> */}
           </View>
         </PageScrollView>
-        <ProfilePersonalInfoModal
-          visible={profile.isPersonalInfoModalOpen}
-          purpose={profile.draftPurpose}
-          city={profile.draftCity}
-          isSaving={profile.isSavingPersonalInfo}
-          error={profile.personalInfoError}
-          canSave={profile.canSavePersonalInfo}
-          onChangePurpose={profile.setDraftPurpose}
-          onChangeCity={profile.setDraftCity}
-          onSave={profile.savePersonalInfo}
-          onClose={profile.closePersonalInfoModal}
-        />
         <ProfilePremiumSheet
           visible={profile.isPremiumSheetOpen}
           selectedPlan={profile.premiumPlan}
@@ -95,6 +81,12 @@ export function ProfileScreen() {
           confirmLabel="Tamam"
           onConfirm={profile.clearFeedbackError}
           onCancel={profile.clearFeedbackError}
+        />
+        <ProfileDeleteAccountModal
+          visible={profile.isDeleteAccountModalOpen}
+          isDeleting={profile.isDeletingAccount}
+          onConfirm={profile.deleteAccount}
+          onCancel={profile.closeDeleteAccountModal}
         />
       </View>
     </PageLayout>
