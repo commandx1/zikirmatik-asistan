@@ -9,11 +9,25 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateOnboardingDto } from './dto/update-onboarding.dto';
 import { UpdateUserPreferencesDto } from './dto/update-user-preferences.dto';
 import { User, type UserDocument } from './schemas/user.schema';
+import { AiRecommendation } from '../ai/schemas/ai-recommendation.schema';
+import { DhikrLog } from '../dhikr-logs/schemas/dhikr-log.schema';
+import { Streak } from '../streaks/schemas/streak.schema';
+import { Subscription } from '../subscriptions/schemas/subscription.schema';
+import { UserDhikr } from '../user-dhikrs/schemas/user-dhikr.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(AiRecommendation.name)
+    private readonly aiRecommendationModel: Model<AiRecommendation>,
+    @InjectModel(DhikrLog.name)
+    private readonly dhikrLogModel: Model<DhikrLog>,
+    @InjectModel(Streak.name) private readonly streakModel: Model<Streak>,
+    @InjectModel(Subscription.name)
+    private readonly subscriptionModel: Model<Subscription>,
+    @InjectModel(UserDhikr.name)
+    private readonly userDhikrModel: Model<UserDhikr>,
   ) {}
 
   async createUser(payload: CreateUserDto) {
@@ -193,6 +207,18 @@ export class UsersService {
       email: existing.email,
       profileImageUrl: existing.profileImageUrl,
     };
+  }
+
+  async deleteUserAllData(userId: string): Promise<void> {
+    const objectId = this.asObjectId(userId);
+    await Promise.all([
+      this.userDhikrModel.deleteMany({ userId: objectId }),
+      this.dhikrLogModel.deleteMany({ userId: objectId }),
+      this.streakModel.deleteMany({ userId: objectId }),
+      this.subscriptionModel.deleteMany({ userId: objectId }),
+      this.aiRecommendationModel.deleteMany({ userId: objectId }),
+    ]);
+    await this.userModel.findByIdAndDelete(objectId);
   }
 
   private asObjectId(rawId: string) {

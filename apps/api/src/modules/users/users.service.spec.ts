@@ -21,7 +21,15 @@ describe('UsersService', () => {
       toObject: () => payload,
     }));
 
-    service = new UsersService(userModel as never);
+    const noopModel = {} as never;
+    service = new UsersService(
+      userModel as never,
+      noopModel,
+      noopModel,
+      noopModel,
+      noopModel,
+      noopModel,
+    );
   });
 
   it('creates new email users as non-premium by default', async () => {

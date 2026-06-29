@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Param,
@@ -42,6 +43,15 @@ export class UsersController {
   ) {
     assertSelfUser(id, userId);
     return this.usersService.savePreferences(id, payload);
+  }
+
+  @Delete(':id')
+  async deleteAccount(
+    @Param('id') id: string,
+    @CurrentUserId() userId: string,
+  ): Promise<void> {
+    assertSelfUser(id, userId);
+    await this.usersService.deleteUserAllData(id);
   }
 }
 
