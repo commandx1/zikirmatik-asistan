@@ -9,23 +9,14 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "env": {
-        "EXPO_PUBLIC_ADMOB_USE_TEST_ADS": "1"
-      }
+      "distribution": "internal"
     },
     "internalTest": {
-      "env": {
-        "EXPO_PUBLIC_ADMOB_USE_TEST_ADS": "1"
-      },
       "android": {
         "buildType": "app-bundle"
       }
     },
     "production": {
-      "env": {
-        "EXPO_PUBLIC_ADMOB_USE_TEST_ADS": "1"
-      },
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"

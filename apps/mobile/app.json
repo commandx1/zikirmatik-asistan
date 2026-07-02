@@ -12,14 +12,7 @@
       "expo-router",
       "expo-apple-authentication",
       "expo-notifications",
-      "@react-native-google-signin/google-signin",
-      [
-        "react-native-google-mobile-ads",
-        {
-          "androidAppId": "ca-app-pub-8425288851880393~6135324235",
-          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
-        }
-      ]
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
