@@ -41,7 +41,7 @@ export type CreateAiRecommendationResponse =
     };
 
 export const DAILY_LIMIT_REACHED_CODE = "DAILY_LIMIT_REACHED";
-export const FREE_DAILY_LIMIT = 2;
+export const FREE_DAILY_LIMIT = 1;
 
 export type BackendAiRecommendation = {
   _id: string;

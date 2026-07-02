@@ -17,7 +17,7 @@ export function TourOverlay() {
   const insets = useSafeAreaInsets();
   const [bounds, setBounds] = useState<SpotlightBounds | null>(null);
 
-  const tabBarHeight = Platform.OS === "android" ? 74 + Math.max(insets.bottom, 8) : 74 + insets.bottom;
+  const TAB_BAR_CONTENT_HEIGHT = 74;
 
   useEffect(() => {
     if (!currentStep) {
@@ -29,9 +29,9 @@ export function TourOverlay() {
       const tabWidth = screenWidth / 5;
       setBounds({
         x: currentStep.tabIndex * tabWidth,
-        y: screenHeight - tabBarHeight,
+        y: screenHeight - insets.bottom - TAB_BAR_CONTENT_HEIGHT,
         width: tabWidth,
-        height: tabBarHeight,
+        height: TAB_BAR_CONTENT_HEIGHT,
       });
       return;
     }
@@ -45,12 +45,16 @@ export function TourOverlay() {
       requestAnimationFrame(() => {
         ref.current?.measureInWindow((x, y, width, height) => {
           if (width > 0 && height > 0) {
-            setBounds({ x, y, width, height });
+            // Modal uses statusBarTranslucent, so its coordinate space starts at the
+            // physical screen top; measureInWindow reports position relative to the
+            // main window, which excludes the status bar on Android. Compensate.
+            const statusBarOffset = Platform.OS === "android" ? insets.top : 0;
+            setBounds({ x, y: y + statusBarOffset, width, height });
           }
         });
       });
     });
-  }, [currentStep, getRef, screenWidth, screenHeight, tabBarHeight]);
+  }, [currentStep, getRef, screenWidth, screenHeight, insets.top, insets.bottom]);
 
   if (!isActive || !currentStep || !bounds) return null;
 
@@ -70,6 +74,7 @@ export function TourOverlay() {
   );
   const tooltipAnchorBelow = currentStep.tooltipPosition === "bottom";
   const showTooltipAbove = !tooltipAnchorBelow;
+  const spotlightRadius = currentStep.shape === "circle" ? Math.min(sw, sh) / 2 : 16;
 
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={skipTour}>
@@ -127,7 +132,7 @@ export function TourOverlay() {
             left: sx,
             width: sw,
             height: sh,
-            borderRadius: 16,
+            borderRadius: spotlightRadius,
             borderWidth: 2,
             borderColor: tokens.accent,
           }}
@@ -138,7 +143,7 @@ export function TourOverlay() {
           style={{
             position: "absolute",
             top: showTooltipAbove ? undefined : tooltipTop,
-            bottom: showTooltipAbove ? screenHeight - tooltipTop + sh + 16 : undefined,
+            bottom: showTooltipAbove ? screenHeight - tooltipTop : undefined,
             left: tooltipLeft,
             width: TOOLTIP_WIDTH,
             borderRadius: 16,

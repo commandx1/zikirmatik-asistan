@@ -15,7 +15,6 @@ import {
   selectAiRecommendation
 } from "../services/ai-api-client";
 import { createAiProgressSocket } from "../services/ai-progress-socket";
-import { showRewardedAdGate } from "../services/rewarded-ad-gate";
 import { buildAiGuideHistoryItems, resolveVisibleAiGuideHistory } from "../services/ai-guide-history-service";
 import { useProfileStore } from "../../../store/profile-store";
 import { getUserById } from "../../users/services/users-api-client";
@@ -34,8 +33,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [showInfo, setShowInfo] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isRewardedSheetOpen, setRewardedSheetOpen] = useState(false);
-  const [isRewardedRunning, setRewardedRunning] = useState(false);
   const [error, setError] = useState<string>();
   const [offTopicMessage, setOffTopicMessage] = useState<string>();
   const [recommendationId, setRecommendationId] = useState<string>();
@@ -46,7 +43,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [lastPrompt, setLastPrompt] = useState("");
   const [prayerTimeLabel, setPrayerTimeLabel] = useState("Vakit bilgisi yok");
   const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
-  const [pendingRequest, setPendingRequest] = useState<{ freeText?: string } | null>(null);
   const [isPremiumVerified, setIsPremiumVerified] = useState(false);
   const [freeUsedToday, setFreeUsedToday] = useState(0);
   const [quotaConfirmed, setQuotaConfirmed] = useState(false);
@@ -73,9 +69,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     setHistoryExpanded(false);
     setLastPrompt("");
     setIntentInput("");
-    setPendingRequest(null);
-    setRewardedSheetOpen(false);
-    setRewardedRunning(false);
     setFreeUsedToday(0);
     setQuotaConfirmed(false);
   }, [authStatus, cacheKey]);
@@ -368,13 +361,12 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   );
 
   const submitIntent = async () => {
-    const normalizedInput = intentInput.trim();
-    if (isLoading || isRewardedRunning) {
+    if (isLoading) {
       return;
     }
 
     Keyboard.dismiss();
-    const request = { freeText: normalizedInput || undefined };
+    const request = { freeText: intentInput.trim() || undefined };
 
     if (await shouldBypassRewardGate()) {
       await executeRecommendationRequest(request);
@@ -386,40 +378,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       return;
     }
 
-    setPendingRequest(request);
-    setRewardedSheetOpen(true);
-  };
-
-  const closeRewardedSheet = () => {
-    if (isRewardedRunning) {
-      return;
-    }
-
-    setRewardedSheetOpen(false);
-    setPendingRequest(null);
-  };
-
-  const confirmRewardedAndSubmit = async () => {
-    if (!pendingRequest || isRewardedRunning) {
-      return;
-    }
-
-    const request = pendingRequest;
-    setRewardedRunning(true);
-    setError(undefined);
-    try {
-      const isRewardEarned = await showRewardedAdGate();
-      if (!isRewardEarned) {
-        setError("Öneriyi açmak için ödüllü reklam tamamlanmalı. Lütfen tekrar dene.");
-        return;
-      }
-
-      setRewardedSheetOpen(false);
-      setPendingRequest(null);
-      await executeRecommendationRequest(request);
-    } finally {
-      setRewardedRunning(false);
-    }
+    await executeRecommendationRequest(request);
   };
 
   const selectRecommendation = (recommendation: AiGuideRecommendation) => {
@@ -475,8 +434,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     showInfo,
     isLoading,
     loadingStep,
-    isRewardedSheetOpen,
-    isRewardedRunning,
     isRefreshing,
     error,
     offTopicMessage,
@@ -495,8 +452,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     applyPrompt,
     onIntentInputChange,
     submitIntent,
-    closeRewardedSheet,
-    confirmRewardedAndSubmit,
     refresh,
     selectRecommendation,
     openHistoryItem,

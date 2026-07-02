@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useAuthStore } from '../../store/auth-store'
 import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
 import { useProfileStore } from '../../store/profile-store'
+import { useOnboardingStore } from '../../store/onboarding-store'
+import { useNotificationPromptStore } from '../../store/notification-prompt-store'
 import { ESMAUL_HUSNA } from '../focus/data'
 import type { EsmaulHusnaItem, ZikirSource } from '../focus/types'
 import { createDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
@@ -176,6 +178,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const sessionUserId = useAuthStore(state => state.session?.userId)
   const sessionAccessToken = useAuthStore(state => state.session?.accessToken)
   const hapticsEnabled = useProfileStore(state => state.hapticsEnabled)
+  const isTourCompleted = useOnboardingStore(s => s.isTourCompleted)
+  const isNotificationPromptBlocking = useNotificationPromptStore(s => s.isPending || s.visible || s.deniedVisible)
   const pendingNavigationDailyEsmaStart = useHomeNavigationIntentStore(state => state.pendingDailyEsmaStart)
   const esmaListFocusRequestId = useHomeNavigationIntentStore(state => state.esmaListFocusRequestId)
 
@@ -345,6 +349,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     ? unsavedProgressDhikrIds.includes(selectedDhikrId)
     : freeCount > 0
   const shouldDeferDailyEsmaWelcome =
+    !isTourCompleted ||
+    isNotificationPromptBlocking ||
     hasUnsavedActiveDhikr ||
     isEditingTarget ||
     isSelectingDhikr ||
@@ -400,6 +406,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   }, [
     checkedDailyEsmaWelcomeKey,
     esmaListFocusRequestId,
+    isNotificationPromptBlocking,
+    isTourCompleted,
     pendingNavigationDailyEsmaStart,
     shouldDeferDailyEsmaWelcome
   ])

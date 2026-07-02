@@ -16,6 +16,7 @@ export type TourStepDef = {
   description: string;
   tooltipPosition: "top" | "bottom";
   padding?: number;
+  shape?: "circle" | "rect";
 };
 
 export type TourRefs = Map<string, RefObject<View | null>>;

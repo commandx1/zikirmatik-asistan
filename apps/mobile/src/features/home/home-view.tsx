@@ -5,7 +5,15 @@ import { useFocusEffect } from '@react-navigation/native'
 import { Animated, InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { useOnboardingStore } from '../../store/onboarding-store'
 import { useTour } from '../../features/tour/use-tour'
-import { TOUR_REF_WATCH, TOUR_REF_TAP_ANYWHERE } from '../../features/tour/tour-steps'
+import {
+  TOUR_REF_WATCH,
+  TOUR_REF_TAP_ANYWHERE,
+  TOUR_REF_WATCH_LIST,
+  TOUR_REF_WATCH_TARGET,
+  TOUR_REF_WATCH_RESET,
+  TOUR_REF_WATCH_SAVE,
+} from '../../features/tour/tour-steps'
+import { EsmaulHusnaSectionSkeleton } from './components/esmaul-husna-section-skeleton'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { DhikrResumeModal } from '../../components/ui/dhikr-resume-modal'
 import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-aware-bottom-sheet-modal'
@@ -426,21 +434,28 @@ export function HomeView() {
   const isMountedRef = useRef(false)
   const appleWatchRef = useRef<View>(null)
   const tapAnywhereRef = useRef<View>(null)
+  const watchListBtnRef = useRef<View>(null)
+  const watchTargetBtnRef = useRef<View>(null)
+  const watchResetBtnRef = useRef<View>(null)
+  const watchSaveBtnRef = useRef<View>(null)
   const { startTour, registerRef } = useTour()
-  const isOnboardingCompleted = useOnboardingStore((s) => s.isCompleted)
   const isTourCompleted = useOnboardingStore((s) => s.isTourCompleted)
 
   useEffect(() => {
     registerRef(TOUR_REF_WATCH, appleWatchRef)
     registerRef(TOUR_REF_TAP_ANYWHERE, tapAnywhereRef)
+    registerRef(TOUR_REF_WATCH_LIST, watchListBtnRef)
+    registerRef(TOUR_REF_WATCH_TARGET, watchTargetBtnRef)
+    registerRef(TOUR_REF_WATCH_RESET, watchResetBtnRef)
+    registerRef(TOUR_REF_WATCH_SAVE, watchSaveBtnRef)
   }, [registerRef])
 
   useFocusEffect(
     useCallback(() => {
-      if (!isOnboardingCompleted || isTourCompleted) return
+      if (isTourCompleted) return
       const timer = setTimeout(() => startTour(), 600)
       return () => clearTimeout(timer)
-    }, [isOnboardingCompleted, isTourCompleted, startTour])
+    }, [isTourCompleted, startTour])
   )
 
   useEffect(() => {
@@ -511,12 +526,18 @@ export function HomeView() {
       >
         <Pressable onPress={home.tapAnywhereEnabled ? home.onCountPress : undefined} style={{ flex: 1 }}>
           <FreeModeButton />
-          <AppleWatch spotlightRef={appleWatchRef} />
+          <AppleWatch
+            spotlightRef={appleWatchRef}
+            listBtnRef={watchListBtnRef}
+            targetBtnRef={watchTargetBtnRef}
+            resetBtnRef={watchResetBtnRef}
+            saveBtnRef={watchSaveBtnRef}
+          />
           <SelectedDhikrMeaning />
           <View onLayout={event => {
             esmaSectionYRef.current = event.nativeEvent.layout.y
           }}>
-            <Suspense fallback={null}>
+            <Suspense fallback={<EsmaulHusnaSectionSkeleton />}>
               <EsmaulHusnaSection
                 disabled={home.isSelectingEsmaDhikr}
                 selectedTransliteration={home.mainDhikr.transliteration}

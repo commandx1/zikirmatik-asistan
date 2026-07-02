@@ -8,7 +8,6 @@ export function useOnboardingGate() {
   const authHydrated = useAuthStore((s) => s.hasHydrated);
   const session = useAuthStore((s) => s.session);
   const onboardingHydrated = useOnboardingStore((s) => s.hasHydrated);
-  const isCompleted = useOnboardingStore((s) => s.isCompleted);
   const applyBackendSnapshot = useOnboardingStore((s) => s.applyBackendSnapshot);
   const [isResolving, setIsResolving] = useState(false);
   const [resolvedUserId, setResolvedUserId] = useState<string>();
@@ -35,8 +34,7 @@ export function useOnboardingGate() {
 
         applyBackendSnapshot({
           purpose: user.onboarding?.purpose,
-          city: user.onboarding?.city ?? user.city,
-          isCompleted: Boolean(user.onboarding?.completedAt)
+          city: user.onboarding?.city ?? user.city
         });
         setResolvedUserId(session.userId);
       })
@@ -69,7 +67,6 @@ export function useOnboardingGate() {
 
   return {
     isReady,
-    authStatus,
-    isCompleted
+    authStatus
   };
 }

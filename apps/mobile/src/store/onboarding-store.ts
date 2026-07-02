@@ -4,18 +4,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useProfileStore } from "./profile-store";
 
 type OnboardingState = {
-  step: number;
-  isCompleted: boolean;
   hasHydrated: boolean;
   purpose: string;
   city: string;
   isTourCompleted: boolean;
-  setStep: (step: number) => void;
-  completeOnboarding: () => void;
   resetOnboarding: () => void;
   setPurpose: (purpose: string) => void;
   setCity: (city: string) => void;
-  applyBackendSnapshot: (payload: { purpose?: string; city?: string; isCompleted?: boolean }) => void;
+  applyBackendSnapshot: (payload: { purpose?: string; city?: string }) => void;
   markHydrated: () => void;
   completeTour: () => void;
   resetTour: () => void;
@@ -48,18 +44,12 @@ const safeAsyncStorage: StateStorage = {
 export const useOnboardingStore = create<OnboardingState>()(
   persist(
     (set) => ({
-      step: 1,
-      isCompleted: false,
       hasHydrated: false,
       purpose: "habit",
       city: "",
       isTourCompleted: false,
-      setStep: (step) => set({ step }),
-      completeOnboarding: () => set({ isCompleted: true, step: 3 }),
       resetOnboarding: () =>
         set({
-          step: 1,
-          isCompleted: false,
           purpose: "habit",
           city: ""
         }),
@@ -69,15 +59,13 @@ export const useOnboardingStore = create<OnboardingState>()(
         set({ city: nextCity });
         useProfileStore.getState().setCity(nextCity);
       },
-      applyBackendSnapshot: ({ purpose, city, isCompleted }) =>
+      applyBackendSnapshot: ({ purpose, city }) =>
         set((state) => {
           const nextPurpose = purpose?.trim() || state.purpose || "habit";
           const nextCity = city?.trim() ?? state.city;
           return {
             purpose: nextPurpose,
-            city: nextCity,
-            isCompleted: Boolean(isCompleted),
-            step: isCompleted ? 3 : 1
+            city: nextCity
           };
         }),
       markHydrated: () => set({ hasHydrated: true }),
@@ -88,8 +76,6 @@ export const useOnboardingStore = create<OnboardingState>()(
       name: "onboarding-store-v4",
       storage: createJSONStorage(() => safeAsyncStorage),
       partialize: (state) => ({
-        step: state.step,
-        isCompleted: state.isCompleted,
         purpose: state.purpose,
         city: state.city,
         isTourCompleted: state.isTourCompleted

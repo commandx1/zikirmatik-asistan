@@ -50,15 +50,6 @@ export async function purchasePremiumWithRevenueCat(
   return syncBackendFromCustomerInfo(userId, accessToken, customerInfo);
 }
 
-export async function restorePremiumWithRevenueCat(
-  userId: string,
-  accessToken: string | undefined
-): Promise<PremiumSyncResult> {
-  await ensureRevenueCatConfigured(userId);
-  const customerInfo = await Purchases.restorePurchases();
-  return syncBackendFromCustomerInfo(userId, accessToken, customerInfo);
-}
-
 export async function syncPremiumStatusWithRevenueCat(
   userId: string,
   accessToken: string | undefined,

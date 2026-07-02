@@ -18,6 +18,7 @@ export function useSpecialDays() {
   const [todayAction, setTodayAction] = useState<TodayActionViewModel | null>(null);
   const [upcomingDays, setUpcomingDays] = useState<UpcomingDayViewModel[]>(UPCOMING_DAYS);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [error, setError] = useState<string>();
 
   const notificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
@@ -55,6 +56,7 @@ export function useSpecialDays() {
       setError(error instanceof SpecialDaysApiError ? error.message : "Özel gün verisi alınamadı.");
     } finally {
       setIsLoading(false);
+      setHasLoadedOnce(true);
     }
   }, [accessToken, authStatus, userId]);
 
@@ -72,6 +74,7 @@ export function useSpecialDays() {
     upcomingDays,
     hasUpcomingItems,
     isLoading,
+    hasLoadedOnce,
     error,
     refresh,
   };

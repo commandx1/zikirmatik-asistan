@@ -10,11 +10,11 @@ import {
 import {
   isRevenueCatConfigured,
   purchasePremiumWithRevenueCat,
-  restorePremiumWithRevenueCat,
   syncPremiumStatusWithRevenueCat,
   toRevenueCatMessage
 } from "../../subscriptions/services/revenuecat-client";
 import { syncDailyReminderNotification } from "../services/daily-reminder-notifications";
+import { requestDailyReminderOptIn } from "../services/request-daily-reminder-opt-in";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
@@ -55,7 +55,6 @@ export function useProfile() {
   const [backendUser, setBackendUser] = useState<BackendUser>();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isActivatingPremium, setIsActivatingPremium] = useState(false);
-  const [isRestoringPremium, setIsRestoringPremium] = useState(false);
   const [premiumPlan, setPremiumPlan] = useState<PremiumPlan>("annual");
   const [premiumError, setPremiumError] = useState<string>();
   const [isReminderTimeModalOpen, setIsReminderTimeModalOpen] = useState(false);
@@ -275,31 +274,6 @@ export function useProfile() {
     }
   };
 
-  const restorePremium = async () => {
-    if (authStatus !== "authenticated" || !session?.userId) {
-      setPremiumError("Satın alma geri yükleme için önce giriş yapmalısın.");
-      return;
-    }
-
-    setIsRestoringPremium(true);
-    setPremiumError(undefined);
-    try {
-      const synced = await restorePremiumWithRevenueCat(session.userId, session.accessToken);
-      hydrateFromBackend({ isPremium: synced.isPremium });
-      setBackendUser((current) => (current ? { ...current, isPremium: synced.isPremium } : current));
-      if (synced.isPremium) {
-        closePremiumSheet();
-      } else {
-        setPremiumError("Aktif abonelik bulunamadı.");
-      }
-    } catch (error) {
-      const msg = toRevenueCatMessage(error);
-      if (msg) setPremiumError(msg);
-    } finally {
-      setIsRestoringPremium(false);
-    }
-  };
-
   useEffect(() => {
     if (authStatus !== "authenticated" || !session?.userId || !isRevenueCatConfigured()) {
       return;
@@ -447,11 +421,11 @@ export function useProfile() {
         );
       };
 
-      void syncDailyReminderNotification({
-        enabled,
-        reminderTime,
-        requestPermission: enabled
-      })
+      const syncPromise = enabled
+        ? requestDailyReminderOptIn(reminderTime)
+        : syncDailyReminderNotification({ enabled: false, reminderTime, requestPermission: false });
+
+      void syncPromise
         .then(async ({ permissionGranted }) => {
           if (!enabled) {
             await persistPreference(false);
@@ -533,7 +507,6 @@ export function useProfile() {
     hapticsEnabled,
     isPremiumSheetOpen,
     isActivatingPremium,
-    isRestoringPremium,
     premiumPlan,
     isRefreshing,
     premiumError,
@@ -558,7 +531,6 @@ export function useProfile() {
     closePremiumSheet,
     setPremiumPlan,
     activatePremium,
-    restorePremium,
     tourReplay,
     onLogout,
     isDeleteAccountModalOpen,

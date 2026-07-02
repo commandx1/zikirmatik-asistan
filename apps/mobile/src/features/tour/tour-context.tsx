@@ -19,7 +19,9 @@ type TourContextValue = {
 
 const TourContext = createContext<TourContextValue | null>(null);
 
-export function TourProvider({ children }: PropsWithChildren) {
+type TourProviderProps = PropsWithChildren<{ onComplete?: () => void }>;
+
+export function TourProvider({ children, onComplete }: TourProviderProps) {
   const isTourCompleted = useOnboardingStore((s) => s.isTourCompleted);
   const completeTour = useOnboardingStore((s) => s.completeTour);
   const [currentStepIndex, setCurrentStepIndex] = useState(-1);
@@ -43,11 +45,12 @@ export function TourProvider({ children }: PropsWithChildren) {
     setCurrentStepIndex((prev) => {
       if (prev >= TOUR_STEPS.length - 1) {
         completeTour();
+        onComplete?.();
         return -1;
       }
       return prev + 1;
     });
-  }, [completeTour]);
+  }, [completeTour, onComplete]);
 
   const prevStep = useCallback(() => {
     setCurrentStepIndex((prev) => Math.max(0, prev - 1));
@@ -55,8 +58,9 @@ export function TourProvider({ children }: PropsWithChildren) {
 
   const skipTour = useCallback(() => {
     completeTour();
+    onComplete?.();
     setCurrentStepIndex(-1);
-  }, [completeTour]);
+  }, [completeTour, onComplete]);
 
   return (
     <TourContext.Provider

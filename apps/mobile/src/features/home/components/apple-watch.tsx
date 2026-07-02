@@ -33,6 +33,10 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 type AppleWatchProps = {
   previewTokens?: ThemeTokens;
   spotlightRef?: RefObject<View | null>;
+  listBtnRef?: RefObject<View | null>;
+  targetBtnRef?: RefObject<View | null>;
+  resetBtnRef?: RefObject<View | null>;
+  saveBtnRef?: RefObject<View | null>;
 }
 
 function ProgressRing({ progress, accent, trackColor }: { progress: number; accent: string; trackColor: string }) {
@@ -73,7 +77,7 @@ function ProgressRing({ progress, accent, trackColor }: { progress: number; acce
   )
 }
 
-export function AppleWatch({ previewTokens, spotlightRef }: AppleWatchProps = {}) {
+export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnRef, resetBtnRef, saveBtnRef }: AppleWatchProps = {}) {
   const router = useRouter()
   const [isResetConfirmVisible, setIsResetConfirmVisible] = useState(false)
   const { tokens: activeTokens, themeName } = useThemeTokens()
@@ -163,7 +167,7 @@ export function AppleWatch({ previewTokens, spotlightRef }: AppleWatchProps = {}
   const onResetConfirmPress = () => setIsResetConfirmVisible(true)
 
   return (
-    <View ref={spotlightRef} className='mb-8 items-center'>
+    <View className='mb-8 items-center'>
       <View className='h-[64px] w-[168px] rounded-t-[26px]' style={{ backgroundColor: strapColor }} />
 
       <View className='relative z-10 -mt-5'>
@@ -186,6 +190,7 @@ export function AppleWatch({ previewTokens, spotlightRef }: AppleWatchProps = {}
               contentContainerStyle={{ alignItems: 'center', flexGrow: 1, justifyContent: 'center', paddingBottom: 12 }}
             >
               <Pressable
+                ref={spotlightRef}
                 onPress={home.onCountPress}
                 className='relative items-center justify-center'
                 style={{ width: RING_SIZE, height: RING_SIZE }}
@@ -249,6 +254,7 @@ export function AppleWatch({ previewTokens, spotlightRef }: AppleWatchProps = {}
 
               <View className='mt-3 flex-row gap-3'>
                 <Pressable
+                  ref={listBtnRef}
                   onPress={() => router.push('/(tabs)/focus')}
                   className='h-9 w-9 items-center justify-center rounded-full border'
                   style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
@@ -256,6 +262,7 @@ export function AppleWatch({ previewTokens, spotlightRef }: AppleWatchProps = {}
                   <FontAwesome6 name='list-ul' size={12} color={tokens.textPrimary} />
                 </Pressable>
                 <Pressable
+                  ref={targetBtnRef}
                   onPress={home.onTargetPress}
                   className='h-9 w-9 items-center justify-center rounded-full border'
                   style={{
@@ -266,6 +273,7 @@ export function AppleWatch({ previewTokens, spotlightRef }: AppleWatchProps = {}
                   <FontAwesome6 name='bullseye' size={12} color={tokens.textPrimary} />
                 </Pressable>
                 <Pressable
+                  ref={resetBtnRef}
                   onPress={onResetConfirmPress}
                   className='h-9 w-9 items-center justify-center rounded-full border'
                   style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
@@ -273,6 +281,7 @@ export function AppleWatch({ previewTokens, spotlightRef }: AppleWatchProps = {}
                   <FontAwesome6 name='arrow-rotate-left' size={12} color={tokens.textPrimary} />
                 </Pressable>
                 <Pressable
+                  ref={saveBtnRef}
                   onPress={home.onSavePress}
                   disabled={home.isSavingLog}
                   className={`h-9 w-9 items-center justify-center rounded-full border ${

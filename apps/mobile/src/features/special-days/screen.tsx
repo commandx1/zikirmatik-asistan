@@ -3,6 +3,7 @@ import { Text, View } from "react-native";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { HeroCountdownCard } from "./components/hero-countdown-card";
 import { SpecialDaysHeader } from "./components/special-days-header";
+import { SpecialDaysSkeleton } from "./components/special-days-skeleton";
 import { TodayActionsCard } from "./components/today-actions-card";
 import { UpcomingDaysSection } from "./components/upcoming-days-section";
 import { useSpecialDays } from "./hooks/use-special-days";
@@ -22,22 +23,28 @@ export function SpecialDaysScreen() {
                 <Text className="text-sm text-[#fecaca]">{specialDays.error}</Text>
               </View>
             ) : null}
-            <HeroCountdownCard
-              data={specialDays.heroCard}
-              onPressDetail={(id) => router.push(`/special-days/${id}`)}
-            />
-            {specialDays.todayAction ? (
-              <TodayActionsCard
-                action={specialDays.todayAction}
-                onPressDetail={(id) => router.push(`/special-days/${id}`)}
-              />
-            ) : null}
-            {specialDays.hasUpcomingItems ? (
-              <UpcomingDaysSection
-                days={specialDays.upcomingDays}
-                onPressDay={(id) => router.push(`/special-days/${id}`)}
-              />
-            ) : null}
+            {specialDays.isLoading && !specialDays.hasLoadedOnce ? (
+              <SpecialDaysSkeleton />
+            ) : (
+              <>
+                <HeroCountdownCard
+                  data={specialDays.heroCard}
+                  onPressDetail={(id) => router.push(`/special-days/${id}`)}
+                />
+                {specialDays.todayAction ? (
+                  <TodayActionsCard
+                    action={specialDays.todayAction}
+                    onPressDetail={(id) => router.push(`/special-days/${id}`)}
+                  />
+                ) : null}
+                {specialDays.hasUpcomingItems ? (
+                  <UpcomingDaysSection
+                    days={specialDays.upcomingDays}
+                    onPressDay={(id) => router.push(`/special-days/${id}`)}
+                  />
+                ) : null}
+              </>
+            )}
           </View>
         </View>
       </PageScrollView>

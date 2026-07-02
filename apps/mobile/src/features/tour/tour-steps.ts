@@ -2,6 +2,10 @@ import type { TourStepDef } from "./types";
 
 export const TOUR_REF_WATCH = "appleWatch";
 export const TOUR_REF_TAP_ANYWHERE = "tapAnywhere";
+export const TOUR_REF_WATCH_LIST = "watchBtnList";
+export const TOUR_REF_WATCH_TARGET = "watchBtnTarget";
+export const TOUR_REF_WATCH_RESET = "watchBtnReset";
+export const TOUR_REF_WATCH_SAVE = "watchBtnSave";
 
 export const TOUR_STEPS: TourStepDef[] = [
   {
@@ -9,9 +13,46 @@ export const TOUR_STEPS: TourStepDef[] = [
     refKey: TOUR_REF_WATCH,
     title: "Zikir Sayacı",
     description:
-      "Parmak izi simgesine bas, zikrini say. Halkalar ilerlemeyi gösterir. Alt butonlarla zikir listesi aç, hedef belirle, sıfırla veya kaydet.",
+      "Parmak izi simgesine bas, zikrini say. Halkalar ilerlemeyi gösterir.",
     tooltipPosition: "bottom",
     padding: 12,
+    shape: "circle",
+  },
+  {
+    id: "watch-btn-list",
+    refKey: TOUR_REF_WATCH_LIST,
+    title: "Zikir Listesi",
+    description: "Kayıtlı zikirlerini aç ve sayaca yükle.",
+    tooltipPosition: "bottom",
+    padding: 10,
+    shape: "circle",
+  },
+  {
+    id: "watch-btn-target",
+    refKey: TOUR_REF_WATCH_TARGET,
+    title: "Hedef Belirle",
+    description: "Kaç kez okuyacağını belirle; halka ilerlemeyi gösterir.",
+    tooltipPosition: "bottom",
+    padding: 10,
+    shape: "circle",
+  },
+  {
+    id: "watch-btn-reset",
+    refKey: TOUR_REF_WATCH_RESET,
+    title: "Sayacı Sıfırla",
+    description: "Mevcut zikir sayacını başa al.",
+    tooltipPosition: "bottom",
+    padding: 10,
+    shape: "circle",
+  },
+  {
+    id: "watch-btn-save",
+    refKey: TOUR_REF_WATCH_SAVE,
+    title: "Kaydet",
+    description: "Zikir seansını hesabına kaydet.",
+    tooltipPosition: "bottom",
+    padding: 10,
+    shape: "circle",
   },
   {
     id: "tap-anywhere",
@@ -21,6 +62,7 @@ export const TOUR_STEPS: TourStepDef[] = [
       "Bu mod açıkken ekranın herhangi bir yerine dokunarak sayabilirsin — sadece parmak izine basmana gerek yok.",
     tooltipPosition: "bottom",
     padding: 10,
+    shape: "circle",
   },
   {
     id: "tab-focus",

@@ -124,11 +124,9 @@ export function CollectionsScreen() {
         visible={premiumSheet.isOpen}
         selectedPlan={premiumSheet.plan}
         isActivating={premiumSheet.isActivating}
-        isRestoring={premiumSheet.isRestoring}
         error={premiumSheet.error}
         onSelectPlan={premiumSheet.setPlan}
         onStartPremium={premiumSheet.activate}
-        onRestorePremium={premiumSheet.restore}
         onClose={premiumSheet.close}
       />
     </PageLayout>

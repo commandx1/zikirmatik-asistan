@@ -102,6 +102,15 @@ function buildWeekdayEsmaNames(): Map<number, string[]> {
   return map;
 }
 
+export async function getNotificationsPermissionState(): Promise<{
+  granted: boolean;
+  canAskAgain: boolean;
+  status: Notifications.PermissionStatus;
+}> {
+  const current = await Notifications.getPermissionsAsync();
+  return { granted: current.granted, canAskAgain: current.canAskAgain, status: current.status };
+}
+
 async function ensureNotificationsPermission(requestPermission: boolean) {
   const current = await Notifications.getPermissionsAsync();
   if (current.granted) {

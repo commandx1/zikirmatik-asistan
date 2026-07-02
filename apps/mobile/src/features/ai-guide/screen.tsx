@@ -21,7 +21,6 @@ import { InfoTooltip } from "./components/info-tooltip";
 import { IntentInputSection } from "./components/intent-input-section";
 import { LoadingSection } from "./components/loading-section";
 import { RecommendationsSection } from "./components/recommendations-section";
-import { RewardedGateSheet } from "./components/rewarded-gate-sheet";
 import { TopBar } from "./components/top-bar";
 import { useAiGuide } from "./hooks/use-ai-guide";
 import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
@@ -221,14 +220,6 @@ export function AiGuideScreen() {
           )}
         </PageScrollView>
 
-        <RewardedGateSheet
-          visible={guide.isRewardedSheetOpen}
-          isRunning={guide.isRewardedRunning}
-          freeUsedToday={guide.freeUsedToday}
-          freeLimit={guide.freeDailyLimit}
-          onConfirm={guide.confirmRewardedAndSubmit}
-          onClose={guide.closeRewardedSheet}
-        />
         <UnsavedDhikrTransitionModal
           visible={Boolean(pendingRecommendation)}
           dhikrName={storeItems.find(d => d.id === selectedDhikrId)?.nameTurkish ?? ""}
@@ -274,11 +265,9 @@ export function AiGuideScreen() {
           visible={premiumSheet.isOpen}
           selectedPlan={premiumSheet.plan}
           isActivating={premiumSheet.isActivating}
-          isRestoring={premiumSheet.isRestoring}
           error={premiumSheet.error}
           onSelectPlan={premiumSheet.setPlan}
           onStartPremium={premiumSheet.activate}
-          onRestorePremium={premiumSheet.restore}
           onClose={premiumSheet.close}
         />
       </View>

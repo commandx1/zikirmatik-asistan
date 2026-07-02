@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import type { ThemeName } from "@zikirmatik/shared";
-import { getUserById } from "../services/users-api-client";
+import { getUserById, saveUserPreferences } from "../services/users-api-client";
 import { useAuthStore } from "../../../store/auth-store";
 import type { AppFontFamily } from "../../../store/theme-store";
 import { useProfileStore } from "../../../store/profile-store";
@@ -11,6 +11,10 @@ import {
   isRevenueCatConfigured,
   syncPremiumStatusWithRevenueCat
 } from "../../subscriptions/services/revenuecat-client";
+import { getNotificationsPermissionState } from "../../profile/services/daily-reminder-notifications";
+import { requestDailyReminderOptIn } from "../../profile/services/request-daily-reminder-opt-in";
+
+const DEFAULT_REMINDER_TIME = "08:00";
 
 function normalizeThemeName(value: string | undefined): ThemeName | undefined {
   if (!value) {
@@ -39,6 +43,7 @@ export function useUserPreferencesSync() {
   const session = useAuthStore((s) => s.session);
   const hydrateProfile = useProfileStore((s) => s.hydrateFromBackend);
   const hydrateAppearance = useThemeStore((s) => s.hydrateAppearance);
+  const hasReconciledReminderRef = useRef(false);
 
   useEffect(() => {
     if (authStatus !== "authenticated" || !session?.userId) {
@@ -75,6 +80,36 @@ export function useUserPreferencesSync() {
           themeName: normalizeThemeName(user.theme),
           fontFamily: normalizeFontFamily(user.fontFamily)
         });
+
+        if (user.notifSettings?.dailyReminder && !hasReconciledReminderRef.current) {
+          hasReconciledReminderRef.current = true;
+          const reminderTime = user.notifSettings.reminderTime ?? DEFAULT_REMINDER_TIME;
+
+          const { status } = await getNotificationsPermissionState();
+          if (cancelled || status === "granted") {
+            return;
+          }
+
+          // Bildirim izni backend'in "true" bildiği bir durumla uyuşmuyor.
+          // "undetermined" = izin bu kurulumda hiç sorulmamış (tipik reinstall
+          // sinyali) — kullanıcının önceki tercihini geri kazanmayı dene.
+          let permissionGranted = false;
+          if (status === "undetermined") {
+            const result = await requestDailyReminderOptIn(reminderTime, { showDeniedPrompt: false });
+            permissionGranted = result.permissionGranted;
+          }
+
+          if (cancelled || permissionGranted) {
+            return;
+          }
+
+          hydrateProfile({ dailyReminderEnabled: false });
+          await saveUserPreferences(
+            session.userId,
+            { dailyReminder: false, reminderTime },
+            session.accessToken
+          ).catch(() => {});
+        }
       } catch {
         // Keep local snapshot when user preferences cannot be fetched.
       }

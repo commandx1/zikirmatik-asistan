@@ -56,11 +56,9 @@ export function ProfileScreen() {
           visible={profile.isPremiumSheetOpen}
           selectedPlan={profile.premiumPlan}
           isActivating={profile.isActivatingPremium}
-          isRestoring={profile.isRestoringPremium}
           error={profile.premiumError}
           onSelectPlan={profile.setPremiumPlan}
           onStartPremium={profile.activatePremium}
-          onRestorePremium={profile.restorePremium}
           onClose={profile.closePremiumSheet}
         />
         <ProfileReminderTimeModal
