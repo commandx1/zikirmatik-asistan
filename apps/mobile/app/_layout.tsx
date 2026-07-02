@@ -2,7 +2,7 @@ import "../global.css";
 
 import { useEffect, useState, type ReactNode } from "react";
 import { Stack } from "expo-router";
-import { Text, TextInput } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import * as Notifications from "expo-notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@zikirmatik/ui";
@@ -14,15 +14,23 @@ import { ThemeTransitionProvider } from "../src/contexts/theme-transition-contex
 import { TourProvider } from "../src/features/tour/tour-context";
 import { TourOverlay } from "../src/features/tour/tour-overlay";
 import { ForceUpdateModal } from "../src/components/ui/force-update-modal";
+import { NotificationPermissionModal } from "../src/components/ui/notification-permission-modal";
+import { NotificationPermissionDeniedModal } from "../src/components/ui/notification-permission-denied-modal";
 import { fetchMinRequiredVersion, isUpdateRequired } from "../src/lib/app-config";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
 import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
+import { useTourNotificationOptIn } from "../src/features/tour/hooks/use-tour-notification-opt-in";
 import { useThemePreferences } from "../src/hooks/use-theme-preferences";
 import type { AppFontFamily } from "../src/store/theme-store";
 import { useThemeStore } from "../src/store/theme-store";
 
 const queryClient = new QueryClient();
+
+// Matches the default theme's bg (packages/shared/src/utils/theme.ts) and
+// android.adaptiveIcon.backgroundColor in app.json — used before ThemeProvider
+// mounts, so it can't read theme tokens yet.
+const FALLBACK_BACKGROUND_COLOR = "#0B1423";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -49,6 +57,7 @@ function RootProviders({ children }: { children: ReactNode }) {
   useAuthSessionSync();
   useDhikrBackendSync();
   useUserPreferencesSync();
+  const promptForDailyReminder = useTourNotificationOptIn();
 
   const resolvedFontFamily = resolveGlobalFontFamily(fontFamily, fontsLoaded);
   const resolvedStrongFontFamily = resolveGlobalStrongFontFamily(fontFamily, fontsLoaded);
@@ -70,7 +79,7 @@ function RootProviders({ children }: { children: ReactNode }) {
   }, [resolvedFontFamily]);
 
   if (!themeStoreHydrated) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: FALLBACK_BACKGROUND_COLOR }} />;
   }
 
   return (
@@ -83,9 +92,11 @@ function RootProviders({ children }: { children: ReactNode }) {
           textFontFamilyStrong={resolvedStrongFontFamily}
         >
           <ThemeTransitionProvider>
-            <TourProvider>
+            <TourProvider onComplete={promptForDailyReminder}>
               {children}
               <TourOverlay />
+              <NotificationPermissionModal />
+              <NotificationPermissionDeniedModal />
             </TourProvider>
           </ThemeTransitionProvider>
         </ThemeProvider>
@@ -98,9 +109,13 @@ function RootProviders({ children }: { children: ReactNode }) {
 export default function RootLayout() {
   return (
     <RootProviders>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: FALLBACK_BACKGROUND_COLOR }
+        }}
+      >
         <Stack.Screen name="auth" />
-        <Stack.Screen name="onboarding" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="theme-selector" />
         <Stack.Screen name="font-selector" />
