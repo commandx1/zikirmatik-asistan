@@ -30,6 +30,8 @@ import {
   type RecommendationCacheDocument,
 } from './schemas/recommendation-cache.schema';
 
+const FREE_DAILY_LIMIT = 1;
+
 type TimeContext = {
   hour: number;
   dayOfWeek: number;
@@ -237,17 +239,21 @@ export class AiService {
         userId,
         createdAt: { $gte: todayStart },
       });
-      if (dailyFreeUsed >= 2) {
-        this.logger.log(`[quota] LIMIT_REACHED used=${dailyFreeUsed}/2`);
+      if (dailyFreeUsed >= FREE_DAILY_LIMIT) {
+        this.logger.log(
+          `[quota] LIMIT_REACHED used=${dailyFreeUsed}/${FREE_DAILY_LIMIT}`,
+        );
         throw new ForbiddenException({
           code: 'DAILY_LIMIT_REACHED',
           message:
             "Günlük ücretsiz öneri hakkın doldu. Premium'a geçerek sınırsız öneri alabilirsin.",
           used: dailyFreeUsed,
-          limit: 2,
+          limit: FREE_DAILY_LIMIT,
         });
       }
-      this.logger.log(`[quota] ok free=${dailyFreeUsed + 1}/2`);
+      this.logger.log(
+        `[quota] ok free=${dailyFreeUsed + 1}/${FREE_DAILY_LIMIT}`,
+      );
     } else {
       this.logger.log(`[quota] ok premium — sınırsız`);
     }
@@ -877,7 +883,7 @@ export class AiService {
       createdAt: { $gte: todayStart },
     });
 
-    return { used, limit: 2, isPremium: false };
+    return { used, limit: FREE_DAILY_LIMIT, isPremium: false };
   }
 
   async listRecommendations(query: QueryAiRecommendationsDto) {
