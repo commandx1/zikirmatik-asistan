@@ -61,7 +61,7 @@ export class User {
 
   @Prop(
     raw({
-      dailyReminder: { type: Boolean, default: true },
+      dailyReminder: { type: Boolean, default: false },
       reminderTime: { type: String, default: '08:00' },
       kandilNotifications: { type: Boolean, default: true },
       azanNotifications: { type: Boolean, default: false },
