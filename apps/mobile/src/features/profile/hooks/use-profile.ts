@@ -20,7 +20,6 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { THEME_LABELS } from "../../../theme/labels";
 import { useOnboardingStore } from "../../../store/onboarding-store";
-import { useTour } from "../../tour/use-tour";
 
 type PremiumPlan = "monthly" | "annual";
 
@@ -49,7 +48,6 @@ export function useProfile() {
   const authDisplayName = useAuthStore((s) => s.session?.displayName);
   const signOut = useAuthStore((s) => s.signOut);
   const resetTour = useOnboardingStore((s) => s.resetTour);
-  const { startTour } = useTour();
 
   const [isPremiumSheetOpen, setPremiumSheetOpen] = useState(false);
   const [backendUser, setBackendUser] = useState<BackendUser>();
@@ -155,7 +153,7 @@ export function useProfile() {
 
   const tourReplay = () => {
     resetTour();
-    setTimeout(() => startTour(), 100);
+    router.push("/(tabs)/home");
   };
 
   const openDeleteAccountModal = () => setIsDeleteAccountModalOpen(true);

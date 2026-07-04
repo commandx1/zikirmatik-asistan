@@ -33,7 +33,6 @@ export function ProfileScreen() {
             <ProfileSettingsSections
               reminderTime={profile.reminderTime}
               dailyReminderEnabled={profile.dailyReminderEnabled}
-              kandilNotificationsEnabled={profile.kandilNotificationsEnabled}
               hapticsEnabled={profile.hapticsEnabled}
               onPressTheme={profile.goThemeSelector}
               onPressFont={profile.goFontSelector}
@@ -46,7 +45,6 @@ export function ProfileScreen() {
               onPressLogout={profile.onLogout}
               onPressDeleteAccount={profile.openDeleteAccountModal}
               onToggleDailyReminder={profile.onToggleDailyReminder}
-              onToggleKandilNotification={profile.setKandilNotificationsEnabled}
               onToggleHaptics={profile.onToggleHaptics}
             />
             {/* <ProfileAppVersion /> */}

@@ -9,7 +9,6 @@ import { ProfileToggleRow } from "./profile-toggle-row";
 type ProfileSettingsSectionsProps = {
   reminderTime: string;
   dailyReminderEnabled: boolean;
-  kandilNotificationsEnabled: boolean;
   hapticsEnabled: boolean;
   onPressTheme: () => void;
   onPressFont: () => void;
@@ -22,14 +21,12 @@ type ProfileSettingsSectionsProps = {
   onPressLogout: () => void;
   onPressDeleteAccount: () => void;
   onToggleDailyReminder: (value: boolean) => void;
-  onToggleKandilNotification: (value: boolean) => void;
   onToggleHaptics: (value: boolean) => void;
 };
 
 export function ProfileSettingsSections({
   reminderTime,
   dailyReminderEnabled,
-  kandilNotificationsEnabled,
   hapticsEnabled,
   onPressTheme,
   onPressFont,
@@ -42,7 +39,6 @@ export function ProfileSettingsSections({
   onPressLogout,
   onPressDeleteAccount,
   onToggleDailyReminder,
-  onToggleKandilNotification,
   onToggleHaptics
 }: ProfileSettingsSectionsProps) {
   return (
@@ -71,14 +67,7 @@ export function ProfileSettingsSections({
             onChange={onToggleDailyReminder}
             bottomBorder
           />
-          <ProfileTimeRow label="Hatırlatma Saati" value={reminderTime} bottomBorder onPress={onPressReminderTime} />
-          <ProfileToggleRow
-            label="Kandil Bildirimleri"
-            iconName="star-and-crescent"
-            value={kandilNotificationsEnabled}
-            onChange={onToggleKandilNotification}
-            bottomBorder={false}
-          />
+          <ProfileTimeRow label="Hatırlatma Saati" value={reminderTime} onPress={onPressReminderTime} />
         </ProfileSettingsCard>
       </View>
 
