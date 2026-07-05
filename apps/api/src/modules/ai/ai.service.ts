@@ -64,6 +64,7 @@ const MONGO_FALLBACK_REASONING =
   'Niyetine en uygun zikirleri sana göre seçtim.';
 
 const KNOWN_CATEGORIES = [
+  'tehlikeli canlılardan korunma',
   'acil dua',
   'adab',
   'adalet',
