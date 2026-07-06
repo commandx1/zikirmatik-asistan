@@ -375,7 +375,7 @@ export class AiService {
       summary: '',
       items: [],
       offTopic: false,
-    }
+    };
 
     // ── Off-topic ───────────────────────────────────────────────────────────
     if (agentResult?.offTopic) {
@@ -901,7 +901,9 @@ export class AiService {
     }
 
     // loadDhikrsByIds sıralamayı garanti etmiyor — skor sırasını koru.
-    const order = new Map(result.recommendedIds.map((id, index) => [id, index]));
+    const order = new Map(
+      result.recommendedIds.map((id, index) => [id, index]),
+    );
     candidates.sort(
       (a, b) =>
         (order.get(a._id.toString()) ?? 0) - (order.get(b._id.toString()) ?? 0),

@@ -46,7 +46,10 @@ export function fallbackRecommend(input: FallbackInput): FallbackResult {
       intentTokens,
       tokenize(dhikr.suitableFor.join(' ')),
     );
-    const tagsOverlap = overlapRatio(intentTokens, tokenize(dhikr.tags.join(' ')));
+    const tagsOverlap = overlapRatio(
+      intentTokens,
+      tokenize(dhikr.tags.join(' ')),
+    );
     const categoriesOverlap = overlapRatio(
       intentTokens,
       tokenize(dhikr.categories.join(' ')),
