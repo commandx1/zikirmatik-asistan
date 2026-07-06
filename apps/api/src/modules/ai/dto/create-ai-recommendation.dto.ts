@@ -49,4 +49,13 @@ export class CreateAiRecommendationDto {
   @IsOptional()
   @IsString()
   socketId?: string;
+
+  /**
+   * Fallback belirsiz kaldığında (needsClarification) kullanıcıya sunulan
+   * kategori önerilerinden birinin seçilip geri gönderilmesi için. 'genel'
+   * özel değeri zaman tabanlı genel öneriyi tetikler.
+   */
+  @IsOptional()
+  @IsString()
+  selectedCategory?: string;
 }

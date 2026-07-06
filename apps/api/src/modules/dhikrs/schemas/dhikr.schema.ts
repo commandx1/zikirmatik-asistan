@@ -83,5 +83,6 @@ export const DhikrSchema = SchemaFactory.createForClass(Dhikr);
 DhikrSchema.index({ key: 1 }, { unique: true, sparse: true });
 DhikrSchema.index({ tags: 1 });
 DhikrSchema.index({ categories: 1 });
+DhikrSchema.index({ suitableFor: 1 });
 DhikrSchema.index({ isVerified: 1, isActive: 1 });
 DhikrSchema.index({ timeOfDay: 1, isVerified: 1 });

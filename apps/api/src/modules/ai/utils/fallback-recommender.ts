@@ -1,3 +1,5 @@
+import { normalizeText } from './text-normalize';
+
 type AvailableDhikr = {
   _id: string;
   nameTurkish: string;
@@ -25,6 +27,14 @@ type FallbackInput = {
 export type FallbackResult = {
   recommendedIds: string[];
   reasoning: string;
+  /**
+   * true → en iyi adayda tags/suitableFor/categories alanlarından en az
+   * biriyle kelime örtüşmesi bulundu (gerçek bir metinsel sinyal var).
+   * false → freeText tamamen alakasız/anlamsız olabilir, katalogda hiçbir
+   * alanla eşleşme yok; bu durumda çağıran taraf kullanıcıya netleştirme
+   * sorusu sormalı ("Yanlış zikir önerme lüksümüz yok" kuralı).
+   */
+  hasTextualSignal: boolean;
 };
 
 export function fallbackRecommend(input: FallbackInput): FallbackResult {
@@ -32,10 +42,19 @@ export function fallbackRecommend(input: FallbackInput): FallbackResult {
   const recentSet = new Set(input.recentDhikrIds);
 
   const scored = input.availableDhikrs.map((dhikr) => {
-    const tokenSpace = tokenize(
-      `${dhikr.tags.join(' ')} ${dhikr.categories.join(' ')}`,
+    const suitableForOverlap = overlapRatio(
+      intentTokens,
+      tokenize(dhikr.suitableFor.join(' ')),
     );
-    const tagOverlap = overlapRatio(intentTokens, tokenSpace);
+    const tagsOverlap = overlapRatio(intentTokens, tokenize(dhikr.tags.join(' ')));
+    const categoriesOverlap = overlapRatio(
+      intentTokens,
+      tokenize(dhikr.categories.join(' ')),
+    );
+    // suitableFor×3, tags×2, categories×1 — searchDhikrsForAgent (ai.service.ts)
+    // ile aynı ağırlıklandırma; 6'ya bölünerek 0..1 aralığına normalize edilir.
+    const fieldOverlapScore =
+      (suitableForOverlap * 3 + tagsOverlap * 2 + categoriesOverlap * 1) / 6;
 
     const timeScore = scoreTimeMatch(input.timeContext.hour, dhikr.timeOfDay);
     const specialScore = scoreSpecialDayMatch(
@@ -46,7 +65,7 @@ export function fallbackRecommend(input: FallbackInput): FallbackResult {
     const diversityBonus = recentSet.has(dhikr._id) ? 0 : 1;
 
     const score =
-      tagOverlap * 0.4 +
+      fieldOverlapScore * 0.4 +
       timeScore * 0.2 +
       specialScore * 0.2 +
       diversityBonus * 0.2;
@@ -54,7 +73,10 @@ export function fallbackRecommend(input: FallbackInput): FallbackResult {
     return {
       dhikr,
       score,
-      tagOverlap,
+      suitableForOverlap,
+      tagsOverlap,
+      categoriesOverlap,
+      fieldOverlapScore,
       timeScore,
       specialScore,
       diversityBonus,
@@ -67,16 +89,18 @@ export function fallbackRecommend(input: FallbackInput): FallbackResult {
   const recommendedIds = picks.map((item) => item.dhikr._id);
 
   const reasoning = buildReasoningSummary(picks);
+  const hasTextualSignal =
+    intentTokens.length > 0 && (picks[0]?.fieldOverlapScore ?? 0) > 0;
 
   return {
     recommendedIds,
     reasoning,
+    hasTextualSignal,
   };
 }
 
 function tokenize(input: string) {
-  const lowered = input.toLocaleLowerCase('tr-TR');
-  const normalized = lowered.replace(/[^\p{L}\p{N}\s]/gu, ' ').trim();
+  const normalized = normalizeText(input);
 
   if (!normalized) {
     return [];
@@ -144,7 +168,7 @@ function scoreSpecialDayMatch(
 function buildReasoningSummary(
   picks: Array<{
     dhikr: AvailableDhikr;
-    tagOverlap: number;
+    fieldOverlapScore: number;
     timeScore: number;
     specialScore: number;
     diversityBonus: number;
@@ -157,8 +181,8 @@ function buildReasoningSummary(
   const top = picks[0];
   const reasons: string[] = [];
 
-  if (top.tagOverlap > 0) {
-    reasons.push('niyet metniyle uyumlu etiket eşleşmesi');
+  if (top.fieldOverlapScore > 0) {
+    reasons.push('niyet metniyle uyumlu etiket/kategori eşleşmesi');
   }
 
   if (top.timeScore >= 0.7) {

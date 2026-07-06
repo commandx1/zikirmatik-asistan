@@ -29,6 +29,8 @@ import {
   RecommendationCache,
   type RecommendationCacheDocument,
 } from './schemas/recommendation-cache.schema';
+import { fallbackRecommend } from './utils/fallback-recommender';
+import { normalizeText } from './utils/text-normalize';
 
 const FREE_DAILY_LIMIT = 1;
 
@@ -62,6 +64,13 @@ type AgentResult = {
 
 const MONGO_FALLBACK_REASONING =
   'Niyetine en uygun zikirleri sana göre seçtim.';
+
+/**
+ * freeText'te tags/suitableFor/categories alanlarıyla hiçbir kelime örtüşmesi
+ * bulunamadığında (fallbackRecommend.hasTextualSignal === false) kullanıcıya
+ * sunulacak, geniş kitleye uygun genel kategoriler.
+ */
+const GENERAL_FALLBACK_CATEGORIES = ['genel', 'dua', 'şükür', 'sabır', 'huzur'];
 
 const KNOWN_CATEGORIES = [
   'tehlikeli canlılardan korunma',
@@ -221,6 +230,7 @@ export class AiService {
       'Geçersiz kullanıcı kimliği.',
     );
     const freeText = payload.freeText?.trim() || undefined;
+    const selectedCategory = payload.selectedCategory?.trim() || undefined;
     const socketId = payload.socketId;
     this.emitStep(socketId, 'analyzing', 'Niyetin analiz ediliyor...');
     this.logger.log(
@@ -261,6 +271,55 @@ export class AiService {
 
     const maxRecommendations = payload.maxRecommendations ?? 5;
     const timeContext = payload.timeContext ?? this.defaultTimeContext();
+
+    // ── Kullanıcı kategori seçti (clarification sonrası) ─────────────────────
+    // Agent/cache devre dışı bırakılır: kullanıcının kendi seçimi en güvenilir
+    // sinyaldir, tahmine gerek yoktur. "genel" seçilirse zaman tabanlı öneri.
+    if (selectedCategory) {
+      this.logger.log(`[category] kullanıcı seçimi: "${selectedCategory}"`);
+      const recentDhikrIdsForCategory = await this.getRecentDhikrIds(userId);
+      const categoryCandidates =
+        selectedCategory === 'genel'
+          ? await this.getTimeBasedCandidates(
+              timeContext,
+              recentDhikrIdsForCategory,
+              maxRecommendations,
+            )
+          : await this.searchDhikrsByCategories(
+              [selectedCategory],
+              recentDhikrIdsForCategory,
+              maxRecommendations,
+            );
+
+      const finalCandidates =
+        categoryCandidates.length > 0
+          ? categoryCandidates
+          : await this.getTimeBasedCandidates(
+              timeContext,
+              recentDhikrIdsForCategory,
+              maxRecommendations,
+            );
+
+      if (finalCandidates.length === 0) {
+        throw new NotFoundException(
+          'Öneri için aktif ve doğrulanmış zikir bulunamadı.',
+        );
+      }
+
+      const result = await this.finalizeRecommendation({
+        userId,
+        freeText,
+        timeContext,
+        reasoning: MONGO_FALLBACK_REASONING,
+        safeRecommendedIds: finalCandidates.map((c) => c._id.toString()),
+        dhikrMapById: new Map(
+          finalCandidates.map((c) => [c._id.toString(), c]),
+        ),
+        usedModel: 'fallback',
+      });
+      this.logger.log(`[done] category path — ${Date.now() - startedAt}ms`);
+      return { ...result, dailyFreeUsed: dailyFreeUsed + 1 };
+    }
 
     // ── Cache lookup ────────────────────────────────────────────────────────
     const catalogVersion = await this.getCatalogVersion();
@@ -311,13 +370,12 @@ export class AiService {
     // ── Agent ───────────────────────────────────────────────────────────────
     this.emitStep(socketId, 'thinking', 'Zikir veritabanı hazırlanıyor...');
     this.logger.log(`[agent] başlatılıyor…`);
-    const agentResult = await this.runRecommendationAgent({
-      freeText,
-      timeContext,
-      recentDhikrIds,
-      maxRecommendations,
-      socketId,
-    });
+    const agentResult = {
+      ids: [],
+      summary: '',
+      items: [],
+      offTopic: false,
+    }
 
     // ── Off-topic ───────────────────────────────────────────────────────────
     if (agentResult?.offTopic) {
@@ -370,12 +428,31 @@ export class AiService {
     // ── Fallback ────────────────────────────────────────────────────────────
     if (safeRecommendedIds.length === 0) {
       this.emitStep(socketId, 'fallback', 'Genel öneriler hazırlanıyor...');
-      this.logger.log(`[fallback] zaman tabanlı MongoDB sorgusu başlatılıyor`);
-      const fallbackCandidates = await this.getTimeBasedCandidates(
+      this.logger.log(`[fallback] akıllı fallback başlatılıyor`);
+      const smartFallback = await this.getSmartFallbackCandidates(
+        freeText,
         timeContext,
         recentDhikrIds,
         maxRecommendations,
       );
+
+      if (smartFallback.kind === 'clarification') {
+        this.logger.log(
+          `[fallback] belirsiz → kullanıcıdan kategori seçimi isteniyor: [${smartFallback.suggestedCategories.join(', ')}]`,
+        );
+        return {
+          needsClarification: true as const,
+          message:
+            'Niyetini biraz daha netleştirir misin? Sana en uygun olanı seçebilirsin:',
+          suggestedCategories: [...smartFallback.suggestedCategories, 'genel'],
+          recommendedIds: [],
+          items: [],
+          usedModel: 'fallback' as const,
+          dailyFreeUsed,
+        };
+      }
+
+      const fallbackCandidates = smartFallback.candidates;
       if (fallbackCandidates.length === 0) {
         throw new NotFoundException(
           'Öneri için aktif ve doğrulanmış zikir bulunamadı.',
@@ -722,6 +799,142 @@ export class AiService {
       .exec();
   }
 
+  /**
+   * Fallback skorlaması için gereken alanlarla birlikte, aktif + doğrulanmış
+   * tüm zikirleri (son gösterilenler hariç) lean olarak getirir.
+   */
+  private async getActiveDhikrPool(
+    recentDhikrIds: string[],
+  ): Promise<DhikrLean[]> {
+    const recentObjectIds = recentDhikrIds
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+
+    return this.dhikrModel
+      .find({
+        isVerified: true,
+        isActive: true,
+        ...(recentObjectIds.length > 0
+          ? { _id: { $nin: recentObjectIds } }
+          : {}),
+      })
+      .lean<DhikrLean[]>()
+      .exec();
+  }
+
+  /**
+   * Agent kullanılamadığında (rate-limit, API key yok, agent hatası) devreye
+   * giren akıllı fallback. LLM olmadan freeText'i kelime kelime (Türkçe
+   * katlamalı) tokenize edip katalogdaki tags/suitableFor/categories
+   * alanlarıyla ağırlıklı örtüşme skoruna göre eşleştirir
+   * (bkz. fallbackRecommend, utils/fallback-recommender.ts):
+   * - freeText yoksa → doğrudan zaman tabanlı öneri (mevcut davranış).
+   * - freeText'te hiçbir alanla kelime örtüşmesi yoksa (hasTextualSignal
+   *   false) → TAHMİN ETMEZ, kullanıcıya seçmesi için genel kategorileri
+   *   döner. ("Yanlış zikir önerme lüksümüz yok" kuralı.)
+   * - En az bir alanla örtüşme varsa → en yüksek skorlu zikirler önerilir.
+   */
+  private async getSmartFallbackCandidates(
+    freeText: string | undefined,
+    timeContext: TimeContext,
+    recentDhikrIds: string[],
+    maxRecommendations: number,
+  ): Promise<
+    | { kind: 'candidates'; candidates: DhikrLean[] }
+    | { kind: 'clarification'; suggestedCategories: string[] }
+  > {
+    if (!freeText) {
+      const candidates = await this.getTimeBasedCandidates(
+        timeContext,
+        recentDhikrIds,
+        maxRecommendations,
+      );
+      return { kind: 'candidates', candidates };
+    }
+
+    const pool = await this.getActiveDhikrPool(recentDhikrIds);
+    if (pool.length === 0) {
+      const candidates = await this.getTimeBasedCandidates(
+        timeContext,
+        recentDhikrIds,
+        maxRecommendations,
+      );
+      return { kind: 'candidates', candidates };
+    }
+
+    const result = fallbackRecommend({
+      freeText,
+      timeContext,
+      recentDhikrIds,
+      maxRecommendations,
+      availableDhikrs: pool.map((d) => ({
+        _id: d._id.toString(),
+        nameTurkish: d.nameTurkish,
+        tags: d.tags,
+        categories: d.categories,
+        timeOfDay: d.timeOfDay,
+        suitableFor: d.suitableFor,
+      })),
+    });
+
+    if (!result.hasTextualSignal) {
+      // freeText hiçbir zikrin tags/suitableFor/categories alanıyla
+      // örtüşmüyor — güvenle karar veremeyiz, kullanıcıya soralım.
+      return {
+        kind: 'clarification',
+        suggestedCategories: GENERAL_FALLBACK_CATEGORIES.slice(0, 5),
+      };
+    }
+
+    this.logger.log(`[fallback] ${result.reasoning}`);
+
+    const candidates = await this.loadDhikrsByIds(result.recommendedIds);
+
+    if (candidates.length === 0) {
+      // Beklenmedik durum (örn. id'ler arada silindi) — zaman tabanlıya düş.
+      const fallback = await this.getTimeBasedCandidates(
+        timeContext,
+        recentDhikrIds,
+        maxRecommendations,
+      );
+      return { kind: 'candidates', candidates: fallback };
+    }
+
+    // loadDhikrsByIds sıralamayı garanti etmiyor — skor sırasını koru.
+    const order = new Map(result.recommendedIds.map((id, index) => [id, index]));
+    candidates.sort(
+      (a, b) =>
+        (order.get(a._id.toString()) ?? 0) - (order.get(b._id.toString()) ?? 0),
+    );
+
+    return { kind: 'candidates', candidates };
+  }
+
+  /** Belirtilen kategorilerden birine sahip, aktif ve doğrulanmış zikirleri döndürür. */
+  private async searchDhikrsByCategories(
+    categories: string[],
+    recentDhikrIds: string[],
+    limit: number,
+  ): Promise<DhikrLean[]> {
+    const recentObjectIds = recentDhikrIds
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+
+    return this.dhikrModel
+      .find({
+        isVerified: true,
+        isActive: true,
+        categories: { $in: categories },
+        ...(recentObjectIds.length > 0
+          ? { _id: { $nin: recentObjectIds } }
+          : {}),
+      })
+      .sort({ recommendedCount: -1 })
+      .limit(limit)
+      .lean<DhikrLean[]>()
+      .exec();
+  }
+
   /** Belirli ID'lere sahip, aktif ve doğrulanmış dhikrleri döndürür. */
   private async loadDhikrsByIds(ids: string[]): Promise<DhikrLean[]> {
     const objectIds = ids
@@ -1045,20 +1258,6 @@ function toSearchResult(item: DhikrLean): SearchResult {
     timeOfDay: item.timeOfDay,
     suitableFor: item.suitableFor,
   };
-}
-
-function normalizeText(value: string): string {
-  return value
-    .toLocaleLowerCase('tr-TR')
-    .replace(/ı/g, 'i')
-    .replace(/ğ/g, 'g')
-    .replace(/ü/g, 'u')
-    .replace(/ş/g, 's')
-    .replace(/ö/g, 'o')
-    .replace(/ç/g, 'c')
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
 }
 
 function stripObjectIds(text: string) {
