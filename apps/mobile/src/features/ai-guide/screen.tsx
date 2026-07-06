@@ -211,6 +211,29 @@ export function AiGuideScreen() {
                 {guide.offTopicMessage}
               </Text>
             </View>
+          ) : guide.clarification ? (
+            <View className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-4">
+              <View className="mb-2 flex-row items-center gap-2">
+                <FontAwesome6 name="circle-question" size={14} color="#fbbf24" />
+                <Text className="text-sm font-semibold text-amber-400">
+                  Biraz daha netleştirelim
+                </Text>
+              </View>
+              <Text className="mb-3 text-sm leading-5 text-amber-100/80">
+                {guide.clarification.message}
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                {guide.clarification.suggestedCategories.map((category) => (
+                  <View
+                    key={category}
+                    onTouchEnd={() => void guide.submitClarificationCategory(category)}
+                    className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1.5"
+                  >
+                    <Text className="text-xs font-medium text-amber-200">{category}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
           ) : (
             <RecommendationsSection
               items={guide.recommendations}

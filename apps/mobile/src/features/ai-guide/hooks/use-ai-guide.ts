@@ -28,6 +28,11 @@ type LastAiGuideResult = {
   recommendations: AiGuideRecommendation[];
 };
 
+type ClarificationState = {
+  message: string;
+  suggestedCategories: string[];
+};
+
 export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [intentInput, setIntentInput] = useState("");
   const [showInfo, setShowInfo] = useState(false);
@@ -35,6 +40,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string>();
   const [offTopicMessage, setOffTopicMessage] = useState<string>();
+  const [clarification, setClarification] = useState<ClarificationState>();
   const [recommendationId, setRecommendationId] = useState<string>();
   const [recommendations, setRecommendations] = useState<AiGuideRecommendation[]>([]);
   const [assistantNote, setAssistantNote] = useState<string>();
@@ -246,11 +252,12 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   };
 
   const executeRecommendationRequest = useCallback(
-    async (request: { freeText?: string }) => {
+    async (request: { freeText?: string; selectedCategory?: string }) => {
       setIsLoading(true);
       setLoadingStep("");
       setError(undefined);
       setOffTopicMessage(undefined);
+      setClarification(undefined);
 
       const progressSocket = createAiProgressSocket();
       let socketId: string | undefined;
@@ -274,6 +281,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           freeText: request.freeText,
           maxRecommendations: 3,
           socketId,
+          selectedCategory: request.selectedCategory,
           timeContext: {
             hour: now.getHours(),
             dayOfWeek: now.getDay(),
@@ -287,6 +295,21 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           setAssistantNote(undefined);
           setRecommendationId(undefined);
           setIntentInput("");
+          return;
+        }
+
+        if (response.needsClarification) {
+          setClarification({
+            message: response.message,
+            suggestedCategories: response.suggestedCategories
+          });
+          setRecommendations([]);
+          setAssistantNote(undefined);
+          setRecommendationId(undefined);
+          if (typeof response.dailyFreeUsed === "number") {
+            setFreeUsedToday(response.dailyFreeUsed);
+            setQuotaConfirmed(true);
+          }
           return;
         }
 
@@ -381,6 +404,26 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     await executeRecommendationRequest(request);
   };
 
+  const submitClarificationCategory = async (category: string) => {
+    if (isLoading) {
+      return;
+    }
+
+    const request = { freeText: intentInput.trim() || undefined, selectedCategory: category };
+
+    if (await shouldBypassRewardGate()) {
+      await executeRecommendationRequest(request);
+      return;
+    }
+
+    if (quotaConfirmed && freeUsedToday >= FREE_DAILY_LIMIT) {
+      onOpenPremiumSheet?.();
+      return;
+    }
+
+    await executeRecommendationRequest(request);
+  };
+
   const selectRecommendation = (recommendation: AiGuideRecommendation) => {
     selectDhikr(
       recommendation.id,
@@ -437,6 +480,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     isRefreshing,
     error,
     offTopicMessage,
+    clarification,
+    submitClarificationCategory,
     recommendationId,
     lastPrompt,
     assistantNote,

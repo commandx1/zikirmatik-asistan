@@ -11,11 +11,17 @@ export type CreateAiRecommendationPayload = {
   };
   maxRecommendations?: number;
   socketId?: string;
+  /**
+   * needsClarification yanıtından sonra kullanıcının seçtiği kategoriyi
+   * geri göndermek için. 'genel' değeri zaman tabanlı genel öneriyi tetikler.
+   */
+  selectedCategory?: string;
 };
 
 export type CreateAiRecommendationResponse =
   | {
       offTopic: true;
+      needsClarification?: false;
       message: string;
       recommendedIds: [];
       items: [];
@@ -23,6 +29,17 @@ export type CreateAiRecommendationResponse =
     }
   | {
       offTopic?: false;
+      needsClarification: true;
+      message: string;
+      suggestedCategories: string[];
+      recommendedIds: [];
+      items: [];
+      usedModel: "fallback";
+      dailyFreeUsed?: number;
+    }
+  | {
+      offTopic?: false;
+      needsClarification?: false;
       recommendationId: string;
       recommendedIds: string[];
       reasoning: string;
