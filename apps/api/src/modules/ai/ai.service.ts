@@ -370,12 +370,13 @@ export class AiService {
     // ── Agent ───────────────────────────────────────────────────────────────
     this.emitStep(socketId, 'thinking', 'Zikir veritabanı hazırlanıyor...');
     this.logger.log(`[agent] başlatılıyor…`);
-    const agentResult = {
-      ids: [],
-      summary: '',
-      items: [],
-      offTopic: false,
-    };
+    const agentResult = await this.runRecommendationAgent({
+      freeText,
+      timeContext,
+      recentDhikrIds,
+      maxRecommendations,
+      socketId,
+    });
 
     // ── Off-topic ───────────────────────────────────────────────────────────
     if (agentResult?.offTopic) {
