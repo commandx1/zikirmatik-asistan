@@ -5,6 +5,7 @@ import { getUserById } from "../../users/services/users-api-client";
 
 export function useOnboardingGate() {
   const authStatus = useAuthStore((s) => s.status);
+  const guestMode = useAuthStore((s) => s.guestMode);
   const authHydrated = useAuthStore((s) => s.hasHydrated);
   const session = useAuthStore((s) => s.session);
   const onboardingHydrated = useOnboardingStore((s) => s.hasHydrated);
@@ -14,6 +15,12 @@ export function useOnboardingGate() {
 
   useEffect(() => {
     if (!authHydrated || !onboardingHydrated) {
+      return;
+    }
+
+    if (guestMode && authStatus !== "authenticated") {
+      setIsResolving(false);
+      setResolvedUserId(undefined);
       return;
     }
 
@@ -55,6 +62,7 @@ export function useOnboardingGate() {
     applyBackendSnapshot,
     authHydrated,
     authStatus,
+    guestMode,
     onboardingHydrated,
     session?.accessToken,
     session?.userId

@@ -16,6 +16,7 @@ import { UsersApiError, saveUserOnboarding } from "../users/services/users-api-c
 export function OnboardingPreferencesScreen() {
   const { tokens } = useThemeTokens();
   const authStatus = useAuthStore((s) => s.status);
+  const guestMode = useAuthStore((s) => s.guestMode);
   const session = useAuthStore((s) => s.session);
   const storePurpose = useOnboardingStore((s) => s.purpose);
   const storeCity = useOnboardingStore((s) => s.city);
@@ -61,7 +62,7 @@ export function OnboardingPreferencesScreen() {
     setIsSaving(true);
 
     try {
-      if (authStatus === "authenticated" && session?.userId) {
+      if (!guestMode && authStatus === "authenticated" && session?.userId) {
         await saveUserOnboarding(
           session.userId,
           {

@@ -26,6 +26,7 @@ import { useAiGuide } from "./hooks/use-ai-guide";
 import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
 import { useDhikrStore } from "../../store/dhikr-store";
 import { usePremiumSheet } from "../../hooks/use-premium-sheet";
+import { useRequireAuth } from "../auth/hooks/use-require-auth";
 import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
 import type { AiGuideRecommendation } from "./types";
 
@@ -39,6 +40,7 @@ function toDateKey(value: Date) {
 export function AiGuideScreen() {
   const router = useRouter();
   const premiumSheet = usePremiumSheet();
+  const { requireAuth } = useRequireAuth();
   const guide = useAiGuide(premiumSheet.open);
   const guard = useDhikrStartGuard();
   const clearDhikrProgress = useDhikrStore(s => s.clearDhikrProgress);
@@ -179,7 +181,11 @@ export function AiGuideScreen() {
             value={guide.intentInput}
             isLoading={guide.isLoading}
             onChangeValue={guide.onIntentInputChange}
-            onSend={guide.submitIntent}
+            onSend={() => {
+              requireAuth(() => {
+                void guide.submitIntent();
+              });
+            }}
             onSelectPrompt={guide.applyPrompt}
           />
           <DailyEsmaShortcutCard onPress={() => setDailyEsmaOpen(true)} />
@@ -292,6 +298,22 @@ export function AiGuideScreen() {
           onSelectPlan={premiumSheet.setPlan}
           onStartPremium={premiumSheet.activate}
           onClose={premiumSheet.close}
+          topupProducts={premiumSheet.topupProducts}
+          purchasingTopupId={premiumSheet.purchasingTopupId}
+          topupError={premiumSheet.topupError}
+          onPurchaseTopup={(productId) => {
+            void premiumSheet.purchaseTopup(productId).then((purchased) => {
+              if (!purchased) {
+                return;
+              }
+              premiumSheet.close();
+              void guide.refresh();
+              // Webhook'un krediyi işlemesi gecikebilir; kısa bir süre sonra tekrar yenile.
+              setTimeout(() => {
+                void guide.refresh();
+              }, 4000);
+            });
+          }}
         />
       </View>
     </PageLayout>

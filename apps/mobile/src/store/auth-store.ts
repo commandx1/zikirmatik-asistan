@@ -9,12 +9,15 @@ import type {
 } from "@zikirmatik/shared";
 import { AuthApiError, refreshSession, verifyProvider } from "../features/auth/services/auth-api-client";
 import { clearProviderSession, ProviderAuthError, requestProviderIdToken } from "../features/auth/services/mock-provider-auth";
+import { captureGuestMigrationSnapshot } from "../features/auth/services/guest-migration";
 import { resetSessionScopedStores } from "./session-boundary";
+import { useGuestMigrationStore } from "./guest-migration-store";
 
 type AuthStatus = "signed_out" | "authenticating" | "authenticated";
 
 type AuthStore = {
   status: AuthStatus;
+  guestMode: boolean;
   hasHydrated: boolean;
   session?: AuthSession;
   authError?: string;
@@ -24,6 +27,8 @@ type AuthStore = {
   signInWithRequiredProvider: () => Promise<void>;
   refreshAuthenticatedSession: () => Promise<void>;
   signOut: () => Promise<void>;
+  continueAsGuest: () => void;
+  exitGuest: () => void;
   markHydrated: () => void;
 };
 
@@ -55,6 +60,7 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       status: "signed_out",
+      guestMode: false,
       hasHydrated: false,
       isSessionRefreshing: false,
       lastAuthenticatedUserId: undefined,
@@ -67,6 +73,9 @@ export const useAuthStore = create<AuthStore>()(
         const provider = resolveRequiredProvider();
         const platform = resolveClientPlatform();
         const previousUserId = get().lastAuthenticatedUserId;
+        // Capture guest-local progress BEFORE any session-scoped reset can wipe
+        // it; only queued after the sign-in actually succeeds.
+        const guestSnapshot = get().guestMode ? captureGuestMigrationSnapshot() : null;
 
         set({
           status: "authenticating",
@@ -83,12 +92,17 @@ export const useAuthStore = create<AuthStore>()(
             idToken
           });
 
+          if (guestSnapshot) {
+            useGuestMigrationStore.getState().queueSnapshot(guestSnapshot);
+          }
+
           if (previousUserId && previousUserId !== session.userId) {
             resetSessionScopedStores();
           }
 
           set({
             status: "authenticated",
+            guestMode: false,
             session,
             authError: undefined,
             isSessionRefreshing: false,
@@ -152,6 +166,7 @@ export const useAuthStore = create<AuthStore>()(
         resetSessionScopedStores();
         set({
           status: "signed_out",
+          guestMode: false,
           session: undefined,
           authError: undefined,
           isSessionRefreshing: false,
@@ -160,6 +175,19 @@ export const useAuthStore = create<AuthStore>()(
 
         await clearProviderSession(provider);
       },
+      continueAsGuest: () =>
+        set({
+          status: "signed_out",
+          guestMode: true,
+          session: undefined,
+          authError: undefined,
+          isSessionRefreshing: false,
+          lastSessionRefreshAt: undefined
+        }),
+      exitGuest: () =>
+        set({
+          guestMode: false
+        }),
       markHydrated: () => set({ hasHydrated: true })
     }),
     {
@@ -167,6 +195,7 @@ export const useAuthStore = create<AuthStore>()(
       storage: createJSONStorage(() => safeAsyncStorage),
       partialize: (state) => ({
         status: state.status,
+        guestMode: state.guestMode,
         session: state.session,
         lastSessionRefreshAt: state.lastSessionRefreshAt,
         lastAuthenticatedUserId: state.lastAuthenticatedUserId

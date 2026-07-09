@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
+import { useGuestMigrationStore } from "../../../store/guest-migration-store";
 import { listAiRecommendations } from "../../ai-guide/services/ai-api-client";
 import { listDhikrLogsByUser } from "../services/dhikr-logs-api-client";
 import { DhikrsApiError, listVerifiedActiveDhikrs } from "../services/dhikrs-api-client";
@@ -13,9 +14,14 @@ export function useDhikrBackendSync() {
   const hydrateReadyItems = useDhikrStore((s) => s.hydrateReadyItems);
   const hydratePersonalItems = useDhikrStore((s) => s.hydratePersonalItems);
   const setSyncError = useDhikrStore((s) => s.setSyncError);
+  // Sync lock: while a guest→member migration snapshot is pending or running,
+  // backend hydration must wait so it can't clobber unmigrated guest data.
+  const isMigrationBlocking = useGuestMigrationStore(
+    (s) => s.status === "pending" || s.status === "running"
+  );
 
   useEffect(() => {
-    if (authStatus !== "authenticated") {
+    if (authStatus !== "authenticated" || isMigrationBlocking) {
       return;
     }
 
@@ -151,7 +157,7 @@ export function useDhikrBackendSync() {
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, hydratePersonalItems, hydrateReadyItems, sessionAccessToken, sessionUserId, setSyncError]);
+  }, [authStatus, hydratePersonalItems, hydrateReadyItems, isMigrationBlocking, sessionAccessToken, sessionUserId, setSyncError]);
 }
 
 function toLastActivityLabel(createdAt: string) {

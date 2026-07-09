@@ -40,13 +40,14 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { fontFamily } = useThemePreferences();
   const authStatus = useAuthStore((s) => s.status);
+  const guestMode = useAuthStore((s) => s.guestMode);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const pathname = usePathname();
   const isMoreMenuRoute = !["/home", "/focus", "/ai-guide", "/special-days"].some(
     (p) => pathname === p || pathname.startsWith(p + "/")
   );
 
-  if (authStatus !== "authenticated") {
+  if (authStatus !== "authenticated" && !guestMode) {
     return <Redirect href="/auth" />;
   }
 

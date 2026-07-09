@@ -18,6 +18,7 @@ import { NotificationPermissionModal } from "../src/components/ui/notification-p
 import { NotificationPermissionDeniedModal } from "../src/components/ui/notification-permission-denied-modal";
 import { fetchMinRequiredVersion, isUpdateRequired } from "../src/lib/app-config";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
+import { useGuestMigration } from "../src/features/auth/hooks/use-guest-migration";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
 import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
 import { useTourNotificationOptIn } from "../src/features/tour/hooks/use-tour-notification-opt-in";
@@ -55,6 +56,9 @@ function RootProviders({ children }: { children: ReactNode }) {
     IndieFlower_400Regular
   });
   useAuthSessionSync();
+  // Order matters: migration drains the pending guest snapshot and gates
+  // useDhikrBackendSync until it completes (see useGuestMigrationStore).
+  useGuestMigration();
   useDhikrBackendSync();
   useUserPreferencesSync();
   const promptForDailyReminder = useTourNotificationOptIn();
