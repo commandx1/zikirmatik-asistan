@@ -1119,7 +1119,10 @@ export class AiService {
     }
 
     const grantWindow = Math.max(0, credits.dailyGrant);
-    const used = Math.max(0, grantWindow - Math.min(credits.balance, grantWindow));
+    const used = Math.max(
+      0,
+      grantWindow - Math.min(credits.balance, grantWindow),
+    );
 
     return {
       used,
@@ -1132,7 +1135,10 @@ export class AiService {
   async getCredits(userId: string) {
     const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
     const user = await this.ensureUserExists(userObjectId);
-    const creditState = await this.ensureCreditState(userObjectId, user.isPremium);
+    const creditState = await this.ensureCreditState(
+      userObjectId,
+      user.isPremium,
+    );
 
     return {
       balance: creditState.balance,
@@ -1147,7 +1153,10 @@ export class AiService {
     productId: string;
     providerEventId: string;
   }) {
-    const userObjectId = this.asObjectId(input.userId, 'Geçersiz kullanıcı kimliği.');
+    const userObjectId = this.asObjectId(
+      input.userId,
+      'Geçersiz kullanıcı kimliği.',
+    );
     await this.ensureUserExists(userObjectId);
 
     const productId = input.productId?.trim();
@@ -1529,8 +1538,7 @@ export class AiService {
                 ...(grantApplied
                   ? {
                       grantCredits: grant.amount,
-                      balance:
-                        Math.max(0, wallet.topupCredits) + grant.amount,
+                      balance: Math.max(0, wallet.topupCredits) + grant.amount,
                     }
                   : {}),
               },

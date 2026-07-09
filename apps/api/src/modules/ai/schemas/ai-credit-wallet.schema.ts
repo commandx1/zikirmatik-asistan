@@ -33,6 +33,7 @@ export class AiCreditWallet {
   readonly updatedAt!: Date;
 }
 
-export const AiCreditWalletSchema = SchemaFactory.createForClass(AiCreditWallet);
+export const AiCreditWalletSchema =
+  SchemaFactory.createForClass(AiCreditWallet);
 
 AiCreditWalletSchema.index({ userId: 1 }, { unique: true });

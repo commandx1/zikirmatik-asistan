@@ -54,7 +54,8 @@ export class AiCreditLedger {
   readonly createdAt!: Date;
 }
 
-export const AiCreditLedgerSchema = SchemaFactory.createForClass(AiCreditLedger);
+export const AiCreditLedgerSchema =
+  SchemaFactory.createForClass(AiCreditLedger);
 
 AiCreditLedgerSchema.index(
   { userId: 1, reason: 1, dayKey: 1 },
