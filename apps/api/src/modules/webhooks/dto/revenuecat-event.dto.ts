@@ -20,10 +20,12 @@ export type RevenueCatEventType =
 export type RevenueCatStore = 'APP_STORE' | 'PLAY_STORE' | 'STRIPE';
 
 export type RevenueCatEvent = {
+  id?: string;
   type: string;
   app_user_id: string;
   original_app_user_id: string;
   product_id: string;
+  transaction_id?: string;
   store: string;
   purchased_at_ms?: number;
   expiration_at_ms?: number;

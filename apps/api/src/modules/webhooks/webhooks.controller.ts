@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import {
   Body,
   Controller,
@@ -8,6 +9,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AiService } from '../ai/ai.service';
 import { CreateSubscriptionDto } from '../subscriptions/dto/create-subscription.dto';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import type {
@@ -21,6 +23,7 @@ const EVENTS_THAT_GRANT_PREMIUM = new Set([
   'RENEWAL',
   'UNCANCELLATION',
 ]);
+const EVENTS_THAT_GRANT_TOPUP = new Set(['NON_SUBSCRIPTION_PURCHASE']);
 
 @Controller('v1/webhooks')
 export class WebhooksController {
@@ -28,6 +31,7 @@ export class WebhooksController {
 
   constructor(
     private readonly subscriptionsService: SubscriptionsService,
+    private readonly aiService: AiService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -53,17 +57,22 @@ export class WebhooksController {
       `RevenueCat event: type=${event.type} userId=${event.app_user_id}`,
     );
 
+    // Beklenen sonuçlar (duplicate, unknown_product vb.) handler'lar içinde
+    // loglanıp 200 döner; beklenmeyen exception'lar buradan yukarı fırlar
+    // (500) ki RevenueCat isteği retry etsin.
     try {
       if (EVENTS_THAT_REVOKE_PREMIUM.has(event.type)) {
         await this.handleRevoke(event);
       } else if (EVENTS_THAT_GRANT_PREMIUM.has(event.type)) {
         await this.handleGrant(event);
+      } else if (EVENTS_THAT_GRANT_TOPUP.has(event.type)) {
+        await this.handleTopup(event);
       }
     } catch (err) {
-      // Loglayıp 200 döndür — RevenueCat başarısız istekleri retry'lar
       this.logger.error(
         `Error processing RevenueCat event ${event.type}: ${(err as Error).message}`,
       );
+      throw err;
     }
 
     return { received: true };
@@ -113,6 +122,40 @@ export class WebhooksController {
     this.logger.log(`Premium granted for user ${userId}`);
   }
 
+  private async handleTopup(event: RevenueCatEvent) {
+    const userId = await this.resolveUserId(event);
+    if (!userId) {
+      return;
+    }
+
+    const providerEventId =
+      event.id?.trim() ||
+      event.transaction_id?.trim() ||
+      [
+        event.type,
+        event.app_user_id,
+        event.product_id,
+        String(event.purchased_at_ms ?? ''),
+      ].join(':');
+
+    const result = await this.aiService.applyTopupPurchase({
+      userId,
+      productId: event.product_id,
+      providerEventId,
+    });
+
+    if (result.applied) {
+      this.logger.log(
+        `Top-up applied for user ${userId}, +${result.credits} credits (${event.product_id})`,
+      );
+      return;
+    }
+
+    this.logger.log(
+      `Top-up skipped for user ${userId} (${event.product_id}) reason=${result.reason}`,
+    );
+  }
+
   /**
    * RevenueCat olayındaki app_user_id (öncelikli) veya original_app_user_id
    * ile veritabanındaki gerçek kullanıcıyı bulur. Bulunamazsa net bir uyarı
@@ -141,13 +184,22 @@ export class WebhooksController {
       ?.trim();
 
     if (!secret) {
-      // Secret tanımlı değilse geliştirme ortamında doğrulamayı atla
+      // Production'da fail-closed: secret yapılandırılmamışsa istekleri reddet.
+      const nodeEnv =
+        this.configService.get<string>('NODE_ENV') ?? process.env.NODE_ENV;
+      if (nodeEnv === 'production') {
+        this.logger.error(
+          'REVENUECAT_WEBHOOK_SECRET not set in production, rejecting webhook',
+        );
+        throw new UnauthorizedException('Webhook secret yapılandırılmamış.');
+      }
+      // Geliştirme ortamında doğrulamayı atla
       this.logger.warn('REVENUECAT_WEBHOOK_SECRET not set, skipping auth');
       return;
     }
 
     const token = authHeader?.replace(/^Bearer\s+/i, '').trim();
-    if (token !== secret) {
+    if (!token || !safeEquals(token, secret)) {
       throw new UnauthorizedException('Geçersiz webhook secret.');
     }
   }
@@ -155,4 +207,13 @@ export class WebhooksController {
 
 function resolveProvider(store: string): 'apple' | 'google' {
   return store === 'APP_STORE' ? 'apple' : 'google';
+}
+
+function safeEquals(a: string, b: string): boolean {
+  const bufferA = Buffer.from(a);
+  const bufferB = Buffer.from(b);
+  if (bufferA.length !== bufferB.length) {
+    return false;
+  }
+  return timingSafeEqual(bufferA, bufferB);
 }

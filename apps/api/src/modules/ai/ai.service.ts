@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   Logger,
@@ -29,10 +30,24 @@ import {
   RecommendationCache,
   type RecommendationCacheDocument,
 } from './schemas/recommendation-cache.schema';
+import {
+  AiCreditWallet,
+  type AiCreditWalletDocument,
+} from './schemas/ai-credit-wallet.schema';
+import {
+  AiCreditLedger,
+  type AiCreditLedgerDocument,
+} from './schemas/ai-credit-ledger.schema';
 import { fallbackRecommend } from './utils/fallback-recommender';
 import { normalizeText } from './utils/text-normalize';
-
-const FREE_DAILY_LIMIT = 1;
+import {
+  AI_CREDIT_DEFAULT_TOPUP_PRODUCTS,
+  AI_CREDIT_INSUFFICIENT_CODE,
+  AI_CREDIT_REASONS,
+  type AiCreditReason,
+  FREE_DAILY_CREDIT_AMOUNT,
+  PREMIUM_MONTHLY_CREDIT_AMOUNT,
+} from './credits.constants';
 
 type TimeContext = {
   hour: number;
@@ -44,6 +59,17 @@ type TimeContext = {
 type UsedModel = 'openai' | 'fallback' | 'cache';
 
 type DhikrLean = Dhikr & { _id: Types.ObjectId };
+
+type CreditGrantStatus = {
+  dailyGrant: number;
+  monthlyGrant: number;
+};
+
+type CreditState = CreditGrantStatus & {
+  balance: number;
+  isPremium: boolean;
+  wallet: AiCreditWalletDocument;
+};
 
 type SearchResult = {
   id: string;
@@ -201,6 +227,8 @@ const KNOWN_CATEGORIES = [
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
+  private topupCatalogCache?: Map<string, number>;
+  private topupCatalogCacheRaw?: string;
 
   constructor(
     private readonly progressGateway: AiProgressGateway,
@@ -209,6 +237,10 @@ export class AiService {
     private readonly aiRecommendationModel: Model<AiRecommendationDocument>,
     @InjectModel(RecommendationCache.name)
     private readonly recommendationCacheModel: Model<RecommendationCacheDocument>,
+    @InjectModel(AiCreditWallet.name)
+    private readonly aiCreditWalletModel: Model<AiCreditWalletDocument>,
+    @InjectModel(AiCreditLedger.name)
+    private readonly aiCreditLedgerModel: Model<AiCreditLedgerDocument>,
     @InjectModel(Dhikr.name)
     private readonly dhikrModel: Model<DhikrDocument>,
     @InjectModel(DhikrLog.name)
@@ -229,6 +261,10 @@ export class AiService {
       payload.userId,
       'Geçersiz kullanıcı kimliği.',
     );
+    const flowId = payload.flowId?.trim();
+    if (!flowId) {
+      throw new BadRequestException('flowId zorunludur.');
+    }
     const freeText = payload.freeText?.trim() || undefined;
     const selectedCategory = payload.selectedCategory?.trim() || undefined;
     const socketId = payload.socketId;
@@ -238,36 +274,13 @@ export class AiService {
     );
 
     const user = await this.ensureUserExists(userId);
-
-    // ── Quota ──────────────────────────────────────────────────────────────
-    let dailyFreeUsed = 0;
-    if (!user.isPremium) {
-      const now = new Date();
-      const todayStart = new Date(
-        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-      );
-      dailyFreeUsed = await this.aiRecommendationModel.countDocuments({
-        userId,
-        createdAt: { $gte: todayStart },
-      });
-      if (dailyFreeUsed >= FREE_DAILY_LIMIT) {
-        this.logger.log(
-          `[quota] LIMIT_REACHED used=${dailyFreeUsed}/${FREE_DAILY_LIMIT}`,
-        );
-        throw new ForbiddenException({
-          code: 'DAILY_LIMIT_REACHED',
-          message:
-            "Günlük ücretsiz öneri hakkın doldu. Premium'a geçerek sınırsız öneri alabilirsin.",
-          used: dailyFreeUsed,
-          limit: FREE_DAILY_LIMIT,
-        });
-      }
-      this.logger.log(
-        `[quota] ok free=${dailyFreeUsed + 1}/${FREE_DAILY_LIMIT}`,
-      );
-    } else {
-      this.logger.log(`[quota] ok premium — sınırsız`);
-    }
+    const promptHash = this.computePromptHash({ freeText, selectedCategory });
+    await this.ensureCreditAccessForFlow(
+      userId,
+      flowId,
+      user.isPremium,
+      promptHash,
+    );
 
     const maxRecommendations = payload.maxRecommendations ?? 5;
     const timeContext = payload.timeContext ?? this.defaultTimeContext();
@@ -317,8 +330,14 @@ export class AiService {
         ),
         usedModel: 'fallback',
       });
+      const wallet = await this.debitCreditForFlow(
+        userId,
+        flowId,
+        user.isPremium,
+        promptHash,
+      );
       this.logger.log(`[done] category path — ${Date.now() - startedAt}ms`);
-      return { ...result, dailyFreeUsed: dailyFreeUsed + 1 };
+      return { ...result, remainingCredits: wallet.balance };
     }
 
     // ── Cache lookup ────────────────────────────────────────────────────────
@@ -359,8 +378,14 @@ export class AiService {
           dhikrMapById,
           usedModel: 'cache',
         });
+        const wallet = await this.debitCreditForFlow(
+          userId,
+          flowId,
+          user.isPremium,
+          promptHash,
+        );
         this.logger.log(`[done] cache path — ${Date.now() - startedAt}ms`);
-        return { ...result, dailyFreeUsed: dailyFreeUsed + 1 };
+        return { ...result, remainingCredits: wallet.balance };
       }
     }
     this.logger.log(`[cache] MISS`);
@@ -449,7 +474,6 @@ export class AiService {
           recommendedIds: [],
           items: [],
           usedModel: 'fallback' as const,
-          dailyFreeUsed,
         };
       }
 
@@ -492,7 +516,13 @@ export class AiService {
     this.logger.log(
       `[done] model=${usedModel} count=${safeRecommendedIds.length} — ${Date.now() - startedAt}ms`,
     );
-    return { ...result, dailyFreeUsed: dailyFreeUsed + 1 };
+    const wallet = await this.debitCreditForFlow(
+      userId,
+      flowId,
+      user.isPremium,
+      promptHash,
+    );
+    return { ...result, remainingCredits: wallet.balance };
   }
 
   /**
@@ -1083,24 +1113,84 @@ export class AiService {
   }
 
   async getDailyQuota(userId: string) {
-    const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
-    const user = await this.userModel.findById(userObjectId).lean().exec();
-    if (!user) throw new NotFoundException('Kullanıcı bulunamadı.');
-
-    if (user.isPremium) {
-      return { used: 0, limit: null, isPremium: true };
+    const credits = await this.getCredits(userId);
+    if (credits.isPremium) {
+      return { used: 0, limit: null, isPremium: true, deprecated: true };
     }
 
-    const now = new Date();
-    const todayStart = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-    );
-    const used = await this.aiRecommendationModel.countDocuments({
-      userId: userObjectId,
-      createdAt: { $gte: todayStart },
-    });
+    const grantWindow = Math.max(0, credits.dailyGrant);
+    const used = Math.max(0, grantWindow - Math.min(credits.balance, grantWindow));
 
-    return { used, limit: FREE_DAILY_LIMIT, isPremium: false };
+    return {
+      used,
+      limit: grantWindow,
+      isPremium: false,
+      deprecated: true,
+    };
+  }
+
+  async getCredits(userId: string) {
+    const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
+    const user = await this.ensureUserExists(userObjectId);
+    const creditState = await this.ensureCreditState(userObjectId, user.isPremium);
+
+    return {
+      balance: creditState.balance,
+      isPremium: creditState.isPremium,
+      dailyGrant: creditState.dailyGrant,
+      monthlyGrant: creditState.monthlyGrant,
+    };
+  }
+
+  async applyTopupPurchase(input: {
+    userId: string;
+    productId: string;
+    providerEventId: string;
+  }) {
+    const userObjectId = this.asObjectId(input.userId, 'Geçersiz kullanıcı kimliği.');
+    await this.ensureUserExists(userObjectId);
+
+    const productId = input.productId?.trim();
+    const providerEventId = input.providerEventId?.trim();
+    if (!productId || !providerEventId) {
+      return { applied: false as const, reason: 'missing_fields', credits: 0 };
+    }
+
+    const credits = this.resolveTopupCredits(productId);
+    if (credits <= 0) {
+      this.logger.error(
+        `Topup UNKNOWN_PRODUCT: katalogda karşılığı olmayan ürün — ` +
+          `productId=${productId} userId=${input.userId} ` +
+          `providerEventId=${providerEventId}. Kredi UYGULANMADI; ` +
+          `AI_CREDIT_TOPUP_PRODUCTS / AI_CREDIT_DEFAULT_TOPUP_PRODUCTS kataloğunu kontrol et.`,
+      );
+      return { applied: false as const, reason: 'unknown_product', credits: 0 };
+    }
+
+    try {
+      await this.aiCreditLedgerModel.create({
+        userId: userObjectId,
+        reason: AI_CREDIT_REASONS.TOPUP_PURCHASE,
+        delta: credits,
+        providerEventId,
+        metadata: { productId },
+      });
+    } catch (error) {
+      if (this.isDuplicateKeyError(error)) {
+        return { applied: false as const, reason: 'duplicate_event', credits };
+      }
+      throw error;
+    }
+
+    await this.aiCreditWalletModel
+      .findOneAndUpdate(
+        { userId: userObjectId },
+        { $inc: { topupCredits: credits, balance: credits } },
+        { upsert: true, new: true, setDefaultsOnInsert: true },
+      )
+      .exec();
+
+    return { applied: true as const, reason: 'ok', credits };
   }
 
   async listRecommendations(query: QueryAiRecommendationsDto) {
@@ -1212,10 +1302,325 @@ export class AiService {
     return parts.join('\n\n');
   }
 
-  private readNumberConfig(key: string, fallback: number): number {
-    const raw = this.configService.get<string | number>(key);
-    const parsed = typeof raw === 'number' ? raw : Number(raw);
-    return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+  private computePromptHash(input: {
+    freeText?: string;
+    selectedCategory?: string;
+  }): string {
+    return createHash('sha256')
+      .update(
+        JSON.stringify({
+          freeText: input.freeText ?? null,
+          selectedCategory: input.selectedCategory ?? null,
+        }),
+      )
+      .digest('hex');
+  }
+
+  private assertPromptHashMatches(
+    existingHash: string | undefined,
+    promptHash: string,
+  ) {
+    // Eski kayıtlarda promptHash olmayabilir; yalnızca kayıtlı hash ile
+    // gelen hash uyuşmuyorsa flowId yeniden kullanımı olarak reddet.
+    if (existingHash && existingHash !== promptHash) {
+      throw new ForbiddenException(
+        'Bu flowId farklı bir istek içeriğiyle zaten kullanılmış.',
+      );
+    }
+  }
+
+  private async ensureCreditAccessForFlow(
+    userId: Types.ObjectId,
+    flowId: string,
+    isPremium: boolean,
+    promptHash: string,
+  ) {
+    const existingDebit = await this.aiCreditLedgerModel
+      .findOne({
+        userId,
+        reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+        flowId,
+      })
+      .lean()
+      .exec();
+
+    if (existingDebit) {
+      this.assertPromptHashMatches(existingDebit.promptHash, promptHash);
+      return;
+    }
+
+    const creditState = await this.ensureCreditState(userId, isPremium);
+    if (creditState.balance > 0) {
+      return;
+    }
+
+    throw new ForbiddenException({
+      code: AI_CREDIT_INSUFFICIENT_CODE,
+      message:
+        'AI Rehber için kredin yetersiz. Premium veya kredi paketi alarak devam edebilirsin.',
+    });
+  }
+
+  private async debitCreditForFlow(
+    userId: Types.ObjectId,
+    flowId: string,
+    isPremium: boolean,
+    promptHash: string,
+  ): Promise<{ balance: number }> {
+    const existingDebit = await this.aiCreditLedgerModel
+      .findOne({
+        userId,
+        reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+        flowId,
+      })
+      .lean()
+      .exec();
+
+    if (existingDebit) {
+      this.assertPromptHashMatches(existingDebit.promptHash, promptHash);
+      const wallet = await this.aiCreditWalletModel
+        .findOne({ userId })
+        .lean()
+        .exec();
+      return { balance: wallet?.balance ?? 0 };
+    }
+
+    const creditState = await this.ensureCreditState(userId, isPremium);
+    if (creditState.balance <= 0) {
+      throw new ForbiddenException({
+        code: AI_CREDIT_INSUFFICIENT_CODE,
+        message:
+          'AI Rehber için kredin yetersiz. Premium veya kredi paketi alarak devam edebilirsin.',
+      });
+    }
+
+    // Önce ledger'a yaz: unique index (userId, reason, flowId) sayesinde
+    // eşzamanlı istekler E11000 alır ve idempotent retry yoluna düşer.
+    try {
+      await this.aiCreditLedgerModel.create({
+        userId,
+        reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+        delta: -1,
+        flowId,
+        promptHash,
+      });
+    } catch (error) {
+      if (this.isDuplicateKeyError(error)) {
+        const duplicateDebit = await this.aiCreditLedgerModel
+          .findOne({
+            userId,
+            reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+            flowId,
+          })
+          .lean()
+          .exec();
+        this.assertPromptHashMatches(duplicateDebit?.promptHash, promptHash);
+        const currentWallet = await this.aiCreditWalletModel
+          .findOne({ userId })
+          .lean()
+          .exec();
+        return { balance: currentWallet?.balance ?? 0 };
+      }
+      throw error;
+    }
+
+    // Wallet'ı koşullu atomik $inc ile düşür: önce grant kovası, yoksa topup.
+    let updatedWallet = await this.aiCreditWalletModel
+      .findOneAndUpdate(
+        { userId, grantCredits: { $gt: 0 } },
+        { $inc: { grantCredits: -1, balance: -1 } },
+        { new: true },
+      )
+      .exec();
+
+    if (!updatedWallet) {
+      updatedWallet = await this.aiCreditWalletModel
+        .findOneAndUpdate(
+          { userId, topupCredits: { $gt: 0 } },
+          { $inc: { topupCredits: -1, balance: -1 } },
+          { new: true },
+        )
+        .exec();
+    }
+
+    if (!updatedWallet) {
+      // Düşülecek kredi kalmamış: ledger kaydını telafi olarak sil ve reddet.
+      await this.aiCreditLedgerModel
+        .deleteOne({
+          userId,
+          reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+          flowId,
+        })
+        .exec();
+      throw new ForbiddenException({
+        code: AI_CREDIT_INSUFFICIENT_CODE,
+        message:
+          'AI Rehber için kredin yetersiz. Premium veya kredi paketi alarak devam edebilirsin.',
+      });
+    }
+
+    // balanceAfter bilgilendirme amaçlı; başarısız olsa da akışı bozmasın.
+    try {
+      await this.aiCreditLedgerModel
+        .updateOne(
+          {
+            userId,
+            reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+            flowId,
+          },
+          { $set: { balanceAfter: updatedWallet.balance } },
+        )
+        .exec();
+    } catch (error) {
+      this.logger.warn(
+        `Ledger balanceAfter güncellenemedi (flow ${flowId}): ${this.describeError(error)}`,
+      );
+    }
+
+    return { balance: updatedWallet.balance };
+  }
+
+  private async ensureCreditState(
+    userId: Types.ObjectId,
+    isPremium: boolean,
+  ): Promise<CreditState> {
+    const initialWallet =
+      (await this.aiCreditWalletModel.findOne({ userId }).exec()) ??
+      (await this.aiCreditWalletModel.create({ userId }));
+
+    const grant = this.resolveGrantStatus(isPremium);
+    let wallet = initialWallet;
+
+    if (
+      wallet.grantReason !== grant.reason ||
+      wallet.grantCycleKey !== grant.cycleKey
+    ) {
+      // Grant yalnızca ledger insert'i başarılıysa uygulanır: unique index
+      // (dayKey/monthKey) aynı döngüde ikinci grant'i engeller. Böylece
+      // premium⇄free toggle'ında aylık grant tekrar verilmez ve mevcut
+      // bakiye korunur (downgrade'de krediler sıfırlanmaz). Yeni döngüde
+      // grant uygulandığında ise grantCredits BİRİKMEZ: kullanılmayan
+      // önceki grant döngü değişince sıfırlanır ($set), topupCredits'e
+      // dokunulmaz.
+      let grantApplied = false;
+      try {
+        await this.aiCreditLedgerModel.create({
+          userId,
+          reason: grant.reason,
+          delta: grant.amount,
+          ...(grant.dayKey ? { dayKey: grant.dayKey } : {}),
+          ...(grant.monthKey ? { monthKey: grant.monthKey } : {}),
+        });
+        grantApplied = true;
+      } catch (error) {
+        if (!this.isDuplicateKeyError(error)) {
+          throw error;
+        }
+      }
+
+      wallet =
+        (await this.aiCreditWalletModel
+          .findOneAndUpdate(
+            { userId },
+            {
+              $set: {
+                grantReason: grant.reason,
+                grantCycleKey: grant.cycleKey,
+                ...(grantApplied
+                  ? {
+                      grantCredits: grant.amount,
+                      balance:
+                        Math.max(0, wallet.topupCredits) + grant.amount,
+                    }
+                  : {}),
+              },
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true },
+          )
+          .exec()) ?? wallet;
+    } else {
+      const nextBalance =
+        Math.max(0, wallet.topupCredits) + Math.max(0, wallet.grantCredits);
+      if (wallet.balance !== nextBalance) {
+        wallet =
+          (await this.aiCreditWalletModel
+            .findOneAndUpdate(
+              { userId },
+              {
+                $set: {
+                  topupCredits: Math.max(0, wallet.topupCredits),
+                  grantCredits: Math.max(0, wallet.grantCredits),
+                  balance: nextBalance,
+                },
+              },
+              { new: true },
+            )
+            .exec()) ?? wallet;
+      }
+    }
+
+    return {
+      balance: wallet.balance,
+      isPremium,
+      dailyGrant: isPremium ? 0 : FREE_DAILY_CREDIT_AMOUNT,
+      monthlyGrant: isPremium ? PREMIUM_MONTHLY_CREDIT_AMOUNT : 0,
+      wallet,
+    };
+  }
+
+  private resolveGrantStatus(isPremium: boolean): {
+    reason: AiCreditReason;
+    cycleKey: string;
+    amount: number;
+    dayKey?: string;
+    monthKey?: string;
+  } {
+    const now = new Date();
+    if (isPremium) {
+      const monthKey = toUtcMonthKey(now);
+      return {
+        reason: AI_CREDIT_REASONS.PREMIUM_MONTHLY_GRANT,
+        cycleKey: monthKey,
+        amount: PREMIUM_MONTHLY_CREDIT_AMOUNT,
+        monthKey,
+      };
+    }
+
+    const dayKey = toUtcDayKey(now);
+    return {
+      reason: AI_CREDIT_REASONS.FREE_DAILY_GRANT,
+      cycleKey: dayKey,
+      amount: FREE_DAILY_CREDIT_AMOUNT,
+      dayKey,
+    };
+  }
+
+  private resolveTopupCredits(productId: string): number {
+    const raw = this.configService
+      .get<string>('AI_CREDIT_TOPUP_PRODUCTS')
+      ?.trim();
+
+    if (!raw) {
+      // Env override yoksa tek kaynak: credits.constants.ts default kataloğu
+      // (mobil CREDIT_TOPUP_CREDITS ile birebir aynı).
+      return AI_CREDIT_DEFAULT_TOPUP_PRODUCTS[productId.trim()] ?? 0;
+    }
+
+    if (this.topupCatalogCacheRaw !== raw || !this.topupCatalogCache) {
+      this.topupCatalogCacheRaw = raw;
+      this.topupCatalogCache = parseTopupCatalog(raw);
+    }
+
+    const key = productId.trim();
+    return this.topupCatalogCache.get(key) ?? 0;
+  }
+
+  private isDuplicateKeyError(error: unknown): boolean {
+    if (!error || typeof error !== 'object') {
+      return false;
+    }
+
+    return (error as { code?: unknown }).code === 11000;
   }
 
   private describeError(error: unknown): string {
@@ -1265,4 +1670,49 @@ function toSearchResult(item: DhikrLean): SearchResult {
 
 function stripObjectIds(text: string) {
   return text.replace(/\b[a-f0-9]{24}\b/gi, '').replace(/\s{2,}/g, ' ');
+}
+
+function toUtcDayKey(date: Date) {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function toUtcMonthKey(date: Date) {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+}
+
+function parseTopupCatalog(raw: string): Map<string, number> {
+  const bySku = new Map<string, number>();
+
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    for (const [sku, amount] of Object.entries(parsed)) {
+      const normalized = Number(amount);
+      if (sku.trim() && Number.isFinite(normalized) && normalized > 0) {
+        bySku.set(sku.trim(), Math.floor(normalized));
+      }
+    }
+    return bySku;
+  } catch {
+    // json değilse csv formatına düş
+  }
+
+  raw
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .forEach((part) => {
+      const [skuRaw, amountRaw] = part.split(':');
+      const sku = skuRaw?.trim();
+      const amount = Number(amountRaw?.trim());
+      if (sku && Number.isFinite(amount) && amount > 0) {
+        bySku.set(sku, Math.floor(amount));
+      }
+    });
+
+  return bySku;
 }

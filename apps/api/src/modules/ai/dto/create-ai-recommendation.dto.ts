@@ -5,6 +5,7 @@ import {
   IsMongoId,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   Min,
 } from 'class-validator';
@@ -58,4 +59,7 @@ export class CreateAiRecommendationDto {
   @IsOptional()
   @IsString()
   selectedCategory?: string;
+
+  @IsUUID('4')
+  flowId!: string;
 }

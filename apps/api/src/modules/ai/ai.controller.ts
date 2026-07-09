@@ -34,6 +34,11 @@ export class AiController {
     return this.aiService.getDailyQuota(userId);
   }
 
+  @Get('credits')
+  getCredits(@CurrentUserId() userId: string) {
+    return this.aiService.getCredits(userId);
+  }
+
   @Get('recommendations')
   listRecommendations(
     @Query() query: QueryAiRecommendationsDto,
