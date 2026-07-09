@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 
 export type CreateAiRecommendationPayload = {
   userId: string;
+  flowId: string;
   freeText?: string;
   timeContext?: {
     hour: number;
@@ -35,7 +36,6 @@ export type CreateAiRecommendationResponse =
       recommendedIds: [];
       items: [];
       usedModel: "fallback";
-      dailyFreeUsed?: number;
     }
   | {
       offTopic?: false;
@@ -54,11 +54,11 @@ export type CreateAiRecommendationResponse =
         recommendedCount?: number;
       }>;
       usedModel: "openai" | "fallback" | "retrieval" | "cache";
-      dailyFreeUsed?: number;
+      remainingCredits?: number;
     };
 
 export const DAILY_LIMIT_REACHED_CODE = "DAILY_LIMIT_REACHED";
-export const FREE_DAILY_LIMIT = 1;
+export const AI_CREDIT_INSUFFICIENT_CODE = "AI_CREDIT_INSUFFICIENT";
 
 export type BackendAiRecommendation = {
   _id: string;
@@ -112,6 +112,20 @@ export type AiDailyQuota = {
   limit: number | null;
   isPremium: boolean;
 };
+
+export type AiCredits = {
+  balance: number;
+  isPremium: boolean;
+  dailyGrant: number;
+  monthlyGrant: number;
+};
+
+export async function getAiCredits(accessToken?: string): Promise<AiCredits> {
+  return requestJson<AiCredits>("/v1/ai/credits", {
+    method: "GET",
+    accessToken
+  });
+}
 
 export async function getAiDailyQuota(accessToken?: string): Promise<AiDailyQuota> {
   return requestJson<AiDailyQuota>("/v1/ai/quota", {

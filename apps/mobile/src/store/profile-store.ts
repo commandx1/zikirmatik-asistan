@@ -34,13 +34,13 @@ type ProfileState = {
 };
 
 export const useProfileStore = create<ProfileState>((set) => ({
-  displayName: "Ahmet Yılmaz",
-  memberSinceLabel: "Mayıs 2025'ten beri",
-  totalDhikr: 1240,
-  streakDays: 12,
-  activeDays: 28,
+  displayName: "Misafir",
+  memberSinceLabel: "",
+  totalDhikr: 0,
+  streakDays: 0,
+  activeDays: 0,
   isPremium: false,
-  city: "Ankara",
+  city: "",
   language: "Türkçe",
   reminderTime: "08:00",
   dailyReminderEnabled: false,
@@ -68,12 +68,13 @@ export const useProfileStore = create<ProfileState>((set) => ({
   },
   resetSessionScoped: () => {
     set({
-      displayName: "Ahmet Yılmaz",
-      totalDhikr: 1240,
-      streakDays: 12,
-      activeDays: 28,
+      displayName: "Misafir",
+      memberSinceLabel: "",
+      totalDhikr: 0,
+      streakDays: 0,
+      activeDays: 0,
       isPremium: false,
-      city: "Ankara",
+      city: "",
       reminderTime: "08:00",
       dailyReminderEnabled: false,
       kandilNotificationsEnabled: true,

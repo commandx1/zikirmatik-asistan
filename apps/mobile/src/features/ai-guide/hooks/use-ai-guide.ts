@@ -7,9 +7,10 @@ import { useDhikrStore } from "../../../store/dhikr-store";
 import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-client";
 import {
   AiApiError,
+  AI_CREDIT_INSUFFICIENT_CODE,
   DAILY_LIMIT_REACHED_CODE,
-  FREE_DAILY_LIMIT,
   createAiRecommendation,
+  getAiCredits,
   getAiDailyQuota,
   listAiRecommendations,
   selectAiRecommendation
@@ -50,8 +51,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [prayerTimeLabel, setPrayerTimeLabel] = useState("Vakit bilgisi yok");
   const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
   const [isPremiumVerified, setIsPremiumVerified] = useState(false);
-  const [freeUsedToday, setFreeUsedToday] = useState(0);
-  const [quotaConfirmed, setQuotaConfirmed] = useState(false);
+  const [creditBalance, setCreditBalance] = useState(0);
+  const [dailyGrant, setDailyGrant] = useState(1);
+  const [monthlyGrant, setMonthlyGrant] = useState(0);
+  const [creditsConfirmed, setCreditsConfirmed] = useState(false);
+  const [activeFlowId, setActiveFlowId] = useState<string>();
   const [loadingStep, setLoadingStep] = useState("");
 
   const authStatus = useAuthStore((s) => s.status);
@@ -66,6 +70,37 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
   const cacheKey = userId ? `ai-guide:last:${userId}` : "";
 
+  const refreshCredits = useCallback(async () => {
+    if (authStatus !== "authenticated") {
+      setCreditBalance(0);
+      setDailyGrant(1);
+      setMonthlyGrant(0);
+      setCreditsConfirmed(false);
+      return { balance: 0, isPremium: false };
+    }
+
+    try {
+      const credits = await getAiCredits(accessToken);
+      setCreditBalance(Math.max(0, Math.floor(credits.balance)));
+      setDailyGrant(Math.max(0, Math.floor(credits.dailyGrant)));
+      setMonthlyGrant(Math.max(0, Math.floor(credits.monthlyGrant)));
+      setIsPremiumVerified(Boolean(credits.isPremium));
+      setCreditsConfirmed(true);
+      return { balance: credits.balance, isPremium: credits.isPremium };
+    } catch {
+      const quota = await getAiDailyQuota(accessToken);
+      const fallbackBalance = quota.isPremium
+        ? Number.MAX_SAFE_INTEGER
+        : Math.max(0, (quota.limit ?? 1) - quota.used);
+      setCreditBalance(fallbackBalance);
+      setDailyGrant(quota.isPremium ? 0 : quota.limit ?? 1);
+      setMonthlyGrant(0);
+      setIsPremiumVerified(Boolean(quota.isPremium));
+      setCreditsConfirmed(true);
+      return { balance: fallbackBalance, isPremium: quota.isPremium };
+    }
+  }, [accessToken, authStatus]);
+
   useEffect(() => {
     setError(undefined);
     setRecommendationId(undefined);
@@ -75,8 +110,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     setHistoryExpanded(false);
     setLastPrompt("");
     setIntentInput("");
-    setFreeUsedToday(0);
-    setQuotaConfirmed(false);
+    setCreditBalance(0);
+    setDailyGrant(1);
+    setMonthlyGrant(0);
+    setCreditsConfirmed(false);
+    setActiveFlowId(undefined);
   }, [authStatus, cacheKey]);
 
   const hydrateLastResultFromCache = useCallback(async () => {
@@ -120,14 +158,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       return false;
     }
 
-    const [recommendationRows, catalog, quota] = await Promise.all([
+    const [recommendationRows, catalog] = await Promise.all([
       listAiRecommendations(accessToken),
       listVerifiedActiveDhikrs(),
-      getAiDailyQuota(accessToken)
     ]);
-
-    setFreeUsedToday(Math.min(quota.used, FREE_DAILY_LIMIT));
-    setQuotaConfirmed(true);
+    await refreshCredits();
 
     const nextHistoryItems = buildAiGuideHistoryItems(recommendationRows, catalog);
     setHistoryItems(nextHistoryItems);
@@ -158,7 +193,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     return true;
-  }, [accessToken, authStatus, cacheKey, userId]);
+  }, [accessToken, authStatus, cacheKey, refreshCredits, userId]);
 
   useEffect(() => {
     if (authStatus !== "authenticated" || !cacheKey) {
@@ -224,24 +259,32 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     void loadCurrentState();
   }, [loadCurrentState]);
 
-  const shouldBypassRewardGate = useCallback(async () => {
-    if (isPremium || isPremiumVerified) {
-      return true;
-    }
-
+  const ensureCreditsAvailable = useCallback(async () => {
     if (authStatus !== "authenticated" || !userId) {
       return false;
     }
 
-    try {
-      const user = await getUserById(userId, accessToken);
-      const premium = Boolean(user.isPremium);
-      setIsPremiumVerified(premium);
-      return premium;
-    } catch {
-      return false;
+    const shouldRefresh = !creditsConfirmed || creditBalance <= 0;
+    const state = shouldRefresh
+      ? await refreshCredits()
+      : { balance: creditBalance, isPremium: isPremium || isPremiumVerified };
+
+    if (state.balance > 0 || state.isPremium) {
+      return true;
     }
-  }, [accessToken, authStatus, isPremium, isPremiumVerified, userId]);
+
+    onOpenPremiumSheet?.();
+    return false;
+  }, [
+    authStatus,
+    creditBalance,
+    creditsConfirmed,
+    isPremium,
+    isPremiumVerified,
+    onOpenPremiumSheet,
+    refreshCredits,
+    userId
+  ]);
 
   const applyPrompt = (value: string) => {
     setIntentInput(value);
@@ -252,7 +295,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   };
 
   const executeRecommendationRequest = useCallback(
-    async (request: { freeText?: string; selectedCategory?: string }) => {
+    async (request: { freeText?: string; selectedCategory?: string; flowId: string }) => {
       setIsLoading(true);
       setLoadingStep("");
       setError(undefined);
@@ -278,6 +321,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         const now = new Date();
         const response = await createAiRecommendation({
           userId,
+          flowId: request.flowId,
           freeText: request.freeText,
           maxRecommendations: 3,
           socketId,
@@ -294,6 +338,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           setRecommendations([]);
           setAssistantNote(undefined);
           setRecommendationId(undefined);
+          setActiveFlowId(undefined);
           setIntentInput("");
           return;
         }
@@ -306,10 +351,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           setRecommendations([]);
           setAssistantNote(undefined);
           setRecommendationId(undefined);
-          if (typeof response.dailyFreeUsed === "number") {
-            setFreeUsedToday(response.dailyFreeUsed);
-            setQuotaConfirmed(true);
-          }
           return;
         }
 
@@ -360,14 +401,21 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           });
         }
 
-        if (typeof response.dailyFreeUsed === "number") {
-          setFreeUsedToday(response.dailyFreeUsed);
-          setQuotaConfirmed(true);
+        if (typeof response.remainingCredits === "number") {
+          setCreditBalance(Math.max(0, Math.floor(response.remainingCredits)));
+          setCreditsConfirmed(true);
         }
 
+        setActiveFlowId(undefined);
         setIntentInput("");
       } catch (error) {
-        if (error instanceof AiApiError && error.code === DAILY_LIMIT_REACHED_CODE) {
+        if (
+          error instanceof AiApiError &&
+          (error.code === AI_CREDIT_INSUFFICIENT_CODE ||
+            error.code === DAILY_LIMIT_REACHED_CODE)
+        ) {
+          setCreditBalance(0);
+          setCreditsConfirmed(true);
           onOpenPremiumSheet?.();
         } else if (error instanceof AiApiError) {
           setError(error.message);
@@ -380,7 +428,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         setLoadingStep("");
       }
     },
-    [accessToken, authStatus, cacheKey, userId]
+    [accessToken, authStatus, cacheKey, onOpenPremiumSheet, userId]
   );
 
   const submitIntent = async () => {
@@ -389,15 +437,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     Keyboard.dismiss();
-    const request = { freeText: intentInput.trim() || undefined };
+    const flowId = createFlowId();
+    setActiveFlowId(flowId);
+    const request = { freeText: intentInput.trim() || undefined, flowId };
 
-    if (await shouldBypassRewardGate()) {
-      await executeRecommendationRequest(request);
-      return;
-    }
-
-    if (quotaConfirmed && freeUsedToday >= FREE_DAILY_LIMIT) {
-      onOpenPremiumSheet?.();
+    if (!(await ensureCreditsAvailable())) {
       return;
     }
 
@@ -409,15 +453,18 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       return;
     }
 
-    const request = { freeText: intentInput.trim() || undefined, selectedCategory: category };
-
-    if (await shouldBypassRewardGate()) {
-      await executeRecommendationRequest(request);
-      return;
+    const flowId = activeFlowId || createFlowId();
+    if (!activeFlowId) {
+      setActiveFlowId(flowId);
     }
 
-    if (quotaConfirmed && freeUsedToday >= FREE_DAILY_LIMIT) {
-      onOpenPremiumSheet?.();
+    const request = {
+      freeText: intentInput.trim() || undefined,
+      selectedCategory: category,
+      flowId
+    };
+
+    if (!(await ensureCreditsAvailable())) {
       return;
     }
 
@@ -464,7 +511,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     closeInfo();
     setIsRefreshing(true);
     try {
-      await loadCurrentState();
+      await Promise.all([loadCurrentState(), refreshCredits()]);
     } finally {
       setIsRefreshing(false);
     }
@@ -490,8 +537,9 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     visibleHistoryItems,
     isHistoryExpanded,
     canExpandHistory: historyItems.length > 2,
-    freeUsedToday,
-    freeDailyLimit: FREE_DAILY_LIMIT,
+    creditBalance,
+    dailyGrant,
+    monthlyGrant,
     closeInfo,
     toggleInfo,
     applyPrompt,
@@ -521,5 +569,13 @@ function markFirstPrimary(items: AiGuideRecommendation[]) {
       ...item,
       isPrimary: true
     };
+  });
+}
+
+function createFlowId() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
+    const random = Math.floor(Math.random() * 16);
+    const value = char === "x" ? random : (random & 0x3) | 0x8;
+    return value.toString(16);
   });
 }

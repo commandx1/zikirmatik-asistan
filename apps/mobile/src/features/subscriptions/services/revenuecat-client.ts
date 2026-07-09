@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import Purchases, {
   LOG_LEVEL,
+  PRODUCT_CATEGORY,
   PURCHASES_ERROR_CODE,
   type CustomerInfo,
   type PurchasesPackage
@@ -28,6 +29,24 @@ export class RevenueCatClientError extends Error {
 }
 
 const REVENUECAT_ENTITLEMENT = process.env.EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID?.trim() || "premium";
+
+export type CreditTopupProduct = {
+  productId: string;
+  credits: number;
+  priceString: string;
+};
+
+const CREDIT_TOPUP_CREDITS: Record<string, number> = {
+  topupsmall: 10,
+  topupmedium: 30,
+  topuplarge: 75
+};
+
+export const CREDIT_TOPUP_FALLBACK: CreditTopupProduct[] = [
+  { productId: "topupsmall", credits: 10, priceString: "₺29,99" },
+  { productId: "topupmedium", credits: 30, priceString: "₺59,99" },
+  { productId: "topuplarge", credits: 75, priceString: "₺99,99" }
+];
 
 let isConfigured = false;
 let configuredAppUserId: string | null = null;
@@ -61,6 +80,38 @@ export async function syncPremiumStatusWithRevenueCat(
   }
   const customerInfo = await Purchases.getCustomerInfo();
   return syncBackendFromCustomerInfo(userId, accessToken, customerInfo);
+}
+
+export async function getCreditTopupProducts(userId: string): Promise<CreditTopupProduct[]> {
+  await ensureRevenueCatConfigured(userId);
+
+  const products = await Purchases.getProducts(
+    Object.keys(CREDIT_TOPUP_CREDITS),
+    PRODUCT_CATEGORY.NON_SUBSCRIPTION
+  );
+
+  const mapped = products
+    .map((product) => ({
+      productId: product.identifier,
+      credits: CREDIT_TOPUP_CREDITS[product.identifier] ?? 0,
+      priceString: product.priceString
+    }))
+    .filter((item) => item.credits > 0)
+    .sort((a, b) => a.credits - b.credits);
+
+  return mapped.length > 0 ? mapped : CREDIT_TOPUP_FALLBACK;
+}
+
+export async function purchaseCreditTopup(userId: string, productId: string): Promise<void> {
+  await ensureRevenueCatConfigured(userId);
+
+  const products = await Purchases.getProducts([productId], PRODUCT_CATEGORY.NON_SUBSCRIPTION);
+  const product = products.find((item) => item.identifier === productId) ?? products[0];
+  if (!product) {
+    throw new RevenueCatClientError("terminal", "Kredi paketi mağazada bulunamadı.");
+  }
+
+  await Purchases.purchaseStoreProduct(product);
 }
 
 async function ensureRevenueCatConfigured(appUserId: string) {

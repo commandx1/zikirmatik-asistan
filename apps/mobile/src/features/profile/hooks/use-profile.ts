@@ -8,16 +8,21 @@ import {
   type BackendUser
 } from "../../users/services/users-api-client";
 import {
+  CREDIT_TOPUP_FALLBACK,
+  getCreditTopupProducts,
   isRevenueCatConfigured,
+  purchaseCreditTopup,
   purchasePremiumWithRevenueCat,
   syncPremiumStatusWithRevenueCat,
-  toRevenueCatMessage
+  toRevenueCatMessage,
+  type CreditTopupProduct
 } from "../../subscriptions/services/revenuecat-client";
 import { syncDailyReminderNotification } from "../services/daily-reminder-notifications";
 import { requestDailyReminderOptIn } from "../services/request-daily-reminder-opt-in";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
+import { useRequireAuth } from "../../auth/hooks/use-require-auth";
 import { THEME_LABELS } from "../../../theme/labels";
 import { useOnboardingStore } from "../../../store/onboarding-store";
 
@@ -25,6 +30,7 @@ type PremiumPlan = "monthly" | "annual";
 
 export function useProfile() {
   const router = useRouter();
+  const { requireAuth } = useRequireAuth();
   const { hydrateAppearance } = useThemePreferences();
 
   const fallbackDisplayName = useProfileStore((s) => s.displayName);
@@ -55,6 +61,9 @@ export function useProfile() {
   const [isActivatingPremium, setIsActivatingPremium] = useState(false);
   const [premiumPlan, setPremiumPlan] = useState<PremiumPlan>("annual");
   const [premiumError, setPremiumError] = useState<string>();
+  const [topupProducts, setTopupProducts] = useState<CreditTopupProduct[]>(CREDIT_TOPUP_FALLBACK);
+  const [purchasingTopupId, setPurchasingTopupId] = useState<string | undefined>();
+  const [topupError, setTopupError] = useState<string | undefined>();
   const [isReminderTimeModalOpen, setIsReminderTimeModalOpen] = useState(false);
   const [reminderHourDraft, setReminderHourDraft] = useState("08");
   const [reminderMinuteDraft, setReminderMinuteDraft] = useState("00");
@@ -142,6 +151,7 @@ export function useProfile() {
   const openPremiumSheet = () => setPremiumSheetOpen(true);
   const closePremiumSheet = () => {
     setPremiumError(undefined);
+    setTopupError(undefined);
     setPremiumSheetOpen(false);
   };
   const goThemeSelector = () => router.push("/theme-selector");
@@ -249,9 +259,8 @@ export function useProfile() {
     }
   };
 
-  const activatePremium = async () => {
-    if (authStatus !== "authenticated" || !session?.userId) {
-      setPremiumError("Premium aktivasyonu için önce giriş yapmalısın.");
+  const activatePremiumInner = async () => {
+    if (!session?.userId) {
       return;
     }
 
@@ -269,6 +278,46 @@ export function useProfile() {
       if (msg) setPremiumError(msg);
     } finally {
       setIsActivatingPremium(false);
+    }
+  };
+
+  const activatePremium = () => {
+    requireAuth(() => {
+      void activatePremiumInner();
+    });
+  };
+
+  const loadTopupProducts = useCallback(async () => {
+    if (!session?.userId) {
+      return;
+    }
+    try {
+      setTopupProducts(await getCreditTopupProducts(session.userId));
+    } catch {
+      // Mağaza fiyatları alınamazsa fallback fiyatlar gösterilir.
+    }
+  }, [session?.userId]);
+
+  useEffect(() => {
+    void loadTopupProducts();
+  }, [loadTopupProducts]);
+
+  const purchaseTopup = async (productId: string): Promise<boolean> => {
+    if (!session?.userId || purchasingTopupId) {
+      return false;
+    }
+    setPurchasingTopupId(productId);
+    setTopupError(undefined);
+    try {
+      await purchaseCreditTopup(session.userId, productId);
+      await syncBackendUser();
+      return true;
+    } catch (error) {
+      const msg = toRevenueCatMessage(error);
+      if (msg) setTopupError(msg);
+      return false;
+    } finally {
+      setPurchasingTopupId(undefined);
     }
   };
 
@@ -508,6 +557,10 @@ export function useProfile() {
     premiumPlan,
     isRefreshing,
     premiumError,
+    topupProducts,
+    purchasingTopupId,
+    topupError,
+    purchaseTopup,
     refresh,
     onToggleDailyReminder,
     setKandilNotificationsEnabled,

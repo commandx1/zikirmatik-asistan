@@ -3,6 +3,12 @@ import { Pressable, ScrollView, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 
+type CreditTopupItem = {
+  productId: string
+  credits: number
+  priceString: string
+}
+
 type ProfilePremiumSheetProps = {
   visible: boolean
   selectedPlan: 'monthly' | 'annual'
@@ -11,6 +17,10 @@ type ProfilePremiumSheetProps = {
   onSelectPlan: (plan: 'monthly' | 'annual') => void
   onStartPremium: () => void
   onClose: () => void
+  topupProducts?: CreditTopupItem[]
+  purchasingTopupId?: string
+  topupError?: string
+  onPurchaseTopup?: (productId: string) => void
 }
 
 function BenefitItem({ title, description }: { title: string; description: string }) {
@@ -34,7 +44,11 @@ export function ProfilePremiumSheet({
   error,
   onSelectPlan,
   onStartPremium,
-  onClose
+  onClose,
+  topupProducts,
+  purchasingTopupId,
+  topupError,
+  onPurchaseTopup
 }: ProfilePremiumSheetProps) {
   const { fontFamily } = useThemePreferences()
   const insets = useSafeAreaInsets()
@@ -89,7 +103,7 @@ export function ProfilePremiumSheet({
           </View>
 
           <View className='mb-8 gap-4'>
-            <BenefitItem title='Sınırsız Asistan Önerisi' description='Günlük limit olmadan istediğin kadar öneri al.' />
+            <BenefitItem title='AI Rehber Kredileri' description='Aylık 50 kredi + ihtiyaç halinde kredi paketi satın alma desteği.' />
             <BenefitItem title='Tüm Koleksiyonlar' description="Hısnu\'l-Muslim ve tüm dua koleksiyonlarına tam erişim." />
             <BenefitItem title='Detaylı İstatistikler' description='Isı haritası, dönem karşılaştırması ve rozetlerle ilerlemeni derinlemesine takip et.' />
             <BenefitItem title='Tüm Özel Günler' description='Kandil ve bayramların yanı sıra tüm özel günlerin içeriğine eriş.' />
@@ -127,6 +141,10 @@ export function ProfilePremiumSheet({
             </Pressable>
           </View>
 
+          <Text className='mb-3 text-center text-xs text-[--text-muted]' style={regularTextStyle}>
+            Aylık 50 kredi her ay yenilenir; kullanılmayan krediler sonraki aya devretmez.
+          </Text>
+
           {error ? <Text className='mb-3 text-center text-sm text-[#fca5a5]'>{error}</Text> : null}
 
           <Pressable
@@ -138,6 +156,60 @@ export function ProfilePremiumSheet({
               {isActivating ? 'Aktifleştiriliyor...' : 'Hemen Başla'}
             </Text>
           </Pressable>
+
+          {topupProducts && topupProducts.length > 0 && onPurchaseTopup ? (
+            <View className='mb-3'>
+              <View className='mb-4 flex-row items-center gap-3'>
+                <View className='h-px flex-1 bg-white/10' />
+                <Text className='text-xs font-semibold uppercase text-[--text-muted]' style={strongTextStyle}>
+                  veya kredi paketi al
+                </Text>
+                <View className='h-px flex-1 bg-white/10' />
+              </View>
+
+              <Text className='mb-2 text-center text-xs text-[--text-muted]' style={regularTextStyle}>
+                Satın aldığın krediler sana kalır, hiçbir zaman silinmez.
+              </Text>
+
+              <View className='gap-2'>
+                {topupProducts.map((item) => {
+                  const isPurchasing = purchasingTopupId === item.productId
+                  return (
+                    <Pressable
+                      key={item.productId}
+                      onPress={() => onPurchaseTopup(item.productId)}
+                      disabled={Boolean(purchasingTopupId) || isActivating}
+                      className={`flex-row items-center justify-between rounded-xl border border-white/10 bg-[--bg] px-4 py-3 ${
+                        isPurchasing ? 'opacity-60' : ''
+                      }`}
+                    >
+                      <View className='flex-row items-center gap-3'>
+                        <View className='h-9 w-9 items-center justify-center rounded-full bg-[--accent]/20'>
+                          <FontAwesome6 name='bolt' size={14} color='#C8972A' />
+                        </View>
+                        <Text className='text-base font-semibold text-[--text-primary]' style={strongTextStyle}>
+                          {`${item.credits} Kredi`}
+                        </Text>
+                      </View>
+                      <Text className='text-base font-bold text-[--accent]' style={strongTextStyle}>
+                        {isPurchasing ? 'Alınıyor...' : item.priceString}
+                      </Text>
+                    </Pressable>
+                  )
+                })}
+              </View>
+
+              {topupError ? (
+                <Text className='mt-3 text-center text-sm text-[#fca5a5]' style={regularTextStyle}>
+                  {topupError}
+                </Text>
+              ) : null}
+            </View>
+          ) : null}
+
+          <Text className='mb-2 text-center text-xs text-[--text-muted]/70' style={regularTextStyle}>
+            Günlük 1 ücretsiz kredin her gün yenilenir.
+          </Text>
 
           <Pressable onPress={onClose} className='py-2'>
             <Text className='text-center text-sm font-medium text-[--text-muted]' style={regularTextStyle}>

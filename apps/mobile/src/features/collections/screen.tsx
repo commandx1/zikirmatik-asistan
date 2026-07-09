@@ -128,6 +128,14 @@ export function CollectionsScreen() {
         onSelectPlan={premiumSheet.setPlan}
         onStartPremium={premiumSheet.activate}
         onClose={premiumSheet.close}
+        topupProducts={premiumSheet.topupProducts}
+        purchasingTopupId={premiumSheet.purchasingTopupId}
+        topupError={premiumSheet.topupError}
+        onPurchaseTopup={(productId) => {
+          void premiumSheet.purchaseTopup(productId).then((purchased) => {
+            if (purchased) premiumSheet.close();
+          });
+        }}
       />
     </PageLayout>
   );

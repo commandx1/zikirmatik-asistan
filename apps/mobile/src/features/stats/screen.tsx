@@ -16,6 +16,7 @@ import { SummaryCards } from "./components/summary-cards";
 import { TopDhikrsList } from "./components/top-dhikrs-list";
 import { WeekdayDistribution } from "./components/weekday-distribution";
 import { useStats } from "./hooks/use-stats";
+import { useAuthStore } from "../../store/auth-store";
 
 function Section({
   title,
@@ -37,10 +38,15 @@ function Section({
 export function StatsScreen() {
   const { tokens } = useThemeTokens();
   const { data, isLoading, isRefreshing, error, isPremium, refresh } = useStats();
+  const guestMode = useAuthStore((s) => s.guestMode);
+  const authStatus = useAuthStore((s) => s.status);
   const premiumSheet = usePremiumSheet();
+  const isGuest = guestMode && authStatus !== "authenticated";
 
   const headerSubtitle = data
-    ? `${data.streak.currentStreak} günlük seri · tüm zamanlar`
+    ? isGuest
+      ? "Yerel istatistikler"
+      : `${data.streak.currentStreak} günlük seri · tüm zamanlar`
     : "Tüm zamanlar özeti";
 
   return (
@@ -128,6 +134,14 @@ export function StatsScreen() {
         onSelectPlan={premiumSheet.setPlan}
         onStartPremium={premiumSheet.activate}
         onClose={premiumSheet.close}
+        topupProducts={premiumSheet.topupProducts}
+        purchasingTopupId={premiumSheet.purchasingTopupId}
+        topupError={premiumSheet.topupError}
+        onPurchaseTopup={(productId) => {
+          void premiumSheet.purchaseTopup(productId).then((purchased) => {
+            if (purchased) premiumSheet.close();
+          });
+        }}
       />
     </PageLayout>
   );

@@ -58,6 +58,14 @@ export function ProfileScreen() {
           onSelectPlan={profile.setPremiumPlan}
           onStartPremium={profile.activatePremium}
           onClose={profile.closePremiumSheet}
+          topupProducts={profile.topupProducts}
+          purchasingTopupId={profile.purchasingTopupId}
+          topupError={profile.topupError}
+          onPurchaseTopup={(productId) => {
+            void profile.purchaseTopup(productId).then((purchased) => {
+              if (purchased) profile.closePremiumSheet();
+            });
+          }}
         />
         <ProfileReminderTimeModal
           visible={profile.isReminderTimeModalOpen}
