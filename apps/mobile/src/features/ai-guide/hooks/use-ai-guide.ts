@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Keyboard } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { AiGuideHistoryItem, AiGuideRecommendation } from "../types";
@@ -34,6 +34,38 @@ type ClarificationState = {
   suggestedCategories: string[];
 };
 
+type PendingAiRequest = {
+  freeText?: string;
+  selectedCategory?: string;
+  flowId: string;
+};
+
+/**
+ * AI API çağrısını çalıştırır; 401 alınırsa oturumu bir kez yenileyip
+ * taze access token ile isteği tekrar dener. Refresh başarısızsa veya
+ * token değişmediyse orijinal hata fırlatılır.
+ */
+async function callWithAuthRetry<T>(call: (accessToken?: string) => Promise<T>): Promise<T> {
+  const initialToken = useAuthStore.getState().session?.accessToken;
+
+  try {
+    return await call(initialToken);
+  } catch (error) {
+    if (!(error instanceof AiApiError) || error.status !== 401) {
+      throw error;
+    }
+
+    await useAuthStore.getState().refreshAuthenticatedSession();
+
+    const refreshedToken = useAuthStore.getState().session?.accessToken;
+    if (!refreshedToken || refreshedToken === initialToken) {
+      throw error;
+    }
+
+    return call(refreshedToken);
+  }
+}
+
 export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [intentInput, setIntentInput] = useState("");
   const [showInfo, setShowInfo] = useState(false);
@@ -57,6 +89,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [creditsConfirmed, setCreditsConfirmed] = useState(false);
   const [activeFlowId, setActiveFlowId] = useState<string>();
   const [loadingStep, setLoadingStep] = useState("");
+  const [postPurchaseNotice, setPostPurchaseNotice] = useState<string>();
+  const pendingRequestRef = useRef<PendingAiRequest | null>(null);
 
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
@@ -80,7 +114,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     try {
-      const credits = await getAiCredits(accessToken);
+      const credits = await callWithAuthRetry((token) => getAiCredits(token));
       setCreditBalance(Math.max(0, Math.floor(credits.balance)));
       setDailyGrant(Math.max(0, Math.floor(credits.dailyGrant)));
       setMonthlyGrant(Math.max(0, Math.floor(credits.monthlyGrant)));
@@ -88,7 +122,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       setCreditsConfirmed(true);
       return { balance: credits.balance, isPremium: credits.isPremium };
     } catch {
-      const quota = await getAiDailyQuota(accessToken);
+      const quota = await callWithAuthRetry((token) => getAiDailyQuota(token));
       const fallbackBalance = quota.isPremium
         ? Number.MAX_SAFE_INTEGER
         : Math.max(0, (quota.limit ?? 1) - quota.used);
@@ -159,7 +193,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     const [recommendationRows, catalog] = await Promise.all([
-      listAiRecommendations(accessToken),
+      callWithAuthRetry((token) => listAiRecommendations(token)),
       listVerifiedActiveDhikrs(),
     ]);
     await refreshCredits();
@@ -292,10 +326,12 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
   const onIntentInputChange = (value: string) => {
     setIntentInput(value);
+    setPostPurchaseNotice(undefined);
   };
 
   const executeRecommendationRequest = useCallback(
-    async (request: { freeText?: string; selectedCategory?: string; flowId: string }) => {
+    async (request: PendingAiRequest) => {
+      pendingRequestRef.current = null;
       setIsLoading(true);
       setLoadingStep("");
       setError(undefined);
@@ -319,19 +355,21 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         }
 
         const now = new Date();
-        const response = await createAiRecommendation({
-          userId,
-          flowId: request.flowId,
-          freeText: request.freeText,
-          maxRecommendations: 3,
-          socketId,
-          selectedCategory: request.selectedCategory,
-          timeContext: {
-            hour: now.getHours(),
-            dayOfWeek: now.getDay(),
-            isSpecialDay: false
-          }
-        }, accessToken);
+        const response = await callWithAuthRetry((token) =>
+          createAiRecommendation({
+            userId,
+            flowId: request.flowId,
+            freeText: request.freeText,
+            maxRecommendations: 3,
+            socketId,
+            selectedCategory: request.selectedCategory,
+            timeContext: {
+              hour: now.getHours(),
+              dayOfWeek: now.getDay(),
+              isSpecialDay: false
+            }
+          }, token)
+        );
 
         if (response.offTopic) {
           setOffTopicMessage(response.message);
@@ -416,6 +454,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         ) {
           setCreditBalance(0);
           setCreditsConfirmed(true);
+          pendingRequestRef.current = request;
           onOpenPremiumSheet?.();
         } else if (error instanceof AiApiError) {
           setError(error.message);
@@ -437,11 +476,13 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     Keyboard.dismiss();
+    setPostPurchaseNotice(undefined);
     const flowId = createFlowId();
     setActiveFlowId(flowId);
     const request = { freeText: intentInput.trim() || undefined, flowId };
 
     if (!(await ensureCreditsAvailable())) {
+      pendingRequestRef.current = request;
       return;
     }
 
@@ -453,6 +494,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       return;
     }
 
+    setPostPurchaseNotice(undefined);
     const flowId = activeFlowId || createFlowId();
     if (!activeFlowId) {
       setActiveFlowId(flowId);
@@ -465,10 +507,65 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     };
 
     if (!(await ensureCreditsAvailable())) {
+      pendingRequestRef.current = request;
       return;
     }
 
     await executeRecommendationRequest(request);
+  };
+
+  const resumeAfterCreditPurchase = async () => {
+    if (isLoading) {
+      return;
+    }
+
+    setPostPurchaseNotice(undefined);
+    setIsLoading(true);
+    setLoadingStep("Kredin yükleniyor…");
+
+    const MAX_ATTEMPTS = 8;
+    const POLL_INTERVAL_MS = 2000;
+
+    try {
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
+        if (attempt > 0) {
+          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+        }
+
+        const state = await refreshCredits();
+        if (state.balance > 0 || state.isPremium) {
+          const request =
+            pendingRequestRef.current ??
+            (intentInput.trim()
+              ? { freeText: intentInput.trim(), flowId: activeFlowId || createFlowId() }
+              : null);
+          pendingRequestRef.current = null;
+
+          if (!request) {
+            setIsLoading(false);
+            setLoadingStep("");
+            return;
+          }
+
+          setIsLoading(false);
+          setLoadingStep("");
+          await executeRecommendationRequest(request);
+          return;
+        }
+      }
+
+      setIsLoading(false);
+      setLoadingStep("");
+      setPostPurchaseNotice(
+        "Kredilerin yükleniyor; birkaç saniye içinde isteğini tekrar gönderebilirsin."
+      );
+    } catch {
+      setIsLoading(false);
+      setLoadingStep("");
+      setPostPurchaseNotice(
+        "Kredilerin yükleniyor; birkaç saniye içinde isteğini tekrar gönderebilirsin."
+      );
+    }
   };
 
   const selectRecommendation = (recommendation: AiGuideRecommendation) => {
@@ -487,7 +584,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       return;
     }
 
-    void selectAiRecommendation(recommendationId, recommendation.id, accessToken).catch((error) => {
+    void callWithAuthRetry((token) => selectAiRecommendation(recommendationId, recommendation.id, token)).catch((error) => {
       if (error instanceof AiApiError) {
         setError(error.message);
       }
@@ -526,6 +623,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     loadingStep,
     isRefreshing,
     error,
+    postPurchaseNotice,
+    resumeAfterCreditPurchase,
     offTopicMessage,
     clarification,
     submitClarificationCategory,

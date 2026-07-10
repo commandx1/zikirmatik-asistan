@@ -13,7 +13,7 @@ import {
 
 type PremiumPlan = "monthly" | "annual";
 
-export function usePremiumSheet() {
+export function usePremiumSheet(options?: { onPremiumActivated?: () => void }) {
   const session = useAuthStore((s) => s.session);
   const { requireAuth } = useRequireAuth();
   const hydrateFromBackend = useProfileStore((s) => s.hydrateFromBackend);
@@ -74,7 +74,10 @@ export function usePremiumSheet() {
     try {
       const synced = await purchasePremiumWithRevenueCat(session.userId, session.accessToken, plan);
       hydrateFromBackend({ isPremium: synced.isPremium });
-      if (synced.isPremium) close();
+      if (synced.isPremium) {
+        close();
+        options?.onPremiumActivated?.();
+      }
     } catch (e) {
       const msg = toRevenueCatMessage(e);
       if (msg) setError(msg);

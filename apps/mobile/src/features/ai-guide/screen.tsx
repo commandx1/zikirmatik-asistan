@@ -39,9 +39,15 @@ function toDateKey(value: Date) {
 
 export function AiGuideScreen() {
   const router = useRouter();
-  const premiumSheet = usePremiumSheet();
+  const resumeAfterCreditPurchaseRef = useRef<() => void>(() => {});
+  const premiumSheet = usePremiumSheet({
+    onPremiumActivated: () => resumeAfterCreditPurchaseRef.current()
+  });
   const { requireAuth } = useRequireAuth();
   const guide = useAiGuide(premiumSheet.open);
+  resumeAfterCreditPurchaseRef.current = () => {
+    void guide.resumeAfterCreditPurchase();
+  };
   const guard = useDhikrStartGuard();
   const clearDhikrProgress = useDhikrStore(s => s.clearDhikrProgress);
   const storeItems = useDhikrStore(s => s.items);
@@ -202,6 +208,13 @@ export function AiGuideScreen() {
               <Text className="text-sm text-[#fecaca]">{guide.error}</Text>
             </View>
           ) : null}
+          {!guide.isLoading && guide.postPurchaseNotice ? (
+            <View className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-3">
+              <Text className="text-sm leading-5 text-amber-100/80">
+                {guide.postPurchaseNotice}
+              </Text>
+            </View>
+          ) : null}
           <View onLayout={(e) => { loadingSectionY.current = e.nativeEvent.layout.y; }}>
             <LoadingSection visible={guide.isLoading} stepMessage={guide.loadingStep} />
           </View>
@@ -307,11 +320,7 @@ export function AiGuideScreen() {
                 return;
               }
               premiumSheet.close();
-              void guide.refresh();
-              // Webhook'un krediyi işlemesi gecikebilir; kısa bir süre sonra tekrar yenile.
-              setTimeout(() => {
-                void guide.refresh();
-              }, 4000);
+              void guide.resumeAfterCreditPurchase();
             });
           }}
         />
