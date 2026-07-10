@@ -49,8 +49,16 @@ export class WebhooksController {
     }
 
     if (event.environment === 'SANDBOX') {
-      this.logger.debug(`Sandbox event ignored: ${event.type}`);
-      return { received: true };
+      const allowSandbox =
+        this.configService.get<string>('REVENUECAT_ALLOW_SANDBOX_EVENTS') ===
+        'true';
+      if (!allowSandbox) {
+        this.logger.debug(`Sandbox event ignored: ${event.type}`);
+        return { received: true };
+      }
+      this.logger.warn(
+        `Sandbox event processed (REVENUECAT_ALLOW_SANDBOX_EVENTS=true): ${event.type}`,
+      );
     }
 
     this.logger.log(
