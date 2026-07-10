@@ -1,12 +1,11 @@
-import { Alert } from "react-native";
-import { useRouter } from "expo-router";
 import { useAuthStore } from "../../../store/auth-store";
+import { useAuthPromptStore } from "../../../store/auth-prompt-store";
 
 type GuardedAction = () => void;
 
 export function useRequireAuth() {
-  const router = useRouter();
   const authStatus = useAuthStore((s) => s.status);
+  const openAuthPrompt = useAuthPromptStore((s) => s.open);
 
   const requireAuth = (action: GuardedAction) => {
     if (authStatus === "authenticated") {
@@ -14,16 +13,7 @@ export function useRequireAuth() {
       return;
     }
 
-    Alert.alert("Bu özellik için üye olun", "AI özellikleri, satın alma ve senkronizasyon için giriş gerekli.", [
-      {
-        text: "Vazgeç",
-        style: "cancel"
-      },
-      {
-        text: "Üye ol",
-        onPress: () => router.push("/auth")
-      }
-    ]);
+    openAuthPrompt();
   };
 
   return { requireAuth };

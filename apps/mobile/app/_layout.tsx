@@ -16,6 +16,7 @@ import { TourOverlay } from "../src/features/tour/tour-overlay";
 import { ForceUpdateModal } from "../src/components/ui/force-update-modal";
 import { NotificationPermissionModal } from "../src/components/ui/notification-permission-modal";
 import { NotificationPermissionDeniedModal } from "../src/components/ui/notification-permission-denied-modal";
+import { AuthPromptModal } from "../src/features/auth/components/auth-prompt-modal";
 import { fetchMinRequiredVersion, isUpdateRequired } from "../src/lib/app-config";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useGuestMigration } from "../src/features/auth/hooks/use-guest-migration";
@@ -101,6 +102,7 @@ function RootProviders({ children }: { children: ReactNode }) {
               <TourOverlay />
               <NotificationPermissionModal />
               <NotificationPermissionDeniedModal />
+              <AuthPromptModal />
             </TourProvider>
           </ThemeTransitionProvider>
         </ThemeProvider>
