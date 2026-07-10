@@ -23,7 +23,7 @@ const EVENTS_THAT_GRANT_PREMIUM = new Set([
   'RENEWAL',
   'UNCANCELLATION',
 ]);
-const EVENTS_THAT_GRANT_TOPUP = new Set(['NON_SUBSCRIPTION_PURCHASE']);
+const EVENTS_THAT_GRANT_TOPUP = new Set(['NON_RENEWING_PURCHASE']);
 
 @Controller('v1/webhooks')
 export class WebhooksController {

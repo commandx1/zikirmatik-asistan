@@ -15,7 +15,7 @@ export type RevenueCatEventType =
   | 'SUBSCRIPTION_PAUSED'
   | 'TRANSFER'
   | 'TEST'
-  | 'NON_SUBSCRIPTION_PURCHASE';
+  | 'NON_RENEWING_PURCHASE';
 
 export type RevenueCatStore = 'APP_STORE' | 'PLAY_STORE' | 'STRIPE';
 
