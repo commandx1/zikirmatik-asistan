@@ -21,8 +21,12 @@ import { fetchMinRequiredVersion, isUpdateRequired } from "../src/lib/app-config
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useGuestMigration } from "../src/features/auth/hooks/use-guest-migration";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
+import { useNotificationTapRouting } from "../src/features/notifications/hooks/use-notification-tap-routing";
+import { usePushDeviceRegistration } from "../src/features/notifications/hooks/use-push-device-registration";
 import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
 import { useTourNotificationOptIn } from "../src/features/tour/hooks/use-tour-notification-opt-in";
+import { useStreakReminderSync } from "../src/features/home/hooks/use-streak-reminder-sync";
+import { BadgeCelebrationHost } from "../src/features/stats/components/badge-celebration-host";
 import { useThemePreferences } from "../src/hooks/use-theme-preferences";
 import type { AppFontFamily } from "../src/store/theme-store";
 import { useThemeStore } from "../src/store/theme-store";
@@ -62,6 +66,9 @@ function RootProviders({ children }: { children: ReactNode }) {
   useGuestMigration();
   useDhikrBackendSync();
   useUserPreferencesSync();
+  usePushDeviceRegistration();
+  useNotificationTapRouting();
+  useStreakReminderSync();
   const promptForDailyReminder = useTourNotificationOptIn();
 
   const resolvedFontFamily = resolveGlobalFontFamily(fontFamily, fontsLoaded);
@@ -103,6 +110,7 @@ function RootProviders({ children }: { children: ReactNode }) {
               <NotificationPermissionModal />
               <NotificationPermissionDeniedModal />
               <AuthPromptModal />
+              <BadgeCelebrationHost />
             </TourProvider>
           </ThemeTransitionProvider>
         </ThemeProvider>
