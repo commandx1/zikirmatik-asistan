@@ -18,7 +18,6 @@ import {
   type CreditTopupProduct
 } from "../../subscriptions/services/revenuecat-client";
 import { syncDailyReminderNotification } from "../services/daily-reminder-notifications";
-import { requestDailyReminderOptIn } from "../services/request-daily-reminder-opt-in";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
@@ -44,7 +43,6 @@ export function useProfile() {
   const adhanNotificationsEnabled = useProfileStore((s) => s.adhanNotificationsEnabled);
   const hapticsEnabled = useProfileStore((s) => s.hapticsEnabled);
   const setReminderTime = useProfileStore((s) => s.setReminderTime);
-  const setDailyReminderEnabled = useProfileStore((s) => s.setDailyReminderEnabled);
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
   const setAdhanNotificationsEnabled = useProfileStore((s) => s.setAdhanNotificationsEnabled);
   const setHapticsEnabled = useProfileStore((s) => s.setHapticsEnabled);
@@ -448,60 +446,6 @@ export function useProfile() {
     }
   };
 
-  const onToggleDailyReminder = useCallback(
-    (enabled: boolean) => {
-      const previous = dailyReminderEnabled;
-      setDailyReminderEnabled(enabled);
-
-      const persistPreference = async (nextEnabled: boolean) => {
-        if (authStatus !== "authenticated" || !session?.userId) {
-          return;
-        }
-
-        await saveUserPreferences(
-          session.userId,
-          {
-            dailyReminder: nextEnabled,
-            reminderTime
-          },
-          session.accessToken
-        );
-      };
-
-      const syncPromise = enabled
-        ? requestDailyReminderOptIn(reminderTime)
-        : syncDailyReminderNotification({ enabled: false, reminderTime, requestPermission: false });
-
-      void syncPromise
-        .then(async ({ permissionGranted }) => {
-          if (!enabled) {
-            await persistPreference(false);
-            return;
-          }
-
-          if (!permissionGranted) {
-            setDailyReminderEnabled(false);
-            await persistPreference(false);
-            return;
-          }
-
-          await persistPreference(true);
-        })
-        .catch(async () => {
-          setDailyReminderEnabled(previous);
-          await persistPreference(previous);
-        });
-    },
-    [
-      authStatus,
-      dailyReminderEnabled,
-      reminderTime,
-      session?.accessToken,
-      session?.userId,
-      setDailyReminderEnabled
-    ]
-  );
-
   const onToggleHaptics = useCallback(
     (enabled: boolean) => {
       setHapticsEnabled(enabled);
@@ -562,7 +506,6 @@ export function useProfile() {
     topupError,
     purchaseTopup,
     refresh,
-    onToggleDailyReminder,
     setKandilNotificationsEnabled,
     setAdhanNotificationsEnabled,
     onToggleHaptics,

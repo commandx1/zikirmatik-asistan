@@ -118,9 +118,7 @@ export function StatsScreen() {
           </Section>
 
           <Section title="Rozetler" subtitle="Ulaştığın kilometre taşları">
-            <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
-              <BadgesRow badges={data.badges} />
-            </PremiumLockOverlay>
+            <BadgesRow badges={data.badges} />
           </Section>
         </View>
       ) : null}

@@ -7,10 +7,12 @@ import { ProfilePremiumSheet } from "./components/profile-premium-sheet";
 import { ProfileReminderTimeModal } from "./components/profile-reminder-time-modal";
 import { ProfileSettingsSections } from "./components/profile-settings-sections";
 import { ProfileUserCard } from "./components/profile-user-card";
+import { useNotificationSettings } from "./hooks/use-notification-settings";
 import { useProfile } from "./hooks/use-profile";
 
 export function ProfileScreen() {
   const profile = useProfile();
+  const notificationSettings = useNotificationSettings();
 
   return (
     <PageLayout>
@@ -32,7 +34,6 @@ export function ProfileScreen() {
             />
             <ProfileSettingsSections
               reminderTime={profile.reminderTime}
-              dailyReminderEnabled={profile.dailyReminderEnabled}
               hapticsEnabled={profile.hapticsEnabled}
               onPressTheme={profile.goThemeSelector}
               onPressFont={profile.goFontSelector}
@@ -44,8 +45,9 @@ export function ProfileScreen() {
               onPressTourReplay={profile.tourReplay}
               onPressLogout={profile.onLogout}
               onPressDeleteAccount={profile.openDeleteAccountModal}
-              onToggleDailyReminder={profile.onToggleDailyReminder}
               onToggleHaptics={profile.onToggleHaptics}
+              notificationsEnabled={notificationSettings.notificationsEnabled}
+              onToggleNotifications={notificationSettings.onToggleNotifications}
             />
             {/* <ProfileAppVersion /> */}
           </View>
@@ -86,6 +88,14 @@ export function ProfileScreen() {
           confirmLabel="Tamam"
           onConfirm={profile.clearFeedbackError}
           onCancel={profile.clearFeedbackError}
+        />
+        <ConfirmModal
+          visible={!!notificationSettings.pushPrefsError}
+          title="Bildirim tercihi güncellenemedi"
+          message={notificationSettings.pushPrefsError ?? ""}
+          confirmLabel="Tamam"
+          onConfirm={notificationSettings.clearPushPrefsError}
+          onCancel={notificationSettings.clearPushPrefsError}
         />
         <ProfileDeleteAccountModal
           visible={profile.isDeleteAccountModalOpen}

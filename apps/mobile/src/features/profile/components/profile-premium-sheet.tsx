@@ -105,7 +105,7 @@ export function ProfilePremiumSheet({
           <View className='mb-8 gap-4'>
             <BenefitItem title='AI Rehber Kredileri' description='Aylık 50 kredi + ihtiyaç halinde kredi paketi satın alma desteği.' />
             <BenefitItem title='Tüm Koleksiyonlar' description="Hısnu\'l-Muslim ve tüm dua koleksiyonlarına tam erişim." />
-            <BenefitItem title='Detaylı İstatistikler' description='Isı haritası, dönem karşılaştırması ve rozetlerle ilerlemeni derinlemesine takip et.' />
+            <BenefitItem title='Detaylı İstatistikler' description='Isı haritası, dönem karşılaştırması ve daha fazlasıyla ilerlemeni derinlemesine takip et.' />
             <BenefitItem title='Tüm Özel Günler' description='Kandil ve bayramların yanı sıra tüm özel günlerin içeriğine eriş.' />
             <BenefitItem title='Tüm Temalar' description='Bütün temaları hiçbir kısıtlama olmadan kullan.' />
           </View>

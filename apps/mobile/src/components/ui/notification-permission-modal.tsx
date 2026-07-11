@@ -20,10 +20,10 @@ export function NotificationPermissionModal() {
           }}
         >
           <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
-            Günlük hatırlatma bildirimleri
+            Uygulama bildirimleri
           </Text>
           <Text className='mb-5 text-sm leading-5' style={{ color: tokens.textMuted }}>
-            Zikir alışkanlığını sürdürmen için günlük hatırlatma bildirimleri göndermemize izin verir misin?
+            Hatırlatmalar ve önemli günler gibi konularda seni bilgilendirebilmemiz için bildirim göndermemize izin verir misin?
           </Text>
 
           <View className='gap-2'>

@@ -4,7 +4,11 @@ import { toDateKey } from "@zikirmatik/shared";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
-import { calculateLocalCompletionStreak } from "../../home/services/local-streak";
+import {
+  calculateLocalCompletionStreak,
+  resolveActivityDateKey
+} from "../../home/services/local-streak";
+import { computeLocalBadges } from "../services/local-badges";
 import { getStatsSummary } from "../services/stats-api-client";
 import type { ZikirItem } from "../../focus/types";
 
@@ -188,7 +192,11 @@ function buildLocalStatsSummary(items: ZikirItem[], freeModeCount: number): Stat
       week: localPeriodComparison(activityByDay, today, "week"),
       month: localPeriodComparison(activityByDay, today, "month")
     },
-    badges: buildLocalBadges(allTimeCount, streak.longestStreak, activeDays.length)
+    badges: computeLocalBadges({
+      allTimeCount,
+      longestStreak: streak.longestStreak,
+      totalDaysActive: activeDays.length
+    })
   };
 }
 
@@ -284,54 +292,6 @@ function sumPreviousPeriod(activityByDay: Map<string, { count: number; completed
     }
   }
   return total;
-}
-
-function buildLocalBadges(allTimeCount: number, longestStreak: number, totalDaysActive: number) {
-  return [
-    {
-      key: "first-steps",
-      label: "Ilk Adimlar",
-      achieved: allTimeCount >= 33,
-      progress: Math.max(0, Math.min(1, allTimeCount / 33))
-    },
-    {
-      key: "steady-streak",
-      label: "7 Gunluk Seri",
-      achieved: longestStreak >= 7,
-      progress: Math.max(0, Math.min(1, longestStreak / 7))
-    },
-    {
-      key: "active-days",
-      label: "30 Aktif Gun",
-      achieved: totalDaysActive >= 30,
-      progress: Math.max(0, Math.min(1, totalDaysActive / 30))
-    }
-  ];
-}
-
-function resolveActivityDateKey(item: ZikirItem, today: Date) {
-  const label = item.lastActivityLabel?.trim();
-  if (!label) {
-    return null;
-  }
-  if (label.startsWith("Bugun")) {
-    return toDateKey(today);
-  }
-  if (label.startsWith("Bugün")) {
-    return toDateKey(today);
-  }
-  if (label.startsWith("Dun") || label.startsWith("Dün")) {
-    const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
-    return toDateKey(yesterday);
-  }
-  const match = /(\d{1,2})\.(\d{1,2})\.(\d{4})/.exec(label);
-  if (!match) {
-    return null;
-  }
-  const day = Number.parseInt(match[1], 10);
-  const month = Number.parseInt(match[2], 10);
-  const year = Number.parseInt(match[3], 10);
-  return toDateKey(new Date(year, month - 1, day));
 }
 
 function parseDateKey(key: string) {

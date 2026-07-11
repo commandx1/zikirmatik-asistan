@@ -1,5 +1,33 @@
 import { toDateKey } from "@zikirmatik/shared";
 
+// Maps a dhikr item's human-facing activity label ("Bugün 14:30", "Dün …",
+// "9.7.2026 …") to a YYYY-MM-DD date key. Shared by the local stats summary
+// and the streak reminder scheduler so both agree on "active day" semantics.
+export function resolveActivityDateKey(
+  item: { lastActivityLabel?: string },
+  today: Date
+): string | null {
+  const label = item.lastActivityLabel?.trim();
+  if (!label) {
+    return null;
+  }
+  if (label.startsWith("Bugun") || label.startsWith("Bugün")) {
+    return toDateKey(today);
+  }
+  if (label.startsWith("Dun") || label.startsWith("Dün")) {
+    const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+    return toDateKey(yesterday);
+  }
+  const match = /(\d{1,2})\.(\d{1,2})\.(\d{4})/.exec(label);
+  if (!match) {
+    return null;
+  }
+  const day = Number.parseInt(match[1], 10);
+  const month = Number.parseInt(match[2], 10);
+  const year = Number.parseInt(match[3], 10);
+  return toDateKey(new Date(year, month - 1, day));
+}
+
 export type LocalCompletionStreak = {
   currentStreak: number;
   longestStreak: number;

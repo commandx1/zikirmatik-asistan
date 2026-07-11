@@ -8,7 +8,7 @@ import { ProfileToggleRow } from "./profile-toggle-row";
 
 type ProfileSettingsSectionsProps = {
   reminderTime: string;
-  dailyReminderEnabled: boolean;
+  notificationsEnabled: boolean;
   hapticsEnabled: boolean;
   onPressTheme: () => void;
   onPressFont: () => void;
@@ -20,13 +20,13 @@ type ProfileSettingsSectionsProps = {
   onPressTourReplay: () => void;
   onPressLogout: () => void;
   onPressDeleteAccount: () => void;
-  onToggleDailyReminder: (value: boolean) => void;
+  onToggleNotifications: (value: boolean) => void;
   onToggleHaptics: (value: boolean) => void;
 };
 
 export function ProfileSettingsSections({
   reminderTime,
-  dailyReminderEnabled,
+  notificationsEnabled,
   hapticsEnabled,
   onPressTheme,
   onPressFont,
@@ -38,7 +38,7 @@ export function ProfileSettingsSections({
   onPressTourReplay,
   onPressLogout,
   onPressDeleteAccount,
-  onToggleDailyReminder,
+  onToggleNotifications,
   onToggleHaptics
 }: ProfileSettingsSectionsProps) {
   return (
@@ -61,13 +61,15 @@ export function ProfileSettingsSections({
         <ProfileSectionTitle label="Bildirimler" />
         <ProfileSettingsCard>
           <ProfileToggleRow
-            label="Günlük Zikir Hatırlatması"
+            label="Bildirimler"
             iconName="bell"
-            value={dailyReminderEnabled}
-            onChange={onToggleDailyReminder}
-            bottomBorder
+            value={notificationsEnabled}
+            onChange={onToggleNotifications}
+            bottomBorder={notificationsEnabled}
           />
-          <ProfileTimeRow label="Hatırlatma Saati" value={reminderTime} onPress={onPressReminderTime} />
+          {notificationsEnabled ? (
+            <ProfileTimeRow label="Hatırlatma Saati" value={reminderTime} onPress={onPressReminderTime} />
+          ) : null}
         </ProfileSettingsCard>
       </View>
 

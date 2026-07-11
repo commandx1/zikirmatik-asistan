@@ -10,6 +10,7 @@ import type {
 import { AuthApiError, refreshSession, verifyProvider } from "../features/auth/services/auth-api-client";
 import { clearProviderSession, ProviderAuthError, requestProviderIdToken } from "../features/auth/services/mock-provider-auth";
 import { captureGuestMigrationSnapshot } from "../features/auth/services/guest-migration";
+import { getOrCreateDeviceId, unlinkPushDevice } from "../features/notifications/services/push-device-registration";
 import { resetSessionScopedStores } from "./session-boundary";
 import { useGuestMigrationStore } from "./guest-migration-store";
 
@@ -84,11 +85,12 @@ export const useAuthStore = create<AuthStore>()(
 
         try {
           const idToken = await requestProviderIdToken(provider);
+          const deviceId = await getOrCreateDeviceId();
 
           const session = await verifyProvider({
             provider,
             platform,
-            deviceId: buildDeviceId(platform),
+            deviceId,
             idToken
           });
 
@@ -174,6 +176,9 @@ export const useAuthStore = create<AuthStore>()(
         });
 
         await clearProviderSession(provider);
+        // Best effort: the device must keep receiving guest-relevant pushes
+        // even if this call fails (e.g. offline logout).
+        await unlinkPushDevice().catch(() => {});
       },
       continueAsGuest: () =>
         set({
@@ -213,10 +218,6 @@ function resolveRequiredProvider(): AuthProvider {
 
 function resolveClientPlatform(): ClientPlatform {
   return Platform.OS === "ios" ? "ios" : "android";
-}
-
-function buildDeviceId(platform: ClientPlatform) {
-  return `${platform}-device-local`;
 }
 
 function toUserFacingAuthMessage(error: unknown) {
