@@ -7,8 +7,10 @@ import { AppController } from './app.controller';
 import { RenderKeepAliveService } from './common/services/render-keep-alive.service';
 import { AiModule } from './modules/ai/ai.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { DevicesModule } from './modules/devices/devices.module';
 import { DhikrLogsModule } from './modules/dhikr-logs/dhikr-logs.module';
 import { DhikrsModule } from './modules/dhikrs/dhikrs.module';
+import { PushModule } from './modules/push/push.module';
 import { SpecialDaysModule } from './modules/special-days/special-days.module';
 import { StreaksModule } from './modules/streaks/streaks.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
@@ -17,6 +19,7 @@ import { PrayerTimesModule } from './modules/prayer-times/prayer-times.module';
 import { UserDhikrsModule } from './modules/user-dhikrs/user-dhikrs.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { DhikrCollectionsModule } from './modules/dhikr-collections/dhikr-collections.module';
+import { NotificationCampaignsModule } from './modules/notification-campaigns/notification-campaigns.module';
 import { StatsModule } from './modules/stats/stats.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
@@ -48,6 +51,9 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     WebhooksModule,
     DhikrCollectionsModule,
     StatsModule,
+    DevicesModule,
+    PushModule,
+    NotificationCampaignsModule,
   ],
   controllers: [AppController],
   providers: [JwtAuthGuard, RenderKeepAliveService],

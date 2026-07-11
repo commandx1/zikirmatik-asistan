@@ -22,6 +22,10 @@ describe('AuthService', () => {
     updateOne: jest.fn(),
   };
 
+  const devicesService = {
+    linkUser: jest.fn(),
+  };
+
   let authService: AuthService;
 
   beforeEach(() => {
@@ -30,6 +34,8 @@ describe('AuthService', () => {
     authIdentityModel.findOne.mockReset();
     authIdentityModel.findOneAndUpdate.mockReset();
     authIdentityModel.updateOne.mockReset();
+    devicesService.linkUser.mockReset();
+    devicesService.linkUser.mockResolvedValue(null);
 
     authIdentityModel.findOne.mockImplementation(() => ({
       lean: () => ({ exec: () => null }),
@@ -44,6 +50,7 @@ describe('AuthService', () => {
     authService = new AuthService(
       usersService as never,
       configService as never,
+      devicesService as never,
       authIdentityModel as never,
     );
   });
@@ -76,6 +83,10 @@ describe('AuthService', () => {
         provider: 'google',
         profileImageUrl: 'https://example.com/demo-user.jpg',
       }),
+    );
+    expect(devicesService.linkUser).toHaveBeenCalledWith(
+      'android-device-local',
+      '507f1f77bcf86cd799439011',
     );
   });
 

@@ -15,6 +15,7 @@ import {
   timingSafeEqual,
 } from 'node:crypto';
 import { type Model, Types } from 'mongoose';
+import { DevicesService } from '../devices/devices.service';
 import { UsersService } from '../users/users.service';
 import type {
   AuthProviderVerifyResponse,
@@ -62,6 +63,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
+    private readonly devicesService: DevicesService,
     @InjectModel(AuthIdentity.name)
     private readonly authIdentityModel: Model<AuthIdentityDocument>,
   ) {}
@@ -111,6 +113,13 @@ export class AuthService {
       userId: user.id,
       displayName: user.displayName,
     });
+
+    // Best effort only: a device linking failure should never block sign-in.
+    if (payload.deviceId?.trim()) {
+      await this.devicesService
+        .linkUser(payload.deviceId.trim(), user.id)
+        .catch(() => undefined);
+    }
 
     return {
       userId: user.id,
