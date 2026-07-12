@@ -186,6 +186,8 @@ export function AiGuideScreen() {
           <IntentInputSection
             value={guide.intentInput}
             isLoading={guide.isLoading}
+            creditBalance={guide.creditBalance}
+            onPressCredits={premiumSheet.open}
             onChangeValue={guide.onIntentInputChange}
             onSend={() => {
               requireAuth(() => {
