@@ -11,7 +11,11 @@ vi.mock("@react-native-async-storage/async-storage", () => ({
 
 describe("badge-celebration-store", () => {
   beforeEach(() => {
-    useBadgeCelebrationStore.setState({ celebratedBadgeKeys: [] });
+    useBadgeCelebrationStore.setState({
+      celebratedBadgeKeys: [],
+      hasHydrated: false,
+      hasSeeded: false
+    });
   });
 
   it("records a badge as celebrated", () => {
@@ -35,5 +39,22 @@ describe("badge-celebration-store", () => {
       "first-steps",
       "steady-streak"
     ]);
+  });
+
+  it("starts with hasHydrated and hasSeeded false", () => {
+    expect(useBadgeCelebrationStore.getState().hasHydrated).toBe(false);
+    expect(useBadgeCelebrationStore.getState().hasSeeded).toBe(false);
+  });
+
+  it("markHydrated flips hasHydrated to true", () => {
+    useBadgeCelebrationStore.getState().markHydrated();
+
+    expect(useBadgeCelebrationStore.getState().hasHydrated).toBe(true);
+  });
+
+  it("markSeeded flips hasSeeded to true", () => {
+    useBadgeCelebrationStore.getState().markSeeded();
+
+    expect(useBadgeCelebrationStore.getState().hasSeeded).toBe(true);
   });
 });
