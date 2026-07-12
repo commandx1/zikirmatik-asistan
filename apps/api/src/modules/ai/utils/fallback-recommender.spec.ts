@@ -1,7 +1,7 @@
 import { fallbackRecommend } from './fallback-recommender';
 
 describe('fallbackRecommend', () => {
-  it('prioritizes tag and diversity match', () => {
+  it('prioritizes tag and diversity match, and drops zero-overlap fillers when textual signal exists', () => {
     const result = fallbackRecommend({
       freeText: 'stresli hissediyorum',
       timeContext: {
@@ -31,10 +31,135 @@ describe('fallbackRecommend', () => {
       ],
     });
 
-    expect(result.recommendedIds[0]).toBe('1');
-    expect(result.recommendedIds).toHaveLength(2);
+    // "hissediyorum" bir stopword — asıl sinyal "stresli" tokeninden gelir.
+    // '2' numaralı zikrin hiçbir alanla örtüşmesi yok, bu yüzden sonuç
+    // listesinden elenir (maxRecommendations=2 olsa bile).
+    expect(result.recommendedIds).toEqual(['1']);
     expect(result.reasoning.length).toBeGreaterThan(0);
     expect(result.hasTextualSignal).toBe(true);
+  });
+
+  it('filters stopwords out of tokenize() so they do not dilute overlap ratio', () => {
+    // "ben", "hissediyorum" ve "cok" stopword; kalan tek anlamlı token
+    // "kaygi" tam eşleşmeli olduğu için overlap oranı 1'e ulaşabilmeli.
+    const result = fallbackRecommend({
+      freeText: 'ben çok kaygı hissediyorum',
+      timeContext: {
+        hour: 9,
+        dayOfWeek: 2,
+        isSpecialDay: false,
+      },
+      recentDhikrIds: [],
+      maxRecommendations: 1,
+      availableDhikrs: [
+        {
+          _id: '1',
+          nameTurkish: 'La havle',
+          tags: ['kaygi'],
+          categories: [],
+          timeOfDay: 'any',
+          suitableFor: [],
+        },
+      ],
+    });
+
+    expect(result.recommendedIds).toEqual(['1']);
+    expect(result.hasTextualSignal).toBe(true);
+  });
+
+  it('matches via prefix when the shared prefix is at least 4 characters ("kaygılıyım" ~ "kaygı")', () => {
+    const result = fallbackRecommend({
+      freeText: 'kaygılıyım',
+      timeContext: {
+        hour: 9,
+        dayOfWeek: 2,
+        isSpecialDay: false,
+      },
+      recentDhikrIds: [],
+      maxRecommendations: 1,
+      availableDhikrs: [
+        {
+          _id: '1',
+          nameTurkish: 'La havle',
+          tags: ['kaygı'],
+          categories: [],
+          timeOfDay: 'any',
+          suitableFor: [],
+        },
+        {
+          _id: '2',
+          nameTurkish: 'Elhamdülillah',
+          tags: ['şükür'],
+          categories: [],
+          timeOfDay: 'any',
+          suitableFor: [],
+        },
+      ],
+    });
+
+    expect(result.recommendedIds).toEqual(['1']);
+    expect(result.hasTextualSignal).toBe(true);
+  });
+
+  it('does not prefix-match short shared prefixes below the 4-char minimum', () => {
+    // "de" ve "deniz" paylaşılan önek uzunluğu 2 — eşik altı, eşleşmemeli.
+    const result = fallbackRecommend({
+      freeText: 'deniz',
+      timeContext: {
+        hour: 9,
+        dayOfWeek: 2,
+        isSpecialDay: false,
+      },
+      recentDhikrIds: [],
+      maxRecommendations: 1,
+      availableDhikrs: [
+        {
+          _id: '1',
+          nameTurkish: 'Test',
+          tags: ['de'],
+          categories: [],
+          timeOfDay: 'any',
+          suitableFor: [],
+        },
+      ],
+    });
+
+    expect(result.hasTextualSignal).toBe(false);
+  });
+
+  it('detects textual signal from ANY scored candidate, not just the top pick, and excludes zero-overlap items from recommendedIds', () => {
+    const result = fallbackRecommend({
+      freeText: 'sükunet',
+      timeContext: {
+        hour: 9,
+        dayOfWeek: 2,
+        isSpecialDay: false,
+      },
+      recentDhikrIds: [],
+      maxRecommendations: 3,
+      availableDhikrs: [
+        {
+          _id: 'no-overlap-but-good-time',
+          nameTurkish: 'Zamanlı ama alakasız',
+          tags: ['şükür'],
+          categories: [],
+          timeOfDay: 'morning',
+          suitableFor: [],
+        },
+        {
+          _id: 'overlap-match',
+          nameTurkish: 'Sükunet eşleşmesi',
+          tags: ['sükunet'],
+          categories: [],
+          timeOfDay: 'any',
+          suitableFor: [],
+        },
+      ],
+    });
+
+    expect(result.hasTextualSignal).toBe(true);
+    expect(result.recommendedIds).toEqual(['overlap-match']);
+    expect(result.recommendedIds).not.toContain('no-overlap-but-good-time');
   });
 
   it('folds Turkish diacritics so "kaygı" matches a tag written as "kaygi"', () => {

@@ -28,14 +28,70 @@ export type FallbackResult = {
   recommendedIds: string[];
   reasoning: string;
   /**
-   * true → en iyi adayda tags/suitableFor/categories alanlarından en az
-   * biriyle kelime örtüşmesi bulundu (gerçek bir metinsel sinyal var).
+   * true → en az bir adayda tags/suitableFor/categories alanlarından biriyle
+   * kelime örtüşmesi bulundu (gerçek bir metinsel sinyal var; yalnızca en
+   * iyi aday değil, TÜM skorlanan adaylar kontrol edilir).
    * false → freeText tamamen alakasız/anlamsız olabilir, katalogda hiçbir
    * alanla eşleşme yok; bu durumda çağıran taraf kullanıcıya netleştirme
    * sorusu sormalı ("Yanlış zikir önerme lüksümüz yok" kuralı).
    */
   hasTextualSignal: boolean;
 };
+
+// Stopword listesi NORMALLEŞTİRİLMİŞ formda tutulur (normalizeText sonrası) —
+// tokenize() zaten normalize edilmiş metin üzerinde çalışıyor. Bu kelimeler
+// niyet/alan kelime örtüşmesini seyreltmesin diye tokenize çıktısından
+// filtrelenir.
+const STOPWORDS = new Set([
+  've',
+  'ile',
+  'ama',
+  'fakat',
+  'cok',
+  'bir',
+  'biraz',
+  'icin',
+  'gibi',
+  'daha',
+  'en',
+  'de',
+  'da',
+  'ki',
+  'mi',
+  'mu',
+  'ne',
+  'bu',
+  'su',
+  'o',
+  'ben',
+  'bana',
+  'beni',
+  'benim',
+  'sen',
+  'sana',
+  'biz',
+  'bize',
+  'bugun',
+  'dun',
+  'yarin',
+  'simdi',
+  'hep',
+  'her',
+  'hic',
+  'olan',
+  'olmak',
+  'istiyorum',
+  'istemek',
+  'lazim',
+  'gerek',
+  'var',
+  'yok',
+  'diye',
+  'kendimi',
+  'kendime',
+  'hissediyorum',
+  'hissetmek',
+]);
 
 export function fallbackRecommend(input: FallbackInput): FallbackResult {
   const intentTokens = tokenize(input.freeText ?? '');
@@ -88,12 +144,23 @@ export function fallbackRecommend(input: FallbackInput): FallbackResult {
 
   scored.sort((a, b) => b.score - a.score);
 
-  const picks = scored.slice(0, input.maxRecommendations);
+  // Gerçek bir metinsel sinyal varsa (freeText'ten en az bir token türetildi
+  // VE skorlanan adaylardan en az biri bir alanla örtüşüyor — sadece en iyi
+  // aday değil, TÜMÜ kontrol edilir), sonuç listesinden sıfır örtüşmeli
+  // dolgu (filler) adaylar elenir. Liste bu durumda maxRecommendations'tan
+  // kısa olabilir; bu kasıtlıdır.
+  const hasTextualSignal =
+    intentTokens.length > 0 &&
+    scored.some((item) => item.fieldOverlapScore > 0);
+
+  const picks = hasTextualSignal
+    ? scored
+        .filter((item) => item.fieldOverlapScore > 0)
+        .slice(0, input.maxRecommendations)
+    : scored.slice(0, input.maxRecommendations);
   const recommendedIds = picks.map((item) => item.dhikr._id);
 
   const reasoning = buildReasoningSummary(picks);
-  const hasTextualSignal =
-    intentTokens.length > 0 && (picks[0]?.fieldOverlapScore ?? 0) > 0;
 
   return {
     recommendedIds,
@@ -109,8 +176,12 @@ function tokenize(input: string) {
     return [];
   }
 
-  return normalized.split(/\s+/).filter((token) => token.length > 1);
+  return normalized
+    .split(/\s+/)
+    .filter((token) => token.length > 1 && !STOPWORDS.has(token));
 }
+
+const PREFIX_MATCH_MIN_LENGTH = 4;
 
 function overlapRatio(a: string[], b: string[]) {
   if (a.length === 0 || b.length === 0) {
@@ -118,7 +189,31 @@ function overlapRatio(a: string[], b: string[]) {
   }
 
   const bSet = new Set(b);
-  const hitCount = a.filter((token) => bSet.has(token)).length;
+  let hitCount = 0;
+
+  for (const token of a) {
+    if (bSet.has(token)) {
+      hitCount += 1;
+      continue;
+    }
+
+    // Hızlı yol (exact match) başarısız oldu — önek (prefix) eşleşmesine
+    // bak. Örn. niyet tokeni "kaygiliyim" alan tokeni "kaygi" ile eşleşsin.
+    // Paylaşılan önek en az PREFIX_MATCH_MIN_LENGTH karakter olmalı ki
+    // "de"/"ne" gibi kısa parçalar yanlışlıkla eşleşmesin.
+    const isPrefixMatch = b.some((candidate) => {
+      const shorterLength = Math.min(token.length, candidate.length);
+      if (shorterLength < PREFIX_MATCH_MIN_LENGTH) {
+        return false;
+      }
+      return token.startsWith(candidate) || candidate.startsWith(token);
+    });
+
+    if (isPrefixMatch) {
+      hitCount += 1;
+    }
+  }
+
   return hitCount / a.length;
 }
 

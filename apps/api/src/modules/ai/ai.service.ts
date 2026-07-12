@@ -508,9 +508,13 @@ export class AiService {
     });
 
     // ── Cache write ─────────────────────────────────────────────────────────
-    if (safeRecommendedIds.length > 0) {
+    // Yalnızca OpenAI (agent) sonuçları cache'lenir — fallback çıktısı düşük
+    // kaliteli olabilir ve cache'e yazılırsa aynı prompt için donup kalır.
+    if (safeRecommendedIds.length > 0 && usedModel === 'openai') {
       await this.writeCache(cacheKey, safeRecommendedIds, reasoning, usedModel);
       this.logger.log(`[cache] yazıldı`);
+    } else {
+      this.logger.log(`[cache] atlandı (usedModel=${usedModel})`);
     }
 
     this.logger.log(
@@ -860,10 +864,11 @@ export class AiService {
    * alanlarıyla ağırlıklı örtüşme skoruna göre eşleştirir
    * (bkz. fallbackRecommend, utils/fallback-recommender.ts):
    * - freeText yoksa → doğrudan zaman tabanlı öneri (mevcut davranış).
-   * - freeText'te hiçbir alanla kelime örtüşmesi yoksa (hasTextualSignal
+   * - freeText'te HİÇBİR aday alanla kelime örtüşmesi yoksa (hasTextualSignal
    *   false) → TAHMİN ETMEZ, kullanıcıya seçmesi için genel kategorileri
    *   döner. ("Yanlış zikir önerme lüksümüz yok" kuralı.)
-   * - En az bir alanla örtüşme varsa → en yüksek skorlu zikirler önerilir.
+   * - En az bir adayda örtüşme varsa → yalnızca örtüşmesi olan zikirler
+   *   (sıfır örtüşmeli dolgular hariç) en yüksek skordan sıralanarak döner.
    */
   private async getSmartFallbackCandidates(
     freeText: string | undefined,
