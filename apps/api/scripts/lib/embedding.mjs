@@ -17,6 +17,7 @@ export function buildSourceText(source) {
     (source.suitableFor ?? []).join(', '),
     (source.tags ?? []).join(', '),
     (source.categories ?? []).join(', '),
+    source.meaning,
     source.virtue,
   ]
     .map((part) => String(part ?? '').trim())

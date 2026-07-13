@@ -10,6 +10,7 @@ type EmbeddingSource = {
   suitableFor?: string[];
   tags?: string[];
   categories?: string[];
+  meaning?: string;
   virtue?: string;
 };
 
@@ -45,6 +46,7 @@ export class EmbeddingService {
       (source.suitableFor ?? []).join(', '),
       (source.tags ?? []).join(', '),
       (source.categories ?? []).join(', '),
+      source.meaning,
       source.virtue,
     ]
       .map((part) => (part ?? '').trim())

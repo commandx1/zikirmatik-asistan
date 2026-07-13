@@ -30,6 +30,7 @@ async function main() {
           tags: 1,
           categories: 1,
           suitableFor: 1,
+          meaning: 1,
           embeddingSourceHash: 1,
         },
       },
