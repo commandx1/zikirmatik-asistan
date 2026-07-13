@@ -25,16 +25,28 @@ export class DevicesService {
       set.expoPushToken = payload.expoPushToken;
     }
 
-    if (payload.prefs) {
-      for (const [key, value] of Object.entries(payload.prefs)) {
-        if (value !== undefined) {
-          set[`prefs.${key}`] = value;
-        }
-      }
-    }
-
     if (userId && Types.ObjectId.isValid(userId)) {
       set.userId = new Types.ObjectId(userId);
+    }
+
+    const setOnInsert: Record<string, unknown> = {
+      deviceId: payload.deviceId,
+      userId: userId && Types.ObjectId.isValid(userId) ? undefined : null,
+    };
+
+    // Mongo rejects a single update that targets both the whole `prefs` path
+    // ($setOnInsert) and a `prefs.<key>` subpath ($set) — "would create a
+    // conflict at 'prefs'". Each pref key must go to exactly one operator:
+    // provided keys to $set (applies on both insert and update), defaults
+    // for the rest to $setOnInsert (insert only), both via dotted paths.
+    const prefDefaults = { specialDays: true, friday: true, streak: true, badges: true } as const;
+    for (const key of Object.keys(prefDefaults) as Array<keyof typeof prefDefaults>) {
+      const value = payload.prefs?.[key];
+      if (value !== undefined) {
+        set[`prefs.${key}`] = value;
+      } else {
+        setOnInsert[`prefs.${key}`] = prefDefaults[key];
+      }
     }
 
     const updated = await this.deviceModel
@@ -42,16 +54,7 @@ export class DevicesService {
         { deviceId: payload.deviceId },
         {
           $set: set,
-          $setOnInsert: {
-            deviceId: payload.deviceId,
-            userId: userId && Types.ObjectId.isValid(userId) ? undefined : null,
-            prefs: {
-              specialDays: payload.prefs?.specialDays ?? true,
-              friday: payload.prefs?.friday ?? true,
-              streak: payload.prefs?.streak ?? true,
-              badges: payload.prefs?.badges ?? true,
-            },
-          },
+          $setOnInsert: setOnInsert,
         },
         { upsert: true, new: true, setDefaultsOnInsert: true },
       )
