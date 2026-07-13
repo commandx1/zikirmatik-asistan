@@ -13,6 +13,7 @@ import { yemekDualari } from './yemekDualari.mjs';
 import { yolculukDualari } from './yolculukDualari.mjs';
 import { hasettenKorunma } from './hasettenKorunma.mjs';
 import { kibirdenKorunma } from './kibirdenKorunma.mjs';
+import { zinadanKorunma } from './zinadanKorunma.mjs';
 import { evlilikHuzur } from './evlilikHuzur.mjs';
 import { ofkeKontrol } from './ofkeKontrol.mjs';
 import { barismaVeSulh } from './barismaVeSulh.mjs';
@@ -97,6 +98,7 @@ export const SOURCE_DATASETS = [
   isHayatiKariyer,
   hayirliEv,
   kibirdenKorunma,
+  zinadanKorunma,
   hasettenKorunma,
   evlilikHuzur,
   ofkeKontrol,

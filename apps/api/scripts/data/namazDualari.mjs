@@ -276,6 +276,29 @@ export const namazDualari = {
       ],
     },
     {
+      key: 'namaz-selamdan-once-kesel-magram-istiaze',
+      nameArabic:
+        'اللَّهُمَّ فَإِنِّي أَعُوذُ بِكَ مِنَ الْكَسَلِ وَالْهَرَمِ وَالْمَأْثَمِ وَالْمَغْرَمِ',
+      nameTurkish: 'Selâmdan Önce — Tembellik, Yaşlılık, Günah ve Borçtan Sığınma',
+      transliteration:
+        `Allâhümme fe-innî eûzü bike mine'l-keseli ve'l-heremi ve'l-me'semi ve'l-mağrami.`,
+      meaning:
+        `Allah'ım! Tembellikten, ihtiyarlıktan, günahtan ve borçlanmaktan sana sığınırım.`,
+      virtue:
+        `Hz. Âişe'den rivayet edilen bu dua, namazda tahiyyattan sonra selâm öncesi okunur; tembelliğin sürükleyeceği günah kirinden ve insanı alçaltan borç yükünden Allah'a sığınmayı öğretir.`,
+      source: `Sahih-i Müslim, İstiâze, 589/4877`,
+      tags: ['namaz', 'selam öncesi', 'istiaze', 'borç', 'tembellik', 'günah'],
+      categories: ['ibadet', 'namaz', 'istiaze', 'korunma'],
+      timeOfDay: 'any',
+      recommendedCount: 7,
+      suitableFor: [
+        'namazda selâmdan hemen önce',
+        'borç ve günahtan korunma',
+        'tembellik ve yaşlılıktan sığınma',
+        'Hz. Âişe rivayeti',
+      ],
+    },
+    {
       key: 'namaz-selamdan-once-inni-zalemtu',
       nameArabic:
         'اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ',

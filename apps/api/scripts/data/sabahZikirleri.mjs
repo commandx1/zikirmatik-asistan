@@ -385,6 +385,32 @@ export const sabahZikirleri = {
       specialDays: [],
       suitableFor: ['sabah zikri', 'akşam zikri', 'koruma', 'kur\'an okuma'],
     },
+    {
+      key: 'sabah-keseli-heremi-sıgınma',
+      nameArabic:
+        'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكَسَلِ وَالْهَرَمِ وَسُوءِ الْكِبَرِ وَفِتْنَةِ الدُّنْيَا وَعَذَابِ الْقَبْرِ',
+      nameTurkish: 'Tembellik, Yaşlılık ve Dünya Fitnesinden Sığınma (Sabah-Akşam)',
+      transliteration:
+        `Allâhümme innî eûzü bike mine'l-keseli ve'l-heremi ve sûi'l-kiberi ve fitneti'd-dünyâ ve azâbi'l-kabr.`,
+      meaning:
+        `Allah'ım! Tembellikten, ihtiyarlıktan, yaşlılığın getirdiği düşkünlük ve bunaklıktan, dünya fitnesinden ve kabir azabından sana sığınırım.`,
+      virtue:
+        `İbn Mes'ud'un rivayet ettiği bu dua, Resûlullah'ın sabah ve akşama ulaştığında okuduğu bir sığınmadır; tembellik, düşkün yaşlılık, bunama, dünya fitnesi ve kabir azabına karşı beş yönlü ilahî koruma diler.`,
+      source: `Sahih-i Müslim, Zikir, 75-76 (Hadis No: 2723)`,
+      tags: ['sabah', 'akşam', 'tembellik', 'yaşlılık', 'sığınma', 'dua'],
+      categories: ['sabah akşam', 'dua'],
+      timeOfDay: 'morning',
+      recommendedCount: 1,
+      specialDays: [],
+      suitableFor: [
+        'sabah duası',
+        'akşam duası',
+        'yaşlılıktan korunma',
+        'tembellikten korunma',
+        'dünya fitnesinden korunma',
+        'kabir azabından sığınma',
+      ],
+    },
   ],
   specialDays: [],
 };

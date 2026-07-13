@@ -5,6 +5,53 @@ export const hacUmre = {
   description: 'Hac ve umre ibadetlerinde okunacak dualar.',
   dhikrItems: [
     {
+      key: 'hac-yolculuk-binit-duasi',
+      nameArabic:
+        'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ',
+      nameTurkish: 'Yolculuğa (Binite) Binerken Duası',
+      transliteration:
+        `Sübhânellezî sahhara lenâ hâzâ vemâ künnâ lehû mukrinîn. Ve innâ ilâ rabbinâ le münkâlibûn.`,
+      meaning:
+        `Bunu bizim hizmetimize veren Yüce Allah'ı tesbih ve tenzih ederiz. Yoksa biz buna güç yetiremezdik. Şüphesiz biz Rabbimize döneceğiz.`,
+      virtue:
+        `Resûlullah (sas) yolculuğa çıkarken bineğine binince bu âyetleri okur, ardından dua ederdi. Kulun kendi gücüne değil Allah'ın takdirine dayandığını hatırlatır; can, mal ve âile emniyetini O'na emânet ederek kaza ve meşakkate karşı ilâhî himâyeye sığındırır.`,
+      source: `Kur'an-ı Kerim, Zuhruf 43/13-14; Müslim, Hac, 425`,
+      tags: ['yolculuk', 'seyahat', 'binit', 'dua', 'hac', 'umre'],
+      categories: ['dua', 'yolculuk'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: ['zilhicce'],
+      suitableFor: [
+        'yolculuğa çıkarken',
+        'vasıtaya/binite binerken',
+        'hac veya umre yoluna çıkarken',
+        'seyahat öncesi',
+      ],
+    },
+    {
+      key: 'hac-ihlas-duasi',
+      nameArabic:
+        'اللَّهُمَّ حَجَّةً لَا رِيَاءَ فِيهَا وَلَا سُمْعَةَ',
+      nameTurkish: 'İhlas Duası (Riyâdan Uzak Hac Duası)',
+      transliteration:
+        `Allâhümme hacceten lâ riyâe fîhâ velâ sum'ate.`,
+      meaning:
+        `Allah'ım! Bu haccımı gösteriş ve şöhretten uzak bir hac eyle!`,
+      virtue:
+        `Resûlullah'ın haccına başlarken okuduğu bu dua, niyeti riyâ ve şöhretten arındırarak ihlâsı korur; mebrûr -yani Allah katında kabul görmüş- bir haccın kapısını ancak samimi niyet aralar.`,
+      source: `İbn Mâce, Menâsik, 4; Elbânî, Menâsik, 16`,
+      tags: ['hac', 'ihlas', 'niyet', 'riya', 'dua'],
+      categories: ['hac', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: ['zilhicce'],
+      suitableFor: [
+        'hacca niyet ederken',
+        'ihrâma girerken',
+        'hac başlangıcında',
+      ],
+    },
+    {
       key: 'hac-telbiye',
       nameArabic:
         'لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ لَبَّيْكَ لَا شَرِيكَ لَكَ لَبَّيْكَ إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ لَا شَرِيكَ لَكَ',
@@ -77,6 +124,29 @@ export const hacUmre = {
       ],
     },
     {
+      key: 'hac-safa-merve-ayeti',
+      nameArabic:
+        'إِنَّ الصَّفَا وَالْمَرْوَةَ مِنْ شَعَائِرِ اللَّهِ فَمَنْ حَجَّ الْبَيْتَ أَوِ اعْتَمَرَ فَلَا جُنَاحَ عَلَيْهِ أَنْ يَطَّوَّفَ بِهِمَا وَمَنْ تَطَوَّعَ خَيْرًا فَإِنَّ اللَّهَ شَاكِرٌ عَلِيمٌ',
+      nameTurkish: `Sa'y Başlangıç Âyeti (Safâ-Merve)`,
+      transliteration:
+        `İnne's-safâ ve'l-mervete min şeâirillâh. Fe men hacce'l-beyte evi'temera felâ cünâha aleyhi en yettavvefe bihimâ. Ve men tetavvea hayran fe innallâhe şâkirun alîm.`,
+      meaning:
+        `Şüphesiz Safâ ile Merve Allah'ın nişânelerindendir. Kim hac veya umre yaparak Beytullah'ı ziyaret ederse, bu iki yeri tavaf (sa'y) etmesinde bir günah yoktur. Kim gönüllü bir iyilik yaparsa bilsin ki Allah karşılığını veren ve her şeyi bilendir.`,
+      virtue:
+        `Resûlullah (sas) sa'ye başlarken Safâ'ya çıkıp bu âyeti okurdu; Safâ ile Merve'nin Allah'ın nişâneleri olduğunu hatırlatarak sa'yin ilk şavtına nebevî bir sünnet ve bereket vesilesi olarak başlanır.`,
+      source: `Kur'an-ı Kerim, Bakara 2/158; Buhârî, Hac, 50; Müslim, Hac, 259`,
+      tags: ['hac', 'umre', 'say', 'safa', 'merve', 'ayet'],
+      categories: ['hac', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 1,
+      specialDays: ['zilhicce'],
+      suitableFor: [
+        `sa'y başlangıcında`,
+        'Safâ tepesinde ilk şavt',
+        `hac veya umre sa'yi`,
+      ],
+    },
+    {
       key: 'hac-safa-zikri',
       nameArabic:
         'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ أَنْجَزَ وَعْدَهُ وَنَصَرَ عَبْدَهُ وَهَزَمَ الْأَحْزَابَ وَحْدَهُ',
@@ -101,6 +171,28 @@ export const hacUmre = {
       ],
     },
     {
+      key: 'hac-say-hervele-duasi',
+      nameArabic: 'رَبِّ اغْفِرْ وَارْحَمْ وَأَنْتَ خَيْرُ الرَّاحِمِينَ',
+      nameTurkish: 'Hervele (Yeşil Direkler Arası) Duası',
+      transliteration:
+        `Rabbiğfir verham ve ente hayrur rahimin.`,
+      meaning:
+        `Rabbim bağışla ve merhamet et, şüphesiz sen merhamet edenlerin en hayırlısısın.`,
+      virtue:
+        `Sa'y sırasında hervele (hızlı yürüyüş) esnasında, yeşil ışıklı iki direk arasında okunan bu dua, günahların affı ve Allah'ın sonsuz merhametine sığınmayı dile getirir; tevazu içinde tekrarlanan kısa fakat samimi bir istiğfardır.`,
+      source: `İbn Ebî Şeybe, Musannef; Diyanet Umre Rehberi`,
+      tags: ['hac', 'umre', 'say', 'hervele', 'dua', 'istigfar'],
+      categories: ['hac', 'dua'],
+      timeOfDay: 'any',
+      recommendedCount: 3,
+      specialDays: ['zilhicce'],
+      suitableFor: [
+        `sa'y sırasında hervele`,
+        'yeşil ışıklı direkler arasında',
+        'her şavtta hervele',
+      ],
+    },
+    {
       key: 'hac-arefe-zikri',
       nameArabic:
         'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
@@ -121,6 +213,29 @@ export const hacUmre = {
         'Arafât vakfesi',
         'arefe günü',
         'hac sırasında',
+        'zilhicce ayında',
+      ],
+    },
+    {
+      key: 'hac-arefe-gecesi-tesbihi',
+      nameArabic:
+        'سُبْحَانَ الَّذِي فِي السَّمَاءِ عَرْشُهُ سُبْحَانَ الَّذِي فِي الْأَرْضِ مَوْطِئُهُ سُبْحَانَ الَّذِي فِي الْبَحْرِ سَبِيلُهُ سُبْحَانَ الَّذِي فِي النَّارِ سُلْطَانُهُ سُبْحَانَ الَّذِي لَا مَنْجَا وَلَا مَلْجَأَ مِنْهُ إِلَّا إِلَيْهِ',
+      nameTurkish: 'Arefe Gecesi Tesbihi (Sığınma Duası)',
+      transliteration:
+        `Subhânallâhillezî fi's-semâi arşuh. Subhânallâhillezî fi'l-ardı mevtıuh. Subhânallâhillezî fi'l-bahri sebîluh. Subhânallâhillezî fi'n-nâri sültânuh. Subhânallâhillezî lâ mencâ velâ melcee minhu illâ ileyh.`,
+      meaning:
+        `Arşı semada olan Allah'ı tesbih ederim. Hükmü yerde olan Allah'ı tesbih ederim. Yolu denizde olan Allah'ı tesbih ederim. Saltanatı ateşte olan Allah'ı tesbih ederim. Kendisinden kaçıp sığınılacak yer ancak kendisi olan Allah'ı tesbih ederim.`,
+      virtue:
+        `İbn Mes'ud'dan rivayet edilen bu tesbih, Arefe gecesi samimiyetle okunduğunda kulun dileklerinin ilâhî lütufla karşılanacağını ve günahlarının bağışlanacağını müjdeler; Allah'ın kudretini gökte, yerde, denizde ve ateşte anarak O'na sığınmayı ifade eder.`,
+      source: `İbn Mes'ud Hadisi; İbn Ebî Şeybe, Musannef`,
+      tags: ['hac', 'arefe', 'tesbih', 'dua', 'zilhicce', 'sığınma'],
+      categories: ['hac', 'dua'],
+      timeOfDay: 'night',
+      recommendedCount: 1,
+      specialDays: ['zilhicce', 'arefe'],
+      suitableFor: [
+        'arefe gecesi',
+        'gece duası',
         'zilhicce ayında',
       ],
     },
