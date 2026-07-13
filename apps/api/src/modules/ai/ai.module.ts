@@ -5,6 +5,7 @@ import {
   DhikrLogSchema,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Dhikr, DhikrSchema } from '../dhikrs/schemas/dhikr.schema';
+import { EmbeddingModule } from '../embedding/embedding.module';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { AiController } from './ai.controller';
 import { AiProgressGateway } from './ai-progress.gateway';
@@ -37,6 +38,7 @@ import {
       { name: DhikrLog.name, schema: DhikrLogSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    EmbeddingModule,
   ],
   controllers: [AiController],
   providers: [AiService, AiProgressGateway],

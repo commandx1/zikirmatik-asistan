@@ -17,6 +17,7 @@ import {
   type DhikrLogDocument,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
+import { EmbeddingService } from '../embedding/embedding.service';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { AiProgressGateway } from './ai-progress.gateway';
 import { CreateAiRecommendationDto } from './dto/create-ai-recommendation.dto';
@@ -248,6 +249,7 @@ export class AiService {
     private readonly dhikrLogModel: Model<DhikrLogDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    private readonly embeddingService: EmbeddingService,
   ) {}
 
   private emitStep(socketId: string | undefined, key: string, message: string) {
@@ -638,6 +640,7 @@ export class AiService {
               const results = await this.searchDhikrsForAgent(
                 params,
                 input.recentDhikrIds,
+                input.freeText,
               );
               this.logger.log(`[agent:searchDhikrs] → ${results.length} sonuç`);
               return results;
@@ -696,9 +699,87 @@ export class AiService {
   }
 
   /**
+   * suitableFor/tags/categories için $setIntersection tabanlı ağırlıklı skor
+   * (suitableFor×3, tags×2, categories×1) ve timeOfDay eşleşirse +2 bonus
+   * üreten aggregation alanlarını kurar. hem literal kesişim yolunda hem de
+   * vector search sonrası rerank katmanında paylaşılır. timeOfDay HİÇBİR
+   * zaman sert filtre değildir, yalnızca bonus olarak eklenir.
+   */
+  private buildIntersectionScoreFields(params: {
+    suitableFor?: string[];
+    tags?: string[];
+    categories?: string[];
+    timeOfDay?: string;
+  }): unknown[] {
+    const scoreFields: unknown[] = [];
+    const hasSuitableFor = (params.suitableFor?.length ?? 0) > 0;
+    const hasTags = (params.tags?.length ?? 0) > 0;
+    const hasCategories = (params.categories?.length ?? 0) > 0;
+    const hasTimeOfDay = !!params.timeOfDay && params.timeOfDay !== 'any';
+
+    if (hasSuitableFor) {
+      scoreFields.push({
+        $multiply: [
+          3,
+          {
+            $size: {
+              $ifNull: [
+                {
+                  $setIntersection: ['$suitableFor', params.suitableFor!],
+                },
+                [],
+              ],
+            },
+          },
+        ],
+      });
+    }
+    if (hasTags) {
+      scoreFields.push({
+        $multiply: [
+          2,
+          {
+            $size: {
+              $ifNull: [{ $setIntersection: ['$tags', params.tags!] }, []],
+            },
+          },
+        ],
+      });
+    }
+    if (hasCategories) {
+      scoreFields.push({
+        $multiply: [
+          1,
+          {
+            $size: {
+              $ifNull: [
+                {
+                  $setIntersection: ['$categories', params.categories!],
+                },
+                [],
+              ],
+            },
+          },
+        ],
+      });
+    }
+    if (hasTimeOfDay) {
+      scoreFields.push({
+        $cond: [{ $eq: ['$timeOfDay', params.timeOfDay] }, 2, 0],
+      });
+    }
+
+    return scoreFields;
+  }
+
+  /**
    * Agent'ın searchDhikrs tool'unda çalışan MongoDB sorgusu.
-   * LLM'in verdiği parametrelere göre skor tabanlı aggregation veya
-   * parametresiz popülerlik sıralaması döndürür.
+   * freeText mevcutsa ve embedding üretilebiliyorsa önce Atlas
+   * $vectorSearch (dhikr_vector_index) ile aday havuzu getirir, ardından bu
+   * adaylar üzerine mevcut tag/kategori/timeOfDay skorunu (soft rerank
+   * katmanı) uygular. freeText yoksa veya embedding üretilemezse (OpenAI
+   * erişilemez/embed() null) mevcut $setIntersection tabanlı skor veya
+   * parametresiz popülerlik sıralamasına sessizce düşer.
    */
   private async searchDhikrsForAgent(
     params: {
@@ -709,6 +790,7 @@ export class AiService {
       limit?: number;
     },
     recentDhikrIds: string[],
+    freeText?: string,
   ): Promise<SearchResult[]> {
     const recentObjectIds = recentDhikrIds
       .filter((id) => Types.ObjectId.isValid(id))
@@ -725,61 +807,55 @@ export class AiService {
     const hasTags = (params.tags?.length ?? 0) > 0;
     const hasCategories = (params.categories?.length ?? 0) > 0;
     const hasTimeOfDay = !!params.timeOfDay && params.timeOfDay !== 'any';
+    const hasAnySignal =
+      hasSuitableFor || hasTags || hasCategories || hasTimeOfDay;
 
-    if (hasSuitableFor || hasTags || hasCategories || hasTimeOfDay) {
-      const scoreFields: unknown[] = [];
+    const trimmedFreeText = freeText?.trim();
+    if (trimmedFreeText) {
+      const queryVector = await this.embeddingService.embed(trimmedFreeText);
+      if (queryVector) {
+        try {
+          const scoreFields = this.buildIntersectionScoreFields(params);
 
-      if (hasSuitableFor) {
-        scoreFields.push({
-          $multiply: [
-            3,
-            {
-              $size: {
-                $ifNull: [
-                  {
-                    $setIntersection: ['$suitableFor', params.suitableFor!],
-                  },
-                  [],
-                ],
+          const results = await this.dhikrModel
+            .aggregate<DhikrLean>([
+              {
+                $vectorSearch: {
+                  index: 'dhikr_vector_index',
+                  path: 'embedding',
+                  queryVector,
+                  numCandidates: 100,
+                  limit: limit * 3,
+                },
               },
-            },
-          ],
-        });
-      }
-      if (hasTags) {
-        scoreFields.push({
-          $multiply: [
-            2,
-            {
-              $size: {
-                $ifNull: [{ $setIntersection: ['$tags', params.tags!] }, []],
+              { $match: baseMatch },
+              {
+                $addFields: {
+                  _vectorScore: { $meta: 'vectorSearchScore' },
+                  _tagScore: scoreFields.length > 0 ? { $sum: scoreFields } : 0,
+                },
               },
-            },
-          ],
-        });
-      }
-      if (hasCategories) {
-        scoreFields.push({
-          $multiply: [
-            1,
-            {
-              $size: {
-                $ifNull: [
-                  {
-                    $setIntersection: ['$categories', params.categories!],
-                  },
-                  [],
-                ],
+              {
+                $addFields: {
+                  _score: { $add: ['$_vectorScore', '$_tagScore'] },
+                },
               },
-            },
-          ],
-        });
+              { $sort: { _score: -1, recommendedCount: -1 } },
+              { $limit: limit },
+            ])
+            .exec();
+
+          return results.map(toSearchResult);
+        } catch (error) {
+          this.logger.warn(
+            `Vector search başarısız, tag/kategori kesişimine düşülüyor: ${this.describeError(error)}`,
+          );
+        }
       }
-      if (hasTimeOfDay) {
-        scoreFields.push({
-          $cond: [{ $eq: ['$timeOfDay', params.timeOfDay] }, 2, 0],
-        });
-      }
+    }
+
+    if (hasAnySignal) {
+      const scoreFields = this.buildIntersectionScoreFields(params);
 
       const results = await this.dhikrModel
         .aggregate<DhikrLean>([

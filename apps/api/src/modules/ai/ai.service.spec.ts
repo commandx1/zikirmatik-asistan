@@ -276,6 +276,7 @@ function createService(initialPremium = false) {
     {} as never,
     {} as never,
     userModel as never,
+    {} as never,
   );
 
   return {
