@@ -68,7 +68,7 @@ export function ProfileSettingsSections({
             bottomBorder={notificationsEnabled}
           />
           {notificationsEnabled ? (
-            <ProfileTimeRow label="Hatırlatma Saati" value={reminderTime} onPress={onPressReminderTime} />
+            <ProfileTimeRow label="Günlük Zikir Hatırlatma Saati" value={reminderTime} onPress={onPressReminderTime} />
           ) : null}
         </ProfileSettingsCard>
       </View>

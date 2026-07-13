@@ -48,7 +48,7 @@ export function ProfileReminderTimeModal({
       sheetClassName="rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-10"
       scrollContentContainerStyle={{ paddingBottom: 24 }}
     >
-      <Text className="mb-1 text-lg font-semibold text-[--text-primary]">Hatırlatma Saati</Text>
+      <Text className="mb-1 text-lg font-semibold text-[--text-primary]">Günlük Zikir Hatırlatma Saati</Text>
       <Text className="mb-4 text-xs text-[--text-muted]">
         Günlük zikir hatırlatmasının saatini ayarlayabilirsin.
       </Text>
