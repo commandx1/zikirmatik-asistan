@@ -39,8 +39,15 @@ export class DevicesService {
     // conflict at 'prefs'". Each pref key must go to exactly one operator:
     // provided keys to $set (applies on both insert and update), defaults
     // for the rest to $setOnInsert (insert only), both via dotted paths.
-    const prefDefaults = { specialDays: true, friday: true, streak: true, badges: true } as const;
-    for (const key of Object.keys(prefDefaults) as Array<keyof typeof prefDefaults>) {
+    const prefDefaults = {
+      specialDays: true,
+      friday: true,
+      streak: true,
+      badges: true,
+    } as const;
+    for (const key of Object.keys(prefDefaults) as Array<
+      keyof typeof prefDefaults
+    >) {
       const value = payload.prefs?.[key];
       if (value !== undefined) {
         set[`prefs.${key}`] = value;
