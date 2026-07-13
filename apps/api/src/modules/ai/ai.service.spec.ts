@@ -310,18 +310,26 @@ describe('AiService credits', () => {
     jest.useRealTimers();
   });
 
-  it('grants free daily credit once per UTC day', async () => {
+  it('grants a 3-credit welcome bonus on the first ever free grant, then 1/day', async () => {
     jest.setSystemTime(new Date('2026-07-08T10:00:00.000Z'));
     const { service, ledger } = createService(false);
 
     const first = await service.getCredits(USER_ID);
-    const second = await service.getCredits(USER_ID);
+    const sameDayAgain = await service.getCredits(USER_ID);
 
-    expect(first.balance).toBe(1);
-    expect(second.balance).toBe(1);
+    expect(first.balance).toBe(3);
+    expect(sameDayAgain.balance).toBe(3);
     expect(
       ledger.filter((entry) => entry.reason === 'FREE_DAILY_GRANT').length,
     ).toBe(1);
+
+    jest.setSystemTime(new Date('2026-07-09T10:00:00.000Z'));
+    const nextDay = await service.getCredits(USER_ID);
+
+    expect(nextDay.balance).toBe(1);
+    expect(
+      ledger.filter((entry) => entry.reason === 'FREE_DAILY_GRANT').length,
+    ).toBe(2);
   });
 
   it('grants premium credits once per UTC month and adds new grant on next month', async () => {
@@ -369,8 +377,8 @@ describe('AiService credits', () => {
       'hash-a',
     );
 
-    expect(result1.balance).toBe(0);
-    expect(result2.balance).toBe(0);
+    expect(result1.balance).toBe(2);
+    expect(result2.balance).toBe(2);
     expect(
       ledger.filter((entry) => entry.reason === 'RECOMMENDATION_DEBIT').length,
     ).toBe(1);
@@ -415,17 +423,17 @@ describe('AiService credits', () => {
     const premium = await service.getCredits(USER_ID);
     expect(premium.balance).toBe(50);
 
-    // Downgrade: free daily grant ilk kez bu gün için verilir (yeni cycle),
-    // grantCredits $set ile 1'e sıfırlanır (öncekiyle birikmez).
+    // Downgrade: bu kullanıcı hiç FREE_DAILY_GRANT almamıştı (premium'du),
+    // bu yüzden ilk free grant'ı karşılama bonusu (3) olarak verilir.
     setPremium(false);
     const free = await service.getCredits(USER_ID);
-    expect(free.balance).toBe(1);
+    expect(free.balance).toBe(3);
 
     // Aynı ay içinde tekrar premium: aylık grant için ledger kaydı zaten
     // mevcut (E11000) → wallet'a dokunulmaz, mevcut bakiye korunur.
     setPremium(true);
     const premiumAgain = await service.getCredits(USER_ID);
-    expect(premiumAgain.balance).toBe(1);
+    expect(premiumAgain.balance).toBe(3);
 
     expect(
       ledger.filter((entry) => entry.reason === 'PREMIUM_MONTHLY_GRANT').length,

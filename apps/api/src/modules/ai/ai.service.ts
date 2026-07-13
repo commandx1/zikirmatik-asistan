@@ -46,6 +46,7 @@ import {
   AI_CREDIT_REASONS,
   type AiCreditReason,
   FREE_DAILY_CREDIT_AMOUNT,
+  FREE_SIGNUP_BONUS_CREDIT_AMOUNT,
   PREMIUM_MONTHLY_CREDIT_AMOUNT,
 } from './credits.constants';
 
@@ -1502,7 +1503,7 @@ export class AiService {
       (await this.aiCreditWalletModel.findOne({ userId }).exec()) ??
       (await this.aiCreditWalletModel.create({ userId }));
 
-    const grant = this.resolveGrantStatus(isPremium);
+    const grant = await this.resolveGrantStatus(userId, isPremium);
     let wallet = initialWallet;
 
     if (
@@ -1575,19 +1576,22 @@ export class AiService {
     return {
       balance: wallet.balance,
       isPremium,
-      dailyGrant: isPremium ? 0 : FREE_DAILY_CREDIT_AMOUNT,
+      dailyGrant: isPremium ? 0 : Math.max(0, wallet.grantCredits),
       monthlyGrant: isPremium ? PREMIUM_MONTHLY_CREDIT_AMOUNT : 0,
       wallet,
     };
   }
 
-  private resolveGrantStatus(isPremium: boolean): {
+  private async resolveGrantStatus(
+    userId: Types.ObjectId,
+    isPremium: boolean,
+  ): Promise<{
     reason: AiCreditReason;
     cycleKey: string;
     amount: number;
     dayKey?: string;
     monthKey?: string;
-  } {
+  }> {
     const now = new Date();
     if (isPremium) {
       const monthKey = toUtcMonthKey(now);
@@ -1600,10 +1604,21 @@ export class AiService {
     }
 
     const dayKey = toUtcDayKey(now);
+    // Kullanıcı hiç FREE_DAILY_GRANT almamışsa (ilk kez AI'ya dokunduğu gün)
+    // karşılama bonusu olarak FREE_SIGNUP_BONUS_CREDIT_AMOUNT ver; sonraki
+    // her gün normal FREE_DAILY_CREDIT_AMOUNT'a döner.
+    const hasPriorFreeGrant = Boolean(
+      await this.aiCreditLedgerModel
+        .exists({ userId, reason: AI_CREDIT_REASONS.FREE_DAILY_GRANT })
+        .exec(),
+    );
+
     return {
       reason: AI_CREDIT_REASONS.FREE_DAILY_GRANT,
       cycleKey: dayKey,
-      amount: FREE_DAILY_CREDIT_AMOUNT,
+      amount: hasPriorFreeGrant
+        ? FREE_DAILY_CREDIT_AMOUNT
+        : FREE_SIGNUP_BONUS_CREDIT_AMOUNT,
       dayKey,
     };
   }

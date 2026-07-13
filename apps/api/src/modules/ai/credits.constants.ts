@@ -12,6 +12,10 @@ export type AiCreditReason =
 export const FREE_DAILY_CREDIT_AMOUNT = 1;
 export const PREMIUM_MONTHLY_CREDIT_AMOUNT = 50;
 
+// Kullanıcının hiç FREE_DAILY_GRANT almadığı ilk gün için tek seferlik
+// karşılama bonusu; sonraki günler FREE_DAILY_CREDIT_AMOUNT'a döner.
+export const FREE_SIGNUP_BONUS_CREDIT_AMOUNT = 3;
+
 export const AI_CREDIT_INSUFFICIENT_CODE = 'AI_CREDIT_INSUFFICIENT';
 
 /**
