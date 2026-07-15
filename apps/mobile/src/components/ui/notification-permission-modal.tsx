@@ -1,9 +1,11 @@
 import { useThemeTokens } from '@zikirmatik/ui'
 import { Modal, Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useNotificationPromptStore } from '../../store/notification-prompt-store'
 
 export function NotificationPermissionModal() {
   const { tokens } = useThemeTokens()
+  const { t } = useTranslation('components')
   const visible = useNotificationPromptStore((s) => s.visible)
   const confirm = useNotificationPromptStore((s) => s.confirm)
   const dismiss = useNotificationPromptStore((s) => s.dismiss)
@@ -20,10 +22,10 @@ export function NotificationPermissionModal() {
           }}
         >
           <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
-            Uygulama bildirimleri
+            {t('components:notificationPermissionModal.title')}
           </Text>
           <Text className='mb-5 text-sm leading-5' style={{ color: tokens.textMuted }}>
-            Hatırlatmalar ve önemli günler gibi konularda seni bilgilendirebilmemiz için bildirim göndermemize izin verir misin?
+            {t('components:notificationPermissionModal.message')}
           </Text>
 
           <View className='gap-2'>
@@ -36,13 +38,13 @@ export function NotificationPermissionModal() {
               }}
             >
               <Text className='text-sm font-semibold' style={{ color: tokens.accent }}>
-                İzin ver
+                {t('components:notificationPermissionModal.allow')}
               </Text>
             </Pressable>
 
             <Pressable onPress={dismiss} className='h-10 items-center justify-center rounded-full px-4'>
               <Text className='text-sm font-medium' style={{ color: tokens.textMuted }}>
-                Şimdi değil
+                {t('components:notificationPermissionModal.notNow')}
               </Text>
             </Pressable>
           </View>

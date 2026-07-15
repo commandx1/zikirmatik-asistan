@@ -1,15 +1,17 @@
 import { Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
 import { formatCounter } from "@zikirmatik/shared";
 import type { StatsSourceBreakdown } from "@zikirmatik/shared";
-import { SOURCE_LABELS, SOURCE_ORDER, withAlpha } from "./chart-utils";
+import { SOURCE_ORDER, withAlpha } from "./chart-utils";
 
 const SIZE = 132;
 const STROKE = 20;
 
 export function SourceDonut({ breakdown }: { breakdown: StatsSourceBreakdown }) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("stats");
   const radius = (SIZE - STROKE) / 2;
   const center = SIZE / 2;
   const circumference = 2 * Math.PI * radius;
@@ -74,7 +76,7 @@ export function SourceDonut({ breakdown }: { breakdown: StatsSourceBreakdown }) 
           {segments.map((segment) => (
             <View key={segment.key} className="flex-row items-center">
               <View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: segment.color }} />
-              <Text className="ml-2 flex-1 text-sm text-[--text-primary]">{SOURCE_LABELS[segment.key]}</Text>
+              <Text className="ml-2 flex-1 text-sm text-[--text-primary]">{t(`stats:sourceLabels.${segment.key}`)}</Text>
               <Text className="text-sm font-semibold text-[--text-muted]">
                 {formatCounter(segment.value)}
                 {total > 0 ? ` · %${Math.round(segment.fraction * 100)}` : ""}

@@ -1,0 +1,124 @@
+{
+  "header": {
+    "title": "Profil"
+  },
+  "userCard": {
+    "premiumBadge": "Premium",
+    "upgradeButton": "Premium'a Geç"
+  },
+  "sections": {
+    "personalization": {
+      "title": "Kişiselleştirme",
+      "theme": "Tema Seçimi",
+      "font": "Yazı Tipi",
+      "haptics": "Titreşim",
+      "language": "Dil"
+    },
+    "notifications": {
+      "title": "Bildirimler",
+      "toggle": "Bildirimler",
+      "reminderTime": "Günlük Zikir Hatırlatma Saati"
+    },
+    "premium": {
+      "title": "Premium",
+      "features": "Premium Özellikleri",
+      "manageSubscription": "Aboneliği Yönet"
+    },
+    "other": {
+      "title": "Diğer",
+      "tourReplay": "Uygulamayı Tanıt",
+      "rateApp": "Uygulamayı Oyla",
+      "sendFeedback": "Geri Bildirim Gönder",
+      "logout": "Çıkış Yap"
+    },
+    "account": {
+      "title": "Hesap",
+      "deleteAccount": "Hesabı Sil"
+    }
+  },
+  "language": {
+    "turkish": "Türkçe",
+    "english": "English"
+  },
+  "memberSince": {
+    "newMember": "Yeni üye",
+    "since": "{{date}}'ten beri"
+  },
+  "feedbackEmail": {
+    "subject": "Zikirmatik Rehber Geri Bildirimi",
+    "body": "Merhaba,\n\nGeri bildirimim:\n\n\n---\nCihaz:\nUygulama sürümü:\n"
+  },
+  "reminderTimeModal": {
+    "title": "Günlük Zikir Hatırlatma Saati",
+    "description": "Günlük zikir hatırlatmasının saatini ayarlayabilirsin.",
+    "hour": "Saat",
+    "minute": "Dakika",
+    "hourPickerTitle": "Saat Seç",
+    "minutePickerTitle": "Dakika Seç",
+    "invalidTime": "Lütfen geçerli bir saat gir (00-23 / 00-59)."
+  },
+  "deleteAccountModal": {
+    "warning": "⚠️  Bu işlem geri alınamaz",
+    "title": "Hesabını Sil",
+    "description": "Hesabını silersen aşağıdaki veriler kalıcı olarak silinir:",
+    "items": {
+      "history": "Tüm zikir geçmişin ve istatistiklerin",
+      "customDhikrs": "Kişisel zikirklerin",
+      "profileInfo": "Profil bilgilerin",
+      "subscription": "Abonelik kaydın",
+      "aiHistory": "AI Rehber tavsiye geçmişin"
+    },
+    "confirmButton": "Hesabı Kalıcı Olarak Sil",
+    "cancelButton": "İptal"
+  },
+  "feedbackErrorModal": {
+    "title": "E-posta uygulaması açılamadı"
+  },
+  "pushPrefsErrorModal": {
+    "title": "Bildirim tercihi güncellenemedi"
+  },
+  "errors": {
+    "manageSubscriptionFailed": "Abonelik yönetim ekranı açılamadı.",
+    "storeOpenFailed": "Mağaza sayfası açılamadı.",
+    "noEmailApp": "Cihazında varsayılan e-posta uygulaması yok gibi görünüyor.",
+    "reminderTimeUpdateFailed": "Saat güncellenemedi. Lütfen tekrar dene.",
+    "pushPrefsUpdateFailed": "Bildirim tercihi güncellenemedi. Lütfen tekrar dene."
+  },
+  "premiumSheet": {
+    "title": "Premium'a Geç",
+    "subtitle": "Manevi yolculuğunuzu Asistan destekli rehberlik ve özel içeriklerle derinleştirin.",
+    "benefits": {
+      "aiCredits": {
+        "title": "AI Rehber Kredileri",
+        "description": "Aylık 50 kredi + ihtiyaç halinde kredi paketi satın alma desteği."
+      },
+      "collections": {
+        "title": "Tüm Koleksiyonlar",
+        "description": "Hısnu'l-Muslim ve tüm dua koleksiyonlarına tam erişim."
+      },
+      "stats": {
+        "title": "Detaylı İstatistikler",
+        "description": "Isı haritası, dönem karşılaştırması ve daha fazlasıyla ilerlemeni derinlemesine takip et."
+      },
+      "specialDays": {
+        "title": "Tüm Özel Günler",
+        "description": "Kandil ve bayramların yanı sıra tüm özel günlerin içeriğine eriş."
+      },
+      "themes": {
+        "title": "Tüm Temalar",
+        "description": "Bütün temaları hiçbir kısıtlama olmadan kullan."
+      }
+    },
+    "monthlyPlan": "Aylık (₺{{price}})",
+    "yearlyPlan": "Yıllık (₺{{price}})",
+    "creditsRenewNote": "Aylık 50 kredi her ay yenilenir; kullanılmayan krediler sonraki aya devretmez.",
+    "startButton": "Hemen Başla",
+    "activating": "Aktifleştiriliyor...",
+    "orBuyCredits": "veya kredi paketi al",
+    "creditsKeptNote": "Satın aldığın krediler sana kalır, hiçbir zaman silinmez.",
+    "creditsLabel": "{{count}} Kredi",
+    "purchasing": "Alınıyor...",
+    "dailyFreeCreditNote": "Günlük 1 ücretsiz kredin her gün yenilenir.",
+    "maybeLater": "Belki Daha Sonra"
+  }
+}

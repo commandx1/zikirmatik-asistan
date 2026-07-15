@@ -26,9 +26,6 @@ export class User {
   @Prop({ type: String, enum: ['google', 'apple', 'email'], default: 'email' })
   authProvider!: 'google' | 'apple' | 'email';
 
-  @Prop({ type: String, default: '' })
-  city!: string;
-
   @Prop({ type: [String], default: [] })
   preferredCategories!: string[];
 
@@ -64,7 +61,6 @@ export class User {
       dailyReminder: { type: Boolean, default: false },
       reminderTime: { type: String, default: '08:00' },
       kandilNotifications: { type: Boolean, default: true },
-      azanNotifications: { type: Boolean, default: false },
       fridayReminder: { type: Boolean, default: true },
     }),
   )
@@ -72,7 +68,6 @@ export class User {
     dailyReminder: boolean;
     reminderTime: string;
     kandilNotifications: boolean;
-    azanNotifications: boolean;
     fridayReminder: boolean;
   };
 
@@ -82,13 +77,11 @@ export class User {
   @Prop(
     raw({
       purpose: { type: String },
-      city: { type: String },
       completedAt: { type: Date },
     }),
   )
   onboarding?: {
     purpose?: string;
-    city?: string;
     completedAt?: Date;
   };
 

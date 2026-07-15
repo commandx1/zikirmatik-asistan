@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
+import { i18n } from "../i18n";
 import type {
   AuthProvider,
   AuthSession,
@@ -225,5 +226,5 @@ function toUserFacingAuthMessage(error: unknown) {
     return error.message;
   }
 
-  return "Giriş sırasında beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.";
+  return i18n.t("auth:errors.unexpectedSignIn");
 }

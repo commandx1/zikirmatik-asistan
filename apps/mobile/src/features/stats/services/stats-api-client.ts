@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
 import type { StatsSummary } from "@zikirmatik/shared";
+import { i18n } from "../../../i18n";
 
 export class StatsApiError extends Error {
   constructor(
@@ -51,7 +52,7 @@ async function requestJson<TResponse>(
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "İstatistik verisi alınamadı.");
+      const message = extractErrorMessage(data, i18n.t("stats:errors.fetchFailed"));
       throw new StatsApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
     }
 
@@ -61,7 +62,7 @@ async function requestJson<TResponse>(
       throw error;
     }
 
-    throw new StatsApiError("transient", "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.");
+    throw new StatsApiError("transient", i18n.t("stats:errors.serverUnreachable"));
   }
 }
 

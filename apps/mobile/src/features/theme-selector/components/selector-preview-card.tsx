@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import type { ThemeName, ThemeTokens } from "@zikirmatik/shared";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Svg, { Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import type { AppFontFamily } from "../../../store/theme-store";
@@ -26,6 +27,7 @@ const PREVIEW_MEANING = "Allah'ı tüm noksan sıfatlardan tenzih eder ve O'na h
 const PREVIEW_ARABIC = "سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ";
 
 export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "default" }: SelectorPreviewCardProps) {
+  const { t } = useTranslation("theme-selector");
   const backgroundImage = resolveThemeBackgroundImage(themeName);
   const isAnimated = themeName === "galaksi-girdabi" || themeName === "su-dalgasi" || themeName === "hilal-gecesi";
   const gradient = tokens.bgGradient;
@@ -54,7 +56,7 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
   return (
     <View className="items-center">
       <Text className="mb-2 text-xs font-semibold uppercase tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
-        Önizleme
+        {t("theme-selector:previewCard.preview")}
       </Text>
 
       <View className="w-full rounded-[24px] border-2 border-dashed p-5" style={{ borderColor: withAlpha(tokens.accent, 0.4), backgroundColor: tokens.card, overflow: "hidden" }}>
@@ -132,12 +134,12 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
           }}
         >
           <Text className="mb-1 text-xs font-semibold uppercase tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
-            Zikir Detayı
+            {t("theme-selector:previewCard.dhikrDetail")}
           </Text>
           <View className="mt-3 gap-2">
-            <PreviewDhikrBlock title="Okunuş" value={PREVIEW_TRANSLITERATION} tokens={tokens} regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
-            <PreviewDhikrBlock title="Anlam" value={PREVIEW_MEANING} tokens={tokens} muted regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
-            <PreviewDhikrBlock title="Arapça" value={PREVIEW_ARABIC} tokens={tokens} arabic regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
+            <PreviewDhikrBlock title={t("components:dhikrContentStack.transliteration")} value={PREVIEW_TRANSLITERATION} tokens={tokens} regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
+            <PreviewDhikrBlock title={t("components:dhikrContentStack.meaning")} value={PREVIEW_MEANING} tokens={tokens} muted regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
+            <PreviewDhikrBlock title={t("components:dhikrContentStack.arabic")} value={PREVIEW_ARABIC} tokens={tokens} arabic regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
           </View>
         </View>
       </View>

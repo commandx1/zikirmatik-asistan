@@ -1,0 +1,9 @@
+{
+  "errors": {
+    "logActionFailed": "Zikir log işlemi başarısız oldu.",
+    "listFailed": "Zikir listesi alınamadı.",
+    "actionFailed": "Kullanıcı zikri işlemi başarısız oldu.",
+    "syncFailed": "Zikir verisi senkronize edilemedi.",
+    "serverUnreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin."
+  }
+}

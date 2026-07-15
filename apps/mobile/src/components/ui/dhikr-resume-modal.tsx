@@ -1,5 +1,6 @@
 import { useThemeTokens } from '@zikirmatik/ui'
 import { Modal, Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   visible: boolean
@@ -12,11 +13,12 @@ type Props = {
 
 export function DhikrResumeModal({ visible, dhikrName, currentCount, onContinue, onFresh, onCancel }: Props) {
   const { tokens } = useThemeTokens()
+  const { t } = useTranslation('components')
 
   const message =
     currentCount > 0
-      ? `"${dhikrName}" için ${currentCount} adet sayım mevcut.`
-      : `"${dhikrName}" şu an aktif seçili.`
+      ? t('components:dhikrResumeModal.messageWithCount', { name: dhikrName, count: currentCount })
+      : t('components:dhikrResumeModal.messageActive', { name: dhikrName })
 
   return (
     <Modal visible={visible} transparent animationType='fade' onRequestClose={onCancel}>
@@ -30,7 +32,7 @@ export function DhikrResumeModal({ visible, dhikrName, currentCount, onContinue,
           }}
         >
           <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
-            Nasıl devam etmek istersin?
+            {t('components:dhikrResumeModal.title')}
           </Text>
           <Text className='mb-5 text-sm leading-5' style={{ color: tokens.textMuted }}>
             {message}
@@ -46,7 +48,7 @@ export function DhikrResumeModal({ visible, dhikrName, currentCount, onContinue,
               }}
             >
               <Text className='text-sm font-semibold' style={{ color: tokens.accent }}>
-                Kaldığı Yerden Devam Et
+                {t('components:dhikrResumeModal.continue')}
               </Text>
             </Pressable>
 
@@ -59,13 +61,13 @@ export function DhikrResumeModal({ visible, dhikrName, currentCount, onContinue,
               }}
             >
               <Text className='text-sm font-semibold' style={{ color: tokens.textPrimary }}>
-                Sıfırdan Başla
+                {t('components:dhikrResumeModal.fresh')}
               </Text>
             </Pressable>
 
             <Pressable onPress={onCancel} className='h-10 items-center justify-center rounded-full px-4'>
               <Text className='text-sm font-medium' style={{ color: tokens.textMuted }}>
-                İptal
+                {t('components:dhikrResumeModal.cancel')}
               </Text>
             </Pressable>
           </View>

@@ -8,14 +8,5 @@ export function validateEnv(config: Record<string, unknown>) {
     );
   }
 
-  if (
-    typeof config.COLLECT_API_KEY !== 'string' ||
-    config.COLLECT_API_KEY.trim().length === 0
-  ) {
-    throw new Error(
-      'COLLECT_API_KEY ortam değişkeni zorunludur. apps/api/.env dosyasını kontrol et.',
-    );
-  }
-
   return config;
 }

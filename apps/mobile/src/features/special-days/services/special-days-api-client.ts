@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 
 export type SpecialDayType = "kandil" | "ramazan" | "bayram" | "özel gün";
 
@@ -179,7 +180,7 @@ async function requestJson<TResponse>(
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "Özel gün verisi alınamadı.");
+      const message = extractErrorMessage(data, i18n.t("special-days:errors.fetchFailed"));
       throw new SpecialDaysApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
     }
 
@@ -189,7 +190,7 @@ async function requestJson<TResponse>(
       throw error;
     }
 
-    throw new SpecialDaysApiError("transient", "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.");
+    throw new SpecialDaysApiError("transient", i18n.t("special-days:errors.serverUnreachable"));
   }
 }
 

@@ -1,12 +1,26 @@
 import { toDateKey } from "@zikirmatik/shared";
 
-// Maps a dhikr item's human-facing activity label ("Bugün 14:30", "Dün …",
-// "9.7.2026 …") to a YYYY-MM-DD date key. Shared by the local stats summary
-// and the streak reminder scheduler so both agree on "active day" semantics.
+// Resolves a dhikr item's "active day" to a YYYY-MM-DD date key. Shared by
+// the local stats summary, local badges, and the streak reminder scheduler
+// so all three agree on "active day" semantics.
+//
+// Primary source of truth is the locale-independent `lastActivityAt` ISO
+// timestamp. Falls back to string-matching the (legacy, Turkish-only)
+// `lastActivityLabel` prefixes ("Bugün"/"Dün"/"d.m.yyyy") only for items
+// persisted before `lastActivityAt` existed — the zustand persist store has
+// no migration step, so old items simply lack the field and must degrade
+// gracefully here rather than break.
 export function resolveActivityDateKey(
-  item: { lastActivityLabel?: string },
+  item: { lastActivityLabel?: string; lastActivityAt?: string },
   today: Date
 ): string | null {
+  if (item.lastActivityAt) {
+    const parsed = new Date(item.lastActivityAt);
+    if (!Number.isNaN(parsed.getTime())) {
+      return toDateKey(new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()));
+    }
+  }
+
   const label = item.lastActivityLabel?.trim();
   if (!label) {
     return null;

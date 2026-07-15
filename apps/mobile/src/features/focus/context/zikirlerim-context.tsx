@@ -1,7 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from "react";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { i18n } from "../../../i18n";
 import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
+import { useProfileStore } from "../../../store/profile-store";
+import { toIntlLocale } from "../../../lib/locale-format";
 import {
   createDhikrLog,
   deleteDhikrLogsByKey,
@@ -56,17 +60,17 @@ type ZikirlerimContextValue = {
 
 const ZikirlerimContext = createContext<ZikirlerimContextValue | null>(null);
 
-const FILTERS: Array<{ key: ZikirFilterKey; label: string }> = [
-  { key: "all", label: "Tümü" },
-  { key: "active", label: "Aktif" },
-  { key: "completed", label: "Tamamlanan" },
-  { key: "favorites", label: "Favoriler" }
-];
-
 type PendingFocusTransition = { kind: "select"; id: string } | { kind: "startHome"; id: string };
 
 export function ZikirlerimProvider({ children }: PropsWithChildren) {
+  const { t } = useTranslation("focus");
   const router = useRouter();
+  const FILTERS: Array<{ key: ZikirFilterKey; label: string }> = [
+    { key: "all", label: t("focus:filters.all") },
+    { key: "active", label: t("focus:filters.active") },
+    { key: "completed", label: t("focus:filters.completed") },
+    { key: "favorites", label: t("focus:filters.favorites") }
+  ];
   const [activeFilter, setActiveFilter] = useState<ZikirFilterKey>("all");
   const items = useDhikrStore((state) => state.items);
   const selectedDhikrId = useDhikrStore((state) => state.selectedDhikrId);
@@ -231,9 +235,9 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       nextItems.push({
         id: dhikrId,
         source: matched?.source ?? "personal",
-        nameTurkish: matched?.nameTurkish ?? latestLog.customDhikrName ?? matched?.transliteration ?? "Kayıtlı Zikir",
+        nameTurkish: matched?.nameTurkish ?? latestLog.customDhikrName ?? matched?.transliteration ?? t("focus:fallback.savedDhikr"),
         arabic: matched?.arabic ?? latestLog.customDhikrArabic,
-        transliteration: matched?.transliteration ?? latestLog.customDhikrName ?? "Kayıtlı Zikir",
+        transliteration: matched?.transliteration ?? latestLog.customDhikrName ?? t("focus:fallback.savedDhikr"),
         meaning: matched?.meaning,
         virtue: matched?.virtue,
         contentSource: matched?.contentSource,
@@ -357,7 +361,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
           lastActivityLabel: previousSnapshot.lastActivityLabel,
           isFavorite: previousSnapshot.isFavorite
         });
-        setUpdateError("Zikir güncellenemedi. Lütfen tekrar dene.");
+        setUpdateError(t("focus:errors.dhikrUpdateFailed"));
       } finally {
         setIsUpdatingDhikr(false);
       }
@@ -402,7 +406,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     }
 
     if (authStatus !== "authenticated" || !sessionUserId) {
-      const message = "Kaydetmek için giriş yapmalısın.";
+      const message = t("focus:errors.loginRequiredToSave");
       setSyncError(message);
       setUnsavedTransitionError(message);
       return false;
@@ -442,7 +446,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       applySavedBackendLog(savedLog);
       return true;
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Zikir kaydı kaydedilemedi.";
+      const message = error instanceof Error ? error.message : t("focus:errors.dhikrLogSaveFailed");
       setSyncError(message);
       setUnsavedTransitionError(message);
       return false;
@@ -547,7 +551,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     unsavedTransitionDhikrName:
       items.find((item) => item.id === selectedDhikrId)?.nameTurkish ||
       items.find((item) => item.id === selectedDhikrId)?.transliteration ||
-      "Bu zikir",
+      t("focus:fallback.thisDhikr"),
     unsavedTransitionCount: items.find((item) => item.id === selectedDhikrId)?.current ?? 0,
     unsavedTransitionError,
     isRefreshing,
@@ -736,7 +740,7 @@ function toLastActivityLabel(createdAt: string | undefined, dateKey: string) {
   const fromCreatedAt = createdAt ? new Date(createdAt) : null;
   const date = fromCreatedAt && !Number.isNaN(fromCreatedAt.getTime()) ? fromCreatedAt : parseDateKey(dateKey);
   if (!date) {
-    return "Kayıtlı";
+    return i18n.t("focus:relativeDate.saved");
   }
 
   return toRelativeDateLabel(date);
@@ -752,14 +756,14 @@ function toRelativeDateLabel(value: Date) {
   const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
 
   if (normalized.getTime() === today.getTime()) {
-    return "Bugün";
+    return i18n.t("focus:relativeDate.today");
   }
 
   if (normalized.getTime() === yesterday.getTime()) {
-    return "Dün";
+    return i18n.t("focus:relativeDate.yesterday");
   }
 
-  return normalized.toLocaleDateString("tr-TR");
+  return normalized.toLocaleDateString(toIntlLocale(useProfileStore.getState().locale));
 }
 
 function parseDateKey(dateKey: string) {

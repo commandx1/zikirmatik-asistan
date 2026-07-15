@@ -1,17 +1,14 @@
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useProfileStore } from "./profile-store";
 
 type OnboardingState = {
   hasHydrated: boolean;
   purpose: string;
-  city: string;
   isTourCompleted: boolean;
   resetOnboarding: () => void;
   setPurpose: (purpose: string) => void;
-  setCity: (city: string) => void;
-  applyBackendSnapshot: (payload: { purpose?: string; city?: string }) => void;
+  applyBackendSnapshot: (payload: { purpose?: string }) => void;
   markHydrated: () => void;
   completeTour: () => void;
   resetTour: () => void;
@@ -46,26 +43,17 @@ export const useOnboardingStore = create<OnboardingState>()(
     (set) => ({
       hasHydrated: false,
       purpose: "habit",
-      city: "",
       isTourCompleted: false,
       resetOnboarding: () =>
         set({
-          purpose: "habit",
-          city: ""
+          purpose: "habit"
         }),
       setPurpose: (purpose) => set({ purpose }),
-      setCity: (city) => {
-        const nextCity = city.trim();
-        set({ city: nextCity });
-        useProfileStore.getState().setCity(nextCity);
-      },
-      applyBackendSnapshot: ({ purpose, city }) =>
+      applyBackendSnapshot: ({ purpose }) =>
         set((state) => {
           const nextPurpose = purpose?.trim() || state.purpose || "habit";
-          const nextCity = city?.trim() ?? state.city;
           return {
-            purpose: nextPurpose,
-            city: nextCity
+            purpose: nextPurpose
           };
         }),
       markHydrated: () => set({ hasHydrated: true }),
@@ -77,7 +65,6 @@ export const useOnboardingStore = create<OnboardingState>()(
       storage: createJSONStorage(() => safeAsyncStorage),
       partialize: (state) => ({
         purpose: state.purpose,
-        city: state.city,
         isTourCompleted: state.isTourCompleted
       }),
       onRehydrateStorage: () => (state) => {

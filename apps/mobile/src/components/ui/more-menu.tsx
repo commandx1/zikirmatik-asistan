@@ -3,6 +3,7 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -21,6 +22,7 @@ type MoreMenuProps = {
 export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
   const router = useRouter();
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("components");
 
   const backdrop = useSharedValue(0);
   const animIstatistik = useSharedValue(0);
@@ -80,7 +82,7 @@ export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
             style={[styles.card, { backgroundColor: tokens.card, borderColor: "rgba(255,255,255,0.09)" }]}
           >
             <FontAwesome6 name="chart-line" size={15} color={tokens.accent} iconStyle="solid" />
-            <Text className="text-base font-semibold" style={{ color: tokens.textPrimary }}>İstatistik</Text>
+            <Text className="text-base font-semibold" style={{ color: tokens.textPrimary }}>{t("components:moreMenu.stats")}</Text>
           </Pressable>
         </Animated.View>
 
@@ -90,7 +92,7 @@ export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
             style={[styles.card, { backgroundColor: tokens.card, borderColor: "rgba(255,255,255,0.09)" }]}
           >
             <FontAwesome6 name="book-open" size={15} color={tokens.accent} iconStyle="solid" />
-            <Text className="text-base font-semibold" style={{ color: tokens.textPrimary }}>Koleksiyonlar</Text>
+            <Text className="text-base font-semibold" style={{ color: tokens.textPrimary }}>{t("components:moreMenu.collections")}</Text>
           </Pressable>
         </Animated.View>
 
@@ -100,7 +102,7 @@ export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
             style={[styles.card, { backgroundColor: tokens.card, borderColor: "rgba(255,255,255,0.09)" }]}
           >
             <FontAwesome6 name="user" size={15} color={tokens.accent} iconStyle="regular" />
-            <Text className="text-base font-semibold" style={{ color: tokens.textPrimary }}>Profil</Text>
+            <Text className="text-base font-semibold" style={{ color: tokens.textPrimary }}>{t("components:moreMenu.profile")}</Text>
           </Pressable>
         </Animated.View>
       </View>

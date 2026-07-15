@@ -1,0 +1,79 @@
+{
+  "editModal": {
+    "title": "Zikri Güncelle",
+    "description": "Zikir adını, okunuşunu, anlamını ve hedefini güncelleyebilirsin.",
+    "submitLabel": "Güncelle",
+    "savingLabel": "Güncelleniyor"
+  },
+  "createModal": {
+    "title": "Yeni Zikir",
+    "description": "Kendi zikrini ekle ve Ana Sayfa sayacında başlat.",
+    "submitLabel": "Kaydet",
+    "savingLabel": "Kaydediliyor"
+  },
+  "form": {
+    "nameLabel": "Zikir adı",
+    "namePlaceholder": "Örn. Salavat",
+    "transliterationLabel": "Okunuş (opsiyonel)",
+    "transliterationPlaceholder": "Örn. Allahumme salli ala Muhammed",
+    "meaningLabel": "Anlamı (opsiyonel)",
+    "meaningPlaceholder": "Örn. Allah'ım Muhammed'e salat et",
+    "targetLabel": "Hedef",
+    "targetPlaceholder": "0 = sınırsız",
+    "errors": {
+      "nameRequired": "Zikir adı zorunlu.",
+      "targetInvalid": "Hedef 0 veya daha büyük olmalı."
+    }
+  },
+  "filters": {
+    "all": "Tümü",
+    "active": "Aktif",
+    "completed": "Tamamlanan",
+    "favorites": "Favoriler"
+  },
+  "header": {
+    "title": "Zikirlerim"
+  },
+  "list": {
+    "empty": "Bu filtrede zikir bulunamadı."
+  },
+  "card": {
+    "meaning": "Anlam",
+    "virtue": "Fazilet",
+    "source": "Kaynak",
+    "assistantNote": "Asistan Notu",
+    "favorited": "Favoride",
+    "addToFavorites": "Favoriye Ekle",
+    "updating": "Güncelleniyor",
+    "update": "Güncelle",
+    "deleting": "Siliniyor",
+    "delete": "Sil",
+    "streakDays": "{{count}} gün",
+    "detail": "Detay",
+    "assistant": "Asistan",
+    "start": "Başlat",
+    "deleteModal": {
+      "title": "Zikri Sil",
+      "message": "Bu zikri Zikirlerim listesinden kaldırmak istediğine emin misin?",
+      "confirmLabel": "Sil",
+      "cancelLabel": "Vazgeç"
+    }
+  },
+  "relativeDate": {
+    "saved": "Kayıtlı",
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "notStarted": "Henüz başlanmadı",
+    "todayAt": "Bugün {{time}}"
+  },
+  "fallback": {
+    "savedDhikr": "Kayıtlı Zikir",
+    "thisDhikr": "Bu zikir"
+  },
+  "errors": {
+    "dhikrUpdateFailed": "Zikir güncellenemedi. Lütfen tekrar dene.",
+    "loginRequiredToSave": "Kaydetmek için giriş yapmalısın.",
+    "dhikrLogSaveFailed": "Zikir kaydı kaydedilemedi.",
+    "dhikrSaveFailed": "Zikir kaydedilemedi. Lütfen tekrar dene."
+  }
+}

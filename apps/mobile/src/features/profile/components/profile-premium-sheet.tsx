@@ -1,6 +1,7 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 
 type CreditTopupItem = {
@@ -51,6 +52,7 @@ export function ProfilePremiumSheet({
   onPurchaseTopup
 }: ProfilePremiumSheetProps) {
   const { fontFamily } = useThemePreferences()
+  const { t } = useTranslation('profile')
   const insets = useSafeAreaInsets()
   const MONTHLY_PRICE = 59.99
   const YEARLY_PRICE = 479.99
@@ -95,19 +97,19 @@ export function ProfilePremiumSheet({
               <FontAwesome6 name='crown' size={24} color='#0F1B2D' />
             </View>
             <Text className='mb-2 text-2xl font-bold text-[--text-primary]' style={strongTextStyle}>
-              Premium'a Geç
+              {t('profile:premiumSheet.title')}
             </Text>
             <Text className='text-center text-base text-[--text-muted]' style={regularTextStyle}>
-              Manevi yolculuğunuzu Asistan destekli rehberlik ve özel içeriklerle derinleştirin.
+              {t('profile:premiumSheet.subtitle')}
             </Text>
           </View>
 
           <View className='mb-8 gap-4'>
-            <BenefitItem title='AI Rehber Kredileri' description='Aylık 50 kredi + ihtiyaç halinde kredi paketi satın alma desteği.' />
-            <BenefitItem title='Tüm Koleksiyonlar' description="Hısnu\'l-Muslim ve tüm dua koleksiyonlarına tam erişim." />
-            <BenefitItem title='Detaylı İstatistikler' description='Isı haritası, dönem karşılaştırması ve daha fazlasıyla ilerlemeni derinlemesine takip et.' />
-            <BenefitItem title='Tüm Özel Günler' description='Kandil ve bayramların yanı sıra tüm özel günlerin içeriğine eriş.' />
-            <BenefitItem title='Tüm Temalar' description='Bütün temaları hiçbir kısıtlama olmadan kullan.' />
+            <BenefitItem title={t('profile:premiumSheet.benefits.aiCredits.title')} description={t('profile:premiumSheet.benefits.aiCredits.description')} />
+            <BenefitItem title={t('profile:premiumSheet.benefits.collections.title')} description={t('profile:premiumSheet.benefits.collections.description')} />
+            <BenefitItem title={t('profile:premiumSheet.benefits.stats.title')} description={t('profile:premiumSheet.benefits.stats.description')} />
+            <BenefitItem title={t('profile:premiumSheet.benefits.specialDays.title')} description={t('profile:premiumSheet.benefits.specialDays.description')} />
+            <BenefitItem title={t('profile:premiumSheet.benefits.themes.title')} description={t('profile:premiumSheet.benefits.themes.description')} />
           </View>
 
           <View className='mb-6 flex-row rounded-xl border border-white/5 bg-[--bg] p-1'>
@@ -122,7 +124,7 @@ export function ProfilePremiumSheet({
                 }`}
                 style={strongTextStyle}
               >
-                {`Aylık (₺${MONTHLY_PRICE})`}
+                {t('profile:premiumSheet.monthlyPlan', { price: MONTHLY_PRICE })}
               </Text>
             </Pressable>
             <Pressable
@@ -136,13 +138,13 @@ export function ProfilePremiumSheet({
                 }`}
                 style={strongTextStyle}
               >
-                {`Yıllık (₺${YEARLY_PRICE}) `}
+                {t('profile:premiumSheet.yearlyPlan', { price: YEARLY_PRICE })}
               </Text>
             </Pressable>
           </View>
 
           <Text className='mb-3 text-center text-xs text-[--text-muted]' style={regularTextStyle}>
-            Aylık 50 kredi her ay yenilenir; kullanılmayan krediler sonraki aya devretmez.
+            {t('profile:premiumSheet.creditsRenewNote')}
           </Text>
 
           {error ? <Text className='mb-3 text-center text-sm text-[#fca5a5]'>{error}</Text> : null}
@@ -153,7 +155,7 @@ export function ProfilePremiumSheet({
             className={`mb-3 rounded-xl bg-[--accent] py-4 ${isActivating ? 'opacity-60' : ''}`}
           >
             <Text className='text-center text-lg font-bold text-[#0F1B2D]' style={strongTextStyle}>
-              {isActivating ? 'Aktifleştiriliyor...' : 'Hemen Başla'}
+              {isActivating ? t('profile:premiumSheet.activating') : t('profile:premiumSheet.startButton')}
             </Text>
           </Pressable>
 
@@ -162,13 +164,13 @@ export function ProfilePremiumSheet({
               <View className='mb-4 flex-row items-center gap-3'>
                 <View className='h-px flex-1 bg-white/10' />
                 <Text className='text-xs font-semibold uppercase text-[--text-muted]' style={strongTextStyle}>
-                  veya kredi paketi al
+                  {t('profile:premiumSheet.orBuyCredits')}
                 </Text>
                 <View className='h-px flex-1 bg-white/10' />
               </View>
 
               <Text className='mb-2 text-center text-xs text-[--text-muted]' style={regularTextStyle}>
-                Satın aldığın krediler sana kalır, hiçbir zaman silinmez.
+                {t('profile:premiumSheet.creditsKeptNote')}
               </Text>
 
               <View className='gap-2'>
@@ -188,11 +190,11 @@ export function ProfilePremiumSheet({
                           <FontAwesome6 name='bolt' size={14} color='#C8972A' />
                         </View>
                         <Text className='text-base font-semibold text-[--text-primary]' style={strongTextStyle}>
-                          {`${item.credits} Kredi`}
+                          {t('profile:premiumSheet.creditsLabel', { count: item.credits })}
                         </Text>
                       </View>
                       <Text className='text-base font-bold text-[--accent]' style={strongTextStyle}>
-                        {isPurchasing ? 'Alınıyor...' : item.priceString}
+                        {isPurchasing ? t('profile:premiumSheet.purchasing') : item.priceString}
                       </Text>
                     </Pressable>
                   )
@@ -208,12 +210,12 @@ export function ProfilePremiumSheet({
           ) : null}
 
           <Text className='mb-2 text-center text-xs text-[--text-muted]/70' style={regularTextStyle}>
-            Günlük 1 ücretsiz kredin her gün yenilenir.
+            {t('profile:premiumSheet.dailyFreeCreditNote')}
           </Text>
 
           <Pressable onPress={onClose} className='py-2'>
             <Text className='text-center text-sm font-medium text-[--text-muted]' style={regularTextStyle}>
-              Belki Daha Sonra
+              {t('profile:premiumSheet.maybeLater')}
             </Text>
           </Pressable>
         </ScrollView>

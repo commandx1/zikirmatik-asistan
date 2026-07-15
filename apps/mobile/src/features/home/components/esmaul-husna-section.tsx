@@ -1,6 +1,7 @@
 import { useThemeTokens } from '@zikirmatik/ui'
 import { useMemo } from 'react'
 import { Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ESMAUL_HUSNA } from '../../focus/data'
 import type { EsmaulHusnaItem } from '../../focus/types'
 
@@ -16,6 +17,7 @@ type EsmaulHusnaSectionProps = {
 }
 
 export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, onSelect }: EsmaulHusnaSectionProps) {
+  const { t } = useTranslation('home')
   const { tokens } = useThemeTokens()
 
   const rows = useMemo(() =>
@@ -42,7 +44,7 @@ export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, 
         }}
       >
         <Text className='mb-3 text-xs font-semibold uppercase tracking-[1.1px]' style={{ color: tokens.textMuted }}>
-          Esmaül Hüsna
+          {t('home:esmaulHusnaSection.title')}
         </Text>
         <View className='overflow-hidden rounded-xl' style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.1) }}>
           {rows.map((row, rowIndex) => {

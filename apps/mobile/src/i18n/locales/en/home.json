@@ -1,0 +1,88 @@
+{
+  "topBar": {
+    "title": "Zikirmatik Guide",
+    "subtitle": "{{greeting}} • Streak {{streak}}"
+  },
+  "greeting": "Hi, {{name}}",
+  "defaultName": "friend",
+  "streakLabel": "{{count}} days",
+  "selectedSource": {
+    "myDhikrs": "Source: My Dhikrs",
+    "ready": "Source: Ready-made",
+    "free": "Free Dhikr"
+  },
+  "lastActivity": {
+    "notStarted": "Not started yet"
+  },
+  "freeMode": {
+    "label": "Free",
+    "button": "Free Mode"
+  },
+  "selectedDhikrMeaning": {
+    "title": "Dhikr Detail",
+    "titleLabel": "Title"
+  },
+  "targetModal": {
+    "title": "Set a new target",
+    "placeholder": "Target count"
+  },
+  "targetDowngradeModal": {
+    "title": "Your count will be trimmed",
+    "bodyPart1": "Your current count is",
+    "bodyPart2": ". Once the new target of",
+    "bodyPart3": "is applied, your count will be reduced to",
+    "bodyPart4": ".",
+    "applyAnyway": "Apply Anyway"
+  },
+  "freeSaveNameModal": {
+    "title": "Save Dhikr",
+    "description": "Write a name to save the dhikr you counted freely.",
+    "namePlaceholder": "e.g. Silent tasbih",
+    "transliterationLabel": "Transliteration (optional)",
+    "transliterationPlaceholder": "e.g. Allahumma salli ala Muhammad",
+    "meaningLabel": "Meaning (optional)",
+    "meaningPlaceholder": "e.g. O Allah, send blessings upon Muhammad",
+    "targetLabel": "Target (optional)",
+    "targetPlaceholder": "Leave blank for unlimited"
+  },
+  "toast": {
+    "tapAnywhere": "You can count by tapping anywhere on the screen",
+    "tapCircleOnly": "Only counts when you tap the circle"
+  },
+  "resetModal": {
+    "title": "Reset Counter",
+    "message": "Your {{name}} counter will be reset. This action cannot be undone.",
+    "confirmLabel": "Reset",
+    "cancelLabel": "Cancel",
+    "defaultDhikrName": "Dhikr"
+  },
+  "dailyEsmaWelcomeModal": {
+    "title": "Welcome",
+    "subtitle": "We've suggested 3 of the Beautiful Names for you today.",
+    "start": "Start",
+    "later": "Later",
+    "showAll": "View All"
+  },
+  "esmaulHusnaSection": {
+    "title": "The 99 Names of Allah"
+  },
+  "errors": {
+    "loginRequiredToSave": "You need to sign in to save.",
+    "loginRequiredToSavePermanently": "You need to sign in to save permanently.",
+    "dhikrLogSaveFailed": "Couldn't save the dhikr log.",
+    "dhikrUpdateFailed": "Couldn't update the dhikr. Please try again.",
+    "esmaDhikrNotFound": "Couldn't find that Beautiful Name dhikr.",
+    "nameRequired": "Dhikr name is required.",
+    "targetInvalid": "The target must be 1 or greater if set.",
+    "dhikrSyncFailed": "Couldn't sync the dhikr log."
+  },
+  "streakReminder": {
+    "title": "Your streak is waiting 🔥",
+    "body": "Don't let your {{streak}}-day streak end, one dhikr is enough.",
+    "channelName": "Streak Reminder"
+  },
+  "streaksApi": {
+    "fetchFailed": "Couldn't fetch streak data.",
+    "unreachable": "Can't reach the server. Please try again."
+  }
+}

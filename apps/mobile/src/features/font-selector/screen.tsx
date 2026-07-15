@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { AppFontFamily } from "../../store/theme-store";
 import { BottomActionFooter } from "../../components/ui/bottom-action-footer";
@@ -45,6 +46,7 @@ const OPTIONS: Array<{
 ];
 
 export function FontSelectorScreen() {
+  const { t } = useTranslation("font-selector");
   const router = useRouter();
   const { tokens, themeName } = useThemeTokens();
   const { fontFamily, setFontFamily } = useThemePreferences();
@@ -60,8 +62,8 @@ export function FontSelectorScreen() {
     <PageLayout>
       <View className="flex-1 w-full">
         <PageHeader
-          title="Yazı Tipi"
-          subtitle="Uygulama yazı tipini belirle"
+          title={t("font-selector:screen.title")}
+          subtitle={t("font-selector:screen.subtitle")}
           leftIconName="chevron-left"
           onPressLeft={() => {
             router.back();
@@ -111,7 +113,7 @@ export function FontSelectorScreen() {
         <BottomActionFooter>
           {hasChanges ? (
             <PrimaryCtaButton
-              label="Değişiklikleri Kaydet"
+              label={t("font-selector:screen.saveChanges")}
               onPress={() => setFontFamily(draftFontFamily)}
               textClassName="text-base"
             />

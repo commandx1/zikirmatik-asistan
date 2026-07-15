@@ -2,6 +2,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { useThemeTokens } from '@zikirmatik/ui'
 import type { ThemeTokens } from '@zikirmatik/shared'
@@ -78,6 +79,7 @@ function ProgressRing({ progress, accent, trackColor }: { progress: number; acce
 }
 
 export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnRef, resetBtnRef, saveBtnRef }: AppleWatchProps = {}) {
+  const { t } = useTranslation('home')
   const router = useRouter()
   const [isResetConfirmVisible, setIsResetConfirmVisible] = useState(false)
   const { tokens: activeTokens, themeName } = useThemeTokens()
@@ -160,8 +162,8 @@ export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnR
   const compactTarget = home.target > 0 ? String(home.target) : '0'
   const strongTextStyle = useMemo(() => resolveStrongTextStyle(fontFamily), [fontFamily])
   const resetDhikrName = useMemo(
-    () => home.mainDhikr.nameTurkish.trim() || home.activeQuickDhikr.trim() || 'Zikir',
-    [home.activeQuickDhikr, home.mainDhikr.nameTurkish]
+    () => home.mainDhikr.nameTurkish.trim() || home.activeQuickDhikr.trim() || t('home:resetModal.defaultDhikrName'),
+    [home.activeQuickDhikr, home.mainDhikr.nameTurkish, t]
   )
 
   const onResetConfirmPress = () => setIsResetConfirmVisible(true)
@@ -314,10 +316,10 @@ export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnR
 
       <ConfirmModal
         visible={isResetConfirmVisible}
-        title='Sayacı Sıfırla'
-        message={`${resetDhikrName} sayacınız sıfırlanacak. Bu işlem geri alınamaz.`}
-        confirmLabel='Sıfırla'
-        cancelLabel='Vazgeç'
+        title={t('home:resetModal.title')}
+        message={t('home:resetModal.message', { name: resetDhikrName })}
+        confirmLabel={t('home:resetModal.confirmLabel')}
+        cancelLabel={t('home:resetModal.cancelLabel')}
         destructive
         onConfirm={() => {
           setIsResetConfirmVisible(false)

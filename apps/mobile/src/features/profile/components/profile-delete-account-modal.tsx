@@ -1,14 +1,15 @@
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 const DANGER_COLOR = "#ef4444";
 
-const LOST_DATA_ITEMS = [
-  "Tüm zikir geçmişin ve istatistiklerin",
-  "Kişisel zikirklerin",
-  "Profil bilgilerin",
-  "Abonelik kaydın",
-  "AI Rehber tavsiye geçmişin"
-];
+const LOST_DATA_ITEM_KEYS = [
+  "profile:deleteAccountModal.items.history",
+  "profile:deleteAccountModal.items.customDhikrs",
+  "profile:deleteAccountModal.items.profileInfo",
+  "profile:deleteAccountModal.items.subscription",
+  "profile:deleteAccountModal.items.aiHistory"
+] as const;
 
 type ProfileDeleteAccountModalProps = {
   visible: boolean;
@@ -23,6 +24,8 @@ export function ProfileDeleteAccountModal({
   onConfirm,
   onCancel
 }: ProfileDeleteAccountModalProps) {
+  const { t } = useTranslation("profile");
+
   if (!visible) {
     return null;
   }
@@ -38,20 +41,20 @@ export function ProfileDeleteAccountModal({
           style={{ backgroundColor: `${DANGER_COLOR}18`, borderWidth: 1, borderColor: `${DANGER_COLOR}40` }}
         >
           <Text className="text-sm font-medium" style={{ color: DANGER_COLOR }}>
-            ⚠️  Bu işlem geri alınamaz
+            {t("profile:deleteAccountModal.warning")}
           </Text>
         </View>
 
-        <Text className="text-xl font-semibold text-[--text-primary]">Hesabını Sil</Text>
+        <Text className="text-xl font-semibold text-[--text-primary]">{t("profile:deleteAccountModal.title")}</Text>
         <Text className="mt-1 text-sm text-[--text-muted]">
-          Hesabını silersen aşağıdaki veriler kalıcı olarak silinir:
+          {t("profile:deleteAccountModal.description")}
         </Text>
 
         <View className="mt-3 gap-1.5">
-          {LOST_DATA_ITEMS.map((item) => (
-            <View key={item} className="flex-row items-center gap-2">
+          {LOST_DATA_ITEM_KEYS.map((key) => (
+            <View key={key} className="flex-row items-center gap-2">
               <View className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: DANGER_COLOR }} />
-              <Text className="text-sm text-[--text-muted]">{item}</Text>
+              <Text className="text-sm text-[--text-muted]">{t(key)}</Text>
             </View>
           ))}
         </View>
@@ -67,7 +70,7 @@ export function ProfileDeleteAccountModal({
               <ActivityIndicator size="small" color={DANGER_COLOR} />
             ) : (
               <Text className="text-sm font-semibold" style={{ color: DANGER_COLOR }}>
-                Hesabı Kalıcı Olarak Sil
+                {t("profile:deleteAccountModal.confirmButton")}
               </Text>
             )}
           </Pressable>
@@ -76,7 +79,7 @@ export function ProfileDeleteAccountModal({
             disabled={isDeleting}
             className={`h-11 items-center justify-center rounded-2xl ${isDeleting ? "opacity-50" : ""}`}
           >
-            <Text className="text-sm font-medium text-[--text-muted]">İptal</Text>
+            <Text className="text-sm font-medium text-[--text-muted]">{t("profile:deleteAccountModal.cancelButton")}</Text>
           </Pressable>
         </View>
       </View>

@@ -1,0 +1,9 @@
+{
+  "errors": {
+    "logActionFailed": "Dhikr log action failed.",
+    "listFailed": "Failed to fetch dhikr list.",
+    "actionFailed": "User dhikr action failed.",
+    "syncFailed": "Failed to sync dhikr data.",
+    "serverUnreachable": "Cannot reach the server. Please try again."
+  }
+}

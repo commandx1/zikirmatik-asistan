@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { toDateKey } from "@zikirmatik/shared";
+import { i18n } from "../../../i18n";
 import { calculateLocalCompletionStreak, resolveActivityDateKey } from "./local-streak";
 
 // Local "your streak is about to break" reminder. Fully device-local:
@@ -20,6 +21,7 @@ export type StreakReminderStatus = {
 type ActivityItem = {
   current: number;
   lastActivityLabel?: string;
+  lastActivityAt?: string;
 };
 
 // Mirrors buildLocalStatsSummary (use-stats.ts): items map to day keys via
@@ -123,8 +125,8 @@ async function runSync(input: {
 
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: "Streak'in seni bekliyor 🔥",
-      body: `${input.status.currentStreak} günlük serin bitmesin, bir zikir yeter.`,
+      title: i18n.t("home:streakReminder.title"),
+      body: i18n.t("home:streakReminder.body", { streak: input.status.currentStreak }),
       sound: Platform.OS === "ios" ? "default" : undefined,
       data: { kind: STREAK_REMINDER_KIND, route: STREAK_REMINDER_ROUTE }
     },
@@ -144,7 +146,7 @@ async function ensureAndroidChannel() {
   }
 
   await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
-    name: "Seri Hatırlatması",
+    name: i18n.t("home:streakReminder.channelName"),
     importance: Notifications.AndroidImportance.DEFAULT,
     vibrationPattern: [0, 200, 150, 200],
     lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC

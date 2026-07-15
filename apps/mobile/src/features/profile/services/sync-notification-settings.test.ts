@@ -22,6 +22,10 @@ vi.mock("./daily-reminder-notifications", () => ({
   syncDailyReminderNotification: (...args: unknown[]) => syncDailyReminderNotification(...args)
 }));
 
+vi.mock("../../../i18n", () => ({
+  i18n: { t: (key: string) => (key === "profile:errors.pushPrefsUpdateFailed" ? "Bildirim tercihi güncellenemedi. Lütfen tekrar dene." : key) }
+}));
+
 describe("runNotificationSettingsToggle", () => {
   beforeEach(() => {
     vi.resetModules();

@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ConfirmModal } from "../../components/ui/confirm-modal";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { ProfileHeader } from "./components/profile-header";
@@ -13,6 +14,7 @@ import { useProfile } from "./hooks/use-profile";
 export function ProfileScreen() {
   const profile = useProfile();
   const notificationSettings = useNotificationSettings();
+  const { t } = useTranslation(["profile", "common"]);
 
   return (
     <PageLayout>
@@ -35,6 +37,8 @@ export function ProfileScreen() {
             <ProfileSettingsSections
               reminderTime={profile.reminderTime}
               hapticsEnabled={profile.hapticsEnabled}
+              locale={profile.locale}
+              onChangeLocale={profile.setLocale}
               onPressTheme={profile.goThemeSelector}
               onPressFont={profile.goFontSelector}
               onPressReminderTime={profile.openReminderTimeModal}
@@ -83,17 +87,17 @@ export function ProfileScreen() {
         />
         <ConfirmModal
           visible={!!profile.feedbackError}
-          title="E-posta uygulaması açılamadı"
+          title={t("profile:feedbackErrorModal.title")}
           message={profile.feedbackError ?? ""}
-          confirmLabel="Tamam"
+          confirmLabel={t("common:actions.ok")}
           onConfirm={profile.clearFeedbackError}
           onCancel={profile.clearFeedbackError}
         />
         <ConfirmModal
           visible={!!notificationSettings.pushPrefsError}
-          title="Bildirim tercihi güncellenemedi"
+          title={t("profile:pushPrefsErrorModal.title")}
           message={notificationSettings.pushPrefsError ?? ""}
-          confirmLabel="Tamam"
+          confirmLabel={t("common:actions.ok")}
           onConfirm={notificationSettings.clearPushPrefsError}
           onCancel={notificationSettings.clearPushPrefsError}
         />

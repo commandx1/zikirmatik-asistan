@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { i18n, type SupportedLocale } from "../../../i18n";
 import { HERO_CARD, UPCOMING_DAYS } from "../data/special-days-content";
 import type {
   HeroCardViewModel,
@@ -12,6 +13,7 @@ import {
 } from "../services/special-days-api-client";
 import { useProfileStore } from "../../../store/profile-store";
 import { useAuthStore } from "../../../store/auth-store";
+import { toIntlLocale } from "../../../lib/locale-format";
 
 export function useSpecialDays() {
   const [heroCard, setHeroCard] = useState<HeroCardViewModel>(HERO_CARD);
@@ -43,7 +45,7 @@ export function useSpecialDays() {
           badge: response.hero.badge,
           title: response.hero.name,
           dateLabel: response.hero.dateLabel,
-          countdown: [{ value: String(days), label: "GÜN" }],
+          countdown: [{ value: String(days), label: i18n.t("special-days:countdown.dayUnit") }],
           remaining: formatDaysRemaining(days),
           isLocked: response.hero.isLocked,
           isTodaySpecial: response.hero.source === "today",
@@ -51,9 +53,9 @@ export function useSpecialDays() {
       }
 
       setTodayAction(response.action);
-      setUpcomingDays(response.upcoming.map(mapUpcomingDay));
+      setUpcomingDays(response.upcoming.map((item) => mapUpcomingDay(item, useProfileStore.getState().locale)));
     } catch (error) {
-      setError(error instanceof SpecialDaysApiError ? error.message : "Özel gün verisi alınamadı.");
+      setError(error instanceof SpecialDaysApiError ? error.message : i18n.t("special-days:errors.homeLoadFailed"));
     } finally {
       setIsLoading(false);
       setHasLoadedOnce(true);
@@ -80,25 +82,28 @@ export function useSpecialDays() {
   };
 }
 
-function mapUpcomingDay(item: BackendSpecialDayHomeItem & { remainingLabel: string }): UpcomingDayViewModel {
+function mapUpcomingDay(
+  item: BackendSpecialDayHomeItem & { remainingLabel: string },
+  locale: SupportedLocale,
+): UpcomingDayViewModel {
   const icon = item.type === "bayram" ? "mosque" : item.type === "ramazan" ? "star" : "moon";
   return {
     id: item.id,
     icon,
     title: item.name,
-    dateLabel: formatDayLabel(item.date),
+    dateLabel: formatDayLabel(item.date, locale),
     remaining: formatDaysRemaining(daysUntil(item.date)),
     isLocked: item.isLocked,
   };
 }
 
-function formatDayLabel(isoDate: string) {
+function formatDayLabel(isoDate: string, locale: SupportedLocale) {
   const date = new Date(`${isoDate}T00:00:00`);
   if (Number.isNaN(date.getTime())) {
     return isoDate;
   }
 
-  const formatter = new Intl.DateTimeFormat("tr-TR", {
+  const formatter = new Intl.DateTimeFormat(toIntlLocale(locale), {
     day: "numeric",
     month: "long",
   });
@@ -121,7 +126,7 @@ function daysUntil(isoDate: string): number {
 }
 
 function formatDaysRemaining(days: number): string {
-  if (days === 0) return "Bugün";
-  if (days === 1) return "1 gün";
-  return `${days} gün`;
+  if (days === 0) return i18n.t("special-days:remaining.today");
+  if (days === 1) return i18n.t("special-days:remaining.oneDay");
+  return i18n.t("special-days:remaining.days", { count: days });
 }

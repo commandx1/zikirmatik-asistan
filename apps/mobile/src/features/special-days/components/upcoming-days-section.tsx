@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { ThemedTag } from "../../../components/ui/themed-tag";
 import type { UpcomingDayViewModel } from "../types/view-model";
@@ -12,6 +13,7 @@ type UpcomingDaysSectionProps = {
 
 function UpcomingDayCard({ day, onPress }: { day: UpcomingDayViewModel; onPress: (id: string) => void }) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("special-days");
 
   return (
     <Pressable onPress={() => onPress(day.id)} disabled={day.isLocked}>
@@ -34,7 +36,7 @@ function UpcomingDayCard({ day, onPress }: { day: UpcomingDayViewModel; onPress:
         </View>
 
         <View className="mt-3 flex-row items-center justify-end">
-          <ThemedTag label={day.isLocked ? "Premium Kilidi" : day.remaining} className="bg-[--bg] px-3 py-[6px]" />
+          <ThemedTag label={day.isLocked ? t("special-days:upcoming.premiumLocked") : day.remaining} className="bg-[--bg] px-3 py-[6px]" />
         </View>
       </ThemedCard>
     </Pressable>
@@ -42,9 +44,10 @@ function UpcomingDayCard({ day, onPress }: { day: UpcomingDayViewModel; onPress:
 }
 
 export function UpcomingDaysSection({ days, onPressDay }: UpcomingDaysSectionProps) {
+  const { t } = useTranslation("special-days");
   return (
     <View className="gap-3">
-      <Text className="px-1 text-sm font-semibold text-[--text-primary]">Yaklaşan Günler</Text>
+      <Text className="px-1 text-sm font-semibold text-[--text-primary]">{t("special-days:upcoming.title")}</Text>
       <View className="gap-3">
         {days.map((day) => (
           <UpcomingDayCard key={day.id} day={day} onPress={onPressDay} />

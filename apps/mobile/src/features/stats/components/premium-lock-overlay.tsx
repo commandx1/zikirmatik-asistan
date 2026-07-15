@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import type { PropsWithChildren } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
 
 type PremiumLockOverlayProps = PropsWithChildren<{
   locked: boolean;
@@ -11,6 +12,7 @@ type PremiumLockOverlayProps = PropsWithChildren<{
 
 export function PremiumLockOverlay({ locked, onUnlock, message, children }: PremiumLockOverlayProps) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("stats");
 
   if (!locked) {
     return <>{children}</>;
@@ -26,17 +28,17 @@ export function PremiumLockOverlay({ locked, onUnlock, message, children }: Prem
           <FontAwesome6 name="lock" iconStyle="solid" size={16} color={tokens.bg} />
         </View>
         <Text className="mt-3 text-center text-sm text-[--text-muted]">
-          {message ?? "Bu istatistik premium üyelere özeldir."}
+          {message ?? t("stats:premiumLock.message")}
         </Text>
         <Pressable
           onPress={onUnlock}
           className="mt-3 rounded-full px-5 py-2.5"
           style={{ backgroundColor: tokens.accent }}
           accessibilityRole="button"
-          accessibilityLabel="Premium ile aç"
+          accessibilityLabel={t("stats:premiumLock.unlock")}
         >
           <Text className="text-sm font-bold" style={{ color: tokens.bg }}>
-            Premium ile aç
+            {t("stats:premiumLock.unlock")}
           </Text>
         </Pressable>
       </View>

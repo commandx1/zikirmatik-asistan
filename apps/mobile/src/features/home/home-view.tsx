@@ -3,6 +3,7 @@ import { useThemeTokens } from '@zikirmatik/ui'
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import { Animated, InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useOnboardingStore } from '../../store/onboarding-store'
 import { useTour } from '../../features/tour/use-tour'
 import {
@@ -119,11 +120,12 @@ function TopBar({
   tapAnywhereRef?: React.RefObject<View | null>;
 }) {
   const home = useHomeContext()
+  const { t } = useTranslation('home')
 
   return (
     <PageHeader
-      title='Zikirmatik Asistan'
-      subtitle={`${home.greeting} • Seri ${home.streakLabel}`}
+      title={t('home:topBar.title')}
+      subtitle={t('home:topBar.subtitle', { greeting: home.greeting, streak: home.streakLabel })}
       rightAccessory={<TapAnywhereToggle onPress={onToggleTapAnywhere} spotlightRef={tapAnywhereRef} />}
     />
   )
@@ -132,6 +134,7 @@ function TopBar({
 function SelectedDhikrMeaning() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
+  const { t } = useTranslation('home')
   const title = (home.mainDhikr.nameTurkish || home.mainDhikr.transliteration || '').trim()
   const transliteration = home.mainDhikr.transliteration?.trim()
   const arabic = home.mainDhikr.arabic?.trim()
@@ -153,12 +156,12 @@ function SelectedDhikrMeaning() {
         }}
       >
         <Text className='mb-1 text-xs font-semibold uppercase tracking-[1.1px]' style={{ color: tokens.textMuted }}>
-          Zikir Detayı
+          {t('home:selectedDhikrMeaning.title')}
         </Text>
         {shouldShowTitleOnly ? (
           <View className='mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2'>
             <Text className='mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]'>
-              Başlık
+              {t('home:selectedDhikrMeaning.titleLabel')}
             </Text>
             <Text className='text-sm leading-5 text-[--text-primary]'>{title}</Text>
           </View>
@@ -178,6 +181,7 @@ function SelectedDhikrMeaning() {
 function FreeModeButton() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
+  const { t } = useTranslation('home')
 
   if (!home.selectedDhikrId) {
     return null
@@ -192,7 +196,7 @@ function FreeModeButton() {
       >
         <FontAwesome6 name='plus' size={11} color={tokens.textMuted} />
         <Text className='text-xs font-semibold' style={{ color: tokens.textPrimary }}>
-          Serbest Mod
+          {t('home:freeMode.button')}
         </Text>
       </Pressable>
     </View>
@@ -202,6 +206,7 @@ function FreeModeButton() {
 function TargetModal() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
+  const { t } = useTranslation('home')
 
   return (
     <Modal visible={home.isEditingTarget} transparent animationType='fade' onRequestClose={home.onTargetCancel}>
@@ -211,7 +216,7 @@ function TargetModal() {
           style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.1), backgroundColor: tokens.card }}
         >
           <Text className='mb-3 text-base font-semibold' style={{ color: tokens.textPrimary }}>
-            Yeni hedef belirle
+            {t('home:targetModal.title')}
           </Text>
           <TextInput
             value={home.targetDraft}
@@ -219,7 +224,7 @@ function TargetModal() {
             keyboardType='number-pad'
             autoFocus
             selectTextOnFocus
-            placeholder='Hedef sayısı'
+            placeholder={t('home:targetModal.placeholder')}
             placeholderTextColor={tokens.textMuted}
             className='mb-4 rounded-xl px-3 py-3 text-sm'
             style={{
@@ -237,7 +242,7 @@ function TargetModal() {
               style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.2) }}
             >
               <Text className='text-sm font-medium' style={{ color: tokens.textPrimary }}>
-                İptal
+                {t('common:actions.cancel')}
               </Text>
             </Pressable>
             <Pressable
@@ -246,7 +251,7 @@ function TargetModal() {
               style={{ backgroundColor: tokens.accent }}
             >
               <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
-                Kaydet
+                {t('common:actions.save')}
               </Text>
             </Pressable>
           </View>
@@ -259,6 +264,7 @@ function TargetModal() {
 function TargetDowngradeWarningModal() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
+  const { t } = useTranslation('home')
 
   return (
     <Modal
@@ -273,22 +279,22 @@ function TargetDowngradeWarningModal() {
           style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.12), backgroundColor: tokens.card }}
         >
           <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
-            Sayım kırpılacak
+            {t('home:targetDowngradeModal.title')}
           </Text>
           <Text className='text-sm leading-5' style={{ color: tokens.textMuted }}>
-            Mevcut sayımın{' '}
+            {t('home:targetDowngradeModal.bodyPart1')}{' '}
             <Text className='font-semibold' style={{ color: tokens.textPrimary }}>
               {home.targetDowngradeCurrentCount}
             </Text>{' '}
-            adet. Yeni hedef{' '}
+            {t('home:targetDowngradeModal.bodyPart2')}{' '}
             <Text className='font-semibold' style={{ color: tokens.textPrimary }}>
               {home.targetDowngradePendingTarget}
             </Text>{' '}
-            olarak uygulandığında sayımın{' '}
+            {t('home:targetDowngradeModal.bodyPart3')}{' '}
             <Text className='font-semibold' style={{ color: tokens.textPrimary }}>
               {home.targetDowngradePendingTarget}
             </Text>{' '}
-            adede indirilecek.
+            {t('home:targetDowngradeModal.bodyPart4')}
           </Text>
           <View className='mt-5 gap-2'>
             <Pressable
@@ -297,7 +303,7 @@ function TargetDowngradeWarningModal() {
               style={{ backgroundColor: tokens.accent }}
             >
               <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
-                Yine de Uygula
+                {t('home:targetDowngradeModal.applyAnyway')}
               </Text>
             </Pressable>
             <Pressable
@@ -305,7 +311,7 @@ function TargetDowngradeWarningModal() {
               className='h-10 items-center justify-center rounded-full px-4'
             >
               <Text className='text-sm font-medium' style={{ color: tokens.textMuted }}>
-                İptal
+                {t('common:actions.cancel')}
               </Text>
             </Pressable>
           </View>
@@ -318,6 +324,7 @@ function TargetDowngradeWarningModal() {
 function FreeSaveNameModal() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
+  const { t } = useTranslation('home')
 
   return (
     <KeyboardAwareBottomSheetModal
@@ -330,16 +337,16 @@ function FreeSaveNameModal() {
       scrollContentContainerStyle={{ paddingBottom: 24 }}
     >
       <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
-        Zikir Kaydet
+        {t('home:freeSaveNameModal.title')}
       </Text>
       <Text className='mb-3 text-xs' style={{ color: tokens.textMuted }}>
-        Serbest çektiğin zikri kaydetmek için bir isim yaz.
+        {t('home:freeSaveNameModal.description')}
       </Text>
       <TextInput
         value={home.freeSaveNameDraft}
         onChangeText={home.onFreeSaveNameChange}
         autoFocus
-        placeholder='Örn. Sessiz tesbih'
+        placeholder={t('home:freeSaveNameModal.namePlaceholder')}
         placeholderTextColor={tokens.textMuted}
         className='mb-2 rounded-xl px-3 py-3 text-sm'
         style={{
@@ -351,12 +358,12 @@ function FreeSaveNameModal() {
         onSubmitEditing={home.onFreeSaveNameSubmit}
       />
       <Text className='mb-1 mt-1 text-xs font-medium' style={{ color: tokens.textPrimary }}>
-        Okunuş (opsiyonel)
+        {t('home:freeSaveNameModal.transliterationLabel')}
       </Text>
       <TextInput
         value={home.freeSaveTransliterationDraft}
         onChangeText={home.onFreeSaveTransliterationChange}
-        placeholder='Örn. Allahumme salli ala Muhammed'
+        placeholder={t('home:freeSaveNameModal.transliterationPlaceholder')}
         placeholderTextColor={tokens.textMuted}
         className='mb-2 rounded-xl px-3 py-3 text-sm'
         style={{
@@ -367,12 +374,12 @@ function FreeSaveNameModal() {
         }}
       />
       <Text className='mb-1 mt-1 text-xs font-medium' style={{ color: tokens.textPrimary }}>
-        Anlamı (opsiyonel)
+        {t('home:freeSaveNameModal.meaningLabel')}
       </Text>
       <TextInput
         value={home.freeSaveMeaningDraft}
         onChangeText={home.onFreeSaveMeaningChange}
-        placeholder="Örn. Allah'ım Muhammed'e salat et"
+        placeholder={t('home:freeSaveNameModal.meaningPlaceholder')}
         placeholderTextColor={tokens.textMuted}
         className='mb-2 rounded-xl px-3 py-3 text-sm'
         style={{
@@ -383,13 +390,13 @@ function FreeSaveNameModal() {
         }}
       />
       <Text className='mb-1 mt-1 text-xs font-medium' style={{ color: tokens.textPrimary }}>
-        Hedef (opsiyonel)
+        {t('home:freeSaveNameModal.targetLabel')}
       </Text>
       <TextInput
         value={home.freeSaveTargetDraft}
         onChangeText={home.onFreeSaveTargetChange}
         keyboardType='number-pad'
-        placeholder='Boş bırakırsan sonsuz'
+        placeholder={t('home:freeSaveNameModal.targetPlaceholder')}
         placeholderTextColor={tokens.textMuted}
         className='mb-2 rounded-xl px-3 py-3 text-sm'
         style={{
@@ -408,7 +415,7 @@ function FreeSaveNameModal() {
           style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.2) }}
         >
           <Text className='text-sm font-medium' style={{ color: tokens.textPrimary }}>
-            İptal
+            {t('common:actions.cancel')}
           </Text>
         </Pressable>
         <Pressable
@@ -417,7 +424,7 @@ function FreeSaveNameModal() {
           style={{ backgroundColor: tokens.accent }}
         >
           <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
-            Kaydet
+            {t('common:actions.save')}
           </Text>
         </Pressable>
       </View>
@@ -427,6 +434,7 @@ function FreeSaveNameModal() {
 
 export function HomeView() {
   const home = useHomeContext()
+  const { t } = useTranslation('home')
   const scrollRef = useRef<ScrollView>(null)
   const esmaSectionYRef = useRef(0)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
@@ -466,11 +474,11 @@ export function HomeView() {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
     setToastMessage(
       home.tapAnywhereEnabled
-        ? 'Ekranın her yerine dokunarak sayabilirsin'
-        : 'Sadece yuvarlağa basınca sayar'
+        ? t('home:toast.tapAnywhere')
+        : t('home:toast.tapCircleOnly')
     )
     toastTimerRef.current = setTimeout(() => setToastMessage(null), 2500)
-  }, [home.tapAnywhereEnabled])
+  }, [home.tapAnywhereEnabled, t])
   const pendingDailyEsmaStart = useHomeNavigationIntentStore(state => state.pendingDailyEsmaStart)
   const consumeDailyEsmaStart = useHomeNavigationIntentStore(state => state.consumeDailyEsmaStart)
   const esmaListFocusRequestId = useHomeNavigationIntentStore(state => state.esmaListFocusRequestId)

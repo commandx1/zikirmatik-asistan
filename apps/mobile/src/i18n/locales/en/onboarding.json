@@ -1,0 +1,20 @@
+{
+  "purpose": {
+    "habit": {
+      "title": "Daily worship habit",
+      "subtitle": "Build a regular dhikr routine"
+    },
+    "calm": {
+      "title": "Peace & calm",
+      "subtitle": "Find spiritual tranquility"
+    },
+    "tracking": {
+      "title": "Track specific dhikrs regularly",
+      "subtitle": "Follow special tasbih routines"
+    },
+    "special-days": {
+      "title": "Be more active on special days",
+      "subtitle": "Kandil nights and blessed evenings"
+    }
+  }
+}

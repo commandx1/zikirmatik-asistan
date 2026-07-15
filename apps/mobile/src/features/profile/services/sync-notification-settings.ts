@@ -1,9 +1,8 @@
 import { requestNotificationPermissionForToggle } from "../../notifications/services/request-notification-permission";
 import { updateDevicePrefs } from "../../notifications/services/update-device-prefs";
 import { saveUserPreferences } from "../../users/services/users-api-client";
+import { i18n } from "../../../i18n";
 import { syncDailyReminderNotification } from "./daily-reminder-notifications";
-
-const PUSH_PREFS_ERROR_MESSAGE = "Bildirim tercihi güncellenemedi. Lütfen tekrar dene.";
 
 export type NotificationSettingsToggleInput = {
   enabled: boolean;
@@ -42,7 +41,7 @@ export async function runNotificationSettingsToggle({
       await applyNotificationSettings(false, { reminderTime, userId, accessToken });
     } catch {
       setAll(true);
-      onError(PUSH_PREFS_ERROR_MESSAGE);
+      onError(i18n.t("profile:errors.pushPrefsUpdateFailed"));
     }
     return;
   }
@@ -59,7 +58,7 @@ export async function runNotificationSettingsToggle({
     await applyNotificationSettings(true, { reminderTime, userId, accessToken });
   } catch {
     setAll(false);
-    onError(PUSH_PREFS_ERROR_MESSAGE);
+    onError(i18n.t("profile:errors.pushPrefsUpdateFailed"));
   }
 }
 

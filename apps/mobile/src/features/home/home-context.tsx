@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Vibration } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { i18n } from '../../i18n'
 import { useAuthStore } from '../../store/auth-store'
 import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
 import { useProfileStore } from '../../store/profile-store'
@@ -35,8 +37,6 @@ type HomeDhikrOption = {
   secondary?: string
   target: number
 }
-
-const FREE_MODE_LABEL = 'Serbest'
 
 type PendingDhikrTransition =
   | { kind: 'free' }
@@ -148,6 +148,8 @@ type HomeContextValue = {
 const HomeContext = createContext<HomeContextValue | null>(null)
 
 export function HomeProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation('home')
+  const freeModeLabel = t('home:freeMode.label')
   const items = useDhikrStore(state => state.items)
   const selectedDhikrId = useDhikrStore(state => state.selectedDhikrId)
   const selectDhikr = useDhikrStore(state => state.selectDhikr)
@@ -258,8 +260,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
     freeAutoDhikrIdRef.current = undefined
     freeAutoDhikrNameRef.current = undefined
-    setActiveQuickDhikr(FREE_MODE_LABEL)
-  }, [items])
+    setActiveQuickDhikr(freeModeLabel)
+  }, [items, freeModeLabel])
 
   const fetchStreakDays = useCallback(async () => {
     if (authStatus !== 'authenticated' || !sessionUserId) {
@@ -277,14 +279,14 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!selectedDhikr) {
-      setActiveQuickDhikr(FREE_MODE_LABEL)
+      setActiveQuickDhikr(freeModeLabel)
       setIsEditingTarget(false)
       return
     }
 
     setActiveQuickDhikr(selectedDhikr.nameTurkish || selectedDhikr.transliteration)
     setTargetDraft(String(selectedDhikr.target > 0 ? selectedDhikr.target : 100))
-  }, [selectedDhikr?.id, selectedDhikr?.nameTurkish, selectedDhikr?.target, selectedDhikr?.transliteration])
+  }, [selectedDhikr?.id, selectedDhikr?.nameTurkish, selectedDhikr?.target, selectedDhikr?.transliteration, freeModeLabel])
 
   useEffect(() => {
     void fetchStreakDays()
@@ -333,7 +335,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const quickDhikrs = useMemo(() => {
     const primaryReady = readyDhikrs.slice(0, 4).map(item => item.label)
     const personal = personalDhikrs.map(item => item.label)
-    return Array.from(new Set([FREE_MODE_LABEL, ...primaryReady, ...personal]))
+    return Array.from(new Set([freeModeLabel, ...primaryReady, ...personal]))
   }, [personalDhikrs, readyDhikrs])
 
   const refresh = useCallback(async () => {
@@ -487,7 +489,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target
 
       if (authStatus !== 'authenticated' || !sessionUserId) {
-        const message = 'Kaydetmek için giriş yapmalısın.'
+        const message = t('home:errors.loginRequiredToSave')
         setSyncError(message)
         setUnsavedTransitionError(message)
         return false
@@ -541,7 +543,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         setSelectedSource(undefined)
         return true
       } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'Zikir kaydı kaydedilemedi.'
+        const message = error instanceof Error ? error.message : t('home:errors.dhikrLogSaveFailed')
         setSyncError(message)
         setUnsavedTransitionError(message)
         return false
@@ -565,7 +567,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         meaning: dhikr.meaning,
         current: 0,
         target: dhikr.recommendedCount,
-        lastActivityLabel: 'Henüz başlanmadı',
+        lastActivityLabel: t('home:lastActivity.notStarted'),
         streakDays: 0,
         isFavorite: false
       })
@@ -610,7 +612,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           applyEsmaFresh(dhikr)
         })
         .catch((error: unknown) => {
-          const message = error instanceof Error ? error.message : 'Esma zikri bulunamadı.'
+          const message = error instanceof Error ? error.message : t('home:errors.esmaDhikrNotFound')
           setSyncError(message)
         })
         .finally(() => {
@@ -621,7 +623,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     const runDhikrTransition = (transition: PendingDhikrTransition) => {
       if (transition.kind === 'free') {
         clearSelectedDhikr()
-        setActiveQuickDhikr(FREE_MODE_LABEL)
+        setActiveQuickDhikr(freeModeLabel)
         clearFreeAutoDhikrRefs()
         liveFreeCountRef.current = 0
         clearFreeModeSession()
@@ -640,7 +642,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      if (transition.label === FREE_MODE_LABEL) {
+      if (transition.label === freeModeLabel) {
         runDhikrTransition({ kind: 'free' })
         return
       }
@@ -654,7 +656,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
     const requestDhikrTransition = (transition: PendingDhikrTransition, targetDhikrId?: string) => {
       const isLeavingFreeMode =
-        transition.kind !== 'free' && !(transition.kind === 'quick' && transition.label === FREE_MODE_LABEL)
+        transition.kind !== 'free' && !(transition.kind === 'quick' && transition.label === freeModeLabel)
       if (
         shouldConfirmUnsavedDhikrTransition({
           selectedDhikrId,
@@ -725,8 +727,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
 
     return {
-      greeting: `Selam, ${authDisplayName?.trim() || 'Dostum'}`,
-      streakLabel: `${streakDays} gün`,
+      greeting: t('home:greeting', { name: authDisplayName?.trim() || t('home:defaultName') }),
+      streakLabel: t('home:streakLabel', { count: streakDays }),
       isSavingLog,
       isRefreshing,
       syncError,
@@ -752,9 +754,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       activeQuickDhikr,
       selectedSourceLabel: selectedDhikr
         ? selectedDhikr.source === 'personal'
-          ? 'Kaynak: Zikirlerim'
-          : 'Kaynak: Hazır'
-        : 'Serbest Zikir',
+          ? t('home:selectedSource.myDhikrs')
+          : t('home:selectedSource.ready')
+        : t('home:selectedSource.free'),
       demoCompleted,
       isEditingTarget,
       targetDraft,
@@ -769,7 +771,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       createError,
       isFreeSaveNameModalOpen,
       isUnsavedTransitionModalOpen: Boolean(pendingDhikrTransition),
-      unsavedTransitionDhikrName: selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || activeFreeModeTitle || FREE_MODE_LABEL,
+      unsavedTransitionDhikrName: selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || activeFreeModeTitle || freeModeLabel,
       unsavedTransitionCount: selectedDhikr?.current ?? freeCount,
       unsavedTransitionError,
       isSelectingEsmaDhikr,
@@ -876,7 +878,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       onCreateSubmit: () => {
         const trimmed = createNameDraft.trim()
         if (!trimmed) {
-          setCreateError('Zikir adı zorunlu.')
+          setCreateError(t('home:errors.nameRequired'))
           return
         }
 
@@ -896,7 +898,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             },
             sessionAccessToken
           ).catch(() => {
-            setSyncError('Zikir kaydı senkronize edilemedi.')
+            setSyncError(t('home:errors.dhikrSyncFailed'))
           })
         }
         closeCreate()
@@ -926,13 +928,13 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       onFreeSaveNameSubmit: () => {
         const trimmed = freeSaveNameDraft.trim()
         if (!trimmed) {
-          setFreeSaveNameError('Zikir adı zorunlu.')
+          setFreeSaveNameError(t('home:errors.nameRequired'))
           return
         }
         const parsedTarget =
           freeSaveTargetDraft.trim().length > 0 ? Number.parseInt(freeSaveTargetDraft, 10) : undefined
         if (parsedTarget !== undefined && (!Number.isFinite(parsedTarget) || parsedTarget <= 0)) {
-          setFreeSaveNameError('Hedef girilecekse 1 veya daha büyük olmalı.')
+          setFreeSaveNameError(t('home:errors.targetInvalid'))
           return
         }
         const countToSave = freeCount
@@ -952,7 +954,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           runDhikrTransition(transitionAfterSave)
         }
         if (authStatus !== 'authenticated' || !sessionUserId) {
-          setSyncError('Kalıcı kaydetmek için giriş yapmalısın.')
+          setSyncError(t('home:errors.loginRequiredToSavePermanently'))
           return
         }
 
@@ -987,7 +989,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             applySavedBackendLog(savedLog)
           })
           .catch((error: unknown) => {
-            const message = error instanceof Error ? error.message : 'Zikir kaydı kaydedilemedi.'
+            const message = error instanceof Error ? error.message : t('home:errors.dhikrLogSaveFailed')
             setSyncError(message)
           })
           .finally(() => {
@@ -1107,7 +1109,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     unsavedProgressDhikrIds,
     unsavedTransitionError,
     tapAnywhereEnabled,
-    toggleTapAnywhere
+    toggleTapAnywhere,
+    t,
+    freeModeLabel
   ])
 
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>
@@ -1147,7 +1151,8 @@ function buildNextAutoFreeTitle(
     }
 
     const title = (item.nameTurkish || item.transliteration || '').trim()
-    const match = /^Başlık\s+(\d+)$/i.exec(title)
+    const prefix = i18n.t('home:selectedDhikrMeaning.titleLabel')
+    const match = new RegExp(`^${prefix}\\s+(\\d+)$`, 'i').exec(title)
     if (!match) {
       continue
     }
@@ -1158,5 +1163,5 @@ function buildNextAutoFreeTitle(
     }
   }
 
-  return `Başlık ${maxIndex + 1}`
+  return `${i18n.t('home:selectedDhikrMeaning.titleLabel')} ${maxIndex + 1}`
 }

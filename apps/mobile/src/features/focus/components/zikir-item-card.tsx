@@ -3,6 +3,7 @@ import type { ThemeTokens } from '@zikirmatik/shared'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { memo, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -62,6 +63,7 @@ const EXPAND_DURATION = 280
 const COLLAPSE_DURATION = 220
 
 const AccordionContent = memo(function AccordionContent({ item, tokens }: { item: ZikirItem; tokens: ThemeTokens }) {
+  const { t } = useTranslation('focus')
   return (
     <View
       className='pb-3 gap-2 pt-1'
@@ -98,7 +100,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
             className='mb-1 text-xs font-semibold uppercase tracking-[0.9px]'
             style={{ color: tokens.textMuted }}
           >
-            Anlam
+            {t('focus:card.meaning')}
           </Text>
           <Text className='text-xs leading-5' style={{ color: tokens.textPrimary, textAlign: 'justify' }}>
             {item.meaning}
@@ -119,7 +121,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
             className='mb-1 text-xs font-semibold uppercase tracking-[0.9px]'
             style={{ color: tokens.textMuted }}
           >
-            Fazilet
+            {t('focus:card.virtue')}
           </Text>
           <Text className='text-xs leading-5' style={{ color: tokens.textMuted, textAlign: 'justify' }}>
             {item.virtue}
@@ -140,7 +142,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
             className='mb-1 text-xs font-semibold uppercase tracking-[0.9px]'
             style={{ color: tokens.textMuted }}
           >
-            Kaynak
+            {t('focus:card.source')}
           </Text>
           <Text className='text-xs leading-5' style={{ color: tokens.textMuted, textAlign: 'justify' }}>
             {item.contentSource}
@@ -182,7 +184,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
             className='mb-1.5 text-xs font-semibold uppercase tracking-[0.9px]'
             style={{ color: tokens.accent }}
           >
-            Asistan Notu
+            {t('focus:card.assistantNote')}
           </Text>
           <MarkdownRenderer markdown={item.aiAssistantNote} />
         </View>
@@ -192,6 +194,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
 })
 
 export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isDeleting, isUpdatingThisItem }: ZikirItemCardProps) {
+  const { t } = useTranslation('focus')
   const { tokens } = useThemeTokens()
   const [isExpanded, setIsExpanded] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -284,7 +287,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
           >
             <FontAwesome6 name='star' size={10} color={item.isFavorite ? '#D6A93D' : tokens.textMuted} iconStyle={item.isFavorite ? 'solid' : 'regular'} />
             <Text className='text-xs font-semibold' style={{ color: item.isFavorite ? '#D6A93D' : tokens.textMuted }}>
-              {item.isFavorite ? 'Favoride' : 'Favoriye Ekle'}
+              {item.isFavorite ? t('focus:card.favorited') : t('focus:card.addToFavorites')}
             </Text>
           </Pressable>
           {item.source === 'personal' ? (
@@ -296,7 +299,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
             >
               <FontAwesome6 name='pen' size={10} color={tokens.accent} />
               <Text className='text-xs font-semibold' style={{ color: tokens.accent }}>
-                {isUpdatingThisItem ? 'Güncelleniyor' : 'Güncelle'}
+                {isUpdatingThisItem ? t('focus:card.updating') : t('focus:card.update')}
               </Text>
             </Pressable>
           ) : null}
@@ -308,7 +311,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
           >
             <FontAwesome6 name='trash' size={10} color={dangerBase} />
             <Text className='text-xs font-semibold' style={{ color: dangerBase }}>
-              {isDeleting ? 'Siliniyor' : 'Sil'}
+              {isDeleting ? t('focus:card.deleting') : t('focus:card.delete')}
             </Text>
           </Pressable>
         </View>
@@ -343,7 +346,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
         </View>
         <View className='flex-row items-center gap-1'>
           <FontAwesome6 name='fire' size={12} color='#4CAF7D' />
-          <Text className='text-xs text-[--text-muted]'>{item.streakDays} gün</Text>
+          <Text className='text-xs text-[--text-muted]'>{t('focus:card.streakDays', { count: item.streakDays })}</Text>
         </View>
       </View>
 
@@ -361,7 +364,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
               className='flex-row items-center gap-1.5 rounded-full border px-3 py-1.5'
               style={{ borderColor: withAlpha(tokens.textMuted, 0.25), backgroundColor: withAlpha(tokens.textMuted, 0.07) }}
             >
-              <Text className='text-xs' style={{ color: tokens.textMuted }}>Detay</Text>
+              <Text className='text-xs' style={{ color: tokens.textMuted }}>{t('focus:card.detail')}</Text>
               <Animated.View style={chevronStyle}>
                 <FontAwesome6 name='chevron-down' size={8} color={tokens.textMuted} />
               </Animated.View>
@@ -372,7 +375,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
               className='flex-row items-center gap-1 rounded-full border px-2.5 py-1.5'
               style={{ borderColor: withAlpha(tokens.accent, 0.35), backgroundColor: withAlpha(tokens.accent, 0.1) }}
             >
-              <Text className='text-xs font-semibold' style={{ color: tokens.accent }}>Asistan</Text>
+              <Text className='text-xs font-semibold' style={{ color: tokens.accent }}>{t('focus:card.assistant')}</Text>
             </View>
           ) : null}
         </View>
@@ -381,17 +384,17 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
           onPress={() => startDhikrOnHome(item.id)}
           className='flex-row items-center gap-1.5 rounded-full bg-[--accent] px-3 py-1.5'
         >
-          <Text className='text-xs font-semibold text-[#111827]'>Başlat</Text>
+          <Text className='text-xs font-semibold text-[#111827]'>{t('focus:card.start')}</Text>
           <FontAwesome6 name='arrow-right' size={9} color='#111827' />
         </Pressable>
       </View>
 
       <ConfirmModal
         visible={isDeleteConfirmVisible}
-        title='Zikri Sil'
-        message='Bu zikri Zikirlerim listesinden kaldırmak istediğine emin misin?'
-        confirmLabel='Sil'
-        cancelLabel='Vazgeç'
+        title={t('focus:card.deleteModal.title')}
+        message={t('focus:card.deleteModal.message')}
+        confirmLabel={t('focus:card.deleteModal.confirmLabel')}
+        cancelLabel={t('focus:card.deleteModal.cancelLabel')}
         destructive
         onConfirm={() => {
           setIsDeleteConfirmVisible(false)

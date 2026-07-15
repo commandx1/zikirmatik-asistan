@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 import Purchases, {
   LOG_LEVEL,
   PRODUCT_CATEGORY,
@@ -61,7 +62,7 @@ export async function purchasePremiumWithRevenueCat(
   const offerings = await Purchases.getOfferings();
   const offering = offerings.current;
   if (!offering || offering.availablePackages.length === 0) {
-    throw new RevenueCatClientError("terminal", "Satın alma paketleri henüz hazır değil.");
+    throw new RevenueCatClientError("terminal", i18n.t("subscriptions:errors.packagesNotReady"));
   }
 
   const selectedPackage = pickPackage(offering.availablePackages, preferredPackage);
@@ -108,7 +109,7 @@ export async function purchaseCreditTopup(userId: string, productId: string): Pr
   const products = await Purchases.getProducts([productId], PRODUCT_CATEGORY.NON_SUBSCRIPTION);
   const product = products.find((item) => item.identifier === productId) ?? products[0];
   if (!product) {
-    throw new RevenueCatClientError("terminal", "Kredi paketi mağazada bulunamadı.");
+    throw new RevenueCatClientError("terminal", i18n.t("subscriptions:errors.topupNotFound"));
   }
 
   await Purchases.purchaseStoreProduct(product);
@@ -144,8 +145,8 @@ function resolveRevenueCatApiKey() {
     throw new RevenueCatClientError(
       "terminal",
       Platform.OS === "ios"
-        ? "EXPO_PUBLIC_REVENUECAT_API_KEY_IOS tanımlı değil."
-        : "EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID tanımlı değil."
+        ? i18n.t("subscriptions:errors.apiKeyMissingIos")
+        : i18n.t("subscriptions:errors.apiKeyMissingAndroid")
     );
   }
 
@@ -248,5 +249,5 @@ export function toRevenueCatMessage(error: unknown): string | undefined {
     }
   }
 
-  return "Satın alma işlemi tamamlanamadı. Lütfen tekrar dene.";
+  return i18n.t("subscriptions:errors.purchaseFailed");
 }

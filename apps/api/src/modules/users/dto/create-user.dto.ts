@@ -50,10 +50,6 @@ export class CreateUserDto {
   authProvider?: 'google' | 'apple' | 'email';
 
   @IsOptional()
-  @IsString()
-  city?: string;
-
-  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   preferredCategories?: string[];

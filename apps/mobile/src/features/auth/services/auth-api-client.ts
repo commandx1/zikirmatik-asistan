@@ -5,6 +5,7 @@ import type {
   RefreshTokenResponse
 } from "@zikirmatik/shared";
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 
 const API_BASE_URL = resolveApiBaseUrl();
 
@@ -53,7 +54,7 @@ async function requestJson<TResponse>(path: string, body: unknown): Promise<TRes
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "Authentication request failed.");
+      const message = extractErrorMessage(data, i18n.t("auth:errors.requestFailed"));
       throw new AuthApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
     }
 
@@ -65,7 +66,7 @@ async function requestJson<TResponse>(path: string, body: unknown): Promise<TRes
 
     throw new AuthApiError(
       "transient",
-      "Sunucuya şu an ulaşılamıyor. Lütfen daha sonra tekrar deneyin."
+      i18n.t("auth:errors.serverUnreachable")
     );
   }
 }

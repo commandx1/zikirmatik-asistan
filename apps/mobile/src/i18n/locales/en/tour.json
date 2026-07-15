@@ -1,0 +1,45 @@
+{
+  "steps": {
+    "watch": {
+      "title": "Dhikr Counter",
+      "description": "Tap the fingerprint icon to count your dhikr. The rings show your progress."
+    },
+    "watchBtnList": {
+      "title": "Dhikr List",
+      "description": "Open your saved dhikrs and load them into the counter."
+    },
+    "watchBtnTarget": {
+      "title": "Set a Target",
+      "description": "Choose how many times to recite; the ring shows your progress."
+    },
+    "watchBtnReset": {
+      "title": "Reset Counter",
+      "description": "Reset the current dhikr counter to zero."
+    },
+    "watchBtnSave": {
+      "title": "Save",
+      "description": "Save the dhikr session to your account."
+    },
+    "tapAnywhere": {
+      "title": "Tap Anywhere",
+      "description": "While this mode is on, you can count by tapping anywhere on the screen — no need to tap the fingerprint."
+    },
+    "tabFocus": {
+      "title": "My Dhikrs",
+      "description": "Manage your saved dhikrs here and load them into the counter."
+    },
+    "tabAiGuide": {
+      "title": "AI Guide",
+      "description": "Get AI-powered personal dhikr recommendations; tracks your guide history."
+    },
+    "tabSpecialDays": {
+      "title": "Special Days",
+      "description": "Don't miss kandils and religiously significant days; get notified."
+    }
+  },
+  "overlay": {
+    "skip": "Skip",
+    "next": "Next",
+    "finish": "Finish"
+  }
+}

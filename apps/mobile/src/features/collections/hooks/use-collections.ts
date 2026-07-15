@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
+import { i18n } from "../../../i18n";
 import {
   listCollections,
   CollectionsApiError,
@@ -25,7 +26,7 @@ export function useCollections() {
       setError(
         err instanceof CollectionsApiError
           ? err.message
-          : "Koleksiyonlar yüklenemedi.",
+          : i18n.t("collections:errors.listLoadFailed"),
       );
     } finally {
       setIsLoading(false);

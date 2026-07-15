@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Modal, Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
 import type { StatsBadge } from "@zikirmatik/shared";
 
 type BadgeCelebrationModalProps = {
@@ -11,6 +12,7 @@ type BadgeCelebrationModalProps = {
 
 export function BadgeCelebrationModal({ badge, onDismiss }: BadgeCelebrationModalProps) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("stats");
   const insets = useSafeAreaInsets();
 
   return (
@@ -35,13 +37,13 @@ export function BadgeCelebrationModal({ badge, onDismiss }: BadgeCelebrationModa
           </View>
 
           <Text className="mt-4 text-lg font-semibold" style={{ color: tokens.textPrimary }}>
-            Yeni rozet kazandın!
+            {t("stats:badgeCelebration.title")}
           </Text>
           <Text className="mt-1 text-center text-base font-semibold" style={{ color: tokens.accent }}>
             {badge?.label}
           </Text>
           <Text className="mt-2 text-center text-sm leading-5" style={{ color: tokens.textMuted }}>
-            Bu ilerlemeyi Rozetler bölümünden istediğin an tekrar görebilirsin.
+            {t("stats:badgeCelebration.description")}
           </Text>
 
           <Pressable
@@ -49,10 +51,10 @@ export function BadgeCelebrationModal({ badge, onDismiss }: BadgeCelebrationModa
             className="mt-6 w-full rounded-full px-4 py-3"
             style={{ backgroundColor: tokens.accent }}
             accessibilityRole="button"
-            accessibilityLabel="Kapat"
+            accessibilityLabel={t("stats:badgeCelebration.close")}
           >
             <Text className="text-center text-sm font-bold" style={{ color: tokens.bg }}>
-              Harika!
+              {t("stats:badgeCelebration.great")}
             </Text>
           </Pressable>
         </View>

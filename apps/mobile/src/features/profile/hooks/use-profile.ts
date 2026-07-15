@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { AppState, Linking, Platform } from "react-native";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
+import type { SupportedLocale } from "../../../i18n";
+import { toIntlLocale } from "../../../lib/locale-format";
 import {
   getUserById,
   saveUserPreferences,
@@ -31,20 +35,19 @@ export function useProfile() {
   const router = useRouter();
   const { requireAuth } = useRequireAuth();
   const { hydrateAppearance } = useThemePreferences();
+  const { t } = useTranslation(["profile", "common"]);
 
   const fallbackDisplayName = useProfileStore((s) => s.displayName);
   const memberSinceLabel = useProfileStore((s) => s.memberSinceLabel);
   const isPremium = useProfileStore((s) => s.isPremium);
-  const city = useProfileStore((s) => s.city);
-  const language = useProfileStore((s) => s.language);
+  const locale = useProfileStore((s) => s.locale);
+  const setLocale = useProfileStore((s) => s.setLocale);
   const reminderTime = useProfileStore((s) => s.reminderTime);
   const dailyReminderEnabled = useProfileStore((s) => s.dailyReminderEnabled);
   const kandilNotificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
-  const adhanNotificationsEnabled = useProfileStore((s) => s.adhanNotificationsEnabled);
   const hapticsEnabled = useProfileStore((s) => s.hapticsEnabled);
   const setReminderTime = useProfileStore((s) => s.setReminderTime);
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
-  const setAdhanNotificationsEnabled = useProfileStore((s) => s.setAdhanNotificationsEnabled);
   const setHapticsEnabled = useProfileStore((s) => s.setHapticsEnabled);
   const hydrateFromBackend = useProfileStore((s) => s.hydrateFromBackend);
   const authStatus = useAuthStore((s) => s.status);
@@ -83,12 +86,10 @@ export function useProfile() {
     setBackendUser(user);
     hydrateFromBackend({
       displayName: user.displayName,
-      city: user.city,
       isPremium: user.isPremium,
       reminderTime: user.notifSettings?.reminderTime,
       dailyReminderEnabled: user.notifSettings?.dailyReminder,
       kandilNotificationsEnabled: user.notifSettings?.kandilNotifications,
-      adhanNotificationsEnabled: user.notifSettings?.azanNotifications,
       hapticsEnabled: user.hapticsEnabled
     });
     hydrateAppearance({
@@ -204,14 +205,14 @@ export function useProfile() {
     try {
       const canOpen = await Linking.canOpenURL(url);
       if (!canOpen) {
-        setPremiumError("Abonelik yönetim ekranı açılamadı.");
+        setPremiumError(t("profile:errors.manageSubscriptionFailed"));
         return;
       }
 
       setShouldSyncPremiumOnForeground(true);
       await Linking.openURL(url);
     } catch {
-      setPremiumError("Abonelik yönetim ekranı açılamadı.");
+      setPremiumError(t("profile:errors.manageSubscriptionFailed"));
     }
   };
   const rateApp = async () => {
@@ -233,14 +234,12 @@ export function useProfile() {
 
       await Linking.openURL(iosUrl);
     } catch {
-      setPremiumError("Mağaza sayfası açılamadı.");
+      setPremiumError(t("profile:errors.storeOpenFailed"));
     }
   };
   const sendFeedback = async () => {
-    const subject = encodeURIComponent("Zikirmatik Rehber Geri Bildirimi");
-    const body = encodeURIComponent(
-      "Merhaba,\n\nGeri bildirimim:\n\n\n---\nCihaz:\nUygulama sürümü:\n"
-    );
+    const subject = encodeURIComponent(t("profile:feedbackEmail.subject"));
+    const body = encodeURIComponent(t("profile:feedbackEmail.body"));
     const mailUrl = `mailto:support@zikirmatik.app?subject=${subject}&body=${body}`;
     const webComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=support@zikirmatik.app&su=${subject}&body=${body}`;
 
@@ -253,7 +252,7 @@ export function useProfile() {
 
       await Linking.openURL(webComposeUrl);
     } catch {
-      setFeedbackError("Cihazında varsayılan e-posta uygulaması yok gibi görünüyor.");
+      setFeedbackError(t("profile:errors.noEmailApp"));
     }
   };
 
@@ -409,7 +408,7 @@ export function useProfile() {
   const saveReminderTime = async () => {
     const parsed = parseReminderTime(`${normalizeTimeUnit(reminderHourDraft)}:${normalizeTimeUnit(reminderMinuteDraft)}`);
     if (!parsed.isValid) {
-      setReminderTimeError("Lütfen geçerli bir saat gir (00-23 / 00-59).");
+      setReminderTimeError(t("profile:reminderTimeModal.invalidTime"));
       return;
     }
 
@@ -440,7 +439,7 @@ export function useProfile() {
       setIsReminderTimeModalOpen(false);
     } catch {
       setReminderTime(previousReminderTime);
-      setReminderTimeError("Saat güncellenemedi. Lütfen tekrar dene.");
+      setReminderTimeError(t("profile:errors.reminderTimeUpdateFailed"));
     } finally {
       setIsSavingReminderTime(false);
     }
@@ -480,21 +479,20 @@ export function useProfile() {
     profileImageUrl: backendUser?.profileImageUrl,
     memberSinceLabel:
       backendUser?.createdAt
-        ? toMemberSinceLabel(backendUser.createdAt)
+        ? toMemberSinceLabel(backendUser.createdAt, locale, t)
         : memberSinceLabel,
     isPremium: backendUser?.isPremium ?? isPremium,
-    city: backendUser?.city ?? city,
     isReminderTimeModalOpen,
     reminderHourDraft,
     reminderMinuteDraft,
     isSavingReminderTime,
     reminderTimeError,
     canSaveReminderTime,
-    language,
+    locale,
+    setLocale,
     reminderTime,
     dailyReminderEnabled,
     kandilNotificationsEnabled,
-    adhanNotificationsEnabled,
     hapticsEnabled,
     isPremiumSheetOpen,
     isActivatingPremium,
@@ -507,7 +505,6 @@ export function useProfile() {
     purchaseTopup,
     refresh,
     setKandilNotificationsEnabled,
-    setAdhanNotificationsEnabled,
     onToggleHaptics,
     goThemeSelector,
     goFontSelector,
@@ -559,14 +556,18 @@ function parseReminderTime(value: string) {
   return { hour, minute, isValid: true };
 }
 
-function toMemberSinceLabel(isoDate: string) {
+function toMemberSinceLabel(isoDate: string, locale: SupportedLocale, t: TFunction) {
   const createdAt = new Date(isoDate);
   if (Number.isNaN(createdAt.getTime())) {
-    return "Yeni üye";
+    return t("profile:memberSince.newMember");
   }
 
-  const formatter = new Intl.DateTimeFormat("tr-TR", { month: "long", year: "numeric" });
+  const formatter = new Intl.DateTimeFormat(toIntlLocale(locale), {
+    month: "long",
+    year: "numeric"
+  });
   const formatted = formatter.format(createdAt);
-  const withCapitalizedMonth = `${formatted.charAt(0).toUpperCase()}${formatted.slice(1)}`;
-  return `${withCapitalizedMonth}'ten beri`;
+  const withCapitalizedMonth =
+    locale === "en" ? formatted : `${formatted.charAt(0).toUpperCase()}${formatted.slice(1)}`;
+  return t("profile:memberSince.since", { date: withCapitalizedMonth });
 }

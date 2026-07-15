@@ -1,0 +1,12 @@
+{
+  "errors": {
+    "registerFailed": "Cihaz kaydı yapılamadı.",
+    "serverUnreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin."
+  },
+  "dailyReminder": {
+    "channelName": "Günlük Hatırlatma",
+    "title": "Günlük zikir vaktin",
+    "bodyWithNames": "Bugünkü esma: {{names}}",
+    "bodyDefault": "Bugünkü zikrini tamamlamak için kısa bir mola ver."
+  }
+}

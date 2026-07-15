@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useMemo, useState } from "react";
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -20,15 +21,19 @@ type AppSelectBoxProps = {
 
 export function AppSelectBox({
   value,
-  placeholder = "Seçiniz",
+  placeholder,
   options,
   onChange,
-  title = "Seçenekler",
+  title,
   disabled = false
 }: AppSelectBoxProps) {
+  const { t } = useTranslation("components");
   const { tokens } = useThemeTokens();
   const insets = useSafeAreaInsets();
   const [isOpen, setIsOpen] = useState(false);
+
+  const resolvedPlaceholder = placeholder ?? t("components:appSelectbox.placeholder");
+  const resolvedTitle = title ?? t("components:appSelectbox.title");
 
   const selectedLabel = useMemo(() => options.find((item) => item.value === value)?.label, [options, value]);
 
@@ -47,7 +52,7 @@ export function AppSelectBox({
       >
         <View className="flex-row items-center justify-between">
           <Text style={{ color: selectedLabel ? tokens.textPrimary : withAlpha(tokens.textMuted, 0.85) }} className="text-base">
-            {selectedLabel ?? placeholder}
+            {selectedLabel ?? resolvedPlaceholder}
           </Text>
           <FontAwesome6 name="chevron-down" size={14} color={tokens.textMuted} />
         </View>
@@ -66,7 +71,7 @@ export function AppSelectBox({
               }}
             >
               <Text className="mb-3 text-base font-semibold" style={{ color: tokens.textPrimary }}>
-                {title}
+                {resolvedTitle}
               </Text>
               <ScrollView
                 style={{ maxHeight: Math.max(260, 420 - insets.bottom) }}

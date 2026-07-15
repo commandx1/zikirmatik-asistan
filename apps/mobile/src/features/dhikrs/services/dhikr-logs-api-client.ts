@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 
 export type BackendDhikrLog = {
   _id: string;
@@ -149,7 +150,7 @@ async function requestJson<TResponse>(
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "Zikir log işlemi başarısız oldu.");
+      const message = extractErrorMessage(data, i18n.t("dhikrs:errors.logActionFailed"));
       throw new DhikrLogsApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
     }
 
@@ -159,7 +160,7 @@ async function requestJson<TResponse>(
       throw error;
     }
 
-    throw new DhikrLogsApiError("transient", "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.");
+    throw new DhikrLogsApiError("transient", i18n.t("dhikrs:errors.serverUnreachable"));
   }
 }
 

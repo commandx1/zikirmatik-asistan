@@ -1,0 +1,32 @@
+{
+  "screen": {
+    "title": "Koleksiyonlar",
+    "emptyList": "Koleksiyon bulunamadı."
+  },
+  "categories": {
+    "all": "Tümü",
+    "gunluk": "Günlük",
+    "namaz": "Namaz",
+    "dua": "Dua",
+    "koruma": "Koruma",
+    "hayat": "Hayat",
+    "ibadet": "İbadet"
+  },
+  "card": {
+    "premiumBadge": "Premium",
+    "dhikrCount": "{{count}} zikir"
+  },
+  "detail": {
+    "defaultTitle": "Koleksiyon",
+    "notStarted": "Henüz başlanmadı",
+    "addToCounter": "Sayaca Ekle",
+    "loginRequired": "Kaydetmek için giriş yapmalısın.",
+    "saveFailed": "Zikir kaydedilemedi."
+  },
+  "errors": {
+    "detailLoadFailed": "Koleksiyon detayı yüklenemedi.",
+    "listLoadFailed": "Koleksiyonlar yüklenemedi.",
+    "fetchFailed": "Koleksiyon verisi alınamadı.",
+    "serverUnreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin."
+  }
+}

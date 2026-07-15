@@ -1,33 +1,33 @@
 export type PurposeOption = {
   id: string;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   icon: string;
 };
 
 export const PURPOSE_OPTIONS: PurposeOption[] = [
   {
     id: "habit",
-    title: "Günlük ibadet alışkanlığı",
-    subtitle: "Düzenli zikir rutini oluştur",
+    titleKey: "onboarding:purpose.habit.title",
+    subtitleKey: "onboarding:purpose.habit.subtitle",
     icon: "🙏"
   },
   {
     id: "calm",
-    title: "Huzur & sakinleşmek",
-    subtitle: "Ruhsal dinginlik bul",
+    titleKey: "onboarding:purpose.calm.title",
+    subtitleKey: "onboarding:purpose.calm.subtitle",
     icon: "🪷"
   },
   {
     id: "tracking",
-    title: "Belirli zikirleri düzenli çekmek",
-    subtitle: "Özel tesbihat takibi",
+    titleKey: "onboarding:purpose.tracking.title",
+    subtitleKey: "onboarding:purpose.tracking.subtitle",
     icon: "☸️"
   },
   {
     id: "special-days",
-    title: "Özel günlerde daha aktif olmak",
-    subtitle: "Kandil ve mübarek geceler",
+    titleKey: "onboarding:purpose.special-days.title",
+    subtitleKey: "onboarding:purpose.special-days.subtitle",
     icon: "☪️"
   }
 ];

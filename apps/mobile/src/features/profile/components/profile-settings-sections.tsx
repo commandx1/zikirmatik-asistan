@@ -1,4 +1,6 @@
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import type { SupportedLocale } from "../../../i18n";
 import { ProfileLinkRow } from "./profile-link-row";
 import { ProfileLogoutRow } from "./profile-logout-row";
 import { ProfileSectionTitle } from "./profile-section-title";
@@ -10,6 +12,8 @@ type ProfileSettingsSectionsProps = {
   reminderTime: string;
   notificationsEnabled: boolean;
   hapticsEnabled: boolean;
+  locale: SupportedLocale;
+  onChangeLocale: (locale: SupportedLocale) => void;
   onPressTheme: () => void;
   onPressFont: () => void;
   onPressReminderTime: () => void;
@@ -28,6 +32,8 @@ export function ProfileSettingsSections({
   reminderTime,
   notificationsEnabled,
   hapticsEnabled,
+  locale,
+  onChangeLocale,
   onPressTheme,
   onPressFont,
   onPressReminderTime,
@@ -41,15 +47,26 @@ export function ProfileSettingsSections({
   onToggleNotifications,
   onToggleHaptics
 }: ProfileSettingsSectionsProps) {
+  const { t } = useTranslation("profile");
+  const languageLabel = locale === "en" ? t("profile:language.english") : t("profile:language.turkish");
+  const toggleLocale = () => onChangeLocale(locale === "tr" ? "en" : "tr");
+
   return (
     <View className="gap-6">
       <View>
-        <ProfileSectionTitle label="Kişiselleştirme" />
+        <ProfileSectionTitle label={t("profile:sections.personalization.title")} />
         <ProfileSettingsCard>
-          <ProfileLinkRow label="Tema Seçimi" iconName="moon" onPress={onPressTheme} bottomBorder />
-          <ProfileLinkRow label="Yazı Tipi" iconName="font" onPress={onPressFont} bottomBorder />
+          <ProfileLinkRow label={t("profile:sections.personalization.theme")} iconName="moon" onPress={onPressTheme} bottomBorder />
+          <ProfileLinkRow label={t("profile:sections.personalization.font")} iconName="font" onPress={onPressFont} bottomBorder />
+          <ProfileLinkRow
+            label={t("profile:sections.personalization.language")}
+            iconName="language"
+            value={languageLabel}
+            onPress={toggleLocale}
+            bottomBorder
+          />
           <ProfileToggleRow
-            label="Titreşim"
+            label={t("profile:sections.personalization.haptics")}
             iconName="mobile-screen"
             value={hapticsEnabled}
             onChange={onToggleHaptics}
@@ -58,27 +75,27 @@ export function ProfileSettingsSections({
       </View>
 
       <View>
-        <ProfileSectionTitle label="Bildirimler" />
+        <ProfileSectionTitle label={t("profile:sections.notifications.title")} />
         <ProfileSettingsCard>
           <ProfileToggleRow
-            label="Bildirimler"
+            label={t("profile:sections.notifications.toggle")}
             iconName="bell"
             value={notificationsEnabled}
             onChange={onToggleNotifications}
             bottomBorder={notificationsEnabled}
           />
           {notificationsEnabled ? (
-            <ProfileTimeRow label="Günlük Zikir Hatırlatma Saati" value={reminderTime} onPress={onPressReminderTime} />
+            <ProfileTimeRow label={t("profile:sections.notifications.reminderTime")} value={reminderTime} onPress={onPressReminderTime} />
           ) : null}
         </ProfileSettingsCard>
       </View>
 
       <View>
-        <ProfileSectionTitle label="Premium" accent />
+        <ProfileSectionTitle label={t("profile:sections.premium.title")} accent />
         <ProfileSettingsCard premium>
           <View className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[--accent]/5" />
           <ProfileLinkRow
-            label="Premium Özellikleri"
+            label={t("profile:sections.premium.features")}
             iconName="star"
             iconContainerClassName="bg-[--accent]"
             iconColor="#0F1B2D"
@@ -86,7 +103,7 @@ export function ProfileSettingsSections({
             onPress={onPressPremium}
           />
           <ProfileLinkRow
-            label="Aboneliği Yönet"
+            label={t("profile:sections.premium.manageSubscription")}
             iconName="clipboard"
             rightIconName="arrow-up-right-from-square"
             rightIconRegular
@@ -96,24 +113,22 @@ export function ProfileSettingsSections({
       </View>
 
       <View>
-        <ProfileSectionTitle label="Diğer" />
+        <ProfileSectionTitle label={t("profile:sections.other.title")} />
         <ProfileSettingsCard>
-          {/*<ProfileLinkRow label="Dini Danışman Notu" iconName="book-open" value="İçeriklerimiz hakkında" bottomBorder />
-          <ProfileLinkRow label="Gizlilik Politikası" iconName="shield-halved" bottomBorder />*/}
-          <ProfileLinkRow label="Uygulamayı Tanıt" iconName="circle-question" bottomBorder onPress={onPressTourReplay} />
-          <ProfileLinkRow label="Uygulamayı Oyla" iconName="star" rightIconRegular bottomBorder onPress={onPressRateApp} />
-          <ProfileLinkRow label="Geri Bildirim Gönder" iconName="comment-dots" rightIconRegular bottomBorder onPress={onPressSendFeedback} />
+          <ProfileLinkRow label={t("profile:sections.other.tourReplay")} iconName="circle-question" bottomBorder onPress={onPressTourReplay} />
+          <ProfileLinkRow label={t("profile:sections.other.rateApp")} iconName="star" rightIconRegular bottomBorder onPress={onPressRateApp} />
+          <ProfileLinkRow label={t("profile:sections.other.sendFeedback")} iconName="comment-dots" rightIconRegular bottomBorder onPress={onPressSendFeedback} />
           <ProfileLogoutRow onPress={onPressLogout} />
         </ProfileSettingsCard>
       </View>
 
       <View>
-        <ProfileSectionTitle label="Hesap" />
+        <ProfileSectionTitle label={t("profile:sections.account.title")} />
         <ProfileSettingsCard>
           <Pressable onPress={onPressDeleteAccount} className="flex-row items-center justify-start p-4">
             <View className="flex-row items-center gap-3">
               <View className="h-8 w-8" />
-              <Text className="text-base font-medium" style={{ color: "#EF4444" }}>Hesabı Sil</Text>
+              <Text className="text-base font-medium" style={{ color: "#EF4444" }}>{t("profile:sections.account.deleteAccount")}</Text>
             </View>
           </Pressable>
         </ProfileSettingsCard>

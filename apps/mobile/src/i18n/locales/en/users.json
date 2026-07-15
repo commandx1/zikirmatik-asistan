@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "fetchFailed": "Failed to fetch user data.",
+    "serverUnreachable": "Cannot reach the server. Please try again."
+  }
+}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
+import { i18n } from "../../../i18n";
 import {
   getCollectionDetail,
   CollectionsApiError,
@@ -22,7 +23,7 @@ export function useCollectionDetail(key: string) {
       setError(
         err instanceof CollectionsApiError
           ? err.message
-          : "Koleksiyon detayı yüklenemedi.",
+          : i18n.t("collections:errors.detailLoadFailed"),
       );
     } finally {
       setIsLoading(false);

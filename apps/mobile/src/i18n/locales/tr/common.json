@@ -1,0 +1,15 @@
+{
+  "actions": {
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor",
+    "ok": "Tamam"
+  },
+  "nav": {
+    "home": "Ana Sayfa",
+    "focus": "Zikirlerim",
+    "aiGuide": "Asistan Rehber",
+    "specialDays": "Özel Günler",
+    "more": "Daha Fazla"
+  }
+}

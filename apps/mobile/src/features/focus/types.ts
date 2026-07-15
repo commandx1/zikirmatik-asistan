@@ -23,6 +23,11 @@ export type ZikirItem = {
   current: number
   target: number
   lastActivityLabel: string
+  // Locale-independent ISO timestamp for the same event lastActivityLabel
+  // describes. Primary source of truth for "active day" resolution
+  // (see resolveActivityDateKey in local-streak.ts); the label itself is
+  // display-only and may be localized to any language.
+  lastActivityAt?: string
   streakDays: number
   isFavorite: boolean
 }

@@ -5,7 +5,9 @@ import { Stack } from "expo-router";
 import { Text, TextInput, View } from "react-native";
 import * as Notifications from "expo-notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { I18nextProvider } from "react-i18next";
 import { ThemeProvider } from "@zikirmatik/ui";
+import { i18n } from "../src/i18n";
 import { Merriweather_400Regular, Merriweather_700Bold, useFonts } from "@expo-google-fonts/merriweather";
 import { IntelOneMono_400Regular, IntelOneMono_700Bold } from "@expo-google-fonts/intel-one-mono";
 import { Finlandica_400Regular, Finlandica_700Bold } from "@expo-google-fonts/finlandica";
@@ -96,25 +98,27 @@ function RootProviders({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider
-          themeName={themeName}
-          fontSize="medium"
-          textFontFamily={resolvedFontFamily}
-          textFontFamilyStrong={resolvedStrongFontFamily}
-        >
-          <ThemeTransitionProvider>
-            <TourProvider onComplete={promptForDailyReminder}>
-              {children}
-              <TourOverlay />
-              <NotificationPermissionModal />
-              <NotificationPermissionDeniedModal />
-              <AuthPromptModal />
-              <BadgeCelebrationHost />
-            </TourProvider>
-          </ThemeTransitionProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
+      <I18nextProvider i18n={i18n}>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider
+            themeName={themeName}
+            fontSize="medium"
+            textFontFamily={resolvedFontFamily}
+            textFontFamilyStrong={resolvedStrongFontFamily}
+          >
+            <ThemeTransitionProvider>
+              <TourProvider onComplete={promptForDailyReminder}>
+                {children}
+                <TourOverlay />
+                <NotificationPermissionModal />
+                <NotificationPermissionDeniedModal />
+                <AuthPromptModal />
+                <BadgeCelebrationHost />
+              </TourProvider>
+            </ThemeTransitionProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </I18nextProvider>
       <ForceUpdateModal visible={forceUpdate} />
     </>
   );

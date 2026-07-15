@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useEffect, useState } from "react";
 import { Modal, Platform, Pressable, Text, View, useWindowDimensions } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTourContext } from "./tour-context";
 import type { SpotlightBounds } from "./types";
@@ -13,6 +14,7 @@ export function TourOverlay() {
   const { isActive, currentStep, currentStepIndex, totalSteps, nextStep, prevStep, skipTour, getRef } =
     useTourContext();
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("tour");
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [bounds, setBounds] = useState<SpotlightBounds | null>(null);
@@ -174,7 +176,7 @@ export function TourOverlay() {
               marginBottom: 6,
             }}
           >
-            {currentStep.title}
+            {t(currentStep.titleKey)}
           </Text>
           <Text
             style={{
@@ -184,12 +186,12 @@ export function TourOverlay() {
               marginBottom: 16,
             }}
           >
-            {currentStep.description}
+            {t(currentStep.descriptionKey)}
           </Text>
 
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
             <Pressable onPress={skipTour} style={{ paddingVertical: 6, paddingRight: 12 }}>
-              <Text style={{ fontSize: 13, color: tokens.textMuted }}>Atla</Text>
+              <Text style={{ fontSize: 13, color: tokens.textMuted }}>{t("tour:overlay.skip")}</Text>
             </Pressable>
 
             <View style={{ flexDirection: "row", gap: 8 }}>
@@ -221,7 +223,7 @@ export function TourOverlay() {
                 }}
               >
                 <Text style={{ fontSize: 13, fontWeight: "700", color: tokens.bg }}>
-                  {isLastStep ? "Bitir" : "İleri"}
+                  {isLastStep ? t("tour:overlay.finish") : t("tour:overlay.next")}
                 </Text>
               </Pressable>
             </View>

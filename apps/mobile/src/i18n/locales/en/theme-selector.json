@@ -1,0 +1,18 @@
+{
+  "screen": {
+    "title": "Theme Selection",
+    "subtitle": "Personalize the app's appearance",
+    "premiumActiveBanner": "Premium membership active: all themes unlocked.",
+    "premiumLockedBanner": "Some themes unlock with Premium.",
+    "saveChanges": "Save Changes",
+    "lockedThemeMessage": "This theme unlocks with Premium membership."
+  },
+  "previewCard": {
+    "preview": "Preview",
+    "dhikrDetail": "Dhikr Detail"
+  },
+  "gridSection": {
+    "readyThemes": "Ready Themes",
+    "premiumBadge": "Premium"
+  }
+}

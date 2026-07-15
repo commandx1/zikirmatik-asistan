@@ -12,26 +12,19 @@ export function withAlpha(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
 }
 
-/** Mongo $dayOfWeek: 1=Sunday..7=Saturday. Turkish short labels. */
-export const WEEKDAY_LABELS: Record<number, string> = {
-  1: "Paz",
-  2: "Pzt",
-  3: "Sal",
-  4: "Çar",
-  5: "Per",
-  6: "Cum",
-  7: "Cmt"
-};
+/**
+ * Mongo $dayOfWeek: 1=Sunday..7=Saturday. Labels themselves live in the
+ * `stats` i18n namespace under `weekdayLabels.<key>` — look them up via
+ * useTranslation at the call site instead of a hardcoded map here.
+ */
 
 /** Display order starting Monday (Turkish convention). */
 export const WEEKDAY_DISPLAY_ORDER = [2, 3, 4, 5, 6, 7, 1];
 
-export const SOURCE_LABELS: Record<StatsSourceKey, string> = {
-  manual: "Elle",
-  ai: "AI önerisi",
-  "special-day": "Özel gün",
-  notification: "Hatırlatıcı"
-};
+/**
+ * Source labels live in the `stats` i18n namespace under
+ * `sourceLabels.<key>` — look them up via useTranslation at the call site.
+ */
 
 /** Distinct hue offsets for source segments, derived from the theme accent. */
 export const SOURCE_ORDER: StatsSourceKey[] = [

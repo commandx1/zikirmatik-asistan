@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Pressable, ScrollView, Text, useWindowDimensions } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
 import { COLLECTION_CATEGORIES } from "../types";
 import type { CollectionCategory } from "../types";
 
@@ -11,6 +12,7 @@ type Props = {
 
 export function CollectionCategoryFilter({ activeCategory, onChange }: Props) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("collections");
   const { width: screenWidth } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
   const itemLayouts = useRef<{ x: number; width: number }[]>([]);
@@ -56,7 +58,7 @@ export function CollectionCategoryFilter({ activeCategory, onChange }: Props) {
               className="text-sm font-medium"
               style={{ color: isActive ? tokens.bg : tokens.textMuted }}
             >
-              {cat.label}
+              {t(`collections:categories.${cat.labelKey}`)}
             </Text>
           </Pressable>
         );

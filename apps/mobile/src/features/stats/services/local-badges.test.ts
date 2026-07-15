@@ -1,5 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { computeLocalBadges, deriveLocalActivityStats } from "./local-badges";
+
+vi.mock("../../../i18n", () => ({
+  i18n: {
+    t: (key: string) => key
+  }
+}));
 
 describe("deriveLocalActivityStats", () => {
   it("counts free-mode taps toward all-time count and today's active day", () => {

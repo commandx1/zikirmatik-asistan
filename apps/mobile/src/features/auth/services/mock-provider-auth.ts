@@ -1,6 +1,7 @@
 import type { AuthProvider } from '@zikirmatik/shared';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
+import { i18n } from '../../../i18n';
 
 export class ProviderAuthError extends Error {
   constructor(
@@ -16,7 +17,7 @@ export async function requestProviderIdToken(provider: AuthProvider) {
   if (process.env.EXPO_PUBLIC_AUTH_SIMULATE_PROVIDER_OUTAGE === '1') {
     throw new ProviderAuthError(
       'transient',
-      'Kimlik sağlayıcısına şu an ulaşılamıyor. Bağlantını kontrol edip tekrar deneyebilirsin.',
+      i18n.t('auth:errors.providerOutage'),
     );
   }
 
@@ -75,14 +76,14 @@ export async function clearProviderSession(provider: AuthProvider) {
 
 async function requestAppleIdentityToken() {
   if (Platform.OS !== 'ios') {
-    throw new ProviderAuthError('terminal', 'Apple girişi sadece iOS için kullanılabilir.');
+    throw new ProviderAuthError('terminal', i18n.t('auth:errors.appleIosOnly'));
   }
 
   const available = await AppleAuthentication.isAvailableAsync();
   if (!available) {
     throw new ProviderAuthError(
       'terminal',
-      'Bu cihazda Apple ile Giriş kullanılamıyor.',
+      i18n.t('auth:errors.appleUnavailable'),
     );
   }
 
@@ -97,7 +98,7 @@ async function requestAppleIdentityToken() {
     if (!credential.identityToken) {
       throw new ProviderAuthError(
         'terminal',
-        'Apple kimlik doğrulama tokenı alınamadı.',
+        i18n.t('auth:errors.appleTokenMissing'),
       );
     }
 
@@ -108,12 +109,12 @@ async function requestAppleIdentityToken() {
     }
 
     if (isCancelError(error)) {
-      throw new ProviderAuthError('terminal', 'Giriş işlemi iptal edildi.');
+      throw new ProviderAuthError('terminal', i18n.t('auth:errors.signInCancelled'));
     }
 
     throw new ProviderAuthError(
       'transient',
-      'Apple ile giriş sırasında beklenmeyen bir hata oluştu.',
+      i18n.t('auth:errors.appleUnexpected'),
     );
   }
 }
@@ -126,7 +127,7 @@ async function requestGoogleIdentityToken() {
   if (Platform.OS !== 'android') {
     throw new ProviderAuthError(
       'terminal',
-      'Google girişi bu platformda etkin değil.',
+      i18n.t('auth:errors.googlePlatformDisabled'),
     );
   }
 
@@ -135,7 +136,7 @@ async function requestGoogleIdentityToken() {
   if (!webClientId) {
     throw new ProviderAuthError(
       'terminal',
-      'Google web client id bulunamadı. EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID değerini ayarla.',
+      i18n.t('auth:errors.googleWebClientIdMissing'),
     );
   }
 
@@ -143,7 +144,7 @@ async function requestGoogleIdentityToken() {
   if (!google) {
     throw new ProviderAuthError(
       'terminal',
-      'Google Sign-In native modülü bulunamadı. Expo Go yerine development build ile açmalısın.',
+      i18n.t('auth:errors.googleModuleMissing'),
     );
   }
 
@@ -162,14 +163,14 @@ async function requestGoogleIdentityToken() {
 
     const response = await GoogleSignin.signIn();
     if (!isSuccessResponse(response)) {
-      throw new ProviderAuthError('terminal', 'Giriş işlemi iptal edildi.');
+      throw new ProviderAuthError('terminal', i18n.t('auth:errors.signInCancelled'));
     }
 
     const idToken = response.data.idToken;
     if (!idToken) {
       throw new ProviderAuthError(
         'terminal',
-        'Google id_token alınamadı. Web client id ayarını kontrol et.',
+        i18n.t('auth:errors.googleIdTokenMissing'),
       );
     }
 
@@ -181,20 +182,20 @@ async function requestGoogleIdentityToken() {
 
     if (isErrorWithCode(error)) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        throw new ProviderAuthError('terminal', 'Giriş işlemi iptal edildi.');
+        throw new ProviderAuthError('terminal', i18n.t('auth:errors.signInCancelled'));
       }
 
       if (error.code === statusCodes.IN_PROGRESS) {
         throw new ProviderAuthError(
           'transient',
-          'Google giriş işlemi zaten devam ediyor.',
+          i18n.t('auth:errors.googleInProgress'),
         );
       }
 
       if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         throw new ProviderAuthError(
           'terminal',
-          'Google Play Services kullanılamıyor.',
+          i18n.t('auth:errors.googlePlayServicesUnavailable'),
         );
       }
     }
@@ -207,13 +208,13 @@ async function requestGoogleIdentityToken() {
     if (diagnostic) {
       throw new ProviderAuthError(
         'transient',
-        `Google giriş hatası (${diagnostic}). ${configSummary}`,
+        i18n.t('auth:errors.googleErrorWithDiagnostic', { diagnostic, configSummary }),
       );
     }
 
     throw new ProviderAuthError(
       'transient',
-      `Google ile giriş sırasında beklenmeyen bir hata oluştu. ${configSummary}`,
+      i18n.t('auth:errors.googleUnexpected', { configSummary }),
     );
   }
 }

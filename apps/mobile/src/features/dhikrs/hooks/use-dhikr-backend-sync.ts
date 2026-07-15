@@ -1,6 +1,9 @@
 import { useEffect } from "react";
+import { i18n } from "../../../i18n";
 import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
+import { useProfileStore } from "../../../store/profile-store";
+import { toIntlLocale } from "../../../lib/locale-format";
 import { useGuestMigrationStore } from "../../../store/guest-migration-store";
 import { listAiRecommendations } from "../../ai-guide/services/ai-api-client";
 import { listDhikrLogsByUser } from "../services/dhikr-logs-api-client";
@@ -148,7 +151,7 @@ export function useDhikrBackendSync() {
         }
 
         const message =
-          error instanceof DhikrsApiError ? error.message : "Zikir verisi senkronize edilemedi.";
+          error instanceof DhikrsApiError ? error.message : i18n.t("dhikrs:errors.syncFailed");
         setSyncError(message);
       }
     };
@@ -163,11 +166,13 @@ export function useDhikrBackendSync() {
 function toLastActivityLabel(createdAt: string) {
   const date = new Date(createdAt);
   if (Number.isNaN(date.getTime())) {
-    return "Bugün";
+    return i18n.t("focus:relativeDate.today");
   }
 
-  return `Bugün ${date.toLocaleTimeString("tr-TR", {
-    hour: "2-digit",
-    minute: "2-digit"
-  })}`;
+  return i18n.t("focus:relativeDate.todayAt", {
+    time: date.toLocaleTimeString(toIntlLocale(useProfileStore.getState().locale), {
+      hour: "2-digit",
+      minute: "2-digit"
+    })
+  });
 }

@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
 import { ZikirFilterTabs } from "./components/zikir-filter-tabs";
@@ -16,6 +17,7 @@ export function FocusScreen() {
 }
 
 function FocusContent() {
+  const { t } = useTranslation("focus");
   const {
     refresh,
     isRefreshing,
@@ -53,10 +55,10 @@ function FocusContent() {
         </PageScrollView>
         <ZikirFormModal
           visible={isUpdateOpen}
-          title="Zikri Güncelle"
-          description="Zikir adını, okunuşunu, anlamını ve hedefini güncelleyebilirsin."
-          submitLabel="Güncelle"
-          savingLabel="Güncelleniyor"
+          title={t("focus:editModal.title")}
+          description={t("focus:editModal.description")}
+          submitLabel={t("focus:editModal.submitLabel")}
+          savingLabel={t("focus:editModal.savingLabel")}
           isSaving={isUpdatingDhikr}
           error={updateError}
           initialValues={initialValues}

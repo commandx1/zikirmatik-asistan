@@ -74,7 +74,6 @@ export class UsersService {
         this.asObjectId(userId),
         {
           $set: {
-            ...(payload.city ? { city: payload.city } : {}),
             onboarding: {
               ...payload,
               completedAt: now,

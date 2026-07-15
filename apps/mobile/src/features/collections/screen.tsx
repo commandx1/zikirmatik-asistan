@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useRef, useMemo } from "react";
 import { ActivityIndicator, FlatList, Platform, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import PagerView from "react-native-pager-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeTokens } from "@zikirmatik/ui";
@@ -18,6 +19,7 @@ import type { BackendCollection } from "./services/collections-api-client";
 
 export function CollectionsScreen() {
   const router = useRouter();
+  const { t } = useTranslation("collections");
   const { tokens } = useThemeTokens();
   const insets = useSafeAreaInsets();
   const bottomPadding =
@@ -92,7 +94,7 @@ export function CollectionsScreen() {
           }}
           ListEmptyComponent={
             <View className="mt-16 items-center">
-              <Text className="text-[--text-muted]">Koleksiyon bulunamadı.</Text>
+              <Text className="text-[--text-muted]">{t("collections:screen.emptyList")}</Text>
             </View>
           }
         />
@@ -102,7 +104,7 @@ export function CollectionsScreen() {
 
   return (
     <PageLayout>
-      <PageHeader title="Koleksiyonlar" />
+      <PageHeader title={t("collections:screen.title")} />
 
       <CollectionCategoryFilter
         activeCategory={activeCategory}

@@ -1,0 +1,18 @@
+{
+  "screen": {
+    "title": "Tema Seçimi",
+    "subtitle": "Uygulamanın görünümünü kişiselleştir",
+    "premiumActiveBanner": "Premium üyelik aktif: tüm temalar açık.",
+    "premiumLockedBanner": "Bazı temalar Premium ile açılır.",
+    "saveChanges": "Değişiklikleri Kaydet",
+    "lockedThemeMessage": "Bu tema Premium üyelikte açılır."
+  },
+  "previewCard": {
+    "preview": "Önizleme",
+    "dhikrDetail": "Zikir Detayı"
+  },
+  "gridSection": {
+    "readyThemes": "Hazır Temalar",
+    "premiumBadge": "Premium"
+  }
+}

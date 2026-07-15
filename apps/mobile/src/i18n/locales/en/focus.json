@@ -1,0 +1,79 @@
+{
+  "editModal": {
+    "title": "Update Dhikr",
+    "description": "You can update the dhikr's name, transliteration, meaning, and target.",
+    "submitLabel": "Update",
+    "savingLabel": "Updating"
+  },
+  "createModal": {
+    "title": "New Dhikr",
+    "description": "Add your own dhikr and start it from the Home counter.",
+    "submitLabel": "Save",
+    "savingLabel": "Saving"
+  },
+  "form": {
+    "nameLabel": "Dhikr name",
+    "namePlaceholder": "e.g. Salawat",
+    "transliterationLabel": "Transliteration (optional)",
+    "transliterationPlaceholder": "e.g. Allahumma salli ala Muhammad",
+    "meaningLabel": "Meaning (optional)",
+    "meaningPlaceholder": "e.g. O Allah, send blessings upon Muhammad",
+    "targetLabel": "Target",
+    "targetPlaceholder": "0 = unlimited",
+    "errors": {
+      "nameRequired": "Dhikr name is required.",
+      "targetInvalid": "The target must be 0 or greater."
+    }
+  },
+  "filters": {
+    "all": "All",
+    "active": "Active",
+    "completed": "Completed",
+    "favorites": "Favorites"
+  },
+  "header": {
+    "title": "My Dhikrs"
+  },
+  "list": {
+    "empty": "No dhikrs found for this filter."
+  },
+  "card": {
+    "meaning": "Meaning",
+    "virtue": "Virtue",
+    "source": "Source",
+    "assistantNote": "Assistant Note",
+    "favorited": "Favorited",
+    "addToFavorites": "Add to Favorites",
+    "updating": "Updating",
+    "update": "Update",
+    "deleting": "Deleting",
+    "delete": "Delete",
+    "streakDays": "{{count}} days",
+    "detail": "Detail",
+    "assistant": "Guide",
+    "start": "Start",
+    "deleteModal": {
+      "title": "Delete Dhikr",
+      "message": "Are you sure you want to remove this dhikr from your list?",
+      "confirmLabel": "Delete",
+      "cancelLabel": "Cancel"
+    }
+  },
+  "relativeDate": {
+    "saved": "Saved",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "notStarted": "Not started yet",
+    "todayAt": "Today {{time}}"
+  },
+  "fallback": {
+    "savedDhikr": "Saved Dhikr",
+    "thisDhikr": "this dhikr"
+  },
+  "errors": {
+    "dhikrUpdateFailed": "Couldn't update the dhikr. Please try again.",
+    "loginRequiredToSave": "You need to sign in to save.",
+    "dhikrLogSaveFailed": "Couldn't save the dhikr log.",
+    "dhikrSaveFailed": "Couldn't save the dhikr. Please try again."
+  }
+}

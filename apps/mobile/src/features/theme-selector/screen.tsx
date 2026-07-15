@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { ScrollView, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import type { ThemeName } from "@zikirmatik/shared";
 import { BottomActionFooter } from "../../components/ui/bottom-action-footer";
 import { useThemeTransition } from "../../contexts/theme-transition-context";
@@ -11,6 +12,7 @@ import { ThemeGridSection } from "./components/theme-grid-section";
 import { useThemeSelector } from "./hooks/use-theme-selector";
 
 export function ThemeSelectorScreen() {
+  const { t } = useTranslation("theme-selector");
   const selector = useThemeSelector();
   const { triggerTransition } = useThemeTransition();
   const selectedCardRef = useRef<View>(null);
@@ -31,17 +33,17 @@ export function ThemeSelectorScreen() {
   return (
     <PageLayout>
       <View className="flex-1 w-full">
-        <SelectorHeader title="Tema Seçimi" subtitle="Uygulamanın görünümünü kişiselleştir" showBackButton />
+        <SelectorHeader title={t("theme-selector:screen.title")} subtitle={t("theme-selector:screen.subtitle")} showBackButton />
         <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={24} scrollRef={scrollRef}>
           <View className="gap-8">
             {selector.isPremium ? (
               <View className="rounded-xl border border-[#C8972A]/30 bg-[#C8972A]/10 px-4 py-3">
-                <Text className="text-sm font-semibold text-[#EAC46B]">Premium üyelik aktif: tüm temalar açık.</Text>
+                <Text className="text-sm font-semibold text-[#EAC46B]">{t("theme-selector:screen.premiumActiveBanner")}</Text>
               </View>
             ) : (
               <View className="rounded-xl border border-white/10 bg-[--card] px-4 py-3">
                 <Text className="text-sm font-semibold text-[--text-primary]">
-                  Bazı temalar Premium ile açılır.
+                  {t("theme-selector:screen.premiumLockedBanner")}
                 </Text>
               </View>
             )}
@@ -63,7 +65,7 @@ export function ThemeSelectorScreen() {
         <BottomActionFooter>
           {selector.hasThemeChanges ? (
             <PrimaryCtaButton
-              label="Değişiklikleri Kaydet"
+              label={t("theme-selector:screen.saveChanges")}
               onPress={handleSave}
               textClassName="text-base"
             />

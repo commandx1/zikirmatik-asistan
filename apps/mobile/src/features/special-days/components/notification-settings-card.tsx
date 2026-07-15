@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { TogglePill } from "./toggle-pill";
 
@@ -11,6 +12,7 @@ type NotificationSettingsCardProps = {
 
 export function NotificationSettingsCard({ enabled, onToggle }: NotificationSettingsCardProps) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("special-days");
 
   return (
     <ThemedCard className="flex-row items-center justify-between rounded-2xl px-4 py-4" borderClassName="border-white/5">
@@ -19,8 +21,8 @@ export function NotificationSettingsCard({ enabled, onToggle }: NotificationSett
           <FontAwesome6 name="bell" iconStyle="regular" size={12} color={tokens.textMuted} />
         </View>
         <View className="flex-1">
-          <Text className="text-sm font-medium text-[--text-primary]">Kandil bildirimlerini al</Text>
-          <Text className="pt-1 text-xs text-[--text-muted]">Kandilden 1 gün ve 1 saat önce bildirim</Text>
+          <Text className="text-sm font-medium text-[--text-primary]">{t("special-days:notificationSettings.title")}</Text>
+          <Text className="pt-1 text-xs text-[--text-muted]">{t("special-days:notificationSettings.subtitle")}</Text>
         </View>
       </View>
 

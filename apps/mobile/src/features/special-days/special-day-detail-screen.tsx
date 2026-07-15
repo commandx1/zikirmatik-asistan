@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Pressable, Text, View } from 'react-native'
 import { useThemeTokens } from '@zikirmatik/ui'
+import { useTranslation } from 'react-i18next'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { DhikrResumeModal } from '../../components/ui/dhikr-resume-modal'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
@@ -36,6 +37,7 @@ function toDateKey(value: Date) {
 export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
   const router = useRouter()
   const { tokens } = useThemeTokens()
+  const { t } = useTranslation('special-days')
 
   const dhikrItems = useDhikrStore(state => state.items)
   const selectedDhikrId = useDhikrStore(state => state.selectedDhikrId)
@@ -76,7 +78,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
           meaning: item.meaning,
           current: 0,
           target,
-          lastActivityLabel: 'Henüz başlanmadı',
+          lastActivityLabel: t('special-days:detail.notStarted'),
           streakDays: 0,
           isFavorite: false,
         })
@@ -115,7 +117,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
     if (!pendingStart || isSavingUnsaved) return
     const selectedDhikr = dhikrItems.find(d => d.id === selectedDhikrId)
     if (!selectedDhikr || authStatus !== 'authenticated' || !sessionUserId) {
-      setUnsavedSaveError('Kaydetmek için giriş yapmalısın.')
+      setUnsavedSaveError(t('special-days:errors.loginRequired'))
       return
     }
     setIsSavingUnsaved(true)
@@ -140,7 +142,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
       setPendingStart(null)
       startDhikr(item, target, progressCount)
     } catch (e) {
-      setUnsavedSaveError(e instanceof Error ? e.message : 'Zikir kaydedilemedi.')
+      setUnsavedSaveError(e instanceof Error ? e.message : t('special-days:errors.saveFailed'))
     } finally {
       setIsSavingUnsaved(false)
     }
@@ -150,7 +152,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
     <PageLayout>
       <View className='flex-1 w-full'>
         <PageHeader
-          title='Özel Gün Detayı'
+          title={t('special-days:detail.pageTitle')}
           leftIconName='chevron-left'
           onPressLeft={() => {
             router.back()
@@ -173,7 +175,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
             <>
               <ThemedCard className='rounded-2xl p-5' borderClassName='border-white/5' elevated>
                 <Text className='text-xs font-semibold uppercase tracking-[1.1px] text-[--text-muted]'>
-                  Özel Gün Detayı
+                  {t('special-days:detail.pageTitle')}
                 </Text>
                 <Text className='mt-2 text-2xl leading-[34px] font-semibold tracking-tight text-[--text-primary]' numberOfLines={2}>
                   {detail.detail.name}
@@ -185,21 +187,24 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                 <View className='mt-4 flex-row items-center gap-2'>
                   <FontAwesome6 name='check-double' size={12} color={tokens.accent} />
                   <Text className='text-xs text-[--text-muted]'>
-                    Tamamlanan: {detail.detail.progress.completedCount}/{detail.detail.progress.totalCount}
+                    {t('special-days:detail.completedLabel', {
+                      completed: detail.detail.progress.completedCount,
+                      total: detail.detail.progress.totalCount
+                    })}
                   </Text>
                 </View>
               </ThemedCard>
 
               <ThemedCard className='mt-4 rounded-2xl p-4' borderClassName='border-white/5'>
                 <Text className='text-xs font-semibold uppercase tracking-[1px] text-[--text-muted]'>
-                  Günün Teması
+                  {t('special-days:detail.themeTitle')}
                 </Text>
                 <Text className='mt-1 text-base font-semibold text-[--text-primary]'>{detail.detail.themeTitle}</Text>
                 <Text className='mt-1 text-sm leading-6 text-[--text-muted]'>{detail.detail.themeSummary}</Text>
               </ThemedCard>
 
               <View className='mt-6 gap-3'>
-                <Text className='px-1 text-sm font-semibold text-[--text-primary]'>Önerilen Zikirler</Text>
+                <Text className='px-1 text-sm font-semibold text-[--text-primary]'>{t('special-days:detail.recommendedDhikrs')}</Text>
                 {detail.detail.recommendedDhikrs.map(item => {
                   const matchedLocal = dhikrItems.find(dhikr => dhikr.id === item.id)
                   const target = Math.max(1, matchedLocal?.target ?? item.progressTarget ?? item.recommendedCount ?? 1)
@@ -219,7 +224,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                             isCompleted ? 'bg-[--success]/15 text-[--success]' : 'bg-[--accent]/15 text-[--accent]'
                           }`}
                         >
-                          {isCompleted ? 'Tamamlandı' : `${progressCount}/${target}`}
+                          {isCompleted ? t('special-days:detail.completed') : `${progressCount}/${target}`}
                         </Text>
                       </View>
 
@@ -231,7 +236,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
 
                       <View className='mt-4'>
                         <View className='mb-2 flex-row items-center justify-between'>
-                          <Text className='text-xs text-[--text-muted]'>Hedef: {target} tekrar</Text>
+                          <Text className='text-xs text-[--text-muted]'>{t('special-days:detail.target', { target })}</Text>
                           <Text className={`text-xs font-semibold ${isCompleted ? 'text-[--success]' : 'text-[--accent]'}`}>
                             %{Math.round(progressPct)}
                           </Text>
@@ -253,7 +258,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                           className='rounded-full bg-[--accent] px-4 py-2'
                         >
                           <Text className='text-xs font-semibold' style={{ color: tokens.bg }}>
-                            Başla
+                            {t('special-days:detail.start')}
                           </Text>
                         </Pressable>
                       </View>

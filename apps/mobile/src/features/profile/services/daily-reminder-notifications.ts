@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
+import { i18n } from "../../../i18n";
 import { ESMAUL_HUSNA } from "../../focus/data";
 
 const DAILY_REMINDER_KIND = "daily-dhikr-reminder";
@@ -60,12 +61,12 @@ async function runSync(input: {
     const names = weekdayEsmas.get(weekday) ?? [];
     const body =
       names.length > 0
-        ? `Bugünkü esma: ${names.join(", ")}`
-        : "Bugünkü zikrini tamamlamak için kısa bir mola ver.";
+        ? i18n.t("notifications:dailyReminder.bodyWithNames", { names: names.join(", ") })
+        : i18n.t("notifications:dailyReminder.bodyDefault");
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Günlük zikir vaktin",
+        title: i18n.t("notifications:dailyReminder.title"),
         body,
         sound: Platform.OS === "ios" ? "default" : undefined,
         data: { kind: DAILY_REMINDER_KIND }
@@ -131,7 +132,7 @@ async function ensureAndroidChannel() {
   }
 
   await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
-    name: "Günlük Hatırlatma",
+    name: i18n.t("notifications:dailyReminder.channelName"),
     importance: Notifications.AndroidImportance.DEFAULT,
     vibrationPattern: [0, 200, 150, 200],
     lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC

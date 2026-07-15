@@ -1,0 +1,50 @@
+{
+  "header": {
+    "title": "Kandil & Özel Günler",
+    "subtitle": "Kutsal gecelere hazırlan"
+  },
+  "countdown": {
+    "dayUnit": "GÜN"
+  },
+  "hero": {
+    "premiumLocked": "Premium Kilidi",
+    "remainingPrefix": "Kalan: {{remaining}}"
+  },
+  "notificationSettings": {
+    "title": "Kandil bildirimlerini al",
+    "subtitle": "Kandilden 1 gün ve 1 saat önce bildirim"
+  },
+  "ramadanMode": {
+    "title": "Ramazan Modu",
+    "sahur": "Sahur",
+    "iftar": "İftar",
+    "cta": "Ramazan zikirlerine git"
+  },
+  "upcoming": {
+    "title": "Yaklaşan Günler",
+    "premiumLocked": "Premium Kilidi"
+  },
+  "remaining": {
+    "today": "Bugün",
+    "oneDay": "1 gün",
+    "days": "{{count}} gün"
+  },
+  "errors": {
+    "homeLoadFailed": "Özel gün verisi alınamadı.",
+    "detailLoadFailed": "Özel gün detayı alınamadı.",
+    "fetchFailed": "Özel gün verisi alınamadı.",
+    "serverUnreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.",
+    "loginRequired": "Kaydetmek için giriş yapmalısın.",
+    "saveFailed": "Zikir kaydedilemedi."
+  },
+  "detail": {
+    "pageTitle": "Özel Gün Detayı",
+    "notStarted": "Henüz başlanmadı",
+    "themeTitle": "Günün Teması",
+    "completedLabel": "Tamamlanan: {{completed}}/{{total}}",
+    "recommendedDhikrs": "Önerilen Zikirler",
+    "completed": "Tamamlandı",
+    "target": "Hedef: {{target}} tekrar",
+    "start": "Başla"
+  }
+}

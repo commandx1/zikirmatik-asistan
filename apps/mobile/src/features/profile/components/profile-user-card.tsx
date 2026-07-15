@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Image, Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 
 type ProfileUserCardProps = {
@@ -18,6 +19,7 @@ export function ProfileUserCard({
   onPressUpgrade
 }: ProfileUserCardProps) {
   const { fontFamily } = useThemePreferences();
+  const { t } = useTranslation("profile");
   const strongTextStyle =
     fontFamily === "merriweather"
       ? { fontFamily: "Merriweather_700Bold", fontWeight: "normal" as const }
@@ -58,11 +60,11 @@ export function ProfileUserCard({
       {isPremium ? (
         <View className="flex-row items-center gap-1.5 rounded-full bg-[--accent] px-4 py-1.5 shadow-md shadow-[#C8972A]/30">
           <FontAwesome6 name="star" iconStyle="solid" size={11} color="#0F1B2D" />
-          <Text className="text-sm font-bold text-[#0F1B2D]" style={strongTextStyle}>Premium</Text>
+          <Text className="text-sm font-bold text-[#0F1B2D]" style={strongTextStyle}>{t("profile:userCard.premiumBadge")}</Text>
         </View>
       ) : (
         <Pressable onPress={onPressUpgrade} className="rounded-full border border-[--accent]/20 bg-[--accent]/10 px-5 py-2">
-          <Text className="text-sm font-semibold text-[--accent]">Premium'a Geç</Text>
+          <Text className="text-sm font-semibold text-[--accent]">{t("profile:userCard.upgradeButton")}</Text>
         </Pressable>
       )}
     </View>

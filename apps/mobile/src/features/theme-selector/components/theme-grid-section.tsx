@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import type { ThemeName } from "@zikirmatik/shared";
 import type { RefObject } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import type { ThemeOption } from "../hooks/use-theme-selector";
 
 type ThemeGridSectionProps = {
@@ -12,9 +13,10 @@ type ThemeGridSectionProps = {
 };
 
 export function ThemeGridSection({ options, selected, onSelect, selectedCardRef }: ThemeGridSectionProps) {
+  const { t } = useTranslation("theme-selector");
   return (
     <View>
-      <Text className="mb-3 px-1 text-sm font-semibold uppercase tracking-[1.1px] text-[--text-muted]">Hazır Temalar</Text>
+      <Text className="mb-3 px-1 text-sm font-semibold uppercase tracking-[1.1px] text-[--text-muted]">{t("theme-selector:gridSection.readyThemes")}</Text>
       <View className="flex-row flex-wrap justify-between gap-y-3">
         {options.map((option) => {
           const isSelected = option.id === selected;
@@ -35,7 +37,7 @@ export function ThemeGridSection({ options, selected, onSelect, selectedCardRef 
               {isLocked ? (
                 <View className="absolute left-2 top-2 z-10 flex-row items-center gap-1 rounded-full border border-[--accent]/30 bg-[--accent]/15 px-2 py-1">
                   <FontAwesome6 name="lock" size={8} color="#C8972A" />
-                  <Text className="text-xs font-bold uppercase tracking-[0.5px] text-[--accent]">Premium</Text>
+                  <Text className="text-xs font-bold uppercase tracking-[0.5px] text-[--accent]">{t("theme-selector:gridSection.premiumBadge")}</Text>
                 </View>
               ) : null}
 

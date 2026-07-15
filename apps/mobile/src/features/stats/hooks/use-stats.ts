@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { StatsSummary, StatsTopDhikr } from "@zikirmatik/shared";
 import { toDateKey } from "@zikirmatik/shared";
+import { i18n } from "../../../i18n";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
@@ -22,7 +23,7 @@ export type UseStatsResult = {
 };
 
 function toMessage(error: unknown): string {
-  return error instanceof Error ? error.message : "İstatistikler yüklenemedi.";
+  return error instanceof Error ? error.message : i18n.t("stats:errors.loadFailed");
 }
 
 export function useStats(): UseStatsResult {
@@ -204,7 +205,7 @@ function buildTopDhikrs(items: ZikirItem[]): StatsTopDhikr[] {
   return items
     .map((item) => ({
       key: item.id,
-      label: item.nameTurkish || item.transliteration || "Zikir",
+      label: item.nameTurkish || item.transliteration || i18n.t("stats:misc.defaultDhikrLabel"),
       totalCount: Math.max(0, Math.floor(item.current)),
       sessions: item.current > 0 ? 1 : 0
     }))

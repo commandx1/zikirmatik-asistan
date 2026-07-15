@@ -68,12 +68,10 @@ export function useUserPreferencesSync() {
 
         hydrateProfile({
           displayName: user.displayName,
-          city: user.city,
           isPremium: user.isPremium,
           reminderTime: user.notifSettings?.reminderTime,
           dailyReminderEnabled: user.notifSettings?.dailyReminder,
           kandilNotificationsEnabled: user.notifSettings?.kandilNotifications,
-          adhanNotificationsEnabled: user.notifSettings?.azanNotifications,
           hapticsEnabled: user.hapticsEnabled
         });
         hydrateAppearance({

@@ -1,0 +1,58 @@
+{
+  "appSelectbox": {
+    "placeholder": "Seçiniz",
+    "title": "Seçenekler"
+  },
+  "dhikrContentStack": {
+    "arabic": "Arapça",
+    "transliteration": "Okunuş",
+    "meaning": "Anlam"
+  },
+  "dhikrResumeModal": {
+    "title": "Nasıl devam etmek istersin?",
+    "messageWithCount": "\"{{name}}\" için {{count}} adet sayım mevcut.",
+    "messageActive": "\"{{name}}\" şu an aktif seçili.",
+    "continue": "Kaldığı Yerden Devam Et",
+    "fresh": "Sıfırdan Başla",
+    "cancel": "İptal"
+  },
+  "forceUpdateModal": {
+    "title": "Güncelleme Gerekli",
+    "message": "Bu sürüm artık desteklenmiyor. Uygulamayı kullanmaya devam etmek için lütfen mağazadan güncelleyin.",
+    "action": "Güncelle"
+  },
+  "moreMenu": {
+    "stats": "İstatistik",
+    "collections": "Koleksiyonlar",
+    "profile": "Profil"
+  },
+  "notificationPermissionDeniedModal": {
+    "title": "Bildirim izni kapalı",
+    "message": "Günlük hatırlatmaları açmak için Ayarlar'dan bildirimlere izin vermen gerekiyor.",
+    "openSettings": "Ayarları Aç",
+    "close": "Kapat"
+  },
+  "notificationPermissionModal": {
+    "title": "Uygulama bildirimleri",
+    "message": "Hatırlatmalar ve önemli günler gibi konularda seni bilgilendirebilmemiz için bildirim göndermemize izin verir misin?",
+    "allow": "İzin ver",
+    "notNow": "Şimdi değil"
+  },
+  "unsavedDhikrTransitionModal": {
+    "title": "Kaydedilmemiş zikir var",
+    "message": "{{title}} için {{count}} çekim kaydedilmedi. Devam etmeden önce kaydetmek ister misin?",
+    "saveAndContinue": "Kaydet ve Devam Et",
+    "continueWithoutSaving": "Kaydetmeden Devam Et",
+    "cancel": "Vazgeç"
+  },
+  "screen": {
+    "title": "Bileşen Kütüphanesi",
+    "subtitle": "Reusable UI envanteri",
+    "moodCalm": "Huzurlu",
+    "moodStressed": "Stresli",
+    "moodTired": "Yorgun",
+    "countdownTitle": "Mevlid Kandili",
+    "countdownLabel": "4 gün kaldı",
+    "footerNote": "Bu ekran docs/design/components parity referansıdır."
+  }
+}

@@ -1,6 +1,7 @@
 import { toDateKey } from "@zikirmatik/shared";
 import type { StatsBadge } from "@zikirmatik/shared";
 import { calculateLocalCompletionStreak, resolveActivityDateKey } from "../../home/services/local-streak";
+import { i18n } from "../../../i18n";
 
 // Same shape as the dhikr-store items consumed by streak-reminder-notifications.ts
 // (see deriveStreakReminderStatus) — kept minimal so this module has no
@@ -8,6 +9,7 @@ import { calculateLocalCompletionStreak, resolveActivityDateKey } from "../../ho
 export type ActivityItem = {
   current: number;
   lastActivityLabel?: string;
+  lastActivityAt?: string;
 };
 
 export type LocalActivityStats = {
@@ -18,7 +20,7 @@ export type LocalActivityStats = {
 
 type BadgeDefinition = {
   key: string;
-  label: string;
+  labelKey: string;
   metric: keyof LocalActivityStats;
   threshold: number;
 };
@@ -29,9 +31,9 @@ type BadgeDefinition = {
 // the same milestones. Kept intentionally small — the backend has a richer
 // set once account-level history exists.
 const BADGE_DEFINITIONS: BadgeDefinition[] = [
-  { key: "first-steps", label: "Ilk Adimlar", metric: "allTimeCount", threshold: 33 },
-  { key: "steady-streak", label: "7 Gunluk Seri", metric: "longestStreak", threshold: 7 },
-  { key: "active-days", label: "30 Aktif Gun", metric: "totalDaysActive", threshold: 30 }
+  { key: "first-steps", labelKey: "firstSteps", metric: "allTimeCount", threshold: 33 },
+  { key: "steady-streak", labelKey: "steadyStreak", metric: "longestStreak", threshold: 7 },
+  { key: "active-days", labelKey: "activeDays", metric: "totalDaysActive", threshold: 30 }
 ];
 
 // Derives the same allTimeCount/longestStreak/totalDaysActive triad the
@@ -72,7 +74,7 @@ export function computeLocalBadges(stats: LocalActivityStats): StatsBadge[] {
     const value = stats[definition.metric];
     return {
       key: definition.key,
-      label: definition.label,
+      label: i18n.t(`stats:badges.${definition.labelKey}`),
       achieved: value >= definition.threshold,
       progress: Math.max(0, Math.min(1, value / definition.threshold))
     };

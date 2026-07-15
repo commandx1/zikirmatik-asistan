@@ -4,8 +4,4 @@ export class UpdateOnboardingDto {
   @IsOptional()
   @IsString()
   purpose?: string;
-
-  @IsOptional()
-  @IsString()
-  city?: string;
 }

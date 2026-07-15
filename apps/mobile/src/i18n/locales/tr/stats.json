@@ -1,0 +1,111 @@
+{
+  "screen": {
+    "title": "İstatistikler",
+    "subtitleGuest": "Kaydettiğin zikirlerin özeti",
+    "subtitleWithStreak": "{{count}} günlük serin devam ediyor",
+    "subtitleDefault": "Kaydettiğin zikirlerin özeti",
+    "retry": "Tekrar dene",
+    "sections": {
+      "dailyActivity": {
+        "title": "Günlük aktivite",
+        "subtitle": "Son 7 veya 30 günlük zikir sayın"
+      },
+      "activityCalendar": {
+        "title": "Aktivite takvimi",
+        "subtitle": "Son bir yıllık zikir yoğunluğun"
+      },
+      "periodComparison": {
+        "title": "Dönem karşılaştırması",
+        "subtitle": "Bu hafta ve bu ayın önceki dönemle kıyası"
+      },
+      "activeDays": {
+        "title": "Aktif günler",
+        "subtitle": "Haftanın hangi günlerinde daha aktifsin"
+      },
+      "activeHours": {
+        "title": "Aktif saatler",
+        "subtitle": "Günün hangi saatlerinde daha aktifsin"
+      },
+      "sourceDistribution": {
+        "title": "Kaynak dağılımı",
+        "subtitle": "Zikirlerin nereden eklendiği"
+      },
+      "topDhikrs": {
+        "title": "En çok çekilen zikirler",
+        "subtitle": "Toplam sayıya göre sıralanmış"
+      },
+      "badges": {
+        "title": "Rozetler",
+        "subtitle": "Kazandığın ve yolda olan başarılar"
+      }
+    }
+  },
+  "errors": {
+    "loadFailed": "İstatistikler yüklenemedi.",
+    "fetchFailed": "İstatistik verisi alınamadı.",
+    "serverUnreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin."
+  },
+  "misc": {
+    "defaultDhikrLabel": "Zikir"
+  },
+  "badges": {
+    "firstSteps": "İlk Adımlar",
+    "steadyStreak": "İstikrarlı Seri",
+    "activeDays": "Aktif Günler",
+    "achieved": "Kazanıldı"
+  },
+  "activityHeatmap": {
+    "low": "az",
+    "high": "çok"
+  },
+  "badgeCelebration": {
+    "title": "Yeni rozet kazandın!",
+    "description": "Bu başarını istatistikler bölümünden her zaman görebilirsin.",
+    "close": "Kapat",
+    "great": "Harika!"
+  },
+  "dailyBarChart": {
+    "totalLabel": "Toplam {{count}}",
+    "range7": "7 gün",
+    "range30": "30 gün"
+  },
+  "periodComparison": {
+    "previousPeriod": "Önceki dönem: {{count}}",
+    "thisWeek": "Bu hafta",
+    "thisMonth": "Bu ay"
+  },
+  "premiumLock": {
+    "message": "Bu istatistik premium üyelere özeldir.",
+    "unlock": "Premium ile aç"
+  },
+  "sourceLabels": {
+    "manual": "Elle",
+    "ai": "AI önerisi",
+    "special-day": "Özel gün",
+    "notification": "Hatırlatıcı"
+  },
+  "summary": {
+    "totalDhikr": "Toplam zikir",
+    "currentStreak": "Mevcut seri",
+    "longestStreak": "En uzun seri",
+    "activeDays": "Aktif gün",
+    "today": "Bugün",
+    "thisWeek": "Bu hafta",
+    "thisMonth": "Bu ay",
+    "dailyAverage": "Günlük ortalama",
+    "completion": "Tamamlama",
+    "dayUnit": "gün"
+  },
+  "topDhikrs": {
+    "empty": "Henüz yeterli zikir kaydı yok."
+  },
+  "weekdayLabels": {
+    "1": "Paz",
+    "2": "Pzt",
+    "3": "Sal",
+    "4": "Çar",
+    "5": "Per",
+    "6": "Cum",
+    "7": "Cmt"
+  }
+}

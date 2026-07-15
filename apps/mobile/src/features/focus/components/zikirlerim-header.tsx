@@ -1,6 +1,7 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useState } from 'react'
 import { Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { PageHeader } from '../../../components/ui/page-header'
 import { createUserDhikr } from '../../dhikrs/services/user-dhikrs-api-client'
 import { useAuthStore } from '../../../store/auth-store'
@@ -8,6 +9,7 @@ import { useDhikrStore } from '../../../store/dhikr-store'
 import { ZikirFormModal } from './zikir-form-modal'
 
 export function ZikirlerimHeader() {
+  const { t } = useTranslation('focus')
   const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
   const removePersonalDhikr = useDhikrStore(state => state.removePersonalDhikr)
   const authStatus = useAuthStore(state => state.status)
@@ -47,7 +49,7 @@ export function ZikirlerimHeader() {
         )
       } catch {
         removePersonalDhikr(createdId)
-        setError('Zikir kaydedilemedi. Lütfen tekrar dene.')
+        setError(t('focus:errors.dhikrSaveFailed'))
         setIsSaving(false)
         return
       } finally {
@@ -61,7 +63,7 @@ export function ZikirlerimHeader() {
   return (
     <>
       <PageHeader
-        title='Zikirlerim'
+        title={t('focus:header.title')}
         rightAccessory={
           <Pressable
             onPress={() => {
@@ -77,10 +79,10 @@ export function ZikirlerimHeader() {
 
       <ZikirFormModal
         visible={isCreateOpen}
-        title='Yeni Zikir'
-        description='Kendi zikrini ekle ve Ana Sayfa sayacında başlat.'
-        submitLabel='Kaydet'
-        savingLabel='Kaydediliyor'
+        title={t('focus:createModal.title')}
+        description={t('focus:createModal.description')}
+        submitLabel={t('focus:createModal.submitLabel')}
+        savingLabel={t('focus:createModal.savingLabel')}
         isSaving={isSaving}
         error={error}
         initialValues={{

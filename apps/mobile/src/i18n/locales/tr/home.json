@@ -1,0 +1,88 @@
+{
+  "topBar": {
+    "title": "Zikirmatik Asistan",
+    "subtitle": "{{greeting}} • Seri {{streak}}"
+  },
+  "greeting": "Selam, {{name}}",
+  "defaultName": "Dostum",
+  "streakLabel": "{{count}} gün",
+  "selectedSource": {
+    "myDhikrs": "Kaynak: Zikirlerim",
+    "ready": "Kaynak: Hazır",
+    "free": "Serbest Zikir"
+  },
+  "lastActivity": {
+    "notStarted": "Henüz başlanmadı"
+  },
+  "freeMode": {
+    "label": "Serbest",
+    "button": "Serbest Mod"
+  },
+  "selectedDhikrMeaning": {
+    "title": "Zikir Detayı",
+    "titleLabel": "Başlık"
+  },
+  "targetModal": {
+    "title": "Yeni hedef belirle",
+    "placeholder": "Hedef sayısı"
+  },
+  "targetDowngradeModal": {
+    "title": "Sayım kırpılacak",
+    "bodyPart1": "Mevcut sayımın",
+    "bodyPart2": "adet. Yeni hedef",
+    "bodyPart3": "olarak uygulandığında sayımın",
+    "bodyPart4": "adede indirilecek.",
+    "applyAnyway": "Yine de Uygula"
+  },
+  "freeSaveNameModal": {
+    "title": "Zikir Kaydet",
+    "description": "Serbest çektiğin zikri kaydetmek için bir isim yaz.",
+    "namePlaceholder": "Örn. Sessiz tesbih",
+    "transliterationLabel": "Okunuş (opsiyonel)",
+    "transliterationPlaceholder": "Örn. Allahumme salli ala Muhammed",
+    "meaningLabel": "Anlamı (opsiyonel)",
+    "meaningPlaceholder": "Örn. Allah'ım Muhammed'e salat et",
+    "targetLabel": "Hedef (opsiyonel)",
+    "targetPlaceholder": "Boş bırakırsan sonsuz"
+  },
+  "toast": {
+    "tapAnywhere": "Ekranın her yerine dokunarak sayabilirsin",
+    "tapCircleOnly": "Sadece yuvarlağa basınca sayar"
+  },
+  "resetModal": {
+    "title": "Sayacı Sıfırla",
+    "message": "{{name}} sayacınız sıfırlanacak. Bu işlem geri alınamaz.",
+    "confirmLabel": "Sıfırla",
+    "cancelLabel": "Vazgeç",
+    "defaultDhikrName": "Zikir"
+  },
+  "dailyEsmaWelcomeModal": {
+    "title": "Hoş geldin",
+    "subtitle": "Bugün için sana 3 Esmaül Hüsna önerdik.",
+    "start": "Başla",
+    "later": "Sonra bak",
+    "showAll": "Tümünü gör"
+  },
+  "esmaulHusnaSection": {
+    "title": "Esmaül Hüsna"
+  },
+  "errors": {
+    "loginRequiredToSave": "Kaydetmek için giriş yapmalısın.",
+    "loginRequiredToSavePermanently": "Kalıcı kaydetmek için giriş yapmalısın.",
+    "dhikrLogSaveFailed": "Zikir kaydı kaydedilemedi.",
+    "dhikrUpdateFailed": "Zikir güncellenemedi. Lütfen tekrar dene.",
+    "esmaDhikrNotFound": "Esma zikri bulunamadı.",
+    "nameRequired": "Zikir adı zorunlu.",
+    "targetInvalid": "Hedef girilecekse 1 veya daha büyük olmalı.",
+    "dhikrSyncFailed": "Zikir kaydı senkronize edilemedi."
+  },
+  "streakReminder": {
+    "title": "Streak'in seni bekliyor 🔥",
+    "body": "{{streak}} günlük serin bitmesin, bir zikir yeter.",
+    "channelName": "Seri Hatırlatması"
+  },
+  "streaksApi": {
+    "fetchFailed": "Seri verisi alınamadı.",
+    "unreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin."
+  }
+}

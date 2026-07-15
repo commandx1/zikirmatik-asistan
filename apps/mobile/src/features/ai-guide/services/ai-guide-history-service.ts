@@ -1,3 +1,4 @@
+import { i18n } from "../../../i18n";
 import type { BackendAiRecommendation } from "./ai-api-client";
 import type { AiGuideHistoryItem, AiGuideRecommendation } from "../types";
 
@@ -31,8 +32,11 @@ export function buildAiGuideHistoryItems(rows: BackendAiRecommendation[], catalo
           id: matched._id,
           title: matched.nameTurkish,
           chipEmoji: index === 0 ? "💆" : "✨",
-          chipLabel: index === 0 ? "Senin için birincil öneri" : "Asistan önerisi",
-          repeatLabel: index === 0 ? "Öncelikli" : undefined,
+          chipLabel:
+            index === 0
+              ? i18n.t("ai-guide:recommendation.chipLabelPrimary")
+              : i18n.t("ai-guide:recommendation.chipLabelSecondary"),
+          repeatLabel: index === 0 ? i18n.t("ai-guide:recommendation.repeatLabelPrimary") : undefined,
           arabic: matched.nameArabic,
           transliteration: matched.transliteration || matched.nameTurkish,
           meaning: matched.meaning,
@@ -50,7 +54,7 @@ export function buildAiGuideHistoryItems(rows: BackendAiRecommendation[], catalo
 
       return {
         id: normalizeObjectId(row._id) ?? row.createdAt,
-        prompt: row.freeText?.trim() || "Genel öneri",
+        prompt: row.freeText?.trim() || i18n.t("ai-guide:genericPrompt"),
         assistantNote: row.assistantNote?.trim() || undefined,
         createdAt: row.createdAt,
         recommendations

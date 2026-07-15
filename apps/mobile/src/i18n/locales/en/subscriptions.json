@@ -1,0 +1,11 @@
+{
+  "errors": {
+    "packagesNotReady": "Purchase packages aren't ready yet.",
+    "topupNotFound": "This credit package wasn't found in the store.",
+    "apiKeyMissingIos": "EXPO_PUBLIC_REVENUECAT_API_KEY_IOS is not set.",
+    "apiKeyMissingAndroid": "EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID is not set.",
+    "purchaseFailed": "The purchase couldn't be completed. Please try again.",
+    "requestFailed": "The subscription request failed.",
+    "serverUnreachable": "The server can't be reached. Please try again."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "errors": {
+    "packagesNotReady": "Satın alma paketleri henüz hazır değil.",
+    "topupNotFound": "Kredi paketi mağazada bulunamadı.",
+    "apiKeyMissingIos": "EXPO_PUBLIC_REVENUECAT_API_KEY_IOS tanımlı değil.",
+    "apiKeyMissingAndroid": "EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID tanımlı değil.",
+    "purchaseFailed": "Satın alma işlemi tamamlanamadı. Lütfen tekrar dene.",
+    "requestFailed": "Abonelik işlemi başarısız oldu.",
+    "serverUnreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin."
+  }
+}

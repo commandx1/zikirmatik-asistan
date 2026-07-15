@@ -1,0 +1,90 @@
+{
+  "state": {
+    "label": "ASİSTAN"
+  },
+  "input": {
+    "placeholder": "Niyetini ve ihtiyacını yaz...",
+    "creditBalanceLabel": "Kalan kredi: {{count}}",
+    "creditBalance": "{{count}} kredi"
+  },
+  "promptChips": {
+    "sad": "İçim sıkıldı",
+    "anxious": "Endişeliyim",
+    "grateful": "Şükretmek istiyorum"
+  },
+  "errors": {
+    "loginRequiredToSave": "Kaydetmek için giriş yapmalısın.",
+    "dhikrSaveFailed": "Zikir kaydedilemedi.",
+    "recommendationFailed": "Asistan önerisi alınamadı. Lütfen tekrar deneyin.",
+    "serviceUnavailable": "Asistan servisi şu anda yanıt veremiyor.",
+    "serviceUnreachable": "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin."
+  },
+  "offTopic": {
+    "title": "Konu dışı"
+  },
+  "clarify": {
+    "title": "Biraz daha netleştirelim"
+  },
+  "noTimeInfo": "Vakit bilgisi yok",
+  "genericPrompt": "Genel öneri",
+  "weekday": {
+    "label": "{{day}} günü"
+  },
+  "loading": {
+    "creditsLoading": "Kredin yükleniyor…",
+    "creditsLoadingRetry": "Kredilerin yükleniyor; birkaç saniye içinde isteğini tekrar gönderebilirsin.",
+    "defaultStep": "Hazırlanıyor..."
+  },
+  "recommendation": {
+    "chipLabelPrimary": "Senin için birincil öneri",
+    "chipLabelSecondary": "Asistan önerisi",
+    "repeatLabelPrimary": "Öncelikli",
+    "start": "Başla",
+    "virtue": "Fazilet",
+    "source": "Kaynak",
+    "recommendedTarget": "Önerilen hedef: {{count}}"
+  },
+  "currentStateCard": {
+    "lastSearch": "Son arama: {{prompt}}",
+    "placeholder": "Niyetini yaz, önerileri sadece metnine göre hazırlayalım."
+  },
+  "dailyEsmaShortcut": {
+    "title": "Bugünün Esma önerileri",
+    "subtitle": "Günlük 3 öneriyi tekrar aç.",
+    "open": "Aç"
+  },
+  "demo": {
+    "theme": "Tema",
+    "loading": "Yükleniyor"
+  },
+  "history": {
+    "title": "Son Asistan Aramaları",
+    "showLastTwo": "Son 2'yi Göster",
+    "showAll": "Tümünü Gör",
+    "recentTime": "Yakın zaman",
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "noRecommendations": "Öneri bulunamadı",
+    "recommendationCount": "{{count}} öneri",
+    "active": "Ekranda",
+    "show": "Göster"
+  },
+  "infoTooltip": {
+    "text": "Asistan yeni içerik üretmez. Yalnızca doğrulanmış zikirler önerilir."
+  },
+  "loadingSection": {
+    "title": "Asistan çalışıyor"
+  },
+  "recommendationsSection": {
+    "empty": "Öneriler burada listelenecek. Niyetini yazıp gönderdiğinde asistan uygun zikirleri getirecek.",
+    "title": "Sana Özel Öneriler",
+    "assistantNote": "Asistan Notu"
+  },
+  "topBar": {
+    "title": "Asistan Rehber",
+    "subtitle": "Ruh haline göre zikirler"
+  },
+  "verificationFooter": {
+    "text": "Tüm içerikler güvenilir dini kaynaklardan alınmıştır."
+  }
+}

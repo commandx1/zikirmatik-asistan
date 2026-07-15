@@ -1,5 +1,6 @@
 import { resolveThemeTokens, type ThemeTokens, type ThemeName } from "@zikirmatik/shared";
 import { useEffect, useMemo, useState } from "react";
+import { i18n } from "../../../i18n";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useProfileStore } from "../../../store/profile-store";
 import { THEME_LABELS } from "../../../theme/labels";
@@ -237,7 +238,7 @@ export function useThemeSelector() {
     }
 
     if (selected.isPremiumLocked) {
-      setLockedThemeMessage("Bu tema Premium üyelikte açılır.");
+      setLockedThemeMessage(i18n.t("theme-selector:screen.lockedThemeMessage"));
       return;
     }
 

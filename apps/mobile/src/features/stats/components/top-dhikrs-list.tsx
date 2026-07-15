@@ -1,17 +1,19 @@
 import { Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
 import { formatCounter } from "@zikirmatik/shared";
 import type { StatsTopDhikr } from "@zikirmatik/shared";
 import { maxOf, withAlpha } from "./chart-utils";
 
 export function TopDhikrsList({ items }: { items: StatsTopDhikr[] }) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("stats");
   const max = maxOf(items.map((item) => item.totalCount)) || 1;
 
   if (items.length === 0) {
     return (
       <View className="rounded-2xl border border-[--border] bg-[--card] p-4">
-        <Text className="text-sm text-[--text-muted]">Henüz yeterli zikir kaydı yok.</Text>
+        <Text className="text-sm text-[--text-muted]">{t("stats:topDhikrs.empty")}</Text>
       </View>
     );
   }

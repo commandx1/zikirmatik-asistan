@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 
 export type BackendDhikr = {
   _id: string;
@@ -59,7 +60,7 @@ async function requestJson<TResponse>(path: string): Promise<TResponse> {
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "Zikir listesi alınamadı.");
+      const message = extractErrorMessage(data, i18n.t("dhikrs:errors.listFailed"));
       throw new DhikrsApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
     }
 
@@ -69,7 +70,7 @@ async function requestJson<TResponse>(path: string): Promise<TResponse> {
       throw error;
     }
 
-    throw new DhikrsApiError("transient", "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.");
+    throw new DhikrsApiError("transient", i18n.t("dhikrs:errors.serverUnreachable"));
   }
 }
 

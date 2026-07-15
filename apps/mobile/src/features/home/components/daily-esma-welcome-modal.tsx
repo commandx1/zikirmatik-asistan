@@ -1,5 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { Modal, Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeTokens } from '@zikirmatik/ui'
 import type { EsmaulHusnaItem } from '../../focus/types'
@@ -19,6 +20,7 @@ export function DailyEsmaWelcomeModal({
   onShowAll,
   onStart
 }: DailyEsmaWelcomeModalProps) {
+  const { t } = useTranslation('home')
   const { tokens } = useThemeTokens()
   const insets = useSafeAreaInsets()
 
@@ -47,10 +49,10 @@ export function DailyEsmaWelcomeModal({
             </View>
             <View className='flex-1'>
               <Text className='text-lg font-semibold' style={{ color: tokens.textPrimary }}>
-                Hoş geldin
+                {t('home:dailyEsmaWelcomeModal.title')}
               </Text>
               <Text className='mt-1 text-sm leading-5' style={{ color: tokens.textMuted }}>
-                Bugün için sana 3 Esmaül Hüsna önerdik.
+                {t('home:dailyEsmaWelcomeModal.subtitle')}
               </Text>
             </View>
           </View>
@@ -80,7 +82,7 @@ export function DailyEsmaWelcomeModal({
                     style={{ backgroundColor: tokens.accent }}
                   >
                     <Text className='text-xs font-semibold' style={{ color: tokens.bg }}>
-                      Başla
+                      {t('home:dailyEsmaWelcomeModal.start')}
                     </Text>
                   </Pressable>
                 </View>
@@ -98,7 +100,7 @@ export function DailyEsmaWelcomeModal({
               style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.18) }}
             >
               <Text className='text-center text-sm font-semibold' style={{ color: tokens.textPrimary }}>
-                Sonra bak
+                {t('home:dailyEsmaWelcomeModal.later')}
               </Text>
             </Pressable>
             <Pressable
@@ -107,7 +109,7 @@ export function DailyEsmaWelcomeModal({
               style={{ backgroundColor: withAlpha(tokens.accent, 0.14) }}
             >
               <Text className='text-center text-sm font-semibold' style={{ color: tokens.accent }}>
-                Tümünü gör
+                {t('home:dailyEsmaWelcomeModal.showAll')}
               </Text>
             </Pressable>
           </View>

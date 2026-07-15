@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { SectionHeader, useThemeTokens } from "@zikirmatik/ui";
 import { PageHeader } from "../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
@@ -36,6 +37,7 @@ function Section({
 }
 
 export function StatsScreen() {
+  const { t } = useTranslation("stats");
   const { tokens } = useThemeTokens();
   const { data, isLoading, isRefreshing, error, isPremium, refresh } = useStats();
   const guestMode = useAuthStore((s) => s.guestMode);
@@ -45,14 +47,14 @@ export function StatsScreen() {
 
   const headerSubtitle = data
     ? isGuest
-      ? "Yerel istatistikler"
-      : `${data.streak.currentStreak} günlük seri · tüm zamanlar`
-    : "Tüm zamanlar özeti";
+      ? t("stats:screen.subtitleGuest")
+      : t("stats:screen.subtitleWithStreak", { count: data.streak.currentStreak })
+    : t("stats:screen.subtitleDefault");
 
   return (
     <PageLayout>
       <PageScrollView contentInnerClassName="w-full" onRefresh={refresh} refreshing={isRefreshing}>
-      <PageHeader title="İstatistikler" subtitle={headerSubtitle} />
+      <PageHeader title={t("stats:screen.title")} subtitle={headerSubtitle} />
 
       {isLoading && !data ? (
         <View className="items-center justify-center py-24">
@@ -66,10 +68,10 @@ export function StatsScreen() {
             className="rounded-full px-5 py-2.5"
             style={{ backgroundColor: tokens.accent }}
             accessibilityRole="button"
-            accessibilityLabel="Tekrar dene"
+            accessibilityLabel={t("stats:screen.retry")}
           >
             <Text className="text-sm font-bold" style={{ color: tokens.bg }}>
-              Tekrar dene
+              {t("stats:screen.retry")}
             </Text>
           </Pressable>
         </View>
@@ -77,47 +79,47 @@ export function StatsScreen() {
         <View className="gap-6 px-5 pb-10">
           <SummaryCards summary={data} />
 
-          <Section title="Günlük aktivite" subtitle="Çekilen zikir sayısı">
+          <Section title={t("stats:screen.sections.dailyActivity.title")} subtitle={t("stats:screen.sections.dailyActivity.subtitle")}>
             <DailyBarChart series={data.dailySeries} />
           </Section>
 
-          <Section title="Aktivite takvimi" subtitle="Son 1 yılın günlük yoğunluğu">
+          <Section title={t("stats:screen.sections.activityCalendar.title")} subtitle={t("stats:screen.sections.activityCalendar.subtitle")}>
             <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
               <ActivityHeatmap heatmap={data.heatmap} />
             </PremiumLockOverlay>
           </Section>
 
-          <Section title="Dönem karşılaştırması" subtitle="Önceki döneme göre değişim">
+          <Section title={t("stats:screen.sections.periodComparison.title")} subtitle={t("stats:screen.sections.periodComparison.subtitle")}>
             <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
               <PeriodComparison comparison={data.comparison} />
             </PremiumLockOverlay>
           </Section>
 
-          <Section title="En aktif günler" subtitle="Haftanın günlerine göre">
+          <Section title={t("stats:screen.sections.activeDays.title")} subtitle={t("stats:screen.sections.activeDays.subtitle")}>
             <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
               <WeekdayDistribution distribution={data.weekdayDistribution} />
             </PremiumLockOverlay>
           </Section>
 
-          <Section title="En aktif saatler" subtitle="Günün saatlerine göre">
+          <Section title={t("stats:screen.sections.activeHours.title")} subtitle={t("stats:screen.sections.activeHours.subtitle")}>
             <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
               <HourDistribution distribution={data.hourDistribution} />
             </PremiumLockOverlay>
           </Section>
 
-          <Section title="Kaynak dağılımı" subtitle="Zikirleri nereden başlattın">
+          <Section title={t("stats:screen.sections.sourceDistribution.title")} subtitle={t("stats:screen.sections.sourceDistribution.subtitle")}>
             <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
               <SourceDonut breakdown={data.sourceBreakdown} />
             </PremiumLockOverlay>
           </Section>
 
-          <Section title="En çok çekilen zikirler" subtitle="Tüm zamanların liderleri">
+          <Section title={t("stats:screen.sections.topDhikrs.title")} subtitle={t("stats:screen.sections.topDhikrs.subtitle")}>
             <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
               <TopDhikrsList items={data.topDhikrs} />
             </PremiumLockOverlay>
           </Section>
 
-          <Section title="Rozetler" subtitle="Ulaştığın kilometre taşları">
+          <Section title={t("stats:screen.sections.badges.title")} subtitle={t("stats:screen.sections.badges.subtitle")}>
             <BadgesRow badges={data.badges} />
           </Section>
         </View>

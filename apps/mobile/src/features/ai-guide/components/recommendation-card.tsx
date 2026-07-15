@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { DhikrContentStack } from "../../../components/ui/dhikr-content-stack";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { ThemedTag } from "../../../components/ui/themed-tag";
@@ -10,6 +11,8 @@ type RecommendationCardProps = {
 };
 
 export function RecommendationCard({ item, onSelect }: RecommendationCardProps) {
+  const { t } = useTranslation("ai-guide");
+
   if (item.isPrimary) {
     return (
       <ThemedCard className="relative rounded-[20px] p-5" accent="accent" elevated>
@@ -39,7 +42,7 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
         </View>
 
         <Pressable onPress={() => onSelect(item)} className="relative z-10 w-full rounded-full bg-[--accent] py-3">
-          <Text className="text-center text-sm font-semibold text-[#111827]">Başla</Text>
+          <Text className="text-center text-sm font-semibold text-[#111827]">{t("ai-guide:recommendation.start")}</Text>
         </Pressable>
       </ThemedCard>
     );
@@ -70,13 +73,15 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
       </View>
 
       <Pressable onPress={() => onSelect(item)} className="w-full rounded-full border border-[--accent]/40 py-2.5">
-        <Text className="text-center text-sm font-medium text-[--accent]">Başla</Text>
+        <Text className="text-center text-sm font-medium text-[--accent]">{t("ai-guide:recommendation.start")}</Text>
       </Pressable>
     </ThemedCard>
   );
 }
 
 function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
+  const { t } = useTranslation("ai-guide");
+
   if (!item.virtue && !item.source && !item.recommendedCount) {
     return null;
   }
@@ -85,7 +90,7 @@ function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
     <View className="mt-3 gap-2">
       {item.virtue ? (
         <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-          <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Fazilet</Text>
+          <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]">{t("ai-guide:recommendation.virtue")}</Text>
           <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
             {item.virtue}
           </Text>
@@ -95,7 +100,7 @@ function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
         <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
           {item.source ? (
             <>
-              <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]">Kaynak</Text>
+              <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]">{t("ai-guide:recommendation.source")}</Text>
               <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
                 {item.source}
               </Text>
@@ -103,7 +108,7 @@ function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
           ) : null}
           {item.recommendedCount ? (
             <Text className={`${item.source ? "mt-2" : ""} text-xs text-[--text-muted]`}>
-              Önerilen hedef: {item.recommendedCount}
+              {t("ai-guide:recommendation.recommendedTarget", { count: item.recommendedCount })}
             </Text>
           ) : null}
         </View>

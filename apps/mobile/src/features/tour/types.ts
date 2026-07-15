@@ -12,8 +12,8 @@ export type TourStepDef = {
   id: string;
   refKey?: string;
   tabIndex?: number;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   tooltipPosition: "top" | "bottom";
   padding?: number;
   shape?: "circle" | "rect";

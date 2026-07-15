@@ -1,5 +1,6 @@
 import { useThemeTokens } from "@zikirmatik/ui";
 import { ActivityIndicator, Modal, Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type UnsavedDhikrTransitionModalProps = {
   visible: boolean;
@@ -23,7 +24,8 @@ export function UnsavedDhikrTransitionModal({
   onCancel
 }: UnsavedDhikrTransitionModalProps) {
   const { tokens } = useThemeTokens();
-  const title = dhikrName.trim() || "Bu zikir";
+  const { t } = useTranslation("components");
+  const title = dhikrName.trim() || t("focus:fallback.thisDhikr");
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
@@ -37,10 +39,10 @@ export function UnsavedDhikrTransitionModal({
           }}
         >
           <Text className="mb-2 text-base font-semibold" style={{ color: tokens.textPrimary }}>
-            Kaydedilmemiş zikir var
+            {t("components:unsavedDhikrTransitionModal.title")}
           </Text>
           <Text className="text-sm leading-5" style={{ color: tokens.textMuted }}>
-            {title} için {Math.max(0, Math.floor(count))} çekim kaydedilmedi. Devam etmeden önce kaydetmek ister misin?
+            {t("components:unsavedDhikrTransitionModal.message", { title, count: Math.max(0, Math.floor(count)) })}
           </Text>
           {error ? <Text className="mt-3 text-xs text-[#F97373]">{error}</Text> : null}
 
@@ -55,7 +57,7 @@ export function UnsavedDhikrTransitionModal({
                 <ActivityIndicator size="small" color={tokens.bg} />
               ) : (
                 <Text className="text-sm font-semibold" style={{ color: tokens.bg }}>
-                  Kaydet ve Devam Et
+                  {t("components:unsavedDhikrTransitionModal.saveAndContinue")}
                 </Text>
               )}
             </Pressable>
@@ -70,7 +72,7 @@ export function UnsavedDhikrTransitionModal({
               }}
             >
               <Text className="text-sm font-semibold" style={{ color: tokens.textPrimary }}>
-                Kaydetmeden Devam Et
+                {t("components:unsavedDhikrTransitionModal.continueWithoutSaving")}
               </Text>
             </Pressable>
             <Pressable
@@ -80,7 +82,7 @@ export function UnsavedDhikrTransitionModal({
               style={{ opacity: isSaving ? 0.56 : 1 }}
             >
               <Text className="text-sm font-medium" style={{ color: tokens.textMuted }}>
-                Vazgeç
+                {t("components:unsavedDhikrTransitionModal.cancel")}
               </Text>
             </Pressable>
           </View>

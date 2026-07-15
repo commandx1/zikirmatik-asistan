@@ -11,13 +11,13 @@ export const FREE_COLLECTION_KEYS = new Set([
 
 export const COLLECTION_CATEGORIES: Array<{
   key: CollectionCategory | "all";
-  label: string;
+  labelKey: string;
 }> = [
-  { key: "all", label: "Tümü" },
-  { key: "gunluk", label: "Günlük" },
-  { key: "namaz", label: "Namaz" },
-  { key: "dua", label: "Dua" },
-  { key: "koruma", label: "Koruma" },
-  { key: "hayat", label: "Hayat" },
-  { key: "ibadet", label: "İbadet" },
+  { key: "all", labelKey: "all" },
+  { key: "gunluk", labelKey: "gunluk" },
+  { key: "namaz", labelKey: "namaz" },
+  { key: "dua", labelKey: "dua" },
+  { key: "koruma", labelKey: "koruma" },
+  { key: "hayat", labelKey: "hayat" },
+  { key: "ibadet", labelKey: "ibadet" },
 ];

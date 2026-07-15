@@ -1,17 +1,16 @@
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 
 type UserNotifSettings = {
   dailyReminder?: boolean;
   reminderTime?: string;
   kandilNotifications?: boolean;
-  azanNotifications?: boolean;
 };
 
 export type BackendUser = {
   _id: string;
   displayName?: string;
   profileImageUrl?: string;
-  city?: string;
   theme?: string;
   fontFamily?: "default" | "merriweather" | "intel-one-mono" | "finlandica-headline" | "indie-flower";
   hapticsEnabled?: boolean;
@@ -19,7 +18,6 @@ export type BackendUser = {
   createdAt?: string;
   onboarding?: {
     purpose?: string;
-    city?: string;
     completedAt?: string;
   };
   notifSettings?: UserNotifSettings;
@@ -27,7 +25,6 @@ export type BackendUser = {
 
 export type UpdateOnboardingPayload = {
   purpose?: string;
-  city?: string;
 };
 
 export type UpdateUserPreferencesPayload = {
@@ -125,7 +122,7 @@ async function requestJson<TResponse>(
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "Kullanıcı verisi alınamadı.");
+      const message = extractErrorMessage(data, i18n.t("users:errors.fetchFailed"));
       throw new UsersApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
     }
 
@@ -135,7 +132,7 @@ async function requestJson<TResponse>(
       throw error;
     }
 
-    throw new UsersApiError("transient", "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.");
+    throw new UsersApiError("transient", i18n.t("users:errors.serverUnreachable"));
   }
 }
 

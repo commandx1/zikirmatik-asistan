@@ -1,0 +1,20 @@
+{
+  "purpose": {
+    "habit": {
+      "title": "Günlük ibadet alışkanlığı",
+      "subtitle": "Düzenli zikir rutini oluştur"
+    },
+    "calm": {
+      "title": "Huzur & sakinleşmek",
+      "subtitle": "Ruhsal dinginlik bul"
+    },
+    "tracking": {
+      "title": "Belirli zikirleri düzenli çekmek",
+      "subtitle": "Özel tesbihat takibi"
+    },
+    "special-days": {
+      "title": "Özel günlerde daha aktif olmak",
+      "subtitle": "Kandil ve mübarek geceler"
+    }
+  }
+}

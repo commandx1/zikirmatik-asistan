@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 
 export type BackendStreak = {
   userId: string;
@@ -61,7 +62,7 @@ async function requestJson<TResponse>(
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "Seri verisi alınamadı.");
+      const message = extractErrorMessage(data, i18n.t("home:streaksApi.fetchFailed"));
       throw new StreaksApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
     }
 
@@ -71,7 +72,7 @@ async function requestJson<TResponse>(
       throw error;
     }
 
-    throw new StreaksApiError("transient", "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.");
+    throw new StreaksApiError("transient", i18n.t("home:streaksApi.unreachable"));
   }
 }
 

@@ -1,6 +1,7 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
 import { formatCounter } from "@zikirmatik/shared";
 import type { StatsPeriodComparison } from "@zikirmatik/shared";
 
@@ -8,6 +9,7 @@ const NEGATIVE_COLOR = "#E5675C";
 
 function ComparisonRow({ label, data }: { label: string; data: StatsPeriodComparison }) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("stats");
   const isUp = data.changePercent >= 0;
   const color = data.changePercent === 0 ? tokens.textMuted : isUp ? tokens.success : NEGATIVE_COLOR;
 
@@ -16,7 +18,7 @@ function ComparisonRow({ label, data }: { label: string; data: StatsPeriodCompar
       <View className="flex-1">
         <Text className="text-sm font-medium text-[--text-primary]">{label}</Text>
         <Text className="mt-0.5 text-xs text-[--text-muted]">
-          Önceki dönem: {formatCounter(data.previous)}
+          {t("stats:periodComparison.previousPeriod", { count: formatCounter(data.previous) })}
         </Text>
       </View>
       <Text className="mr-3 text-lg font-bold text-[--text-primary]">{formatCounter(data.current)}</Text>
@@ -40,11 +42,12 @@ export function PeriodComparison({
 }: {
   comparison: { week: StatsPeriodComparison; month: StatsPeriodComparison };
 }) {
+  const { t } = useTranslation("stats");
   return (
     <View className="rounded-2xl border border-[--border] bg-[--card] px-4 py-2">
-      <ComparisonRow label="Bu hafta" data={comparison.week} />
+      <ComparisonRow label={t("stats:periodComparison.thisWeek")} data={comparison.week} />
       <View className="h-px bg-[--border]" />
-      <ComparisonRow label="Bu ay" data={comparison.month} />
+      <ComparisonRow label={t("stats:periodComparison.thisMonth")} data={comparison.month} />
     </View>
   );
 }

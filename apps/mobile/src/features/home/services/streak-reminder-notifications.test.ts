@@ -1,5 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("../../../i18n", () => ({
+  i18n: {
+    t: (key: string, options?: Record<string, unknown>) => {
+      if (key === "home:streakReminder.title") return "Streak'in seni bekliyor 🔥";
+      if (key === "home:streakReminder.body") return `${options?.streak} günlük serin bitmesin, bir zikir yeter.`;
+      if (key === "home:streakReminder.channelName") return "Seri Hatırlatması";
+      return key;
+    }
+  }
+}));
+
 vi.mock("react-native", () => ({
   Platform: {
     OS: "ios",

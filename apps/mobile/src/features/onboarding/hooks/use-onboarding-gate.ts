@@ -40,8 +40,7 @@ export function useOnboardingGate() {
         }
 
         applyBackendSnapshot({
-          purpose: user.onboarding?.purpose,
-          city: user.onboarding?.city ?? user.city
+          purpose: user.onboarding?.purpose
         });
         setResolvedUserId(session.userId);
       })

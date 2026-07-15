@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "fetchFailed": "Kullanıcı verisi alınamadı.",
+    "serverUnreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin."
+  }
+}

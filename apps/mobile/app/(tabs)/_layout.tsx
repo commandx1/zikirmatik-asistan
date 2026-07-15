@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Redirect, Tabs, usePathname } from "expo-router";
 import { useState } from "react";
 import { Platform, Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useThemePreferences } from "../../src/hooks/use-theme-preferences";
@@ -37,6 +38,7 @@ function TabIcon({ focused, name, activeColor, inactiveColor, regular = false }:
 
 export default function TabsLayout() {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("common");
   const insets = useSafeAreaInsets();
   const { fontFamily } = useThemePreferences();
   const authStatus = useAuthStore((s) => s.status);
@@ -83,41 +85,41 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="home"
           options={{
-            title: "Ana Sayfa",
+            title: t("common:nav.home"),
             tabBarIcon: ({ focused }) => <TabIcon focused={focused} name="house" activeColor={tokens.accent} inactiveColor={tokens.textPrimary} />
           }}
         />
         <Tabs.Screen
           name="focus"
           options={{
-            title: "Zikirlerim",
+            title: t("common:nav.focus"),
             tabBarIcon: ({ focused }) => <TabIcon focused={focused} name="list-ul" activeColor={tokens.accent} inactiveColor={tokens.textPrimary} />
           }}
         />
         <Tabs.Screen
           name="ai-guide"
           options={{
-            title: "Asistan Rehber",
+            title: t("common:nav.aiGuide"),
             tabBarIcon: ({ focused }) => <TabIcon focused={focused} name="sparkles" activeColor={tokens.accent} inactiveColor={tokens.textPrimary} />
           }}
         />
         <Tabs.Screen
           name="special-days"
           options={{
-            title: "Özel Günler",
+            title: t("common:nav.specialDays"),
             tabBarIcon: ({ focused }) => <TabIcon focused={focused} name="moon" activeColor={tokens.accent} inactiveColor={tokens.textPrimary} />
           }}
         />
         <Tabs.Screen
           name="profile"
           options={{
-            title: "Daha Fazla",
+            title: t("common:nav.more"),
             tabBarButton: ({ style, accessibilityState }) => (
               <Pressable
                 style={[style, { alignItems: "center", justifyContent: "center" }]}
                 onPress={() => setMoreMenuOpen((v) => !v)}
                 accessibilityRole="button"
-                accessibilityLabel="Daha Fazla"
+                accessibilityLabel={t("common:nav.more")}
                 accessibilityState={accessibilityState}
               >
                 <FontAwesome6
@@ -128,7 +130,7 @@ export default function TabsLayout() {
                   style={{ opacity: (moreMenuOpen || isMoreMenuRoute) ? 1 : 0.6, marginBottom: 2 }}
                 />
                 <Text style={{ ...tabLabelStyle, color: dahaFazlaColor }}>
-                  Daha Fazla
+                  {t("common:nav.more")}
                 </Text>
               </Pressable>
             ),

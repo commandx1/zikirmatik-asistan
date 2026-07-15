@@ -1,0 +1,45 @@
+{
+  "steps": {
+    "watch": {
+      "title": "Zikir Sayacı",
+      "description": "Parmak izi simgesine bas, zikrini say. Halkalar ilerlemeyi gösterir."
+    },
+    "watchBtnList": {
+      "title": "Zikir Listesi",
+      "description": "Kayıtlı zikirlerini aç ve sayaca yükle."
+    },
+    "watchBtnTarget": {
+      "title": "Hedef Belirle",
+      "description": "Kaç kez okuyacağını belirle; halka ilerlemeyi gösterir."
+    },
+    "watchBtnReset": {
+      "title": "Sayacı Sıfırla",
+      "description": "Mevcut zikir sayacını başa al."
+    },
+    "watchBtnSave": {
+      "title": "Kaydet",
+      "description": "Zikir seansını hesabına kaydet."
+    },
+    "tapAnywhere": {
+      "title": "Her Yere Dokun",
+      "description": "Bu mod açıkken ekranın herhangi bir yerine dokunarak sayabilirsin — sadece parmak izine basmana gerek yok."
+    },
+    "tabFocus": {
+      "title": "Zikirlerim",
+      "description": "Kayıtlı zikirlerini buradan yönet ve sayaca yükle."
+    },
+    "tabAiGuide": {
+      "title": "AI Rehber",
+      "description": "Yapay zeka destekli kişisel zikir tavsiyeleri al; rehber geçmişini takip eder."
+    },
+    "tabSpecialDays": {
+      "title": "Özel Günler",
+      "description": "Kandiller ve dini öneme sahip günleri kaçırma; bildirim ile haberdar ol."
+    }
+  },
+  "overlay": {
+    "skip": "Atla",
+    "next": "İleri",
+    "finish": "Bitir"
+  }
+}

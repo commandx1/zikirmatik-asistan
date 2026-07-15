@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 
 export type CollectionCategory =
   | "gunluk"
@@ -91,7 +92,7 @@ async function requestJson<TResponse>(path: string): Promise<TResponse> {
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "Koleksiyon verisi alınamadı.");
+      const message = extractErrorMessage(data, i18n.t("collections:errors.fetchFailed"));
       throw new CollectionsApiError(
         response.status >= 500 ? "transient" : "terminal",
         message,
@@ -107,7 +108,7 @@ async function requestJson<TResponse>(path: string): Promise<TResponse> {
 
     throw new CollectionsApiError(
       "transient",
-      "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.",
+      i18n.t("collections:errors.serverUnreachable"),
     );
   }
 }

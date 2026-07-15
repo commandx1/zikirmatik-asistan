@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { KeyboardAwareBottomSheetModal } from '../../../components/ui/keyboard-aware-bottom-sheet-modal'
 import { PrimaryCtaButton } from '../../../components/ui/primary-cta-button'
 import { ThemedInput } from '../../../components/ui/themed-input'
@@ -38,6 +39,7 @@ export function ZikirFormModal({
   onErrorClear,
   onSubmit
 }: ZikirFormModalProps) {
+  const { t } = useTranslation('focus')
   const [nameDraft, setNameDraft] = useState(initialValues.name)
   const [transliterationDraft, setTransliterationDraft] = useState(initialValues.transliteration)
   const [meaningDraft, setMeaningDraft] = useState(initialValues.meaning)
@@ -62,13 +64,13 @@ export function ZikirFormModal({
   const handleSubmit = async () => {
     const trimmedName = nameDraft.trim()
     if (!trimmedName) {
-      setLocalError('Zikir adı zorunlu.')
+      setLocalError(t('focus:form.errors.nameRequired'))
       return
     }
 
     const parsedTarget = targetDraft.trim().length > 0 ? Number.parseInt(targetDraft, 10) : 0
     if (!Number.isFinite(parsedTarget) || parsedTarget < 0) {
-      setLocalError('Hedef 0 veya daha büyük olmalı.')
+      setLocalError(t('focus:form.errors.targetInvalid'))
       return
     }
 
@@ -101,41 +103,41 @@ export function ZikirFormModal({
       <Text className='mb-1 text-lg font-semibold text-[--text-primary]'>{title}</Text>
       <Text className='mb-4 text-xs text-[--text-muted]'>{description}</Text>
 
-      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Zikir adı</Text>
+      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>{t('focus:form.nameLabel')}</Text>
       <ThemedInput
         value={nameDraft}
         onChangeText={text => {
           setNameDraft(text)
           clearErrors()
         }}
-        placeholder='Örn. Salavat'
+        placeholder={t('focus:form.namePlaceholder')}
         className='mb-3 rounded-xl bg-[--bg] px-3'
         autoFocus
       />
 
-      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Okunuş (opsiyonel)</Text>
+      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>{t('focus:form.transliterationLabel')}</Text>
       <ThemedInput
         value={transliterationDraft}
         onChangeText={text => {
           setTransliterationDraft(text)
           clearErrors()
         }}
-        placeholder='Örn. Allahumme salli ala Muhammed'
+        placeholder={t('focus:form.transliterationPlaceholder')}
         className='mb-3 rounded-xl bg-[--bg] px-3'
       />
 
-      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Anlamı (opsiyonel)</Text>
+      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>{t('focus:form.meaningLabel')}</Text>
       <ThemedInput
         value={meaningDraft}
         onChangeText={text => {
           setMeaningDraft(text)
           clearErrors()
         }}
-        placeholder="Örn. Allah'ım Muhammed'e salat et"
+        placeholder={t('focus:form.meaningPlaceholder')}
         className='mb-3 rounded-xl bg-[--bg] px-3'
       />
 
-      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>Hedef</Text>
+      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>{t('focus:form.targetLabel')}</Text>
       <ThemedInput
         value={targetDraft}
         onChangeText={value => {
@@ -143,7 +145,7 @@ export function ZikirFormModal({
           clearErrors()
         }}
         keyboardType='number-pad'
-        placeholder='0 = sınırsız'
+        placeholder={t('focus:form.targetPlaceholder')}
         className='mb-2 rounded-xl bg-[--bg] px-3'
       />
 
@@ -151,7 +153,7 @@ export function ZikirFormModal({
 
       <View className='mt-1 mb-2 flex-row items-center justify-end gap-2'>
         <Pressable onPress={onRequestClose} disabled={isSaving} className='rounded-full border border-white/20 px-4 py-2'>
-          <Text className='text-sm font-medium text-[--text-primary]'>İptal</Text>
+          <Text className='text-sm font-medium text-[--text-primary]'>{t('common:actions.cancel')}</Text>
         </Pressable>
         <PrimaryCtaButton
           label={isSaving ? savingLabel : submitLabel}

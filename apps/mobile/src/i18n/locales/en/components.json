@@ -1,0 +1,58 @@
+{
+  "appSelectbox": {
+    "placeholder": "Select",
+    "title": "Options"
+  },
+  "dhikrContentStack": {
+    "arabic": "Arabic",
+    "transliteration": "Transliteration",
+    "meaning": "Meaning"
+  },
+  "dhikrResumeModal": {
+    "title": "How would you like to continue?",
+    "messageWithCount": "There are {{count}} counts saved for \"{{name}}\".",
+    "messageActive": "\"{{name}}\" is currently selected.",
+    "continue": "Continue Where You Left Off",
+    "fresh": "Start Fresh",
+    "cancel": "Cancel"
+  },
+  "forceUpdateModal": {
+    "title": "Update Required",
+    "message": "This version is no longer supported. Please update from the store to keep using the app.",
+    "action": "Update"
+  },
+  "moreMenu": {
+    "stats": "Stats",
+    "collections": "Collections",
+    "profile": "Profile"
+  },
+  "notificationPermissionDeniedModal": {
+    "title": "Notification permission off",
+    "message": "You need to allow notifications from Settings to turn on daily reminders.",
+    "openSettings": "Open Settings",
+    "close": "Close"
+  },
+  "notificationPermissionModal": {
+    "title": "App notifications",
+    "message": "Will you allow us to send notifications so we can keep you informed about reminders and important days?",
+    "allow": "Allow",
+    "notNow": "Not Now"
+  },
+  "unsavedDhikrTransitionModal": {
+    "title": "You have an unsaved dhikr",
+    "message": "{{count}} counts for {{title}} were not saved. Would you like to save before continuing?",
+    "saveAndContinue": "Save and Continue",
+    "continueWithoutSaving": "Continue Without Saving",
+    "cancel": "Cancel"
+  },
+  "screen": {
+    "title": "Component Library",
+    "subtitle": "Reusable UI inventory",
+    "moodCalm": "Calm",
+    "moodStressed": "Stressed",
+    "moodTired": "Tired",
+    "countdownTitle": "Mawlid al-Nabi",
+    "countdownLabel": "4 days left",
+    "footerNote": "This screen is a docs/design/components parity reference."
+  }
+}

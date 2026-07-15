@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useEffect } from "react";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated, {
   Easing,
   cancelAnimation,
@@ -25,6 +26,7 @@ type HeroCountdownCardProps = {
 
 export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProps) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("special-days");
   const isTodaySpecial = data.isTodaySpecial;
   const pulseProgress = useSharedValue(0);
   const shimmerProgress = useSharedValue(0);
@@ -96,7 +98,7 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
       </View>
       {data.isLocked ? (
         <View className="z-10 mt-2 self-start">
-          <ThemedTag label="Premium Kilidi" className="bg-[--bg] px-3 py-[6px]" />
+          <ThemedTag label={t("special-days:hero.premiumLocked")} className="bg-[--bg] px-3 py-[6px]" />
         </View>
       ) : null}
       <View className="z-10 mb-6 mt-4">
@@ -123,7 +125,7 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
           color={isTodaySpecial ? tokens.textPrimary : tokens.textMuted}
         />
         <Text className={`text-xs leading-5 ${isTodaySpecial ? "text-[--text-primary]" : "text-[--text-muted]"}`}>
-          Kalan: {data.remaining}
+          {t("special-days:hero.remainingPrefix", { remaining: data.remaining })}
         </Text>
       </View>
     </>

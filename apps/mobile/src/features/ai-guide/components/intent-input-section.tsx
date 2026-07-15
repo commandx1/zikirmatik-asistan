@@ -1,9 +1,9 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
 import { ThemedInput } from "../../../components/ui/themed-input";
 import { ThemedTag } from "../../../components/ui/themed-tag";
-import { AI_GUIDE_INPUT_PLACEHOLDER, AI_GUIDE_PROMPT_CHIPS } from "../data";
 
 type IntentInputSectionProps = {
   value: string;
@@ -25,13 +25,19 @@ export function IntentInputSection({
   onSelectPrompt
 }: IntentInputSectionProps) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("ai-guide");
+  const promptChips = [
+    t("ai-guide:promptChips.sad"),
+    t("ai-guide:promptChips.anxious"),
+    t("ai-guide:promptChips.grateful")
+  ];
 
   return (
     <View className="mb-8">
       <ThemedInput
         value={value}
         onChangeText={onChangeValue}
-        placeholder={AI_GUIDE_INPUT_PLACEHOLDER}
+        placeholder={t("ai-guide:input.placeholder")}
         shape="xl"
         multiline
         numberOfLines={4}
@@ -49,7 +55,7 @@ export function IntentInputSection({
       />
 
       <View className="mt-3 flex-row flex-wrap items-center gap-2">
-        {AI_GUIDE_PROMPT_CHIPS.map((chip) => (
+        {promptChips.map((chip) => (
           <ThemedTag key={chip} label={chip} onPress={isLoading ? undefined : () => onSelectPrompt(chip)} />
         ))}
         {typeof creditBalance === "number" ? (
@@ -58,11 +64,11 @@ export function IntentInputSection({
             disabled={!onPressCredits}
             className="ml-auto flex-row items-center gap-1.5 rounded-full bg-[--bg] px-3 py-1.5"
             accessibilityRole="button"
-            accessibilityLabel={`Kalan kredi: ${creditBalance}`}
+            accessibilityLabel={t("ai-guide:input.creditBalanceLabel", { count: creditBalance })}
           >
             <FontAwesome6 name="coins" size={12} color={tokens.accent} />
             <Text className="text-xs font-semibold text-[--fg]" style={{ color: tokens.accent }}>
-              {creditBalance} kredi
+              {t("ai-guide:input.creditBalance", { count: creditBalance })}
             </Text>
           </Pressable>
         ) : null}

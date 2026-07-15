@@ -1,0 +1,90 @@
+{
+  "state": {
+    "label": "GUIDE"
+  },
+  "input": {
+    "placeholder": "Write your intention and need...",
+    "creditBalanceLabel": "Remaining credit: {{count}}",
+    "creditBalance": "{{count}} credits"
+  },
+  "promptChips": {
+    "sad": "I feel down",
+    "anxious": "I'm anxious",
+    "grateful": "I want to give thanks"
+  },
+  "errors": {
+    "loginRequiredToSave": "You need to sign in to save.",
+    "dhikrSaveFailed": "Couldn't save the dhikr.",
+    "recommendationFailed": "Couldn't get a recommendation. Please try again.",
+    "serviceUnavailable": "The guide service isn't responding right now.",
+    "serviceUnreachable": "Couldn't reach the guide service. Please try again."
+  },
+  "offTopic": {
+    "title": "Off topic"
+  },
+  "clarify": {
+    "title": "Let's clarify a bit more"
+  },
+  "noTimeInfo": "No time info",
+  "genericPrompt": "General recommendation",
+  "weekday": {
+    "label": "{{day}}"
+  },
+  "loading": {
+    "creditsLoading": "Loading your credit…",
+    "creditsLoadingRetry": "Your credits are loading; you can resend your request in a few seconds.",
+    "defaultStep": "Preparing..."
+  },
+  "recommendation": {
+    "chipLabelPrimary": "Top pick for you",
+    "chipLabelSecondary": "Guide recommendation",
+    "repeatLabelPrimary": "Priority",
+    "start": "Start",
+    "virtue": "Virtue",
+    "source": "Source",
+    "recommendedTarget": "Recommended target: {{count}}"
+  },
+  "currentStateCard": {
+    "lastSearch": "Last search: {{prompt}}",
+    "placeholder": "Write your intention and we'll prepare recommendations based only on your text."
+  },
+  "dailyEsmaShortcut": {
+    "title": "Today's Beautiful Name suggestions",
+    "subtitle": "Reopen today's 3 suggestions.",
+    "open": "Open"
+  },
+  "demo": {
+    "theme": "Theme",
+    "loading": "Loading"
+  },
+  "history": {
+    "title": "Recent Guide Searches",
+    "showLastTwo": "Show Last 2",
+    "showAll": "Show All",
+    "recentTime": "Recently",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "noRecommendations": "No recommendations found",
+    "recommendationCount": "{{count}} recommendations",
+    "active": "On screen",
+    "show": "Show"
+  },
+  "infoTooltip": {
+    "text": "The guide doesn't generate new content. Only verified dhikrs are recommended."
+  },
+  "loadingSection": {
+    "title": "Guide is working"
+  },
+  "recommendationsSection": {
+    "empty": "Recommendations will be listed here. Write your intention and send it, and the guide will bring up suitable dhikrs.",
+    "title": "Recommendations For You",
+    "assistantNote": "Guide's Note"
+  },
+  "topBar": {
+    "title": "AI Guide",
+    "subtitle": "Dhikrs based on your state of mind"
+  },
+  "verificationFooter": {
+    "text": "All content is sourced from trusted religious references."
+  }
+}

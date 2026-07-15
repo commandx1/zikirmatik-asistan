@@ -1,0 +1,124 @@
+{
+  "header": {
+    "title": "Profile"
+  },
+  "userCard": {
+    "premiumBadge": "Premium",
+    "upgradeButton": "Go Premium"
+  },
+  "sections": {
+    "personalization": {
+      "title": "Personalization",
+      "theme": "Theme Selection",
+      "font": "Font",
+      "haptics": "Haptics",
+      "language": "Language"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "toggle": "Notifications",
+      "reminderTime": "Daily Dhikr Reminder Time"
+    },
+    "premium": {
+      "title": "Premium",
+      "features": "Premium Features",
+      "manageSubscription": "Manage Subscription"
+    },
+    "other": {
+      "title": "Other",
+      "tourReplay": "Take the App Tour",
+      "rateApp": "Rate the App",
+      "sendFeedback": "Send Feedback",
+      "logout": "Log Out"
+    },
+    "account": {
+      "title": "Account",
+      "deleteAccount": "Delete Account"
+    }
+  },
+  "language": {
+    "turkish": "Türkçe",
+    "english": "English"
+  },
+  "memberSince": {
+    "newMember": "New member",
+    "since": "Member since {{date}}"
+  },
+  "feedbackEmail": {
+    "subject": "Zikirmatik Rehber Feedback",
+    "body": "Hello,\n\nMy feedback:\n\n\n---\nDevice:\nApp version:\n"
+  },
+  "reminderTimeModal": {
+    "title": "Daily Dhikr Reminder Time",
+    "description": "You can set the time for your daily dhikr reminder.",
+    "hour": "Hour",
+    "minute": "Minute",
+    "hourPickerTitle": "Select Hour",
+    "minutePickerTitle": "Select Minute",
+    "invalidTime": "Please enter a valid time (00-23 / 00-59)."
+  },
+  "deleteAccountModal": {
+    "warning": "⚠️  This action cannot be undone",
+    "title": "Delete Your Account",
+    "description": "If you delete your account, the following data will be permanently deleted:",
+    "items": {
+      "history": "All your dhikr history and statistics",
+      "customDhikrs": "Your personal dhikrs",
+      "profileInfo": "Your profile information",
+      "subscription": "Your subscription record",
+      "aiHistory": "Your AI Guide recommendation history"
+    },
+    "confirmButton": "Permanently Delete Account",
+    "cancelButton": "Cancel"
+  },
+  "feedbackErrorModal": {
+    "title": "Couldn't open the email app"
+  },
+  "pushPrefsErrorModal": {
+    "title": "Notification preference couldn't be updated"
+  },
+  "errors": {
+    "manageSubscriptionFailed": "Couldn't open the subscription management screen.",
+    "storeOpenFailed": "Couldn't open the store page.",
+    "noEmailApp": "It looks like you don't have a default email app on your device.",
+    "reminderTimeUpdateFailed": "Couldn't update the time. Please try again.",
+    "pushPrefsUpdateFailed": "Couldn't update the notification preference. Please try again."
+  },
+  "premiumSheet": {
+    "title": "Go Premium",
+    "subtitle": "Deepen your spiritual journey with AI-powered guidance and exclusive content.",
+    "benefits": {
+      "aiCredits": {
+        "title": "AI Guide Credits",
+        "description": "50 monthly credits plus support for buying extra credit packs when needed."
+      },
+      "collections": {
+        "title": "All Collections",
+        "description": "Full access to Hisnul Muslim and all dua collections."
+      },
+      "stats": {
+        "title": "Detailed Statistics",
+        "description": "Track your progress in depth with heat maps, period comparisons, and more."
+      },
+      "specialDays": {
+        "title": "All Special Days",
+        "description": "Access the content of all special days, not just Kandils and holidays."
+      },
+      "themes": {
+        "title": "All Themes",
+        "description": "Use every theme with no restrictions."
+      }
+    },
+    "monthlyPlan": "Monthly (₺{{price}})",
+    "yearlyPlan": "Yearly (₺{{price}})",
+    "creditsRenewNote": "50 monthly credits renew every month; unused credits don't carry over.",
+    "startButton": "Get Started",
+    "activating": "Activating...",
+    "orBuyCredits": "or buy a credit pack",
+    "creditsKeptNote": "Credits you purchase are yours to keep, they never expire.",
+    "creditsLabel": "{{count}} Credits",
+    "purchasing": "Purchasing...",
+    "dailyFreeCreditNote": "Your 1 free daily credit renews every day.",
+    "maybeLater": "Maybe Later"
+  }
+}

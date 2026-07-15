@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 
 export type CreateAiRecommendationPayload = {
   userId: string;
@@ -175,7 +176,7 @@ async function requestJson<TResponse>(
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "Asistan servisi şu anda yanıt veremiyor.");
+      const message = extractErrorMessage(data, i18n.t("ai-guide:errors.serviceUnavailable"));
       const code = extractErrorCode(data);
       throw new AiApiError(response.status >= 500 ? "transient" : "terminal", message, response.status, code);
     }
@@ -186,7 +187,7 @@ async function requestJson<TResponse>(
       throw error;
     }
 
-    throw new AiApiError("transient", "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin.");
+    throw new AiApiError("transient", i18n.t("ai-guide:errors.serviceUnreachable"));
   }
 }
 

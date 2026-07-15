@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { DhikrResumeModal } from "../../components/ui/dhikr-resume-modal";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
@@ -38,6 +39,7 @@ function toDateKey(value: Date) {
 }
 
 export function AiGuideScreen() {
+  const { t } = useTranslation("ai-guide");
   const router = useRouter();
   const resumeAfterCreditPurchaseRef = useRef<() => void>(() => {});
   const premiumSheet = usePremiumSheet({
@@ -107,7 +109,7 @@ export function AiGuideScreen() {
 
     const selectedDhikr = storeItems.find(d => d.id === selectedDhikrId);
     if (!selectedDhikr || authStatus !== "authenticated" || !sessionUserId) {
-      setUnsavedSaveError("Kaydetmek için giriş yapmalısın.");
+      setUnsavedSaveError(t("ai-guide:errors.loginRequiredToSave"));
       return;
     }
 
@@ -134,7 +136,7 @@ export function AiGuideScreen() {
       setPendingRecommendation(null);
       proceedWithRecommendation(item);
     } catch (e) {
-      setUnsavedSaveError(e instanceof Error ? e.message : "Zikir kaydedilemedi.");
+      setUnsavedSaveError(e instanceof Error ? e.message : t("ai-guide:errors.dhikrSaveFailed"));
     } finally {
       setIsSavingUnsaved(false);
     }
@@ -225,7 +227,7 @@ export function AiGuideScreen() {
               <View className="mb-2 flex-row items-center gap-2">
                 <FontAwesome6 name="circle-exclamation" size={14} color="#f87171" />
                 <Text className="text-sm font-semibold text-red-400">
-                  Konu dışı
+                  {t("ai-guide:offTopic.title")}
                 </Text>
               </View>
               <Text className="text-sm leading-5 text-red-200/80">
@@ -237,7 +239,7 @@ export function AiGuideScreen() {
               <View className="mb-2 flex-row items-center gap-2">
                 <FontAwesome6 name="circle-question" size={14} color="#fbbf24" />
                 <Text className="text-sm font-semibold text-amber-400">
-                  Biraz daha netleştirelim
+                  {t("ai-guide:clarify.title")}
                 </Text>
               </View>
               <Text className="mb-3 text-sm leading-5 text-amber-100/80">

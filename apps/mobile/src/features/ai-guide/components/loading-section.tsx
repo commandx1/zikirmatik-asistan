@@ -1,6 +1,8 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { i18n } from "../../../i18n";
 import Animated, {
   cancelAnimation,
   Easing,
@@ -12,7 +14,9 @@ import Animated, {
 } from "react-native-reanimated";
 import { ThemedCard } from "../../../components/ui/themed-card";
 
-const DEFAULT_STEP_MESSAGE = "Hazırlanıyor...";
+function defaultStepMessage() {
+  return i18n.t("ai-guide:loading.defaultStep");
+}
 
 function Spinner() {
   const rotation = useSharedValue(0);
@@ -115,19 +119,21 @@ type LoadingSectionProps = {
 };
 
 export function LoadingSection({ visible, stepMessage }: LoadingSectionProps) {
+  const { t } = useTranslation("ai-guide");
+
   if (!visible) return null;
 
   return (
     <View className="mb-8">
       <View className="mb-4 flex-row items-center gap-2 px-1">
         <FontAwesome6 name="sparkles" iconStyle="solid" size={12} color="#D6A93D" />
-        <Text className="text-sm font-semibold text-[--text-primary]">Asistan çalışıyor</Text>
+        <Text className="text-sm font-semibold text-[--text-primary]">{t("ai-guide:loadingSection.title")}</Text>
       </View>
 
       <ThemedCard className="mb-4 rounded-[20px] px-5 py-4" accent="accentSoft">
         <View className="flex-row items-center gap-3">
           <Spinner />
-          <FadingStepLabel message={stepMessage || DEFAULT_STEP_MESSAGE} />
+          <FadingStepLabel message={stepMessage || defaultStepMessage()} />
         </View>
       </ThemedCard>
 

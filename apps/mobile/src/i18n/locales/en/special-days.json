@@ -1,0 +1,50 @@
+{
+  "header": {
+    "title": "Kandils & Special Days",
+    "subtitle": "Prepare for the sacred nights"
+  },
+  "countdown": {
+    "dayUnit": "DAYS"
+  },
+  "hero": {
+    "premiumLocked": "Premium Locked",
+    "remainingPrefix": "Remaining: {{remaining}}"
+  },
+  "notificationSettings": {
+    "title": "Get kandil notifications",
+    "subtitle": "Notification 1 day and 1 hour before the kandil"
+  },
+  "ramadanMode": {
+    "title": "Ramadan Mode",
+    "sahur": "Suhoor",
+    "iftar": "Iftar",
+    "cta": "Go to Ramadan dhikrs"
+  },
+  "upcoming": {
+    "title": "Upcoming Days",
+    "premiumLocked": "Premium Locked"
+  },
+  "remaining": {
+    "today": "Today",
+    "oneDay": "1 day",
+    "days": "{{count}} days"
+  },
+  "errors": {
+    "homeLoadFailed": "Special day data could not be retrieved.",
+    "detailLoadFailed": "Special day detail could not be retrieved.",
+    "fetchFailed": "Special day data could not be retrieved.",
+    "serverUnreachable": "Cannot reach the server. Please try again.",
+    "loginRequired": "You must sign in to save.",
+    "saveFailed": "Dhikr could not be saved."
+  },
+  "detail": {
+    "pageTitle": "Special Day Detail",
+    "notStarted": "Not started yet",
+    "themeTitle": "Theme of the Day",
+    "completedLabel": "Completed: {{completed}}/{{total}}",
+    "recommendedDhikrs": "Recommended Dhikrs",
+    "completed": "Completed",
+    "target": "Target: {{target}} repetitions",
+    "start": "Start"
+  }
+}

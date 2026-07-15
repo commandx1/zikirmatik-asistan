@@ -1,0 +1,32 @@
+{
+  "screen": {
+    "title": "Collections",
+    "emptyList": "No collections found."
+  },
+  "categories": {
+    "all": "All",
+    "gunluk": "Daily",
+    "namaz": "Prayer",
+    "dua": "Dua",
+    "koruma": "Protection",
+    "hayat": "Life",
+    "ibadet": "Worship"
+  },
+  "card": {
+    "premiumBadge": "Premium",
+    "dhikrCount": "{{count}} dhikr"
+  },
+  "detail": {
+    "defaultTitle": "Collection",
+    "notStarted": "Not started yet",
+    "addToCounter": "Add to Counter",
+    "loginRequired": "You need to sign in to save.",
+    "saveFailed": "Failed to save dhikr."
+  },
+  "errors": {
+    "detailLoadFailed": "Failed to load collection details.",
+    "listLoadFailed": "Failed to load collections.",
+    "fetchFailed": "Failed to fetch collection data.",
+    "serverUnreachable": "Cannot reach the server. Please try again."
+  }
+}

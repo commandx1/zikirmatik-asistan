@@ -1,0 +1,111 @@
+{
+  "screen": {
+    "title": "Statistics",
+    "subtitleGuest": "Summary of your recorded dhikrs",
+    "subtitleWithStreak": "Your {{count}}-day streak is going strong",
+    "subtitleDefault": "Summary of your recorded dhikrs",
+    "retry": "Retry",
+    "sections": {
+      "dailyActivity": {
+        "title": "Daily activity",
+        "subtitle": "Your dhikr count over the last 7 or 30 days"
+      },
+      "activityCalendar": {
+        "title": "Activity calendar",
+        "subtitle": "Your dhikr intensity over the past year"
+      },
+      "periodComparison": {
+        "title": "Period comparison",
+        "subtitle": "This week and this month compared to the previous period"
+      },
+      "activeDays": {
+        "title": "Active days",
+        "subtitle": "Which days of the week you're most active"
+      },
+      "activeHours": {
+        "title": "Active hours",
+        "subtitle": "Which hours of the day you're most active"
+      },
+      "sourceDistribution": {
+        "title": "Source breakdown",
+        "subtitle": "Where your dhikrs were added from"
+      },
+      "topDhikrs": {
+        "title": "Most recited dhikrs",
+        "subtitle": "Sorted by total count"
+      },
+      "badges": {
+        "title": "Badges",
+        "subtitle": "Achievements you've earned and ones on the way"
+      }
+    }
+  },
+  "errors": {
+    "loadFailed": "Statistics could not be loaded.",
+    "fetchFailed": "Statistics data could not be retrieved.",
+    "serverUnreachable": "Cannot reach the server. Please try again."
+  },
+  "misc": {
+    "defaultDhikrLabel": "Dhikr"
+  },
+  "badges": {
+    "firstSteps": "First Steps",
+    "steadyStreak": "Steady Streak",
+    "activeDays": "Active Days",
+    "achieved": "Achieved"
+  },
+  "activityHeatmap": {
+    "low": "less",
+    "high": "more"
+  },
+  "badgeCelebration": {
+    "title": "You earned a new badge!",
+    "description": "You can always view this achievement in the statistics section.",
+    "close": "Close",
+    "great": "Great!"
+  },
+  "dailyBarChart": {
+    "totalLabel": "Total {{count}}",
+    "range7": "7 days",
+    "range30": "30 days"
+  },
+  "periodComparison": {
+    "previousPeriod": "Previous period: {{count}}",
+    "thisWeek": "This week",
+    "thisMonth": "This month"
+  },
+  "premiumLock": {
+    "message": "This statistic is exclusive to premium members.",
+    "unlock": "Unlock with premium"
+  },
+  "sourceLabels": {
+    "manual": "Manual",
+    "ai": "AI suggestion",
+    "special-day": "Special day",
+    "notification": "Reminder"
+  },
+  "summary": {
+    "totalDhikr": "Total dhikr",
+    "currentStreak": "Current streak",
+    "longestStreak": "Longest streak",
+    "activeDays": "Active days",
+    "today": "Today",
+    "thisWeek": "This week",
+    "thisMonth": "This month",
+    "dailyAverage": "Daily average",
+    "completion": "Completion",
+    "dayUnit": "days"
+  },
+  "topDhikrs": {
+    "empty": "Not enough dhikr records yet."
+  },
+  "weekdayLabels": {
+    "1": "Sun",
+    "2": "Mon",
+    "3": "Tue",
+    "4": "Wed",
+    "5": "Thu",
+    "6": "Fri",
+    "7": "Sat"
+  }
+}

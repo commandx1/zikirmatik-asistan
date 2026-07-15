@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { i18n } from "../i18n";
+import { useProfileStore } from "./profile-store";
+import { toIntlLocale } from "../lib/locale-format";
 import { ZIKIR_ITEMS } from "../features/focus/data";
 import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api-client";
 import type { AiDhikrContext, ZikirItem } from "../features/focus/types";
@@ -19,6 +22,7 @@ type UnsavedProgressSnapshot = {
   current: number;
   target: number;
   lastActivityLabel: string;
+  lastActivityAt?: string;
 };
 
 type DhikrStore = {
@@ -99,18 +103,18 @@ type DhikrStore = {
 
 export const MAX_DHIKR_TARGET = 9999;
 
-function formatLastActivityLabel() {
-  const time = new Date().toLocaleTimeString("tr-TR", {
+function formatLastActivityLabel(now: Date = new Date()) {
+  const time = now.toLocaleTimeString(toIntlLocale(useProfileStore.getState().locale), {
     hour: "2-digit",
     minute: "2-digit"
   });
 
-  return `Bugün ${time}`;
+  return i18n.t("focus:relativeDate.todayAt", { time });
 }
 
 function slugify(value: string) {
   const normalized = value
-    .toLocaleLowerCase("tr-TR")
+    .toLocaleLowerCase(toIntlLocale(useProfileStore.getState().locale))
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
@@ -170,7 +174,8 @@ function markUnsavedProgress(
           [item.id]: {
             current: item.current,
             target: item.target,
-            lastActivityLabel: item.lastActivityLabel
+            lastActivityLabel: item.lastActivityLabel,
+            lastActivityAt: item.lastActivityAt
           }
         }
   };
@@ -270,6 +275,7 @@ export const useDhikrStore = create<DhikrStore>()(
                   current: normalizedTarget > 0 ? Math.min(normalizedCurrent, normalizedTarget) : normalizedCurrent,
                   target: normalizedTarget,
                   lastActivityLabel: item.lastActivityLabel ?? value.lastActivityLabel,
+                  lastActivityAt: value.lastActivityAt,
                   isFavorite: item.isFavorite ?? value.isFavorite
                 }
               : value
@@ -286,7 +292,7 @@ export const useDhikrStore = create<DhikrStore>()(
         meaning: item.meaning,
         current: normalizedTarget > 0 ? Math.min(normalizedCurrent, normalizedTarget) : normalizedCurrent,
         target: normalizedTarget,
-        lastActivityLabel: item.lastActivityLabel ?? "Kayıtlı",
+        lastActivityLabel: item.lastActivityLabel ?? i18n.t("focus:relativeDate.saved"),
         streakDays: 0,
         isFavorite: Boolean(item.isFavorite)
       };
@@ -322,6 +328,7 @@ export const useDhikrStore = create<DhikrStore>()(
                   current: normalizedCurrent,
                   target: normalizedTarget,
                   lastActivityLabel: item.lastActivityLabel,
+                  lastActivityAt: item.lastActivityAt,
                   isFavorite: item.isFavorite
                 }
               : value
@@ -353,6 +360,8 @@ export const useDhikrStore = create<DhikrStore>()(
     const meaning = input.meaning?.trim() || undefined;
 
     const id = input.id?.trim() || `personal-${slugify(name)}-${Date.now().toString(36)}`;
+    const hasInitialCount = Math.max(0, Math.floor(input.initialCount ?? 0)) > 0;
+    const now = new Date();
     const custom: ZikirItem = {
       id,
       source: "personal",
@@ -362,7 +371,8 @@ export const useDhikrStore = create<DhikrStore>()(
       meaning,
       current: Math.max(0, Math.floor(input.initialCount ?? 0)),
       target: resolveCustomTarget(input.target),
-      lastActivityLabel: Math.max(0, Math.floor(input.initialCount ?? 0)) > 0 ? formatLastActivityLabel() : "Henüz başlanmadı",
+      lastActivityLabel: hasInitialCount ? formatLastActivityLabel(now) : i18n.t("focus:relativeDate.notStarted"),
+      lastActivityAt: hasInitialCount ? now.toISOString() : undefined,
       streakDays: 0,
       isFavorite: false
     };
@@ -394,7 +404,8 @@ export const useDhikrStore = create<DhikrStore>()(
           ? {
               ...item,
               current: 0,
-              lastActivityLabel: "Henüz başlanmadı"
+              lastActivityLabel: i18n.t("focus:relativeDate.notStarted"),
+              lastActivityAt: undefined
             }
           : item
       ),
@@ -415,10 +426,12 @@ export const useDhikrStore = create<DhikrStore>()(
         }
 
         changedItem = item;
+        const now = new Date();
         return {
           ...item,
           current: nextCount,
-          lastActivityLabel: formatLastActivityLabel()
+          lastActivityLabel: formatLastActivityLabel(now),
+          lastActivityAt: now.toISOString()
         };
       });
 
@@ -436,7 +449,13 @@ export const useDhikrStore = create<DhikrStore>()(
         }
 
         changedItem = item;
-        return { ...item, current: 0, lastActivityLabel: formatLastActivityLabel() };
+        const now = new Date();
+        return {
+          ...item,
+          current: 0,
+          lastActivityLabel: formatLastActivityLabel(now),
+          lastActivityAt: now.toISOString()
+        };
       });
 
       return {
@@ -456,10 +475,12 @@ export const useDhikrStore = create<DhikrStore>()(
           ? Math.max(0, Math.min(item.target, Math.floor(count)))
           : Math.max(0, Math.floor(count));
         changedItem = item;
+        const now = new Date();
         return {
           ...item,
           current: safeCount,
-          lastActivityLabel: formatLastActivityLabel()
+          lastActivityLabel: formatLastActivityLabel(now),
+          lastActivityAt: now.toISOString()
         };
       });
 
@@ -504,7 +525,8 @@ export const useDhikrStore = create<DhikrStore>()(
                 ...item,
                 current: snapshot.current,
                 target: snapshot.target,
-                lastActivityLabel: snapshot.lastActivityLabel
+                lastActivityLabel: snapshot.lastActivityLabel,
+                lastActivityAt: snapshot.lastActivityAt
               }
             : item
         ),
@@ -569,7 +591,7 @@ export const useDhikrStore = create<DhikrStore>()(
           aiRecommendationId: item.aiRecommendationId ?? (state.activeAiContext?.dhikrId === item.id ? state.activeAiContext.recommendationId : undefined),
           current: normalizedCurrent,
           target: effectiveTarget,
-          lastActivityLabel: item.lastActivityLabel ?? existing?.lastActivityLabel ?? "Henüz başlanmadı",
+          lastActivityLabel: item.lastActivityLabel ?? existing?.lastActivityLabel ?? i18n.t("focus:relativeDate.notStarted"),
           streakDays: 0,
           isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)
         };
@@ -613,7 +635,7 @@ export const useDhikrStore = create<DhikrStore>()(
           meaning: item.meaning?.trim() || undefined,
           current: normalizedCurrent,
           target: effectiveTarget,
-          lastActivityLabel: item.lastActivityLabel?.trim() || existing?.lastActivityLabel || "Henüz başlanmadı",
+          lastActivityLabel: item.lastActivityLabel?.trim() || existing?.lastActivityLabel || i18n.t("focus:relativeDate.notStarted"),
           streakDays: 0,
           isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)
         };

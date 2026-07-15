@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { i18n } from "../../../i18n";
 import { useAuthStore } from "../../../store/auth-store";
 import { useGuestMigrationStore } from "../../../store/guest-migration-store";
 import { runGuestMigration } from "../services/guest-migration";
@@ -42,7 +43,7 @@ export function useGuestMigration() {
         useGuestMigrationStore.getState().completeRun();
       })
       .catch(async (error) => {
-        const message = error instanceof Error ? error.message : "Guest migration failed";
+        const message = error instanceof Error ? error.message : i18n.t("auth:errors.migrationFailed");
         // Exponential backoff before releasing the retry: a transient network
         // failure (e.g. logging in while offline) must not burn every attempt
         // within milliseconds. inFlight stays held during the wait; if the app

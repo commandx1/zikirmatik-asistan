@@ -1,6 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { buildAiGuideHistoryItems, resolveVisibleAiGuideHistory } from "./ai-guide-history-service";
 import type { AiGuideHistoryItem } from "../types";
+
+vi.mock("../../../i18n", () => ({
+  i18n: {
+    t: (key: string) => {
+      if (key === "ai-guide:recommendation.chipLabelPrimary") return "Senin için birincil öneri";
+      if (key === "ai-guide:recommendation.chipLabelSecondary") return "Asistan önerisi";
+      if (key === "ai-guide:recommendation.repeatLabelPrimary") return "Öncelikli";
+      if (key === "ai-guide:genericPrompt") return "Genel öneri";
+      return key;
+    }
+  }
+}));
 
 const history: AiGuideHistoryItem[] = [
   { id: "1", prompt: "Sabır", createdAt: "2026-06-03T10:00:00.000Z", recommendations: [] },

@@ -9,6 +9,19 @@ vi.mock("react-native", () => ({
   }
 }));
 
+vi.mock("../../../i18n", () => ({
+  i18n: {
+    t: (key: string, opts?: Record<string, unknown>) => {
+      if (key === "focus:relativeDate.saved") return "Kayıtlı";
+      if (key === "focus:relativeDate.notStarted") return "Henüz başlanmadı";
+      if (key === "focus:relativeDate.todayAt") return `Bugün ${opts?.time ?? ""}`;
+      return key;
+    },
+    changeLanguage: vi.fn()
+  },
+  detectDeviceLocale: () => "tr"
+}));
+
 vi.mock("@react-native-async-storage/async-storage", () => ({
   default: {
     getItem: vi.fn(),

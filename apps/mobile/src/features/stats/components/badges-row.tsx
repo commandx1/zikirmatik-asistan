@@ -1,11 +1,13 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { ScrollView, Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
 import type { StatsBadge } from "@zikirmatik/shared";
 import { withAlpha } from "./chart-utils";
 
 function BadgeCard({ badge }: { badge: StatsBadge }) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("stats");
   const tint = badge.achieved ? tokens.accent : withAlpha(tokens.textPrimary, 0.18);
 
   return (
@@ -24,7 +26,7 @@ function BadgeCard({ badge }: { badge: StatsBadge }) {
         {badge.label}
       </Text>
       <Text className="mt-1 text-[11px] font-semibold" style={{ color: badge.achieved ? tokens.accent : tokens.textMuted }}>
-        {badge.achieved ? "Kazanıldı" : `%${Math.round(badge.progress * 100)}`}
+        {badge.achieved ? t("stats:badges.achieved") : `%${Math.round(badge.progress * 100)}`}
       </Text>
     </View>
   );

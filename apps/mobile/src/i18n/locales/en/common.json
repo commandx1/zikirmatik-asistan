@@ -1,0 +1,15 @@
+{
+  "actions": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving",
+    "ok": "OK"
+  },
+  "nav": {
+    "home": "Home",
+    "focus": "My Dhikrs",
+    "aiGuide": "AI Guide",
+    "specialDays": "Special Days",
+    "more": "More"
+  }
+}

@@ -1,23 +1,23 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ThemedCard } from "../../../components/ui/themed-card";
-import { AI_GUIDE_CURRENT_STATE } from "../data";
 
 type CurrentStateCardProps = {
-  prayerTimeLabel: string;
   weekdayLabel: string;
   lastPrompt?: string;
 };
 
-export function CurrentStateCard({ prayerTimeLabel, weekdayLabel, lastPrompt }: CurrentStateCardProps) {
+export function CurrentStateCard({ weekdayLabel, lastPrompt }: CurrentStateCardProps) {
+  const { t } = useTranslation("ai-guide");
   const promptLabel = lastPrompt?.trim()
-    ? `Son arama: ${lastPrompt.trim()}`
-    : "Niyetini yaz, önerileri sadece metnine göre hazırlayalım.";
+    ? t("ai-guide:currentStateCard.lastSearch", { prompt: lastPrompt.trim() })
+    : t("ai-guide:currentStateCard.placeholder");
 
   return (
     <ThemedCard className="mb-6 rounded-[24px] p-5" elevated>
       <View className="mb-4 flex-row items-start justify-between">
-        <Text className="text-xs font-semibold tracking-[1.1px] text-[--text-muted]">{AI_GUIDE_CURRENT_STATE.label}</Text>
+        <Text className="text-xs font-semibold tracking-[1.1px] text-[--text-muted]">{t("ai-guide:state.label")}</Text>
       </View>
 
       <View className="mb-3 flex-row items-center gap-3">
@@ -30,10 +30,6 @@ export function CurrentStateCard({ prayerTimeLabel, weekdayLabel, lastPrompt }: 
       </View>
 
       <View className="mt-4 flex-row gap-4 border-t border-white/5 pt-4">
-        <View className="flex-row items-center gap-1.5">
-          <FontAwesome6 name="clock" iconStyle="regular" size={11} color="#D6A93D" />
-          <Text className="text-xs text-[--text-muted]">{prayerTimeLabel}</Text>
-        </View>
         <View className="flex-row items-center gap-1.5">
           <FontAwesome6 name="calendar" iconStyle="regular" size={11} color="#D6A93D" />
           <Text className="text-xs text-[--text-muted]">{weekdayLabel}</Text>

@@ -1,0 +1,12 @@
+{
+  "errors": {
+    "registerFailed": "Couldn't register the device.",
+    "serverUnreachable": "The server can't be reached. Please try again."
+  },
+  "dailyReminder": {
+    "channelName": "Daily Reminder",
+    "title": "Time for your daily dhikr",
+    "bodyWithNames": "Today's names: {{names}}",
+    "bodyDefault": "Take a short break to finish today's dhikr."
+  }
+}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Keyboard } from "react-native";
+import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { AiGuideHistoryItem, AiGuideRecommendation } from "../types";
 import { useAuthStore } from "../../../store/auth-store";
@@ -19,8 +20,8 @@ import { createAiProgressSocket } from "../services/ai-progress-socket";
 import { buildAiGuideHistoryItems, resolveVisibleAiGuideHistory } from "../services/ai-guide-history-service";
 import { useProfileStore } from "../../../store/profile-store";
 import { getUserById } from "../../users/services/users-api-client";
-import { getPrayerTimesByCity } from "../../prayer-times/services/prayer-times-api-client";
-import { formatCurrentPrayerLabel, formatWeekdayLabel } from "../../../lib/prayer-time";
+import { i18n } from "../../../i18n";
+import { toIntlLocale } from "../../../lib/locale-format";
 
 type LastAiGuideResult = {
   prompt: string;
@@ -67,6 +68,7 @@ async function callWithAuthRetry<T>(call: (accessToken?: string) => Promise<T>):
 }
 
 export function useAiGuide(onOpenPremiumSheet?: () => void) {
+  const { t } = useTranslation("ai-guide");
   const [intentInput, setIntentInput] = useState("");
   const [showInfo, setShowInfo] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +82,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [historyItems, setHistoryItems] = useState<AiGuideHistoryItem[]>([]);
   const [isHistoryExpanded, setHistoryExpanded] = useState(false);
   const [lastPrompt, setLastPrompt] = useState("");
-  const [prayerTimeLabel, setPrayerTimeLabel] = useState("Vakit bilgisi yok");
   const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
   const [isPremiumVerified, setIsPremiumVerified] = useState(false);
   const [creditBalance, setCreditBalance] = useState(0);
@@ -95,7 +96,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
   const accessToken = useAuthStore((s) => s.session?.accessToken);
-  const profileCity = useProfileStore((s) => s.city);
   const isPremium = useProfileStore((s) => s.isPremium);
   const selectDhikr = useDhikrStore((s) => s.selectDhikr);
 
@@ -175,7 +175,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         ? [
             {
               id: parsed.recommendationId,
-              prompt: parsed.prompt?.trim() || "Genel öneri",
+              prompt: parsed.prompt?.trim() || t("ai-guide:genericPrompt"),
               assistantNote: parsed.assistantNote?.trim() || undefined,
               createdAt: "",
               recommendations: parsed.recommendations
@@ -206,7 +206,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       return false;
     }
 
-    const prompt = latest.prompt === "Genel öneri" ? "" : latest.prompt;
+    const prompt = latest.prompt === t("ai-guide:genericPrompt") ? "" : latest.prompt;
     setLastPrompt(prompt);
     setAssistantNote(latest.assistantNote);
     setRecommendationId(latest.id);
@@ -263,31 +263,17 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const loadCurrentState = useCallback(async () => {
     setWeekdayLabel(formatWeekdayLabel());
 
-    let city = profileCity?.trim() ?? "";
     if (authStatus === "authenticated" && userId) {
       try {
         const user = await getUserById(userId, accessToken);
-        city = user.city?.trim() || city;
         setIsPremiumVerified(Boolean(user.isPremium));
       } catch {
-        // Use local profile fallback when user document cannot be fetched.
+        // Keep existing state when user document cannot be fetched.
       }
     } else {
       setIsPremiumVerified(false);
     }
-
-    if (!city) {
-      setPrayerTimeLabel("Vakit bilgisi yok");
-      return;
-    }
-
-    try {
-      const prayerTimes = await getPrayerTimesByCity(city);
-      setPrayerTimeLabel(formatCurrentPrayerLabel(prayerTimes.times));
-    } catch {
-      setPrayerTimeLabel("Vakit bilgisi yok");
-    }
-  }, [accessToken, authStatus, profileCity, userId]);
+  }, [accessToken, authStatus, userId]);
 
   useEffect(() => {
     void loadCurrentState();
@@ -399,8 +385,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
             id: item.id,
             title: item.nameTurkish,
             chipEmoji: index === 0 ? "💆" : "✨",
-            chipLabel: index === 0 ? "Senin için birincil öneri" : "Asistan önerisi",
-            repeatLabel: index === 0 ? "Öncelikli" : undefined,
+            chipLabel: index === 0 ? t("ai-guide:recommendation.chipLabelPrimary") : t("ai-guide:recommendation.chipLabelSecondary"),
+            repeatLabel: index === 0 ? t("ai-guide:recommendation.repeatLabelPrimary") : undefined,
             arabic: item.nameArabic,
             transliteration: item.transliteration || item.nameTurkish,
             meaning: item.meaning,
@@ -416,7 +402,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         setHistoryItems((prev) => [
           {
             id: response.recommendationId,
-            prompt: normalizedPrompt || "Genel öneri",
+            prompt: normalizedPrompt || t("ai-guide:genericPrompt"),
             assistantNote: nextAssistantNote,
             createdAt: new Date().toISOString(),
             recommendations: mappedItems
@@ -459,7 +445,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         } else if (error instanceof AiApiError) {
           setError(error.message);
         } else {
-          setError("Asistan önerisi alınamadı. Lütfen tekrar deneyin.");
+          setError(t("ai-guide:errors.recommendationFailed"));
         }
       } finally {
         progressSocket.disconnect();
@@ -467,7 +453,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         setLoadingStep("");
       }
     },
-    [accessToken, authStatus, cacheKey, onOpenPremiumSheet, userId]
+    [accessToken, authStatus, cacheKey, onOpenPremiumSheet, userId, t]
   );
 
   const submitIntent = async () => {
@@ -521,7 +507,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
     setPostPurchaseNotice(undefined);
     setIsLoading(true);
-    setLoadingStep("Kredin yükleniyor…");
+    setLoadingStep(t("ai-guide:loading.creditsLoading"));
 
     const MAX_ATTEMPTS = 8;
     const POLL_INTERVAL_MS = 2000;
@@ -556,15 +542,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
       setIsLoading(false);
       setLoadingStep("");
-      setPostPurchaseNotice(
-        "Kredilerin yükleniyor; birkaç saniye içinde isteğini tekrar gönderebilirsin."
-      );
+      setPostPurchaseNotice(t("ai-guide:loading.creditsLoadingRetry"));
     } catch {
       setIsLoading(false);
       setLoadingStep("");
-      setPostPurchaseNotice(
-        "Kredilerin yükleniyor; birkaç saniye içinde isteğini tekrar gönderebilirsin."
-      );
+      setPostPurchaseNotice(t("ai-guide:loading.creditsLoadingRetry"));
     }
   };
 
@@ -574,7 +556,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       recommendationId
         ? {
             recommendationId,
-            prompt: lastPrompt.trim() || "Genel öneri",
+            prompt: lastPrompt.trim() || t("ai-guide:genericPrompt"),
             assistantNote
           }
         : undefined
@@ -598,7 +580,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
   const openHistoryItem = (item: AiGuideHistoryItem) => {
     setRecommendationId(item.id);
-    setLastPrompt(item.prompt === "Genel öneri" ? "" : item.prompt);
+    setLastPrompt(item.prompt === t("ai-guide:genericPrompt") ? "" : item.prompt);
     setAssistantNote(item.assistantNote);
     setRecommendations(item.recommendations);
     setError(undefined);
@@ -615,7 +597,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   };
 
   return {
-    prayerTimeLabel,
     weekdayLabel,
     intentInput,
     showInfo,
@@ -669,6 +650,20 @@ function markFirstPrimary(items: AiGuideRecommendation[]) {
       isPrimary: true
     };
   });
+}
+
+function formatWeekdayLabel(date: Date = new Date()) {
+  const locale = toIntlLocale(useProfileStore.getState().locale);
+  const day = new Intl.DateTimeFormat(locale, { weekday: "long" }).format(date);
+  return i18n.t("ai-guide:weekday.label", { day: capitalize(day, locale) });
+}
+
+function capitalize(value: string, locale: string) {
+  if (!value) {
+    return value;
+  }
+
+  return `${value.charAt(0).toLocaleUpperCase(locale)}${value.slice(1)}`;
 }
 
 function createFlowId() {

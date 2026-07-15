@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ThemedCard } from "../../../components/ui/themed-card";
 
 type InfoTooltipProps = {
@@ -7,6 +8,8 @@ type InfoTooltipProps = {
 };
 
 export function InfoTooltip({ visible }: InfoTooltipProps) {
+  const { t } = useTranslation("ai-guide");
+
   if (!visible) {
     return null;
   }
@@ -20,7 +23,7 @@ export function InfoTooltip({ visible }: InfoTooltipProps) {
       <View className="flex-row items-start gap-3">
         <FontAwesome6 name="shield-halved" size={14} color="#D6A93D" style={{ marginTop: 2 }} />
         <Text className="flex-1 text-sm leading-5 text-[--text-primary]">
-          Asistan yeni içerik üretmez. Yalnızca doğrulanmış zikirler önerilir.
+          {t("ai-guide:infoTooltip.text")}
         </Text>
       </View>
     </ThemedCard>

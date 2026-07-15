@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { ComponentProps } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import type { BackendCollection } from "../services/collections-api-client";
 import { COLLECTION_CATEGORIES } from "../types";
 
@@ -24,10 +25,14 @@ type Props = {
 
 export function CollectionCard({ item, onPress, isLocked = false }: Props) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("collections");
   const iconName = CATEGORY_ICONS[item.category] ?? "book";
-  const categoryLabel =
-    COLLECTION_CATEGORIES.find((c) => c.key === item.category)?.label ??
-    item.category;
+  const categoryLabelKey = COLLECTION_CATEGORIES.find(
+    (c) => c.key === item.category,
+  )?.labelKey;
+  const categoryLabel = categoryLabelKey
+    ? t(`collections:categories.${categoryLabelKey}`)
+    : item.category;
 
   return (
     <Pressable
@@ -38,7 +43,7 @@ export function CollectionCard({ item, onPress, isLocked = false }: Props) {
       {isLocked ? (
         <View className="absolute right-2 top-2 z-10 flex-row items-center gap-1 rounded-full border border-[--accent]/30 bg-[--accent]/15 px-2 py-1">
           <FontAwesome6 name="lock" size={8} color="#C8972A" />
-          <Text className="text-xs font-bold uppercase tracking-[0.5px] text-[--accent]">Premium</Text>
+          <Text className="text-xs font-bold uppercase tracking-[0.5px] text-[--accent]">{t("collections:card.premiumBadge")}</Text>
         </View>
       ) : null}
 
@@ -61,7 +66,7 @@ export function CollectionCard({ item, onPress, isLocked = false }: Props) {
       <View className="mt-auto flex-row items-center justify-between pt-2">
         <Text className="text-xs text-[--text-muted]">{categoryLabel}</Text>
         <Text className="text-xs text-[--text-muted]">
-          {item.dhikrCount} zikir
+          {t("collections:card.dhikrCount", { count: item.dhikrCount })}
         </Text>
       </View>
     </Pressable>

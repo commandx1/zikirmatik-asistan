@@ -1,6 +1,7 @@
 import { ScrollView, Text, View } from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
 import type { StatsHeatmapPoint } from "@zikirmatik/shared";
 import { heatmapColor, maxOf, withAlpha } from "./chart-utils";
 
@@ -16,6 +17,7 @@ function weekdayIndex(key: string): number {
 
 export function ActivityHeatmap({ heatmap }: { heatmap: StatsHeatmapPoint[] }) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("stats");
   const emptyColor = withAlpha(tokens.textPrimary, 0.08);
   const max = maxOf(heatmap.map((point) => point.count));
 
@@ -48,14 +50,14 @@ export function ActivityHeatmap({ heatmap }: { heatmap: StatsHeatmapPoint[] }) {
       </ScrollView>
 
       <View className="mt-3 flex-row items-center justify-end gap-1.5">
-        <Text className="text-[10px] text-[--text-muted]">az</Text>
+        <Text className="text-[10px] text-[--text-muted]">{t("stats:activityHeatmap.low")}</Text>
         {[0.25, 0.45, 0.7, 1].map((level) => (
           <View
             key={level}
             style={{ width: CELL, height: CELL, borderRadius: 2, backgroundColor: withAlpha(tokens.accent, level) }}
           />
         ))}
-        <Text className="text-[10px] text-[--text-muted]">çok</Text>
+        <Text className="text-[10px] text-[--text-muted]">{t("stats:activityHeatmap.high")}</Text>
       </View>
     </View>
   );

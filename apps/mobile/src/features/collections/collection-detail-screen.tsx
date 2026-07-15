@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DhikrContentStack } from "../../components/ui/dhikr-content-stack";
 import { DhikrResumeModal } from "../../components/ui/dhikr-resume-modal";
@@ -30,6 +31,7 @@ function toDateKey(value: Date) {
 
 export function CollectionDetailScreen({ collectionKey }: Props) {
   const router = useRouter();
+  const { t } = useTranslation("collections");
   const { tokens } = useThemeTokens();
   const insets = useSafeAreaInsets();
   const bottomPadding = 40 + (Platform.OS === "android" ? Math.max(insets.bottom, 0) : insets.bottom);
@@ -74,7 +76,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
           contentSource: dhikr.source,
           current: 0,
           target: dhikr.recommendedCount,
-          lastActivityLabel: "Henüz başlanmadı",
+          lastActivityLabel: t("collections:detail.notStarted"),
           streakDays: 0,
           isFavorite: false,
         });
@@ -109,7 +111,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
     if (!pendingDhikr || isSavingUnsaved) return;
     const selectedDhikr = storeItems.find((d) => d.id === selectedDhikrId);
     if (!selectedDhikr || authStatus !== "authenticated" || !sessionUserId) {
-      setUnsavedSaveError("Kaydetmek için giriş yapmalısın.");
+      setUnsavedSaveError(t("collections:detail.loginRequired"));
       return;
     }
     setIsSavingUnsaved(true);
@@ -134,7 +136,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
       setPendingDhikr(null);
       startDhikr(dhikr);
     } catch (e) {
-      setUnsavedSaveError(e instanceof Error ? e.message : "Zikir kaydedilemedi.");
+      setUnsavedSaveError(e instanceof Error ? e.message : t("collections:detail.saveFailed"));
     } finally {
       setIsSavingUnsaved(false);
     }
@@ -143,7 +145,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
   return (
     <PageLayout>
       <PageHeader
-        title={detail?.label ?? "Koleksiyon"}
+        title={detail?.label ?? t("collections:detail.defaultTitle")}
         leftIconName="arrow-left"
         onPressLeft={() => router.back()}
       />
@@ -219,7 +221,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
                       className="text-xs font-semibold"
                       style={{ color: tokens.bg }}
                     >
-                      Sayaca Ekle
+                      {t("collections:detail.addToCounter")}
                     </Text>
                   </Pressable>
                 </View>

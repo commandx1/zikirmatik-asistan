@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { i18n } from "../../../i18n";
 
 export type DevicePrefs = {
   specialDays?: boolean;
@@ -77,7 +78,7 @@ async function requestJson(
     const data = unwrapDataEnvelope(parsed);
 
     if (!response.ok) {
-      const message = extractErrorMessage(data, "Cihaz kaydı yapılamadı.");
+      const message = extractErrorMessage(data, i18n.t("notifications:errors.registerFailed"));
       throw new DevicesApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
     }
 
@@ -87,7 +88,7 @@ async function requestJson(
       throw error;
     }
 
-    throw new DevicesApiError("transient", "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.");
+    throw new DevicesApiError("transient", i18n.t("notifications:errors.serverUnreachable"));
   }
 }
 

@@ -1,6 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Pressable, Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { useTranslation } from "react-i18next";
+import { i18n } from "../../../i18n";
+import { useProfileStore } from "../../../store/profile-store";
+import { toIntlLocale } from "../../../lib/locale-format";
 import type { AiGuideHistoryItem } from "../types";
 
 type HistorySectionProps = {
@@ -21,6 +25,7 @@ export function HistorySection({
   onOpenHistoryItem
 }: HistorySectionProps) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("ai-guide");
 
   if (totalCount === 0) {
     return null;
@@ -31,12 +36,12 @@ export function HistorySection({
       <View className="mb-3 flex-row items-center justify-between px-1">
         <View className="flex-row items-center gap-2">
           <FontAwesome6 name="clock-rotate-left" size={12} color={tokens.accent} />
-          <Text className="text-sm font-semibold text-[--text-primary]">Son Asistan Aramaları</Text>
+          <Text className="text-sm font-semibold text-[--text-primary]">{t("ai-guide:history.title")}</Text>
         </View>
         {totalCount > 2 ? (
           <Pressable onPress={onToggleExpanded} className="rounded-full px-3 py-1.5">
             <Text className="text-xs font-semibold text-[--accent]">
-              {isExpanded ? "Son 2'yi Göster" : "Tümünü Gör"}
+              {isExpanded ? t("ai-guide:history.showLastTwo") : t("ai-guide:history.showAll")}
             </Text>
           </Pressable>
         ) : null}
@@ -67,14 +72,14 @@ export function HistorySection({
                 <Text className="text-xs text-[--text-muted]">{formatHistoryDate(item.createdAt)}</Text>
               </View>
               <Text className="text-xs leading-5 text-[--text-muted]" numberOfLines={2}>
-                {names || "Öneri bulunamadı"}
+                {names || t("ai-guide:history.noRecommendations")}
               </Text>
               <View className="mt-3 flex-row items-center justify-between">
                 <Text className="text-xs font-medium text-[--text-muted]">
-                  {item.recommendations.length} öneri
+                  {t("ai-guide:history.recommendationCount", { count: item.recommendations.length })}
                 </Text>
                 <Text className="text-xs font-semibold text-[--accent]">
-                  {isActive ? "Ekranda" : "Göster"}
+                  {isActive ? t("ai-guide:history.active") : t("ai-guide:history.show")}
                 </Text>
               </View>
             </Pressable>
@@ -88,7 +93,7 @@ export function HistorySection({
 function formatHistoryDate(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return "Yakın zaman";
+    return i18n.t("ai-guide:history.recentTime");
   }
 
   const today = startOfDay(new Date());
@@ -96,13 +101,16 @@ function formatHistoryDate(value: string) {
   const dayDiff = Math.round((today.getTime() - target.getTime()) / 86_400_000);
 
   if (dayDiff === 0) {
-    return "Bugün";
+    return i18n.t("ai-guide:history.today");
   }
   if (dayDiff === 1) {
-    return "Dün";
+    return i18n.t("ai-guide:history.yesterday");
   }
 
-  return date.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
+  return date.toLocaleDateString(toIntlLocale(useProfileStore.getState().locale), {
+    day: "2-digit",
+    month: "short"
+  });
 }
 
 function startOfDay(value: Date) {
