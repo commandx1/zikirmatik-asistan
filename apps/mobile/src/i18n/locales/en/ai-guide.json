@@ -33,7 +33,16 @@
   "loading": {
     "creditsLoading": "Loading your credit…",
     "creditsLoadingRetry": "Your credits are loading; you can resend your request in a few seconds.",
-    "defaultStep": "Preparing..."
+    "defaultStep": "Preparing...",
+    "steps": {
+      "analyzing": "Analyzing your intention...",
+      "thinking": "Preparing the dhikr database...",
+      "searching": "Searching dhikrs...",
+      "widening": "Widening the search...",
+      "selecting": "Selecting the best dhikrs for you...",
+      "fallback": "Preparing general recommendations...",
+      "finalizing": "Preparing recommendations..."
+    }
   },
   "recommendation": {
     "chipLabelPrimary": "Top pick for you",

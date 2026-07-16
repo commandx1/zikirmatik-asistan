@@ -328,7 +328,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       let socketId: string | undefined;
       try {
         socketId = await progressSocket.connect();
-        progressSocket.onStep(({ message }) => setLoadingStep(message));
+        progressSocket.onStep(({ key }) =>
+          setLoadingStep(
+            t(`ai-guide:loading.steps.${key}`, { defaultValue: t("ai-guide:loading.defaultStep") })
+          )
+        );
       } catch {
         // socket bağlanamazsa silent devam
       }
