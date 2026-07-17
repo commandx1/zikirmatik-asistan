@@ -80,14 +80,15 @@ describe("ai-guide-history-service", () => {
     expect(items).toHaveLength(1);
     expect(items[0]?.assistantNote).toBe("Bu öneriler borç ve iç sıkışması bağlamına göre hazırlandı.");
     expect(items[0]?.recommendations).toHaveLength(3);
+    // buildAiGuideHistoryItems artık dil-bağımsız (raw LocalizedText) alanlar
+    // döndürür; string çözümü render anında use-ai-guide.ts'de aktif dile göre
+    // yapılır (bkz. resolveRecommendation), böylece dil değişince kartlar da
+    // güncellenir.
     expect(items[0]?.recommendations[0]).toMatchObject({
       id: "dhikr-a",
-      isPrimary: true,
-      repeatLabel: "Öncelikli",
-      virtue: "Fazilet A",
-      source: "Tirmizi, Deavat",
+      virtue: { tr: "Fazilet A", en: "Fazilet A" },
+      source: { tr: "Tirmizi, Deavat", en: "Tirmizi, Deavat" },
       recommendedCount: 33
     });
-    expect(items[0]?.recommendations[1]?.repeatLabel).toBeUndefined();
   });
 });

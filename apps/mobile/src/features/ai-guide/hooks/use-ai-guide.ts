@@ -2,7 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { AiGuideHistoryItem, AiGuideRecommendation } from "../types";
+import type {
+  AiGuideHistoryItem,
+  AiGuideHistoryItemRaw,
+  AiGuideRecommendation,
+  AiGuideRecommendationRaw
+} from "../types";
 import { useAuthStore } from "../../../store/auth-store";
 import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
 import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-client";
@@ -23,11 +28,20 @@ import { getUserById } from "../../users/services/users-api-client";
 import { i18n } from "../../../i18n";
 import { toIntlLocale } from "../../../lib/locale-format";
 
+/**
+ * AsyncStorage cache payload şekli. `version: 2` ile dil-bağımlı alanların
+ * artık RAW (LocalizedText) saklandığını işaretliyoruz — v1'de (bu alan
+ * yokken) çözülmüş plain string saklanıyordu. hydrateLastResultFromCache bu
+ * versiyonu kontrol edip eski şekilli cache'i sessizce görmezden gelir.
+ */
+const AI_GUIDE_CACHE_VERSION = 2;
+
 type LastAiGuideResult = {
+  version: typeof AI_GUIDE_CACHE_VERSION;
   prompt: string;
   assistantNote?: string;
   recommendationId?: string;
-  recommendations: AiGuideRecommendation[];
+  recommendations: AiGuideRecommendationRaw[];
 };
 
 type ClarificationState = {
@@ -77,9 +91,12 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [offTopicMessage, setOffTopicMessage] = useState<string>();
   const [clarification, setClarification] = useState<ClarificationState>();
   const [recommendationId, setRecommendationId] = useState<string>();
-  const [recommendations, setRecommendations] = useState<AiGuideRecommendation[]>([]);
+  // Dil-bağımlı alanlar RAW (LocalizedText) saklanır; ekrana basılacak
+  // çözülmüş string'ler aşağıda `resolvedRecommendations`/`resolvedHistoryItems`
+  // ile render anında, aktif dile göre üretilir (bkz. resolveRecommendation).
+  const [recommendations, setRecommendations] = useState<AiGuideRecommendationRaw[]>([]);
   const [assistantNote, setAssistantNote] = useState<string>();
-  const [historyItems, setHistoryItems] = useState<AiGuideHistoryItem[]>([]);
+  const [historyItems, setHistoryItems] = useState<AiGuideHistoryItemRaw[]>([]);
   const [isHistoryExpanded, setHistoryExpanded] = useState(false);
   const [lastPrompt, setLastPrompt] = useState("");
   const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
@@ -97,6 +114,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const userId = useAuthStore((s) => s.session?.userId);
   const accessToken = useAuthStore((s) => s.session?.accessToken);
   const isPremium = useProfileStore((s) => s.isPremium);
+  // Canonical locale kaynağı: useProfileStore.locale (reactive selector).
+  // setLocale() hem bu store'u hem i18n.changeLanguage()'i günceller, ama
+  // burada zustand selector kullanmak dil değişince re-render'ı garanti eder
+  // (i18n.language de değişir ama bu hook doğrudan onu izlemiyordu).
+  const locale = useProfileStore((s) => s.locale);
   const selectDhikr = useDhikrStore((s) => s.selectDhikr);
 
   const closeInfo = () => setShowInfo(false);
@@ -161,8 +183,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       return false;
     }
 
-    const parsed = JSON.parse(raw) as LastAiGuideResult;
-    if (!parsed || !Array.isArray(parsed.recommendations)) {
+    const parsed = JSON.parse(raw) as Partial<LastAiGuideResult>;
+    // v1 cache'i (bu değişiklikten önce yazılmış) recommendations alanında
+    // çözülmüş plain string'ler barındırıyordu; version alanı yoksa/uymuyorsa
+    // eski şekilli veriyi sessizce yok say (crash etme).
+    if (!parsed || parsed.version !== AI_GUIDE_CACHE_VERSION || !Array.isArray(parsed.recommendations)) {
       return false;
     }
 
@@ -216,6 +241,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       void AsyncStorage.setItem(
         cacheKey,
         JSON.stringify({
+          version: AI_GUIDE_CACHE_VERSION,
           prompt,
           assistantNote: latest.assistantNote,
           recommendationId: latest.id,
@@ -384,37 +410,30 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
         setRecommendationId(response.recommendationId);
         const nextAssistantNote = response.reasoning?.trim() || undefined;
-        const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
-        const mappedItems = markFirstPrimary(
-          response.items.map((item, index) => {
-            const resolvedName = resolveLocalizedText(item.name, locale);
-            const resolvedTransliteration = resolveLocalizedText(item.transliteration, locale);
-            return {
-              id: item.id,
-              title: resolvedName,
-              chipEmoji: index === 0 ? "💆" : "✨",
-              chipLabel: index === 0 ? t("ai-guide:recommendation.chipLabelPrimary") : t("ai-guide:recommendation.chipLabelSecondary"),
-              repeatLabel: index === 0 ? t("ai-guide:recommendation.repeatLabelPrimary") : undefined,
-              arabic: item.nameArabic,
-              transliteration: resolvedTransliteration || resolvedName,
-              meaning: resolveLocalizedText(item.meaning, locale),
-              virtue: item.virtue ? resolveLocalizedText(item.virtue, locale) : undefined,
-              source: item.source ? resolveLocalizedText(item.source, locale) : undefined,
-              recommendedCount: item.recommendedCount
-            };
-          })
-        );
+        // Dil-bağımlı alanlar RAW (LocalizedText) saklanır — çözüm burada
+        // YAPILMAZ, render anında aktif dile göre yapılır. Böylece kullanıcı
+        // dili değiştirdiğinde bu kayıt yeniden fetch edilmeden güncellenir.
+        const rawItems: AiGuideRecommendationRaw[] = response.items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          arabic: item.nameArabic,
+          transliteration: item.transliteration,
+          meaning: item.meaning,
+          virtue: item.virtue,
+          source: item.source,
+          recommendedCount: item.recommendedCount
+        }));
         const normalizedPrompt = request.freeText?.trim() || "";
         setLastPrompt(normalizedPrompt);
         setAssistantNote(nextAssistantNote);
-        setRecommendations(mappedItems);
+        setRecommendations(rawItems);
         setHistoryItems((prev) => [
           {
             id: response.recommendationId,
             prompt: normalizedPrompt || t("ai-guide:genericPrompt"),
             assistantNote: nextAssistantNote,
             createdAt: new Date().toISOString(),
-            recommendations: mappedItems
+            recommendations: rawItems
           },
           ...prev.filter((item) => item.id !== response.recommendationId)
         ]);
@@ -424,10 +443,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           void AsyncStorage.setItem(
             cacheKey,
             JSON.stringify({
+              version: AI_GUIDE_CACHE_VERSION,
               prompt: normalizedPrompt,
               assistantNote: nextAssistantNote,
               recommendationId: response.recommendationId,
-              recommendations: mappedItems
+              recommendations: rawItems
             } satisfies LastAiGuideResult)
           ).catch(() => {
             // ignore cache write errors
@@ -559,6 +579,52 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
   };
 
+  // RAW (LocalizedText) bir öneriyi ekranda gösterilecek çözülmüş stringlere
+  // dönüştürür. `locale` (useProfileStore selector) veya `t` değiştiğinde bu
+  // fonksiyon yeniden oluşur, böylece aşağıdaki useMemo'lar da yeniden
+  // hesaplanır — dil değişince kart metinleri anında güncellenir.
+  const resolveRecommendation = useCallback(
+    (raw: AiGuideRecommendationRaw, index: number): AiGuideRecommendation => {
+      const resolvedName = raw.name ? resolveLocalizedText(raw.name, locale) : undefined;
+      const resolvedTransliteration = resolveLocalizedText(raw.transliteration, locale);
+      return {
+        id: raw.id,
+        title: resolvedName,
+        chipEmoji: index === 0 ? "💆" : "✨",
+        chipLabel:
+          index === 0
+            ? t("ai-guide:recommendation.chipLabelPrimary")
+            : t("ai-guide:recommendation.chipLabelSecondary"),
+        repeatLabel: index === 0 ? t("ai-guide:recommendation.repeatLabelPrimary") : undefined,
+        arabic: raw.arabic,
+        transliteration: resolvedTransliteration || resolvedName || "",
+        meaning: resolveLocalizedText(raw.meaning, locale),
+        virtue: raw.virtue ? resolveLocalizedText(raw.virtue, locale) : undefined,
+        source: raw.source ? resolveLocalizedText(raw.source, locale) : undefined,
+        recommendedCount: raw.recommendedCount,
+        isPrimary: index === 0
+      };
+    },
+    [locale, t]
+  );
+
+  const resolvedRecommendations = useMemo(
+    () => recommendations.map((raw, index) => resolveRecommendation(raw, index)),
+    [recommendations, resolveRecommendation]
+  );
+
+  const resolvedHistoryItems = useMemo<AiGuideHistoryItem[]>(
+    () =>
+      historyItems.map((item) => ({
+        id: item.id,
+        prompt: item.prompt,
+        assistantNote: item.assistantNote,
+        createdAt: item.createdAt,
+        recommendations: item.recommendations.map((raw, index) => resolveRecommendation(raw, index))
+      })),
+    [historyItems, resolveRecommendation]
+  );
+
   const selectRecommendation = (recommendation: AiGuideRecommendation) => {
     selectDhikr(
       recommendation.id,
@@ -583,15 +649,19 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   };
 
   const visibleHistoryItems = useMemo(
-    () => resolveVisibleAiGuideHistory(historyItems, isHistoryExpanded),
-    [historyItems, isHistoryExpanded]
+    () => resolveVisibleAiGuideHistory(resolvedHistoryItems, isHistoryExpanded),
+    [resolvedHistoryItems, isHistoryExpanded]
   );
 
   const openHistoryItem = (item: AiGuideHistoryItem) => {
+    // `item` render'a döndürülen çözülmüş (display) tipte gelir; state'e
+    // yazarken raw kaynağı `historyItems` içinden id ile buluyoruz ki dil
+    // değişince bu kayıt da yeniden çözülsün.
+    const rawItem = historyItems.find((entry) => entry.id === item.id);
     setRecommendationId(item.id);
     setLastPrompt(item.prompt === t("ai-guide:genericPrompt") ? "" : item.prompt);
     setAssistantNote(item.assistantNote);
-    setRecommendations(item.recommendations);
+    setRecommendations(rawItem?.recommendations ?? []);
     setError(undefined);
   };
 
@@ -621,8 +691,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     recommendationId,
     lastPrompt,
     assistantNote,
-    recommendations,
-    historyItems,
+    recommendations: resolvedRecommendations,
+    historyItems: resolvedHistoryItems,
     visibleHistoryItems,
     isHistoryExpanded,
     canExpandHistory: historyItems.length > 2,
@@ -639,26 +709,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     openHistoryItem,
     toggleHistoryExpanded: () => setHistoryExpanded((value) => !value)
   };
-}
-
-function markFirstPrimary(items: AiGuideRecommendation[]) {
-  if (items.length === 0) {
-    return items;
-  }
-
-  return items.map((item, index) => {
-    if (index > 0) {
-      return {
-        ...item,
-        isPrimary: false
-      };
-    }
-
-    return {
-      ...item,
-      isPrimary: true
-    };
-  });
 }
 
 function formatWeekdayLabel(date: Date = new Date()) {

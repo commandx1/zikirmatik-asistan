@@ -1,8 +1,6 @@
 import { i18n } from "../../../i18n";
 import type { BackendAiRecommendation } from "./ai-api-client";
-import type { AiGuideHistoryItem, AiGuideRecommendation } from "../types";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
-import { useProfileStore } from "../../../store/profile-store";
+import type { AiGuideHistoryItem, AiGuideHistoryItemRaw, AiGuideRecommendationRaw } from "../types";
 import type { LocalizedText } from "@zikirmatik/shared";
 
 type CatalogDhikr = {
@@ -20,35 +18,32 @@ export function resolveVisibleAiGuideHistory(items: AiGuideHistoryItem[], showAl
   return showAll ? items : items.slice(0, 2);
 }
 
-export function buildAiGuideHistoryItems(rows: BackendAiRecommendation[], catalog: CatalogDhikr[]) {
+/**
+ * Backend geçmiş kayıtlarını dil-bağımsız (raw LocalizedText) alanlarla üretir.
+ * Görüntülenecek dize çözümü render anında, aktif dile göre yapılmalıdır
+ * (bkz. use-ai-guide.ts -> resolveRecommendation) — burada locale'e göre
+ * çözüm YAPILMAZ ki dil değişince kartlar da güncellenebilsin.
+ */
+export function buildAiGuideHistoryItems(rows: BackendAiRecommendation[], catalog: CatalogDhikr[]): AiGuideHistoryItemRaw[] {
   const catalogById = new Map(catalog.map((item) => [item._id, item]));
-  const locale = useProfileStore.getState().locale;
 
   return rows
-    .map((row): AiGuideHistoryItem | null => {
-      const recommendations = row.recommendedDhikrIds.reduce<AiGuideRecommendation[]>((acc, id, index) => {
+    .map((row): AiGuideHistoryItemRaw | null => {
+      const recommendations = row.recommendedDhikrIds.reduce<AiGuideRecommendationRaw[]>((acc, id) => {
         const matched = catalogById.get(normalizeObjectId(id) ?? "");
         if (!matched) {
           return acc;
         }
 
-        const title = resolveLocalizedText(matched.name, locale);
         acc.push({
           id: matched._id,
-          title,
-          chipEmoji: index === 0 ? "💆" : "✨",
-          chipLabel:
-            index === 0
-              ? i18n.t("ai-guide:recommendation.chipLabelPrimary")
-              : i18n.t("ai-guide:recommendation.chipLabelSecondary"),
-          repeatLabel: index === 0 ? i18n.t("ai-guide:recommendation.repeatLabelPrimary") : undefined,
+          name: matched.name,
           arabic: matched.nameArabic,
-          transliteration: resolveLocalizedText(matched.transliteration, locale) || title,
-          meaning: resolveLocalizedText(matched.meaning, locale),
-          virtue: matched.virtue ? resolveLocalizedText(matched.virtue, locale) : undefined,
-          source: matched.source ? resolveLocalizedText(matched.source, locale) : undefined,
-          recommendedCount: matched.recommendedCount,
-          isPrimary: index === 0
+          transliteration: matched.transliteration,
+          meaning: matched.meaning,
+          virtue: matched.virtue,
+          source: matched.source,
+          recommendedCount: matched.recommendedCount
         });
         return acc;
       }, []);
@@ -65,7 +60,7 @@ export function buildAiGuideHistoryItems(rows: BackendAiRecommendation[], catalo
         recommendations
       };
     })
-    .filter((item): item is AiGuideHistoryItem => Boolean(item))
+    .filter((item): item is AiGuideHistoryItemRaw => Boolean(item))
     .sort((a, b) => toTimestamp(b.createdAt) - toTimestamp(a.createdAt));
 }
 

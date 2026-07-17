@@ -160,7 +160,8 @@ async function requestJson<TResponse>(
 ): Promise<TResponse> {
   try {
     const headers: Record<string, string> = {
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "accept-language": i18n.language
     };
     if (options.accessToken?.trim()) {
       headers.authorization = `Bearer ${options.accessToken.trim()}`;
