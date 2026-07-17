@@ -25,7 +25,7 @@ async function main() {
       {},
       {
         projection: {
-          nameTurkish: 1,
+          name: 1,
           virtue: 1,
           tags: 1,
           categories: 1,
@@ -63,7 +63,7 @@ async function main() {
       } catch (error) {
         failed += 1;
         console.warn(
-          `  ! ${doc.nameTurkish ?? doc._id} için embedding başarısız: ${
+          `  ! ${doc.name?.tr ?? doc._id} için embedding başarısız: ${
             error instanceof Error ? error.message : String(error)
           }`,
         );

@@ -110,8 +110,8 @@ function modelSupportsTemperature(model) {
 function toCandidate(doc) {
   return {
     id: doc._id.toString(),
-    nameTurkish: doc.nameTurkish,
-    virtue: doc.virtue,
+    nameTurkish: doc.name?.tr,
+    virtue: doc.virtue?.tr,
     tags: doc.tags ?? [],
     categories: doc.categories ?? [],
     timeOfDay: doc.timeOfDay,
@@ -230,7 +230,7 @@ async function main() {
         { isVerified: true, isActive: true },
         {
           projection: {
-            nameTurkish: 1, nameArabic: 1, transliteration: 1,
+            name: 1, nameArabic: 1, transliteration: 1,
             meaning: 1, virtue: 1, source: 1,
             tags: 1, categories: 1, timeOfDay: 1, suitableFor: 1,
             recommendedCount: 1,
@@ -271,7 +271,7 @@ async function main() {
         console.log(`\n  [Stage A-2] Top ${scoredCandidates.length} aday (skor):`);
         scoredCandidates.forEach((s, idx) => {
           console.log(
-            `    ${String(idx + 1).padStart(2)}. score=${s.score}  ${s.doc.nameTurkish}  [${(s.doc.suitableFor ?? []).join(', ')}]`,
+            `    ${String(idx + 1).padStart(2)}. score=${s.score}  ${s.doc.name?.tr}  [${(s.doc.suitableFor ?? []).join(', ')}]`,
           );
         });
       }
@@ -330,16 +330,16 @@ async function main() {
         const recs = Array.isArray(parsed.recommendations) ? parsed.recommendations : [];
         recs.forEach((r, idx) => {
           const doc = fullById.get(r.id);
-          const name = doc ? doc.nameTurkish : `⚠ LİSTE DIŞI ID (${r.id})`;
+          const name = doc ? doc.name?.tr : `⚠ LİSTE DIŞI ID (${r.id})`;
           console.log(`  ${'─'.repeat(74)}`);
           console.log(`  ${idx + 1}. ${name}`);
           console.log(`     💡 Neden: ${r.reason ?? ''}`);
           if (doc) {
             if (doc.nameArabic) console.log(`     ﷽  ${doc.nameArabic}`);
-            if (doc.transliteration) console.log(`     🔤 Okunuş: ${doc.transliteration}`);
-            if (doc.meaning) console.log(`     📖 Anlam: ${doc.meaning}`);
-            if (doc.virtue) console.log(`     ✨ Fazilet: ${doc.virtue}`);
-            if (doc.source) console.log(`     📚 Kaynak: ${doc.source}`);
+            if (doc.transliteration?.tr) console.log(`     🔤 Okunuş: ${doc.transliteration.tr}`);
+            if (doc.meaning?.tr) console.log(`     📖 Anlam: ${doc.meaning.tr}`);
+            if (doc.virtue?.tr) console.log(`     ✨ Fazilet: ${doc.virtue.tr}`);
+            if (doc.source?.tr) console.log(`     📚 Kaynak: ${doc.source.tr}`);
           }
         });
         if (recs.length === 0) console.log('    (boş)');

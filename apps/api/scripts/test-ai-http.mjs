@@ -124,12 +124,12 @@ async function main() {
       const items = Array.isArray(data?.items) ? data.items : [];
       for (const [idx, item] of items.entries()) {
         console.log(`  ${'─'.repeat(74)}`);
-        console.log(`  ${idx + 1}. ${item.nameTurkish ?? item.dhikrId ?? item.id}`);
+        console.log(`  ${idx + 1}. ${item.name?.tr ?? item.dhikrId ?? item.id}`);
         if (item.reason) console.log(`     💡 Neden: ${item.reason}`);
         if (item.nameArabic) console.log(`     ﷽  ${item.nameArabic}`);
-        if (item.transliteration) console.log(`     🔤 Okunuş: ${item.transliteration}`);
-        if (item.meaning) console.log(`     📖 Anlam: ${item.meaning}`);
-        if (item.virtue) console.log(`     ✨ Fazilet: ${item.virtue}`);
+        if (item.transliteration?.tr) console.log(`     🔤 Okunuş: ${item.transliteration.tr}`);
+        if (item.meaning?.tr) console.log(`     📖 Anlam: ${item.meaning.tr}`);
+        if (item.virtue?.tr) console.log(`     ✨ Fazilet: ${item.virtue.tr}`);
       }
       if (items.length === 0) console.log('    (boş)');
     }

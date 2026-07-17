@@ -39,26 +39,16 @@ export async function runSpecialDaySeed(dataset) {
 
       if (!key) {
         throw new Error(
-          `Dhikr key tanımsız: ${payload.nameTurkish}. Upsert için key zorunlu.`,
+          `Dhikr key tanımsız: ${payload.name?.tr}. Upsert için key zorunlu.`,
         );
       }
 
-      // Mevcut kaydı bul: önce stabil `key` ile. Bulunamazsa, henüz key'i
-      // olmayan eski kayıtlar için legacy eşleşme (nameTurkish + transliteration)
-      // ile dene; böylece ilk seed'de kopya açmadan eski kayda key backfill edilir.
-      let existing = await dhikrsCollection.findOne(
+      // Mevcut kaydı yalnızca stabil `key` ile bul; legacy isim/transliterasyon
+      // eşleşmesine gerek yok (DB tamamen key bazlı seed'lenir).
+      const existing = await dhikrsCollection.findOne(
         { key },
         { projection: { _id: 1, embeddingSourceHash: 1 } },
       );
-      if (!existing) {
-        existing = await dhikrsCollection.findOne(
-          {
-            nameTurkish: payload.nameTurkish,
-            transliteration: payload.transliteration,
-          },
-          { projection: { _id: 1, embeddingSourceHash: 1 } },
-        );
-      }
 
       // Kaynak metin değişmediyse buildEmbeddingFields null döner (yeniden embed yok).
       const embeddingFields = await buildEmbeddingFields(

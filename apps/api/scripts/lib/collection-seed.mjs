@@ -19,20 +19,6 @@ function loadEnvFiles(paths) {
   }
 }
 
-function normalize(value) {
-  return String(value ?? '')
-    .toLocaleLowerCase('tr-TR')
-    .replace(/ı/g, 'i')
-    .replace(/ğ/g, 'g')
-    .replace(/ü/g, 'u')
-    .replace(/ş/g, 's')
-    .replace(/ö/g, 'o')
-    .replace(/ç/g, 'c')
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 function uniq(items) {
   return [...new Set(items.filter(Boolean))];
 }
@@ -52,34 +38,20 @@ export async function runCollectionSeed(datasets) {
     const dhikrsCol = mongoose.connection.collection('dhikrs');
     const collectionsCol = mongoose.connection.collection('dhikr_collections');
 
-    // Build keyRemap from dedup logic (same as master seed)
-    const canonicalBySignature = new Map();
-    const keyRemap = new Map();
-
-    for (const dataset of datasets) {
-      for (const item of dataset.dhikrItems) {
-        const sig =
-          normalize(item.nameTurkish) + '|' + normalize(item.transliteration);
-        const existingKey = canonicalBySignature.get(sig);
-        if (existingKey) {
-          keyRemap.set(item.key, existingKey);
-        } else {
-          canonicalBySignature.set(sig, item.key);
-          keyRemap.set(item.key, item.key);
-        }
-      }
-    }
-
-    // Fetch all dhikr IDs from DB by canonical keys in one query
-    const allCanonicalKeys = uniq([...keyRemap.values()]);
+    // Dhikr key'leri artık tek doğruluk kaynağı: her dataset kendi
+    // dhikrItems'ında stabil `key` taşır, isim/transliterasyon bazlı
+    // eşleştirmeye gerek yok.
+    const allKeys = uniq(
+      datasets.flatMap((dataset) => dataset.dhikrItems.map((item) => item.key)),
+    );
     const dhikrDocs = await dhikrsCol
-      .find({ key: { $in: allCanonicalKeys } }, { projection: { _id: 1, key: 1 } })
+      .find({ key: { $in: allKeys } }, { projection: { _id: 1, key: 1 } })
       .toArray();
 
     const dhikrIdMap = new Map(dhikrDocs.map((d) => [d.key, d._id]));
 
     console.log(
-      `DB'de ${dhikrIdMap.size} / ${allCanonicalKeys.length} dhikr key'i eşleşti.`,
+      `DB'de ${dhikrIdMap.size} / ${allKeys.length} dhikr key'i eşleşti.`,
     );
 
     let created = 0;
@@ -95,8 +67,7 @@ export async function runCollectionSeed(datasets) {
       const dhikrIds = [];
       const seenIds = new Set();
       for (const item of dataset.dhikrItems) {
-        const canonicalKey = keyRemap.get(item.key) ?? item.key;
-        const id = dhikrIdMap.get(canonicalKey);
+        const id = dhikrIdMap.get(item.key);
         if (id && !seenIds.has(id.toString())) {
           dhikrIds.push(id);
           seenIds.add(id.toString());
