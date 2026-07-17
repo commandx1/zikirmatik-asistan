@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -6,6 +7,7 @@ import {
   IsOptional,
   IsString,
   Min,
+  ValidateNested,
 } from 'class-validator';
 
 const TIME_OF_DAY = {
@@ -15,24 +17,37 @@ const TIME_OF_DAY = {
   any: 'any',
 } as const;
 
+export class LocalizedTextDto {
+  @IsString()
+  tr!: string;
+
+  @IsString()
+  en!: string;
+}
+
 export class CreateDhikrDto {
   @IsString()
   nameArabic!: string;
 
-  @IsString()
-  nameTurkish!: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  name!: LocalizedTextDto;
 
-  @IsString()
-  transliteration!: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  transliteration!: LocalizedTextDto;
 
-  @IsString()
-  meaning!: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  meaning!: LocalizedTextDto;
 
-  @IsString()
-  virtue!: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  virtue!: LocalizedTextDto;
 
-  @IsString()
-  source!: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  source!: LocalizedTextDto;
 
   @IsOptional()
   @IsArray()

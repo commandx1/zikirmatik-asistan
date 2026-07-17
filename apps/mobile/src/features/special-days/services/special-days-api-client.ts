@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
+import type { LocalizedText } from "@zikirmatik/shared";
 
 export type SpecialDayType = "kandil" | "ramazan" | "bayram" | "özel gün";
 
@@ -50,10 +51,10 @@ export type BackendSpecialDayHomeResponse = {
 export type BackendSpecialDayDetail = BackendSpecialDayHomeItem & {
   recommendedDhikrs: Array<{
     id: string;
-    nameTurkish: string;
+    name: LocalizedText;
     nameArabic: string;
-    transliteration: string;
-    meaning: string;
+    transliteration: LocalizedText;
+    meaning: LocalizedText;
     recommendedCount: number;
     progressCount: number;
     progressTarget: number;

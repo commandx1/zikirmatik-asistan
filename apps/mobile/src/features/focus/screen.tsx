@@ -2,6 +2,7 @@ import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
+import { resolveLocalizedText } from "../../store/dhikr-store";
 import { ZikirFilterTabs } from "./components/zikir-filter-tabs";
 import { ZikirFormModal } from "./components/zikir-form-modal";
 import { ZikirListSection } from "./components/zikir-list-section";
@@ -17,7 +18,8 @@ export function FocusScreen() {
 }
 
 function FocusContent() {
-  const { t } = useTranslation("focus");
+  const { t, i18n } = useTranslation("focus");
+  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const {
     refresh,
     isRefreshing,
@@ -39,9 +41,10 @@ function FocusContent() {
   } = useZikirlerim();
 
   const initialValues = {
-    name: editingDhikr?.nameTurkish || editingDhikr?.transliteration || "",
-    transliteration: editingDhikr?.transliteration ?? "",
-    meaning: editingDhikr?.meaning ?? "",
+    name: (editingDhikr?.name ? resolveLocalizedText(editingDhikr.name, locale) : "") ||
+      (editingDhikr?.transliteration ? resolveLocalizedText(editingDhikr.transliteration, locale) : ""),
+    transliteration: editingDhikr?.transliteration ? resolveLocalizedText(editingDhikr.transliteration, locale) : "",
+    meaning: editingDhikr?.meaning ? resolveLocalizedText(editingDhikr.meaning, locale) : "",
     target: editingDhikr?.target ?? 33
   };
 

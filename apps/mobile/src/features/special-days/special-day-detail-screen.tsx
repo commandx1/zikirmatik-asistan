@@ -12,7 +12,7 @@ import { ThemedCard } from '../../components/ui/themed-card'
 import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-transition-modal'
 import { useDhikrStartGuard } from '../../hooks/use-dhikr-start-guard'
 import { useAuthStore } from '../../store/auth-store'
-import { useDhikrStore } from '../../store/dhikr-store'
+import { resolveLocalizedText, useDhikrStore } from '../../store/dhikr-store'
 import { createDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
 import { useSpecialDayDetail } from './hooks/use-special-day-detail'
 import type { BackendSpecialDayDetail } from './services/special-days-api-client'
@@ -37,7 +37,8 @@ function toDateKey(value: Date) {
 export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
   const router = useRouter()
   const { tokens } = useThemeTokens()
-  const { t } = useTranslation('special-days')
+  const { t, i18n } = useTranslation('special-days')
+  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
 
   const dhikrItems = useDhikrStore(state => state.items)
   const selectedDhikrId = useDhikrStore(state => state.selectedDhikrId)
@@ -67,12 +68,12 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
   const startDhikr = (item: PendingStart['item'], target: number, progressCount: number) => {
     guard.guardedStart({
       id: item.id,
-      dhikrName: item.nameTurkish,
+      dhikrName: resolveLocalizedText(item.name, locale),
       onFresh: () => {
         upsertDhikrSnapshot({
           id: item.id,
           source: 'ready',
-          nameTurkish: item.nameTurkish,
+          name: item.name,
           arabic: item.nameArabic,
           transliteration: item.transliteration,
           meaning: item.meaning,
@@ -134,7 +135,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
       const savedLog = await createDhikrLog(
         isObjectId
           ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...sourceMeta, isCompleted, isFavorite: selectedDhikr.isFavorite }
-          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: selectedDhikr.nameTurkish || selectedDhikr.transliteration, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...sourceMeta, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
+          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: resolveLocalizedText(selectedDhikr.name, locale) || resolveLocalizedText(selectedDhikr.transliteration, locale), count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...sourceMeta, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
         sessionAccessToken
       )
       applySavedBackendLog(savedLog)
@@ -218,7 +219,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                   return (
                     <ThemedCard key={item.id} className='rounded-2xl p-4' borderClassName='border-white/5'>
                       <View className='flex-row items-start justify-between gap-3'>
-                        <Text className='flex-1 text-base font-semibold text-[--text-primary]'>{item.nameTurkish}</Text>
+                        <Text className='flex-1 text-base font-semibold text-[--text-primary]'>{resolveLocalizedText(item.name, locale)}</Text>
                         <Text
                           className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
                             isCompleted ? 'bg-[--success]/15 text-[--success]' : 'bg-[--accent]/15 text-[--accent]'
@@ -230,8 +231,8 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
 
                       <DhikrContentStack
                         arabic={item.nameArabic}
-                        transliteration={item.transliteration}
-                        meaning={item.meaning}
+                        transliteration={resolveLocalizedText(item.transliteration, locale)}
+                        meaning={resolveLocalizedText(item.meaning, locale)}
                       />
 
                       <View className='mt-4'>
@@ -272,7 +273,10 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
 
         <UnsavedDhikrTransitionModal
           visible={Boolean(pendingStart)}
-          dhikrName={dhikrItems.find(d => d.id === selectedDhikrId)?.nameTurkish ?? ''}
+          dhikrName={(() => {
+            const found = dhikrItems.find(d => d.id === selectedDhikrId)
+            return found ? resolveLocalizedText(found.name, locale) : ''
+          })()}
           count={dhikrItems.find(d => d.id === selectedDhikrId)?.current ?? freeModeCount}
           isSaving={isSavingUnsaved}
           error={unsavedSaveError}

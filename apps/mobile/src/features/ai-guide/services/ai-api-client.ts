@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
+import type { LocalizedText } from "@zikirmatik/shared";
 
 export type CreateAiRecommendationPayload = {
   userId: string;
@@ -46,12 +47,12 @@ export type CreateAiRecommendationResponse =
       reasoning: string;
       items: Array<{
         id: string;
-        nameTurkish: string;
+        name: LocalizedText;
         nameArabic: string;
-        transliteration: string;
-        meaning: string;
-        virtue?: string;
-        source?: string;
+        transliteration: LocalizedText;
+        meaning: LocalizedText;
+        virtue?: LocalizedText;
+        source?: LocalizedText;
         recommendedCount?: number;
       }>;
       usedModel: "openai" | "fallback" | "retrieval" | "cache";

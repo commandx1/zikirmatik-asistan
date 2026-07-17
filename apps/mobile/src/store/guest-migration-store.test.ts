@@ -15,7 +15,7 @@ function makeSnapshot(): GuestMigrationSnapshot {
       {
         id: "subhanallah",
         source: "ready",
-        nameTurkish: "Sübhanallah",
+        name: "Sübhanallah",
         transliteration: "Subhanallah",
         current: 33,
         target: 33,

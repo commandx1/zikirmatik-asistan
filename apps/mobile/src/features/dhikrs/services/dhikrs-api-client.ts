@@ -1,14 +1,15 @@
 import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
+import type { LocalizedText } from "@zikirmatik/shared";
 
 export type BackendDhikr = {
   _id: string;
   nameArabic: string;
-  nameTurkish: string;
-  transliteration: string;
-  meaning: string;
-  virtue?: string;
-  source?: string;
+  name: LocalizedText;
+  transliteration: LocalizedText;
+  meaning: LocalizedText;
+  virtue?: LocalizedText;
+  source?: LocalizedText;
   recommendedCount: number;
 };
 

@@ -1,10 +1,15 @@
+export type LocalizedText = {
+  tr: string;
+  en: string;
+};
+
 export type Dhikr = {
   id: string;
   nameArabic: string;
-  nameTurkish: string;
-  transliteration: string;
-  meaning: string;
-  source: string;
+  name: LocalizedText;
+  transliteration: LocalizedText;
+  meaning: LocalizedText;
+  source: LocalizedText;
   tags: string[];
   recommendedCount: number;
 };

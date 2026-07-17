@@ -13,7 +13,7 @@ import { ThemedCard } from "../../components/ui/themed-card";
 import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
 import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
 import { useAuthStore } from "../../store/auth-store";
-import { useDhikrStore } from "../../store/dhikr-store";
+import { resolveLocalizedText, useDhikrStore } from "../../store/dhikr-store";
 import { createDhikrLog } from "../dhikrs/services/dhikr-logs-api-client";
 import { useCollectionDetail } from "./hooks/use-collection-detail";
 import type { BackendCollectionDhikr } from "./services/collections-api-client";
@@ -31,7 +31,8 @@ function toDateKey(value: Date) {
 
 export function CollectionDetailScreen({ collectionKey }: Props) {
   const router = useRouter();
-  const { t } = useTranslation("collections");
+  const { t, i18n } = useTranslation("collections");
+  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const { tokens } = useThemeTokens();
   const insets = useSafeAreaInsets();
   const bottomPadding = 40 + (Platform.OS === "android" ? Math.max(insets.bottom, 0) : insets.bottom);
@@ -63,12 +64,12 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
   const startDhikr = (dhikr: BackendCollectionDhikr) => {
     guard.guardedStart({
       id: dhikr._id,
-      dhikrName: dhikr.nameTurkish,
+      dhikrName: resolveLocalizedText(dhikr.name, locale),
       onFresh: () => {
         upsertDhikrSnapshot({
           id: dhikr._id,
           source: "ready",
-          nameTurkish: dhikr.nameTurkish,
+          name: dhikr.name,
           arabic: dhikr.nameArabic,
           transliteration: dhikr.transliteration,
           meaning: dhikr.meaning,
@@ -128,7 +129,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
       const savedLog = await createDhikrLog(
         isObjectId
           ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted, isFavorite: selectedDhikr.isFavorite }
-          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: selectedDhikr.nameTurkish || selectedDhikr.transliteration, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
+          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: resolveLocalizedText(selectedDhikr.name, locale) || resolveLocalizedText(selectedDhikr.transliteration, locale), count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
         sessionAccessToken
       );
       applySavedBackendLog(savedLog);
@@ -190,18 +191,18 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
                 </View>
 
                 <Text className="text-base font-semibold text-[--text-primary]">
-                  {dhikr.nameTurkish}
+                  {resolveLocalizedText(dhikr.name, locale)}
                 </Text>
 
                 <DhikrContentStack
                   arabic={dhikr.nameArabic}
-                  transliteration={dhikr.transliteration}
-                  meaning={dhikr.meaning}
+                  transliteration={resolveLocalizedText(dhikr.transliteration, locale)}
+                  meaning={resolveLocalizedText(dhikr.meaning, locale)}
                 />
 
                 {dhikr.source ? (
                   <Text className="mt-3 text-xs leading-4 text-[--text-muted]">
-                    {dhikr.source}
+                    {resolveLocalizedText(dhikr.source, locale)}
                   </Text>
                 ) : null}
 
@@ -233,7 +234,10 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
 
       <UnsavedDhikrTransitionModal
         visible={Boolean(pendingDhikr)}
-        dhikrName={storeItems.find((d) => d.id === selectedDhikrId)?.nameTurkish ?? ""}
+        dhikrName={(() => {
+          const found = storeItems.find((d) => d.id === selectedDhikrId);
+          return found ? resolveLocalizedText(found.name, locale) : "";
+        })()}
         count={storeItems.find((d) => d.id === selectedDhikrId)?.current ?? freeModeCount}
         isSaving={isSavingUnsaved}
         error={unsavedSaveError}

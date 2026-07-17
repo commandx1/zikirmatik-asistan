@@ -4,7 +4,7 @@ import { toDateKey } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
-import { useDhikrStore } from "../../../store/dhikr-store";
+import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
 import {
   calculateLocalCompletionStreak,
   resolveActivityDateKey
@@ -202,10 +202,11 @@ function buildLocalStatsSummary(items: ZikirItem[], freeModeCount: number): Stat
 }
 
 function buildTopDhikrs(items: ZikirItem[]): StatsTopDhikr[] {
+  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   return items
     .map((item) => ({
       key: item.id,
-      label: item.nameTurkish || item.transliteration || i18n.t("stats:misc.defaultDhikrLabel"),
+      label: resolveLocalizedText(item.name, locale) || resolveLocalizedText(item.transliteration, locale) || i18n.t("stats:misc.defaultDhikrLabel"),
       totalCount: Math.max(0, Math.floor(item.current)),
       sessions: item.current > 0 ? 1 : 0
     }))

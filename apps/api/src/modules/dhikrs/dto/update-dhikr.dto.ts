@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -6,7 +7,9 @@ import {
   IsOptional,
   IsString,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { LocalizedTextDto } from './create-dhikr.dto';
 
 const TIME_OF_DAY = {
   morning: 'morning',
@@ -21,24 +24,29 @@ export class UpdateDhikrDto {
   nameArabic?: string;
 
   @IsOptional()
-  @IsString()
-  nameTurkish?: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  name?: LocalizedTextDto;
 
   @IsOptional()
-  @IsString()
-  transliteration?: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  transliteration?: LocalizedTextDto;
 
   @IsOptional()
-  @IsString()
-  meaning?: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  meaning?: LocalizedTextDto;
 
   @IsOptional()
-  @IsString()
-  virtue?: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  virtue?: LocalizedTextDto;
 
   @IsOptional()
-  @IsString()
-  source?: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  source?: LocalizedTextDto;
 
   @IsOptional()
   @IsArray()

@@ -1,12 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import type { LocalizedText } from '../../../common/types/localized-text';
 
 export type DhikrDocument = HydratedDocument<Dhikr>;
+
+// Çok dilli alt-şema: her alan { tr, en } nesnesi olarak tutulur. Her iki dil
+// de zorunludur — API yanıtları her zaman ikisini birden döner (Accept-Language
+// ile tek dile indirgeme yok).
+const LOCALIZED_TEXT_SCHEMA = {
+  type: {
+    tr: { type: String, required: true, trim: true },
+    en: { type: String, required: true, trim: true },
+  },
+  required: true,
+};
 
 @Schema({ collection: 'dhikrs', timestamps: true, versionKey: false })
 export class Dhikr {
   // Seed verisindeki stabil tanımlayıcı. Seed'ler bu key üzerinden upsert
-  // eder; nameTurkish/transliteration düzenlense bile kayıt eşleşmesi bozulmaz.
+  // eder; name/transliteration düzenlense bile kayıt eşleşmesi bozulmaz.
   // Elle/admin üzerinden eklenen kayıtlarda bulunmayabilir (sparse).
   @Prop({ type: String, trim: true })
   key?: string;
@@ -14,20 +26,20 @@ export class Dhikr {
   @Prop({ type: String, required: true, trim: true })
   nameArabic!: string;
 
-  @Prop({ type: String, required: true, trim: true })
-  nameTurkish!: string;
+  @Prop(LOCALIZED_TEXT_SCHEMA)
+  name!: LocalizedText;
 
-  @Prop({ type: String, required: true, trim: true })
-  transliteration!: string;
+  @Prop(LOCALIZED_TEXT_SCHEMA)
+  transliteration!: LocalizedText;
 
-  @Prop({ type: String, required: true, trim: true })
-  meaning!: string;
+  @Prop(LOCALIZED_TEXT_SCHEMA)
+  meaning!: LocalizedText;
 
-  @Prop({ type: String, required: true, trim: true })
-  virtue!: string;
+  @Prop(LOCALIZED_TEXT_SCHEMA)
+  virtue!: LocalizedText;
 
-  @Prop({ type: String, required: true, trim: true })
-  source!: string;
+  @Prop(LOCALIZED_TEXT_SCHEMA)
+  source!: LocalizedText;
 
   @Prop({ type: [String], default: [] })
   tags!: string[];

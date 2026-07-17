@@ -25,7 +25,7 @@ import { RecommendationsSection } from "./components/recommendations-section";
 import { TopBar } from "./components/top-bar";
 import { useAiGuide } from "./hooks/use-ai-guide";
 import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
-import { useDhikrStore } from "../../store/dhikr-store";
+import { resolveLocalizedText, useDhikrStore } from "../../store/dhikr-store";
 import { usePremiumSheet } from "../../hooks/use-premium-sheet";
 import { useRequireAuth } from "../auth/hooks/use-require-auth";
 import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
@@ -39,7 +39,8 @@ function toDateKey(value: Date) {
 }
 
 export function AiGuideScreen() {
-  const { t } = useTranslation("ai-guide");
+  const { t, i18n } = useTranslation("ai-guide");
+  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const router = useRouter();
   const resumeAfterCreditPurchaseRef = useRef<() => void>(() => {});
   const premiumSheet = usePremiumSheet({
@@ -129,7 +130,7 @@ export function AiGuideScreen() {
       const savedLog = await createDhikrLog(
         isObjectId
           ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted, isFavorite: selectedDhikr.isFavorite }
-          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: selectedDhikr.nameTurkish || selectedDhikr.transliteration, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
+          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: resolveLocalizedText(selectedDhikr.name, locale) || resolveLocalizedText(selectedDhikr.transliteration, locale), count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
         sessionAccessToken
       );
       applySavedBackendLog(savedLog);
@@ -268,7 +269,10 @@ export function AiGuideScreen() {
 
         <UnsavedDhikrTransitionModal
           visible={Boolean(pendingRecommendation)}
-          dhikrName={storeItems.find(d => d.id === selectedDhikrId)?.nameTurkish ?? ""}
+          dhikrName={(() => {
+            const found = storeItems.find(d => d.id === selectedDhikrId);
+            return found ? resolveLocalizedText(found.name, locale) : "";
+          })()}
           count={storeItems.find(d => d.id === selectedDhikrId)?.current ?? freeModeCount}
           isSaving={isSavingUnsaved}
           error={unsavedSaveError}

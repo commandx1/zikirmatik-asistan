@@ -14,6 +14,7 @@ import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { MarkdownRenderer } from '../../../components/ui/markdown-renderer'
 import { ThemedCard } from '../../../components/ui/themed-card'
 import { useZikirlerim } from '../context/zikirlerim-context'
+import { resolveLocalizedText } from '../../../store/dhikr-store'
 import type { ZikirItem } from '../types'
 
 type ZikirItemCardProps = {
@@ -63,7 +64,11 @@ const EXPAND_DURATION = 280
 const COLLAPSE_DURATION = 220
 
 const AccordionContent = memo(function AccordionContent({ item, tokens }: { item: ZikirItem; tokens: ThemeTokens }) {
-  const { t } = useTranslation('focus')
+  const { t, i18n } = useTranslation('focus')
+  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const meaningText = item.meaning ? resolveLocalizedText(item.meaning, locale) : ''
+  const virtueText = item.virtue ? resolveLocalizedText(item.virtue, locale) : ''
+  const contentSourceText = item.contentSource ? resolveLocalizedText(item.contentSource, locale) : ''
   return (
     <View
       className='pb-3 gap-2 pt-1'
@@ -87,7 +92,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
         </View>
       ) : null}
 
-      {item.meaning ? (
+      {meaningText ? (
         <View
           className='rounded-xl px-3 py-2.5'
           style={{
@@ -103,12 +108,12 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
             {t('focus:card.meaning')}
           </Text>
           <Text className='text-xs leading-5' style={{ color: tokens.textPrimary, textAlign: 'justify' }}>
-            {item.meaning}
+            {meaningText}
           </Text>
         </View>
       ) : null}
 
-      {item.virtue ? (
+      {virtueText ? (
         <View
           className='rounded-xl px-3 py-2.5'
           style={{
@@ -124,12 +129,12 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
             {t('focus:card.virtue')}
           </Text>
           <Text className='text-xs leading-5' style={{ color: tokens.textMuted, textAlign: 'justify' }}>
-            {item.virtue}
+            {virtueText}
           </Text>
         </View>
       ) : null}
 
-      {item.contentSource ? (
+      {contentSourceText ? (
         <View
           className='rounded-xl px-3 py-2.5'
           style={{
@@ -145,7 +150,7 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
             {t('focus:card.source')}
           </Text>
           <Text className='text-xs leading-5' style={{ color: tokens.textMuted, textAlign: 'justify' }}>
-            {item.contentSource}
+            {contentSourceText}
           </Text>
         </View>
       ) : null}
@@ -194,7 +199,8 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
 })
 
 export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isDeleting, isUpdatingThisItem }: ZikirItemCardProps) {
-  const { t } = useTranslation('focus')
+  const { t, i18n } = useTranslation('focus')
+  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
   const { tokens } = useThemeTokens()
   const [isExpanded, setIsExpanded] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -210,8 +216,9 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
   const progressPct = item.target === 0 ? 0 : Math.min(100, Math.round((item.current / item.target) * 100))
   const accent = resolveAccent(item)
   const targetLabel = item.target > 0 ? String(item.target) : '∞'
-  const title = item.nameTurkish || item.transliteration
-  const showTransliteration = item.transliteration && item.transliteration !== title
+  const resolvedTransliteration = resolveLocalizedText(item.transliteration, locale)
+  const title = resolveLocalizedText(item.name, locale) || resolvedTransliteration
+  const showTransliteration = resolvedTransliteration && resolvedTransliteration !== title
   const hasDetails = !!(item.arabic || item.meaning || item.virtue || item.contentSource || item.aiPrompt || item.aiAssistantNote)
 
   const dangerBase = '#EF4444'
@@ -259,7 +266,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
         <View className='flex-1 pr-3'>
           <Text className='text-sm font-medium text-[--text-primary]'>{title}</Text>
           {showTransliteration ? (
-            <Text className='mt-1 text-xs text-[--text-muted]'>{item.transliteration}</Text>
+            <Text className='mt-1 text-xs text-[--text-muted]'>{resolvedTransliteration}</Text>
           ) : null}
         </View>
         <Pressable

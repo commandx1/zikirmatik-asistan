@@ -10,8 +10,10 @@ vi.mock("../../../i18n", () => ({
       if (key === "ai-guide:recommendation.repeatLabelPrimary") return "Öncelikli";
       if (key === "ai-guide:genericPrompt") return "Genel öneri";
       return key;
-    }
-  }
+    },
+    changeLanguage: vi.fn()
+  },
+  detectDeviceLocale: () => "tr"
 }));
 
 const history: AiGuideHistoryItem[] = [
@@ -44,32 +46,32 @@ describe("ai-guide-history-service", () => {
       [
         {
           _id: "dhikr-a",
-          nameTurkish: "Dua A",
+          name: { tr: "Dua A", en: "Dua A" },
           nameArabic: "الدعاء أ",
-          transliteration: "Dua A",
-          meaning: "Anlam A",
-          virtue: "Fazilet A",
-          source: "Tirmizi, Deavat",
+          transliteration: { tr: "Dua A", en: "Dua A" },
+          meaning: { tr: "Anlam A", en: "Anlam A" },
+          virtue: { tr: "Fazilet A", en: "Fazilet A" },
+          source: { tr: "Tirmizi, Deavat", en: "Tirmizi, Deavat" },
           recommendedCount: 33
         },
         {
           _id: "dhikr-b",
-          nameTurkish: "Dua B",
+          name: { tr: "Dua B", en: "Dua B" },
           nameArabic: "الدعاء ب",
-          transliteration: "Dua B",
-          meaning: "Anlam B",
-          virtue: "Fazilet B",
-          source: "Buhari, Deavat",
+          transliteration: { tr: "Dua B", en: "Dua B" },
+          meaning: { tr: "Anlam B", en: "Anlam B" },
+          virtue: { tr: "Fazilet B", en: "Fazilet B" },
+          source: { tr: "Buhari, Deavat", en: "Buhari, Deavat" },
           recommendedCount: 100
         },
         {
           _id: "dhikr-c",
-          nameTurkish: "Dua C",
+          name: { tr: "Dua C", en: "Dua C" },
           nameArabic: "الدعاء ج",
-          transliteration: "Dua C",
-          meaning: "Anlam C",
-          virtue: "Fazilet C",
-          source: "Müslim, Zikir",
+          transliteration: { tr: "Dua C", en: "Dua C" },
+          meaning: { tr: "Anlam C", en: "Anlam C" },
+          virtue: { tr: "Fazilet C", en: "Fazilet C" },
+          source: { tr: "Müslim, Zikir", en: "Müslim, Zikir" },
           recommendedCount: 7
         }
       ]

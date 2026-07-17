@@ -48,9 +48,9 @@ function makeBackend(overrides: Partial<GuestMigrationBackendState> = {}): Guest
       {
         _id: VERIFIED_ID,
         nameArabic: "سُبْحَانَ اللَّهِ",
-        nameTurkish: "Sübhanallah",
-        transliteration: "Subhanallah",
-        meaning: "Allah her türlü eksiklikten uzaktır",
+        name: { tr: "Sübhanallah", en: "Sübhanallah" },
+        transliteration: { tr: "Subhanallah", en: "Subhanallah" },
+        meaning: { tr: "Allah her türlü eksiklikten uzaktır", en: "Allah her türlü eksiklikten uzaktır" },
         recommendedCount: 33
       }
     ],
@@ -67,7 +67,7 @@ describe("planGuestMigration", () => {
         {
           id: "subhanallah",
           source: "ready",
-          nameTurkish: "Sübhanallah",
+          name: "Sübhanallah",
           transliteration: "Subhanallah",
           current: 21,
           target: 33,
@@ -95,7 +95,7 @@ describe("planGuestMigration", () => {
         {
           id: "subhanallah",
           source: "ready",
-          nameTurkish: "Sübhanallah",
+          name: "Sübhanallah",
           transliteration: "Subhanallah",
           current: 21,
           target: 33,
@@ -127,7 +127,7 @@ describe("planGuestMigration", () => {
         {
           id: "subhanallah",
           source: "ready",
-          nameTurkish: "Sübhanallah",
+          name: "Sübhanallah",
           transliteration: "Subhanallah",
           current: 40,
           target: 33,
@@ -159,7 +159,7 @@ describe("planGuestMigration", () => {
         {
           id: "personal-1",
           source: "personal",
-          nameTurkish: "Kendi zikrim",
+          name: "Kendi zikrim",
           transliteration: "",
           current: 5,
           target: 100,
@@ -168,7 +168,7 @@ describe("planGuestMigration", () => {
         {
           id: "personal-2",
           source: "personal",
-          nameTurkish: "Zaten var",
+          name: "Zaten var",
           transliteration: "",
           current: 0,
           target: 10,
@@ -201,7 +201,7 @@ describe("planGuestMigration", () => {
         {
           id: VERIFIED_ID,
           source: "ready",
-          nameTurkish: "Sübhanallah",
+          name: "Sübhanallah",
           transliteration: "Subhanallah",
           current: 0,
           target: 33,
@@ -234,7 +234,7 @@ describe("planGuestMigration", () => {
         {
           id: "eski-slug",
           source: "ready",
-          nameTurkish: "Katalogdan kalkan zikir",
+          name: "Katalogdan kalkan zikir",
           transliteration: "Yok",
           current: 7,
           target: 0,

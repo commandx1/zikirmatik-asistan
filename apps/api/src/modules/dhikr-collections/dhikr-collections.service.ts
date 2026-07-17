@@ -53,7 +53,7 @@ export class DhikrCollectionsService {
         {
           key: 1,
           nameArabic: 1,
-          nameTurkish: 1,
+          name: 1,
           transliteration: 1,
           meaning: 1,
           virtue: 1,

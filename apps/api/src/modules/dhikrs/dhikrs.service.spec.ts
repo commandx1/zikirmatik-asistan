@@ -22,7 +22,7 @@ describe('DhikrsService', () => {
   it('finds verified active dhikr by transliteration case-insensitively', async () => {
     const record = {
       _id: '507f1f77bcf86cd799439011',
-      transliteration: 'Er-Rahmân',
+      transliteration: { tr: 'Er-Rahmân', en: 'Ar-Rahman' },
       isVerified: true,
       isActive: true,
     };
@@ -36,7 +36,10 @@ describe('DhikrsService', () => {
       service.findVerifiedActiveByTransliteration(' er-rahmân '),
     ).resolves.toEqual(record);
     expect(dhikrModel.findOne).toHaveBeenCalledWith({
-      transliteration: /^er-rahmân$/i,
+      $or: [
+        { 'transliteration.tr': /^er-rahmân$/i },
+        { 'transliteration.en': /^er-rahmân$/i },
+      ],
       isVerified: true,
       isActive: true,
     });

@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
+import type { LocalizedText } from "@zikirmatik/shared";
 
 export type CollectionCategory =
   | "gunluk"
@@ -22,11 +23,11 @@ export type BackendCollectionDhikr = {
   _id: string;
   key?: string;
   nameArabic: string;
-  nameTurkish: string;
-  transliteration: string;
-  meaning: string;
-  virtue?: string;
-  source?: string;
+  name: LocalizedText;
+  transliteration: LocalizedText;
+  meaning: LocalizedText;
+  virtue?: LocalizedText;
+  source?: LocalizedText;
   recommendedCount: number;
   timeOfDay?: string;
 };

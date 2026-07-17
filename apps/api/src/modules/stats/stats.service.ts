@@ -117,7 +117,7 @@ export class StatsService {
                     customName: 1,
                     totalCount: 1,
                     sessions: 1,
-                    dhikrName: { $arrayElemAt: ['$dhikr.nameTurkish', 0] },
+                    dhikrName: { $arrayElemAt: ['$dhikr.name.tr', 0] },
                   },
                 },
               ],

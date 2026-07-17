@@ -5,7 +5,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export type GuestSnapshotItem = {
   id: string;
   source: "ready" | "personal";
-  nameTurkish: string;
+  // Snapshot is a flattened, locale-resolved copy of ZikirItem — only the
+  // active-locale string is captured, since it's used for backend name
+  // matching (see resolveLogKey) and personal-dhikr creation, both of which
+  // operate on plain strings.
+  name: string;
   transliteration: string;
   arabic?: string;
   meaning?: string;

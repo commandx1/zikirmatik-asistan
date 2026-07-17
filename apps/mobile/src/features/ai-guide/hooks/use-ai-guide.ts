@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { AiGuideHistoryItem, AiGuideRecommendation } from "../types";
 import { useAuthStore } from "../../../store/auth-store";
-import { useDhikrStore } from "../../../store/dhikr-store";
+import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
 import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-client";
 import {
   AiApiError,
@@ -384,20 +384,25 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
         setRecommendationId(response.recommendationId);
         const nextAssistantNote = response.reasoning?.trim() || undefined;
+        const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
         const mappedItems = markFirstPrimary(
-          response.items.map((item, index) => ({
-            id: item.id,
-            title: item.nameTurkish,
-            chipEmoji: index === 0 ? "💆" : "✨",
-            chipLabel: index === 0 ? t("ai-guide:recommendation.chipLabelPrimary") : t("ai-guide:recommendation.chipLabelSecondary"),
-            repeatLabel: index === 0 ? t("ai-guide:recommendation.repeatLabelPrimary") : undefined,
-            arabic: item.nameArabic,
-            transliteration: item.transliteration || item.nameTurkish,
-            meaning: item.meaning,
-            virtue: item.virtue,
-            source: item.source,
-            recommendedCount: item.recommendedCount
-          }))
+          response.items.map((item, index) => {
+            const resolvedName = resolveLocalizedText(item.name, locale);
+            const resolvedTransliteration = resolveLocalizedText(item.transliteration, locale);
+            return {
+              id: item.id,
+              title: resolvedName,
+              chipEmoji: index === 0 ? "💆" : "✨",
+              chipLabel: index === 0 ? t("ai-guide:recommendation.chipLabelPrimary") : t("ai-guide:recommendation.chipLabelSecondary"),
+              repeatLabel: index === 0 ? t("ai-guide:recommendation.repeatLabelPrimary") : undefined,
+              arabic: item.nameArabic,
+              transliteration: resolvedTransliteration || resolvedName,
+              meaning: resolveLocalizedText(item.meaning, locale),
+              virtue: item.virtue ? resolveLocalizedText(item.virtue, locale) : undefined,
+              source: item.source ? resolveLocalizedText(item.source, locale) : undefined,
+              recommendedCount: item.recommendedCount
+            };
+          })
         );
         const normalizedPrompt = request.freeText?.trim() || "";
         setLastPrompt(normalizedPrompt);

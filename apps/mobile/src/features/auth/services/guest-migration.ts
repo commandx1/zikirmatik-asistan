@@ -1,5 +1,6 @@
 import { toDateKey } from "@zikirmatik/shared";
-import { useDhikrStore } from "../../../store/dhikr-store";
+import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
+import { useProfileStore } from "../../../store/profile-store";
 import type {
   GuestMigrationSnapshot,
   GuestSnapshotItem
@@ -43,6 +44,7 @@ export function captureGuestMigrationSnapshot(): GuestMigrationSnapshot | null {
   }
 
   const now = new Date();
+  const locale = useProfileStore.getState().locale;
   return {
     id: `guest-migration-${now.getTime()}`,
     capturedAt: now.toISOString(),
@@ -50,10 +52,10 @@ export function captureGuestMigrationSnapshot(): GuestMigrationSnapshot | null {
     items: relevant.map((item) => ({
       id: item.id,
       source: item.source,
-      nameTurkish: item.nameTurkish,
-      transliteration: item.transliteration,
+      name: resolveLocalizedText(item.name, locale),
+      transliteration: resolveLocalizedText(item.transliteration, locale),
       arabic: item.arabic,
-      meaning: item.meaning,
+      meaning: item.meaning ? resolveLocalizedText(item.meaning, locale) : undefined,
       current: item.current,
       target: item.target,
       isFavorite: item.isFavorite
@@ -80,10 +82,11 @@ export function planGuestMigration(
     skippedItemIds: []
   };
 
+  const locale = useProfileStore.getState().locale;
   const verifiedByName = new Map<string, BackendDhikr>();
   for (const dhikr of backend.verifiedDhikrs) {
-    verifiedByName.set(normalizeName(dhikr.nameTurkish), dhikr);
-    verifiedByName.set(normalizeName(dhikr.transliteration), dhikr);
+    verifiedByName.set(normalizeName(resolveLocalizedText(dhikr.name, locale)), dhikr);
+    verifiedByName.set(normalizeName(resolveLocalizedText(dhikr.transliteration, locale)), dhikr);
   }
   const userDhikrClientIds = new Set(backend.userDhikrs.map((d) => d.clientId));
 
@@ -93,7 +96,7 @@ export function planGuestMigration(
     if (item.source === "personal" && !userDhikrClientIds.has(item.id)) {
       plan.createUserDhikrs.push({
         clientId: item.id,
-        name: item.nameTurkish,
+        name: item.name,
         transliteration: item.transliteration || undefined,
         arabic: item.arabic,
         meaning: item.meaning,
@@ -184,7 +187,7 @@ function resolveLogKey(
   if (item.source === "personal") {
     return {
       customDhikrId: item.id,
-      customDhikrName: item.nameTurkish,
+      customDhikrName: item.name,
       customDhikrArabic: item.arabic
     };
   }
@@ -194,7 +197,7 @@ function resolveLogKey(
   }
 
   const matched =
-    verifiedByName.get(normalizeName(item.nameTurkish)) ??
+    verifiedByName.get(normalizeName(item.name)) ??
     verifiedByName.get(normalizeName(item.transliteration));
   if (matched) {
     return { dhikrId: matched._id };
@@ -204,7 +207,7 @@ function resolveLogKey(
   // progress as a custom-keyed log, mirroring the home-context fallback.
   return {
     customDhikrId: item.id,
-    customDhikrName: item.nameTurkish,
+    customDhikrName: item.name,
     customDhikrArabic: item.arabic
   };
 }

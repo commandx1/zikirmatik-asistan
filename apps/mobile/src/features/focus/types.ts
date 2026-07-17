@@ -1,3 +1,5 @@
+import type { LocalizedText } from '@zikirmatik/shared'
+
 export type ZikirFilterKey = 'all' | 'active' | 'completed' | 'favorites'
 export type ZikirSource = 'ready' | 'personal'
 
@@ -11,12 +13,14 @@ export type AiDhikrContext = {
 export type ZikirItem = {
   id: string
   source: ZikirSource
-  nameTurkish: string
+  // 'ready' items carry LocalizedText (tr+en); 'personal' items stay a plain
+  // string (user-authored custom dhikrs are single-language by design).
+  name: LocalizedText | string
   arabic?: string
-  transliteration: string
-  meaning?: string
-  virtue?: string
-  contentSource?: string
+  transliteration: LocalizedText | string
+  meaning?: LocalizedText | string
+  virtue?: LocalizedText | string
+  contentSource?: LocalizedText | string
   aiPrompt?: string
   aiAssistantNote?: string
   aiRecommendationId?: string

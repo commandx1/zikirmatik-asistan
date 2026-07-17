@@ -10,13 +10,22 @@ import {
 } from "@zikirmatik/ui";
 import { DHIKR_MOCKS } from "@zikirmatik/shared";
 import { ScreenFrame } from "../../components/ui/screen-frame";
+import { resolveLocalizedText } from "../../store/dhikr-store";
 
 export function ComponentsScreen() {
-  const { t } = useTranslation("components");
+  const { t, i18n } = useTranslation("components");
+  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const dhikrMock = DHIKR_MOCKS[0];
   return (
     <ScreenFrame>
       <SectionHeader title={t("components:screen.title")} subtitle={t("components:screen.subtitle")} />
-      <DhikrCard dhikr={DHIKR_MOCKS[0]} />
+      {dhikrMock ? (
+        <DhikrCard
+          nameArabic={dhikrMock.nameArabic}
+          name={resolveLocalizedText(dhikrMock.name, locale)}
+          meaning={resolveLocalizedText(dhikrMock.meaning, locale)}
+        />
+      ) : null}
       <View className="flex-row flex-wrap gap-2">
         <AppChip label={t("components:screen.moodCalm")} active />
         <AppChip label={t("components:screen.moodStressed")} />

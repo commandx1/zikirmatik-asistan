@@ -3,7 +3,8 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { i18n } from "../../../i18n";
 import { useAuthStore } from "../../../store/auth-store";
-import { useDhikrStore } from "../../../store/dhikr-store";
+import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
+import type { LocalizedText } from "@zikirmatik/shared";
 import { useProfileStore } from "../../../store/profile-store";
 import { toIntlLocale } from "../../../lib/locale-format";
 import {
@@ -63,7 +64,13 @@ const ZikirlerimContext = createContext<ZikirlerimContextValue | null>(null);
 type PendingFocusTransition = { kind: "select"; id: string } | { kind: "startHome"; id: string };
 
 export function ZikirlerimProvider({ children }: PropsWithChildren) {
-  const { t } = useTranslation("focus");
+  const { t, i18n: i18next } = useTranslation("focus");
+  const locale = (i18next.language === "en" ? "en" : "tr") as "tr" | "en";
+  const dhikrDisplayName = useCallback(
+    (item: { name: LocalizedText | string; transliteration: LocalizedText | string }) =>
+      resolveLocalizedText(item.name, locale) || resolveLocalizedText(item.transliteration, locale),
+    [locale]
+  );
   const router = useRouter();
   const FILTERS: Array<{ key: ZikirFilterKey; label: string }> = [
     { key: "all", label: t("focus:filters.all") },
@@ -235,7 +242,10 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       nextItems.push({
         id: dhikrId,
         source: matched?.source ?? "personal",
-        nameTurkish: matched?.nameTurkish ?? latestLog.customDhikrName ?? matched?.transliteration ?? t("focus:fallback.savedDhikr"),
+        name: resolveLocalizedText(
+          matched?.name ?? latestLog.customDhikrName ?? matched?.transliteration ?? t("focus:fallback.savedDhikr"),
+          locale
+        ),
         arabic: matched?.arabic ?? latestLog.customDhikrArabic,
         transliteration: matched?.transliteration ?? latestLog.customDhikrName ?? t("focus:fallback.savedDhikr"),
         meaning: matched?.meaning,
@@ -267,7 +277,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       const latestB = bLogs.reduce((max, log) => Math.max(max, toLogTimestamp(log)), 0);
       return latestB - latestA;
     });
-  }, [authStatus, items, logs, unsavedProgressDhikrIds]);
+  }, [authStatus, items, locale, logs, t, unsavedProgressDhikrIds]);
 
   const visibleItems = useMemo(() => {
     if (activeFilter === "all") {
@@ -323,7 +333,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
       upsertPersonalDhikr({
         id: editingDhikr.id,
-        nameTurkish: trimmedName,
+        name: trimmedName,
         transliteration: trimmedTransliteration,
         arabic: editingDhikr.arabic,
         meaning: trimmedMeaning || undefined,
@@ -352,10 +362,10 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       } catch {
         upsertPersonalDhikr({
           id: previousSnapshot.id,
-          nameTurkish: previousSnapshot.nameTurkish,
-          transliteration: previousSnapshot.transliteration,
+          name: resolveLocalizedText(previousSnapshot.name, locale),
+          transliteration: resolveLocalizedText(previousSnapshot.transliteration, locale),
           arabic: previousSnapshot.arabic,
-          meaning: previousSnapshot.meaning,
+          meaning: previousSnapshot.meaning ? resolveLocalizedText(previousSnapshot.meaning, locale) : undefined,
           current: previousSnapshot.current,
           target: previousSnapshot.target,
           lastActivityLabel: previousSnapshot.lastActivityLabel,
@@ -366,7 +376,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
         setIsUpdatingDhikr(false);
       }
     },
-    [authStatus, editingDhikr, isUpdatingDhikr, sessionAccessToken, sessionUserId, upsertPersonalDhikr]
+    [authStatus, editingDhikr, isUpdatingDhikr, locale, sessionAccessToken, sessionUserId, t, upsertPersonalDhikr]
   );
 
   const selectDhikrImmediately = useCallback(
@@ -381,10 +391,10 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
           if (fallbackPersonal) {
             upsertPersonalDhikr({
               id: fallbackPersonal.id,
-              nameTurkish: fallbackPersonal.nameTurkish,
-              transliteration: fallbackPersonal.transliteration,
+              name: resolveLocalizedText(fallbackPersonal.name, locale),
+              transliteration: resolveLocalizedText(fallbackPersonal.transliteration, locale),
               arabic: fallbackPersonal.arabic,
-              meaning: fallbackPersonal.meaning,
+              meaning: fallbackPersonal.meaning ? resolveLocalizedText(fallbackPersonal.meaning, locale) : undefined,
               current: fallbackPersonal.current,
               target: fallbackPersonal.target,
               lastActivityLabel: fallbackPersonal.lastActivityLabel,
@@ -396,7 +406,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
       storeSelectDhikr(id);
     },
-    [enrichedItems, items, storeSelectDhikr, upsertDhikrSnapshot, upsertPersonalDhikr, visibleItems]
+    [enrichedItems, items, locale, storeSelectDhikr, upsertDhikrSnapshot, upsertPersonalDhikr, visibleItems]
   );
 
   const saveSelectedDhikrProgress = useCallback(async () => {
@@ -428,7 +438,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       : {
           userId: sessionUserId,
           customDhikrId: selectedItem.id,
-          customDhikrName: selectedItem.nameTurkish || selectedItem.transliteration,
+          customDhikrName: dhikrDisplayName(selectedItem),
           customDhikrArabic: selectedItem.arabic,
           count: safeCount,
           targetCount: selectedItem.target,
@@ -456,11 +466,13 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   }, [
     applySavedBackendLog,
     authStatus,
+    dhikrDisplayName,
     items,
     selectedDhikrId,
     sessionAccessToken,
     sessionUserId,
-    setSyncError
+    setSyncError,
+    t
   ]);
 
   const runFocusTransition = useCallback(
@@ -548,10 +560,10 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     updateError,
     isUnsavedTransitionOpen: Boolean(pendingFocusTransition),
     isSavingUnsavedTransition,
-    unsavedTransitionDhikrName:
-      items.find((item) => item.id === selectedDhikrId)?.nameTurkish ||
-      items.find((item) => item.id === selectedDhikrId)?.transliteration ||
-      t("focus:fallback.thisDhikr"),
+    unsavedTransitionDhikrName: (() => {
+      const found = items.find((item) => item.id === selectedDhikrId);
+      return (found ? dhikrDisplayName(found) : "") || t("focus:fallback.thisDhikr");
+    })(),
     unsavedTransitionCount: items.find((item) => item.id === selectedDhikrId)?.current ?? 0,
     unsavedTransitionError,
     isRefreshing,

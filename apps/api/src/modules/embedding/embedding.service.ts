@@ -6,12 +6,12 @@ import OpenAI from 'openai';
 export const DEFAULT_EMBEDDING_MODEL = 'text-embedding-3-large';
 
 type EmbeddingSource = {
-  nameTurkish?: string;
+  name?: { tr?: string };
   suitableFor?: string[];
   tags?: string[];
   categories?: string[];
-  meaning?: string;
-  virtue?: string;
+  meaning?: { tr?: string };
+  virtue?: { tr?: string };
 };
 
 /**
@@ -42,12 +42,12 @@ export class EmbeddingService {
    */
   buildSourceText(source: EmbeddingSource): string {
     return [
-      source.nameTurkish,
+      source.name?.tr,
       (source.suitableFor ?? []).join(', '),
       (source.tags ?? []).join(', '),
       (source.categories ?? []).join(', '),
-      source.meaning,
-      source.virtue,
+      source.meaning?.tr,
+      source.virtue?.tr,
     ]
       .map((part) => (part ?? '').trim())
       .filter((part) => part.length > 0)

@@ -4,20 +4,26 @@ export const DHIKR_MOCKS: Dhikr[] = [
   {
     id: "dhikr-astagfirullah",
     nameArabic: "أَسْتَغْفِرُ اللَّهَ",
-    nameTurkish: "Estağfirullah",
-    transliteration: "Astaghfirullah",
-    meaning: "Allah'tan bağışlanma dilerim",
-    source: "Buhari, 6307",
+    name: { tr: "Estağfirullah", en: "Astaghfirullah" },
+    transliteration: { tr: "Estağfirullah", en: "Astaghfirullah" },
+    meaning: {
+      tr: "Allah'tan bağışlanma dilerim",
+      en: "I seek forgiveness from Allah"
+    },
+    source: { tr: "Buhari, 6307", en: "Sahih al-Bukhari, 6307" },
     tags: ["stres", "arınma"],
     recommendedCount: 100
   },
   {
     id: "dhikr-subhanallah",
     nameArabic: "سُبْحَانَ اللّٰهِ",
-    nameTurkish: "Sübhanallah",
-    transliteration: "Subhanallah",
-    meaning: "Allah her türlü eksiklikten uzaktır",
-    source: "Müslim, 2694",
+    name: { tr: "Sübhanallah", en: "Subhanallah" },
+    transliteration: { tr: "Sübhanallah", en: "Subhanallah" },
+    meaning: {
+      tr: "Allah her türlü eksiklikten uzaktır",
+      en: "Glory be to Allah, free of all imperfection"
+    },
+    source: { tr: "Müslim, 2694", en: "Sahih Muslim, 2694" },
     tags: ["huzur", "şükür"],
     recommendedCount: 33
   }

@@ -85,7 +85,7 @@ export class DhikrsService {
       throw new NotFoundException('Güncellenecek zikir bulunamadı.');
     }
 
-    // Embedding kaynağı (nameTurkish/suitableFor/tags/categories/virtue)
+    // Embedding kaynağı (name.tr/suitableFor/tags/categories/virtue.tr)
     // değiştiyse vektörü yenile. Hash aynıysa gereksiz embedding maliyeti yok.
     const sourceText = this.embeddingService.buildSourceText(dhikr);
     const hash = this.embeddingService.sourceHash(sourceText);
@@ -157,9 +157,13 @@ export class DhikrsService {
       throw new NotFoundException('Zikir bulunamadı.');
     }
 
+    const pattern = new RegExp(`^${escapeRegExp(normalized)}$`, 'i');
     const dhikr = await this.dhikrModel
       .findOne({
-        transliteration: new RegExp(`^${escapeRegExp(normalized)}$`, 'i'),
+        $or: [
+          { 'transliteration.tr': pattern },
+          { 'transliteration.en': pattern },
+        ],
         isVerified: true,
         isActive: true,
       })
