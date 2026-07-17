@@ -42,6 +42,7 @@ import {
 import { fallbackRecommend } from './utils/fallback-recommender';
 import type { LocalizedText } from '../../common/types/localized-text';
 import { normalizeText } from './utils/text-normalize';
+import type { SupportedAiLocale } from './utils/locale';
 import {
   AI_CREDIT_DEFAULT_TOPUP_PRODUCTS,
   AI_CREDIT_INSUFFICIENT_CODE,
@@ -262,7 +263,10 @@ export class AiService {
     }
   }
 
-  async createRecommendation(payload: CreateAiRecommendationDto) {
+  async createRecommendation(
+    payload: CreateAiRecommendationDto,
+    locale: SupportedAiLocale = 'tr',
+  ) {
     const startedAt = Date.now();
     const userId = this.asObjectId(
       payload.userId,
@@ -336,6 +340,7 @@ export class AiService {
           finalCandidates.map((c) => [c._id.toString(), c]),
         ),
         usedModel: 'fallback',
+        locale,
       });
       const wallet = await this.debitCreditForFlow(
         userId,
@@ -354,6 +359,7 @@ export class AiService {
       timeContext,
       maxRecommendations,
       catalogVersion,
+      locale,
     });
     this.logger.log(`[cache] lookup key=${cacheKey.slice(0, 12)}…`);
 
@@ -384,6 +390,7 @@ export class AiService {
           safeRecommendedIds: validIds,
           dhikrMapById,
           usedModel: 'cache',
+          locale,
         });
         const wallet = await this.debitCreditForFlow(
           userId,
@@ -408,6 +415,7 @@ export class AiService {
       recentDhikrIds,
       maxRecommendations,
       socketId,
+      locale,
     });
 
     // ── Off-topic ───────────────────────────────────────────────────────────
@@ -512,6 +520,7 @@ export class AiService {
       safeRecommendedIds,
       dhikrMapById,
       usedModel,
+      locale,
     });
 
     // ── Cache write ─────────────────────────────────────────────────────────
@@ -548,6 +557,7 @@ export class AiService {
     recentDhikrIds: string[];
     maxRecommendations: number;
     socketId?: string;
+    locale: SupportedAiLocale;
   }): Promise<AgentResult | null> {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
@@ -594,6 +604,10 @@ export class AiService {
       '**selectRecommendations YAZIM KURALLARI:**',
       '- summary: Kullanıcının niyetini samimiyetle kabul eden sıcak 3-5 cümle. "inşallah", "Allah kabul etsin", "maşallah" gibi ifadeler kullan. Zikir ismi yazma.',
       '- reason: Her zikir için fazilet/etiket içeriğinden türeyen 1-2 cümle. Doğrudan kullanıcıya yönelik, insani ve sıcak bir dil kullan.',
+      '',
+      input.locale === 'en'
+        ? 'Write the summary and each reason in English.'
+        : 'Write the summary and each reason in Turkish.',
     ].join('\n');
 
     let agentResult: AgentResult | null = null;
@@ -1098,6 +1112,7 @@ export class AiService {
     safeRecommendedIds: string[];
     dhikrMapById: Map<string, DhikrLean>;
     usedModel: UsedModel;
+    locale: SupportedAiLocale;
   }) {
     await this.userModel
       .updateOne({ _id: input.userId }, { $set: { lastSeenAt: new Date() } })
@@ -1107,6 +1122,7 @@ export class AiService {
       userId: input.userId,
       freeText: input.freeText,
       assistantNote: input.reasoning,
+      locale: input.locale,
       timeContext: input.timeContext,
       recommendedDhikrIds: input.safeRecommendedIds.map(
         (id) => new Types.ObjectId(id),
@@ -1133,6 +1149,7 @@ export class AiService {
       reasoning: input.reasoning,
       items: recommendedItems,
       usedModel: input.usedModel,
+      locale: input.locale,
     };
   }
 
@@ -1141,6 +1158,7 @@ export class AiService {
     timeContext: TimeContext;
     maxRecommendations: number;
     catalogVersion: string;
+    locale: SupportedAiLocale;
   }): string {
     const normalizedFreeText = normalizeText(input.freeText ?? '');
     const timeBucket = this.resolveTimeBucket(input.timeContext);
@@ -1149,6 +1167,7 @@ export class AiService {
       timeBucket,
       String(input.maxRecommendations),
       input.catalogVersion,
+      input.locale,
     ].join('|');
 
     return createHash('sha256').update(raw).digest('hex');

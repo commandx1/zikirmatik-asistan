@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
@@ -14,6 +15,7 @@ import { AiService } from './ai.service';
 import { CreateAiRecommendationDto } from './dto/create-ai-recommendation.dto';
 import { QueryAiRecommendationsDto } from './dto/query-ai-recommendations.dto';
 import { SelectAiRecommendationDto } from './dto/select-ai-recommendation.dto';
+import { resolveAiRecommendationLocale } from './utils/locale';
 
 @Controller('v1/ai')
 @UseGuards(JwtAuthGuard)
@@ -24,9 +26,11 @@ export class AiController {
   createRecommendation(
     @Body() payload: CreateAiRecommendationDto,
     @CurrentUserId() userId: string,
+    @Headers('accept-language') acceptLanguage?: string,
   ) {
     payload.userId = userId;
-    return this.aiService.createRecommendation(payload);
+    const locale = resolveAiRecommendationLocale(acceptLanguage);
+    return this.aiService.createRecommendation(payload, locale);
   }
 
   @Get('quota')

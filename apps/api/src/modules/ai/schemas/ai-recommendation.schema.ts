@@ -20,6 +20,11 @@ export class AiRecommendation {
   @Prop({ type: String, trim: true })
   assistantNote?: string;
 
+  // assistantNote'un hangi dilde üretildiği ('tr' | 'en'). Eski kayıtlarda
+  // bulunmaz — yokluğu 'tr' olarak yorumlanmalıdır.
+  @Prop({ type: String })
+  locale?: string;
+
   @Prop(
     raw({
       hour: { type: Number, required: true },
