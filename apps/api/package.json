@@ -18,6 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "seed:dhikrs": "node scripts/seed-dhikrs.mjs",
     "seed:collections": "node scripts/seed-collections.mjs",
     "seed:embeddings": "node scripts/backfill-dhikr-embeddings.mjs",
     "seed:special-days": "node scripts/seed-special-days.mjs",
