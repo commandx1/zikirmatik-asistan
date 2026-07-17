@@ -11,14 +11,26 @@ export const eyyamibiyd = {
       key: keyMap.TEVHID_SIRK_UZAKLASMA,
       nameArabic:
         'اَللهُ اَللهُ رَبِّي لَا أُشْرِكُ بِهِ شَيْئاً وَلَا أَتَّخِذُ مِنْ دُونِهِ وَلِيّاً',
-      nameTurkish: 'Tevhid ve Şirkten Uzaklaşma Zikri',
-      transliteration:
-        "Allâhu Allâhu Rabbî lâ uşriku bihî şey'en velâ ettehizu min dûnihî veliyyen.",
-      meaning:
-        "Benim Rabbim Allah'tır, Allah'tır! O'na hiçbir şeyi ortak koşmam ve O'ndan başka hiçbir veli (dost ve koruyucu) edinmem.",
-      virtue:
-        "Ruhun tevhid ekseninde sabitlenmesini sağlar, şirkin açık ve gizli her türlüsünden muhafaza eder. Eyyâm-ı Biyd gecelerinde kılınan 12 rekatlık namazın akabinde dörder kez okunması tavsiye edilir.",
-      source: "İmam Cafer-i Sadık hadisi; Wikishia",
+      name: {
+        tr: 'Tevhid ve Şirkten Uzaklaşma Zikri',
+        en: 'Dhikr of Tawhid and Distancing from Shirk',
+      },
+      transliteration: {
+        tr: "Allâhu Allâhu Rabbî lâ uşriku bihî şey'en velâ ettehizü min dûnihî veliyyen.",
+        en: "Allahu Allahu Rabbi la ushriku bihi shay'an wa la attakhidhu min dunihi waliyyan.",
+      },
+      meaning: {
+        tr: "Benim Rabbim Allah'tır, Allah'tır! O'na hiçbir şeyi ortak koşmam ve O'ndan başka hiçbir veli (dost ve koruyucu) edinmem.",
+        en: 'Allah is my Lord, Allah is my Lord! I associate no partner with Him, and I take no protector besides Him.',
+      },
+      virtue: {
+        tr: 'Ruhun tevhid ekseninde sabitlenmesini sağlar, şirkin açık ve gizli her türlüsünden muhafaza eder. Eyyâm-ı Biyd gecelerinde kılınan 12 rekatlık namazın akabinde dörder kez okunması tavsiye edilir.',
+        en: "This dhikr anchors the soul firmly upon tawhid and safeguards it from every form of shirk, both apparent and hidden. It is recommended to recite it four times following the twelve-rak'ah prayer performed on the nights of Eyyâm-ı Biyd.",
+      },
+      source: {
+        tr: 'İmam Cafer-i Sâdık rivayeti; Eyyâm-ı Biyd Zikirleri',
+        en: "Narrated from Imam Ja'far al-Sadiq; Remembrances of the Days of Illumination",
+      },
       tags: ['eyyam-ı biyd', 'tevhid', 'şirkten korunma', 'gece namazı', 'dolunay'],
       categories: ['zikir', 'tevhid', 'özel gün'],
       timeOfDay: ['gece', 'yatsi'],

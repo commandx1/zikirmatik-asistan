@@ -2,19 +2,27 @@ export const esmaulHusnaTemel = {
   key: 'esmaul-husna-temel-liste',
   label: 'Esmaül Hüsna Temel Liste',
   category: 'ibadet',
-  description: 'Allah\'ın 99 güzel isminin Türkçe anlamları ve kısa açıklamaları.',
+  description:
+    "Allah'ın 99 güzel isminin Türkçe anlamları ve kısa açıklamaları.",
   dhikrItems: [
     {
       key: 'esmaul-husna-allah',
       nameArabic: 'اللَّهُ',
-      nameTurkish: 'Allah (C.C.)',
-      transliteration: 'ALLAH (C.C.)',
-      dhikrDay: 'Pazar',
-      meaning:
-        'Tüm isim ve sıfatları kendinde toplayan, eşi benzeri bulunmayan tek ilah.',
-      virtue:
-        'Derecenin hem Allah hem insanlar katında artması; sevilen, sayılan, sözü geçen biri olmak; her türlü şeytan ve nefis şerrinden korunmak; uykuda meleklerin yardımına nail olmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Allah (C.C.)', en: 'Allah (SWT)' },
+      transliteration: { tr: 'ALLAH (C.C.)', en: 'ALLAH (SWT)' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Tüm isim ve sıfatları kendinde toplayan, eşi benzeri bulunmayan tek ilah.',
+        en: 'The One who encompasses all names and attributes within Himself, the unique Deity without peer or equal.',
+      },
+      virtue: {
+        tr: 'Derecenin hem Allah hem insanlar katında artması; sevilen, sayılan, sözü geçen biri olmak; her türlü şeytan ve nefis şerrinden korunmak; uykuda meleklerin yardımına nail olmak.',
+        en: 'Elevation of rank both in the sight of Allah and among people; becoming beloved, respected, and influential; protection from all forms of satanic and egoic harm; receiving the aid of angels during sleep.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'allah', 'tevhid', 'korunma'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma'],
       timeOfDay: 'any',
@@ -30,14 +38,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-er-rahman',
       nameArabic: 'الرَّحْمٰنُ',
-      nameTurkish: 'Er-Rahmân',
-      transliteration: 'Er-Rahmân',
-      dhikrDay: 'Pazar',
-      meaning:
-        'Dünyadaki bütün yaratılmışlara ayırt etmeden merhamet eden, esirgeyen.',
-      virtue:
-        'Dünya ve ahirette ilahi sevgi kazanmak; farz namaz ardı 100 zikirle rıza bulmak; 40 gün riyazetle 1000 zikirle kalp gözünün açılması; her arzunun gerçekleşmesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Er-Rahmân', en: 'Ar-Rahman' },
+      transliteration: { tr: 'Er-Rahmân', en: 'Ar-Rahman' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Dünyadaki bütün yaratılmışlara ayırt etmeden merhamet eden, esirgeyen.',
+        en: 'The Merciful One who extends compassion to all creatures in creation without discrimination or distinction.',
+      },
+      virtue: {
+        tr: 'Dünya ve ahirette ilahi sevgi kazanmak; farz namaz ardı 100 zikirle rıza bulmak; 40 gün riyazetle 1000 zikirle kalp gözünün açılması; her arzunun gerçekleşmesi.',
+        en: "Attaining divine love in this world and the next; finding divine pleasure through 100 invocations after obligatory prayers; spiritual openness of the heart's eye through 1000 invocations over 40 days of devotion; fulfillment of all desires and aspirations.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'rahmet', 'merhamet', 'dua'],
       categories: ['genel', 'esma', 'esmaul husna', 'rahmet'],
       timeOfDay: 'any',
@@ -53,14 +68,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-er-rahim',
       nameArabic: 'الرَّحِيمُ',
-      nameTurkish: 'Er-Rahîm',
-      transliteration: 'Er-Rahîm',
-      dhikrDay: 'Pazar',
-      meaning:
-        'Ahirette sadece müminlere sonsuz ihsanda, lütufta ve merhamette bulunan.',
-      virtue:
-        'Maddi ve manevi bol rızık; belalardan, kazalardan ve afetlerden korunma; uykuda ağlayan/korkan çocukların şifası; ahlak güzelliği ve fiziki iyileşme.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Er-Rahîm', en: 'Ar-Rahim' },
+      transliteration: { tr: 'Er-Rahîm', en: 'Ar-Rahim' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Ahirette sadece müminlere sonsuz ihsanda, lütufta ve merhamette bulunan.',
+        en: 'The Compassionate One who, in the Hereafter, bestows infinite grace, favor, and mercy exclusively upon the believers.',
+      },
+      virtue: {
+        tr: 'Maddi ve manevi bol rızık; belalardan, kazalardan ve afetlerden korunma; uykuda ağlayan/korkan çocukların şifası; ahlak güzelliği ve fiziki iyileşme.',
+        en: 'Material and spiritual abundance of provision; protection from calamities, accidents, and disasters; healing for weeping and fearful children during sleep; beautification of character and physical well-being.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'rahmet', 'rızık', 'şifa'],
       categories: ['genel', 'esma', 'esmaul husna', 'rahmet', 'şifa'],
       timeOfDay: 'any',
@@ -76,14 +98,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-melik',
       nameArabic: 'الْمَلِكُ',
-      nameTurkish: 'El-Melik',
-      transliteration: 'El-Melik',
-      dhikrDay: 'Çarşamba',
-      meaning:
-        'Kainatın tek sahibi, mülk ve saltanatı sürekli olan mutlak hükümdar.',
-      virtue:
-        'Maddi ve manevi güçlü olmak; insanlara sözünü dinletip emir sahibi olmak; her sabah namazı ardı 121 zikirle fakirlikten kalıcı kurtuluş; gizli sırlara ve ilme vakıf olmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Melik', en: 'Al-Malik' },
+      transliteration: { tr: 'El-Melik', en: 'Al-Malik' },
+      dhikrDay: { tr: 'Çarşamba', en: 'Wednesday' },
+      meaning: {
+        tr: 'Kainatın tek sahibi, mülk ve saltanatı sürekli olan mutlak hükümdar.',
+        en: 'The Sovereign Master of the universe, the Absolute Ruler whose dominion and kingdom are eternal and all-encompassing.',
+      },
+      virtue: {
+        tr: 'Maddi ve manevi güçlü olmak; insanlara sözünü dinletip emir sahibi olmak; her sabah namazı ardı 121 zikirle fakirlikten kalıcı kurtuluş; gizli sırlara ve ilme vakıf olmak.',
+        en: "Becoming strong in material and spiritual dimensions; having one's word heeded and exercising authority; permanent deliverance from poverty through 121 invocations after the dawn prayer; attaining knowledge of hidden secrets and divine wisdom.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'mülk', 'güç', 'rızık'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket'],
       timeOfDay: 'any',
@@ -99,14 +128,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-kuddus',
       nameArabic: 'الْقُدُّوسُ',
-      nameTurkish: 'El-Kuddüs',
-      transliteration: 'El-Kuddüs',
-      dhikrDay: 'Perşembe',
-      meaning:
-        'Hatadan, gafletten, aczden ve her türlü eksiklikten pek uzak, pek temiz.',
-      virtue:
-        'Maddi-manevi her türlü temizlik; nefsi şehvetten ve manevi hastalıklardan koruma; vesveseden ve şeytanın hilelerinden uzaklaşıp insanlar arasında saygı görmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Kuddüs', en: 'Al-Quddus' },
+      transliteration: { tr: 'El-Kuddüs', en: 'Al-Quddus' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Hatadan, gafletten, aczden ve her türlü eksiklikten pek uzak, pek temiz.',
+        en: 'Utterly pure and transcendent, far removed from error, heedlessness, incapacity, and every kind of imperfection.',
+      },
+      virtue: {
+        tr: 'Maddi-manevi her türlü temizlik; nefsi şehvetten ve manevi hastalıklardan koruma; vesveseden ve şeytanın hilelerinden uzaklaşıp insanlar arasında saygı görmek.',
+        en: 'Purification in every material and spiritual sense; protection of the self from carnal desire and spiritual afflictions; freedom from whispered doubts and satanic schemes, along with respect among people.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'temizlik', 'arınma', 'vesvese'],
       categories: ['genel', 'esma', 'esmaul husna', 'manevi arınma'],
       timeOfDay: 'any',
@@ -122,14 +158,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-es-selam',
       nameArabic: 'السَّلَامُ',
-      nameTurkish: 'Es-Selâm',
-      transliteration: 'Es-Selâm',
-      dhikrDay: 'Pazar',
-      meaning:
-        'Kullarını her türlü tehlikelerden selamete çıkaran, cennette selam veren.',
-      virtue:
-        'Korkulardan emin olmak; hastanın üzerine okunduğunda fiziki şifa; kabza yazılıp aç karnına içildiğinde vesvese hastalığının yok olması; her duanın kabule ulaşması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Es-Selâm', en: 'As-Salam' },
+      transliteration: { tr: 'Es-Selâm', en: 'As-Salam' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Kullarını her türlü tehlikelerden selamete çıkaran, cennette selam veren.',
+        en: 'The Source of Peace who delivers His servants from every danger to safety and grants the greeting of peace in Paradise.',
+      },
+      virtue: {
+        tr: 'Korkulardan emin olmak; hastanın üzerine okunduğunda fiziki şifa; kabza yazılıp aç karnına içildiğinde vesvese hastalığının yok olması; her duanın kabule ulaşması.',
+        en: 'Security from fears; physical healing when recited over the sick; the disappearance of whispered-doubt afflictions when written and drunk on an empty stomach; the acceptance of every supplication.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'selamet', 'şifa', 'dua'],
       categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'korunma'],
       timeOfDay: 'any',
@@ -145,14 +188,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mumin',
       nameArabic: 'الْمُؤْمِنُ',
-      nameTurkish: "El-Mü'min",
-      transliteration: "El-Mü'min",
-      dhikrDay: 'Pazartesi',
-      meaning:
-        'Gönüllerde iman ışığı uyandıran, kendine sığınanları koruyan ve rahatlatan.',
-      virtue:
-        'Kötü ve bulaşıcı hastalıklara yakalanmamak; dili yalandan, küfürden, riyadan, zinadan, kibirden ve hasetten uzaklaştırmak; kimseye muhtaç olmamak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: "El-Mü'min", en: "Al-Mu'min" },
+      transliteration: { tr: "El-Mü'min", en: "Al-Mu'min" },
+      dhikrDay: { tr: 'Pazartesi', en: 'Monday' },
+      meaning: {
+        tr: 'Gönüllerde iman ışığı uyandıran, kendine sığınanları koruyan ve rahatlatan.',
+        en: 'The Granter of Security who kindles the light of faith in hearts and protects and comforts those who take refuge in Him.',
+      },
+      virtue: {
+        tr: 'Kötü ve bulaşıcı hastalıklara yakalanmamak; dili yalandan, küfürden, riyadan, zinadan, kibirden ve hasetten uzaklaştırmak; kimseye muhtaç olmamak.',
+        en: 'Protection from harmful and contagious illnesses; keeping the tongue away from lying, disbelief, hypocrisy, fornication, arrogance, and envy; freedom from dependence on others.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'iman', 'korunma', 'ahlak'],
       categories: ['genel', 'esma', 'esmaul husna', 'iman', 'korunma'],
       timeOfDay: 'any',
@@ -168,14 +218,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muheymin',
       nameArabic: 'الْمُهَيْمِنُ',
-      nameTurkish: 'El-Müheymin',
-      transliteration: 'El-Müheymin',
-      dhikrDay: 'Perşembe',
-      meaning:
-        'Her şeyi görüp gözeten, her varlığın yaptıklarından haberdar olan, koruyan.',
-      virtue:
-        'İnsanların düşüncelerini ve niyetlerini okumak; unutkanlıktan kurtulmak; yatsı namazı sonrası okuyup uyuyana rüyada olacak hadiselerin bildirilmesi; bela ve musibetten korunma.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Müheymin', en: 'Al-Muhaymin' },
+      transliteration: { tr: 'El-Müheymin', en: 'Al-Muhaymin' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Her şeyi görüp gözeten, her varlığın yaptıklarından haberdar olan, koruyan.',
+        en: 'The Overseeing Protector who watches over all things and is aware of the deeds of every being.',
+      },
+      virtue: {
+        tr: 'İnsanların düşüncelerini ve niyetlerini okumak; unutkanlıktan kurtulmak; yatsı namazı sonrası okuyup uyuyana rüyada olacak hadiselerin bildirilmesi; bela ve musibetten korunma.',
+        en: 'Insight into the thoughts and intentions of others; deliverance from forgetfulness; the revealing of future events in dreams to one who recites it after the night prayer before sleeping; protection from calamity and misfortune.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'korunma', 'basiret', 'hafıza'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'basiret'],
       timeOfDay: 'any',
@@ -191,14 +248,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-aziz',
       nameArabic: 'الْعَزِيزُ',
-      nameTurkish: 'El-Azîz',
-      transliteration: 'El-Azîz',
-      dhikrDay: 'Salı',
-      meaning:
-        'İzzet sahibi, mağlup edilmesi asla mümkün olmayan, her şeye galip.',
-      virtue:
-        'Düşmanlara ezici üstünlük sağlamak; kendini insanlara sevdirmek; iş ve isteklerin geri çevrilmemesi; evden çıkarken okunduğunda dünya ve ahiret bahtiyarlığı.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Azîz', en: 'Al-Aziz' },
+      transliteration: { tr: 'El-Azîz', en: 'Al-Aziz' },
+      dhikrDay: { tr: 'Salı', en: 'Tuesday' },
+      meaning: {
+        tr: 'İzzet sahibi, mağlup edilmesi asla mümkün olmayan, her şeye galip.',
+        en: 'The Almighty, possessor of honor, who can never be overcome and prevails over all things.',
+      },
+      virtue: {
+        tr: 'Düşmanlara ezici üstünlük sağlamak; kendini insanlara sevdirmek; iş ve isteklerin geri çevrilmemesi; evden çıkarken okunduğunda dünya ve ahiret bahtiyarlığı.',
+        en: "Overwhelming superiority over enemies; becoming beloved among people; having one's affairs and requests never turned away; happiness in this world and the Hereafter when recited upon leaving home.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'izzet', 'başarı', 'sevgi'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'itibar'],
       timeOfDay: 'any',
@@ -214,14 +278,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-cebbar',
       nameArabic: 'الْجَبَّارُ',
-      nameTurkish: 'El-Cebbâr',
-      transliteration: 'El-Cebbâr',
-      dhikrDay: 'Salı',
-      meaning:
-        'Eksikleri tamamlayan, dilediğini zorla yaptırmaya muktedir olan, azamet sahibi.',
-      virtue:
-        'İsteklerin gerçekleşmesi; insanların ve cinlerin şerrinden emin olmak; düşmanların helaki; "Ya Zülcelali Vel İkram" ile yazıldığında insanlara şirin ve heybetli görünmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Cebbâr', en: 'Al-Jabbar' },
+      transliteration: { tr: 'El-Cebbâr', en: 'Al-Jabbar' },
+      dhikrDay: { tr: 'Salı', en: 'Tuesday' },
+      meaning: {
+        tr: 'Eksikleri tamamlayan, dilediğini zorla yaptırmaya muktedir olan, azamet sahibi.',
+        en: 'The Compeller who remedies deficiencies, is able to enforce His will upon whomever He wills, and possesses supreme majesty.',
+      },
+      virtue: {
+        tr: 'İsteklerin gerçekleşmesi; insanların ve cinlerin şerrinden emin olmak; düşmanların helaki; "Ya Zülcelali Vel İkram" ile yazıldığında insanlara şirin ve heybetli görünmek.',
+        en: 'The fulfillment of one\'s wishes; safety from the harm of humans and jinn; the ruin of enemies; appearing dignified and impressive to others when written together with "O Possessor of Majesty and Honor."',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'azamet', 'korunma', 'hacet'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'hacet'],
       timeOfDay: 'any',
@@ -237,14 +308,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mutekebbir',
       nameArabic: 'الْمُتَكَبِّرُ',
-      nameTurkish: 'El-Mütekebbir',
-      transliteration: 'El-Mütekebbir',
-      dhikrDay: 'Perşembe',
-      meaning:
-        'Büyüklükte eşi benzeri olmayan, her şeyde büyüklüğünü gösteren.',
-      virtue:
-        'İzzet ve refaha nail olmak; konuşurken muhatapları tesir altında bırakmak; itibar kazanmak; kötü ahlaklı ve haram işleyen kişilerin ıslah olması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mütekebbir', en: 'Al-Mutakabbir' },
+      transliteration: { tr: 'El-Mütekebbir', en: 'Al-Mutakabbir' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Büyüklükte eşi benzeri olmayan, her şeyde büyüklüğünü gösteren.',
+        en: 'The Supremely Great, without equal in greatness, who manifests His majesty in all things.',
+      },
+      virtue: {
+        tr: 'İzzet ve refaha nail olmak; konuşurken muhatapları tesir altında bırakmak; itibar kazanmak; kötü ahlaklı ve haram işleyen kişilerin ıslah olması.',
+        en: 'Attaining honor and prosperity; leaving a strong impression on listeners while speaking; gaining respect; the reform of those of bad character who commit forbidden acts.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'izzet', 'refah', 'itibar'],
       categories: ['genel', 'esma', 'esmaul husna', 'itibar'],
       timeOfDay: 'any',
@@ -260,14 +338,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-halik',
       nameArabic: 'الْخَالِقُ',
-      nameTurkish: 'El-Hâlık',
-      transliteration: 'El-Hâlık',
-      dhikrDay: 'Pazar',
-      meaning:
-        'Bütün varlığı, halleri ve hadiseleri tayin edip yoktan var eden.',
-      virtue:
-        'İşlerde üzüntü ve darlıktan kurtulmak; her işte başarı; zor akıl hastalarına yazılıp taşıtıldığında şifa; çözülmesi imkansız görülen işlerin kolayca çözülmesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hâlık', en: 'Al-Khaliq' },
+      transliteration: { tr: 'El-Hâlık', en: 'Al-Khaliq' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Bütün varlığı, halleri ve hadiseleri tayin edip yoktan var eden.',
+        en: 'The Creator who determines and brings into existence from nothing all beings, states, and events.',
+      },
+      virtue: {
+        tr: 'İşlerde üzüntü ve darlıktan kurtulmak; her işte başarı; zor akıl hastalarına yazılıp taşıtıldığında şifa; çözülmesi imkansız görülen işlerin kolayca çözülmesi.',
+        en: "Deliverance from sorrow and hardship in one's affairs; success in every undertaking; healing for the severely mentally ill when written and carried; the easy resolution of matters that seem impossible to solve.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'yaratılış', 'başarı', 'şifa'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'şifa'],
       timeOfDay: 'any',
@@ -283,14 +368,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-bari',
       nameArabic: 'الْبَارِئُ',
-      nameTurkish: "El-Bâri'",
-      transliteration: "El-Bâri'",
-      dhikrDay: 'Pazar',
-      meaning:
-        'Eşyayı ve her şeyin vücudunu birbirine uygun ve kusursuz yaratan.',
-      virtue:
-        'İş hayatında olağanüstü başarı ve şöhret; düşmanları yenmek; zihin ve aklın gelişimi; ağır işlerin kolaylaşması; bir sene devamla zikredildiğinde şifacılık yeteneği.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: "El-Bâri'", en: "Al-Bari'" },
+      transliteration: { tr: "El-Bâri'", en: "Al-Bari'" },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Eşyayı ve her şeyin vücudunu birbirine uygun ve kusursuz yaratan.',
+        en: 'The Evolver who creates all things and every being in perfect proportion and harmony with one another.',
+      },
+      virtue: {
+        tr: 'İş hayatında olağanüstü başarı ve şöhret; düşmanları yenmek; zihin ve aklın gelişimi; ağır işlerin kolaylaşması; bir sene devamla zikredildiğinde şifacılık yeteneği.',
+        en: 'Extraordinary success and renown in professional life; overcoming enemies; the development of the mind and intellect; the ease of burdensome tasks; the gift of healing ability when recited continuously for a year.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'yaratılış', 'iş hayatı', 'zihin'],
       categories: ['genel', 'esma', 'esmaul husna', 'iş hayatı', 'şifa'],
       timeOfDay: 'any',
@@ -307,13 +399,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-musavvir',
       nameArabic: 'الْمُصَوِّرُ',
-      nameTurkish: 'El-Musavvir',
-      transliteration: 'El-Musavvir',
-      dhikrDay: 'Pazartesi',
-      meaning: 'Varlıklara şekillerini veren, onları birbirinden farklı kılan.',
-      virtue:
-        'Maksat ve merama ulaşmak; en zor işleri başarmak; sanatkarlar için yaratıcılık; ruhanilerle irtibat kurmak; sıkıntılardan arınmak; ahlaklı evlat sahibi olmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Musavvir', en: 'Al-Musawwir' },
+      transliteration: { tr: 'El-Musavvir', en: 'Al-Musawwir' },
+      dhikrDay: { tr: 'Pazartesi', en: 'Monday' },
+      meaning: {
+        tr: 'Varlıklara şekillerini veren, onları birbirinden farklı kılan.',
+        en: 'The Fashioner who gives all beings their forms and makes each distinct from the others.',
+      },
+      virtue: {
+        tr: 'Maksat ve merama ulaşmak; en zor işleri başarmak; sanatkarlar için yaratıcılık; ruhanilerle irtibat kurmak; sıkıntılardan arınmak; ahlaklı evlat sahibi olmak.',
+        en: "Attaining one's aims and purposes; accomplishing the most difficult tasks; creativity for artists; connection with the spiritual realm; freedom from distress; having virtuous children.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'yaratıcılık', 'evlat', 'başarı'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'evlat'],
       timeOfDay: 'any',
@@ -329,13 +429,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-gaffar',
       nameArabic: 'الْغَفَّارُ',
-      nameTurkish: 'El-Gaffâr',
-      transliteration: 'El-Gaffâr',
-      dhikrDay: 'Cuma',
-      meaning: 'Kullarının günahlarını örten, mağfireti pek çok olan.',
-      virtue:
-        'Günahların bağışlanması ve korunması; hata ve isyanlardan arınma; düşman ve hasımların gözünde görünmez (zararsız) hale gelmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Gaffâr', en: 'Al-Ghaffar' },
+      transliteration: { tr: 'El-Gaffâr', en: 'Al-Ghaffar' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Kullarının günahlarını örten, mağfireti pek çok olan.',
+        en: 'The All-Forgiving who conceals the sins of His servants and grants abundant forgiveness.',
+      },
+      virtue: {
+        tr: 'Günahların bağışlanması ve korunması; hata ve isyanlardan arınma; düşman ve hasımların gözünde görünmez (zararsız) hale gelmek.',
+        en: 'The forgiveness and covering of sins; purification from error and disobedience; becoming unseen and harmless in the eyes of enemies and adversaries.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'mağfiret', 'tevbe', 'korunma'],
       categories: ['genel', 'esma', 'esmaul husna', 'manevi arınma', 'korunma'],
       timeOfDay: 'any',
@@ -351,13 +459,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-kahhar',
       nameArabic: 'الْقَهَّارُ',
-      nameTurkish: 'El-Kahhâr',
-      transliteration: 'El-Kahhâr',
-      dhikrDay: 'Salı',
-      meaning: 'Her şeye, her istediğini yapacak surette galip ve hakim olan.',
-      virtue:
-        'Din düşmanlarının, zalimlerin ve zorbaların kahrından kurtulmak; nefs-i emmarenin isteklerini ve kötü huyları ezmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Kahhâr', en: 'Al-Qahhar' },
+      transliteration: { tr: 'El-Kahhâr', en: 'Al-Qahhar' },
+      dhikrDay: { tr: 'Salı', en: 'Tuesday' },
+      meaning: {
+        tr: 'Her şeye, her istediğini yapacak surette galip ve hakim olan.',
+        en: 'The Subduer who prevails and holds dominion over all things, doing with them whatever He wills.',
+      },
+      virtue: {
+        tr: 'Din düşmanlarının, zalimlerin ve zorbaların kahrından kurtulmak; nefs-i emmarenin isteklerini ve kötü huyları ezmek.',
+        en: 'Deliverance from the tyranny of enemies of the faith, oppressors, and tyrants; the subduing of the base desires of the commanding self and evil habits.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'korunma', 'nefis', 'kötü huy'],
       categories: [
         'genel',
@@ -379,13 +495,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-vehhab',
       nameArabic: 'الْوَهَّابُ',
-      nameTurkish: 'El-Vehhâb',
-      transliteration: 'El-Vehhâb',
-      dhikrDay: 'Cuma',
-      meaning: 'Karşılıksız bol ihsanlarda, bağışlarda ve hibelerde bulunan.',
-      virtue:
-        'Sıkıntısız, borçsuz ve son derece konforlu bir yaşam; rızkın artması; mahlukata karşı güçlü ve heybetli görünmek; duaların hızla kabulü.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Vehhâb', en: 'Al-Wahhab' },
+      transliteration: { tr: 'El-Vehhâb', en: 'Al-Wahhab' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Karşılıksız bol ihsanlarda, bağışlarda ve hibelerde bulunan.',
+        en: 'The Bestower who grants abundant favors, gifts, and endowments without expecting anything in return.',
+      },
+      virtue: {
+        tr: 'Sıkıntısız, borçsuz ve son derece konforlu bir yaşam; rızkın artması; mahlukata karşı güçlü ve heybetli görünmek; duaların hızla kabulü.',
+        en: 'A life free of hardship and debt, and of great comfort; an increase in provision; appearing strong and dignified before creation; the swift acceptance of supplications.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'rızık', 'borç', 'dua'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'dua'],
       timeOfDay: 'any',
@@ -401,14 +525,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-er-rezzak',
       nameArabic: 'الرَّزَّاقُ',
-      nameTurkish: 'Er-Rezzâk',
-      transliteration: 'Er-Rezzâk',
-      dhikrDay: 'Perşembe',
-      meaning:
-        'Bütün mahlukatın rızkını veren ve her türlü ihtiyacını karşılayan.',
-      virtue:
-        'Rızık bolluğu; maddi sıkıntıların kalıcı bitişi; zihin açılması; resmi işlerin çözülmesi; sabah namazı öncesi okunup üflendiğinde eve kötülük girmemesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Er-Rezzâk', en: 'Ar-Razzaq' },
+      transliteration: { tr: 'Er-Rezzâk', en: 'Ar-Razzaq' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Bütün mahlukatın rızkını veren ve her türlü ihtiyacını karşılayan.',
+        en: 'The Provider who gives sustenance to all creation and meets every kind of need.',
+      },
+      virtue: {
+        tr: 'Rızık bolluğu; maddi sıkıntıların kalıcı bitişi; zihin açılması; resmi işlerin çözülmesi; sabah namazı öncesi okunup üflendiğinde eve kötülük girmemesi.',
+        en: 'Abundance of provision; the lasting end of financial hardship; clarity of mind; the resolution of official matters; keeping evil from entering the home when recited and blown before the dawn prayer.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'rızık', 'bereket', 'zihin'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket'],
       timeOfDay: 'any',
@@ -424,14 +555,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-fettah',
       nameArabic: 'الْفَتَّاحُ',
-      nameTurkish: 'El-Fettâh',
-      transliteration: 'El-Fettâh',
-      dhikrDay: 'Çarşamba',
-      meaning:
-        'Her türlü zorlukları kolaylaştıran, maddi-manevi darlıktan kurtaran.',
-      virtue:
-        'Maddi ve manevi hayır kapılarının açılması; ticarette başarı; darlık çekmemek; kalbin nurlanması; rüyada bilinmeyen sırların gösterilmesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Fettâh', en: 'Al-Fattah' },
+      transliteration: { tr: 'El-Fettâh', en: 'Al-Fattah' },
+      dhikrDay: { tr: 'Çarşamba', en: 'Wednesday' },
+      meaning: {
+        tr: 'Her türlü zorlukları kolaylaştıran, maddi-manevi darlıktan kurtaran.',
+        en: 'The Opener who eases every difficulty and delivers from material and spiritual constraint.',
+      },
+      virtue: {
+        tr: 'Maddi ve manevi hayır kapılarının açılması; ticarette başarı; darlık çekmemek; kalbin nurlanması; rüyada bilinmeyen sırların gösterilmesi.',
+        en: 'The opening of doors to material and spiritual good; success in trade; freedom from hardship; the illumination of the heart; the revealing of unknown secrets in dreams.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'feth', 'ticaret', 'başarı'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'rızık bereket'],
       timeOfDay: 'any',
@@ -447,14 +585,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-alim',
       nameArabic: 'الْعَلِيمُ',
-      nameTurkish: 'El-Alîm',
-      transliteration: 'El-Alîm',
-      dhikrDay: 'Perşembe',
-      meaning:
-        'Her şeyi en küçük detayına kadar ezeli ve ebedi ilmi ile en iyi bilen.',
-      virtue:
-        'İlim zenginliği; gizli sırlara vakıf olmak; hikmetli konuşma; anlayış ve zeka artışı; ilahi marifete ulaşmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Alîm', en: "Al-'Alim" },
+      transliteration: { tr: 'El-Alîm', en: "Al-'Alim" },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Her şeyi en küçük detayına kadar ezeli ve ebedi ilmi ile en iyi bilen.',
+        en: 'The All-Knowing who knows all things, down to their smallest detail, with eternal and everlasting knowledge.',
+      },
+      virtue: {
+        tr: 'İlim zenginliği; gizli sırlara vakıf olmak; hikmetli konuşma; anlayış ve zeka artışı; ilahi marifete ulaşmak.',
+        en: 'Richness of knowledge; awareness of hidden secrets; wise speech; an increase in understanding and intelligence; attaining divine gnosis.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'ilim', 'zeka', 'hikmet'],
       categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'eğitim'],
       timeOfDay: 'any',
@@ -471,13 +616,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-kabid',
       nameArabic: 'الْقَابِضُ',
-      nameTurkish: 'El-Kâbıd',
-      transliteration: 'El-Kâbıd',
-      dhikrDay: 'Perşembe',
-      meaning: 'Dilediğine darlık veren, sıkan, daraltan, ruhları alan.',
-      virtue:
-        'Zalimin zulmünden korunmak; heybet ve celal kazanarak düşman dedikodularını engellemek; nefsani kötü huyları bırakmak; metafizik perdelerin kalkması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Kâbıd', en: 'Al-Qabid' },
+      transliteration: { tr: 'El-Kâbıd', en: 'Al-Qabid' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Dilediğine darlık veren, sıkan, daraltan, ruhları alan.',
+        en: 'The Constrictor who straitens, tightens, and narrows whom He wills, and who takes souls at death.',
+      },
+      virtue: {
+        tr: 'Zalimin zulmünden korunmak; heybet ve celal kazanarak düşman dedikodularını engellemek; nefsani kötü huyları bırakmak; metafizik perdelerin kalkması.',
+        en: 'Protection from the oppression of tyrants; gaining dignity and majesty so as to silence the slander of enemies; abandoning base habits of the self; the lifting of metaphysical veils.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'korunma', 'heybet', 'nefis'],
       categories: [
         'genel',
@@ -499,13 +652,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-basit',
       nameArabic: 'الْبَاسِطُ',
-      nameTurkish: 'El-Bâsıt',
-      transliteration: 'El-Bâsıt',
-      dhikrDay: 'Cuma',
-      meaning: 'Dilediğine bolluk veren, açan, genişleten, ferahlatan.',
-      virtue:
-        'Rızkın genişlemesi ve bereket; korkulardan emin olmak; endişelerin gitmesi; kalp gözünün açılması; keyif ve neşenin artması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Bâsıt', en: 'Al-Basit' },
+      transliteration: { tr: 'El-Bâsıt', en: 'Al-Basit' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Dilediğine bolluk veren, açan, genişleten, ferahlatan.',
+        en: 'The Expander who grants abundance, opens, broadens, and brings relief to whomever He wills.',
+      },
+      virtue: {
+        tr: 'Rızkın genişlemesi ve bereket; korkulardan emin olmak; endişelerin gitmesi; kalp gözünün açılması; keyif ve neşenin artması.',
+        en: "The expansion of provision and blessing; security from fears; the departure of anxiety; the opening of the heart's inner eye; an increase in joy and cheerfulness.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'rızık', 'bereket', 'ferahlik'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'huzur'],
       timeOfDay: 'any',
@@ -522,13 +683,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-hafid',
       nameArabic: 'الْخَافِضُ',
-      nameTurkish: 'El-Hâfıd',
-      transliteration: 'El-Hâfıd',
-      dhikrDay: 'Pazar',
-      meaning: 'Dereceleri alçaltan, kâfir ve facirleri aşağıya indiren.',
-      virtue:
-        'Kötülerin ve belaların defedilmesi; zalimlerin şerrinden korunmak; düşmanlara karşı her daim üstün ve güçlü görünmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hâfıd', en: 'Al-Khafid' },
+      transliteration: { tr: 'El-Hâfıd', en: 'Al-Khafid' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Dereceleri alçaltan, kâfir ve facirleri aşağıya indiren.',
+        en: 'The Abaser who lowers ranks and brings down the disbelieving and the wicked.',
+      },
+      virtue: {
+        tr: 'Kötülerin ve belaların defedilmesi; zalimlerin şerrinden korunmak; düşmanlara karşı her daim üstün ve güçlü görünmek.',
+        en: 'The repelling of evil people and calamities; protection from the harm of tyrants; always appearing superior and strong before enemies.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'korunma', 'bela', 'düşman'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma'],
       timeOfDay: 'any',
@@ -544,13 +713,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-er-rafi',
       nameArabic: 'الرَّافِعُ',
-      nameTurkish: 'Er-Râfi',
-      transliteration: 'Er-Râfi',
-      dhikrDay: 'Pazar',
-      meaning: 'Şeref vererek yükselten, yukarı kaldıran.',
-      virtue:
-        'İnsanlar arasında ve iş hayatında yükselmek; tevazu sahibi olmak; rızkın artması; düşmanların kalbine korku salmak; fakirlikten korunma.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Er-Râfi', en: 'Ar-Rafi' },
+      transliteration: { tr: 'Er-Râfi', en: 'Ar-Rafi' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Şeref vererek yükselten, yukarı kaldıran.',
+        en: 'The Exalter who elevates and raises up by bestowing honor.',
+      },
+      virtue: {
+        tr: 'İnsanlar arasında ve iş hayatında yükselmek; tevazu sahibi olmak; rızkın artması; düşmanların kalbine korku salmak; fakirlikten korunma.',
+        en: 'Rising among people and in professional life; possessing humility; an increase in provision; instilling fear in the hearts of enemies; protection from poverty.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'yükseliş', 'iş hayatı', 'rızık'],
       categories: [
         'genel',
@@ -573,13 +750,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muiz',
       nameArabic: 'الْمُعِزُّ',
-      nameTurkish: "El-Mu'ız",
-      transliteration: "El-Mu'ız",
-      dhikrDay: 'Pazar',
-      meaning: 'Dilediğini aziz eden, izzet verip ağırlayan.',
-      virtue:
-        'Fakirlik ve zelillikten kurtulmak; gücün ve cesaretin artması; kadri kıymetin yücelmesi; mahlukata karşı heybetli görünmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: "El-Mu'ız", en: "Al-Mu'izz" },
+      transliteration: { tr: "El-Mu'ız", en: "Al-Mu'izz" },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Dilediğini aziz eden, izzet verip ağırlayan.',
+        en: 'The Bestower of Honor who ennobles and dignifies whomever He wills.',
+      },
+      virtue: {
+        tr: 'Fakirlik ve zelillikten kurtulmak; gücün ve cesaretin artması; kadri kıymetin yücelmesi; mahlukata karşı heybetli görünmek.',
+        en: "Deliverance from poverty and humiliation; an increase in strength and courage; the elevation of one's worth; appearing dignified before creation.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'izzet', 'cesaret', 'heybet'],
       categories: ['genel', 'esma', 'esmaul husna', 'itibar', 'korunma'],
       timeOfDay: 'any',
@@ -595,13 +780,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muzil',
       nameArabic: 'المُذِلُّ',
-      nameTurkish: 'El-Müzil',
-      transliteration: 'El-Müzil',
-      dhikrDay: 'Salı',
-      meaning: 'Dilediğini zillete düşüren, hor ve hakir eden.',
-      virtue:
-        'Düşmanları zelil etmek; zalim şerrinden emin olmak; haksızlık yapanları hezimete uğratmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Müzil', en: 'Al-Mudhill' },
+      transliteration: { tr: 'El-Müzil', en: 'Al-Mudhill' },
+      dhikrDay: { tr: 'Salı', en: 'Tuesday' },
+      meaning: {
+        tr: 'Dilediğini zillete düşüren, hor ve hakir eden.',
+        en: 'The Humiliator who brings low whomever He wills, rendering them despised and abased.',
+      },
+      virtue: {
+        tr: 'Düşmanları zelil etmek; zalim şerrinden emin olmak; haksızlık yapanları hezimete uğratmak.',
+        en: "Humbling one's enemies; safety from the harm of tyrants; bringing those who commit injustice to defeat.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'düşman', 'zalim', 'korunma'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma'],
       timeOfDay: 'any',
@@ -616,13 +809,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-es-semi',
       nameArabic: 'السَّمِيعُ',
-      nameTurkish: 'Es-Semî',
-      transliteration: 'Es-Semî',
-      dhikrDay: 'Perşembe',
-      meaning: 'Her şeyi en iyi işiten, duaları kabul eden.',
-      virtue:
-        'Duaların ilahi dergahta hızla kabulü; oruç ve halvetle zikredildiğinde ruhsal hassasiyetin artması ve metafizik algıların açılması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Es-Semî', en: "As-Sami'" },
+      transliteration: { tr: 'Es-Semî', en: "As-Sami'" },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Her şeyi en iyi işiten, duaları kabul eden.',
+        en: 'The All-Hearing who hears all things perfectly and accepts supplications.',
+      },
+      virtue: {
+        tr: 'Duaların ilahi dergahta hızla kabulü; oruç ve halvetle zikredildiğinde ruhsal hassasiyetin artması ve metafizik algıların açılması.',
+        en: 'The swift acceptance of supplications in the divine presence; increased spiritual sensitivity and the opening of metaphysical perception when recited with fasting and spiritual retreat.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'dua', 'halvet', 'basiret'],
       categories: ['genel', 'esma', 'esmaul husna', 'dua', 'basiret'],
       timeOfDay: 'any',
@@ -638,13 +839,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-basir',
       nameArabic: 'الْبَصِيرُ',
-      nameTurkish: 'El-Basîr',
-      transliteration: 'El-Basîr',
-      dhikrDay: 'Pazar',
-      meaning: 'Gizli açık her şeyi en iyi gören, her şeyi fark eden.',
-      virtue:
-        'Acziyetin ortadan kalkması; basiretli ve sezgileri güçlü biri olmak; dünya ve ahiret korkularından tamamen kurtulmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Basîr', en: 'Al-Basir' },
+      transliteration: { tr: 'El-Basîr', en: 'Al-Basir' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Gizli açık her şeyi en iyi gören, her şeyi fark eden.',
+        en: 'The All-Seeing who perceives all things, hidden and manifest, with perfect clarity.',
+      },
+      virtue: {
+        tr: 'Acziyetin ortadan kalkması; basiretli ve sezgileri güçlü biri olmak; dünya ve ahiret korkularından tamamen kurtulmak.',
+        en: 'The removal of helplessness; becoming a person of insight and strong intuition; complete deliverance from the fears of this world and the Hereafter.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'basiret', 'sezgi', 'korku'],
       categories: ['genel', 'esma', 'esmaul husna', 'basiret', 'huzur'],
       timeOfDay: 'any',
@@ -660,13 +869,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-hakem',
       nameArabic: 'الْحَكَمُ',
-      nameTurkish: 'El-Hakem',
-      transliteration: 'El-Hakem',
-      dhikrDay: 'Pazar',
-      meaning: 'Mutlak hakim olan, hakkı batıldan ayıran, hikmetle hükmeden.',
-      virtue:
-        'Haklı davayı kazanmak; insanlar arasında hak ve adaletle hüküm vermek; olayların iç yüzünü kavrama yeteneği.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hakem', en: 'Al-Hakam' },
+      transliteration: { tr: 'El-Hakem', en: 'Al-Hakam' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Mutlak hakim olan, hakkı batıldan ayıran, hikmetle hükmeden.',
+        en: 'The Supreme Judge who distinguishes truth from falsehood and rules with wisdom.',
+      },
+      virtue: {
+        tr: 'Haklı davayı kazanmak; insanlar arasında hak ve adaletle hüküm vermek; olayların iç yüzünü kavrama yeteneği.',
+        en: 'Winning a just case; ruling among people with truth and justice; the ability to grasp the inner reality of events.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'adalet', 'hak', 'hikmet'],
       categories: ['genel', 'esma', 'esmaul husna', 'adalet', 'hikmet'],
       timeOfDay: 'any',
@@ -681,13 +898,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-adl',
       nameArabic: 'الْعَدْلُ',
-      nameTurkish: 'El-Adl',
-      transliteration: 'El-Adl',
-      dhikrDay: 'Pazar',
-      meaning: 'Mutlak adil olan, her şeyi yerli yerinde yapan.',
-      virtue:
-        'Adaletli olmak; haklı davayı kazanmak; nefsi terbiye etmek; haram işlerden ve kötü ahlaktan uzak durmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Adl', en: "Al-'Adl" },
+      transliteration: { tr: 'El-Adl', en: "Al-'Adl" },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Mutlak adil olan, her şeyi yerli yerinde yapan.',
+        en: 'The Utterly Just, who places everything precisely in its rightful place.',
+      },
+      virtue: {
+        tr: 'Adaletli olmak; haklı davayı kazanmak; nefsi terbiye etmek; haram işlerden ve kötü ahlaktan uzak durmak.',
+        en: 'Being just; winning a rightful case; disciplining the self; keeping away from forbidden acts and bad character.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'adalet', 'nefis', 'ahlak'],
       categories: [
         'genel',
@@ -709,13 +934,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-latif',
       nameArabic: 'اللَّطِيفُ',
-      nameTurkish: 'El-Latîf',
-      transliteration: 'El-Latîf',
-      dhikrDay: 'Cuma',
-      meaning: 'Bütün incelikleri bilen, kullarına sezdirmeden lütuf sunan.',
-      virtue:
-        'Dileklerin kabulü; kısmet ve rızkın umulmadık yerlerden artması; zor durumların kolayca atlatılması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Latîf', en: 'Al-Latif' },
+      transliteration: { tr: 'El-Latîf', en: 'Al-Latif' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Bütün incelikleri bilen, kullarına sezdirmeden lütuf sunan.',
+        en: 'The Subtly Gracious, who knows every fine detail and grants favor to His servants without their perceiving it.',
+      },
+      virtue: {
+        tr: 'Dileklerin kabulü; kısmet ve rızkın umulmadık yerlerden artması; zor durumların kolayca atlatılması.',
+        en: 'The acceptance of wishes; an increase in fortune and provision from unexpected sources; the easy overcoming of difficult circumstances.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'lütuf', 'rızık', 'kolaylık'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'dua'],
       timeOfDay: 'any',
@@ -731,13 +964,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-habir',
       nameArabic: 'الْخَبِيرُ',
-      nameTurkish: 'El-Habîr',
-      transliteration: 'El-Habîr',
-      dhikrDay: 'Pazar',
-      meaning: 'Her şeyin iç yüzünden, gizli tarafından haberdar olan.',
-      virtue:
-        'Hafıza ve idrakin genişlemesi; bilinmeyen, gizemli meselelerin rüya ve ilham yoluyla kişiye aşikar olması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Habîr', en: 'Al-Khabir' },
+      transliteration: { tr: 'El-Habîr', en: 'Al-Khabir' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Her şeyin iç yüzünden, gizli tarafından haberdar olan.',
+        en: 'The All-Aware, who is informed of the inner reality and hidden aspect of all things.',
+      },
+      virtue: {
+        tr: 'Hafıza ve idrakin genişlemesi; bilinmeyen, gizemli meselelerin rüya ve ilham yoluyla kişiye aşikar olması.',
+        en: 'The expansion of memory and comprehension; unknown and mysterious matters becoming clear to a person through dreams and inspiration.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'hafıza', 'idrak', 'ilham'],
       categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'basiret'],
       timeOfDay: 'any',
@@ -753,13 +994,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-halim',
       nameArabic: 'الْحَلِيمُ',
-      nameTurkish: 'El-Halîm',
-      transliteration: 'El-Halîm',
-      dhikrDay: 'Cumartesi',
-      meaning: 'Cezalandırmada acele etmeyen, yumuşak davranan, hilm sahibi.',
-      virtue:
-        'Ahlak güzelliği; yumuşak huylu olmak; öfke, hiddet ve sinir krizlerinden kurtulup ruhi sükunete ermek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Halîm', en: 'Al-Halim' },
+      transliteration: { tr: 'El-Halîm', en: 'Al-Halim' },
+      dhikrDay: { tr: 'Cumartesi', en: 'Saturday' },
+      meaning: {
+        tr: 'Cezalandırmada acele etmeyen, yumuşak davranan, hilm sahibi.',
+        en: 'The Forbearing One, who does not hasten in punishment, deals gently, and possesses clemency.',
+      },
+      virtue: {
+        tr: 'Ahlak güzelliği; yumuşak huylu olmak; öfke, hiddet ve sinir krizlerinden kurtulup ruhi sükunete ermek.',
+        en: 'Beauty of character; gentleness of temperament; deliverance from anger, rage, and fits of nervous agitation, attaining spiritual tranquility.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'ahlak', 'öfke', 'sükûnet'],
       categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'nefis terbiyesi'],
       timeOfDay: 'any',
@@ -775,13 +1024,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-azim',
       nameArabic: 'الْعَظِيمُ',
-      nameTurkish: 'El-Azîm',
-      transliteration: 'El-Azîm',
-      dhikrDay: 'Çarşamba',
-      meaning: 'Pek yüce, büyüklükte benzeri ve ortağı olmayan.',
-      virtue:
-        'Sözünün insanlar üzerinde son derece tesirli ve dinlenir olması; toplum nezdinde büyük heybet ve saygınlık kazanmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Azîm', en: "Al-'Azim" },
+      transliteration: { tr: 'El-Azîm', en: "Al-'Azim" },
+      dhikrDay: { tr: 'Çarşamba', en: 'Wednesday' },
+      meaning: {
+        tr: 'Pek yüce, büyüklükte benzeri ve ortağı olmayan.',
+        en: 'The Magnificent, supremely exalted, without equal or partner in greatness.',
+      },
+      virtue: {
+        tr: 'Sözünün insanlar üzerinde son derece tesirli ve dinlenir olması; toplum nezdinde büyük heybet ve saygınlık kazanmak.',
+        en: "One's words becoming highly influential and heeded by others; gaining great dignity and standing within society.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'heybet', 'saygınlık', 'söz etkisi'],
       categories: ['genel', 'esma', 'esmaul husna', 'itibar'],
       timeOfDay: 'any',
@@ -797,13 +1054,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-gafur',
       nameArabic: 'الْغَفُورُ',
-      nameTurkish: 'El-Gafûr',
-      transliteration: 'El-Gafûr',
-      dhikrDay: 'Pazar',
-      meaning: 'Affı ve mağfireti çok bol olan, günahları bağışlayan.',
-      virtue:
-        'Günahların affı; kötü ahlaktan korunmak; stres ve anksiyeteden kurtulup kalbe derin bir huzur ve sekine indirmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Gafûr', en: 'Al-Ghafur' },
+      transliteration: { tr: 'El-Gafûr', en: 'Al-Ghafur' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Affı ve mağfireti çok bol olan, günahları bağışlayan.',
+        en: 'The Ever-Forgiving, whose pardon and forgiveness are abundant, and who forgives sins.',
+      },
+      virtue: {
+        tr: 'Günahların affı; kötü ahlaktan korunmak; stres ve anksiyeteden kurtulup kalbe derin bir huzur ve sekine indirmek.',
+        en: 'The forgiveness of sins; protection from bad character; deliverance from stress and anxiety, bringing deep peace and tranquility down upon the heart.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'mağfiret', 'huzur', 'stres'],
       categories: ['genel', 'esma', 'esmaul husna', 'manevi arınma', 'huzur'],
       timeOfDay: 'any',
@@ -819,13 +1084,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-es-sekur',
       nameArabic: 'الشَّكُورُ',
-      nameTurkish: 'Eş-Şekûr',
-      transliteration: 'Eş-Şekûr',
-      dhikrDay: 'Pazar',
-      meaning: 'Kendi rızası için yapılan az amele çok sevap veren.',
-      virtue:
-        'Verilen nimetlerin şükrünü eda edebilmek; talihin açıklığı; rızıkta ve kazançta bereketin katlanarak artması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Eş-Şekûr', en: 'Ash-Shakur' },
+      transliteration: { tr: 'Eş-Şekûr', en: 'Ash-Shakur' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Kendi rızası için yapılan az amele çok sevap veren.',
+        en: 'The Most Appreciative, who grants abundant reward for even a small deed performed for His pleasure.',
+      },
+      virtue: {
+        tr: 'Verilen nimetlerin şükrünü eda edebilmek; talihin açıklığı; rızıkta ve kazançta bereketin katlanarak artması.',
+        en: "The ability to give proper thanks for bestowed blessings; the opening of one's fortune; the compounding increase of blessing in provision and earnings.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'şükür', 'bereket', 'rızık'],
       categories: ['genel', 'esma', 'esmaul husna', 'şükür', 'rızık bereket'],
       timeOfDay: 'any',
@@ -841,13 +1114,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-aliyy',
       nameArabic: 'الْعَلِيُّ',
-      nameTurkish: 'El-Aliyy',
-      transliteration: 'El-Aliyy',
-      dhikrDay: 'Pazar',
-      meaning: 'Yüceler yücesi, çok yüksek ve ulaşılamaz olan.',
-      virtue:
-        'Zilletten, hor görülmekten kurtulmak; ilim ve manevi derecelerin hızla artması; saygınlık elde etmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Aliyy', en: "Al-'Aliyy" },
+      transliteration: { tr: 'El-Aliyy', en: "Al-'Aliyy" },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Yüceler yücesi, çok yüksek ve ulaşılamaz olan.',
+        en: 'The Most High, exalted above all that is exalted, supremely lofty and unattainable.',
+      },
+      virtue: {
+        tr: 'Zilletten, hor görülmekten kurtulmak; ilim ve manevi derecelerin hızla artması; saygınlık elde etmek.',
+        en: 'Deliverance from humiliation and contempt; the swift advancement of knowledge and spiritual rank; gaining respect.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'ilim', 'saygınlık', 'yükseliş'],
       categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'itibar'],
       timeOfDay: 'any',
@@ -863,13 +1144,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-kebir',
       nameArabic: 'الْكَبِيرُ',
-      nameTurkish: 'El-Kebîr',
-      transliteration: 'El-Kebîr',
-      dhikrDay: 'Perşembe',
-      meaning: 'Büyüklüğünde hudut olmayan, her şeyden büyük olan.',
-      virtue:
-        'Maddi ve manevi büyüklük; toplumda sözü dinlenen, hürmet ve tazim gören saygın bir lider konumuna gelmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Kebîr', en: 'Al-Kabir' },
+      transliteration: { tr: 'El-Kebîr', en: 'Al-Kabir' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Büyüklüğünde hudut olmayan, her şeyden büyük olan.',
+        en: 'The Most Great, whose greatness has no limit, and who is greater than all things.',
+      },
+      virtue: {
+        tr: 'Maddi ve manevi büyüklük; toplumda sözü dinlenen, hürmet ve tazim gören saygın bir lider konumuna gelmek.',
+        en: 'Material and spiritual greatness; attaining the standing of a respected leader whose word is heeded and who is held in honor and reverence within society.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'liderlik', 'saygınlık', 'itibar'],
       categories: ['genel', 'esma', 'esmaul husna', 'liderlik', 'itibar'],
       timeOfDay: 'any',
@@ -885,14 +1174,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-hafiz',
       nameArabic: 'الْحَفِيظُ',
-      nameTurkish: 'El-Hafîz',
-      transliteration: 'El-Hafîz',
-      dhikrDay: 'Cumartesi',
-      meaning:
-        'Yapılan işleri ayrıntısıyla tutan, her şeyi belli vakte kadar koruyan.',
-      virtue:
-        'Nefsin, canın ve malın korunması; zalimlerin şerrinden emin olmak; düşmanlara karşı her daim üstünlük sağlamak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hafîz', en: 'Al-Hafiz' },
+      transliteration: { tr: 'El-Hafîz', en: 'Al-Hafiz' },
+      dhikrDay: { tr: 'Cumartesi', en: 'Saturday' },
+      meaning: {
+        tr: 'Yapılan işleri ayrıntısıyla tutan, her şeyi belli vakte kadar koruyan.',
+        en: 'The Preserver, who records deeds in full detail and safeguards all things until their appointed time.',
+      },
+      virtue: {
+        tr: 'Nefsin, canın ve malın korunması; zalimlerin şerrinden emin olmak; düşmanlara karşı her daim üstünlük sağlamak.',
+        en: "The protection of one's self, life, and property; safety from the harm of tyrants; maintaining constant superiority over enemies.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'korunma', 'mal', 'can'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma'],
       timeOfDay: 'any',
@@ -908,13 +1204,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mukit',
       nameArabic: 'الْمُقِيتُ',
-      nameTurkish: 'El-Mukît',
-      transliteration: 'El-Mukît',
-      dhikrDay: 'Pazar',
-      meaning: 'Yaratılmış her mahlukatın azığını, gıdasını ve rızkını veren.',
-      virtue:
-        'Muhtaç olunan rızkı kolayca kazanmak; beden gücü elde etmek; darlık ve açlık korkularından emin olmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mukît', en: 'Al-Muqit' },
+      transliteration: { tr: 'El-Mukît', en: 'Al-Muqit' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Yaratılmış her mahlukatın azığını, gıdasını ve rızkını veren.',
+        en: 'The Sustainer, who provides the sustenance, nourishment, and provision of every created being.',
+      },
+      virtue: {
+        tr: 'Muhtaç olunan rızkı kolayca kazanmak; beden gücü elde etmek; darlık ve açlık korkularından emin olmak.',
+        en: 'Easily earning the provision one needs; gaining bodily strength; security from the fear of hardship and hunger.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'rızık', 'beden gücü', 'korunma'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'korunma'],
       timeOfDay: 'any',
@@ -929,14 +1233,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-hasib',
       nameArabic: 'الْحَسِيبُ',
-      nameTurkish: 'El-Hasîb',
-      transliteration: 'El-Hasîb',
-      dhikrDay: 'Cuma',
-      meaning:
-        'Kulların hayatları boyunca yaptıklarının hesabını en iyi gören.',
-      virtue:
-        'Herkese karşı açık alınlı ve dürüst olmak; korkulardan emin olmak; haksız ithamlardan ve dedikodulardan korunmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hasîb', en: 'Al-Hasib' },
+      transliteration: { tr: 'El-Hasîb', en: 'Al-Hasib' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Kulların hayatları boyunca yaptıklarının hesabını en iyi gören.',
+        en: 'The Reckoner, who most perfectly keeps account of everything His servants do throughout their lives.',
+      },
+      virtue: {
+        tr: 'Herkese karşı açık alınlı ve dürüst olmak; korkulardan emin olmak; haksız ithamlardan ve dedikodulardan korunmak.',
+        en: 'Being open and honest before everyone; security from fears; protection from unjust accusations and gossip.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'dürüstlük', 'korunma', 'dedikodu'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'ahlak'],
       timeOfDay: 'any',
@@ -951,13 +1262,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-celil',
       nameArabic: 'الْجَلِيلُ',
-      nameTurkish: 'El-Celîl',
-      transliteration: 'El-Celîl',
-      dhikrDay: 'Pazar',
-      meaning: 'Azamet, celal ve ululuk sahibi olan, şanı yüce olan.',
-      virtue:
-        'Toplumda manevi heybet kazanmak; düşmanların kötülük yapmaya cesaret edememesi; saygı duyulan biri olmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Celîl', en: 'Al-Jalil' },
+      transliteration: { tr: 'El-Celîl', en: 'Al-Jalil' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Azamet, celal ve ululuk sahibi olan, şanı yüce olan.',
+        en: 'The Majestic, possessor of grandeur, splendor, and supreme glory, whose renown is exalted.',
+      },
+      virtue: {
+        tr: 'Toplumda manevi heybet kazanmak; düşmanların kötülük yapmaya cesaret edememesi; saygı duyulan biri olmak.',
+        en: 'Gaining spiritual dignity within society; enemies losing the courage to do harm; becoming a person who is respected.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'heybet', 'saygınlık', 'korunma'],
       categories: ['genel', 'esma', 'esmaul husna', 'itibar', 'korunma'],
       timeOfDay: 'any',
@@ -972,13 +1291,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-kerim',
       nameArabic: 'الْكَرِيمُ',
-      nameTurkish: 'El-Kerîm',
-      transliteration: 'El-Kerîm',
-      dhikrDay: 'Cuma',
-      meaning: 'Karşılıksız veren, çok ikram edici, lütuf ve ihsanı bol olan.',
-      virtue:
-        'Cömertlik ve güzel ahlak kazanmak; darlıktan kurtulmak; her türlü maddi-manevi lütfa zahmetsizce ulaşmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Kerîm', en: 'Al-Karim' },
+      transliteration: { tr: 'El-Kerîm', en: 'Al-Karim' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Karşılıksız veren, çok ikram edici, lütuf ve ihsanı bol olan.',
+        en: 'The Most Generous, who gives without expecting return, is most hospitable, and whose favor and bounty are abundant.',
+      },
+      virtue: {
+        tr: 'Cömertlik ve güzel ahlak kazanmak; darlıktan kurtulmak; her türlü maddi-manevi lütfa zahmetsizce ulaşmak.',
+        en: 'Attaining generosity and good character; deliverance from hardship; effortlessly reaching every kind of material and spiritual favor.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'cömertlik', 'ahlak', 'lütuf'],
       categories: ['genel', 'esma', 'esmaul husna', 'ahlak', 'rızık bereket'],
       timeOfDay: 'any',
@@ -993,13 +1320,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-er-rakib',
       nameArabic: 'الرَّقِيبُ',
-      nameTurkish: 'Er-Rakîb',
-      transliteration: 'Er-Rakîb',
-      dhikrDay: 'Cuma',
-      meaning: 'Bütün varlıkları ve işleri her an murakabe edip gözeten.',
-      virtue:
-        'Hırsızlıktan, ihanetten ve kazalardan emin olmak; işlerin kontrol altında aksamadan ilerlemesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Er-Rakîb', en: 'Ar-Raqib' },
+      transliteration: { tr: 'Er-Rakîb', en: 'Ar-Raqib' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Bütün varlıkları ve işleri her an murakabe edip gözeten.',
+        en: 'The Watchful, who observes and oversees all beings and affairs at every moment.',
+      },
+      virtue: {
+        tr: 'Hırsızlıktan, ihanetten ve kazalardan emin olmak; işlerin kontrol altında aksamadan ilerlemesi.',
+        en: "Security from theft, betrayal, and accidents; the smooth, controlled progress of one's affairs without disruption.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: [
         'esma',
         'esmaul husna',
@@ -1020,13 +1355,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mucib',
       nameArabic: 'الْمُجِيبُ',
-      nameTurkish: 'El-Mucîb',
-      transliteration: 'El-Mucîb',
-      dhikrDay: 'Perşembe',
-      meaning: 'Kendisine dua edenlerin dualarını kabul eden, istekleri veren.',
-      virtue:
-        'Duaların engelsiz şekilde ilahi huzura kabulü; hayırlı isteklerin hızlıca gerçekleşmesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mucîb', en: 'Al-Mujib' },
+      transliteration: { tr: 'El-Mucîb', en: 'Al-Mujib' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Kendisine dua edenlerin dualarını kabul eden, istekleri veren.',
+        en: 'The Responder, who accepts the supplications of those who call upon Him and grants their requests.',
+      },
+      virtue: {
+        tr: 'Duaların engelsiz şekilde ilahi huzura kabulü; hayırlı isteklerin hızlıca gerçekleşmesi.',
+        en: 'The unhindered acceptance of supplications in the divine presence; the swift fulfillment of good and righteous wishes.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'dua', 'hacet', 'kabul'],
       categories: ['genel', 'esma', 'esmaul husna', 'dua', 'hacet'],
       timeOfDay: 'any',
@@ -1041,13 +1384,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-vasi',
       nameArabic: 'الْوَاسِعُ',
-      nameTurkish: 'El-Vâsi',
-      transliteration: 'El-Vâsi',
-      dhikrDay: 'Pazartesi',
-      meaning: 'İlmi, rahmeti ve kudreti ile her şeyi kuşatan, lütfu bol olan.',
-      virtue:
-        'Kalp ve gönül ferahlığı; rızık darlığından kurtulmak; ömre, rızka ve berekete genişlik kazandırmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Vâsi', en: "Al-Wasi'" },
+      transliteration: { tr: 'El-Vâsi', en: "Al-Wasi'" },
+      dhikrDay: { tr: 'Pazartesi', en: 'Monday' },
+      meaning: {
+        tr: 'İlmi, rahmeti ve kudreti ile her şeyi kuşatan, lütfu bol olan.',
+        en: 'The All-Encompassing, who embraces all things with His knowledge, mercy, and power, and whose favor is abundant.',
+      },
+      virtue: {
+        tr: 'Kalp ve gönül ferahlığı; rızık darlığından kurtulmak; ömre, rızka ve berekete genişlik kazandırmak.',
+        en: "Ease and openness of heart; deliverance from constricted provision; bringing expansiveness to one's lifespan, provision, and blessing.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'ferahlik', 'rızık', 'bereket'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'huzur'],
       timeOfDay: 'any',
@@ -1062,13 +1413,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-hakim',
       nameArabic: 'الْحَكِيمُ',
-      nameTurkish: 'El-Hakîm',
-      transliteration: 'El-Hakîm',
-      dhikrDay: 'Cuma',
-      meaning: 'Emirleri, kelamı ve bütün işleri mutlak hikmetli olan.',
-      virtue:
-        'Derin ilim ve hikmet sahibi olmak; engellerin kalkması; işlerde en hayırlı ve isabetli kararları verebilmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hakîm', en: 'Al-Hakim' },
+      transliteration: { tr: 'El-Hakîm', en: 'Al-Hakim' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Emirleri, kelamı ve bütün işleri mutlak hikmetli olan.',
+        en: 'The All-Wise, whose commands, speech, and every affair are grounded in absolute wisdom.',
+      },
+      virtue: {
+        tr: 'Derin ilim ve hikmet sahibi olmak; engellerin kalkması; işlerde en hayırlı ve isabetli kararları verebilmek.',
+        en: "Possessing profound knowledge and wisdom; the removal of obstacles; being able to make the most beneficial and correct decisions in one's affairs.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'hikmet', 'ilim', 'karar'],
       categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'hikmet'],
       timeOfDay: 'any',
@@ -1084,13 +1443,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-vedud',
       nameArabic: 'الْوَدُودُ',
-      nameTurkish: 'El-Vedûd',
-      transliteration: 'El-Vedûd',
-      dhikrDay: 'Pazartesi',
-      meaning: 'İyi kullarını çok seven, sevilmeye ve dostluğa en layık olan.',
-      virtue:
-        'İnsanlar arasında eşsiz bir sevgi, şefkat ve muhabbet celbi; borçlardan ve maddi sıkıntılardan kurtulmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Vedûd', en: 'Al-Wadud' },
+      transliteration: { tr: 'El-Vedûd', en: 'Al-Wadud' },
+      dhikrDay: { tr: 'Pazartesi', en: 'Monday' },
+      meaning: {
+        tr: 'İyi kullarını çok seven, sevilmeye ve dostluğa en layık olan.',
+        en: 'The Most Loving, who dearly loves His righteous servants and is most deserving of love and friendship.',
+      },
+      virtue: {
+        tr: 'İnsanlar arasında eşsiz bir sevgi, şefkat ve muhabbet celbi; borçlardan ve maddi sıkıntılardan kurtulmak.',
+        en: 'Drawing unparalleled love, compassion, and affection among people; deliverance from debts and financial hardship.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'sevgi', 'muhabbet', 'borç'],
       categories: [
         'genel',
@@ -1112,13 +1479,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mecid',
       nameArabic: 'الْمَجِيدُ',
-      nameTurkish: 'El-Mecîd',
-      transliteration: 'El-Mecîd',
-      dhikrDay: 'Cuma',
-      meaning: 'Nimeti ve ihsanı sonsuz, şanı ve şerefi çok yüksek olan.',
-      virtue:
-        'Şan, şeref ve makam kazanmak; insanların sevgisine nail olmak; kalbin manevi kirlerden temizlenmesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mecîd', en: 'Al-Majid' },
+      transliteration: { tr: 'El-Mecîd', en: 'Al-Majid' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Nimeti ve ihsanı sonsuz, şanı ve şerefi çok yüksek olan.',
+        en: 'The Glorious, whose favor and bounty are infinite and whose renown and honor are supremely exalted.',
+      },
+      virtue: {
+        tr: 'Şan, şeref ve makam kazanmak; insanların sevgisine nail olmak; kalbin manevi kirlerden temizlenmesi.',
+        en: 'Gaining renown, honor, and standing; winning the love of people; the cleansing of the heart from spiritual impurities.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'şeref', 'makam', 'temizlik'],
       categories: ['genel', 'esma', 'esmaul husna', 'itibar', 'manevi arınma'],
       timeOfDay: 'any',
@@ -1134,13 +1509,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-bais',
       nameArabic: 'الْبَاعِثُ',
-      nameTurkish: 'El-Bâis',
-      transliteration: 'El-Bâis',
-      dhikrDay: 'Pazar',
-      meaning: 'Ölüleri diriltip kabirlerinden çıkaran, elçiler gönderen.',
-      virtue:
-        'Alacakları tahsil edebilmek; zalimlerin şerrinden ve iftiralardan hızla kurtulmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Bâis', en: "Al-Ba'ith" },
+      transliteration: { tr: 'El-Bâis', en: "Al-Ba'ith" },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Ölüleri diriltip kabirlerinden çıkaran, elçiler gönderen.',
+        en: 'The Resurrector, who raises the dead from their graves and sends forth messengers.',
+      },
+      virtue: {
+        tr: 'Alacakları tahsil edebilmek; zalimlerin şerrinden ve iftiralardan hızla kurtulmak.',
+        en: 'Being able to collect what is owed; swift deliverance from the harm of tyrants and from slander.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'alacak', 'korunma', 'iftira'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -1155,13 +1538,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-es-sehid',
       nameArabic: 'الشَّهِيدُ',
-      nameTurkish: 'Eş-Şehîd',
-      transliteration: 'Eş-Şehîd',
-      dhikrDay: 'Perşembe',
-      meaning: 'Bütün zamanlarda ve her yerde hazır ve nazır olan, gören.',
-      virtue:
-        'Heybetli görünmek; asi, itaatsiz ve geçimsiz yakınların, eş ve çocukların ıslah olup yola gelmesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Eş-Şehîd', en: 'Ash-Shahid' },
+      transliteration: { tr: 'Eş-Şehîd', en: 'Ash-Shahid' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Bütün zamanlarda ve her yerde hazır ve nazır olan, gören.',
+        en: 'The Witness, present and observant in every time and place, seeing all things.',
+      },
+      virtue: {
+        tr: 'Heybetli görünmek; asi, itaatsiz ve geçimsiz yakınların, eş ve çocukların ıslah olup yola gelmesi.',
+        en: 'Appearing dignified; the reform of rebellious, disobedient, and quarrelsome relatives, spouses, and children who return to the right path.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'heybet', 'aile', 'islah'],
       categories: ['genel', 'esma', 'esmaul husna', 'aile', 'itibar'],
       timeOfDay: 'any',
@@ -1176,13 +1567,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-hakk',
       nameArabic: 'الْحَقُّ',
-      nameTurkish: 'El-Hakk',
-      transliteration: 'El-Hakk',
-      dhikrDay: 'Cuma',
-      meaning: 'Varlığı hiç değişmeden duran, hakkı ve adaleti gösteren.',
-      virtue:
-        'Haklı davalarda üstün gelmek; yalan ve batıllardan uzaklaşmak; işlerin doğruluk ve dürüstlük üzere yürümesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hakk', en: 'Al-Haqq' },
+      transliteration: { tr: 'El-Hakk', en: 'Al-Haqq' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Varlığı hiç değişmeden duran, hakkı ve adaleti gösteren.',
+        en: 'The Truth, whose existence remains ever unchanging, who manifests right and justice.',
+      },
+      virtue: {
+        tr: 'Haklı davalarda üstün gelmek; yalan ve batıllardan uzaklaşmak; işlerin doğruluk ve dürüstlük üzere yürümesi.',
+        en: "Prevailing in rightful causes; keeping away from falsehood and vanity; conducting one's affairs with truthfulness and integrity.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'hak', 'adalet', 'dürüstlük'],
       categories: ['genel', 'esma', 'esmaul husna', 'adalet', 'ahlak'],
       timeOfDay: 'any',
@@ -1198,14 +1597,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-vekil',
       nameArabic: 'الْوَكِيلُ',
-      nameTurkish: 'El-Vekîl',
-      transliteration: 'El-Vekîl',
-      dhikrDay: 'Cuma',
-      meaning:
-        'Kendisine tevekkül edenlerin işlerini en iyi neticeye ulaştıran.',
-      virtue:
-        'Ani musibetlerden korunmak; rızık kapılarının açılması; düşman üzerine zöhre saatinde beddua için okunması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Vekîl', en: 'Al-Wakil' },
+      transliteration: { tr: 'El-Vekîl', en: 'Al-Wakil' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Kendisine tevekkül edenlerin işlerini en iyi neticeye ulaştıran.',
+        en: 'The Trustee, who brings the affairs of those who rely upon Him to the best outcome.',
+      },
+      virtue: {
+        tr: 'Ani musibetlerden korunmak; rızık kapılarının açılması; düşman üzerine zöhre saatinde beddua için okunması.',
+        en: 'Protection from sudden calamities; the opening of doors to provision; its recitation against an enemy during the hour of Venus as an imprecation.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'tevekkül', 'korunma', 'rızık'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -1220,13 +1626,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-kaviyy',
       nameArabic: 'الْقَوِيُّ',
-      nameTurkish: 'El-Kaviyy',
-      transliteration: 'El-Kaviyy',
-      dhikrDay: 'Salı',
-      meaning: 'Pek kuvvetli, pek güçlü, kudreti en üstün olan.',
-      virtue:
-        'Kansızlık ve fiziki zayıflıktan kurtulmak; yolculuk kazalarından muhafaza olmak; ağır yükleri kolayca kaldırmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Kaviyy', en: 'Al-Qawiyy' },
+      transliteration: { tr: 'El-Kaviyy', en: 'Al-Qawiyy' },
+      dhikrDay: { tr: 'Salı', en: 'Tuesday' },
+      meaning: {
+        tr: 'Pek kuvvetli, pek güçlü, kudreti en üstün olan.',
+        en: 'The Most Strong, exceedingly powerful, whose might is supreme above all.',
+      },
+      virtue: {
+        tr: 'Kansızlık ve fiziki zayıflıktan kurtulmak; yolculuk kazalarından muhafaza olmak; ağır yükleri kolayca kaldırmak.',
+        en: 'Deliverance from anemia and physical weakness; protection from travel accidents; easily bearing heavy burdens.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'güç', 'şifa', 'yolculuk'],
       categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'korunma'],
       timeOfDay: 'any',
@@ -1241,13 +1655,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-metin',
       nameArabic: 'الْمَتِينُ',
-      nameTurkish: 'El-Metîn',
-      transliteration: 'El-Metîn',
-      dhikrDay: 'Cuma',
-      meaning: 'Çok sağlam, kudreti hiç eksilmeyen, sarsılmaz olan.',
-      virtue:
-        'Maddi-manevi direnç kazanmak; fakirlikten, zulümden, kötü ahlaktan arınmak; manevi sırlara vakıf olmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Metîn', en: 'Al-Matin' },
+      transliteration: { tr: 'El-Metîn', en: 'Al-Matin' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Çok sağlam, kudreti hiç eksilmeyen, sarsılmaz olan.',
+        en: 'The Firm, exceedingly steadfast, whose power never diminishes, and who is unshakeable.',
+      },
+      virtue: {
+        tr: 'Maddi-manevi direnç kazanmak; fakirlikten, zulümden, kötü ahlaktan arınmak; manevi sırlara vakıf olmak.',
+        en: 'Gaining material and spiritual resilience; purification from poverty, oppression, and bad character; becoming privy to spiritual secrets.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'direnç', 'korunma', 'sırlar'],
       categories: [
         'genel',
@@ -1269,13 +1691,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-veliyy',
       nameArabic: 'الْوَلِيُّ',
-      nameTurkish: 'El-Veliyy',
-      transliteration: 'El-Veliyy',
-      dhikrDay: 'Salı',
-      meaning: 'İnananların, salih kulların gerçek dostu ve yardımcısı.',
-      virtue:
-        'Her işte ilahi yardım görmek; ahiret hesabının kolaylaşması; veli kullar zümresine kabul edilmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Veliyy', en: 'Al-Waliyy' },
+      transliteration: { tr: 'El-Veliyy', en: 'Al-Waliyy' },
+      dhikrDay: { tr: 'Salı', en: 'Tuesday' },
+      meaning: {
+        tr: 'İnananların, salih kulların gerçek dostu ve yardımcısı.',
+        en: 'The Protecting Friend, the true ally and helper of believers and righteous servants.',
+      },
+      virtue: {
+        tr: 'Her işte ilahi yardım görmek; ahiret hesabının kolaylaşması; veli kullar zümresine kabul edilmek.',
+        en: 'Receiving divine assistance in every matter; ease in the reckoning of the Hereafter; being accepted among the ranks of the righteous friends of Allah.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'yardım', 'velayet', 'ahiret'],
       categories: ['genel', 'esma', 'esmaul husna', 'manevi gelişim', 'yardım'],
       timeOfDay: 'any',
@@ -1290,13 +1720,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-hamid',
       nameArabic: 'الْحَمِيدُ',
-      nameTurkish: 'El-Hamîd',
-      transliteration: 'El-Hamîd',
-      dhikrDay: 'Çarşamba',
-      meaning: 'Ancak kendisine hamdedilen, bütün varlığın diliyle övülen.',
-      virtue:
-        'Ahlakın ve amellerin güzelleşmesi; kazancın helal yoldan genişlemesi; mahlukatın sevgisi; namaz ardı 100 okuma ile salih olmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hamîd', en: 'Al-Hamid' },
+      transliteration: { tr: 'El-Hamîd', en: 'Al-Hamid' },
+      dhikrDay: { tr: 'Çarşamba', en: 'Wednesday' },
+      meaning: {
+        tr: 'Ancak kendisine hamdedilen, bütün varlığın diliyle övülen.',
+        en: 'The Praiseworthy, to whom alone all praise is due, extolled by the tongue of all creation.',
+      },
+      virtue: {
+        tr: 'Ahlakın ve amellerin güzelleşmesi; kazancın helal yoldan genişlemesi; mahlukatın sevgisi; namaz ardı 100 okuma ile salih olmak.',
+        en: "The beautification of character and deeds; the lawful expansion of one's earnings; the love of creation; becoming righteous through 100 recitations after prayer.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'hamd', 'ahlak', 'helal rızık'],
       categories: ['genel', 'esma', 'esmaul husna', 'ahlak', 'rızık bereket'],
       timeOfDay: 'any',
@@ -1312,13 +1750,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muhsi',
       nameArabic: 'الْمُحْصِي',
-      nameTurkish: 'El-Muhsî',
-      transliteration: 'El-Muhsî',
-      dhikrDay: 'Pazar',
-      meaning: 'Sonsuz da olsa her şeyin tek tek sayısını ve miktarını bilen.',
-      virtue:
-        'Zekanın olağanüstü kuvvetlenmesi; unutkanlığın tamamen gitmesi; muhatap kalplerin itaat etmesi; hastalıklara şifa.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Muhsî', en: 'Al-Muhsi' },
+      transliteration: { tr: 'El-Muhsî', en: 'Al-Muhsi' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Sonsuz da olsa her şeyin tek tek sayısını ve miktarını bilen.',
+        en: 'The Enumerator, who knows the exact number and measure of all things, however infinite.',
+      },
+      virtue: {
+        tr: 'Zekanın olağanüstü kuvvetlenmesi; unutkanlığın tamamen gitmesi; muhatap kalplerin itaat etmesi; hastalıklara şifa.',
+        en: 'The extraordinary strengthening of intelligence; the complete removal of forgetfulness; the compliance of the hearts of those addressed; healing from illness.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'zeka', 'hafıza', 'şifa'],
       categories: ['genel', 'esma', 'esmaul husna', 'ilim', 'şifa'],
       timeOfDay: 'any',
@@ -1333,14 +1779,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mubdi',
       nameArabic: 'الْمُبْدِئُ',
-      nameTurkish: 'El-Mübdi',
-      transliteration: 'El-Mübdi',
-      dhikrDay: 'Perşembe',
-      meaning:
-        'Bütün varlıkları örneksiz ve maddesiz olarak ilk baştan yaratan.',
-      virtue:
-        'Girişilen işlerde üstün başarı; karar verme güçlüklerini aşmak; başlanan projeleri bitirmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mübdi', en: 'Al-Mubdi' },
+      transliteration: { tr: 'El-Mübdi', en: 'Al-Mubdi' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Bütün varlıkları örneksiz ve maddesiz olarak ilk baştan yaratan.',
+        en: 'The Originator, who creates all beings from the very beginning without precedent or material.',
+      },
+      virtue: {
+        tr: 'Girişilen işlerde üstün başarı; karar verme güçlüklerini aşmak; başlanan projeleri bitirmek.',
+        en: 'Outstanding success in undertakings; overcoming difficulties in decision-making; bringing started projects to completion.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'başarı', 'karar', 'proje'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'iş hayatı'],
       timeOfDay: 'any',
@@ -1355,13 +1808,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muid',
       nameArabic: 'الْمُعِيدُ',
-      nameTurkish: 'El-Muîd',
-      transliteration: 'El-Muîd',
-      dhikrDay: 'Cumartesi',
-      meaning: 'Varlıkları yok ettikten sonra tekrar yaratan, dirilten.',
-      virtue:
-        'Kaybedilen itibar, mevki ve makamı geri kazanmak; altüst olmuş işlerin yeniden düzene girmesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Muîd', en: "Al-Mu'id" },
+      transliteration: { tr: 'El-Muîd', en: "Al-Mu'id" },
+      dhikrDay: { tr: 'Cumartesi', en: 'Saturday' },
+      meaning: {
+        tr: 'Varlıkları yok ettikten sonra tekrar yaratan, dirilten.',
+        en: 'The Restorer, who, after bringing beings to an end, creates and revives them again.',
+      },
+      virtue: {
+        tr: 'Kaybedilen itibar, mevki ve makamı geri kazanmak; altüst olmuş işlerin yeniden düzene girmesi.',
+        en: 'Regaining lost reputation, position, and standing; the restoration of order to affairs that have fallen into disarray.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'itibar', 'makam', 'düzen'],
       categories: ['genel', 'esma', 'esmaul husna', 'itibar', 'iş hayatı'],
       timeOfDay: 'any',
@@ -1376,13 +1837,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muhyi',
       nameArabic: 'الْمُحْيِي',
-      nameTurkish: 'El-Muhyî',
-      transliteration: 'El-Muhyî',
-      dhikrDay: 'Cuma',
-      meaning: 'İhya eden, can bağışlayan, dirilten, sağlık veren.',
-      virtue:
-        'Şifacılık yeteneklerinin uyanması; kalbin gafletten uyanıp dirilmesi; ağır ve kronik hastalıklardan kurtuluş.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Muhyî', en: 'Al-Muhyi' },
+      transliteration: { tr: 'El-Muhyî', en: 'Al-Muhyi' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'İhya eden, can bağışlayan, dirilten, sağlık veren.',
+        en: 'The Giver of Life, who revives, bestows the soul, resurrects, and grants health.',
+      },
+      virtue: {
+        tr: 'Şifacılık yeteneklerinin uyanması; kalbin gafletten uyanıp dirilmesi; ağır ve kronik hastalıklardan kurtuluş.',
+        en: "The awakening of healing abilities; the heart's awakening from heedlessness and coming to life; recovery from serious and chronic illness.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'şifa', 'kalp', 'diriliş'],
       categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'manevi gelişim'],
       timeOfDay: 'any',
@@ -1397,13 +1866,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mumit',
       nameArabic: 'الْمُمِيتُ',
-      nameTurkish: 'El-Mümît',
-      transliteration: 'El-Mümît',
-      dhikrDay: 'Salı',
-      meaning: 'Canlıların hayatına son veren, ölümü yaratan, öldüren.',
-      virtue:
-        'Nefsin harama olan meylini ve şehvetini köreltmek; düşmanların her türlü kötü planını iptal etmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mümît', en: 'Al-Mumit' },
+      transliteration: { tr: 'El-Mümît', en: 'Al-Mumit' },
+      dhikrDay: { tr: 'Salı', en: 'Tuesday' },
+      meaning: {
+        tr: 'Canlıların hayatına son veren, ölümü yaratan, öldüren.',
+        en: 'The Bringer of Death, who ends the life of living beings, creates death, and causes death.',
+      },
+      virtue: {
+        tr: 'Nefsin harama olan meylini ve şehvetini köreltmek; düşmanların her türlü kötü planını iptal etmek.',
+        en: "Blunting the self's inclination toward the forbidden and its carnal desire; nullifying every evil scheme of enemies.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'nefis', 'korunma', 'düşman'],
       categories: [
         'genel',
@@ -1424,13 +1901,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-hayy',
       nameArabic: 'الْحَيُّ',
-      nameTurkish: 'El-Hayy',
-      transliteration: 'El-Hayy',
-      dhikrDay: 'Pazar',
-      meaning: 'Diri, tam ve mükemmel manasıyla sonsuz hayat sahibi.',
-      virtue:
-        'Genç, zinde ve diri kalmak; bedensel güçlenme; uzun ve sağlıklı ömür; kalbin tevhid nuruyla dolması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hayy', en: 'Al-Hayy' },
+      transliteration: { tr: 'El-Hayy', en: 'Al-Hayy' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Diri, tam ve mükemmel manasıyla sonsuz hayat sahibi.',
+        en: 'The Ever-Living, possessor of everlasting life in its complete and perfect sense.',
+      },
+      virtue: {
+        tr: 'Genç, zinde ve diri kalmak; bedensel güçlenme; uzun ve sağlıklı ömür; kalbin tevhid nuruyla dolması.',
+        en: 'Remaining youthful, vigorous, and lively; physical strengthening; a long and healthy life; the filling of the heart with the light of divine oneness.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'hayat', 'sağlık', 'tevhid'],
       categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'manevi gelişim'],
       timeOfDay: 'any',
@@ -1446,14 +1931,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-kayyum',
       nameArabic: 'الْقَيُّومُ',
-      nameTurkish: 'El-Kayyûm',
-      transliteration: 'El-Kayyûm',
-      dhikrDay: 'Perşembe',
-      meaning:
-        'Gökleri, yeri ve her şeyi ayakta tutan, varlığı kendinden olan.',
-      virtue:
-        'Ruhsal ve psikolojik rahatsızlıkların tedavisi; işlerin süreklilik ve istikrar kazanması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Kayyûm', en: 'Al-Qayyum' },
+      transliteration: { tr: 'El-Kayyûm', en: 'Al-Qayyum' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Gökleri, yeri ve her şeyi ayakta tutan, varlığı kendinden olan.',
+        en: 'The Self-Subsisting Sustainer, who upholds the heavens, the earth, and all things, and whose existence depends on nothing else.',
+      },
+      virtue: {
+        tr: 'Ruhsal ve psikolojik rahatsızlıkların tedavisi; işlerin süreklilik ve istikrar kazanması.',
+        en: 'The treatment of spiritual and psychological ailments; affairs gaining continuity and stability.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'istikrar', 'psikoloji', 'şifa'],
       categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'huzur'],
       timeOfDay: 'any',
@@ -1468,13 +1960,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-vacid',
       nameArabic: 'الْوَاجِدُ',
-      nameTurkish: 'El-Vâcid',
-      transliteration: 'El-Vâcid',
-      dhikrDay: 'Cuma',
-      meaning: 'İstediğini istediği an bulan, hiçbir şeye muhtaç olmayan.',
-      virtue:
-        'Kaybedilen değerli şeyleri bulmak; kalbin manevi zenginliği; mevcut nimetlerin elden çıkmasını engellemek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Vâcid', en: 'Al-Wajid' },
+      transliteration: { tr: 'El-Vâcid', en: 'Al-Wajid' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'İstediğini istediği an bulan, hiçbir şeye muhtaç olmayan.',
+        en: 'The Finder, who finds whatever He wills the moment He wills it, and who is in need of nothing.',
+      },
+      virtue: {
+        tr: 'Kaybedilen değerli şeyleri bulmak; kalbin manevi zenginliği; mevcut nimetlerin elden çıkmasını engellemek.',
+        en: 'Finding lost valuables; spiritual richness of the heart; preventing existing blessings from slipping away.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'bulmak', 'nimet', 'manevi zenginlik'],
       categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'rızık bereket'],
       timeOfDay: 'any',
@@ -1489,13 +1989,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-macid',
       nameArabic: 'الْمَاجِدُ',
-      nameTurkish: 'El-Mâcid',
-      transliteration: 'El-Mâcid',
-      dhikrDay: 'Cuma',
-      meaning: 'Kadri büyük, şanı yüce, keremi ve cömertliği bol olan.',
-      virtue:
-        'Kan basıncının dengelenmesi; şan ve şerefin artması; maddi imkanların genişlemesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mâcid', en: 'Al-Maajid' },
+      transliteration: { tr: 'El-Mâcid', en: 'Al-Maajid' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Kadri büyük, şanı yüce, keremi ve cömertliği bol olan.',
+        en: 'The Most Glorious, of great worth and exalted renown, whose generosity and munificence are abundant.',
+      },
+      virtue: {
+        tr: 'Kan basıncının dengelenmesi; şan ve şerefin artması; maddi imkanların genişlemesi.',
+        en: 'The balancing of blood pressure; an increase in renown and honor; the expansion of material means.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'şifa', 'şeref', 'rızık'],
       categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'rızık bereket'],
       timeOfDay: 'any',
@@ -1510,13 +2018,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-vahid',
       nameArabic: 'الْوَاحِدُ',
-      nameTurkish: 'El-Vâhid',
-      transliteration: 'El-Vâhid',
-      dhikrDay: 'Pazar',
-      meaning: 'Zatında, sıfatlarında ve fiillerinde ortağı bulunmayan tek.',
-      virtue:
-        'Kalbin masivadan arınarak tek ilaha yönelmesi; yalnızlık korkusunu yenmek; tevhid bilincine ulaşmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Vâhid', en: 'Al-Wahid' },
+      transliteration: { tr: 'El-Vâhid', en: 'Al-Wahid' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Zatında, sıfatlarında ve fiillerinde ortağı bulunmayan tek.',
+        en: 'The One, without partner in His Essence, His Attributes, or His Acts.',
+      },
+      virtue: {
+        tr: 'Kalbin masivadan arınarak tek ilaha yönelmesi; yalnızlık korkusunu yenmek; tevhid bilincine ulaşmak.',
+        en: "The heart's purification from all besides Allah and its turning to the One God alone; overcoming the fear of loneliness; attaining the awareness of divine oneness.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'tevhid', 'yalnızlık', 'kalp'],
       categories: ['genel', 'esma', 'esmaul husna', 'tevhid', 'huzur'],
       timeOfDay: 'any',
@@ -1531,13 +2047,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-es-samed',
       nameArabic: 'الصَّمَدُ',
-      nameTurkish: 'Es-Samed',
-      transliteration: 'Es-Samed',
-      dhikrDay: 'Perşembe',
-      meaning: 'Herkesin muhtaç olduğu, kendisi hiçbir şeye muhtaç olmayan.',
-      virtue:
-        'Şansın açılması; dertlere derman bulmak; kimseye muhtaç olmadan onurlu ve bağımsız bir yaşam sürmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Es-Samed', en: 'As-Samad' },
+      transliteration: { tr: 'Es-Samed', en: 'As-Samad' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Herkesin muhtaç olduğu, kendisi hiçbir şeye muhtaç olmayan.',
+        en: 'The Eternal Refuge, upon whom all depend, while He depends on nothing.',
+      },
+      virtue: {
+        tr: 'Şansın açılması; dertlere derman bulmak; kimseye muhtaç olmadan onurlu ve bağımsız bir yaşam sürmek.',
+        en: "The opening of good fortune; finding remedy for one's troubles; leading a dignified and independent life without depending on anyone.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'bağımsızlık', 'derman', 'samed'],
       categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'rızık bereket'],
       timeOfDay: 'any',
@@ -1552,13 +2076,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-kadir',
       nameArabic: 'الْقَادِرُ',
-      nameTurkish: 'El-Kâdir',
-      transliteration: 'El-Kâdir',
-      dhikrDay: 'Pazar',
-      meaning: 'Dilediğini yapmaya gücü yeten, mutlak kudret sahibi.',
-      virtue:
-        'Bedensel ve zihinsel güç kazanmak; düşman şerrinden tam koruma; bilimsel çalışmalarda başarı; sol göz sağlığı.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Kâdir', en: 'Al-Qadir' },
+      transliteration: { tr: 'El-Kâdir', en: 'Al-Qadir' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Dilediğini yapmaya gücü yeten, mutlak kudret sahibi.',
+        en: 'The All-Powerful, able to do whatever He wills, possessor of absolute might.',
+      },
+      virtue: {
+        tr: 'Bedensel ve zihinsel güç kazanmak; düşman şerrinden tam koruma; bilimsel çalışmalarda başarı; sol göz sağlığı.',
+        en: 'Gaining physical and mental strength; complete protection from the harm of enemies; success in scientific study; health of the left eye.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'güç', 'korunma', 'başarı'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'korunma'],
       timeOfDay: 'any',
@@ -1574,13 +2106,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muktedir',
       nameArabic: 'الْمُقْتَدِرُ',
-      nameTurkish: 'El-Muktedir',
-      transliteration: 'El-Muktedir',
-      dhikrDay: 'Cumartesi',
-      meaning: 'Güç ve kuvvet sahipleri üzerinde dilediği gibi tasarruf eden.',
-      virtue:
-        'İktidar, güç ve nüfuz sahibi olmak; zor işlerin kolayca çözülmesi; omuz ve boyun fıtığı şifası.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Muktedir', en: 'Al-Muqtadir' },
+      transliteration: { tr: 'El-Muktedir', en: 'Al-Muqtadir' },
+      dhikrDay: { tr: 'Cumartesi', en: 'Saturday' },
+      meaning: {
+        tr: 'Güç ve kuvvet sahipleri üzerinde dilediği gibi tasarruf eden.',
+        en: 'The All-Determiner, who exercises His will freely even over those who possess power and strength.',
+      },
+      virtue: {
+        tr: 'İktidar, güç ve nüfuz sahibi olmak; zor işlerin kolayca çözülmesi; omuz ve boyun fıtığı şifası.',
+        en: 'Possessing authority, power, and influence; the easy resolution of difficult matters; healing for shoulder and neck disc herniation.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'güç', 'nüfuz', 'kolaylık'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'şifa'],
       timeOfDay: 'any',
@@ -1595,13 +2135,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mukaddim',
       nameArabic: 'الْمُقَدِّمُ',
-      nameTurkish: 'El-Mukaddim',
-      transliteration: 'El-Mukaddim',
-      dhikrDay: 'Cumartesi',
-      meaning: 'Dilediğini ileri geçiren, öne alan, yükselten.',
-      virtue:
-        'Sınav, ticaret ve hayırlı işlerde rakiplerin önüne geçmek; makamda yükselmek; işlerin hızlanması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mukaddim', en: 'Al-Muqaddim' },
+      transliteration: { tr: 'El-Mukaddim', en: 'Al-Muqaddim' },
+      dhikrDay: { tr: 'Cumartesi', en: 'Saturday' },
+      meaning: {
+        tr: 'Dilediğini ileri geçiren, öne alan, yükselten.',
+        en: 'The Expediter, who advances, brings forward, and elevates whomever He wills.',
+      },
+      virtue: {
+        tr: 'Sınav, ticaret ve hayırlı işlerde rakiplerin önüne geçmek; makamda yükselmek; işlerin hızlanması.',
+        en: "Getting ahead of rivals in exams, trade, and good endeavors; rising in rank; the acceleration of one's affairs.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'yükseliş', 'sınav', 'ticaret'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'iş kariyer'],
       timeOfDay: 'any',
@@ -1616,13 +2164,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muahhir',
       nameArabic: 'الْمُؤَخِّرُ',
-      nameTurkish: 'El-Muahhir',
-      transliteration: 'El-Muahhir',
-      dhikrDay: 'Cumartesi',
-      meaning: 'Dilediğini geride bırakan, arkaya koyan, erteleyen.',
-      virtue:
-        'Kötü niyetli kişileri geride bırakmak; belaları ertelemek; sağ ayak ve lenf ödemi şifası.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Muahhir', en: "Al-Mu'akhkhir" },
+      transliteration: { tr: 'El-Muahhir', en: "Al-Mu'akhkhir" },
+      dhikrDay: { tr: 'Cumartesi', en: 'Saturday' },
+      meaning: {
+        tr: 'Dilediğini geride bırakan, arkaya koyan, erteleyen.',
+        en: 'The Delayer, who sets back, postpones, and holds behind whomever He wills.',
+      },
+      virtue: {
+        tr: 'Kötü niyetli kişileri geride bırakmak; belaları ertelemek; sağ ayak ve lenf ödemi şifası.',
+        en: 'Leaving ill-intentioned people behind; delaying calamities; healing for the right foot and lymphedema.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'korunma', 'şifa', 'bela'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'şifa'],
       timeOfDay: 'any',
@@ -1637,13 +2193,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-evvel',
       nameArabic: 'الْأَوَّلُ',
-      nameTurkish: 'El-Evvel',
-      transliteration: 'El-Evvel',
-      dhikrDay: 'Pazar',
-      meaning: 'Ezeli olan, başlangıcı bulunmayan, ilk olan.',
-      virtue:
-        'Girişilen işlerin sonunun hayırla neticelenmesi; uzun yolculukların kaza belasız tamamlanması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Evvel', en: 'Al-Awwal' },
+      transliteration: { tr: 'El-Evvel', en: 'Al-Awwal' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Ezeli olan, başlangıcı bulunmayan, ilk olan.',
+        en: 'The First, the Pre-Eternal, without beginning, the Foremost.',
+      },
+      virtue: {
+        tr: 'Girişilen işlerin sonunun hayırla neticelenmesi; uzun yolculukların kaza belasız tamamlanması.',
+        en: 'The good conclusion of undertakings; the completion of long journeys free of accidents and misfortune.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'hayır', 'yolculuk', 'başlangıç'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'korunma'],
       timeOfDay: 'any',
@@ -1658,13 +2222,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-ahir',
       nameArabic: 'الْآخِرُ',
-      nameTurkish: 'El-Âhir',
-      transliteration: 'El-Âhir',
-      dhikrDay: 'Cuma',
-      meaning: 'Ebedi olan, sonu bulunmayan, sonsuz olan.',
-      virtue:
-        'Ömrün hayırla tamamlanması; son nefeste imanla göçmek; gizli düşmanların tamamen etkisiz hale gelmesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Âhir', en: 'Al-Akhir' },
+      transliteration: { tr: 'El-Âhir', en: 'Al-Akhir' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Ebedi olan, sonu bulunmayan, sonsuz olan.',
+        en: 'The Last, the Everlasting, without end, infinite.',
+      },
+      virtue: {
+        tr: 'Ömrün hayırla tamamlanması; son nefeste imanla göçmek; gizli düşmanların tamamen etkisiz hale gelmesi.',
+        en: "The good completion of one's lifespan; departing with faith at one's final breath; the complete neutralizing of hidden enemies.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'iman', 'korunma', 'hayırlı ömür'],
       categories: ['genel', 'esma', 'esmaul husna', 'iman', 'korunma'],
       timeOfDay: 'any',
@@ -1679,13 +2251,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-ez-zahir',
       nameArabic: 'الظَّاهِرُ',
-      nameTurkish: 'Ez-Zâhir',
-      transliteration: 'Ez-Zâhir',
-      dhikrDay: 'Cumartesi',
-      meaning: 'Eserleriyle, yarattıklarıyla varlığı açık ve aşikar olan.',
-      virtue:
-        'Gizli kalmış işlerin aydınlanması; kalbin nurlanması; rakiplere karşı ezici üstünlük sağlamak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Ez-Zâhir', en: 'Az-Zahir' },
+      transliteration: { tr: 'Ez-Zâhir', en: 'Az-Zahir' },
+      dhikrDay: { tr: 'Cumartesi', en: 'Saturday' },
+      meaning: {
+        tr: 'Eserleriyle, yarattıklarıyla varlığı açık ve aşikar olan.',
+        en: 'The Manifest, whose existence is clear and evident through His works and creation.',
+      },
+      virtue: {
+        tr: 'Gizli kalmış işlerin aydınlanması; kalbin nurlanması; rakiplere karşı ezici üstünlük sağlamak.',
+        en: 'The clarification of hidden matters; the illumination of the heart; overwhelming superiority over rivals.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'aydınlanma', 'nur', 'üstünlük'],
       categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'başarı'],
       timeOfDay: 'any',
@@ -1700,13 +2280,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-batin',
       nameArabic: 'الْبَاطِنُ',
-      nameTurkish: 'El-Bâtın',
-      transliteration: 'El-Bâtın',
-      dhikrDay: 'Pazartesi',
-      meaning: 'Yüceliği gizli olan, akılların idrak edemeyeceği zat.',
-      virtue:
-        'Ruhsal derinlik ve manevi olgunluk kazanmak; vesveselerden kalıcı olarak özgürleşmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Bâtın', en: 'Al-Batin' },
+      transliteration: { tr: 'El-Bâtın', en: 'Al-Batin' },
+      dhikrDay: { tr: 'Pazartesi', en: 'Monday' },
+      meaning: {
+        tr: 'Yüceliği gizli olan, akılların idrak edemeyeceği zat.',
+        en: 'The Hidden, whose majesty is concealed, an Essence that minds cannot fully grasp.',
+      },
+      virtue: {
+        tr: 'Ruhsal derinlik ve manevi olgunluk kazanmak; vesveselerden kalıcı olarak özgürleşmek.',
+        en: 'Gaining spiritual depth and maturity; lasting freedom from whispered doubts.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'maneviyat', 'vesvese', 'olgunluk'],
       categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'manevi arınma'],
       timeOfDay: 'any',
@@ -1721,13 +2309,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-vali',
       nameArabic: 'الْوَالِي',
-      nameTurkish: 'El-Vâlî',
-      transliteration: 'El-Vâlî',
-      dhikrDay: 'Pazar',
-      meaning: 'Kainatı idare eden, onun üzerinde tek tasarruf sahibi olan.',
-      virtue:
-        'Yönetim ve liderlik yeteneği kazanmak; karmaşık işleri kolayca idare etmek; amirler nezdinde dinlenmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Vâlî', en: 'Al-Wali' },
+      transliteration: { tr: 'El-Vâlî', en: 'Al-Wali' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Kainatı idare eden, onun üzerinde tek tasarruf sahibi olan.',
+        en: 'The Governor, who administers the universe and alone holds authority over it.',
+      },
+      virtue: {
+        tr: 'Yönetim ve liderlik yeteneği kazanmak; karmaşık işleri kolayca idare etmek; amirler nezdinde dinlenmek.',
+        en: 'Gaining the ability to govern and lead; easily managing complicated affairs; being heeded by those in authority.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'liderlik', 'yönetim', 'itibar'],
       categories: ['genel', 'esma', 'esmaul husna', 'iş kariyer', 'başarı'],
       timeOfDay: 'any',
@@ -1742,13 +2338,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muteali',
       nameArabic: 'الْمُتَعَالِي',
-      nameTurkish: 'El-Müteâlî',
-      transliteration: 'El-Müteâlî',
-      dhikrDay: 'Cumartesi',
-      meaning: 'İzzet, şan ve şerefiyle her şeyden üstün, pek yüce olan.',
-      virtue:
-        'Mevki ve makamın korunması; haksız suçlamalardan ve iftiralardan uzak kalmak; devlet işlerinin kolaylaşması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Müteâlî', en: "Al-Muta'ali" },
+      transliteration: { tr: 'El-Müteâlî', en: "Al-Muta'ali" },
+      dhikrDay: { tr: 'Cumartesi', en: 'Saturday' },
+      meaning: {
+        tr: 'İzzet, şan ve şerefiyle her şeyden üstün, pek yüce olan.',
+        en: 'The Supremely Exalted, transcendent above all things in honor, renown, and glory.',
+      },
+      virtue: {
+        tr: 'Mevki ve makamın korunması; haksız suçlamalardan ve iftiralardan uzak kalmak; devlet işlerinin kolaylaşması.',
+        en: 'The safeguarding of position and rank; remaining free from unjust accusations and slander; the ease of state affairs.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'itibar', 'makam', 'korunma'],
       categories: ['genel', 'esma', 'esmaul husna', 'iş kariyer', 'korunma'],
       timeOfDay: 'any',
@@ -1763,13 +2367,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-berr',
       nameArabic: 'الْبَرُّ',
-      nameTurkish: 'El-Berr',
-      transliteration: 'El-Berr',
-      dhikrDay: 'Cuma',
-      meaning: 'İyilik ve ihsanı bol olan, kullarının iyiliğini isteyen.',
-      virtue:
-        'İçindeki iyilik yapma arzusunun artması; kazalardan korunmak; ahlakın mükemmelleşmesi.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Berr', en: 'Al-Barr' },
+      transliteration: { tr: 'El-Berr', en: 'Al-Barr' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'İyilik ve ihsanı bol olan, kullarının iyiliğini isteyen.',
+        en: 'The Source of Goodness, whose kindness and beneficence are abundant, and who desires good for His servants.',
+      },
+      virtue: {
+        tr: 'İçindeki iyilik yapma arzusunun artması; kazalardan korunmak; ahlakın mükemmelleşmesi.',
+        en: "An increase in one's inner desire to do good; protection from accidents; the perfecting of one's character.",
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'iyilik', 'ahlak', 'korunma'],
       categories: ['genel', 'esma', 'esmaul husna', 'güzel ahlak', 'korunma'],
       timeOfDay: 'any',
@@ -1784,13 +2396,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-et-tevvab',
       nameArabic: 'التَّوَّابُ',
-      nameTurkish: 'Et-Tevvâb',
-      transliteration: 'Et-Tevvâb',
-      dhikrDay: 'Perşembe',
-      meaning: 'Tövbeleri kabul eden, günahları bağışlayan.',
-      virtue:
-        'Günahlardan samimi tövbeyle sıyrılmak; kötü alışkanlıkları kolayca bırakmak; rızık kapılarının açılması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Et-Tevvâb', en: 'At-Tawwab' },
+      transliteration: { tr: 'Et-Tevvâb', en: 'At-Tawwab' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Tövbeleri kabul eden, günahları bağışlayan.',
+        en: 'The Ever-Relenting, who accepts repentance and forgives sins.',
+      },
+      virtue: {
+        tr: 'Günahlardan samimi tövbeyle sıyrılmak; kötü alışkanlıkları kolayca bırakmak; rızık kapılarının açılması.',
+        en: 'Being freed from sins through sincere repentance; easily giving up bad habits; the opening of doors to provision.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'tevbe', 'mağfiret', 'rızık'],
       categories: ['genel', 'esma', 'esmaul husna', 'tevbe', 'rızık bereket'],
       timeOfDay: 'any',
@@ -1805,13 +2425,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muntekim',
       nameArabic: 'الْمُنْتَقِمُ',
-      nameTurkish: 'El-Müntekim',
-      transliteration: 'El-Müntekim',
-      dhikrDay: 'Salı',
-      meaning: 'Suçluları adaletiyle cezalandıran, intikam alan.',
-      virtue:
-        'Zalimlerin şerrinden adalete sığınmak; haksızlığa uğrayanların hakkını ilahi adaletle geri alması.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Müntekim', en: 'Al-Muntaqim' },
+      transliteration: { tr: 'El-Müntekim', en: 'Al-Muntaqim' },
+      dhikrDay: { tr: 'Salı', en: 'Tuesday' },
+      meaning: {
+        tr: 'Suçluları adaletiyle cezalandıran, intikam alan.',
+        en: 'The Avenger, who punishes the guilty with His justice and exacts retribution.',
+      },
+      virtue: {
+        tr: 'Zalimlerin şerrinden adalete sığınmak; haksızlığa uğrayanların hakkını ilahi adaletle geri alması.',
+        en: 'Taking refuge in divine justice from the harm of tyrants; the restoration, through divine justice, of the rights of those who have suffered injustice.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'adalet', 'korunma', 'haksızlık'],
       categories: ['genel', 'esma', 'esmaul husna', 'adalet', 'korunma'],
       timeOfDay: 'any',
@@ -1826,13 +2454,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-afuvv',
       nameArabic: 'الْعَفُوُّ',
-      nameTurkish: 'El-Afüvv',
-      transliteration: 'El-Afüvv',
-      dhikrDay: 'Pazar',
-      meaning: 'Affı çok olan, günahları tamamen silip yok eden.',
-      virtue:
-        'İlahi affa nail olmak; kin, nefret ve intikam gibi kalbi yıpratan duygulardan tamamen arınmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Afüvv', en: 'Al-Afuww' },
+      transliteration: { tr: 'El-Afüvv', en: 'Al-Afuww' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Affı çok olan, günahları tamamen silip yok eden.',
+        en: 'The Most Forgiving, whose pardon is abundant, who completely erases and effaces sins.',
+      },
+      virtue: {
+        tr: 'İlahi affa nail olmak; kin, nefret ve intikam gibi kalbi yıpratan duygulardan tamamen arınmak.',
+        en: 'Attaining divine pardon; complete purification from heart-corroding feelings such as rancor, hatred, and the desire for revenge.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'af', 'arınma', 'kalp'],
       categories: ['genel', 'esma', 'esmaul husna', 'tevbe', 'manevi arınma'],
       timeOfDay: 'any',
@@ -1847,13 +2483,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-er-rauf',
       nameArabic: 'الرَّؤُوفُ',
-      nameTurkish: 'Er-Raûf',
-      transliteration: 'Er-Raûf',
-      dhikrDay: 'Cumartesi',
-      meaning: 'Çok merhametli, çok şefkatli, lütufta bulunan.',
-      virtue:
-        'Merhamet ve şefkat duygularının artması; insanlar tarafından sevilip korunmak; öfkenin kontrolü.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Er-Raûf', en: "Ar-Ra'uf" },
+      transliteration: { tr: 'Er-Raûf', en: "Ar-Ra'uf" },
+      dhikrDay: { tr: 'Cumartesi', en: 'Saturday' },
+      meaning: {
+        tr: 'Çok merhametli, çok şefkatli, lütufta bulunan.',
+        en: 'The Most Compassionate, exceedingly merciful and tender, who bestows favor.',
+      },
+      virtue: {
+        tr: 'Merhamet ve şefkat duygularının artması; insanlar tarafından sevilip korunmak; öfkenin kontrolü.',
+        en: 'An increase in feelings of mercy and compassion; being loved and protected by others; control over anger.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'merhamet', 'şefkat', 'öfke'],
       categories: ['genel', 'esma', 'esmaul husna', 'güzel ahlak', 'huzur'],
       timeOfDay: 'any',
@@ -1863,13 +2507,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-malik-ul-mulk',
       nameArabic: 'مَالِكُ الْمُلْكِ',
-      nameTurkish: 'Mâlik-ül Mülk',
-      transliteration: 'Mâlik-ül Mülk',
-      dhikrDay: 'Çarşamba',
-      meaning: 'Her varlığın, mülkün tek ve mutlak sahibi olan.',
-      virtue:
-        'Maddi güç, mal ve servetin korunması; kimseye borçlu kalmadan huzurlu bir yaşam sürmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Mâlik-ül Mülk', en: 'Malik al-Mulk' },
+      transliteration: { tr: 'Mâlik-ül Mülk', en: 'Malik al-Mulk' },
+      dhikrDay: { tr: 'Çarşamba', en: 'Wednesday' },
+      meaning: {
+        tr: 'Her varlığın, mülkün tek ve mutlak sahibi olan.',
+        en: 'The Owner of All Sovereignty, the sole and absolute possessor of every being and dominion.',
+      },
+      virtue: {
+        tr: 'Maddi güç, mal ve servetin korunması; kimseye borçlu kalmadan huzurlu bir yaşam sürmek.',
+        en: 'The protection of material strength, property, and wealth; leading a peaceful life without owing debt to anyone.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'mülk', 'servet', 'borç'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'huzur'],
       timeOfDay: 'any',
@@ -1884,13 +2536,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-zul-celali-vel-ikram',
       nameArabic: 'ذُو الْجَلَالِ وَالْإِكْرَامِ',
-      nameTurkish: 'Zül-Celâli vel İkrâm',
-      transliteration: 'Zül-Celâli vel İkrâm',
-      dhikrDay: 'Pazar',
-      meaning: 'Hem celal (azamet) hem de ikram (kerem) sahibi olan.',
-      virtue:
-        'Duaların en hızlı şekilde kabulü; insanların gözünde olağanüstü saygınlık ve karizma kazanmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Zül-Celâli vel İkrâm', en: 'Dhul-Jalali wal-Ikram' },
+      transliteration: { tr: 'Zül-Celâli vel İkrâm', en: 'Dhul-Jalali wal-Ikram' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Hem celal (azamet) hem de ikram (kerem) sahibi olan.',
+        en: 'Possessor of both Majesty (grandeur) and Generosity (bounteous honor).',
+      },
+      virtue: {
+        tr: 'Duaların en hızlı şekilde kabulü; insanların gözünde olağanüstü saygınlık ve karizma kazanmak.',
+        en: 'The swiftest acceptance of supplications; gaining extraordinary respect and charisma in the eyes of others.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'dua', 'saygınlık', 'ikram'],
       categories: ['genel', 'esma', 'esmaul husna', 'dua', 'itibar'],
       timeOfDay: 'any',
@@ -1900,13 +2560,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-muksit',
       nameArabic: 'الْمُقْسِطُ',
-      nameTurkish: 'El-Muksit',
-      transliteration: 'El-Muksit',
-      dhikrDay: 'Perşembe',
-      meaning: 'Her işi birbirine denk yapan, mutlak adil olan.',
-      virtue:
-        'Aile içi geçimsizliklerin ve huzursuzlukların bitmesi; adil kararlar verebilmek; borç ödeme kolaylığı.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Muksit', en: 'Al-Muqsit' },
+      transliteration: { tr: 'El-Muksit', en: 'Al-Muqsit' },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Her işi birbirine denk yapan, mutlak adil olan.',
+        en: 'The Equitable, who renders every matter in just proportion, the Absolutely Just.',
+      },
+      virtue: {
+        tr: 'Aile içi geçimsizliklerin ve huzursuzlukların bitmesi; adil kararlar verebilmek; borç ödeme kolaylığı.',
+        en: 'The ending of family discord and unrest; the ability to make just decisions; ease in repaying debts.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'adalet', 'aile', 'borç'],
       categories: ['genel', 'esma', 'esmaul husna', 'adalet', 'aile'],
       timeOfDay: 'any',
@@ -1921,13 +2589,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-cami',
       nameArabic: 'الْجَامِعُ',
-      nameTurkish: 'El-Câmi',
-      transliteration: 'El-Câmi',
-      dhikrDay: 'Perşembe',
-      meaning: 'Mahşerde mahlukatı bir araya toplayan, birleştiren.',
-      virtue:
-        'Kaybolan eşyayı veya insanı bulmak; dargınları barıştırmak; dağınık işleri bir araya getirmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Câmi', en: "Al-Jami'" },
+      transliteration: { tr: 'El-Câmi', en: "Al-Jami'" },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Mahşerde mahlukatı bir araya toplayan, birleştiren.',
+        en: 'The Gatherer, who assembles and unites all creation on the Day of Resurrection.',
+      },
+      virtue: {
+        tr: 'Kaybolan eşyayı veya insanı bulmak; dargınları barıştırmak; dağınık işleri bir araya getirmek.',
+        en: 'Finding lost belongings or people; reconciling those who are estranged; bringing scattered affairs together.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'birlik', 'barışma', 'kayip'],
       categories: ['genel', 'esma', 'esmaul husna', 'aile', 'huzur'],
       timeOfDay: 'any',
@@ -1942,13 +2618,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-ganiyy',
       nameArabic: 'الْغَنِيُّ',
-      nameTurkish: 'El-Ganiyy',
-      transliteration: 'El-Ganiyy',
-      dhikrDay: 'Pazar',
-      meaning: 'Hiçbir şeye ihtiyacı olmayan, mutlak zengin olan.',
-      virtue:
-        'Maddi-manevi zenginlik; baş ağrısı ve migren ağrılarının şifası.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Ganiyy', en: 'Al-Ghani' },
+      transliteration: { tr: 'El-Ganiyy', en: 'Al-Ghani' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Hiçbir şeye ihtiyacı olmayan, mutlak zengin olan.',
+        en: 'The All-Sufficient, in need of nothing, absolutely rich.',
+      },
+      virtue: {
+        tr: 'Maddi-manevi zenginlik; baş ağrısı ve migren ağrılarının şifası.',
+        en: 'Material and spiritual richness; healing from headaches and migraine pain.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'zenginlik', 'şifa', 'migren'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'şifa'],
       timeOfDay: 'any',
@@ -1963,13 +2647,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mugni',
       nameArabic: 'الْمُغْنِي',
-      nameTurkish: 'El-Mugnî',
-      transliteration: 'El-Mugnî',
-      dhikrDay: 'Cuma',
-      meaning: 'Dilediğini zengin kılan, kendi kendine yeterli kılan.',
-      virtue:
-        'Büyük zenginliğe ulaşmak; geçim darlığından tamamen kurtulmak; insanlardan bir şey istemeyecek konuma gelmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mugnî', en: 'Al-Mughni' },
+      transliteration: { tr: 'El-Mugnî', en: 'Al-Mughni' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Dilediğini zengin kılan, kendi kendine yeterli kılan.',
+        en: 'The Enricher, who makes wealthy and self-sufficient whomever He wills.',
+      },
+      virtue: {
+        tr: 'Büyük zenginliğe ulaşmak; geçim darlığından tamamen kurtulmak; insanlardan bir şey istemeyecek konuma gelmek.',
+        en: 'Attaining great wealth; complete deliverance from financial hardship; reaching a position where one need ask nothing of others.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'zenginlik', 'geçim', 'istiğna'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'huzur'],
       timeOfDay: 'any',
@@ -1984,13 +2676,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mani',
       nameArabic: 'الْمَانِعُ',
-      nameTurkish: 'El-Mâni',
-      transliteration: 'El-Mâni',
-      dhikrDay: 'Pazar',
-      meaning: 'Dilemediği şeylerin gerçekleşmesini engelleyen, koruyan.',
-      virtue:
-        'Kazaların, belaların engellenmesi; sağ el, başın üstü ve kalp için şifa; zararlı alışkanlıkları bırakmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Mâni', en: "Al-Mani'" },
+      transliteration: { tr: 'El-Mâni', en: "Al-Mani'" },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Dilemediği şeylerin gerçekleşmesini engelleyen, koruyan.',
+        en: 'The Preventer, who blocks the occurrence of what He does not will and grants protection.',
+      },
+      virtue: {
+        tr: 'Kazaların, belaların engellenmesi; sağ el, başın üstü ve kalp için şifa; zararlı alışkanlıkları bırakmak.',
+        en: 'The prevention of accidents and calamities; healing for the right hand, the crown of the head, and the heart; giving up harmful habits.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'korunma', 'şifa', 'alışkanlık'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'şifa'],
       timeOfDay: 'any',
@@ -2005,13 +2705,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-ed-darr',
       nameArabic: 'الضَّارُ',
-      nameTurkish: 'Ed-Dârr',
-      transliteration: 'Ed-Dârr',
-      dhikrDay: 'Salı',
-      meaning: 'Zarar verenleri yaratan, dilediğine zarar veren.',
-      virtue:
-        'Zararlı düşmanların planlarını bozmak; hile yapanların hilelerini kendi başlarına yıkmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Ed-Dârr', en: 'Ad-Darr' },
+      transliteration: { tr: 'Ed-Dârr', en: 'Ad-Darr' },
+      dhikrDay: { tr: 'Salı', en: 'Tuesday' },
+      meaning: {
+        tr: 'Zarar verenleri yaratan, dilediğine zarar veren.',
+        en: 'The Distresser, who creates those who cause harm and brings harm upon whomever He wills.',
+      },
+      virtue: {
+        tr: 'Zararlı düşmanların planlarını bozmak; hile yapanların hilelerini kendi başlarına yıkmak.',
+        en: 'Foiling the schemes of harmful enemies; turning the deceit of those who scheme back upon their own heads.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'korunma', 'düşman', 'hile'],
       categories: ['genel', 'esma', 'esmaul husna', 'korunma', 'adalet'],
       timeOfDay: 'any',
@@ -2026,13 +2734,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-en-nafi',
       nameArabic: 'النَّافِعُ',
-      nameTurkish: 'En-Nâfi',
-      transliteration: 'En-Nâfi',
-      dhikrDay: 'Cuma',
-      meaning: 'Fayda verenleri yaratan, dilediğine fayda sağlayan.',
-      virtue:
-        'Hastalıklara şifa bulmak; kazancın artması; girişilen her türlü ticari işten büyük kârlar elde etmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'En-Nâfi', en: "An-Nafi'" },
+      transliteration: { tr: 'En-Nâfi', en: "An-Nafi'" },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Fayda verenleri yaratan, dilediğine fayda sağlayan.',
+        en: 'The Propitious, who creates those who bring benefit and grants benefit to whomever He wills.',
+      },
+      virtue: {
+        tr: 'Hastalıklara şifa bulmak; kazancın artması; girişilen her türlü ticari işten büyük kârlar elde etmek.',
+        en: 'Finding healing from illness; an increase in earnings; obtaining great profit from every commercial venture undertaken.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'fayda', 'şifa', 'kazanç'],
       categories: ['genel', 'esma', 'esmaul husna', 'şifa', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2047,13 +2763,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-en-nur',
       nameArabic: 'النُّورُ',
-      nameTurkish: 'En-Nûr',
-      transliteration: 'En-Nûr',
-      dhikrDay: 'Cuma',
-      meaning: 'Alemleri nurlandıran, kalplere hidayet nuru veren.',
-      virtue:
-        'Kalbin iman nuruyla dolması; zihin ve basiret açıklığı; doğru yolu kolayca görebilmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'En-Nûr', en: 'An-Nur' },
+      transliteration: { tr: 'En-Nûr', en: 'An-Nur' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Alemleri nurlandıran, kalplere hidayet nuru veren.',
+        en: 'The Light, who illuminates the worlds and gives the light of guidance to hearts.',
+      },
+      virtue: {
+        tr: 'Kalbin iman nuruyla dolması; zihin ve basiret açıklığı; doğru yolu kolayca görebilmek.',
+        en: 'The filling of the heart with the light of faith; clarity of mind and insight; easily discerning the right path.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'nur', 'hidayet', 'basiret'],
       categories: ['genel', 'esma', 'esmaul husna', 'iman', 'huzur'],
       timeOfDay: 'any',
@@ -2068,13 +2792,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-hadi',
       nameArabic: 'الْهَادِي',
-      nameTurkish: 'El-Hâdî',
-      transliteration: 'El-Hâdî',
-      dhikrDay: 'Pazar',
-      meaning: 'Hidayet veren, dilediğini doğru yola ulaştıran.',
-      virtue:
-        'Hidayete ermek; çocukların güzel ahlaklı olması; idrar kesesi ve kalp için fiziki şifa.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Hâdî', en: 'Al-Hadi' },
+      transliteration: { tr: 'El-Hâdî', en: 'Al-Hadi' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Hidayet veren, dilediğini doğru yola ulaştıran.',
+        en: 'The Guide, who grants guidance and leads whomever He wills to the right path.',
+      },
+      virtue: {
+        tr: 'Hidayete ermek; çocukların güzel ahlaklı olması; idrar kesesi ve kalp için fiziki şifa.',
+        en: 'Attaining guidance; children growing up with good character; physical healing for the bladder and the heart.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'hidayet', 'ahlak', 'şifa'],
       categories: ['genel', 'esma', 'esmaul husna', 'iman', 'şifa'],
       timeOfDay: 'any',
@@ -2089,13 +2821,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-bedi',
       nameArabic: 'الْبَدِيعُ',
-      nameTurkish: 'El-Bedî',
-      transliteration: 'El-Bedî',
-      dhikrDay: 'Perşembe',
-      meaning: 'Örneksiz, benzersiz ve eşsiz yaratan.',
-      virtue:
-        'Sanatta, bilimde ve iş hayatında özgün projeler üretmek; zor işlerin üstesinden gelmek; takdir toplamak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Bedî', en: "Al-Badi'" },
+      transliteration: { tr: 'El-Bedî', en: "Al-Badi'" },
+      dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
+      meaning: {
+        tr: 'Örneksiz, benzersiz ve eşsiz yaratan.',
+        en: 'The Incomparable Originator, who creates without precedent, peerless and unique.',
+      },
+      virtue: {
+        tr: 'Sanatta, bilimde ve iş hayatında özgün projeler üretmek; zor işlerin üstesinden gelmek; takdir toplamak.',
+        en: 'Producing original work in art, science, and professional life; overcoming difficult tasks; gaining recognition.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'yaratıcılık', 'bilim', 'başarı'],
       categories: ['genel', 'esma', 'esmaul husna', 'başarı', 'iş kariyer'],
       timeOfDay: 'any',
@@ -2110,13 +2850,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-baki',
       nameArabic: 'الْبَاقِي',
-      nameTurkish: 'El-Bâkî',
-      transliteration: 'El-Bâkî',
-      dhikrDay: 'Pazar',
-      meaning: 'Ebedi olan, varlığının sonu bulunmayan.',
-      virtue:
-        'Ömrün uzun ve bereketli olması; sadır, idrar yolu ve boşaltım için fiziki şifa; gelecek endişesini yenmek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Bâkî', en: 'Al-Baqi' },
+      transliteration: { tr: 'El-Bâkî', en: 'Al-Baqi' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Ebedi olan, varlığının sonu bulunmayan.',
+        en: 'The Everlasting, whose existence has no end.',
+      },
+      virtue: {
+        tr: 'Ömrün uzun ve bereketli olması; sadır, idrar yolu ve boşaltım için fiziki şifa; gelecek endişesini yenmek.',
+        en: 'A long and blessed life; physical healing for the chest, urinary tract, and elimination; overcoming anxiety about the future.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'ömür', 'bereket', 'şifa'],
       categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'şifa'],
       timeOfDay: 'any',
@@ -2131,13 +2879,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-varis',
       nameArabic: 'الْوَارِثُ',
-      nameTurkish: 'El-Vâris',
-      transliteration: 'El-Vâris',
-      dhikrDay: 'Cuma',
-      meaning: 'Her şey yok olduktan sonra varlığı devam eden asıl sahibi.',
-      virtue:
-        'Mal, mülk ve toprak sahibi olmak; hayırlı bir neslin devam etmesi; ahiret saadetine ermek.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'El-Vâris', en: 'Al-Warith' },
+      transliteration: { tr: 'El-Vâris', en: 'Al-Warith' },
+      dhikrDay: { tr: 'Cuma', en: 'Friday' },
+      meaning: {
+        tr: 'Her şey yok olduktan sonra varlığı devam eden asıl sahibi.',
+        en: 'The Inheritor, the true Owner whose existence continues after all else has perished.',
+      },
+      virtue: {
+        tr: 'Mal, mülk ve toprak sahibi olmak; hayırlı bir neslin devam etmesi; ahiret saadetine ermek.',
+        en: 'Owning property, possessions, and land; the continuation of a righteous lineage; attaining bliss in the Hereafter.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'mülk', 'nesil', 'ahiret'],
       categories: ['genel', 'esma', 'esmaul husna', 'rızık bereket', 'aile'],
       timeOfDay: 'any',
@@ -2152,13 +2908,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-er-resid',
       nameArabic: 'الرَّشِيدُ',
-      nameTurkish: 'Er-Reşîd',
-      transliteration: 'Er-Reşîd',
-      dhikrDay: 'Pazar',
-      meaning: 'Doğru yolu en iyi gösteren, irşad eden.',
-      virtue:
-        'Alınan kararlardan pişman olmamak; doğru kararlar vermek; prostat, omurilik ve sağ ayak için fiziki şifa.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Er-Reşîd', en: 'Ar-Rashid' },
+      transliteration: { tr: 'Er-Reşîd', en: 'Ar-Rashid' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Doğru yolu en iyi gösteren, irşad eden.',
+        en: 'The Guide to the Right Way, who best shows the correct path and provides right direction.',
+      },
+      virtue: {
+        tr: 'Alınan kararlardan pişman olmamak; doğru kararlar vermek; prostat, omurilik ve sağ ayak için fiziki şifa.',
+        en: 'Not regretting decisions made; making correct decisions; physical healing for the prostate, spinal cord, and right foot.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'karar', 'irşad', 'şifa'],
       categories: ['genel', 'esma', 'esmaul husna', 'huzur', 'şifa'],
       timeOfDay: 'any',
@@ -2173,13 +2937,21 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-es-sabur',
       nameArabic: 'الصَّبُورُ',
-      nameTurkish: 'Es-Sabûr',
-      transliteration: 'Es-Sabûr',
-      dhikrDay: 'Pazar',
-      meaning: 'Cezalandırmada acele etmeyen, sabrı çok olan.',
-      virtue:
-        'Zor zamanlarda sabır ve metanet kazanmak; öfkeyi kontrol altına almak; sıkıntılardan kurtulmak.',
-      source: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+      name: { tr: 'Es-Sabûr', en: 'As-Sabur' },
+      transliteration: { tr: 'Es-Sabûr', en: 'As-Sabur' },
+      dhikrDay: { tr: 'Pazar', en: 'Sunday' },
+      meaning: {
+        tr: 'Cezalandırmada acele etmeyen, sabrı çok olan.',
+        en: 'The Most Patient, who does not hasten in punishment and whose patience is abundant.',
+      },
+      virtue: {
+        tr: 'Zor zamanlarda sabır ve metanet kazanmak; öfkeyi kontrol altına almak; sıkıntılardan kurtulmak.',
+        en: 'Gaining patience and fortitude in difficult times; controlling anger; deliverance from distress.',
+      },
+      source: {
+        tr: 'Esmaül Hüsna temel anlam ve fazilet tablosu',
+        en: 'The Beautiful Names of Allah: fundamental meanings and virtues',
+      },
       tags: ['esma', 'esmaul husna', 'sabır', 'metanet', 'öfke'],
       categories: ['genel', 'esma', 'esmaul husna', 'sabır', 'huzur'],
       timeOfDay: 'any',
@@ -2204,12 +2976,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-melik',
       nameArabic: 'يَا مَلِكُ',
-      nameTurkish: 'Ya Melik',
-      transliteration: 'Yâ Melik',
-      meaning: 'Ey mutlak mülkün sahibi olan Allahım.',
-      virtue:
-        'Fakirlikten kurtuluş, maddi güç ve sahip olunan imkanları doğru yönetme niyetiyle okunur.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Melik', en: 'Ya Malik' },
+      transliteration: { tr: 'Yâ Melik', en: 'Ya Malik' },
+      meaning: {
+        tr: 'Ey mutlak mülkün sahibi olan Allahım.',
+        en: 'O Allah, the absolute Owner of all dominion.',
+      },
+      virtue: {
+        tr: 'Fakirlikten kurtuluş, maddi güç ve sahip olunan imkanları doğru yönetme niyetiyle okunur.',
+        en: 'Recited with the intention of deliverance from poverty, gaining material strength, and rightly managing the means one possesses.',
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'rızık', 'bereket', 'maddi güç'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2224,12 +3004,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-vehhab',
       nameArabic: 'يَا وَهَّابُ',
-      nameTurkish: 'Ya Vehhâb',
-      transliteration: 'Yâ Vehhâb',
-      meaning: 'Ey karşılıksız nimetler veren Allahım.',
-      virtue:
-        'Karşılıksız nimet, borç yükünün hafiflemesi ve rızık artışı niyetiyle zikredilir.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Vehhâb', en: 'Ya Wahhab' },
+      transliteration: { tr: 'Yâ Vehhâb', en: 'Ya Wahhab' },
+      meaning: {
+        tr: 'Ey karşılıksız nimetler veren Allahım.',
+        en: 'O Allah, who bestows blessings without expecting anything in return.',
+      },
+      virtue: {
+        tr: 'Karşılıksız nimet, borç yükünün hafiflemesi ve rızık artışı niyetiyle zikredilir.',
+        en: "Recited with the intention of receiving unconditional blessings, easing the burden of debt, and increasing one's provision.",
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'rızık', 'nimet', 'borç'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2239,12 +3027,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-rezzak',
       nameArabic: 'يَا رَزَّاقُ',
-      nameTurkish: 'Ya Rezzâk',
-      transliteration: 'Yâ Rezzâk',
-      meaning: 'Ey bütün mahlukatın rızkını veren Allahım.',
-      virtue:
-        'Bol rızık, darlıkların sona ermesi ve geçim genişliği niyetiyle okunur.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Rezzâk', en: 'Ya Razzaq' },
+      transliteration: { tr: 'Yâ Rezzâk', en: 'Ya Razzaq' },
+      meaning: {
+        tr: 'Ey bütün mahlukatın rızkını veren Allahım.',
+        en: 'O Allah, who provides sustenance for all creation.',
+      },
+      virtue: {
+        tr: 'Bol rızık, darlıkların sona ermesi ve geçim genişliği niyetiyle okunur.',
+        en: "Recited with the intention of abundant provision, the end of hardship, and ease in one's livelihood.",
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'rızık', 'geçim', 'bolluk'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2254,12 +3050,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-fettah',
       nameArabic: 'يَا فَتَّاحُ',
-      nameTurkish: 'Ya Fettâh',
-      transliteration: 'Yâ Fettâh',
-      meaning: 'Ey hayır kapılarını açan Allahım.',
-      virtue:
-        'Kapalı kapıların açılması, iş ve rızık yollarının genişlemesi niyetiyle okunur.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Fettâh', en: 'Ya Fattah' },
+      transliteration: { tr: 'Yâ Fettâh', en: 'Ya Fattah' },
+      meaning: {
+        tr: 'Ey hayır kapılarını açan Allahım.',
+        en: 'O Allah, who opens the doors of goodness.',
+      },
+      virtue: {
+        tr: 'Kapalı kapıların açılması, iş ve rızık yollarının genişlemesi niyetiyle okunur.',
+        en: "Recited with the intention of opening closed doors and widening the paths of work and provision.",
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'feth', 'iş kapısı', 'rızık'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2273,12 +3077,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-gani',
       nameArabic: 'يَا غَنِيُّ',
-      nameTurkish: 'Ya Ganî',
-      transliteration: 'Yâ Ganî',
-      meaning: 'Ey hiçbir şeye muhtaç olmayan, mutlak zengin Allahım.',
-      virtue:
-        'Kimseye muhtaç olmama, iç ve dış zenginlik bilinci ile maddi ferahlık niyetiyle zikredilir.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Ganî', en: 'Ya Ghani' },
+      transliteration: { tr: 'Yâ Ganî', en: 'Ya Ghani' },
+      meaning: {
+        tr: 'Ey hiçbir şeye muhtaç olmayan, mutlak zengin Allahım.',
+        en: 'O Allah, the Self-Sufficient, who is in need of nothing and possesses absolute richness.',
+      },
+      virtue: {
+        tr: 'Kimseye muhtaç olmama, iç ve dış zenginlik bilinci ile maddi ferahlık niyetiyle zikredilir.',
+        en: 'Recited with the intention of needing no one, cultivating an awareness of inner and outer richness, and attaining material ease.',
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'zenginlik', 'istiğna', 'bereket'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2288,12 +3100,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-mugni',
       nameArabic: 'يَا مُغْنِي',
-      nameTurkish: 'Ya Muğnî',
-      transliteration: 'Yâ Muğnî',
-      meaning: 'Ey dilediğini zengin kılan Allahım.',
-      virtue:
-        'Maddi refah, bolluk ve kişinin ihtiyaçlarının karşılanması niyetiyle okunur.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Muğnî', en: 'Ya Mughni' },
+      transliteration: { tr: 'Yâ Muğnî', en: 'Ya Mughni' },
+      meaning: {
+        tr: 'Ey dilediğini zengin kılan Allahım.',
+        en: 'O Allah, who enriches whomever He wills.',
+      },
+      virtue: {
+        tr: 'Maddi refah, bolluk ve kişinin ihtiyaçlarının karşılanması niyetiyle okunur.',
+        en: "Recited with the intention of material prosperity, abundance, and having one's needs met.",
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'zenginlik', 'refah', 'rızık'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2303,12 +3123,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-basit',
       nameArabic: 'يَا بَاسِطُ',
-      nameTurkish: 'Ya Bâsıt',
-      transliteration: 'Yâ Bâsıt',
-      meaning: 'Ey darlığı açıp genişlik veren Allahım.',
-      virtue:
-        'İşlerin büyümesi, mal ve paranın bereketlenmesi niyetiyle zikredilir.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Bâsıt', en: 'Ya Basit' },
+      transliteration: { tr: 'Yâ Bâsıt', en: 'Ya Basit' },
+      meaning: {
+        tr: 'Ey darlığı açıp genişlik veren Allahım.',
+        en: 'O Allah, who relieves hardship and grants expansiveness.',
+      },
+      virtue: {
+        tr: 'İşlerin büyümesi, mal ve paranın bereketlenmesi niyetiyle zikredilir.',
+        en: "Recited with the intention of growth in one's affairs and blessing in wealth and money.",
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'genişlik', 'işlerin açılması', 'bereket'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2318,12 +3146,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-kerim',
       nameArabic: 'يَا كَرِيمُ',
-      nameTurkish: 'Ya Kerîm',
-      transliteration: 'Yâ Kerîm',
-      meaning: 'Ey ikramı bol ve cömert olan Allahım.',
-      virtue:
-        'Kolay rızık, cömertçe verilen nimetler ve hayırlı ikramlar niyetiyle okunur.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Kerîm', en: 'Ya Karim' },
+      transliteration: { tr: 'Yâ Kerîm', en: 'Ya Karim' },
+      meaning: {
+        tr: 'Ey ikramı bol ve cömert olan Allahım.',
+        en: 'O Allah, abounding in generosity and bounty.',
+      },
+      virtue: {
+        tr: 'Kolay rızık, cömertçe verilen nimetler ve hayırlı ikramlar niyetiyle okunur.',
+        en: 'Recited with the intention of easily attained provision, generously bestowed blessings, and good favors.',
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'ikram', 'rızık', 'cömertlik'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2333,12 +3169,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-malikel-mulk',
       nameArabic: 'يَا مَالِكَ الْمُلْكِ',
-      nameTurkish: 'Ya Mâlikül Mülk',
-      transliteration: 'Yâ Mâlikel Mülk',
-      meaning: 'Ey mülkün gerçek sahibi ve hükümranı olan Allahım.',
-      virtue:
-        'Ev, arsa gibi taşınmaz mülk edinme ve mevcut mülkün korunması niyetiyle zikredilir.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Mâlikül Mülk', en: 'Ya Malikul Mulk' },
+      transliteration: { tr: 'Yâ Mâlikel Mülk', en: 'Ya Malikal Mulk' },
+      meaning: {
+        tr: 'Ey mülkün gerçek sahibi ve hükümranı olan Allahım.',
+        en: 'O Allah, the true Owner and Sovereign of all dominion.',
+      },
+      virtue: {
+        tr: 'Ev, arsa gibi taşınmaz mülk edinme ve mevcut mülkün korunması niyetiyle zikredilir.',
+        en: 'Recited with the intention of acquiring real property such as a house or land, and protecting property already owned.',
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'mülk', 'ev arsa', 'korunma'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',
@@ -2348,12 +3192,20 @@ export const esmaRizikBereket = {
     {
       key: 'esma-ya-mutekebbir',
       nameArabic: 'يَا مُتَكَبِّرُ',
-      nameTurkish: 'Ya Mütekebbir',
-      transliteration: 'Yâ Mütekebbir',
-      meaning: 'Ey azamet ve büyüklük sahibi olan Allahım.',
-      virtue:
-        'İzzet, refah ve bereket artışı ile sözün tesirinin güçlenmesi niyetiyle okunur.',
-      source: 'Esma-ül Hüsna ebced uygulama geleneği',
+      name: { tr: 'Ya Mütekebbir', en: 'Ya Mutakabbir' },
+      transliteration: { tr: 'Yâ Mütekebbir', en: 'Ya Mutakabbir' },
+      meaning: {
+        tr: 'Ey azamet ve büyüklük sahibi olan Allahım.',
+        en: 'O Allah, possessor of greatness and majesty.',
+      },
+      virtue: {
+        tr: 'İzzet, refah ve bereket artışı ile sözün tesirinin güçlenmesi niyetiyle okunur.',
+        en: "Recited with the intention of increasing honor, prosperity, and blessing, and strengthening the impact of one's words.",
+      },
+      source: {
+        tr: 'Esma-ül Hüsna ebced uygulama geleneği',
+        en: 'The Beautiful Names of Allah: abjad (ebced) practice tradition',
+      },
       tags: ['esma', 'izzet', 'refah', 'bereket'],
       categories: ['genel', 'esma', 'rızık bereket'],
       timeOfDay: 'any',

@@ -10,14 +10,26 @@ export const kurbanBayrami = {
       key: keyMap.TESRIK_TEKBIRI,
       nameArabic:
         'اللّٰهُ أَكْبَرُ اللّٰهُ أَكْبَرُ لاَ إِلٰهَ إِلاَّ اللّٰهُ وَاللّٰهُ أَكْبَرُ اللّٰهُ أَكْبَرُ وَلِلّٰهِ الْحَمْدُ',
-      nameTurkish: 'Teşrik Tekbiri',
-      transliteration:
-        'Allâhu ekber Allâhu ekber. Lâ ilâhe illallâhu vallâhu ekber. Allâhu ekber ve lillâhil-hamd.',
-      meaning:
-        "Allah en büyüktür. Allah en büyüktür. Allah'tan başka ilah yoktur. Allah en büyüktür. Hamd Allah'adır.",
-      virtue:
-        'Teşrik günlerinde farz namazların ardından tekbir getirmek bayram şuurunu canlı tutar.',
-      source: 'Teşrik tekbirleri geleneği',
+      name: {
+        tr: 'Teşrik Tekbiri',
+        en: 'Takbir of the Days of Tashriq',
+      },
+      transliteration: {
+        tr: 'Allâhu ekber Allâhu ekber. Lâ ilâhe illallâhu vallâhu ekber. Allâhu ekber ve lillâhil-hamd.',
+        en: 'Allahu akbar, Allahu akbar. La ilaha illallahu wallahu akbar. Allahu akbar wa lillahil-hamd.',
+      },
+      meaning: {
+        tr: "Allah en büyüktür, Allah en büyüktür. Allah'tan başka ilah yoktur. Allah en büyüktür. Hamd Allah'adır.",
+        en: 'Allah is the Greatest, Allah is the Greatest. There is no deity but Allah, and Allah is the Greatest. Allah is the Greatest, and to Allah belongs all praise.',
+      },
+      virtue: {
+        tr: "Abdullah b. Mesud, İbn Ömer ve İbn Abbas radıyallahu anhüm gibi sahabilerin Arefe sabahından Teşrik günlerinin sonuna kadar farz namazların ardından bu tekbiri getirdikleri nakledilmiştir. Tekbir getirmek, Kur'an'da geçen 'Allah'ı sayılı günlerde anın' (Bakara 2:203) emrinin bir tatbikidir ve bayram günlerinde Allah'ın büyüklüğünü ilan ederek şükür ve tevhid bilincini canlı tutar.",
+        en: "It is reported that Companions such as Abdullah ibn Mas'ud, Ibn Umar, and Ibn Abbas (may Allah be pleased with them) recited this takbir after every obligatory prayer from the morning of Arafah until the end of the Days of Tashriq. Reciting it fulfils the Quranic command to 'remember Allah during the appointed days' (Al-Baqarah 2:203) and keeps the awareness of Allah's greatness and gratitude alive throughout the days of Eid.",
+      },
+      source: {
+        tr: "Buhârî, Îdeyn, 11 (muallak rivayet); İbn Ebî Şeybe, el-Musannef, 2/165",
+        en: 'Sahih al-Bukhari, Two Eids, 11 (mu`allaq narration); Ibn Abi Shaybah, Al-Musannaf, 2/165',
+      },
       tags: [
         'kurban bayramı',
         'tesrik',
@@ -34,12 +46,26 @@ export const kurbanBayrami = {
     {
       key: keyMap.SUBHANALLAHI_VE_BIHAMDIHI,
       nameArabic: 'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ',
-      nameTurkish: 'Tesbih Zikri',
-      transliteration: 'Sübhânallâhi ve bi-hamdihî.',
-      meaning: "Allah'ı noksan sıfatlardan tenzih eder ve O'na hamd ederim.",
-      virtue:
-        'Kalbi arındırır, şükür duygusunu artırır ve bayram günlerinde manevi dengeyi destekler. Bayram günü 300 kere okunup ölmüşlerin ruhuna bağışlandığında her müminin kabrine bin nur girer, okuyan kişi vefat ettiğinde de kabrine bin nur verilir. Günde yüz defa okuyan kişinin günahları deniz köpüğü kadar olsa bile bağışlanır.',
-      source: 'Bayram sabahı tavsiye tesbihat',
+      name: {
+        tr: 'Tesbih Zikri',
+        en: 'Tasbih of Glorification and Praise',
+      },
+      transliteration: {
+        tr: 'Sübhânallâhi ve bi-hamdihî.',
+        en: "Subhanallahi wa bihamdihi.",
+      },
+      meaning: {
+        tr: "Allah'ı noksan sıfatlardan tenzih eder, O'na hamd ederim.",
+        en: 'Glory be to Allah and praise be to Him.',
+      },
+      virtue: {
+        tr: "Ebû Hüreyre radıyallahu anh, Resûlullah'ın (sas) şöyle buyurduğunu rivayet etmiştir: 'İki kelime vardır ki dile hafif, mizanda ağır, Rahmân'a sevimlidir: Sübhânallâhi ve bi-hamdihî, Sübhânallâhi'l-azîm.' Yine aynı sahabiden nakledilen bir başka hadiste Resûlullah (sas): 'Kim günde yüz kere Sübhânallâhi ve bi-hamdihî derse, günahları deniz köpüğü kadar çok olsa bile bağışlanır' buyurmuştur. Bayram sabahı bu tesbihle Allah'a şükretmek, kalbi arındırır ve nimetin sahibini hatırlatır.",
+        en: "Abu Hurairah (may Allah be pleased with him) narrated that the Messenger of Allah (peace be upon him) said: 'There are two phrases that are light on the tongue, heavy on the scale, and beloved to the Most Merciful: Subhanallahi wa bihamdihi, Subhanallahil-azim.' The same Companion also narrated that the Prophet (peace be upon him) said: 'Whoever says Subhanallahi wa bihamdihi one hundred times a day will have his sins forgiven, even if they were as much as the foam of the sea.' Reciting this tasbih on the morning of Eid purifies the heart and recalls the Giver of every blessing.",
+      },
+      source: {
+        tr: "Buhârî, Deavât, 65 (6406) ve 64 (6405); Müslim, Zikr, 30 (2694) ve 28-29 (2691)",
+        en: 'Sahih al-Bukhari, Supplications, 65 (6406) and 64 (6405); Sahih Muslim, Dhikr, 30 (2694) and 28-29 (2691)',
+      },
       tags: [
         'kurban bayramı',
         'tesbih',
@@ -60,12 +86,26 @@ export const kurbanBayrami = {
     {
       key: keyMap.ESTAGFIRULLAH,
       nameArabic: 'أَسْتَغْفِرُ اللّٰهَ',
-      nameTurkish: 'Estağfirullâh',
-      transliteration: 'Estağfirullâh.',
-      meaning: "Allah'tan bağışlanma dilerim.",
-      virtue:
-        'İbadetlerdeki eksiklikler için tevbe bilincini güçlendirir ve kalpte arınma sağlar.',
-      source: 'Bayram günü istiğfar tavsiyesi',
+      name: {
+        tr: 'Estağfirullâh',
+        en: 'Astaghfirullah',
+      },
+      transliteration: {
+        tr: 'Estağfirullâh.',
+        en: 'Astaghfirullah.',
+      },
+      meaning: {
+        tr: "Allah'tan bağışlanma dilerim.",
+        en: 'I seek forgiveness from Allah.',
+      },
+      virtue: {
+        tr: "Ebû Hüreyre radıyallahu anh'ten rivayet edildiğine göre Resûlullah (sas): 'Vallahi ben günde yetmiş defadan fazla Allah'a istiğfar eder ve tevbe ederim' buyurmuştur. Yine İbn Ömer radıyallahu anhümâ, bir mecliste Resûlullah'ın (sas) yüz defadan fazla 'Rabbiğfirlî ve tüb aleyye, inneke ente't-tevvâbü'r-rahîm' dediğini saydıklarını nakletmiştir. Bayram günlerinde istiğfar, ibadetlerdeki eksiklikleri telafi eder ve kalpte tevbe bilincini tazeler.",
+        en: "It was narrated from Abu Hurairah (may Allah be pleased with him) that the Messenger of Allah (peace be upon him) said: 'By Allah, I seek Allah's forgiveness and turn to Him in repentance more than seventy times a day.' Ibn Umar (may Allah be pleased with him) also reported that they used to count the Prophet (peace be upon him) saying, in a single gathering, more than a hundred times: 'My Lord, forgive me and accept my repentance, for You are the Ever-Relenting, the Most Merciful.' Seeking forgiveness during the days of Eid makes up for shortcomings in worship and renews the heart's awareness of repentance.",
+      },
+      source: {
+        tr: "Buhârî, Deavât, 3 (6307); Ebû Dâvûd, Vitir, 26 (1516); Tirmizî, Deavât, 38 (3434)",
+        en: 'Sahih al-Bukhari, Supplications, 3 (6307); Abu Dawood, Witr, 26 (1516); At-Tirmidhi, Supplications, 38 (3434)',
+      },
       tags: ['kurban bayramı', 'istiğfar', 'tevbe'],
       categories: ['özel gün', 'bayram'],
       timeOfDay: 'any',
@@ -76,14 +116,26 @@ export const kurbanBayrami = {
       key: keyMap.KURBAN_SUKRU_DUASI,
       nameArabic:
         'اللّٰهُمَّ لَكَ الْحَمْدُ كُلُّهُ وَلَكَ الشُّكْرُ كُلُّهُ وَإِلَيْكَ يُرْجَعُ الْأَمْرُ كُلُّهُ',
-      nameTurkish: 'Şükür Duası',
-      transliteration:
-        'Allâhümme lekel-hamdü küllühû ve lekeş-şükrü küllühû ve ileyke yürceul-emru küllühû.',
-      meaning:
-        "Allah'ım, hamdin bütünü Sana aittir, şükrün bütünü Sana aittir, bütün işler Sana döner.",
-      virtue:
-        'Kurban ibadetini şükür ve teslimiyet boyutuyla tamamlar, nimetin sahibini hatırlatır.',
-      source: 'Kurban ibadeti sonrası şükür duaları',
+      name: {
+        tr: 'Şükür Duası',
+        en: 'Supplication of Gratitude',
+      },
+      transliteration: {
+        tr: 'Allâhümme lekel-hamdü küllühû ve lekeş-şükrü küllühû ve ileyke yürceul-emru küllühû.',
+        en: "Allahumma lakal-hamdu kulluhu wa lakash-shukru kulluhu wa ilayka yurja'ul-amru kulluhu.",
+      },
+      meaning: {
+        tr: "Allah'ım, hamdin bütünü Sana aittir, şükrün bütünü Sana aittir, bütün işler Sana döner.",
+        en: 'O Allah, to You belongs all praise, to You belongs all thanks, and to You all matters return.',
+      },
+      virtue: {
+        tr: "Kurban ibadeti, Hz. İbrahim (a.s.) ile oğlu Hz. İsmail (a.s.)'ın Allah'a teslimiyetinin hatırasıdır. Kesim sonrasında bu şükür duasıyla nimetin ve emrin gerçek sahibinin Allah olduğu tekrar edilir; kurbanın etinden, kanından değil, sahibindeki takvadan Allah'a ulaşacağı (Hac 22:37) hatırlanarak ibadet şükür ve teslimiyet boyutuyla tamamlanır.",
+        en: "The sacrifice of Eid al-Adha commemorates the submission of Prophet Ibrahim (peace be upon him) and his son Prophet Isma'il (peace be upon him) to Allah. After the sacrifice, this supplication of gratitude affirms that Allah alone is the true owner of every blessing and every affair; it recalls that it is not the flesh or blood of the sacrifice that reaches Allah, but the piety of the one who offers it (Al-Hajj 22:37), completing the act of worship with gratitude and submission.",
+      },
+      source: {
+        tr: "Kur'an-ı Kerim, Hac 22:37; Kurban ibadeti sonrası şükür duaları geleneği",
+        en: 'Quran, Surah Al-Hajj 22:37; traditional supplications of gratitude recited after the sacrifice',
+      },
       tags: ['kurban bayramı', 'şükür', 'dua'],
       categories: ['özel gün', 'bayram'],
       timeOfDay: 'any',
@@ -93,12 +145,26 @@ export const kurbanBayrami = {
     {
       key: keyMap.HASBIYE_ZIKRI_100,
       nameArabic: 'حَسْبِيَ اللّٰهُ وَنِعْمَ الْوَكِيلُ',
-      nameTurkish: 'Hasbiye Zikri',
-      transliteration: "Hasbiyallâhu ve ni'mel-vekîl.",
-      meaning: 'Allah bana yeter, O ne güzel vekildir.',
-      virtue:
-        'Tevekkül bilincini artırır, endişe ve dağınıklık halinde kalbi dengelemeye yardımcı olur.',
-      source: 'Tevekkül zikirleri',
+      name: {
+        tr: 'Hasbiye Zikri',
+        en: 'Dhikr of Sufficiency',
+      },
+      transliteration: {
+        tr: "Hasbiyallâhu ve ni'mel-vekîl.",
+        en: "Hasbiyallahu wa ni'mal-wakil.",
+      },
+      meaning: {
+        tr: 'Allah bana yeter, O ne güzel vekildir.',
+        en: 'Allah is sufficient for me, and He is the best Disposer of affairs.',
+      },
+      virtue: {
+        tr: "İbn Abbas radıyallahu anhümâ'dan nakledildiğine göre Resûlullah (sas) şöyle buyurmuştur: 'Hasbunallâhu ve ni'mel-vekîl sözünü İbrahim (a.s.) ateşe atıldığında söylemiştir; Muhammed (sas) de düşmanları kendisine karşı toplandığında bu sözü söylemiştir.' Bu zikir, Kur'an'da Âl-i İmrân 3:173'te de yer alır ve tevekkülün en özlü ifadesidir; zorluk ve endişe anlarında kalbi Allah'a bağlayarak güven ve dinginlik verir.",
+        en: "It was narrated from Ibn Abbas (may Allah be pleased with them both) that the Messenger of Allah (peace be upon him) said: 'Ibrahim (peace be upon him) said hasbunallahu wa ni'mal-wakil when he was thrown into the fire, and Muhammad (peace be upon him) said it when his enemies gathered against him.' This dhikr also appears in the Quran, Surah Aal-i-Imran 3:173, and is the most concise expression of trust in Allah; in moments of hardship and anxiety it anchors the heart to Allah, bringing security and calm.",
+      },
+      source: {
+        tr: "Buhârî, Tefsîr, Âl-i İmrân, 13 (4563); Kur'an-ı Kerim, Âl-i İmrân 3:173",
+        en: "Sahih al-Bukhari, Tafsir, Aal-i-Imran, 13 (4563); Quran, Surah Aal-i-Imran 3:173",
+      },
       tags: ['kurban bayramı', 'tevekkül', 'hasbiye'],
       categories: ['özel gün', 'bayram'],
       timeOfDay: 'any',
@@ -109,14 +175,26 @@ export const kurbanBayrami = {
       key: keyMap.HASBIYE,
       nameArabic:
         'حَسْبِيَ اللّٰهُ وَكَفَى سَمِعَ اللّٰهُ لِمَنْ دَعَا لَيْسَ وَرَاءَ اللّٰهِ مُنْتَهَى',
-      nameTurkish: 'Tevekkül ve Hasbiye Zikri',
-      transliteration:
-        'Hasbiyallâhu ve kefâ. Semiallâhu limen deâ. Leyse verâ-allâhi müntehâ.',
-      meaning:
-        "Allah bana yeter ve kâfidir. Allah dua edeni işitir. Allah'tan öte varılacak bir son yoktur.",
-      virtue:
-        'Tevekkül bilincini derinleştirir; kalpte emniyet ve teslimiyet hissini artırır.',
-      source: 'Hasbiye rivayetleri',
+      name: {
+        tr: 'Tevekkül ve Hasbiye Zikri',
+        en: 'Dhikr of Trust and Sufficiency',
+      },
+      transliteration: {
+        tr: 'Hasbiyallâhu ve kefâ. Semiallâhu limen deâ. Leyse verâ-allâhi müntehâ.',
+        en: "Hasbiyallahu wa kafa. Sami'allahu liman da'a. Laysa wara'allahi muntaha.",
+      },
+      meaning: {
+        tr: "Allah bana yeter ve kâfidir. Allah dua edeni işitir. Allah'tan öte varılacak bir son yoktur.",
+        en: 'Allah is sufficient for me, and He suffices. Allah hears whoever calls upon Him. There is no destination beyond Allah.',
+      },
+      virtue: {
+        tr: "Bu zikir, dua ve tevekkül mecmûalarında nakledilen, Hasbiye zikrinin genişletilmiş bir şeklidir; hadis lafzı olmaktan çok, önceki âlimlerin tevekkül ve teslimiyeti pekiştirmek için tavsiye ettiği bir virddir. Bayram günlerinde tekrarlanması, kulun her işinde son mercinin Allah olduğunu hatırlatarak kalpte emniyet ve teslimiyet hissini derinleştirir.",
+        en: "This dhikr is an expanded form of the sufficiency formula found in supplication and remembrance compendiums; rather than being the exact wording of a marfu' hadith, it is a devotional formula that earlier scholars recommended to reinforce trust and submission to Allah. Repeating it during the days of Eid reminds the servant that Allah is the final refuge in every matter, deepening the heart's sense of security and submission.",
+      },
+      source: {
+        tr: 'Dua ve tevekkül mecmûaları; Hasbiye zikri rivayetleri',
+        en: 'Traditional supplication and remembrance compendiums; narrations on the dhikr of sufficiency',
+      },
       tags: ['kurban bayramı', 'hasbiye', 'tevekkül', 'dua'],
       categories: ['özel gün', 'bayram', 'dua', 'tevekkül'],
       timeOfDay: 'any',
@@ -215,4 +293,4 @@ export const kurbanBayrami = {
       ],
     },
   ],
-};
+}

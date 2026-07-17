@@ -11,14 +11,26 @@ export const eyyamisud = {
       key: keyMap.LUTFU_HAFI_DUASI,
       nameArabic:
         'اَللَّهُمَّ يَا لَطِيفَ الْوُجُودِ يَا مَنْ لُطْفُهُ خَفِيٌّ لُطْفَكَ الْخَفِيَّ دَارِكْنِي وَأَوْصِلْنِي إِلَى مُرَادِي وَاحْفَظْنِي وَارْحَمْنِي وَأَهْلِي وَالْمُؤْمِنِينَ مِنْ تَحْتِ سُتُورِ الْعِزَّةِ',
-      nameTurkish: 'Lütf-u Hafî Duası',
-      transliteration:
-        "Allâhümme yâ lâtîfe'l-vücûd, yâ men lütfuhû hafî, lütfike'l-hafîyyi dârikni, ve evsılni ilâ murâdî vahfaznî, verhamnî ve ehlî ve'l-mü'minîne min tahti sütûri'l-izzeh.",
-      meaning:
-        "Ey lütfu tam olan ve lütufları kulların idraklerinden gizli olan Allah'ım! Gizli lütfunla beni muratlarıma ulaştır ve koru. İzzet perdelerinin altından bana, aileme ve müminlere rahmet et.",
-      virtue:
-        "Ayın son günlerinin karanlığında gizlenen ilahi lütuflara nail olmak, her türlü gizli kaza, bela ve musibetten muhafaza olunmak.",
-      source: "Muhammed b. Hatîriddîn, Cevâhiru'l-Hams; İsmailağa Kaynakları",
+      name: {
+        tr: 'Lütf-u Hafî Duası',
+        en: 'Supplication of the Hidden Grace',
+      },
+      transliteration: {
+        tr: "Allâhümme yâ lâtîfe'l-vücûd, yâ men lütfuhû hafî, lütfike'l-hafîyyi dârikni, ve evsılni ilâ murâdî vahfaznî, verhamnî ve ehlî ve'l-mü'minîne min tahti sütûri'l-izzeh.",
+        en: "Allahumma ya latifal-wujud, ya man lutfuhu khafi, lutfikal-khafiyya darikni, wa awsilni ila muradi wahfazni, warhamni wa ahli wal-mu'minina min tahti suturil-izzah.",
+      },
+      meaning: {
+        tr: "Ey lütfu tam olan ve lütufları kulların idraklerinden gizli olan Allah'ım! Gizli lütfunla beni muratlarıma ulaştır ve koru. İzzet perdelerinin altından bana, aileme ve müminlere rahmet et.",
+        en: 'O Allah, O the All-Gracious in essence, whose grace is hidden from the perception of His servants! Reach me with Your hidden grace, bring me to my aims and protect me. From behind the veils of Your majesty, have mercy upon me, my family, and the believers.',
+      },
+      virtue: {
+        tr: "Bu dua, hicri takvimin Eyyâm-ı Sud (karanlık günler) olarak bilinen ayın 28, 29 ve 30. günlerine özgü olarak İslam tasavvuf geleneğinde ve fıkıh kitaplarında önemli bir yer edinmiştir. Cevâhiru'l-Hams gibi klasik dönem eserlerinde bu günlerde okunan zikirler arasında nakledilmektedir. 'Yâ Lâtîfe'l-vücûd' nidası, Allah'ın el-Latîf ismini çağırmaktadır; bu isim, lütfunun boyutunu kavrayan değil, farkında bile olmaksızın lutuflara mazhar olan kulu anlatan bir mana taşır. Yani Allah'ın lütfu öyle gizlidir ki, kul çoğu zaman ona ne zaman çarptığını bile fark etmez. Eyyâm-ı Sud günleri, ayın ışığının tamamen kaybolduğu, dış dünyada bile bir karanlık ve belirsizlik havasının hâkim olduğu zamanlardır. Selef alimleri bu günlerin, kazanın ve belanın da en çok gizlendiği, yani aniden gelip çarptığı günler olduğuna dair rivayetlere dikkat çekmiştir. Bu sebeple bu günlerde oruç tutmak (Sirar orucu) ve dua ile meşgul olmak İslam geleneğinde müstehab görülmüştür. Duanın 'min tahti sütûri'l-izzeh' ifadesi son derece manidardır: 'izzet perdelerinin altından.' Bu ifade, Allah'ın rahmetinin yalnızca ihtişam ve açıklıkla değil, bazen bizim göremediğimiz perde aralarından aktığını hatırlatır. Kul, bu günlerde Allah'tan gizli lütufla muamele görmesini, işlerinin ıslah edilmesini, ailesinin ve tüm müminlerin korunmasını diler. Özellikle 'lâ tekilnî ilâ nefsî tarfete aynin' (beni göz açıp kapayıncaya kadar bile olsa nefsime bırakma) benzeri taleplerin bu dua ile birlikte okunması; ayın karanlık günlerinde kulun en içten ihtiyacını, yani sürekli ilahi himayeyi, tek cümlede özetler. Eyyâm-ı Sud'da bu duayı sabah ve gece 3 kez okumak, ayın son demlerini manevi bir bitiş töreniyle kapatmak ve gelen yeni aya temiz bir sayfa olarak adım atmaktır.",
+        en: "This supplication holds a significant place in Islamic Sufi tradition and classical fiqh literature as a dhikr specific to the days known as Ayyam al-Sud (the Days of Darkness) — the 28th, 29th, and 30th days of the lunar month. It is narrated among the remembrances prescribed for these days in classical-era works such as Jawahir al-Khams. The invocation 'Ya Latifal-wujud' calls upon Allah's name al-Latif; this name carries the meaning of One whose grace is so subtle that the servant does not comprehend its dimensions, and often does not even realize when he has been touched by it. In other words, Allah's grace is so hidden that the servant frequently does not notice the moment it reaches him. The Ayyam al-Sud are the days when the moon's light has entirely disappeared — days during which even the outer world carries an air of darkness and uncertainty. Scholars of the Salaf have drawn attention to narrations indicating that these are the days when calamities and afflictions are most concealed, meaning they can come suddenly and without warning. For this reason, fasting on these days (the Sirar fast) and engaging in supplication has been regarded as recommended (mustahabb) in Islamic tradition. The phrase 'min tahti suturil-izzah' in the supplication — 'from beneath the veils of majesty' — is deeply significant: it recalls that Allah's mercy does not flow only through splendor and visibility, but sometimes from behind veils that we cannot see. On these days, the servant asks Allah to deal with him through hidden grace, to set right his affairs, and to protect his family and all believers. Reciting this supplication three times at dawn and at night during the Ayyam al-Sud is to close the moon's final days with a spiritual farewell rite and to step into the coming new month as a fresh, unblemished page.",
+      },
+      source: {
+        tr: "Muhammed b. Hatîriddîn, Cevâhiru'l-Hams; Eyyâm-ı Sud Zikirleri",
+        en: "Muhammad ibn Khatiruddin, Jawahir al-Khams (The Five Jewels); Remembrances of the Days of Darkness",
+      },
       tags: ['eyyam-ı sud', 'lütuf', 'korunma', 'gizli bela', 'muharrem', 'dua'],
       categories: ['dua', 'özel gün', 'korunma'],
       timeOfDay: ['gece', 'sabah'],

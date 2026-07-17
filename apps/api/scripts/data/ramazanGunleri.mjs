@@ -11,14 +11,26 @@ export const ramazanGunleri = {
       key: keyMap.IFTAR_DUASI,
       nameArabic:
         'اللَّهُمَّ لَكَ صُمْتُ وَبِكَ آمَنْتُ وَعَلَيْكَ تَوَكَّلْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ',
-      nameTurkish: 'İftar Duası',
-      transliteration:
-        'Allahümme leke sumtü ve bike âmentü ve aleyke tevekkeltü ve alâ rızkıke eftartü',
-      meaning:
-        "Allah'ım! Senin için oruç tuttum, Sana iman ettim, Sana tevekkül ettim ve Senin rızkınla orucumu açtım.",
-      virtue:
-        "Hz. Muaz b. Zühre rivayetine göre Peygamber Efendimiz (s.a.v.) iftar ederken bu duayı okurdu. 'Oruçlunun duası reddedilmez.' (Tirmizî)",
-      source: 'Ebu Davud, Savm 22; Tirmizî, Savm 1',
+      name: {
+        tr: 'İftar Duası',
+        en: 'Supplication for Breaking the Fast',
+      },
+      transliteration: {
+        tr: 'Allahümme leke sumtü ve bike âmentü ve aleyke tevekkeltü ve alâ rızkıke eftartü.',
+        en: 'Allahumma laka sumtu wa bika amantu wa alayka tawakkaltu wa ala rizqika aftartu.',
+      },
+      meaning: {
+        tr: "Allah'ım! Senin için oruç tuttum, Sana iman ettim, Sana tevekkül ettim ve Senin rızkınla orucumu açtım.",
+        en: 'O Allah! For You I have fasted, in You I have believed, upon You I have relied, and with Your provision I break my fast.',
+      },
+      virtue: {
+        tr: "Muaz b. Zühre nakline göre Resûlullah'ın (sas) iftar ederken bu duayı okuduğu rivayet edilmiştir. Dua, orucun Allah için tutulduğunu, imanın ve tevekkülün yalnız O'na yöneltildiğini, iftar nimetinin de Allah'ın rızkı olduğunu açıkça ifade eder. İftar vakti, kulun aczini ve şükrünü birlikte hissettiği bereketli bir vakittir; bu sebeple oruçlu kimse iftar ederken duasını bilinçle ve huşu ile yapar.",
+        en: 'According to the report transmitted from Muadh ibn Zuhrah, it is narrated that the Messenger of Allah (peace be upon him) would recite this supplication when breaking the fast. The wording states that the fast was observed for Allah, that faith and reliance are directed to Him alone, and that the food used to break the fast is from His provision. The moment of iftar is a blessed time in which the servant feels both need and gratitude, so the fasting person should make this supplication with presence and humility.',
+      },
+      source: {
+        tr: 'Ebû Dâvûd, Savm, 22; Tirmizî, Savm, 1',
+        en: 'Abu Dawood, Sawm, 22; At-Tirmidhi, Sawm, 1',
+      },
       tags: ['ramazan', 'oruç', 'iftar', 'dua'],
       categories: ['ibadet', 'oruç'],
       timeOfDay: ['aksam'],
@@ -29,13 +41,26 @@ export const ramazanGunleri = {
       key: keyMap.ZEHEBEZ_ZAMA,
       nameArabic:
         'ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ',
-      nameTurkish: 'Zehebez Zamau — İftar Sonrası Dua',
-      transliteration:
-        "Zehebe'z-zameu vebtelleti'l-urûku ve sebe'tel-ecru inşâallâh",
-      meaning: 'Susuzluk gitti, damarlar ıslandı, inşallah ecir de sabit oldu.',
-      virtue:
-        "İbn Ömer (r.a.) rivayet etmiştir: Peygamber Efendimiz (s.a.v.) iftar açtıktan sonra bu duayı okurdu. İftar sonrası okunması Sünnet'tir.",
-      source: 'Ebu Davud, Savm 22; İbn Mace, Sıyam 48',
+      name: {
+        tr: 'Zehebe’z-Zameu — İftar Sonrası Dua',
+        en: 'Dhahaba az-Zamau — Supplication After Iftar',
+      },
+      transliteration: {
+        tr: "Zehebe'z-zameu vebtelleti'l-urûku ve sebete'l-ecru inşâallâh.",
+        en: "Dhahaba az-zamau wabtallatil-uruqu wa thabata al-ajru in sha' Allah.",
+      },
+      meaning: {
+        tr: 'Susuzluk gitti, damarlar ıslandı, inşallah ecir de sabit oldu.',
+        en: 'The thirst has gone, the veins have become moist, and the reward has been established, if Allah wills.',
+      },
+      virtue: {
+        tr: "Abdullah ibn Ömer radıyallahu anh rivayet etmiştir: Resûlullah'ın (sas) iftar ettikten sonra bu duayı okuduğu nakledilmiştir. Dua, oruç ibadetinin bedende meydana getirdiği susuzluk ve yorgunluğu Allah'ın lütfuyla sona eren bir hâl olarak görür. “Ecrin sabit olması” ifadesi, sevabın Allah katında kabul edilmesi ümidiyle söylenir; kesin bir iddia değil, “inşallah” kaydıyla yapılan edepli bir niyazdır.",
+        en: 'Abdullah ibn Umar, may Allah be pleased with him, narrated that the Messenger of Allah (peace be upon him) would recite this supplication after breaking the fast. The supplication views the thirst and bodily strain of fasting as a state that ends through the grace of Allah. The phrase about the reward being established is said with hope for acceptance before Allah; it is not a claim made with certainty, but a humble request framed by the words “if Allah wills.”',
+      },
+      source: {
+        tr: 'Ebû Dâvûd, Savm, 22; İbn Mâce, Sıyâm, 48',
+        en: 'Abu Dawood, Sawm, 22; Ibn Majah, Siyam, 48',
+      },
       tags: ['ramazan', 'oruç', 'iftar'],
       categories: ['ibadet', 'oruç'],
       timeOfDay: ['aksam'],
@@ -45,12 +70,26 @@ export const ramazanGunleri = {
     {
       key: keyMap.YA_ERHAMERRA,
       nameArabic: 'يَا أَرْحَمَ الرَّاحِمِينَ',
-      nameTurkish: 'Yâ Erhamerrâhimîn — Rahmet Günleri Zikirı',
-      transliteration: 'Yâ Erhamerrâhimîn',
-      meaning: 'Ey merhametlilerin en merhametlisi',
-      virtue:
-        "Kur'an'da birden fazla yerde geçen bu nida ile Allah'ın sonsuz rahmetine sığınılır. Ramazan'ın ilk on günü rahmet günleridir; günde en az 100 defa çekilmesi tavsiye edilmiştir. (Süyûtî, ed-Dürrü'l-mensûr, 2/228)",
-      source: "Süyûtî, ed-Dürrü'l-mensûr, 2/228; Kur'an-ı Kerim, Yusuf 12:64; Enbiya 21:83",
+      name: {
+        tr: 'Yâ Erhamerrâhimîn — Rahmet Günleri Zikri',
+        en: 'Ya Arham ar-Rahimin — Dhikr for the Days of Mercy',
+      },
+      transliteration: {
+        tr: 'Yâ Erhamerrâhimîn.',
+        en: 'Ya Arham ar-Rahimin.',
+      },
+      meaning: {
+        tr: 'Ey merhametlilerin en merhametlisi.',
+        en: 'O Most Merciful of those who show mercy.',
+      },
+      virtue: {
+        tr: "Kur'an-ı Kerim'de peygamberlerin ve salih kulların niyazlarında geçen bu nida, kulun Allah'ın rahmetine sığınmasını ifade eder. Ramazan'ın ilk on günü gelenekte rahmet günleri olarak anılmıştır; bu zikir, kulun rahmeti yalnız Allah'tan beklediğini ve merhametin en kâmil kaynağının O olduğunu ikrar eder. Günde 100 defa okunması, kesin bir hadis vaadi olarak değil, rahmet bilincini diri tutmaya yönelik bir zikir tavsiyesi olarak değerlendirilmelidir.",
+        en: 'This invocation appears in the supplications of prophets and righteous servants in the Quran and expresses the servant seeking refuge in the mercy of Allah. The first ten days of Ramadan are traditionally remembered as days of mercy; this dhikr affirms that the servant seeks mercy from Allah alone and recognizes Him as the most perfect source of mercy. Reciting it 100 times daily should be understood as a recommended practice for keeping awareness of mercy alive, not as a specific prophetic promise with a fixed reward.',
+      },
+      source: {
+        tr: "Süyûtî, ed-Dürrü'l-mensûr, 2/228; Kur'an-ı Kerim, Yûsuf 12:64; Enbiyâ 21:83",
+        en: 'As-Suyuti, Ad-Durr al-Manthur, 2/228; Quran, Surah Yusuf 12:64; Surah Al-Anbiya 21:83',
+      },
       tags: ['ramazan', 'rahmet', 'esma', 'zikir', 'dua'],
       categories: ['zikir', 'ibadet'],
       timeOfDay: ['sabah', 'ogle', 'ikindi', 'aksam', 'yatsi'],
@@ -60,12 +99,26 @@ export const ramazanGunleri = {
     {
       key: keyMap.YA_GAFFAREZZUNUB,
       nameArabic: 'يَا غَفَّارَ الذُّنُوبِ اغْفِرْ لِي',
-      nameTurkish: 'Yâ Gaffârez-Zünûb — Mağfiret Günleri Zikirı',
-      transliteration: "Yâ Gaffârez-zünûbi'ğfir lî",
-      meaning: 'Ey günahları çok bağışlayan, beni bağışla',
-      virtue:
-        "Allah'ın 'el-Gaffâr' ismi Kur'an'da geçmektedir. Ramazan'ın ikinci on günü mağfiret günleridir; günde en az 100 defa çekilmesi tavsiye edilmiştir. (Süyûtî, ed-Dürrü'l-mensûr, 2/228)",
-      source: "Süyûtî, ed-Dürrü'l-mensûr, 2/228; Kur'an-ı Kerim, Zümer 39:5; Nuh 71:10",
+      name: {
+        tr: 'Yâ Gaffârez-Zünûb — Mağfiret Günleri Zikri',
+        en: 'Ya Ghaffar adh-Dhunub — Dhikr for the Days of Maghfirah',
+      },
+      transliteration: {
+        tr: "Yâ Gaffârez-zünûbi'ğfir lî.",
+        en: 'Ya Ghaffar adh-dhunubi ighfir li.',
+      },
+      meaning: {
+        tr: 'Ey günahları çok bağışlayan, beni bağışla.',
+        en: 'O One who greatly forgives sins, forgive me.',
+      },
+      virtue: {
+        tr: "Allah'ın el-Gaffâr ismi Kur'an-ı Kerim'de geçer ve O'nun günahları tekrar tekrar bağışlayan olduğunu bildirir. Ramazan'ın ikinci on günü gelenekte mağfiret günleri olarak anılmıştır; bu zikir, kulun kusurunu itiraf ederek mağfireti yalnız Allah'tan istemesine vesile olur. Günde 100 defa okunması, tevbe ve istiğfarı düzenli hâle getiren bir zikir tavsiyesidir; fazilet iddiası, Allah'ın mağfiret sıfatına yönelme ve günah bağışlanmasını isteme anlamıyla sınırlı tutulmalıdır.",
+        en: 'The divine name Al-Ghaffar appears in the Quran and indicates that Allah forgives sins again and again. The second ten days of Ramadan are traditionally remembered as days of maghfirah; this dhikr helps the servant confess personal shortcomings and seek forgiveness from Allah alone. Reciting it 100 times daily is a recommended way to make tawbah and istighfar regular; the virtue should be kept within the meaning of turning to Allah through His attribute of forgiveness and asking Him to pardon sins.',
+      },
+      source: {
+        tr: "Süyûtî, ed-Dürrü'l-mensûr, 2/228; Kur'an-ı Kerim, Zümer 39:5; Nûh 71:10",
+        en: 'As-Suyuti, Ad-Durr al-Manthur, 2/228; Quran, Surah Az-Zumar 39:5; Surah Nuh 71:10',
+      },
       tags: ['ramazan', 'mağfiret', 'istigfar', 'esma', 'zikir'],
       categories: ['zikir', 'ibadet', 'tevbe'],
       timeOfDay: ['sabah', 'ogle', 'ikindi', 'aksam', 'yatsi'],
@@ -75,12 +128,26 @@ export const ramazanGunleri = {
     {
       key: keyMap.ATIKARRIKAB,
       nameArabic: 'يَا مُعْتِقَ الرِّقَابِ',
-      nameTurkish: "Yâ Mu'tıga'r-Rigâb — İtk Günleri Zikirı",
-      transliteration: "Yâ Mu'tıga'r-Rigâb",
-      meaning: 'Ey boyunları cehennem azabından azad eden!',
-      virtue:
-        "Ramazan'ın son on günü 'itk' (cehennemden kurtuluş) günleridir. Bu esmayı her gün en az 100 defa çekerek cehennem azabından azad edilmeye niyet edilir. (Süyûtî, ed-Dürrü'l-mensûr, 2/228; İsmailağa)",
-      source: "Süyûtî, ed-Dürrü'l-mensûr, 2/228; İsmailağa Cemaati Uygulaması",
+      name: {
+        tr: "Yâ Mu'tıka'r-Rikâb — İtk Günleri Zikri",
+        en: "Ya Mu'tiq ar-Riqab — Dhikr for the Days of Itq",
+      },
+      transliteration: {
+        tr: "Yâ Mu'tıka'r-rikâb.",
+        en: "Ya Mu'tiq ar-riqab.",
+      },
+      meaning: {
+        tr: 'Ey boyunları cehennem azabından azat eden.',
+        en: 'O One who frees necks from the punishment of Hell.',
+      },
+      virtue: {
+        tr: "Ramazan'ın son on günü gelenekte itk, yani cehennem azabından kurtuluş günleri olarak anılmıştır. Bu zikirde kul, kurtuluşu kendi amelinden değil Allah'ın azat etmesinden beklediğini dile getirir. “Rikâb” ifadesi Arapça aslı takip ederek boyunlar anlamında korunmuştur; burada maksat, cehennemden azat edilmeyi istemektir. Günde 100 defa okunması, kesin sayı ve garanti edilmiş sonuç iddiası değil, kurtuluş niyetini canlı tutan bir zikir uygulaması olarak verilmelidir.",
+        en: 'The last ten days of Ramadan are traditionally remembered as days of itq, meaning deliverance from the punishment of Hell. In this dhikr, the servant expresses that deliverance is hoped for from Allah freeing him, not from his own deeds alone. The word riqab follows the Arabic original and literally refers to necks; in this context it means asking to be freed from Hell. Reciting it 100 times daily should be presented as a dhikr practice that keeps the intention of deliverance alive, not as a fixed number with a guaranteed result.',
+      },
+      source: {
+        tr: "Süyûtî, ed-Dürrü'l-mensûr, 2/228; İsmailağa Cemaati uygulaması",
+        en: 'As-Suyuti, Ad-Durr al-Manthur, 2/228; Ismailaga community practice',
+      },
       tags: ['ramazan', 'itk', 'esma', 'zikir', 'kurtuluş', 'cehennem'],
       categories: ['zikir', 'ibadet'],
       timeOfDay: ['sabah', 'ogle', 'ikindi', 'aksam', 'yatsi'],
@@ -92,14 +159,26 @@ export const ramazanGunleri = {
       key: keyMap.RAMAZAN_GUN_1,
       nameArabic:
         'اللَّهُمَّ اجْعَلْ صِيَامِي فِيهِ صِيَامَ الصَّائِمِينَ وَقِيَامِي فِيهِ قِيَامَ الْقَائِمِينَ وَنَبِّهْنِي فِيهِ عَنْ نَوْمَةِ الْغَافِلِينَ وَهَبْ لِي جُرْمِي فِيهِ يَا إِلَهَ الْعَالَمِينَ وَاعْفُ عَنِّي يَا عَافِياً عَنِ الْمُجْرِمِينَ',
-      nameTurkish: 'Ramazan 1. Gün Duası — İbn Abbas',
-      transliteration:
-        "Allahummec'al siyamî fîhi siyames-saimîn ve giyamî fîhi giyamel-gaimîn ve nebbihni an nevmetil-ğafilîn ve heb lî curmî fîhi ya ilâhel-âlemîn ve'fu annî âfiyen anil-mucrimîn.",
-      meaning:
-        "Allah'ım! Bu günde tuttuğum orucu gerçek oruç tutanların orucu gibi, ibadetimi gerçek ibadet edenlerin ibadeti gibi kıl. Beni gaflilerin uykusundan uyandır; suçumu bu günde bağışla ey âlemlerin ilahı! Beni affet, ey suçluları affeden!",
-      virtue:
-        "İbn-i Abbas (r.a.) kanalıyla Peygamber Efendimiz'den (s.a.v.) nakledilen Ramazan'ın her gününe mahsus özel duadır. Oruç ve gece namazının hakiki ve manen kabul görmüş bir ibadet seviyesine yükselmesini sağlar.",
-      source: 'İbn-i Abbas nakliyle Resulullah (s.a.v.)',
+      name: {
+        tr: 'Ramazan 1. Gün Duası — İbn Abbas',
+        en: 'Ramadan Day 1 Supplication — Ibn Abbas',
+      },
+      transliteration: {
+        tr: "Allahummec'al siyâmî fîhi siyâme's-sâimîn ve kıyâmî fîhi kıyâme'l-kâimîn ve nebbihnî fîhi an nevmeti'l-gâfilîn ve heb lî curmî fîhi yâ İlâhe'l-âlemîn ve'fu annî yâ âfiyen ani'l-mücrimîn.",
+        en: "Allahumma ij'al siyami fihi siyamas-sa'imin wa qiyami fihi qiyamal-qa'imin wa nabbihni fihi an nawmatil-ghafilin wa hab li jurmi fihi ya Ilahal-alamin wa'fu anni ya afiyan anil-mujrimin.",
+      },
+      meaning: {
+        tr: "Allah'ım! Bu günde orucumu oruç tutanların orucu, kıyamımı kıyam edenlerin kıyamı kıl. Bu günde beni gafillerin uykusundan uyandır; suçumu bana bağışla ey âlemlerin ilahı! Beni affet, ey suçluları affeden.",
+        en: 'O Allah! On this day, make my fasting the fasting of those who truly fast, and my standing the standing of those who stand in worship. Awaken me on this day from the sleep of the heedless; forgive my offense, O God of the worlds, and pardon me, O One who pardons the guilty.',
+      },
+      virtue: {
+        tr: "Abdullah ibn Abbas radıyallahu anh kanalıyla nakledilen Ramazan günlük duaları arasında birinci gün duası olarak zikredilir. Dua, sadece aç kalmayı değil, orucun hakikatine uygun bir kulluk hâlini istemeyi öğretir. Kıyam ifadesi gece ibadeti ve Allah huzurunda duruş bilincini taşır; gaflet uykusundan uyanmak ise Ramazan'a kalp uyanıklığıyla başlamayı ifade eder. Bu metin, faziletini kesin bir sevap sayısından değil, oruç, kıyam, mağfiret ve af taleplerini bir araya getirmesinden alır.",
+        en: 'This is mentioned as the first-day supplication among the daily Ramadan supplications transmitted through Abdullah ibn Abbas, may Allah be pleased with him. The supplication teaches the servant to ask not merely for abstaining from food, but for fasting that reflects the true reality of worship. Qiyam carries the meaning of standing in night worship and standing consciously before Allah, while being awakened from heedlessness points to beginning Ramadan with an alert heart. Its virtue is not tied here to a fixed numerical reward, but to the way it gathers fasting, qiyam, forgiveness, and pardon in one supplication.',
+      },
+      source: {
+        tr: "Abdullah ibn Abbas radıyallahu anh nakliyle Resûlullah'ın (sas) Ramazan günlük duaları",
+        en: 'Daily Ramadan supplications transmitted from the Messenger of Allah (peace be upon him) through Abdullah ibn Abbas, may Allah be pleased with him',
+      },
       tags: ['ramazan', 'günlük dua', 'ibn abbas', 'oruç'],
       categories: ['ibadet', 'oruç', 'dua'],
       timeOfDay: ['sabah'],
@@ -110,14 +189,26 @@ export const ramazanGunleri = {
       key: keyMap.RAMAZAN_GUN_2,
       nameArabic:
         'اللَّهُمَّ قَرِّبْنِي فِيهِ إِلَى مَرْضَاتِكَ وَجَنِّبْنِي فِيهِ مِنْ سَخَطِكَ وَنَقِمَاتِكَ وَوَفِّقْنِي فِيهِ لِقِرَاءَةِ آيَاتِكَ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ',
-      nameTurkish: 'Ramazan 2. Gün Duası — İbn Abbas',
-      transliteration:
-        "Allahumme garribnî fîhi ilâ merzâtike ve cennibnî fîhi min sehatike ve negimâtike ve veffignî fîhi li-girâeti âyâtike bi-rahmetike ya erhemerrahimîn.",
-      meaning:
-        "Allah'ım! Bu günde beni kendi hoşnutluğuna yakınlaştır, gazap ve azabından uzaklaştır. Bu günde ayetlerini okumaya beni muvaffak kıl; rahmetin hakkına ey merhametlilerin en merhametlisi!",
-      virtue:
-        "İbn-i Abbas (r.a.) kanalıyla nakledilen 2. gün duasıdır. Adım adım ilahi rızaya yaklaşmak, Allah'ın gazabından korunmak ve Kur'an-ı Kerim'i anlayarak okumaya muvaffak olmak için okunur.",
-      source: 'İbn-i Abbas nakliyle Resulullah (s.a.v.)',
+      name: {
+        tr: 'Ramazan 2. Gün Duası — İbn Abbas',
+        en: 'Ramadan Day 2 Supplication — Ibn Abbas',
+      },
+      transliteration: {
+        tr: 'Allahumme karribnî fîhi ilâ merzâtike ve cennibnî fîhi min sehatike ve nekımâtike ve veffiknî fîhi li-kırâeti âyâtike bi-rahmetike yâ Erhamerrâhimîn.',
+        en: 'Allahumma qarribni fihi ila mardatika wa jannibni fihi min sakhatika wa naqimatika wa waffiqni fihi li-qiraati ayatika bi-rahmatika ya Arham ar-Rahimin.',
+      },
+      meaning: {
+        tr: "Allah'ım! Bu günde beni rızana yakınlaştır, gazabından ve cezalarından uzaklaştır. Bu günde ayetlerini okumaya beni muvaffak kıl; rahmetinle, ey merhametlilerin en merhametlisi.",
+        en: 'O Allah! On this day, bring me near to Your pleasure and keep me away from Your wrath and punishments. Grant me success on this day in reciting Your verses, by Your mercy, O Most Merciful of those who show mercy.',
+      },
+      virtue: {
+        tr: "Abdullah ibn Abbas radıyallahu anh kanalıyla nakledilen ikinci gün duası, Ramazan kulluğunu Allah'ın rızasına yaklaşma ekseninde kurar. Duada gazap ve nekımetten uzak kalma isteği, sadece cezadan kaçınma değil, kulun Allah'ın razı olmayacağı hâl ve davranışlardan korunma niyetidir. Ayetleri okumaya muvaffakiyet talebi de Kur'an-ı Kerim tilavetinin Ramazan'daki merkezî yerini gösterir. Fazilet, rıza, korunma ve Kur'an ile meşguliyet taleplerinin birlikte yapılmasındadır.",
+        en: 'The second-day supplication transmitted through Abdullah ibn Abbas, may Allah be pleased with him, frames Ramadan worship around drawing near to the pleasure of Allah. Asking to be kept away from wrath and naqimah is not merely a request to avoid punishment; it is also an intention to be protected from states and actions that displease Allah. Asking for success in reciting His verses points to the central place of Quran recitation in Ramadan. Its virtue lies in combining the pursuit of divine pleasure, protection, and engagement with the Quran.',
+      },
+      source: {
+        tr: "Abdullah ibn Abbas radıyallahu anh nakliyle Resûlullah'ın (sas) Ramazan günlük duaları",
+        en: 'Daily Ramadan supplications transmitted from the Messenger of Allah (peace be upon him) through Abdullah ibn Abbas, may Allah be pleased with him',
+      },
       tags: ['ramazan', 'günlük dua', 'ibn abbas'],
       categories: ['ibadet', 'oruç', 'dua'],
       timeOfDay: ['sabah'],
@@ -128,14 +219,26 @@ export const ramazanGunleri = {
       key: keyMap.RAMAZAN_GUN_3,
       nameArabic:
         'اللَّهُمَّ ارْزُقْنِي فِيهِ الذِّهْنَ وَالتَّنْبِيهَ وَبَاعِدْنِي فِيهِ مِنَ السَّفَاهَةِ وَالتَّمْوِيهِ وَاجْعَلْ لِي نَصِيباً مِنْ كُلِّ خَيْرٍ تُنْزِلُهُ فِيهِ بِجُودِكَ يَا أَجْوَدَ الْأَجْوَدِينَ',
-      nameTurkish: 'Ramazan 3. Gün Duası — İbn Abbas',
-      transliteration:
-        "Allahummerz ugnî fîhiz-zihne vet-tenbîhe ve bâidnî fîhi mines-sefâheti vet-temvîhi vec'al lî nesîben min kulli hayrin tunzilu fîhi bi-cûdike ya ecvedel-ecvedîn.",
-      meaning:
-        "Allah'ım! Bu günde bana zekâ ve uyanıklık hali ver; beni cahillik ve batıl işlerden uzaklaştır. Bu günde indirdiğin her hayırdan bana da bir nasip ayır; cömertliğin hakkına ey cömertlerin en cömerdi!",
-      virtue:
-        "İbn-i Abbas (r.a.) kanalıyla nakledilen 3. gün duasıdır. Zihinsel berraklık kazanarak batıl işlerden uzaklaşmak ve Ramazan'da yeryüzüne inen tüm hayırlardan pay sahibi olmak için okunur.",
-      source: 'İbn-i Abbas nakliyle Resulullah (s.a.v.)',
+      name: {
+        tr: 'Ramazan 3. Gün Duası — İbn Abbas',
+        en: 'Ramadan Day 3 Supplication — Ibn Abbas',
+      },
+      transliteration: {
+        tr: "Allahummerzuknî fîhi'z-zihne ve't-tenbîhe ve bâidnî fîhi mine's-sefâheti ve't-temvîhi vec'al lî nasîben min kulli hayrin tünzilü fîhi bi-cûdike yâ Ecvede'l-ecvedîn.",
+        en: 'Allahummarzuqni fihidh-dhihna wat-tanbiha wa baidni fihi minas-safahati wat-tamwihi wajal li nasiban min kulli khayrin tunziluhu fihi bi-judika ya Ajwad al-ajwadin.',
+      },
+      meaning: {
+        tr: 'Allah\'ım! Bu günde bana anlayış ve uyanıklık rızıklandır; beni akılsızlıktan ve aldatıcı karışıklıktan uzaklaştır. Bu günde indirdiğin her hayırdan bana bir nasip kıl; cömertliğinle, ey cömertlerin en cömerdi.',
+        en: 'O Allah! On this day, grant me understanding and alertness, and keep me away from foolishness and deceptive confusion. Appoint for me a share of every good that You send down on this day, by Your generosity, O Most Generous of the generous.',
+      },
+      virtue: {
+        tr: "Abdullah ibn Abbas radıyallahu anh kanalıyla nakledilen üçüncü gün duası, Ramazan'da zihnin ve kalbin uyanık tutulmasını ister. “Zihn” ve “tenbîh” ifadeleri, dini sorumluluğu fark eden bir anlayış ve gaflete düşmeyen bir dikkat hâlini çağrıştırır. Sefâhet ve temvîhten uzak kalma talebi, boş, yanlış ve aldatıcı yönelişlerden korunmayı kapsar. Dua, o gün indirilen her hayırdan nasip istemesiyle kulun Allah'ın cömertliğine bağlılığını açıkça gösterir.",
+        en: 'The third-day supplication transmitted through Abdullah ibn Abbas, may Allah be pleased with him, asks for the mind and heart to remain awake in Ramadan. The words dhihn and tanbih suggest understanding that recognizes religious responsibility and attentiveness that does not fall into heedlessness. Asking to be kept away from safahah and tamwih includes protection from empty, wrong, and deceptive inclinations. By asking for a share of every good sent down on that day, the servant clearly attaches his hope to the generosity of Allah.',
+      },
+      source: {
+        tr: "Abdullah ibn Abbas radıyallahu anh nakliyle Resûlullah'ın (sas) Ramazan günlük duaları",
+        en: 'Daily Ramadan supplications transmitted from the Messenger of Allah (peace be upon him) through Abdullah ibn Abbas, may Allah be pleased with him',
+      },
       tags: ['ramazan', 'günlük dua', 'ibn abbas'],
       categories: ['ibadet', 'oruç', 'dua'],
       timeOfDay: ['sabah'],
@@ -146,14 +249,26 @@ export const ramazanGunleri = {
       key: keyMap.RAMAZAN_GUN_4,
       nameArabic:
         'اللَّهُمَّ قَوِّنِي فِيهِ عَلَى إِقَامَةِ أَمْرِكَ وَأَذِقْنِي فِيهِ حَلَاوَةَ ذِكْرِكَ وَأَوْزِعْنِي فِيهِ لِأَدَاءِ شُكْرِكَ بِكَرَمِكَ وَاحْفَظْنِي فِيهِ بِحِفْظِكَ وَسِتْرِكَ يَا أَبْصَرَ النَّاظِرِينَ',
-      nameTurkish: 'Ramazan 4. Gün Duası — İbn Abbas',
-      transliteration:
-        "Allahumme gavvinî fîhi alâ igameti emrik ve ezignî fîhi halâvete zikrik ve evzi'nî fîhi li-edâi şükrik bi-keramik vahfeznî fîhi bi-hıfzike ve sitrik ya ebsaran-nâzirîn.",
-      meaning:
-        "Allah'ım! Bu günde emrini uygulamak için beni güçlendir; zikrinin güzel tadını bana tattır; kereminle şükrünü eda etmek için beni hazırla; hıfzın ve örtünle beni koru; ey basiretlilerin en basiretlisi!",
-      virtue:
-        "İbn-i Abbas (r.a.) kanalıyla nakledilen 4. gün duasıdır. İlahi emirlere itaat edecek bedensel ve manevi güce ulaşmak, zikrullahın tadına varmak ve ilahi koruma kalkanı altına girmek için okunur.",
-      source: 'İbn-i Abbas nakliyle Resulullah (s.a.v.)',
+      name: {
+        tr: 'Ramazan 4. Gün Duası — İbn Abbas',
+        en: 'Ramadan Day 4 Supplication — Ibn Abbas',
+      },
+      transliteration: {
+        tr: "Allahumme kavvinî fîhi alâ ikâmeti emrike ve eziknî fîhi halâvete zikrike ve evzi'nî fîhi li-edâi şükrike bi-keramike vahfeznî fîhi bi-hıfzike ve sitrike yâ Ebsara'n-nâzirîn.",
+        en: "Allahumma qawwini fihi ala iqamati amrika wa adhiqni fihi halawata dhikrika wa awzini fihi li-adai shukrika bi-karamika wahfazni fihi bi-hifzika wa sitrika ya Absaran-nazirin.",
+      },
+      meaning: {
+        tr: 'Allah\'ım! Bu günde emrini ayakta tutmak için beni güçlendir; zikrinin tatlılığını bana tattır. Kereminle şükrünü eda etmeye beni sevk et; hıfzın ve örtmenle beni koru, ey görenlerin en iyi göreni.',
+        en: 'O Allah! On this day, strengthen me to uphold Your command and let me taste the sweetness of Your dhikr. By Your generosity, inspire me to fulfill gratitude to You; protect me with Your safeguarding and covering, O Best of those who see.',
+      },
+      virtue: {
+        tr: "Abdullah ibn Abbas radıyallahu anh kanalıyla nakledilen dördüncü gün duası, Ramazan ibadetinin güç, zikir, şükür ve ilahi koruma boyutlarını birleştirir. Emri ikame etmek, Allah'ın hükümlerini sadece bilmek değil, onları hayata taşımak için güç istemektir. Zikrin halâveti, dilde kalan bir tekrar değil, kalpte hissedilen yakınlık anlamı taşır. Hıfz ve sitr talebi ise kulun hem korunmaya hem de kusurlarının Allah tarafından örtülmesine muhtaç olduğunu hatırlatır.",
+        en: 'The fourth-day supplication transmitted through Abdullah ibn Abbas, may Allah be pleased with him, brings together strength, dhikr, gratitude, and divine protection in Ramadan worship. Upholding the command means asking for strength not only to know the commands of Allah, but to carry them into life. The sweetness of dhikr is not mere repetition on the tongue; it points to nearness felt in the heart. Asking for hifz and sitr reminds the servant that he needs both protection and the covering of his shortcomings by Allah.',
+      },
+      source: {
+        tr: "Abdullah ibn Abbas radıyallahu anh nakliyle Resûlullah'ın (sas) Ramazan günlük duaları",
+        en: 'Daily Ramadan supplications transmitted from the Messenger of Allah (peace be upon him) through Abdullah ibn Abbas, may Allah be pleased with him',
+      },
       tags: ['ramazan', 'günlük dua', 'ibn abbas'],
       categories: ['ibadet', 'oruç', 'dua'],
       timeOfDay: ['sabah'],
@@ -164,14 +279,26 @@ export const ramazanGunleri = {
       key: keyMap.RAMAZAN_GUN_5,
       nameArabic:
         'اللَّهُمَّ اجْعَلْنِي فِيهِ مِنَ الْمُسْتَغْفِرِينَ وَاجْعَلْنِي فِيهِ مِنْ عِبَادِكَ الصَّالِحِينَ الْقَانِتِينَ وَاجْعَلْنِي فِيهِ مِنْ أَوْلِيَائِكَ الْمُقَرَّبِينَ بِرَأْفَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ',
-      nameTurkish: 'Ramazan 5. Gün Duası — İbn Abbas',
-      transliteration:
-        "Allahummec'alnî fîhi minel-musteğfirîn vec'alnî fîhi min ibâdikeş-sâlihînel-gânıtîn vec'alnî fîhi min evliyâikel-mukarrabîn bira'fetike ya erhamerrahimîn.",
-      meaning:
-        "Allah'ım! Bu günde beni mağfiret dileyenlerden, sana itaat eden salih kullarından ve mukarreb velilerinden kıl; lütuf ve şefkatinin hakkına ey merhametlilerin en merhametlisi!",
-      virtue:
-        "İbn-i Abbas (r.a.) kanalıyla nakledilen 5. gün duasıdır. Gerçek anlamda tövbe edenlerin, salihlerin ve Allah'a en yakın dostların (mukarrebun) derecesine ve makamına yükselmek için okunur.",
-      source: 'İbn-i Abbas nakliyle Resulullah (s.a.v.)',
+      name: {
+        tr: 'Ramazan 5. Gün Duası — İbn Abbas',
+        en: 'Ramadan Day 5 Supplication — Ibn Abbas',
+      },
+      transliteration: {
+        tr: "Allahummec'alnî fîhi mine'l-müstağfirîn vec'alnî fîhi min ibâdike's-sâlihîne'l-kânitîn vec'alnî fîhi min evliyâike'l-mukarrabîn bi-ra'fetike yâ Erhamerrâhimîn.",
+        en: "Allahumma ij'alni fihi minal-mustaghfirin waj'alni fihi min ibadikas-salihin al-qanitin waj'alni fihi min awliya'ikal-muqarrabin bi-ra'fatika ya Arham ar-Rahimin.",
+      },
+      meaning: {
+        tr: "Allah'ım! Bu günde beni istiğfar edenlerden kıl; beni salih, itaatkâr kullarından kıl; beni Sana yakın kılınmış velilerinden kıl. Şefkatinle, ey merhametlilerin en merhametlisi.",
+        en: 'O Allah! On this day, make me among those who seek forgiveness; make me among Your righteous and obedient servants; and make me among Your close awliya, by Your tenderness, O Most Merciful of those who show mercy.',
+      },
+      virtue: {
+        tr: "Abdullah ibn Abbas radıyallahu anh kanalıyla nakledilen beşinci gün duası, istiğfar, salah, kunût ve Allah'a yakınlık taleplerini bir araya getirir. Müstağfirlerden olmayı istemek, günahı hafife almadan bağışlanmayı sürekli Allah'tan talep etmektir. Salih ve kânit kullar arasına girmeyi istemek, amelin doğruluğu ile itaatin sürekliliğini birlikte hedefler. Mukarreb velilerden olma niyazı ise kullukta yakınlığın Allah'ın rahmeti ve ra'fetiyle gerçekleştiğini hatırlatır.",
+        en: 'The fifth-day supplication transmitted through Abdullah ibn Abbas, may Allah be pleased with him, gathers the requests for istighfar, righteousness, qunut, and nearness to Allah. Asking to be among the mustaghfirin means continually seeking forgiveness from Allah without treating sin lightly. Asking to be among righteous and obedient servants joins sound action with steady obedience. The request to be among the close awliya reminds the servant that nearness in worship is attained through the mercy and tenderness of Allah.',
+      },
+      source: {
+        tr: "Abdullah ibn Abbas radıyallahu anh nakliyle Resûlullah'ın (sas) Ramazan günlük duaları",
+        en: 'Daily Ramadan supplications transmitted from the Messenger of Allah (peace be upon him) through Abdullah ibn Abbas, may Allah be pleased with him',
+      },
       tags: ['ramazan', 'günlük dua', 'ibn abbas'],
       categories: ['ibadet', 'oruç', 'dua'],
       timeOfDay: ['sabah'],
@@ -182,14 +309,26 @@ export const ramazanGunleri = {
       key: keyMap.RAMAZAN_GUN_6,
       nameArabic:
         'اللَّهُمَّ لَا تَخْذُلْنِي فِيهِ لِتَعَرُّضِ مَعْصِيَتِكَ وَلَا تَضْرِبْنِي بِسِيَاطِ نَقِمَتِكَ وَزَحْزِحْنِي فِيهِ مِنْ مُوجِبَاتِ سَخَطِكَ بِمَنِّكَ وَأَيَادِيكَ يَا مُنْتَهَى رَغْبَةِ الرَّاغِبِينَ',
-      nameTurkish: 'Ramazan 6. Gün Duası — İbn Abbas',
-      transliteration:
-        "Allahumme la tehzulnî fîhi li-tearruzı ma'siyetik velâ tazribnî bi-siyâti negimetik ve zahzıhnî fîhi min mûcibâti sehatike bi-mennike ve eyâdîke ya muntehâ ragbetir-rağibîn.",
-      meaning:
-        "Allah'ım! Sana karşı işlediğim günahtan ötürü bu günde beni yalnız bırakma; azap kırbacınla beni cezalandırma; bu günde gazabına vesile olacak şeylerden beni uzaklaştır; sonsuz lütfün ve nimetlerin hakkına, ey şevkli insanların en büyük arzusu!",
-      virtue:
-        "İbn-i Abbas (r.a.) kanalıyla nakledilen 6. gün duasıdır. Günahlar sebebiyle ilahi yardımdan mahrum kalmaktan korunmak, ilahi azap ve gazaptan emin bir sığınağa kavuşmak için okunur.",
-      source: 'İbn-i Abbas nakliyle Resulullah (s.a.v.)',
+      name: {
+        tr: 'Ramazan 6. Gün Duası — İbn Abbas',
+        en: 'Ramadan Day 6 Supplication — Ibn Abbas',
+      },
+      transliteration: {
+        tr: "Allahumme lâ tahzulnî fîhi li-tearruzı ma'siyetike ve lâ tadribnî bi-siyâti nekımetike ve zahzıhnî fîhi min mûcibâti sehatike bi-mennike ve eyâdîke yâ Müntehâ rağbeti'r-râğıbîn.",
+        en: "Allahumma la takhdhulni fihi li-ta'arrudi ma'siyatika wa la tadribni bi-siyati naqimatika wa zahzihni fihi min mujibati sakhatika bi-mannika wa ayadika ya Muntaha raghbatir-raghibin.",
+      },
+      meaning: {
+        tr: "Allah'ım! Bu günde masiyetine yönelmem sebebiyle beni yardımsız bırakma; beni cezanın kamçılarıyla vurma. Bu günde gazabını gerektiren şeylerden beni uzaklaştır; lütfun ve nimetlerinle, ey rağbet edenlerin arzusunun son noktası.",
+        en: 'O Allah! On this day, do not abandon me because of my exposure to disobedience to You, and do not strike me with the lashes of Your punishment. Move me away on this day from the causes of Your wrath, by Your favor and gifts, O Ultimate Aim of those who long.',
+      },
+      virtue: {
+        tr: "Abdullah ibn Abbas radıyallahu anh kanalıyla nakledilen altıncı gün duası, günahın kul üzerindeki en ağır sonucunun ilahi yardımdan mahrum kalmak olduğunu hatırlatır. Masiyete yönelme ifadesi, kulun zayıflığını itiraf etmesini ve korunmayı Allah'tan istemesini sağlar. Gazabı gerektiren sebeplerden uzaklaştırılma talebi, sadece cezadan değil, cezaya götüren davranışlardan da sakınmayı kapsar. Dua, lütuf ve nimet vurgusuyla kurtuluşun Allah'ın ihsanıyla mümkün olduğunu açıkça belirtir.",
+        en: 'The sixth-day supplication transmitted through Abdullah ibn Abbas, may Allah be pleased with him, reminds the servant that one of the heaviest consequences of sin is being deprived of divine assistance. Mentioning exposure to disobedience leads the servant to admit weakness and seek protection from Allah. Asking to be moved away from the causes of wrath includes avoiding not only punishment, but also the actions that lead to punishment. The supplication emphasizes favor and gifts, making clear that deliverance is through the generosity of Allah.',
+      },
+      source: {
+        tr: "Abdullah ibn Abbas radıyallahu anh nakliyle Resûlullah'ın (sas) Ramazan günlük duaları",
+        en: 'Daily Ramadan supplications transmitted from the Messenger of Allah (peace be upon him) through Abdullah ibn Abbas, may Allah be pleased with him',
+      },
       tags: ['ramazan', 'günlük dua', 'ibn abbas'],
       categories: ['ibadet', 'oruç', 'dua'],
       timeOfDay: ['sabah'],
@@ -200,14 +339,26 @@ export const ramazanGunleri = {
       key: keyMap.RAMAZAN_GUN_7,
       nameArabic:
         'اللَّهُمَّ أَعِنِّي فِيهِ عَلَى صِيَامِهِ وَقِيَامِهِ وَجَنِّبْنِي فِيهِ مِنْ هَفَوَاتِهِ وَآثَامِهِ وَارْزُقْنِي فِيهِ ذِكْرَكَ بِدَوَامِهِ بِتَوْفِيقِكَ يَا هَادِيَ الْمُضِلِّينَ',
-      nameTurkish: 'Ramazan 7. Gün Duası — İbn Abbas',
-      transliteration:
-        "Allahumme einnî fîhi alâ siyamihi ve giyamih ve cennibnî fîhi min hefevâtihi ve âsamih verzugnî fîhi zikreke bi-devâmihi bi-tevfigike ya hâdiyal-mudıllîn.",
-      meaning:
-        "Allah'ım! Bu günde oruç tutup ibadet durmam için bana yardımcı ol; bu günün sürçme ve günahlarından beni uzaklaştır; bu günde sürekli olarak seni zikretmeyi bana nasip eyle; tevfikinle ey yolunu şaşıranları hidayete erdiren!",
-      virtue:
-        "İbn-i Abbas (r.a.) kanalıyla nakledilen 7. gün duasıdır. Oruç ve gece ibadetlerinde ilahi yardıma (tevfik) nail olmak, günah ve sürçmelerden korunarak kesintisiz zikir bilincine erişmek için okunur.",
-      source: 'İbn-i Abbas nakliyle Resulullah (s.a.v.)',
+      name: {
+        tr: 'Ramazan 7. Gün Duası — İbn Abbas',
+        en: 'Ramadan Day 7 Supplication — Ibn Abbas',
+      },
+      transliteration: {
+        tr: 'Allahumme einnî fîhi alâ siyâmihi ve kıyâmihi ve cennibnî fîhi min hefevâtihi ve âsâmihi verzuknî fîhi zikreke bi-devâmihi bi-tevfîkıke yâ Hâdiye’l-mudıllîn.',
+        en: 'Allahumma ainni fihi ala siyamihi wa qiyamihi wa jannibni fihi min hafawatihi wa athamihi warzuqni fihi dhikraka bi-dawamihi bi-tawfiqika ya Hadiyal-mudillin.',
+      },
+      meaning: {
+        tr: 'Allah\'ım! Bu günde orucuna ve kıyamına karşı bana yardım et; bu günün sürçmelerinden ve günahlarından beni uzaklaştır. Bu günde zikrini sürekli olarak bana rızıklandır; tevfikinle, ey yolunu şaşıranları hidayete erdiren.',
+        en: 'O Allah! On this day, help me with its fasting and its qiyam, and keep me away from its slips and sins. Grant me constant dhikr of You on this day, by Your tawfiq, O Guide of those who have gone astray.',
+      },
+      virtue: {
+        tr: "Abdullah ibn Abbas radıyallahu anh kanalıyla nakledilen yedinci gün duası, oruç ve kıyamı kulun kendi gücüne değil Allah'ın yardımına bağlar. Hefevaât ve âsâm ifadeleri, küçük sürçmelerden açık günahlara kadar ibadetin ruhunu zedeleyen hâllerden korunmayı içerir. Zikrin sürekliliğini istemek, Ramazan'ın yalnız belirli vakitlerde değil gün boyunca Allah'ı hatırlama bilinciyle yaşanmasını hedefler. Tevfîk vurgusu, doğru amele muvaffak olmanın Allah'ın yönlendirmesiyle gerçekleştiğini gösterir.",
+        en: 'The seventh-day supplication transmitted through Abdullah ibn Abbas, may Allah be pleased with him, connects fasting and qiyam to the help of Allah rather than the servant’s own strength. The words hafawat and atham include protection from both minor slips and clear sins that damage the spirit of worship. Asking for constant dhikr aims for Ramadan to be lived with remembrance of Allah throughout the day, not only at selected times. The emphasis on tawfiq shows that success in righteous action comes through Allah guiding the servant to it.',
+      },
+      source: {
+        tr: "Abdullah ibn Abbas radıyallahu anh nakliyle Resûlullah'ın (sas) Ramazan günlük duaları",
+        en: 'Daily Ramadan supplications transmitted from the Messenger of Allah (peace be upon him) through Abdullah ibn Abbas, may Allah be pleased with him',
+      },
       tags: ['ramazan', 'günlük dua', 'ibn abbas'],
       categories: ['ibadet', 'oruç', 'dua'],
       timeOfDay: ['sabah'],
@@ -218,14 +369,26 @@ export const ramazanGunleri = {
       key: keyMap.RAMAZAN_GUN_8,
       nameArabic:
         'اللَّهُمَّ ارْزُقْنِي فِيهِ رَحْمَةَ الْأَيْتَامِ وَإِطْعَامَ الطَّعَامِ وَإِفْشَاءَ السَّلَامِ وَصُحْبَةَ الْكِرَامِ بِطَوْلِكَ يَا مَلْجَأَ الْآمِلِينَ',
-      nameTurkish: 'Ramazan 8. Gün Duası — İbn Abbas',
-      transliteration:
-        "Allahummerz ugnî fîhi rahmetel-eytâmi ve it'âmet-taâmi ve ifşâes-selâmi ve suhbetel-kirâmi bi-tavlike ya melcel-âmilîn.",
-      meaning:
-        "Allah'ım! Bu günde öksüzlere merhamet etmeyi, fakirlerin karnını doyurmayı, karşılaştığım herkese selam vermeyi ve değerli insanlarla dost olmayı bana nasip eyle; iyilik ve ihsanınla, ey ümit edenlerin sığınağı!",
-      virtue:
-        "İbn-i Abbas (r.a.) kanalıyla nakledilen 8. gün duasıdır. Öksüzlere şefkat, fakirleri doyurma, selam yayma ve salih insanlarla dost olma gibi üstün sosyal ahlak ilkelerini kuşanmak için okunur.",
-      source: 'İbn-i Abbas nakliyle Resulullah (s.a.v.)',
+      name: {
+        tr: 'Ramazan 8. Gün Duası — İbn Abbas',
+        en: 'Ramadan Day 8 Supplication — Ibn Abbas',
+      },
+      transliteration: {
+        tr: "Allahummerzuknî fîhi rahmete'l-eytâmi ve it'âme't-taâmi ve ifşâe's-selâmi ve sohbetel-kirâmi bi-tavlike yâ Melcee'l-âmilîn.",
+        en: "Allahummarzuqni fihi rahmatal-aytami wa it'amat-ta'ami wa ifsha'as-salami wa suhbat al-kirami bi-tawlika ya Malja'al-amilin.",
+      },
+      meaning: {
+        tr: 'Allah\'ım! Bu günde yetimlere merhameti, yemek yedirmeyi, selamı yaymayı ve kerem sahibi kimselerle arkadaşlığı bana rızıklandır; ihsanınla, ey ümit edenlerin sığınağı.',
+        en: 'O Allah! On this day, grant me mercy toward orphans, feeding food, spreading salam, and companionship with noble people, by Your bounty, O Refuge of those who hope.',
+      },
+      virtue: {
+        tr: "Abdullah ibn Abbas radıyallahu anh kanalıyla nakledilen sekizinci gün duası, Ramazan ibadetinin sosyal ahlak tarafını öne çıkarır. Yetimlere merhamet, yemek yedirmek, selamı yaymak ve kerem sahibi kimselerle beraber olmak, kulun ibadetini toplum içinde güzel ahlaka dönüştüren amellerdir. Dua, bu davranışları yalnız kişisel erdem olarak değil, Allah'tan istenen bir rızık olarak görür. Böylece Ramazan'ın rahmet iklimi, zayıfa şefkat, ikram, barış ve salih çevre arayışıyla hayata taşınır.",
+        en: 'The eighth-day supplication transmitted through Abdullah ibn Abbas, may Allah be pleased with him, highlights the social character of Ramadan worship. Mercy toward orphans, feeding food, spreading salam, and keeping company with noble people are actions that turn worship into good character within society. The supplication treats these behaviors not merely as personal virtues, but as provisions to be sought from Allah. In this way, the mercy of Ramadan is carried into life through compassion for the vulnerable, generosity, peace, and seeking righteous companionship.',
+      },
+      source: {
+        tr: "Abdullah ibn Abbas radıyallahu anh nakliyle Resûlullah'ın (sas) Ramazan günlük duaları",
+        en: 'Daily Ramadan supplications transmitted from the Messenger of Allah (peace be upon him) through Abdullah ibn Abbas, may Allah be pleased with him',
+      },
       tags: ['ramazan', 'günlük dua', 'ibn abbas', 'sosyal ahlak'],
       categories: ['ibadet', 'oruç', 'dua'],
       timeOfDay: ['sabah'],
