@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { i18n } from '../../i18n'
 import { useAuthStore } from '../../store/auth-store'
-import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
+import { MAX_DHIKR_TARGET, resolveLocalizedText, useDhikrStore } from '../../store/dhikr-store'
 import { useProfileStore } from '../../store/profile-store'
 import { useOnboardingStore } from '../../store/onboarding-store'
 import { useNotificationPromptStore } from '../../store/notification-prompt-store'
@@ -20,11 +20,12 @@ import {
 } from './services/daily-esma-suggestion-service'
 import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
 import { shouldConfirmUnsavedDhikrTransition } from './services/unsaved-transition-guard'
+import type { LocalizedText } from '@zikirmatik/shared'
 
 type HomeDhikr = {
   id: string
   source: ZikirSource
-  nameTurkish: string
+  displayName: string
   transliteration?: string
   arabic?: string
   meaning?: string
@@ -46,10 +47,10 @@ type PendingDhikrTransition =
 
 type EsmaResumePendingDhikr = {
   _id: string
-  nameTurkish: string
+  name: LocalizedText
   nameArabic: string
-  transliteration: string
-  meaning: string
+  transliteration: LocalizedText
+  meaning: LocalizedText
   recommendedCount: number
 }
 
@@ -149,6 +150,12 @@ const HomeContext = createContext<HomeContextValue | null>(null)
 
 export function HomeProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation('home')
+  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const dhikrDisplayName = useCallback(
+    (item: { name: LocalizedText | string; transliteration: LocalizedText | string }) =>
+      resolveLocalizedText(item.name, locale) || resolveLocalizedText(item.transliteration, locale),
+    [locale]
+  )
   const freeModeLabel = t('home:freeMode.label')
   const items = useDhikrStore(state => state.items)
   const selectedDhikrId = useDhikrStore(state => state.selectedDhikrId)
@@ -189,7 +196,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     return items.find(item => item.id === selectedDhikrId)
   }, [items, selectedDhikrId])
 
-  const [activeQuickDhikr, setActiveQuickDhikr] = useState(selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || '')
+  const [activeQuickDhikr, setActiveQuickDhikr] = useState(selectedDhikr ? dhikrDisplayName(selectedDhikr) : '')
   const [demoCompleted, setDemoCompleted] = useState(false)
   const [isEditingTarget, setIsEditingTarget] = useState(false)
   const [targetDraft, setTargetDraft] = useState(selectedDhikr ? String(selectedDhikr.target) : '100')
@@ -284,9 +291,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    setActiveQuickDhikr(selectedDhikr.nameTurkish || selectedDhikr.transliteration)
+    setActiveQuickDhikr(dhikrDisplayName(selectedDhikr))
     setTargetDraft(String(selectedDhikr.target > 0 ? selectedDhikr.target : 100))
-  }, [selectedDhikr?.id, selectedDhikr?.nameTurkish, selectedDhikr?.target, selectedDhikr?.transliteration, freeModeLabel])
+  }, [selectedDhikr, dhikrDisplayName, freeModeLabel])
 
   useEffect(() => {
     void fetchStreakDays()
@@ -311,11 +318,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         .map(item => ({
           id: item.id,
           source: item.source,
-          label: item.nameTurkish || item.transliteration,
+          label: dhikrDisplayName(item),
           secondary: item.arabic,
           target: item.target
         })),
-    [items]
+    [items, dhikrDisplayName]
   )
 
   const personalDhikrs = useMemo<HomeDhikrOption[]>(
@@ -325,11 +332,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         .map(item => ({
           id: item.id,
           source: item.source,
-          label: item.nameTurkish || item.transliteration,
+          label: dhikrDisplayName(item),
           secondary: item.arabic,
           target: item.target
         })),
-    [items]
+    [items, dhikrDisplayName]
   )
 
   const quickDhikrs = useMemo(() => {
@@ -523,7 +530,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         : {
             userId: sessionUserId,
             customDhikrId: selectedDhikr.id,
-            customDhikrName: selectedDhikr.nameTurkish || selectedDhikr.transliteration,
+            customDhikrName: dhikrDisplayName(selectedDhikr),
             customDhikrArabic: selectedDhikr.arabic,
             count: safeCount,
             targetCount: selectedDhikr.target,
@@ -561,9 +568,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       upsertDhikrSnapshot({
         id: dhikr._id,
         source: 'ready',
-        nameTurkish: dhikr.nameTurkish,
+        name: dhikr.name,
         arabic: dhikr.nameArabic,
-        transliteration: dhikr.transliteration || dhikr.nameTurkish,
+        transliteration: dhikr.transliteration,
         meaning: dhikr.meaning,
         current: 0,
         target: dhikr.recommendedCount,
@@ -572,7 +579,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         isFavorite: false
       })
       selectDhikr(dhikr._id)
-      setActiveQuickDhikr(dhikr.nameTurkish || dhikr.transliteration)
+      setActiveQuickDhikr(dhikrDisplayName(dhikr))
       clearFreeAutoDhikrRefs()
       liveFreeCountRef.current = 0
       clearFreeModeSession()
@@ -582,7 +589,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
     const applyEsmaContinue = (dhikr: EsmaResumePendingDhikr) => {
       selectDhikr(dhikr._id)
-      setActiveQuickDhikr(dhikr.nameTurkish || dhikr.transliteration)
+      setActiveQuickDhikr(dhikrDisplayName(dhikr))
       clearFreeAutoDhikrRefs()
       liveFreeCountRef.current = 0
       clearFreeModeSession()
@@ -648,7 +655,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       }
 
       setActiveQuickDhikr(transition.label)
-      const matched = items.find(item => item.nameTurkish === transition.label)
+      const matched = items.find(item => dhikrDisplayName(item) === transition.label)
       if (matched) {
         selectDhikr(matched.id)
       }
@@ -745,10 +752,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       mainDhikr: {
         id: selectedDhikr?.id ?? '',
         source: selectedDhikr?.source ?? 'personal',
-        nameTurkish: selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || activeFreeModeTitle,
-        transliteration: selectedDhikr?.transliteration || (selectedDhikr ? '' : activeFreeModeTitle),
+        displayName: (selectedDhikr ? dhikrDisplayName(selectedDhikr) : '') || activeFreeModeTitle,
+        transliteration:
+          (selectedDhikr ? resolveLocalizedText(selectedDhikr.transliteration, locale) : '') ||
+          (selectedDhikr ? '' : activeFreeModeTitle),
         arabic: selectedDhikr?.arabic,
-        meaning: selectedDhikr?.meaning
+        meaning: selectedDhikr?.meaning ? resolveLocalizedText(selectedDhikr.meaning, locale) : undefined
       },
       quickDhikrs,
       activeQuickDhikr,
@@ -771,7 +780,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       createError,
       isFreeSaveNameModalOpen,
       isUnsavedTransitionModalOpen: Boolean(pendingDhikrTransition),
-      unsavedTransitionDhikrName: selectedDhikr?.nameTurkish || selectedDhikr?.transliteration || activeFreeModeTitle || freeModeLabel,
+      unsavedTransitionDhikrName:
+        (selectedDhikr ? dhikrDisplayName(selectedDhikr) : '') || activeFreeModeTitle || freeModeLabel,
       unsavedTransitionCount: selectedDhikr?.current ?? freeCount,
       unsavedTransitionError,
       isSelectingEsmaDhikr,
@@ -849,7 +859,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         })
       },
       onQuickDhikrSelect: label => {
-        const matched = items.find(item => item.nameTurkish === label)
+        const matched = items.find(item => dhikrDisplayName(item) === label)
         requestDhikrTransition({ kind: 'quick', label }, matched?.id)
       },
       onSavePress: () => {
@@ -1003,7 +1013,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         requestDhikrTransition({ kind: 'esma', item })
       },
       isEsmaResumeGuardOpen: Boolean(esmaResumePending),
-      esmaResumeGuardDhikrName: esmaResumePending?.dhikr.nameTurkish ?? '',
+      esmaResumeGuardDhikrName: esmaResumePending ? dhikrDisplayName(esmaResumePending.dhikr) : '',
       esmaResumeGuardCurrentCount: esmaResumePending?.currentCount ?? 0,
       onEsmaResumeGuardFresh: () => {
         if (!esmaResumePending) return
@@ -1139,10 +1149,11 @@ function toDateKey(value: Date) {
 function buildNextAutoFreeTitle(
   items: Array<{
     source: ZikirSource
-    nameTurkish: string
-    transliteration?: string
+    name: LocalizedText | string
+    transliteration?: LocalizedText | string
   }>
 ) {
+  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
   let maxIndex = 0
 
   for (const item of items) {
@@ -1150,7 +1161,10 @@ function buildNextAutoFreeTitle(
       continue
     }
 
-    const title = (item.nameTurkish || item.transliteration || '').trim()
+    const title = (
+      resolveLocalizedText(item.name, locale) ||
+      (item.transliteration ? resolveLocalizedText(item.transliteration, locale) : '')
+    ).trim()
     const prefix = i18n.t('home:selectedDhikrMeaning.titleLabel')
     const match = new RegExp(`^${prefix}\\s+(\\d+)$`, 'i').exec(title)
     if (!match) {

@@ -135,7 +135,7 @@ function SelectedDhikrMeaning() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('home')
-  const title = (home.mainDhikr.nameTurkish || home.mainDhikr.transliteration || '').trim()
+  const title = (home.mainDhikr.displayName || home.mainDhikr.transliteration || '').trim()
   const transliteration = home.mainDhikr.transliteration?.trim()
   const arabic = home.mainDhikr.arabic?.trim()
   const meaning = home.mainDhikr.meaning?.trim()
@@ -484,7 +484,7 @@ export function HomeView() {
   const esmaListFocusRequestId = useHomeNavigationIntentStore(state => state.esmaListFocusRequestId)
   const consumeEsmaListFocus = useHomeNavigationIntentStore(state => state.consumeEsmaListFocus)
   const hasDhikrDetail =
-    hasContent(home.mainDhikr.nameTurkish) ||
+    hasContent(home.mainDhikr.displayName) ||
     hasContent(home.mainDhikr.transliteration) ||
     hasContent(home.mainDhikr.meaning) ||
     hasContent(home.mainDhikr.arabic)

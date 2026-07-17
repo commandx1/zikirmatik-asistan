@@ -228,7 +228,7 @@ export class SpecialDaysService {
 
         return {
           id: item._id.toString(),
-          nameTurkish: item.nameTurkish,
+          name: item.name,
           nameArabic: item.nameArabic,
           transliteration: item.transliteration,
           meaning: item.meaning,

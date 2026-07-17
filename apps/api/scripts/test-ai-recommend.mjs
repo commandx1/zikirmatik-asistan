@@ -110,7 +110,7 @@ function modelSupportsTemperature(model) {
 function toCandidate(doc) {
   return {
     id: doc._id.toString(),
-    nameTurkish: doc.name?.tr,
+    name: doc.name,
     virtue: doc.virtue?.tr,
     tags: doc.tags ?? [],
     categories: doc.categories ?? [],

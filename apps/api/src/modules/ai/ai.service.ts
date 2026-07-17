@@ -74,11 +74,12 @@ type CreditState = CreditGrantStatus & {
   wallet: AiCreditWalletDocument;
 };
 
-// Ajanın LLM'e döndürdüğü arama sonucu — LLM Türkçe akıl yürütür, bu yüzden
-// yalnızca TR metinleri (name.tr/virtue.tr) taşınır.
+// Ajanın LLM'e döndürdüğü arama sonucu — LLM şu an Türkçe akıl yürütür, bu
+// yüzden virtue yalnızca TR taşınır; name ise ileride İngilizce yanıt
+// üretimine hazır olsun diye tam LocalizedText olarak taşınır.
 type SearchResult = {
   id: string;
-  nameTurkish: string;
+  name: LocalizedText;
   virtue: string;
   tags: string[];
   categories: string[];
@@ -1765,7 +1766,7 @@ function toDateString(date: Date) {
 function toSearchResult(item: DhikrLean): SearchResult {
   return {
     id: item._id.toString(),
-    nameTurkish: item.name.tr,
+    name: item.name,
     virtue: item.virtue.tr,
     tags: item.tags,
     categories: item.categories,

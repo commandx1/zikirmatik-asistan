@@ -162,8 +162,8 @@ export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnR
   const compactTarget = home.target > 0 ? String(home.target) : '0'
   const strongTextStyle = useMemo(() => resolveStrongTextStyle(fontFamily), [fontFamily])
   const resetDhikrName = useMemo(
-    () => home.mainDhikr.nameTurkish.trim() || home.activeQuickDhikr.trim() || t('home:resetModal.defaultDhikrName'),
-    [home.activeQuickDhikr, home.mainDhikr.nameTurkish, t]
+    () => home.mainDhikr.displayName.trim() || home.activeQuickDhikr.trim() || t('home:resetModal.defaultDhikrName'),
+    [home.activeQuickDhikr, home.mainDhikr.displayName, t]
   )
 
   const onResetConfirmPress = () => setIsResetConfirmVisible(true)
