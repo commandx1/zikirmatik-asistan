@@ -7,6 +7,25 @@ import { toIntlLocale } from "../lib/locale-format";
 import { ZIKIR_ITEMS } from "../features/focus/data";
 import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api-client";
 import type { AiDhikrContext, ZikirItem } from "../features/focus/types";
+import type { LocalizedText } from "@zikirmatik/shared";
+
+/**
+ * Resolves a (possibly not-yet-localized) text field to a plain string for
+ * the given locale. Backward compatible with plain strings (e.g. user-authored
+ * personal dhikrs, which stay single-language by design) — those are
+ * returned as-is.
+ */
+export function resolveLocalizedText(text: LocalizedText | string, locale: "tr" | "en"): string {
+  if (typeof text === "string") {
+    return text;
+  }
+
+  return text[locale] ?? text.tr ?? text.en ?? "";
+}
+
+function toLocalizedText(value: string): LocalizedText {
+  return { tr: value, en: value };
+}
 
 type CreateCustomDhikrInput = {
   id?: string;
@@ -41,7 +60,7 @@ type DhikrStore = {
   clearSelectedDhikr: () => void;
   upsertPersonalDhikr: (item: {
     id: string;
-    nameTurkish: string;
+    name: string;
     transliteration: string;
     arabic?: string;
     meaning?: string;
@@ -67,12 +86,12 @@ type DhikrStore = {
   hydrateReadyItems: (
     items: Array<{
       id: string;
-      nameTurkish: string;
+      name: LocalizedText;
       arabic?: string;
-      transliteration: string;
-      meaning?: string;
-      virtue?: string;
-      contentSource?: string;
+      transliteration: LocalizedText;
+      meaning?: LocalizedText;
+      virtue?: LocalizedText;
+      contentSource?: LocalizedText;
       aiPrompt?: string;
       aiAssistantNote?: string;
       aiRecommendationId?: string;
@@ -85,7 +104,7 @@ type DhikrStore = {
   hydratePersonalItems: (
     items: Array<{
       id: string;
-      nameTurkish: string;
+      name: string;
       transliteration: string;
       arabic?: string;
       meaning?: string;
@@ -268,7 +287,7 @@ export const useDhikrStore = create<DhikrStore>()(
               ? {
                   ...value,
                   source: "personal",
-                  nameTurkish: item.nameTurkish,
+                  name: item.name,
                   transliteration: item.transliteration,
                   arabic: item.arabic,
                   meaning: item.meaning,
@@ -286,7 +305,7 @@ export const useDhikrStore = create<DhikrStore>()(
       const nextPersonal: ZikirItem = {
         id: item.id,
         source: "personal",
-        nameTurkish: item.nameTurkish,
+        name: item.name,
         transliteration: item.transliteration,
         arabic: item.arabic,
         meaning: item.meaning,
@@ -319,7 +338,7 @@ export const useDhikrStore = create<DhikrStore>()(
               ? {
                   ...value,
                   source: item.source,
-                  nameTurkish: item.nameTurkish,
+                  name: item.name,
                   arabic: item.arabic,
                   transliteration: item.transliteration,
                   meaning: item.meaning,
@@ -365,7 +384,7 @@ export const useDhikrStore = create<DhikrStore>()(
     const custom: ZikirItem = {
       id,
       source: "personal",
-      nameTurkish: name,
+      name,
       transliteration,
       arabic: input.arabicOrPronunciation?.trim() || undefined,
       meaning,
@@ -580,7 +599,7 @@ export const useDhikrStore = create<DhikrStore>()(
           ...(existing ?? {}),
           id: item.id,
           source: "ready",
-          nameTurkish: item.nameTurkish,
+          name: item.name,
           arabic: item.arabic,
           transliteration: item.transliteration,
           meaning: item.meaning,
@@ -629,7 +648,7 @@ export const useDhikrStore = create<DhikrStore>()(
           ...(existing ?? {}),
           id: item.id,
           source: "personal",
-          nameTurkish: item.nameTurkish.trim(),
+          name: item.name.trim(),
           arabic: item.arabic?.trim() || undefined,
           transliteration: item.transliteration.trim(),
           meaning: item.meaning?.trim() || undefined,
@@ -694,6 +713,64 @@ export const useDhikrStore = create<DhikrStore>()(
   {
     name: "dhikr-store-v1",
     storage: createJSONStorage(() => safeAsyncStorage),
+    version: 1,
+    migrate: (persistedState, version) => {
+      if (version >= 1) {
+        return persistedState as DhikrStore;
+      }
+
+      // Sürüm 0'dan (nameTurkish/plain-string alanlar) sürüm 1'e (LocalizedText)
+      // geçiş. Bozuk/eksik/beklenmeyen şekilde persist edilmiş eski state
+      // (örn. null, dizi olmayan items, obje olmayan öğeler) burada crash
+      // etmemeli — her adım defensive olmalı, en kötü ihtimalle öğe atlanır.
+      try {
+        const state = (persistedState ?? {}) as { items?: unknown };
+        const rawItems = Array.isArray(state.items) ? state.items : [];
+
+        const items = rawItems
+          .filter((rawItem): rawItem is Record<string, unknown> => typeof rawItem === "object" && rawItem !== null)
+          .map((rawItem) => {
+            const item = { ...rawItem };
+            const isPersonal = item.source === "personal";
+
+            if (typeof item.nameTurkish === "string") {
+              item.name = isPersonal ? item.nameTurkish : toLocalizedText(item.nameTurkish);
+              delete item.nameTurkish;
+            }
+
+            if (typeof item.name !== "string" && !(item.name && typeof item.name === "object" && "tr" in item.name)) {
+              // nameTurkish yoktu ve name de tanımsız/geçersiz — render'ı
+              // crash ettirmemek için güvenli bir varsayılana düş.
+              item.name = isPersonal ? "" : toLocalizedText("");
+            }
+
+            if (!isPersonal) {
+              if (typeof item.transliteration === "string") {
+                item.transliteration = toLocalizedText(item.transliteration);
+              }
+              if (typeof item.meaning === "string") {
+                item.meaning = toLocalizedText(item.meaning);
+              }
+              if (typeof item.virtue === "string") {
+                item.virtue = toLocalizedText(item.virtue);
+              }
+              if (typeof item.contentSource === "string") {
+                item.contentSource = toLocalizedText(item.contentSource);
+              }
+            }
+
+            return item;
+          });
+
+        return { ...state, items } as DhikrStore;
+      } catch {
+        // Migrasyon her ne sebeple olursa olsun başarısız olursa, boş bir
+        // items listesiyle devam et — kullanıcı verisi kaybı yerine crash'i
+        // engellemek önceliklidir; kalan alanlar zustand varsayılanlarından gelir.
+        const state = (persistedState ?? {}) as Record<string, unknown>;
+        return { ...state, items: [] } as unknown as DhikrStore;
+      }
+    },
     partialize: (state) => ({
       items: state.items,
       selectedDhikrId: state.selectedDhikrId,
