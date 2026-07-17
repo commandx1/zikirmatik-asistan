@@ -13,12 +13,12 @@ export function embeddingModel() {
  */
 export function buildSourceText(source) {
   return [
-    source.nameTurkish,
+    source.name?.tr,
     (source.suitableFor ?? []).join(', '),
     (source.tags ?? []).join(', '),
     (source.categories ?? []).join(', '),
-    source.meaning,
-    source.virtue,
+    source.meaning?.tr,
+    source.virtue?.tr,
   ]
     .map((part) => String(part ?? '').trim())
     .filter((part) => part.length > 0)
