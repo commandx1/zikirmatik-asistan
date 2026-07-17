@@ -2,7 +2,6 @@ import { normalizeText } from './text-normalize';
 
 type AvailableDhikr = {
   _id: string;
-  nameTurkish: string;
   tags: string[];
   categories: string[];
   timeOfDay: 'morning' | 'evening' | 'night' | 'any';

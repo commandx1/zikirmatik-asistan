@@ -40,6 +40,7 @@ import {
   type AiCreditLedgerDocument,
 } from './schemas/ai-credit-ledger.schema';
 import { fallbackRecommend } from './utils/fallback-recommender';
+import type { LocalizedText } from '../../common/types/localized-text';
 import { normalizeText } from './utils/text-normalize';
 import {
   AI_CREDIT_DEFAULT_TOPUP_PRODUCTS,
@@ -73,6 +74,8 @@ type CreditState = CreditGrantStatus & {
   wallet: AiCreditWalletDocument;
 };
 
+// Ajanın LLM'e döndürdüğü arama sonucu — LLM Türkçe akıl yürütür, bu yüzden
+// yalnızca TR metinleri (name.tr/virtue.tr) taşınır.
 type SearchResult = {
   id: string;
   nameTurkish: string;
@@ -982,7 +985,6 @@ export class AiService {
       maxRecommendations,
       availableDhikrs: pool.map((d) => ({
         _id: d._id.toString(),
-        nameTurkish: d.nameTurkish,
         tags: d.tags,
         categories: d.categories,
         timeOfDay: d.timeOfDay,
@@ -1115,7 +1117,7 @@ export class AiService {
       .filter((item): item is DhikrLean => Boolean(item))
       .map((item) => ({
         id: item._id.toString(),
-        nameTurkish: item.nameTurkish,
+        name: item.name,
         nameArabic: item.nameArabic,
         transliteration: item.transliteration,
         meaning: item.meaning,
@@ -1372,11 +1374,11 @@ export class AiService {
   private composeReasoning(
     summary: string | undefined,
     items: Array<{ id: string; reason: string }>,
-    dhikrMapById: Map<string, { nameTurkish: string }>,
+    dhikrMapById: Map<string, { name: LocalizedText }>,
   ): string {
     const lines = items
       .map((item) => {
-        const name = dhikrMapById.get(item.id)?.nameTurkish?.trim();
+        const name = dhikrMapById.get(item.id)?.name?.tr?.trim();
         const reason = item.reason ? stripObjectIds(item.reason).trim() : '';
 
         if (name && reason) return `- **${name}:** ${reason}`;
@@ -1763,8 +1765,8 @@ function toDateString(date: Date) {
 function toSearchResult(item: DhikrLean): SearchResult {
   return {
     id: item._id.toString(),
-    nameTurkish: item.nameTurkish,
-    virtue: item.virtue,
+    nameTurkish: item.name.tr,
+    virtue: item.virtue.tr,
     tags: item.tags,
     categories: item.categories,
     timeOfDay: item.timeOfDay,

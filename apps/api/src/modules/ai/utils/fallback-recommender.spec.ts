@@ -14,7 +14,6 @@ describe('fallbackRecommend', () => {
       availableDhikrs: [
         {
           _id: '1',
-          nameTurkish: 'Estağfirullah',
           tags: ['stresli', 'huzur'],
           categories: ['arınma'],
           timeOfDay: 'morning',
@@ -22,7 +21,6 @@ describe('fallbackRecommend', () => {
         },
         {
           _id: '2',
-          nameTurkish: 'Elhamdülillah',
           tags: ['şükür'],
           categories: ['şükür'],
           timeOfDay: 'morning',
@@ -54,7 +52,6 @@ describe('fallbackRecommend', () => {
       availableDhikrs: [
         {
           _id: '1',
-          nameTurkish: 'La havle',
           tags: ['kaygi'],
           categories: [],
           timeOfDay: 'any',
@@ -80,7 +77,6 @@ describe('fallbackRecommend', () => {
       availableDhikrs: [
         {
           _id: '1',
-          nameTurkish: 'La havle',
           tags: ['kaygı'],
           categories: [],
           timeOfDay: 'any',
@@ -88,7 +84,6 @@ describe('fallbackRecommend', () => {
         },
         {
           _id: '2',
-          nameTurkish: 'Elhamdülillah',
           tags: ['şükür'],
           categories: [],
           timeOfDay: 'any',
@@ -115,7 +110,6 @@ describe('fallbackRecommend', () => {
       availableDhikrs: [
         {
           _id: '1',
-          nameTurkish: 'Test',
           tags: ['de'],
           categories: [],
           timeOfDay: 'any',
@@ -140,7 +134,6 @@ describe('fallbackRecommend', () => {
       availableDhikrs: [
         {
           _id: 'no-overlap-but-good-time',
-          nameTurkish: 'Zamanlı ama alakasız',
           tags: ['şükür'],
           categories: [],
           timeOfDay: 'morning',
@@ -148,7 +141,6 @@ describe('fallbackRecommend', () => {
         },
         {
           _id: 'overlap-match',
-          nameTurkish: 'Sükunet eşleşmesi',
           tags: ['sükunet'],
           categories: [],
           timeOfDay: 'any',
@@ -175,7 +167,6 @@ describe('fallbackRecommend', () => {
       availableDhikrs: [
         {
           _id: '1',
-          nameTurkish: 'La havle',
           tags: ['kaygi', 'endise'],
           categories: ['gelecek kaygisi'],
           timeOfDay: 'any',
@@ -183,7 +174,6 @@ describe('fallbackRecommend', () => {
         },
         {
           _id: '2',
-          nameTurkish: 'Elhamdülillah',
           tags: ['şükür'],
           categories: ['şükür'],
           timeOfDay: 'any',
@@ -209,7 +199,6 @@ describe('fallbackRecommend', () => {
       availableDhikrs: [
         {
           _id: 'tags-only',
-          nameTurkish: 'Tag eşleşmesi',
           tags: ['sınav'],
           categories: [],
           timeOfDay: 'any',
@@ -217,7 +206,6 @@ describe('fallbackRecommend', () => {
         },
         {
           _id: 'suitable-for-only',
-          nameTurkish: 'SuitableFor eşleşmesi',
           tags: [],
           categories: [],
           timeOfDay: 'any',
@@ -242,7 +230,6 @@ describe('fallbackRecommend', () => {
       availableDhikrs: [
         {
           _id: '1',
-          nameTurkish: 'Estağfirullah',
           tags: ['stresli', 'huzur'],
           categories: ['arınma'],
           timeOfDay: 'morning',
