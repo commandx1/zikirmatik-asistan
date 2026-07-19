@@ -6,7 +6,6 @@
       "zikirmatik",
       "zikirmatikasistan"
     ],
-    "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "plugins": [
       "expo-router",
@@ -25,7 +24,8 @@
       "adaptiveIcon": {
         "backgroundColor": "#0B1423"
       },
-      "package": "com.zikirmatik_asistan.app"
+      "package": "com.zikirmatik_asistan.app",
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro"

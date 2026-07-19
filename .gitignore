@@ -17,6 +17,8 @@ android-logs
 *.env
 docs
 *.jks
+*.aab
+*.apk
 .superpowers
 apps/mobile/android/local.properties
 apps/mobile/android/keystore.properties
