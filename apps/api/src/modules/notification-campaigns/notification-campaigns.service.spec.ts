@@ -192,7 +192,7 @@ describe('NotificationCampaignsService', () => {
               targetCount: 1,
               sentCount: 1,
               ticketErrorCount: 0,
-            }),
+            }) as unknown,
           },
         },
       );

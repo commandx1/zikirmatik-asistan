@@ -31,7 +31,10 @@ export class CampaignTriggerGuard implements CanActivate {
 
     const expected = Buffer.from(secret);
     const actual = Buffer.from(provided);
-    if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
+    if (
+      expected.length !== actual.length ||
+      !timingSafeEqual(expected, actual)
+    ) {
       throw new UnauthorizedException();
     }
 

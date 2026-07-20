@@ -8,6 +8,7 @@ import { Cron } from '@nestjs/schedule';
 import type { Model } from 'mongoose';
 import { DevicesService } from '../devices/devices.service';
 import { PushSenderService } from '../push/push-sender.service';
+import type { PushSendResult } from '../push/push.types';
 import {
   SpecialDay,
   type SpecialDayDocument,
@@ -163,7 +164,7 @@ export class NotificationCampaignsService implements OnApplicationBootstrap {
       return { status: 'no-targets', sentCount: 0 };
     }
 
-    let result;
+    let result: PushSendResult;
     try {
       result = await this.pushSenderService.sendToDevices(targets, message);
     } catch (error) {
@@ -191,7 +192,11 @@ export class NotificationCampaignsService implements OnApplicationBootstrap {
   // crashed midway. Failures here must never fail the campaign itself.
   private async recordDispatchResult(
     key: string,
-    result: { targetCount: number; sentCount: number; ticketErrorCount: number },
+    result: {
+      targetCount: number;
+      sentCount: number;
+      ticketErrorCount: number;
+    },
   ) {
     try {
       await this.dispatchModel.updateOne(
