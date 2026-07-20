@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  type OnApplicationBootstrap,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron } from '@nestjs/schedule';
 import type { Model } from 'mongoose';
@@ -33,7 +37,7 @@ export type CampaignRunResult = {
 };
 
 @Injectable()
-export class NotificationCampaignsService {
+export class NotificationCampaignsService implements OnApplicationBootstrap {
   private readonly logger = new Logger(NotificationCampaignsService.name);
 
   constructor(
@@ -44,6 +48,31 @@ export class NotificationCampaignsService {
     private readonly devicesService: DevicesService,
     private readonly pushSenderService: PushSenderService,
   ) {}
+
+  // Catch-up on boot: on Render Free the instance sleeps after ~15 min idle,
+  // so the in-process @Cron ticks are missed entirely while asleep. Any
+  // wake-up (external ping, GitHub Actions trigger, organic traffic) re-runs
+  // the campaigns for today; claimDispatch's unique key makes this idempotent,
+  // and the quiet-hours guard keeps late-night wake-ups silent.
+  onApplicationBootstrap() {
+    void this.runCatchUp().catch((error) => {
+      this.logger.error('Campaign catch-up failed.', error);
+    });
+  }
+
+  async runCatchUp(now = new Date()) {
+    const { weekday, hour, minute } = getIstanbulParts(now);
+
+    if (weekday === 'Fri' && (hour > 9 || (hour === 9 && minute >= 30))) {
+      const result = await this.runFridayCampaign(now);
+      this.logger.log(`Friday catch-up: ${result.status}`);
+    }
+
+    if (hour >= 20) {
+      const result = await this.runSpecialDayEveCampaign(now);
+      this.logger.log(`Special-day catch-up: ${result.status}`);
+    }
+  }
 
   // 20:00 Istanbul, daily. Sends the "eve of a special day" (arife) push when
   // tomorrow (Istanbul calendar) is a special day.
@@ -72,15 +101,13 @@ export class NotificationCampaignsService {
       return { status: 'no-special-day' };
     }
 
-    const claimed = await this.claimDispatch(
-      `special-day:${dateKey}`,
-      'special-day',
-    );
+    const claimKey = `special-day:${dateKey}`;
+    const claimed = await this.claimDispatch(claimKey, 'special-day');
     if (!claimed) {
       return { status: 'already-sent' };
     }
 
-    return this.dispatch('specialDays', {
+    return this.dispatch(claimKey, 'specialDays', {
       title: `Bu Gece ${specialDay.name} 🌙`,
       body:
         specialDay.description?.trim() ||
@@ -101,12 +128,13 @@ export class NotificationCampaignsService {
       return { status: 'quiet-hours' };
     }
 
-    const claimed = await this.claimDispatch(`friday:${dateKey}`, 'friday');
+    const claimKey = `friday:${dateKey}`;
+    const claimed = await this.claimDispatch(claimKey, 'friday');
     if (!claimed) {
       return { status: 'already-sent' };
     }
 
-    return this.dispatch('friday', {
+    return this.dispatch(claimKey, 'friday', {
       title: 'Hayırlı Cumalar 🕌',
       body: 'Bugün Kehf suresi okumayı ve bol bol salavat getirmeyi unutma.',
       data: { route: '/(tabs)/special-days' },
@@ -114,6 +142,7 @@ export class NotificationCampaignsService {
   }
 
   private async dispatch(
+    claimKey: string,
     pref: 'specialDays' | 'friday',
     message: { title: string; body: string; data: Record<string, unknown> },
   ): Promise<CampaignRunResult> {
@@ -126,17 +155,64 @@ export class NotificationCampaignsService {
       }));
 
     if (targets.length === 0) {
-      // The dispatch record stays claimed on purpose: re-running the same
-      // campaign against an empty audience should not retry forever.
+      // Release the claim: an empty audience is usually transient (devices
+      // registering later the same day), so the next trigger should retry
+      // instead of the campaign being permanently marked as sent.
+      this.logger.warn(`Campaign "${pref}" had no targets; claim released.`);
+      await this.releaseDispatchClaim(claimKey);
       return { status: 'no-targets', sentCount: 0 };
     }
 
-    const result = await this.pushSenderService.sendToDevices(targets, message);
+    let result;
+    try {
+      result = await this.pushSenderService.sendToDevices(targets, message);
+    } catch (error) {
+      // Nothing reached Expo (network/config failure before any chunk was
+      // accepted). Release the claim so the next cron run can retry instead
+      // of the campaign being silently marked as sent.
+      await this.releaseDispatchClaim(claimKey);
+      throw error;
+    }
+
     this.logger.log(
-      `Campaign "${pref}" dispatched: ${result.sentCount} sent, ${result.skippedCount} skipped, ${result.deactivatedDeviceIds.length} deactivated.`,
+      `Campaign "${pref}" dispatched: ${result.sentCount} sent, ${result.ticketErrorCount} ticket errors, ${result.skippedCount} skipped, ${result.deactivatedDeviceIds.length} deactivated.`,
     );
 
+    await this.recordDispatchResult(claimKey, {
+      targetCount: targets.length,
+      sentCount: result.sentCount,
+      ticketErrorCount: result.ticketErrorCount,
+    });
+
     return { status: 'sent', sentCount: result.sentCount };
+  }
+
+  // Best-effort observability: a claim row without a result means the send
+  // crashed midway. Failures here must never fail the campaign itself.
+  private async recordDispatchResult(
+    key: string,
+    result: { targetCount: number; sentCount: number; ticketErrorCount: number },
+  ) {
+    try {
+      await this.dispatchModel.updateOne(
+        { key },
+        { $set: { result: { ...result, finishedAt: new Date() } } },
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to record dispatch result for "${key}": ${String(error)}`,
+      );
+    }
+  }
+
+  private async releaseDispatchClaim(key: string) {
+    try {
+      await this.dispatchModel.deleteOne({ key });
+    } catch (error) {
+      this.logger.error(
+        `Failed to release dispatch claim "${key}" after send error: ${String(error)}`,
+      );
+    }
   }
 
   // Insert-first claim on the unique key. Duplicate-key (11000) means another
@@ -176,10 +252,17 @@ export function getIstanbulParts(now: Date) {
     formatter.formatToParts(now).map((part) => [part.type, part.value]),
   );
 
+  // en-US short weekday is period-free ("Fri"), unlike en-CA ("Fri.").
+  const weekday = new Intl.DateTimeFormat('en-US', {
+    timeZone: ISTANBUL_TIME_ZONE,
+    weekday: 'short',
+  }).format(now);
+
   return {
     dateKey: `${parts.get('year')}-${parts.get('month')}-${parts.get('day')}`,
     hour: Number(parts.get('hour')),
     minute: Number(parts.get('minute')),
+    weekday,
   };
 }
 

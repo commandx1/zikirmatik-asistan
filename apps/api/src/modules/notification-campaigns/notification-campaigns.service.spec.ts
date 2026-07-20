@@ -22,6 +22,8 @@ import {
 describe('NotificationCampaignsService', () => {
   const dispatchModel = {
     create: jest.fn(),
+    updateOne: jest.fn(),
+    deleteOne: jest.fn(),
   };
   const specialDayModel = {
     find: jest.fn(),
@@ -54,11 +56,15 @@ describe('NotificationCampaignsService', () => {
 
   beforeEach(() => {
     dispatchModel.create.mockReset();
+    dispatchModel.updateOne.mockReset();
+    dispatchModel.deleteOne.mockReset();
     specialDayModel.find.mockReset();
     devicesService.findActiveByPref.mockReset();
     pushSenderService.sendToDevices.mockReset();
 
     dispatchModel.create.mockResolvedValue({});
+    dispatchModel.updateOne.mockResolvedValue({ modifiedCount: 1 });
+    dispatchModel.deleteOne.mockResolvedValue({ deletedCount: 1 });
     mockSpecialDaysFound([
       {
         _id: specialDayId,
@@ -75,6 +81,7 @@ describe('NotificationCampaignsService', () => {
     pushSenderService.sendToDevices.mockResolvedValue({
       sentCount: 1,
       skippedCount: 0,
+      ticketErrorCount: 0,
       deactivatedDeviceIds: [],
     });
 
@@ -146,14 +153,49 @@ describe('NotificationCampaignsService', () => {
       expect(result).toEqual({ status: 'quiet-hours' });
     });
 
-    it('keeps the campaign claimed when there are no targets', async () => {
+    it('releases the claim when there are no targets, so a retry is possible', async () => {
       devicesService.findActiveByPref.mockResolvedValue([]);
 
       const result = await service.runSpecialDayEveCampaign(eveAt2000Istanbul);
 
       expect(dispatchModel.create).toHaveBeenCalled();
       expect(pushSenderService.sendToDevices).not.toHaveBeenCalled();
+      expect(dispatchModel.deleteOne).toHaveBeenCalledWith({
+        key: 'special-day:2026-01-15',
+      });
       expect(result).toEqual({ status: 'no-targets', sentCount: 0 });
+    });
+
+    it('releases the claim when the send throws, so the next run can retry', async () => {
+      pushSenderService.sendToDevices.mockRejectedValue(
+        new Error('expo unreachable'),
+      );
+
+      await expect(
+        service.runSpecialDayEveCampaign(eveAt2000Istanbul),
+      ).rejects.toThrow('expo unreachable');
+
+      expect(dispatchModel.deleteOne).toHaveBeenCalledWith({
+        key: 'special-day:2026-01-15',
+      });
+      expect(dispatchModel.updateOne).not.toHaveBeenCalled();
+    });
+
+    it('records the dispatch result on the claim row after sending', async () => {
+      await service.runSpecialDayEveCampaign(eveAt2000Istanbul);
+
+      expect(dispatchModel.updateOne).toHaveBeenCalledWith(
+        { key: 'special-day:2026-01-15' },
+        {
+          $set: {
+            result: expect.objectContaining({
+              targetCount: 1,
+              sentCount: 1,
+              ticketErrorCount: 0,
+            }),
+          },
+        },
+      );
     });
   });
 
@@ -199,12 +241,14 @@ describe('getIstanbulParts', () => {
       dateKey: '2026-01-15',
       hour: 20,
       minute: 0,
+      weekday: 'Thu',
     });
     // 22:30Z rolls over to the next Istanbul calendar day (01:30).
     expect(getIstanbulParts(new Date('2026-01-15T22:30:00Z'))).toEqual({
       dateKey: '2026-01-16',
       hour: 1,
       minute: 30,
+      weekday: 'Fri',
     });
   });
 });

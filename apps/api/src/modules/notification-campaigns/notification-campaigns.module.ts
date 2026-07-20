@@ -6,6 +6,8 @@ import {
   SpecialDay,
   SpecialDaySchema,
 } from '../special-days/schemas/special-day.schema';
+import { CampaignTriggerGuard } from './campaign-trigger.guard';
+import { NotificationCampaignsController } from './notification-campaigns.controller';
 import { NotificationCampaignsService } from './notification-campaigns.service';
 import {
   NotificationDispatch,
@@ -21,6 +23,7 @@ import {
     DevicesModule,
     PushModule,
   ],
-  providers: [NotificationCampaignsService],
+  controllers: [NotificationCampaignsController],
+  providers: [NotificationCampaignsService, CampaignTriggerGuard],
 })
 export class NotificationCampaignsModule {}

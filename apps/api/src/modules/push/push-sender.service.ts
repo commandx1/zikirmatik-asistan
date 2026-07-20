@@ -24,7 +24,12 @@ export class PushSenderService {
     const skippedCount = targets.length - messages.length;
 
     if (messages.length === 0) {
-      return { sentCount: 0, skippedCount, deactivatedDeviceIds: [] };
+      return {
+        sentCount: 0,
+        skippedCount,
+        ticketErrorCount: 0,
+        deactivatedDeviceIds: [],
+      };
     }
 
     const tickets = await this.sendChunks(messages);
@@ -32,10 +37,14 @@ export class PushSenderService {
       tickets,
       ticketDeviceIds,
     );
+    const ticketErrorCount = tickets.filter(
+      (ticket) => ticket.status === 'error',
+    ).length;
 
     return {
-      sentCount: tickets.length,
+      sentCount: tickets.length - ticketErrorCount,
       skippedCount,
+      ticketErrorCount,
       deactivatedDeviceIds,
     };
   }

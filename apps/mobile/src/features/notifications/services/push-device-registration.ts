@@ -3,7 +3,6 @@ import Constants from "expo-constants";
 import * as Crypto from "expo-crypto";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
-import { useDeviceNotificationPrefsStore } from "../../../store/device-notification-prefs-store";
 import { registerDevice, unlinkDevice } from "./devices-api-client";
 
 const DEVICE_ID_STORAGE_KEY = "push-device-id-v1";
@@ -76,22 +75,24 @@ async function getExpoPushToken(): Promise<string | undefined> {
 
 // Registers (or refreshes) this device with the backend. Works for guests:
 // pass accessToken only when authenticated so the device gets linked.
-// Always forwards the local device-notification-prefs-store values as
-// `prefs` so the backend's own defaults (opt-in-friendly `true`) never
-// silently diverge from what the client's single "Bildirimler" master
-// toggle actually shows — this store is the source of truth.
+//
+// Deliberately does NOT send `prefs`: registration runs on every app start
+// (usePushDeviceRegistration) and used to fire before the zustand persist
+// hydration finished, silently overwriting the backend prefs with the
+// store's initial values. Prefs are only written by the explicit
+// "Bildirimler" master-toggle flow (sync-notification-settings.ts →
+// updateDevicePrefs); new devices get the backend's opt-in-friendly
+// $setOnInsert defaults (`true`).
 export async function registerPushDevice(accessToken?: string): Promise<void> {
   const deviceId = await getOrCreateDeviceId();
   const granted = await ensurePushPermission();
   const expoPushToken = granted ? await getExpoPushToken() : undefined;
-  const { specialDays, friday } = useDeviceNotificationPrefsStore.getState();
 
   await registerDevice(
     {
       deviceId,
       expoPushToken,
-      platform: resolvePlatform(),
-      prefs: { specialDays, friday }
+      platform: resolvePlatform()
     },
     accessToken
   );

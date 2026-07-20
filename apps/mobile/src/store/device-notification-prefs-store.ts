@@ -7,12 +7,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // Both fields are driven together by the single "Bildirimler" master
 // toggle on the profile screen (see
 // features/profile/hooks/use-notification-settings.ts) — they always move
-// in lockstep with it, so the default here is `false` to match the
-// master's off-by-default state. push-device-registration.ts always sends
-// the current values of this store on every registration/refresh so the
-// backend never falls back to its own (opt-in-friendly `true`) defaults
-// behind the client's back. On a failed backend update the caller reverts
-// these fields.
+// in lockstep with it. Defaults are `true` to match the backend's
+// $setOnInsert defaults for new devices. The backend is only written by
+// the explicit master-toggle flow (sync-notification-settings.ts →
+// updateDevicePrefs); registration deliberately no longer sends these
+// values, so an unhydrated store can never overwrite server-side prefs.
+// On a failed backend update the caller reverts these fields.
 type DeviceNotificationPrefsState = {
   specialDays: boolean;
   friday: boolean;
@@ -47,8 +47,8 @@ const safeAsyncStorage: StateStorage = {
 export const useDeviceNotificationPrefsStore = create<DeviceNotificationPrefsState>()(
   persist(
     (set) => ({
-      specialDays: false,
-      friday: false,
+      specialDays: true,
+      friday: true,
       setSpecialDays: (enabled) => set({ specialDays: enabled }),
       setFriday: (enabled) => set({ friday: enabled })
     }),

@@ -1,0 +1,53 @@
+# Render Free plan'da API instance boşta uyuduğu için in-process @Cron
+# tick'leri kaçıyor. Bu workflow kampanyaları dışarıdan tetikler; endpoint'ler
+# İstanbul günü başına idempotent (claimDispatch) olduğundan geç/tekrar
+# tetikleme güvenlidir. GH cron UTC çalışır ve dakikalarca gecikebilir —
+# sorun değil, catch-up + dedup telafi eder.
+#
+# Gerekli repo secrets:
+#   API_URL                 — örn. https://<service>.onrender.com (sondaki / olmadan)
+#   CAMPAIGN_TRIGGER_SECRET — Render'daki env ile aynı değer
+name: campaign-triggers
+
+on:
+  schedule:
+    # 09:35 İstanbul (06:35 UTC), sadece Cuma → Cuma kampanyası
+    - cron: '35 6 * * 5'
+    # 20:05 İstanbul (17:05 UTC), her gün → özel gün arifesi kampanyası
+    - cron: '5 17 * * *'
+  workflow_dispatch:
+    inputs:
+      campaign:
+        description: 'Tetiklenecek kampanya'
+        required: true
+        type: choice
+        options:
+          - friday
+          - special-day-eve
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Resolve campaign
+        id: resolve
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "campaign=${{ inputs.campaign }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "35 6 * * 5" ]; then
+            echo "campaign=friday" >> "$GITHUB_OUTPUT"
+          else
+            echo "campaign=special-day-eve" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Trigger campaign
+        run: |
+          # Render Free instance uykudan kalkarken ilk istek uzun sürebilir /
+          # 5xx dönebilir; retry bunu tolere eder. Endpoint idempotent.
+          curl --fail-with-body --silent --show-error \
+            --retry 5 --retry-delay 20 --retry-all-errors \
+            --max-time 120 \
+            -X POST \
+            -H "x-campaign-secret: ${{ secrets.CAMPAIGN_TRIGGER_SECRET }}" \
+            "${{ secrets.API_URL }}/internal/campaigns/${{ steps.resolve.outputs.campaign }}"

@@ -57,6 +57,7 @@ describe('PushSenderService', () => {
     expect(result).toEqual({
       sentCount: 0,
       skippedCount: 1,
+      ticketErrorCount: 0,
       deactivatedDeviceIds: [],
     });
   });
@@ -104,6 +105,8 @@ describe('PushSenderService', () => {
     expect(getPushNotificationReceiptsAsync).not.toHaveBeenCalled();
     expect(devicesService.deactivateByIds).toHaveBeenCalledWith(['d1']);
     expect(result.deactivatedDeviceIds).toEqual(['d1']);
+    expect(result.sentCount).toBe(0);
+    expect(result.ticketErrorCount).toBe(1);
   });
 
   it('deactivates a device whose receipt reports DeviceNotRegistered', async () => {

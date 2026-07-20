@@ -1,6 +1,27 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
+// Outcome of a completed dispatch, written after the send finishes. A claim
+// row without a result means the send is still in flight (or crashed midway).
+@Schema({ _id: false, versionKey: false })
+export class NotificationDispatchResult {
+  @Prop({ type: Number, required: true })
+  targetCount!: number;
+
+  @Prop({ type: Number, required: true })
+  sentCount!: number;
+
+  @Prop({ type: Number, required: true })
+  ticketErrorCount!: number;
+
+  @Prop({ type: Date, required: true })
+  finishedAt!: Date;
+}
+
+const NotificationDispatchResultSchema = SchemaFactory.createForClass(
+  NotificationDispatchResult,
+);
+
 export type NotificationDispatchDocument =
   HydratedDocument<NotificationDispatch>;
 
@@ -22,6 +43,9 @@ export class NotificationDispatch {
 
   @Prop({ type: Date, required: true })
   sentAt!: Date;
+
+  @Prop({ type: NotificationDispatchResultSchema, required: false })
+  result?: NotificationDispatchResult;
 
   readonly createdAt!: Date;
   readonly updatedAt!: Date;
