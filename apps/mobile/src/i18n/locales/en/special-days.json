@@ -8,7 +8,13 @@
   },
   "hero": {
     "premiumLocked": "Premium Locked",
-    "remainingPrefix": "Remaining: {{remaining}}"
+    "remainingPrefix": "Remaining: {{remaining}}",
+    "badgeToday": "TODAY",
+    "badgeUpcoming": "UPCOMING"
+  },
+  "action": {
+    "cta": "View",
+    "defaultSubtitle": "Recommended dhikrs for today"
   },
   "notificationSettings": {
     "title": "Get kandil notifications",

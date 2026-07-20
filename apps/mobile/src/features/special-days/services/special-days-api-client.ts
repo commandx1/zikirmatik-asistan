@@ -4,21 +4,28 @@ import type { LocalizedText } from "@zikirmatik/shared";
 
 export type SpecialDayType = "kandil" | "ramazan" | "bayram" | "özel gün";
 
+// API artık çok dilli ham içerik döner; okunur etiketler (dateLabel, badge,
+// countdown metni, action başlık/CTA) mobil i18n katmanında üretilir.
+export type SpecialDayCountdown = {
+  days: number;
+  hours: number;
+  minutes: number;
+};
+
 export type BackendSpecialDayHomeItem = {
   id: string;
-  name: string;
+  name: LocalizedText;
   type: SpecialDayType;
   date: string;
   hijriDate: string;
-  description?: string;
+  description?: LocalizedText;
   eventKey?: string;
   dayIndex?: number;
   dayCount?: number;
-  dateLabel: string;
   hasSpecialFlow: boolean;
   recommendedDhikrCount: number;
-  themeTitle: string;
-  themeSummary: string;
+  themeTitle: LocalizedText;
+  themeSummary: LocalizedText;
   isLocked: boolean;
 };
 
@@ -27,23 +34,22 @@ export type BackendSpecialDayHomeResponse = {
   hero:
     | (BackendSpecialDayHomeItem & {
         source: "today" | "upcoming";
-        badge: string;
-        countdown: Array<{ value: string; label: string }>;
-        remainingLabel: string;
+        isToday: boolean;
+        countdown: SpecialDayCountdown;
       })
     | null;
   action:
     | {
         specialDayId: string;
-        title: string;
-        subtitle: string;
-        ctaLabel: string;
+        name: LocalizedText;
+        description?: LocalizedText;
         isLocked: boolean;
       }
     | null;
   upcoming: Array<
     BackendSpecialDayHomeItem & {
-      remainingLabel: string;
+      isToday: boolean;
+      countdown: SpecialDayCountdown;
     }
   >;
 };

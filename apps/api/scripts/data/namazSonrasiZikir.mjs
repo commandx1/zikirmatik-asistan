@@ -1,8 +1,14 @@
 export const namazSonrasiZikir = {
   key: 'namaz-sonrasi-zikir',
-  label: 'Namazdan Sonra Yapılan Zikirler',
+  label: {
+    tr: 'Namazdan Sonra Yapılan Zikirler',
+    en: 'Dhikrs Recited After Prayer',
+  },
   category: 'namaz',
-  description: 'Namazdan selam verdikten sonra okunacak zikirler.',
+  description: {
+    tr: 'Namazdan selam verdikten sonra okunacak zikirler.',
+    en: 'Dhikrs to be recited after giving the closing salam of the prayer.',
+  },
   dhikrItems: [
     {
       key: 'namaz-sonrasi-33-tesbih-paketi',

@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const recepAyi = {
   key: 'recep-ayi-2025',
-  label: 'Recep Ayı 2025',
+  label: {
+    tr: 'Recep Ayı 2025',
+    en: 'Month of Rajab 2025',
+  },
   category: 'ibadet',
-  description:
-    "Haram aylardan biri olan Recep, 'tohum ekme' mevsimidir. Üç onar günlük fazda (Hayy-Kayyûm → Ehad-Samed → Ğafûr-Rahîm) esma tesbihiyle, 30 rekatlık hacet namazıyla ve Seyyidü'l-İstiğfar ile ihya edilir.",
+  description: {
+    tr: "Haram aylardan biri olan Recep, 'tohum ekme' mevsimidir. Üç onar günlük fazda (Hayy-Kayyûm → Ehad-Samed → Ğafûr-Rahîm) esma tesbihiyle, 30 rekatlık hacet namazıyla ve Seyyidü'l-İstiğfar ile ihya edilir.",
+    en: "Rajab, one of the sacred months, is the season of 'sowing the seed.' Across three ten-day phases (al-Hayy-al-Qayyum → al-Ahad-as-Samad → al-Ghafur-ar-Rahim), it is revived through the tasbih of the Divine Names, a thirty-rakat prayer of need (hajat), and the Sayyid al-Istighfar.",
+  },
   dhikrItems: [
     {
       key: keyMap.SUBHANALLAH_HAYY_KAYYUM,
@@ -247,12 +252,17 @@ export const recepAyi = {
   ],
   specialDays: [
     {
-      name: 'Recep Ayı Girişi — 1. Faz (Hayy-Kayyûm)',
+      name: {
+        tr: 'Recep Ayı Girişi — 1. Faz (Hayy-Kayyûm)',
+        en: 'Beginning of the Month of Rajab — Phase 1 (al-Hayy-al-Qayyum)',
+      },
       type: 'özel gün',
       date: '2025-12-21',
       hijriDate: '1 Recep 1447',
-      description:
-        "Haram aylardan Recep'in başlangıcı. İlk on günde Hayy-Kayyûm esmasıyla manevi uyanış, Seyyidü'l-İstiğfar ile derinlemesine tövbe ve üç aylar duasını çok oku.",
+      description: {
+        tr: "Haram aylardan Recep'in başlangıcı. İlk on günde Hayy-Kayyûm esmasıyla manevi uyanış, Seyyidü'l-İstiğfar ile derinlemesine tövbe ve üç aylar duasını çok oku.",
+        en: "The beginning of Rajab, one of the sacred months. In the first ten days, awaken spiritually with the Divine Names al-Hayy-al-Qayyum, turn to Allah in profound repentance through the Sayyid al-Istighfar, and recite abundantly the supplication of the three holy months.",
+      },
       eventKey: 'recep-ayi-2025',
       dayIndex: 1,
       dayCount: 30,
@@ -266,12 +276,17 @@ export const recepAyi = {
       ],
     },
     {
-      name: 'Recep 11. Gün — 2. Faz (Ehad-Samed)',
+      name: {
+        tr: 'Recep 11. Gün — 2. Faz (Ehad-Samed)',
+        en: 'Rajab Day 11 — Phase 2 (al-Ahad-as-Samad)',
+      },
       type: 'özel gün',
       date: '2025-12-31',
       hijriDate: '11 Recep 1447',
-      description:
-        "Recep'in ikinci on günlük fazı. Allah'ın mutlak bağımsızlığını ve tekliğini ifade eden Ehad-Samed esmasına odaklanarak kalbi fani bağlardan kurtulma dönemi.",
+      description: {
+        tr: "Recep'in ikinci on günlük fazı. Allah'ın mutlak bağımsızlığını ve tekliğini ifade eden Ehad-Samed esmasına odaklanarak kalbi fani bağlardan kurtulma dönemi.",
+        en: "The second ten-day phase of Rajab. A season of freeing the heart from perishable attachments by focusing on the Divine Names al-Ahad-as-Samad, which express the absolute self-sufficiency and oneness of Allah.",
+      },
       eventKey: 'recep-ayi-2025',
       dayIndex: 11,
       dayCount: 30,
@@ -285,12 +300,17 @@ export const recepAyi = {
       ],
     },
     {
-      name: 'Recep 21. Gün — 3. Faz (Ğafûr-Rahîm)',
+      name: {
+        tr: 'Recep 21. Gün — 3. Faz (Ğafûr-Rahîm)',
+        en: 'Rajab Day 21 — Phase 3 (al-Ghafur-ar-Rahim)',
+      },
       type: 'özel gün',
       date: '2026-01-10',
       hijriDate: '21 Recep 1447',
-      description:
-        "Recep'in son on günü: mağfiret, esirgeme ve merhamet boyutları. Ğafûr-Rahîm esmasıyla tamamlan; Miraç Kandili'ne doğru manevi irtifaını artır.",
+      description: {
+        tr: "Recep'in son on günü: mağfiret, esirgeme ve merhamet boyutları. Ğafûr-Rahîm esmasıyla tamamlan; Miraç Kandili'ne doğru manevi irtifaını artır.",
+        en: "The final ten days of Rajab: the dimensions of forgiveness, protection, and mercy. Complete your journey with the Divine Names al-Ghafur-ar-Rahim, and raise your spiritual ascent toward Laylat al-Mi'raj.",
+      },
       eventKey: 'recep-ayi-2025',
       dayIndex: 21,
       dayCount: 30,

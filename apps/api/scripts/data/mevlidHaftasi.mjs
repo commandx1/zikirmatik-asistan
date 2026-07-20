@@ -2,19 +2,29 @@ import { keyMap } from './keyMap.mjs';
 
 export const mevlidHaftasi = {
   key: 'mevlid-haftasi-2026',
-  label: 'Mevlid Haftası 2026',
+  label: {
+    tr: 'Mevlid Haftası 2026',
+    en: 'Mawlid Week 2026',
+  },
   category: 'ibadet',
-  description:
-    "12 Rebiülevvel 1448 (24 Ağustos 2026) Mevlid Kandili etrafındaki mübarek hafta. Peygamber Efendimiz'in doğumunu salavat, muhabbet ve şükürle anma günleri.",
+  description: {
+    tr: "12 Rebiülevvel 1448 (24 Ağustos 2026) Mevlid Kandili etrafındaki mübarek hafta. Peygamber Efendimiz'in doğumunu salavat, muhabbet ve şükürle anma günleri.",
+    en: "The blessed week surrounding Mawlid al-Nabi on 12 Rabi al-Awwal 1448 (24 August 2026). Days of commemorating the birth of our Prophet with salawat, love, and gratitude.",
+  },
   dhikrItems: [],
   specialDays: [
     {
-      name: 'Mevlid Haftası — 1. Gün',
+      name: {
+        tr: 'Mevlid Haftası — 1. Gün',
+        en: 'Mawlid Week — Day 1',
+      },
       type: 'özel gün',
       date: '2026-08-20',
       hijriDate: '7 Rebiülevvel 1448',
-      description:
-        "Mevlid Kandili'ne 4 gün kala: Peygamber sevgisini salavat ve muhabbet zikirleriyle besle.",
+      description: {
+        tr: "Mevlid Kandili'ne 4 gün kala: Peygamber sevgisini salavat ve muhabbet zikirleriyle besle.",
+        en: "Four days before Mawlid al-Nabi: nourish your love for the Prophet with salawat and dhikrs of devotion.",
+      },
       eventKey: 'mevlid-haftasi-2026',
       dayIndex: 1,
       dayCount: 7,
@@ -28,12 +38,17 @@ export const mevlidHaftasi = {
       ],
     },
     {
-      name: 'Mevlid Haftası — 2. Gün',
+      name: {
+        tr: 'Mevlid Haftası — 2. Gün',
+        en: 'Mawlid Week — Day 2',
+      },
       type: 'özel gün',
       date: '2026-08-21',
       hijriDate: '8 Rebiülevvel 1448',
-      description:
-        "Mevlid Kandili'ne 3 gün kala: Salavat ve sığınma zikirlerini artırma günü.",
+      description: {
+        tr: "Mevlid Kandili'ne 3 gün kala: Salavat ve sığınma zikirlerini artırma günü.",
+        en: "Three days before Mawlid al-Nabi: a day to increase salawat and dhikrs of seeking refuge.",
+      },
       eventKey: 'mevlid-haftasi-2026',
       dayIndex: 2,
       dayCount: 7,
@@ -47,12 +62,17 @@ export const mevlidHaftasi = {
       ],
     },
     {
-      name: 'Mevlid Haftası — 3. Gün',
+      name: {
+        tr: 'Mevlid Haftası — 3. Gün',
+        en: 'Mawlid Week — Day 3',
+      },
       type: 'özel gün',
       date: '2026-08-22',
       hijriDate: '9 Rebiülevvel 1448',
-      description:
-        "Mevlid Kandili'ne 2 gün kala: Salavat-ı Fatih ve muhabbet zikirleriyle hazırlık.",
+      description: {
+        tr: "Mevlid Kandili'ne 2 gün kala: Salavat-ı Fatih ve muhabbet zikirleriyle hazırlık.",
+        en: "Two days before Mawlid al-Nabi: preparation with Salat al-Fatih and dhikrs of devotion.",
+      },
       eventKey: 'mevlid-haftasi-2026',
       dayIndex: 3,
       dayCount: 7,
@@ -66,12 +86,17 @@ export const mevlidHaftasi = {
       ],
     },
     {
-      name: 'Mevlid Haftası — 4. Gün',
+      name: {
+        tr: 'Mevlid Haftası — 4. Gün',
+        en: 'Mawlid Week — Day 4',
+      },
       type: 'özel gün',
       date: '2026-08-23',
       hijriDate: '10 Rebiülevvel 1448',
-      description:
-        "Mevlid Kandili öncesi son hazırlık günü: istiğfar ve salavat ile gönlü temizle.",
+      description: {
+        tr: "Mevlid Kandili öncesi son hazırlık günü: istiğfar ve salavat ile gönlü temizle.",
+        en: "The final day of preparation before Mawlid al-Nabi: purify your heart with istighfar and salawat.",
+      },
       eventKey: 'mevlid-haftasi-2026',
       dayIndex: 4,
       dayCount: 7,
@@ -85,12 +110,17 @@ export const mevlidHaftasi = {
       ],
     },
     {
-      name: 'Mevlid Haftası — 6. Gün',
+      name: {
+        tr: 'Mevlid Haftası — 6. Gün',
+        en: 'Mawlid Week — Day 6',
+      },
       type: 'özel gün',
       date: '2026-08-25',
       hijriDate: '13 Rebiülevvel 1448',
-      description:
-        "Mevlid Kandili'nin ertesi: Kandil sevincini salavat ve hamdla sürdür.",
+      description: {
+        tr: "Mevlid Kandili'nin ertesi: Kandil sevincini salavat ve hamdla sürdür.",
+        en: "The day after Mawlid al-Nabi: carry on the joy of the Holy Night with salawat and praise.",
+      },
       eventKey: 'mevlid-haftasi-2026',
       dayIndex: 6,
       dayCount: 7,
@@ -104,12 +134,17 @@ export const mevlidHaftasi = {
       ],
     },
     {
-      name: 'Mevlid Haftası — 7. Gün',
+      name: {
+        tr: 'Mevlid Haftası — 7. Gün',
+        en: 'Mawlid Week — Day 7',
+      },
       type: 'özel gün',
       date: '2026-08-26',
       hijriDate: '14 Rebiülevvel 1448',
-      description:
-        "Mevlid haftasının son günü: Peygamber muhabbetini salavat ve duayla mühürle.",
+      description: {
+        tr: "Mevlid haftasının son günü: Peygamber muhabbetini salavat ve duayla mühürle.",
+        en: "The last day of Mawlid Week: seal your love for the Prophet with salawat and supplication.",
+      },
       eventKey: 'mevlid-haftasi-2026',
       dayIndex: 7,
       dayCount: 7,

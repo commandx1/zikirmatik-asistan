@@ -2,9 +2,15 @@ import { keyMap } from './keyMap.mjs'
 
 export const kibirdenKorunma = {
   key: 'kibirden-korunma',
-  label: 'Kibirden Korunma Duaları',
+  label: {
+    tr: 'Kibirden Korunma Duaları',
+    en: 'Supplications for Protection from Arrogance',
+  },
   category: 'koruma',
-  description: 'Kibre ve ucba düşmekten korunmak için okunacak dualar.',
+  description: {
+    tr: 'Kibre ve ucba düşmekten korunmak için okunacak dualar.',
+    en: 'Supplications to be recited for protection from falling into arrogance and vanity (ujb).',
+  },
   dhikrItems: [
     {
       key: keyMap.SEYTAN_HEMZI_NEFHI,

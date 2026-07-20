@@ -1,8 +1,14 @@
 export const tovbeIstigfar = {
   key: 'tovbe-istigfar',
-  label: 'Tövbe ve İstiğfâr Duaları',
+  label: {
+    tr: 'Tövbe ve İstiğfâr Duaları',
+    en: 'Supplications for Repentance and Seeking Forgiveness',
+  },
   category: 'dua',
-  description: 'Tövbe ve istiğfar için Hz. Peygamber\'den gelen en değerli dualar.',
+  description: {
+    tr: 'Tövbe ve istiğfar için Hz. Peygamber\'den gelen en değerli dualar.',
+    en: 'The most precious supplications from the Prophet (peace be upon him) for repentance and seeking forgiveness.',
+  },
   dhikrItems: [
     {
       key: 'istigfar-rabbigfirli',

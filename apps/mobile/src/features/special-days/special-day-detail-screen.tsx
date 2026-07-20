@@ -13,6 +13,7 @@ import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-t
 import { useDhikrStartGuard } from '../../hooks/use-dhikr-start-guard'
 import { useAuthStore } from '../../store/auth-store'
 import { resolveLocalizedText, useDhikrStore } from '../../store/dhikr-store'
+import { formatLongDate } from '../../lib/locale-format'
 import { createDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
 import { useSpecialDayDetail } from './hooks/use-special-day-detail'
 import type { BackendSpecialDayDetail } from './services/special-days-api-client'
@@ -179,11 +180,11 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                   {t('special-days:detail.pageTitle')}
                 </Text>
                 <Text className='mt-2 text-2xl leading-[34px] font-semibold tracking-tight text-[--text-primary]' numberOfLines={2}>
-                  {detail.detail.name}
+                  {resolveLocalizedText(detail.detail.name, locale)}
                 </Text>
-                <Text className='mt-1 text-sm leading-5 text-[--text-muted]'>{detail.detail.dateLabel}</Text>
+                <Text className='mt-1 text-sm leading-5 text-[--text-muted]'>{formatLongDate(detail.detail.date, locale)}</Text>
                 {detail.detail.description ? (
-                  <Text className='mt-3 text-sm leading-6 text-[--text-primary]'>{detail.detail.description}</Text>
+                  <Text className='mt-3 text-sm leading-6 text-[--text-primary]'>{resolveLocalizedText(detail.detail.description, locale)}</Text>
                 ) : null}
                 <View className='mt-4 flex-row items-center gap-2'>
                   <FontAwesome6 name='check-double' size={12} color={tokens.accent} />
@@ -200,8 +201,8 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                 <Text className='text-xs font-semibold uppercase tracking-[1px] text-[--text-muted]'>
                   {t('special-days:detail.themeTitle')}
                 </Text>
-                <Text className='mt-1 text-base font-semibold text-[--text-primary]'>{detail.detail.themeTitle}</Text>
-                <Text className='mt-1 text-sm leading-6 text-[--text-muted]'>{detail.detail.themeSummary}</Text>
+                <Text className='mt-1 text-base font-semibold text-[--text-primary]'>{resolveLocalizedText(detail.detail.themeTitle, locale)}</Text>
+                <Text className='mt-1 text-sm leading-6 text-[--text-muted]'>{resolveLocalizedText(detail.detail.themeSummary, locale)}</Text>
               </ThemedCard>
 
               <View className='mt-6 gap-3'>

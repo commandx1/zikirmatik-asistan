@@ -1,8 +1,14 @@
 export const yemekDualari = {
   key: 'yemek-dualari',
-  label: 'Yemek ve İçme Duaları',
+  label: {
+    tr: 'Yemek ve İçme Duaları',
+    en: 'Supplications for Eating and Drinking',
+  },
   category: 'gunluk',
-  description: 'Yemek öncesinde ve sonrasında okunacak şükür ve bereket duaları.',
+  description: {
+    tr: 'Yemek öncesinde ve sonrasında okunacak şükür ve bereket duaları.',
+    en: 'Supplications of gratitude and blessing to be recited before and after eating.',
+  },
   dhikrItems: [
     {
       key: 'yemek-besmele',

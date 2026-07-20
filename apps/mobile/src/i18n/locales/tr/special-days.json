@@ -8,7 +8,13 @@
   },
   "hero": {
     "premiumLocked": "Premium Kilidi",
-    "remainingPrefix": "Kalan: {{remaining}}"
+    "remainingPrefix": "Kalan: {{remaining}}",
+    "badgeToday": "BUGÜN",
+    "badgeUpcoming": "YAKLAŞAN"
+  },
+  "action": {
+    "cta": "İncele",
+    "defaultSubtitle": "Bugün için önerilen zikirler"
   },
   "notificationSettings": {
     "title": "Kandil bildirimlerini al",

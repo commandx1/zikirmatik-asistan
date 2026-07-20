@@ -1,8 +1,14 @@
 export const gunlukTesbih = {
   key: 'gunluk-tesbih',
-  label: 'Günlük Tesbih ve Zikir',
+  label: {
+    tr: 'Günlük Tesbih ve Zikir',
+    en: 'Daily Tasbih and Dhikr',
+  },
   category: 'gunluk',
-  description: 'Her gün okunması tavsiye edilen kısa ve bereketli tesbih zikirleri.',
+  description: {
+    tr: 'Her gün okunması tavsiye edilen kısa ve bereketli tesbih zikirleri.',
+    en: 'Short and blessed tasbih dhikrs recommended to be recited every day.',
+  },
   dhikrItems: [
     {
       key: 'tesbih-subhanallahil-azim-ve-bihamdihi',

@@ -2,9 +2,15 @@ import { keyMap } from './keyMap.mjs'
 
 export const hasettenKorunma = {
   key: 'hasetten-korunma',
-  label: 'Haset ve Kıskançlıktan Korunma Duaları',
+  label: {
+    tr: 'Haset ve Kıskançlıktan Korunma Duaları',
+    en: 'Supplications for Protection from Envy and Jealousy',
+  },
   category: 'koruma',
-  description: 'Haset ve kıskançlıktan korunmak için Hz. Peygamber\'den gelen dualar.',
+  description: {
+    tr: 'Haset ve kıskançlıktan korunmak için Hz. Peygamber\'den gelen dualar.',
+    en: 'Supplications from the Prophet (peace be upon him) for protection from envy and jealousy.',
+  },
   dhikrItems: [
     {
       key: 'haset-ya-mumin',

@@ -77,7 +77,7 @@ export async function runCollectionSeed(datasets) {
       const now = new Date();
       const doc = {
         label: dataset.label,
-        description: dataset.description ?? '',
+        description: dataset.description ?? { tr: '', en: '' },
         category: dataset.category,
         dhikrIds,
         dhikrCount: dhikrIds.length,

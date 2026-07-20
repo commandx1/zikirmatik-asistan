@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const beratKandili = {
   key: 'berat-kandili-2026',
-  label: 'Berat Kandili 2026',
+  label: {
+    tr: 'Berat Kandili 2026',
+    en: "Laylat al-Bara'ah 2026",
+  },
   category: 'ibadet',
-  description:
-    '15 Şaban 1447 gecesi (2 Şubat 2026): takdir-i ilahinin tecelli ettiği, amellerin, rızıkların ve ecellerin yıllık olarak karara bağlandığı mübarek gece.',
+  description: {
+    tr: '15 Şaban 1447 gecesi (2 Şubat 2026): takdir-i ilahinin tecelli ettiği, amellerin, rızıkların ve ecellerin yıllık olarak karara bağlandığı mübarek gece.',
+    en: 'The night of 15 Sha\'ban 1447 (2 February 2026): the blessed night on which divine decree manifests, and deeds, provisions, and appointed lifespans are ordained for the year.',
+  },
   dhikrItems: [
     {
       key: keyMap.BERAT_DUASI,
@@ -100,12 +105,17 @@ export const beratKandili = {
   ],
   specialDays: [
     {
-      name: 'Berat Kandili',
+      name: {
+        tr: 'Berat Kandili',
+        en: "Laylat al-Bara'ah",
+      },
       type: 'kandil',
       date: '2026-02-02',
       hijriDate: '15 Şaban 1447',
-      description:
-        "Şaban'ın 15. gecesi: Allah'ın kimi bağışlayacağını, kimin rızkını, ömrünü ve kaderini belirleyeceğini açıkladığı mübarek gece. Üç Yasin, secde duası, istiğfar ve Salât-ı Münciye ile ihya edilir.",
+      description: {
+        tr: "Şaban'ın 15. gecesi: Allah'ın kimi bağışlayacağını, kimin rızkını, ömrünü ve kaderini belirleyeceğini açıkladığı mübarek gece. Üç Yasin, secde duası, istiğfar ve Salât-ı Münciye ile ihya edilir.",
+        en: "The 15th night of Sha'ban: the blessed night on which Allah reveals whom He will forgive and decrees the provision, lifespan, and destiny of His servants. It is kept alive with three recitations of Surah Ya-Sin, the prostration supplication, istighfar, and Salat al-Munjiya.",
+      },
       eventKey: 'berat-kandili-2026',
       priority: 170,
       dhikrKeys: [

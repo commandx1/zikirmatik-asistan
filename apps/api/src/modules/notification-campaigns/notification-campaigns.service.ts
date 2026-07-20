@@ -108,10 +108,12 @@ export class NotificationCampaignsService implements OnApplicationBootstrap {
       return { status: 'already-sent' };
     }
 
+    // Kampanya bildirimleri tek bir metinle tüm cihazlara broadcast edilir;
+    // çok dilli kataloğun Türkçe (tr) karşılığı mevcut davranışı korur.
     return this.dispatch(claimKey, 'specialDays', {
-      title: `Bu Gece ${specialDay.name} 🌙`,
+      title: `Bu Gece ${specialDay.name.tr} 🌙`,
       body:
-        specialDay.description?.trim() ||
+        specialDay.description?.tr?.trim() ||
         `Bu geceyi zikir ve dua ile ihya etmek için önerilen zikirlere göz at.`,
       data: { route: `/special-days/${specialDay._id.toString()}` },
     });

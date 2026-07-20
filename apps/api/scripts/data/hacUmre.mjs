@@ -1,8 +1,14 @@
 export const hacUmre = {
   key: 'hac-umre',
-  label: 'Hac ve Umre Zikirleri',
+  label: {
+    tr: 'Hac ve Umre Zikirleri',
+    en: 'Hajj and Umrah Dhikrs',
+  },
   category: 'ibadet',
-  description: 'Hac ve umre ibadetlerinde okunacak dualar.',
+  description: {
+    tr: 'Hac ve umre ibadetlerinde okunacak dualar.',
+    en: 'Supplications to be recited during the Hajj and Umrah rites.',
+  },
   dhikrItems: [
     {
       key: 'hac-yolculuk-binit-duasi',

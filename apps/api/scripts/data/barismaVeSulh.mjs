@@ -1,8 +1,14 @@
 export const barismaVeSulh = {
   key: 'barisma-ve-sulh',
-  label: 'Barışma, Kalp Birliği ve Sulh Duaları',
+  label: {
+    tr: 'Barışma, Kalp Birliği ve Sulh Duaları',
+    en: 'Supplications for Reconciliation, Unity of Hearts, and Peace',
+  },
   category: 'hayat',
-  description: 'Kırgınlık sonrası barışma ve sulh için okunacak dualar.',
+  description: {
+    tr: 'Kırgınlık sonrası barışma ve sulh için okunacak dualar.',
+    en: 'Supplications to recite for reconciliation and peace after a falling-out.',
+  },
   dhikrItems: [
     {
       key: 'barisma-ellefe-beyne-kulubihim',

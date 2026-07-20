@@ -1,8 +1,14 @@
 export const sinavVeYazili = {
   key: 'sinav-ve-yazili-zikirleri',
-  label: 'Sınav ve Yazılı Süreçleri Zikirleri',
+  label: {
+    tr: 'Sınav ve Yazılı Süreçleri Zikirleri',
+    en: 'Dhikrs for Exam and Written Test Processes',
+  },
   category: 'hayat',
-  description: 'Sınav ve yazılı öncesinde okunacak dualar.',
+  description: {
+    tr: 'Sınav ve yazılı öncesinde okunacak dualar.',
+    en: 'Supplications to be recited before exams and written tests.',
+  },
   dhikrItems: [
     {
       key: 'sinav-rabbi-edhilni',

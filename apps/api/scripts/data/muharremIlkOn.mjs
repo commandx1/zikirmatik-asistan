@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs'
 
 export const muharremIlkOn = {
   key: 'muharrem-ilk-on-2026',
-  label: 'Muharrem İlk 10 Gün 2026',
+  label: {
+    tr: 'Muharrem İlk 10 Gün 2026',
+    en: 'First 10 Days of Muharram 2026',
+  },
   category: 'ibadet',
-  description:
-    "Muharrem'in ilk on gününe ait oruç, aşure ve zikirler.",
+  description: {
+    tr: "Muharrem'in ilk on gününe ait oruç, aşure ve zikirler.",
+    en: "Fasting, Ashura, and dhikrs pertaining to the first ten days of Muharram.",
+  },
   dhikrItems: [
     {
       key: keyMap.ASURE_DUASI,
@@ -389,11 +394,17 @@ export const muharremIlkOn = {
   ],
   specialDays: [
     {
-      name: 'Hicri Yılbaşı',
+      name: {
+        tr: 'Hicri Yılbaşı',
+        en: 'Hijri New Year',
+      },
       type: 'özel gün',
       date: '2026-06-16',
       hijriDate: '1 Muharrem 1448',
-      description: 'Yeni hicri yıla tevbe, tevhid ve korunma niyetiyle giriş.',
+      description: {
+        tr: 'Yeni hicri yıla tevbe, tevhid ve korunma niyetiyle giriş.',
+        en: 'Entering the new Hijri year with the intention of repentance, tawhid, and protection.',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 1,
       dayCount: 10,
@@ -401,11 +412,17 @@ export const muharremIlkOn = {
       dhikrKeys: [keyMap.ESTAGFIRULLAH, keyMap.IHLAS, keyMap.AYETEL_KURSI],
     },
     {
-      name: '2 Muharrem',
+      name: {
+        tr: '2 Muharrem',
+        en: '2 Muharram',
+      },
       type: 'özel gün',
       date: '2026-06-17',
       hijriDate: '2 Muharrem 1448',
-      description: 'Şükür ve tesbih bilincini güçlendirme günü.',
+      description: {
+        tr: 'Şükür ve tesbih bilincini güçlendirme günü.',
+        en: 'A day to strengthen the consciousness of gratitude and glorification (tasbih).',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 2,
       dayCount: 10,
@@ -413,11 +430,17 @@ export const muharremIlkOn = {
       dhikrKeys: [keyMap.BAKIYAT_SALIHAT],
     },
     {
-      name: '3 Muharrem',
+      name: {
+        tr: '3 Muharrem',
+        en: '3 Muharram',
+      },
       type: 'özel gün',
       date: '2026-06-18',
       hijriDate: '3 Muharrem 1448',
-      description: 'Selamet ve şifa niyetini güçlendirme günü.',
+      description: {
+        tr: 'Selamet ve şifa niyetini güçlendirme günü.',
+        en: 'A day to strengthen the intention of well-being and healing.',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 3,
       dayCount: 10,
@@ -425,11 +448,17 @@ export const muharremIlkOn = {
       dhikrKeys: [keyMap.YA_SELAM],
     },
     {
-      name: '4 Muharrem',
+      name: {
+        tr: '4 Muharrem',
+        en: '4 Muharram',
+      },
       type: 'özel gün',
       date: '2026-06-19',
       hijriDate: '4 Muharrem 1448',
-      description: 'Tevhid ile ego kırma ve teslimiyet günü.',
+      description: {
+        tr: 'Tevhid ile ego kırma ve teslimiyet günü.',
+        en: 'A day of breaking the ego and submission through tawhid.',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 4,
       dayCount: 10,
@@ -437,11 +466,17 @@ export const muharremIlkOn = {
       dhikrKeys: [keyMap.VAHDEHU_LA],
     },
     {
-      name: '5 Muharrem',
+      name: {
+        tr: '5 Muharrem',
+        en: '5 Muharram',
+      },
       type: 'özel gün',
       date: '2026-06-20',
       hijriDate: '5 Muharrem 1448',
-      description: 'Rahmet ve merhamet iklimini diri tutma günü.',
+      description: {
+        tr: 'Rahmet ve merhamet iklimini diri tutma günü.',
+        en: 'A day to keep alive the climate of mercy and compassion.',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 5,
       dayCount: 10,
@@ -449,11 +484,17 @@ export const muharremIlkOn = {
       dhikrKeys: [keyMap.YA_RAHMAN_YA_RAHIM],
     },
     {
-      name: '6 Muharrem',
+      name: {
+        tr: '6 Muharrem',
+        en: '6 Muharram',
+      },
       type: 'özel gün',
       date: '2026-06-21',
       hijriDate: '6 Muharrem 1448',
-      description: 'Acziyet, tevekkül ve dayanıklılık günü.',
+      description: {
+        tr: 'Acziyet, tevekkül ve dayanıklılık günü.',
+        en: 'A day of humility, trust in God (tawakkul), and endurance.',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 6,
       dayCount: 10,
@@ -461,11 +502,17 @@ export const muharremIlkOn = {
       dhikrKeys: [keyMap.LA_HAVLE],
     },
     {
-      name: '7 Muharrem',
+      name: {
+        tr: '7 Muharrem',
+        en: '7 Muharram',
+      },
       type: 'özel gün',
       date: '2026-06-22',
       hijriDate: '7 Muharrem 1448',
-      description: 'İhlas ve tevhidde sebat günü.',
+      description: {
+        tr: 'İhlas ve tevhidde sebat günü.',
+        en: 'A day of sincerity (ikhlas) and steadfastness in tawhid.',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 7,
       dayCount: 10,
@@ -473,11 +520,17 @@ export const muharremIlkOn = {
       dhikrKeys: [keyMap.IHLAS],
     },
     {
-      name: '8 Muharrem',
+      name: {
+        tr: '8 Muharrem',
+        en: '8 Muharram',
+      },
       type: 'özel gün',
       date: '2026-06-23',
       hijriDate: '8 Muharrem 1448',
-      description: 'Kelime-i tevhid ve risalet bilincini tazeleme günü.',
+      description: {
+        tr: 'Kelime-i tevhid ve risalet bilincini tazeleme günü.',
+        en: 'A day to renew the consciousness of the word of tawhid and prophethood.',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 8,
       dayCount: 10,
@@ -485,11 +538,17 @@ export const muharremIlkOn = {
       dhikrKeys: [keyMap.TEVHID],
     },
     {
-      name: '9 Muharrem',
+      name: {
+        tr: '9 Muharrem',
+        en: '9 Muharram',
+      },
       type: 'özel gün',
       date: '2026-06-24',
       hijriDate: '9 Muharrem 1448',
-      description: 'Selamet ve ilahi hitap ümidiyle okunacak zikir günü.',
+      description: {
+        tr: 'Selamet ve ilahi hitap ümidiyle okunacak zikir günü.',
+        en: 'A day of dhikr to be recited in hope of well-being and divine address.',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 9,
       dayCount: 10,
@@ -497,11 +556,17 @@ export const muharremIlkOn = {
       dhikrKeys: [keyMap.SELAMUN_KAVLEN, keyMap.SEHADET, keyMap.IHLAS],
     },
     {
-      name: '10 Muharrem (Aşure)',
+      name: {
+        tr: '10 Muharrem (Aşure)',
+        en: '10 Muharram (Ashura)',
+      },
       type: 'özel gün',
       date: '2026-06-25',
       hijriDate: '10 Muharrem 1448',
-      description: 'Aşure gününde enbiya vesilesiyle kurtuluş duası ve zikir.',
+      description: {
+        tr: 'Aşure gününde enbiya vesilesiyle kurtuluş duası ve zikir.',
+        en: 'Supplication and dhikr for salvation through the prophets on the Day of Ashura.',
+      },
       eventKey: 'muharrem-ilk-on-2026',
       dayIndex: 10,
       dayCount: 10,

@@ -1,8 +1,14 @@
 export const kaygiKriz = {
   key: 'sikinti-kaygi-kriz-zikirleri',
-  label: 'Sıkıntı, Kaygı ve Kriz Anı Zikirleri',
+  label: {
+    tr: 'Sıkıntı, Kaygı ve Kriz Anı Zikirleri',
+    en: 'Dhikrs for Times of Distress, Anxiety and Crisis',
+  },
   category: 'dua',
-  description: 'Sıkıntı, kaygı ve kriz anlarında okunacak teselli ve kurtuluş duaları.',
+  description: {
+    tr: 'Sıkıntı, kaygı ve kriz anlarında okunacak teselli ve kurtuluş duaları.',
+    en: 'Supplications of comfort and deliverance to be recited in times of distress, anxiety and crisis.',
+  },
   dhikrItems: [
     {
       key: 'sikinti-insirah-suresi',

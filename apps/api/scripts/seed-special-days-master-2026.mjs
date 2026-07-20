@@ -79,7 +79,8 @@ for (const dataset of SOURCE_DATASETS) {
       item.eventKey,
       item.date,
       item.dayIndex ?? '',
-      item.name ?? '',
+      // name artık { tr, en } nesnesi olabilir; Türkçe metni imzada kullan.
+      (typeof item.name === 'object' ? item.name?.tr : item.name) ?? '',
     ].join('|');
     const existing = specialDayByComposite.get(compositeKey);
 

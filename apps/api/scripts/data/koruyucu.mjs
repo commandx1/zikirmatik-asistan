@@ -2,9 +2,15 @@ import { keyMap } from './keyMap.mjs'
 
 export const koruyucu = {
   key: 'koruyucu-zikirler',
-  label: 'Büyü, Nazar ve Vesveseye Karşı Koruyucu Zikirler',
+  label: {
+    tr: 'Büyü, Nazar ve Vesveseye Karşı Koruyucu Zikirler',
+    en: 'Protective Dhikrs Against Magic, the Evil Eye and Whispering',
+  },
   category: 'koruma',
-  description: 'Şeytandan, nazardan ve kötülüklerden korunmak için okunan dualar.',
+  description: {
+    tr: 'Şeytandan, nazardan ve kötülüklerden korunmak için okunan dualar.',
+    en: 'Supplications recited for protection from Satan, the evil eye and evils.',
+  },
   dhikrItems: [
     {
       key: 'korunma-muavvizeteyn-felak-nas',

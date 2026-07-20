@@ -1,8 +1,14 @@
 export const ofkeKontrol = {
   key: 'ofke-kontrol',
-  label: 'Öfke Kontrolü ve Sakinleşme Duaları',
+  label: {
+    tr: 'Öfke Kontrolü ve Sakinleşme Duaları',
+    en: 'Supplications for Anger Control and Calming Down',
+  },
   category: 'hayat',
-  description: 'Öfke anında sakinleşmek için Hz. Peygamber\'in öğrettiği yöntemler ve dualar.',
+  description: {
+    tr: 'Öfke anında sakinleşmek için Hz. Peygamber\'in öğrettiği yöntemler ve dualar.',
+    en: 'The methods and supplications the Prophet (peace be upon him) taught for calming down in moments of anger.',
+  },
   dhikrItems: [
     {
       key: 'ofke-euzubillah',

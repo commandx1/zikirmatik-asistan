@@ -1,8 +1,14 @@
 export const vitrKunutu = {
   key: 'vitr-kunutu',
-  label: 'Vitir Namazı Kunut Duaları',
+  label: {
+    tr: 'Vitir Namazı Kunut Duaları',
+    en: 'Witr Prayer Qunut Supplications',
+  },
   category: 'namaz',
-  description: 'Vitir namazına ait kunut duaları ve vitir sonrası zikir.',
+  description: {
+    tr: 'Vitir namazına ait kunut duaları ve vitir sonrası zikir.',
+    en: 'The Qunut supplications of the Witr prayer and the dhikr after Witr.',
+  },
   dhikrItems: [
     {
       key: 'vitr-kunut-hdini-fimen',

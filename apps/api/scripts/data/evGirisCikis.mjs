@@ -1,8 +1,14 @@
 export const evGirisCikis = {
   key: 'ev-giris-cikis',
-  label: 'Ev, Cami ve Yola Çıkış Duaları',
+  label: {
+    tr: 'Ev, Cami ve Yola Çıkış Duaları',
+    en: 'Supplications for Home, Mosque, and Setting Out on a Journey',
+  },
   category: 'gunluk',
-  description: 'Eve girerken, çıkarken ve camiye girip çıkarken okunacak dualar.',
+  description: {
+    tr: 'Eve girerken, çıkarken ve camiye girip çıkarken okunacak dualar.',
+    en: 'Supplications to recite when entering and leaving the home and when entering and leaving the mosque.',
+  },
   dhikrItems: [
     {
       key: 'ev-cikis-bismillah-tevekkul',

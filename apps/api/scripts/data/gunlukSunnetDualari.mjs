@@ -1,8 +1,14 @@
 export const gunlukSunnetDualari = {
   key: 'gunluk-sunnet-dualari',
-  label: 'Günlük Sünnet Duaları (Elbise, Temizlik, Abdest)',
+  label: {
+    tr: 'Günlük Sünnet Duaları (Elbise, Temizlik, Abdest)',
+    en: 'Daily Sunnah Supplications (Clothing, Cleanliness, Ablution)',
+  },
   category: 'gunluk',
-  description: 'Gün içindeki rutin eylemlere özgü Hz. Peygamber\'den gelen sünnet duaları.',
+  description: {
+    tr: 'Gün içindeki rutin eylemlere özgü Hz. Peygamber\'den gelen sünnet duaları.',
+    en: 'Sunnah supplications from the Prophet (peace be upon him) specific to routine daily actions.',
+  },
   dhikrItems: [
     {
       key: 'elbise-giyerken-hamd',

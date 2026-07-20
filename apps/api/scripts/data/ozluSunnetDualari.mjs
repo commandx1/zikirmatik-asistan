@@ -1,8 +1,14 @@
 export const ozluSunnetDualari = {
   key: 'ozlu-sunnet-dualari',
-  label: 'Özlü Sünnet Duaları — Her Zaman Okunabilir',
+  label: {
+    tr: 'Özlü Sünnet Duaları — Her Zaman Okunabilir',
+    en: 'Concise Sunnah Supplications — Can Be Recited at Any Time',
+  },
   category: 'gunluk',
-  description: "Hz. Peygamber'in çeşitli vesilelerle okuduğu kapsamlı ve özlü dualar.",
+  description: {
+    tr: "Hz. Peygamber'in çeşitli vesilelerle okuduğu kapsamlı ve özlü dualar.",
+    en: 'Comprehensive and concise supplications the Prophet (peace be upon him) recited on various occasions.',
+  },
   dhikrItems: [
     {
       key: 'ozlu-huda-takva-iffet-gina',

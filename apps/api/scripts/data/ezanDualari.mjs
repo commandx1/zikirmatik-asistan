@@ -1,8 +1,14 @@
 export const ezanDualari = {
   key: 'ezan-dualari',
-  label: 'Ezan Duaları ve Müezzine Uyma',
+  label: {
+    tr: 'Ezan Duaları ve Müezzine Uyma',
+    en: 'Adhan Supplications and Responding to the Muezzin',
+  },
   category: 'gunluk',
-  description: 'Ezan okunurken ve sonrasında okunacak dualar.',
+  description: {
+    tr: 'Ezan okunurken ve sonrasında okunacak dualar.',
+    en: 'Supplications to recite during and after the adhan.',
+  },
   dhikrItems: [
     {
       key: 'ezan-muezzine-tekrar',

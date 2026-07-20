@@ -2,9 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const miracKandili = {
   key: 'mirac-kandili-2026',
-  label: 'Miraç Kandili 2026',
+  label: {
+    tr: 'Miraç Kandili 2026',
+    en: "Laylat al-Mi'raj 2026",
+  },
   category: 'ibadet',
-  description: "27 Recep gecesi: Peygamber Efendimiz'in miracını anma ve salavat kandili.",
+  description: {
+    tr: "27 Recep gecesi: Peygamber Efendimiz'in miracını anma ve salavat kandili.",
+    en: "The night of 27 Rajab: the holy night commemorating the Prophet's Ascension (Mi'raj), observed with salawat.",
+  },
   dhikrItems: [
     {
       key: keyMap.MIRAC_TESBIHAT,
@@ -100,12 +106,17 @@ export const miracKandili = {
   ],
   specialDays: [
     {
-      name: 'Miraç Kandili',
+      name: {
+        tr: 'Miraç Kandili',
+        en: "Laylat al-Mi'raj",
+      },
       type: 'kandil',
       date: '2026-01-15',
       hijriDate: '27 Recep 1447',
-      description:
-        "Peygamber Efendimiz'in Allah'ın huzuruna çıktığı, beş vakit namazın farz kılındığı mübarek gece.",
+      description: {
+        tr: "Peygamber Efendimiz'in Allah'ın huzuruna çıktığı, beş vakit namazın farz kılındığı mübarek gece.",
+        en: "The blessed night on which the Prophet ascended into the presence of Allah and the five daily prayers were made obligatory.",
+      },
       eventKey: 'mirac-kandili-2026',
       priority: 170,
       dhikrKeys: [

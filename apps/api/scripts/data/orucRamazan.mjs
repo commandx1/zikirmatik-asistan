@@ -1,8 +1,14 @@
 export const orucRamazan = {
   key: 'oruc-ramazan',
-  label: 'Oruç ve Ramazan Duaları',
+  label: {
+    tr: 'Oruç ve Ramazan Duaları',
+    en: 'Fasting and Ramadan Supplications',
+  },
   category: 'ibadet',
-  description: 'Ramazan orucunda ve sahur/iftar vakitlerinde okunacak dualar.',
+  description: {
+    tr: 'Ramazan orucunda ve sahur/iftar vakitlerinde okunacak dualar.',
+    en: 'Supplications to recite during the Ramadan fast and at suhoor/iftar times.',
+  },
   dhikrItems: [
     {
       key: 'oruc-recep-saban-ramazana-yetistir',

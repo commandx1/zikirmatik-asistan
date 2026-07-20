@@ -1,8 +1,14 @@
 export const imanSaglamligi = {
   key: 'iman-saglamligi',
-  label: 'İman Sağlamlığı — Şüphe ve Vesvese Anında',
+  label: {
+    tr: 'İman Sağlamlığı — Şüphe ve Vesvese Anında',
+    en: 'Firmness of Faith — In Moments of Doubt and Whispering',
+  },
   category: 'dua',
-  description: 'İman şüphesi ve vesvese anında imanı pekiştiren dualar.',
+  description: {
+    tr: 'İman şüphesi ve vesvese anında imanı pekiştiren dualar.',
+    en: 'Supplications that strengthen faith in moments of doubt and whispering (waswas).',
+  },
   dhikrItems: [
     {
       key: 'iman-suphe-euzu-billah',

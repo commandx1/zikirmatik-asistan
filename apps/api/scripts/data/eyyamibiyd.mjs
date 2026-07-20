@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const eyyamibiyd = {
   key: 'eyyami-biyd-2026',
-  label: 'Eyyâm-ı Biyd 2026–2027',
+  label: {
+    tr: 'Eyyâm-ı Biyd 2026–2027',
+    en: 'Ayyam al-Bid (the White Days) 2026–2027',
+  },
   category: 'ibadet',
-  description:
-    'Her hicri ayın 13, 14 ve 15. günleri olan dolunay günleri. Oruç tutulması ve gece namazı ile ihya edilmesi tavsiye edilmiştir.',
+  description: {
+    tr: 'Her hicri ayın 13, 14 ve 15. günleri olan dolunay günleri. Oruç tutulması ve gece namazı ile ihya edilmesi tavsiye edilmiştir.',
+    en: 'The full-moon days that fall on the 13th, 14th, and 15th of every Hijri month. It is recommended to observe them by fasting and by keeping the night alive with prayer.',
+  },
   dhikrItems: [
     {
       key: keyMap.TEVHID_SIRK_UZAKLASMA,
@@ -45,11 +50,17 @@ export const eyyamibiyd = {
   ],
   specialDays: [
     {
-      name: 'Eyyâm-ı Biyd — Muharrem 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Muharrem 1448',
+        en: 'Ayyam al-Bid — Muharram 1448',
+      },
       type: 'özel gün',
       date: '2026-06-28',
       hijriDate: '13 Muharrem 1448',
-      description: 'Muharrem 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Muharrem 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+        en: 'The full-moon days of Muharram 1448 (13–15). Observed with fasting and night prayer.',
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -62,11 +73,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: 'Eyyâm-ı Biyd — Safer 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Safer 1448',
+        en: 'Ayyam al-Bid — Safar 1448',
+      },
       type: 'özel gün',
       date: '2026-07-27',
       hijriDate: '13 Safer 1448',
-      description: 'Safer 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Safer 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+        en: 'The full-moon days of Safar 1448 (13–15). Observed with fasting and night prayer.',
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -79,12 +96,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: "Eyyâm-ı Biyd — Rebîulevvel 1448",
+      name: {
+        tr: "Eyyâm-ı Biyd — Rebîulevvel 1448",
+        en: "Ayyam al-Bid — Rabi al-Awwal 1448",
+      },
       type: 'özel gün',
       date: '2026-08-26',
       hijriDate: '13 Rebîulevvel 1448',
-      description:
-        "Rebîulevvel 1448 dolunay günleri (13–15). Peygamber Efendimiz'in doğum ayında dolunay.",
+      description: {
+        tr: "Rebîulevvel 1448 dolunay günleri (13–15). Peygamber Efendimiz'in doğum ayında dolunay.",
+        en: "The full-moon days of Rabi al-Awwal 1448 (13–15). The full moon in the month of the Prophet's birth.",
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -97,11 +119,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: "Eyyâm-ı Biyd — Rebîulahir 1448",
+      name: {
+        tr: "Eyyâm-ı Biyd — Rebîulahir 1448",
+        en: "Ayyam al-Bid — Rabi al-Thani 1448",
+      },
       type: 'özel gün',
       date: '2026-09-24',
       hijriDate: '13 Rebîulahir 1448',
-      description: 'Rebîulahir 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Rebîulahir 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+        en: 'The full-moon days of Rabi al-Thani 1448 (13–15). Observed with fasting and night prayer.',
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -114,11 +142,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: 'Eyyâm-ı Biyd — Cemaziyelevvel 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Cemaziyelevvel 1448',
+        en: 'Ayyam al-Bid — Jumada al-Awwal 1448',
+      },
       type: 'özel gün',
       date: '2026-10-23',
       hijriDate: '13 Cemaziyelevvel 1448',
-      description: 'Cemaziyelevvel 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Cemaziyelevvel 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+        en: 'The full-moon days of Jumada al-Awwal 1448 (13–15). Observed with fasting and night prayer.',
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -131,11 +165,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: 'Eyyâm-ı Biyd — Cemaziyülahir 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Cemaziyülahir 1448',
+        en: 'Ayyam al-Bid — Jumada al-Thani 1448',
+      },
       type: 'özel gün',
       date: '2026-11-22',
       hijriDate: '13 Cemaziyülahir 1448',
-      description: 'Cemaziyülahir 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Cemaziyülahir 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+        en: 'The full-moon days of Jumada al-Thani 1448 (13–15). Observed with fasting and night prayer.',
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -148,11 +188,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: 'Eyyâm-ı Biyd — Recep 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Recep 1448',
+        en: 'Ayyam al-Bid — Rajab 1448',
+      },
       type: 'özel gün',
       date: '2026-12-21',
       hijriDate: '13 Recep 1448',
-      description: 'Recep 1448 dolunay günleri (13–15). Üç Aylar içinde; oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Recep 1448 dolunay günleri (13–15). Üç Aylar içinde; oruç ve gece namazıyla ihya edilir.',
+        en: 'The full-moon days of Rajab 1448 (13–15). Within the Three Holy Months; observed with fasting and night prayer.',
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -165,11 +211,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: 'Eyyâm-ı Biyd — Şaban 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Şaban 1448',
+        en: "Ayyam al-Bid — Sha'ban 1448",
+      },
       type: 'özel gün',
       date: '2027-01-19',
       hijriDate: '13 Şaban 1448',
-      description: 'Şaban 1448 dolunay günleri (13–15). Üç Aylar içinde; oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Şaban 1448 dolunay günleri (13–15). Üç Aylar içinde; oruç ve gece namazıyla ihya edilir.',
+        en: "The full-moon days of Sha'ban 1448 (13–15). Within the Three Holy Months; observed with fasting and night prayer.",
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -182,12 +234,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: 'Eyyâm-ı Biyd — Ramazan 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Ramazan 1448',
+        en: 'Ayyam al-Bid — Ramadan 1448',
+      },
       type: 'özel gün',
       date: '2027-02-18',
       hijriDate: '13 Ramazan 1448',
-      description:
-        'Ramazan 1448 dolunay günleri (13–15). Ramazan orucu zaten sürmekte; gece namazı ve tesbih ile değerlendirilir.',
+      description: {
+        tr: 'Ramazan 1448 dolunay günleri (13–15). Ramazan orucu zaten sürmekte; gece namazı ve tesbih ile değerlendirilir.',
+        en: 'The full-moon days of Ramadan 1448 (13–15). The Ramadan fast is already ongoing; the days are honored with night prayer and tesbih.',
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -200,11 +257,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: 'Eyyâm-ı Biyd — Şevval 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Şevval 1448',
+        en: 'Ayyam al-Bid — Shawwal 1448',
+      },
       type: 'özel gün',
       date: '2027-03-19',
       hijriDate: '13 Şevval 1448',
-      description: 'Şevval 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Şevval 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+        en: 'The full-moon days of Shawwal 1448 (13–15). Observed with fasting and night prayer.',
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -217,11 +280,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: 'Eyyâm-ı Biyd — Zilkade 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Zilkade 1448',
+        en: "Ayyam al-Bid — Dhul-Qi'dah 1448",
+      },
       type: 'özel gün',
       date: '2027-04-18',
       hijriDate: '13 Zilkade 1448',
-      description: 'Zilkade 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Zilkade 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+        en: "The full-moon days of Dhul-Qi'dah 1448 (13–15). Observed with fasting and night prayer.",
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,
@@ -234,11 +303,17 @@ export const eyyamibiyd = {
       ],
     },
     {
-      name: 'Eyyâm-ı Biyd — Zilhicce 1448',
+      name: {
+        tr: 'Eyyâm-ı Biyd — Zilhicce 1448',
+        en: 'Ayyam al-Bid — Dhul-Hijjah 1448',
+      },
       type: 'özel gün',
       date: '2027-05-17',
       hijriDate: '13 Zilhicce 1448',
-      description: 'Zilhicce 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+      description: {
+        tr: 'Zilhicce 1448 dolunay günleri (13–15). Oruç ve gece namazıyla ihya edilir.',
+        en: 'The full-moon days of Dhul-Hijjah 1448 (13–15). Observed with fasting and night prayer.',
+      },
       eventKey: 'eyyami-biyd-2026',
       dayIndex: 13,
       dayCount: 3,

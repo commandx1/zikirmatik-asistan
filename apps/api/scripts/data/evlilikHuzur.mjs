@@ -1,8 +1,14 @@
 export const evlilikHuzur = {
   key: 'evlilik-huzur',
-  label: 'Evlilikte Huzur ve Eşle Geçim Duaları',
+  label: {
+    tr: 'Evlilikte Huzur ve Eşle Geçim Duaları',
+    en: 'Supplications for Peace in Marriage and Harmony with One\'s Spouse',
+  },
   category: 'hayat',
-  description: 'Evlilik ve aile huzuru için okunacak dualar.',
+  description: {
+    tr: 'Evlilik ve aile huzuru için okunacak dualar.',
+    en: 'Supplications to recite for marital and family peace.',
+  },
   dhikrItems: [
     {
       key: 'evlilik-rum-21',

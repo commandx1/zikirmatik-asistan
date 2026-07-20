@@ -2,9 +2,15 @@ import { keyMap } from './keyMap.mjs'
 
 export const salavat = {
   key: 'salavat',
-  label: 'Salavat ve Selam',
+  label: {
+    tr: 'Salavat ve Selam',
+    en: 'Salawat and Salam',
+  },
   category: 'dua',
-  description: "Hz. Peygamber'e salavat getirme formları ve faziletleri.",
+  description: {
+    tr: "Hz. Peygamber'e salavat getirme formları ve faziletleri.",
+    en: 'Forms of sending salawat upon the Prophet (peace be upon him) and their virtues.',
+  },
   dhikrItems: [
     {
       key: keyMap.SALAVAT_SERIF,

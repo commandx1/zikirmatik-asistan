@@ -1,8 +1,14 @@
 export const namazDualari = {
   key: 'namaz-dualari',
-  label: 'Namaz İçi Dualar ve Zikirler',
+  label: {
+    tr: 'Namaz İçi Dualar ve Zikirler',
+    en: 'Supplications and Dhikrs During Prayer',
+  },
   category: 'namaz',
-  description: 'Namaz içindeki her makama ait — iftitah, rükû, secde, teşehhüd ve selam duaları.',
+  description: {
+    tr: 'Namaz içindeki her makama ait — iftitah, rükû, secde, teşehhüd ve selam duaları.',
+    en: 'Supplications for every station within the prayer — the opening (iftitah), bowing (ruku), prostration (sujud), tashahhud and the salam.',
+  },
   dhikrItems: [
     {
       key: 'namaz-iftitah-subhaneke',

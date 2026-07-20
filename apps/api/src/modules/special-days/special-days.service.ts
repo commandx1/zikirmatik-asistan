@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
+import type { LocalizedText } from '../../common/types/localized-text';
 import {
   DhikrLog,
   type DhikrLogDocument,
@@ -29,11 +30,11 @@ import {
 
 type SpecialDayLean = {
   _id: Types.ObjectId;
-  name: string;
+  name: LocalizedText;
   type: 'kandil' | 'ramazan' | 'bayram' | 'özel gün';
   date: string;
   hijriDate: string;
-  description?: string;
+  description?: LocalizedText;
   eventKey?: string;
   dayIndex?: number;
   dayCount?: number;
@@ -434,28 +435,27 @@ export class SpecialDaysService {
     return {
       ...this.mapSpecialDayBase(item, isPremiumUser),
       source,
-      badge: source === 'today' ? 'Bugünün Özel Günü 🌙' : 'Yaklaşıyor 🌙',
-      countdown: [
-        { value: pad2(Math.max(diff.days, 0)), label: 'Gün' },
-        { value: pad2(Math.max(diff.hours, 0)), label: 'Sa' },
-        { value: pad2(Math.max(diff.minutes, 0)), label: 'Dk' },
-      ],
+      isToday: source === 'today',
+      // Ham sayısal geri sayım; etiketler (Gün/Sa/Dk) ve "Bugün/X gün"
+      // metni mobil i18n katmanında kullanıcının seçili diline göre üretilir.
+      countdown: {
+        days: Math.max(diff.days, 0),
+        hours: Math.max(diff.hours, 0),
+        minutes: Math.max(diff.minutes, 0),
+      },
       isLocked,
-      remainingLabel:
-        source === 'today' ? 'Bugün' : `${Math.max(diff.days, 0)} gün`,
     };
   }
 
   private mapAction(item: SpecialDayLean, isPremiumUser: boolean) {
     const isLocked = !isPremiumUser && !FREE_VISIBLE_TYPES.includes(item.type);
+    // Sabit başlık/CTA ("Bugün Ne Yapabilirim?", "Detaya git", "Premium ile
+    // Aç") mobil i18n katmanında üretilir. API yalnızca ham çok dilli içerik
+    // ve kilit durumunu döner; alt metin mobilde description || name ile kurulur.
     return {
       specialDayId: item._id.toString(),
-      title: 'Bugün Ne Yapabilirim?',
-      subtitle: isLocked
-        ? `${item.name} içeriği Premium üyelik ile açılır.`
-        : item.description?.trim() ||
-          `${item.name} için önerilen zikir ve hazırlıkları inceleyebilirsin.`,
-      ctaLabel: isLocked ? 'Premium ile Aç' : 'Detaya git',
+      name: item.name,
+      description: item.description,
       isLocked,
     };
   }
@@ -466,8 +466,12 @@ export class SpecialDaysService {
     return {
       ...this.mapSpecialDayBase(item, isPremiumUser),
       isLocked,
-      remainingLabel:
-        diff.totalMs <= 0 ? 'Bugün' : `${Math.max(diff.days, 0)} gün`,
+      isToday: diff.totalMs <= 0,
+      countdown: {
+        days: Math.max(diff.days, 0),
+        hours: Math.max(diff.hours, 0),
+        minutes: Math.max(diff.minutes, 0),
+      },
     };
   }
 
@@ -479,13 +483,14 @@ export class SpecialDaysService {
       id: item._id.toString(),
       name: item.name,
       type: item.type,
+      // Ham ISO tarih (YYYY-MM-DD); okunur tarih etiketi mobilde kullanıcının
+      // seçili diline göre formatlanır (dateLabel API'den gönderilmez).
       date: item.date,
       hijriDate: item.hijriDate,
       description: item.description,
       eventKey: item.eventKey,
       dayIndex: item.dayIndex,
       dayCount: item.dayCount,
-      dateLabel: formatDayLabel(item.date),
       hasSpecialFlow: Boolean(item.hasSpecialFlow),
       recommendedDhikrCount: effectiveRecommendedDhikrCount,
       themeTitle: theme.title,
@@ -595,24 +600,6 @@ function calculateDateDiff(isoDate: string) {
   return { totalMs, days, hours, minutes };
 }
 
-function pad2(value: number) {
-  return String(value).padStart(2, '0');
-}
-
-function formatDayLabel(isoDate: string, includeYear = true) {
-  const date = new Date(`${isoDate}T00:00:00`);
-  if (Number.isNaN(date.getTime())) {
-    return isoDate;
-  }
-
-  const formatter = new Intl.DateTimeFormat('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    ...(includeYear ? { year: 'numeric' } : {}),
-  });
-  return formatter.format(date);
-}
-
 function compareSpecialDaysForHero(a: SpecialDayLean, b: SpecialDayLean) {
   const priorityDiff = (b.priority ?? 0) - (a.priority ?? 0);
   if (priorityDiff !== 0) {
@@ -635,55 +622,78 @@ function resolveTypeRank(type: SpecialDayLean['type']) {
   return 1;
 }
 
-function resolveSpecialDayTheme(item: SpecialDayLean) {
+function resolveSpecialDayTheme(item: SpecialDayLean): {
+  title: LocalizedText;
+  summary: LocalizedText;
+} {
   if (item.eventKey === 'kurban-bayrami-2026') {
-    if (item.name.toLocaleLowerCase('tr-TR').includes('arefe')) {
+    if (item.name.tr.toLocaleLowerCase('tr-TR').includes('arefe')) {
       return {
-        title: 'Arefe Hazırlığı',
-        summary:
-          'Tevbe, istiğfar ve yoğun tefekkür ile bayrama kalbi hazırlama günü.',
+        title: { tr: 'Arefe Hazırlığı', en: 'Preparing for Arafah' },
+        summary: {
+          tr: 'Tevbe, istiğfar ve yoğun tefekkür ile bayrama kalbi hazırlama günü.',
+          en: 'A day of readying the heart for the feast through repentance, seeking forgiveness, and deep reflection.',
+        },
       };
     }
 
     if (item.dayIndex === 1) {
       return {
-        title: 'Bayram Başlangıcı',
-        summary: 'Teşrik tekbirleri ve şükür merkezli bir başlangıç akışı.',
+        title: { tr: 'Bayram Başlangıcı', en: 'Start of the Feast' },
+        summary: {
+          tr: 'Teşrik tekbirleri ve şükür merkezli bir başlangıç akışı.',
+          en: 'An opening flow centred on the takbir of Tashriq and gratitude.',
+        },
       };
     }
     if (item.dayIndex === 2) {
       return {
-        title: 'Tevhid ve Tevekkül',
-        summary: 'Salavat, tevhid ve hasbiye ile iç dengeyi koruma günü.',
+        title: { tr: 'Tevhid ve Tevekkül', en: 'Tawhid and Trust in God' },
+        summary: {
+          tr: 'Salavat, tevhid ve hasbiye ile iç dengeyi koruma günü.',
+          en: 'A day of preserving inner balance through salawat, tawhid, and hasbiya.',
+        },
       };
     }
     if (item.dayIndex === 3) {
       return {
-        title: 'Sabır ve Arınma',
-        summary: 'Dua, istiğfar ve teslimiyet vurgusuyla manevi arınma günü.',
+        title: { tr: 'Sabır ve Arınma', en: 'Patience and Purification' },
+        summary: {
+          tr: 'Dua, istiğfar ve teslimiyet vurgusuyla manevi arınma günü.',
+          en: 'A day of spiritual purification emphasising supplication, seeking forgiveness, and submission.',
+        },
       };
     }
     if (item.dayIndex === 4) {
       return {
-        title: 'Kapanış ve Sabitleme',
-        summary:
-          'Bayram ritmini tamamlayıp kazanımları günlük hayata taşıma günü.',
+        title: { tr: 'Kapanış ve Sabitleme', en: 'Closing and Consolidation' },
+        summary: {
+          tr: 'Bayram ritmini tamamlayıp kazanımları günlük hayata taşıma günü.',
+          en: 'A day of completing the rhythm of the feast and carrying its gains into daily life.',
+        },
       };
     }
   }
 
   if (item.eventKey === 'mevlid-kandili-2026') {
     return {
-      title: 'Mevlid Kandili',
-      summary:
-        'Salavat, tevhid, istiğfar ve dua ile Peygamber sevgisini tazeleme gecesi.',
+      title: { tr: 'Mevlid Kandili', en: 'Mawlid al-Nabi' },
+      summary: {
+        tr: 'Salavat, tevhid, istiğfar ve dua ile Peygamber sevgisini tazeleme gecesi.',
+        en: 'A night of renewing love for the Prophet through salawat, tawhid, seeking forgiveness, and supplication.',
+      },
     };
   }
 
   return {
-    title: 'Günün Teması',
-    summary:
-      item.description?.trim() ||
-      `${item.name} için önerilen zikir akışını takip edebilirsin.`,
+    title: { tr: 'Günün Teması', en: "Today's Theme" },
+    summary: {
+      tr:
+        item.description?.tr?.trim() ||
+        `${item.name.tr} için önerilen zikir akışını takip edebilirsin.`,
+      en:
+        item.description?.en?.trim() ||
+        `Follow the recommended dhikr flow for ${item.name.en}.`,
+    },
   };
 }

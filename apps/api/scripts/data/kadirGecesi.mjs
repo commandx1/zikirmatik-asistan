@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const kadirGecesi = {
   key: 'kadir-gecesi-2026',
-  label: 'Kadir Gecesi 2026',
+  label: {
+    tr: 'Kadir Gecesi 2026',
+    en: 'Laylat al-Qadr 2026',
+  },
   category: 'ibadet',
-  description:
-    "Bin aydan daha hayırlı olan Kadir Gecesi: 27 Ramazan 1447, 16 Mart 2026.",
+  description: {
+    tr: "Bin aydan daha hayırlı olan Kadir Gecesi: 27 Ramazan 1447, 16 Mart 2026.",
+    en: 'Laylat al-Qadr, the Night of Decree that is better than a thousand months: 27 Ramadan 1447, 16 March 2026.',
+  },
   dhikrItems: [
     {
       key: keyMap.KADIR_DUASI,
@@ -60,12 +65,17 @@ export const kadirGecesi = {
   ],
   specialDays: [
     {
-      name: 'Kadir Gecesi',
+      name: {
+        tr: 'Kadir Gecesi',
+        en: 'Laylat al-Qadr',
+      },
       type: 'kandil',
       date: '2026-03-16',
       hijriDate: '27 Ramazan 1447',
-      description:
-        "Bin aydan daha hayırlı olan Kadir Gecesi. Bu gece inen melekler ve Ruh, sabahın doğuşuna kadar esenlik getirir. (Kadir 1-5)",
+      description: {
+        tr: "Bin aydan daha hayırlı olan Kadir Gecesi. Bu gece inen melekler ve Ruh, sabahın doğuşuna kadar esenlik getirir. (Kadir 1-5)",
+        en: 'Laylat al-Qadr, the Night of Decree that is better than a thousand months. On this night the angels and the Spirit descend, bringing peace until the break of dawn. (Surah al-Qadr 1-5)',
+      },
       eventKey: 'kadir-gecesi-2026',
       priority: 200,
       dhikrKeys: [

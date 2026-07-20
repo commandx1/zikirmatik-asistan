@@ -2,9 +2,15 @@ import { keyMap } from './keyMap.mjs'
 
 export const kurbanBayrami = {
   key: 'kurban-bayrami-2026',
-  label: 'Kurban Bayramı 2026',
+  label: {
+    tr: 'Kurban Bayramı 2026',
+    en: 'Eid al-Adha 2026',
+  },
   category: 'ibadet',
-  description: 'Kurban Bayramı\'na ait tekbir ve özel dualar.',
+  description: {
+    tr: 'Kurban Bayramı\'na ait tekbir ve özel dualar.',
+    en: 'The takbirs and special supplications of Eid al-Adha.',
+  },
   dhikrItems: [
     {
       key: keyMap.TESRIK_TEKBIRI,
@@ -210,20 +216,32 @@ export const kurbanBayrami = {
   ],
   specialDays: [
     {
-      name: 'Kurban Bayramı Arefe Günü',
+      name: {
+        tr: 'Kurban Bayramı Arefe Günü',
+        en: 'Eid al-Adha Day of Arafah',
+      },
       type: 'özel gün',
       date: '2026-05-26',
       hijriDate: '9 Zilhicce 1447',
-      description: 'Arefe Günü (Tevbe, Dua ve Tevhid Yoğunluğu)',
+      description: {
+        tr: 'Arefe Günü (Tevbe, Dua ve Tevhid Yoğunluğu)',
+        en: 'Day of Arafah (Intensive Repentance, Supplication, and Tawhid)',
+      },
       eventKey: 'kurban-bayrami-2026',
       dhikrKeys: [keyMap.IHLAS, keyMap.VAHDEHU_LA, keyMap.ISTIGFAR],
     },
     {
-      name: 'Kurban Bayramı',
+      name: {
+        tr: 'Kurban Bayramı',
+        en: 'Eid al-Adha',
+      },
       type: 'bayram',
       date: '2026-05-27',
       hijriDate: '10 Zilhicce 1447',
-      description: 'Kurban Bayramı 1. Gün (Bayram Sabahı ve Teşrik Başlangıcı)',
+      description: {
+        tr: 'Kurban Bayramı 1. Gün (Bayram Sabahı ve Teşrik Başlangıcı)',
+        en: 'Eid al-Adha Day 1 (Eid Morning and the Start of the Tashriq Days)',
+      },
       eventKey: 'kurban-bayrami-2026',
       dayIndex: 1,
       dayCount: 4,
@@ -237,11 +255,17 @@ export const kurbanBayrami = {
       ],
     },
     {
-      name: 'Kurban Bayramı',
+      name: {
+        tr: 'Kurban Bayramı',
+        en: 'Eid al-Adha',
+      },
       type: 'bayram',
       date: '2026-05-28',
       hijriDate: '11 Zilhicce 1447',
-      description: 'Kurban Bayramı 2. Gün (Tevhid, Salavat ve Tevekkül Günü)',
+      description: {
+        tr: 'Kurban Bayramı 2. Gün (Tevhid, Salavat ve Tevekkül Günü)',
+        en: 'Eid al-Adha Day 2 (A Day of Tawhid, Salawat, and Trust in Allah)',
+      },
       eventKey: 'kurban-bayrami-2026',
       dayIndex: 2,
       dayCount: 4,
@@ -256,11 +280,17 @@ export const kurbanBayrami = {
       ],
     },
     {
-      name: 'Kurban Bayramı',
+      name: {
+        tr: 'Kurban Bayramı',
+        en: 'Eid al-Adha',
+      },
       type: 'bayram',
       date: '2026-05-29',
       hijriDate: '12 Zilhicce 1447',
-      description: 'Kurban Bayramı 3. Gün (Sabır, Dua ve Arınma Günü)',
+      description: {
+        tr: 'Kurban Bayramı 3. Gün (Sabır, Dua ve Arınma Günü)',
+        en: 'Eid al-Adha Day 3 (A Day of Patience, Supplication, and Purification)',
+      },
       eventKey: 'kurban-bayrami-2026',
       dayIndex: 3,
       dayCount: 4,
@@ -274,11 +304,17 @@ export const kurbanBayrami = {
       ],
     },
     {
-      name: 'Kurban Bayramı',
+      name: {
+        tr: 'Kurban Bayramı',
+        en: 'Eid al-Adha',
+      },
       type: 'bayram',
       date: '2026-05-30',
       hijriDate: '13 Zilhicce 1447',
-      description: 'Kurban Bayramı 4. Gün (Kapanış ve Teşrik Tamamlama Günü)',
+      description: {
+        tr: 'Kurban Bayramı 4. Gün (Kapanış ve Teşrik Tamamlama Günü)',
+        en: 'Eid al-Adha Day 4 (Closing Day and Completion of the Tashriq Days)',
+      },
       eventKey: 'kurban-bayrami-2026',
       dayIndex: 4,
       dayCount: 4,

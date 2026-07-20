@@ -1,8 +1,14 @@
 export const istihareDuasi = {
   key: 'istihare-duasi',
-  label: 'İstihare Duası',
+  label: {
+    tr: 'İstihare Duası',
+    en: 'Istikhara Prayer',
+  },
   category: 'dua',
-  description: 'Önemli kararlar öncesi istihare namazında okunacak dua.',
+  description: {
+    tr: 'Önemli kararlar öncesi istihare namazında okunacak dua.',
+    en: 'The supplication to be recited in the Istikhara prayer before important decisions.',
+  },
   dhikrItems: [
     {
       key: 'istihare-allahümme-estehiruke',

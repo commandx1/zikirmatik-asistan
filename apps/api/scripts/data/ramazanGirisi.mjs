@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const ramazanGirisi = {
   key: 'ramazan-girisi-2026',
-  label: 'Ramazan Girişi 2026',
+  label: {
+    tr: 'Ramazan Girişi 2026',
+    en: 'Beginning of Ramadan 2026',
+  },
   category: 'ibadet',
-  description:
-    'Ramazan ayının ilk günü: 1 Ramazan 1447, 19 Şubat 2026. Hilal duası, oruç niyeti ve hoşgeldin Ramazan.',
+  description: {
+    tr: 'Ramazan ayının ilk günü: 1 Ramazan 1447, 19 Şubat 2026. Hilal duası, oruç niyeti ve hoşgeldin Ramazan.',
+    en: 'The first day of the month of Ramadan: 1 Ramadan 1447, 19 February 2026. Supplication for the crescent moon, intention to fast, and welcome to Ramadan.',
+  },
   dhikrItems: [
     {
       key: keyMap.HILAL_DUASI,
@@ -69,12 +74,17 @@ export const ramazanGirisi = {
   ],
   specialDays: [
     {
-      name: 'Ramazan Ayı Girişi',
+      name: {
+        tr: 'Ramazan Ayı Girişi',
+        en: 'Beginning of the Month of Ramadan',
+      },
       type: 'özel gün',
       date: '2026-02-19',
       hijriDate: '1 Ramazan 1447',
-      description:
-        "Mübarek Ramazan'ın ilk günü. Hilali görünce dua et, oruç niyetini tazele; ilk sahur ve iftarın coşkusuyla tevhid, salavat ve istiğfar.",
+      description: {
+        tr: "Mübarek Ramazan'ın ilk günü. Hilali görünce dua et, oruç niyetini tazele; ilk sahur ve iftarın coşkusuyla tevhid, salavat ve istiğfar.",
+        en: "The first day of blessed Ramadan. When you see the crescent moon, make supplication and renew your intention to fast; with the joy of the first suhoor and iftar, perform tawhid, salawat and istighfar.",
+      },
       eventKey: 'ramazan-girisi-2026',
       priority: 175,
       dhikrKeys: [

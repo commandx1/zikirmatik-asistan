@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const ramazanGunleri = {
   key: 'ramazan-gunleri-2026',
-  label: 'Ramazan 29 Gün 2026',
+  label: {
+    tr: 'Ramazan 29 Gün 2026',
+    en: 'Ramadan 29 Days 2026',
+  },
   category: 'ibadet',
-  description:
-    "Ramazan 1447'nin tüm 29 günü: ilk 10 rahmet (İbn Abbas günlük duaları), orta 10 mağfiret, son 9 ateşten kurtuluş.",
+  description: {
+    tr: "Ramazan 1447'nin tüm 29 günü: ilk 10 rahmet (İbn Abbas günlük duaları), orta 10 mağfiret, son 9 ateşten kurtuluş.",
+    en: "All 29 days of Ramadan 1447: the first ten of mercy (Ibn Abbas' daily supplications), the middle ten of forgiveness, the last nine of deliverance from the Fire.",
+  },
   dhikrItems: [
     {
       key: keyMap.IFTAR_DUASI,
@@ -399,11 +404,17 @@ export const ramazanGunleri = {
   specialDays: [
     // ── RAHMET (1–10) ──────────────────────────────────────────────
     {
-      name: 'Ramazan 1. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 1. Gün — Rahmet',
+        en: 'Ramadan Day 1 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-19',
       hijriDate: '1 Ramazan 1447',
-      description: 'Rahmet on günlerinin ilk günü. Oruç niyetiyle Rahman ve Rahim isimlerine yönel.',
+      description: {
+        tr: 'Rahmet on günlerinin ilk günü. Oruç niyetiyle Rahman ve Rahim isimlerine yönel.',
+        en: 'The first of the ten days of mercy. With the intention to fast, turn to the names ar-Rahman and ar-Rahim.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 1,
       dayCount: 29,
@@ -417,11 +428,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 2. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 2. Gün — Rahmet',
+        en: 'Ramadan Day 2 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-20',
       hijriDate: '2 Ramazan 1447',
-      description: 'Tevhid ve şükür günü. İlahi rızaya yakınlaş, Kur\'an okumaya muvaffak ol.',
+      description: {
+        tr: 'Tevhid ve şükür günü. İlahi rızaya yakınlaş, Kur\'an okumaya muvaffak ol.',
+        en: 'A day of tawhid and gratitude. Draw near to divine pleasure and be granted success in reciting the Qur\'an.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 2,
       dayCount: 29,
@@ -435,11 +452,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 3. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 3. Gün — Rahmet',
+        en: 'Ramadan Day 3 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-21',
       hijriDate: '3 Ramazan 1447',
-      description: 'Zihinsel berraklık ve uyanıklık günü. Batıl işlerden uzaklaş, hayır nasibini al.',
+      description: {
+        tr: 'Zihinsel berraklık ve uyanıklık günü. Batıl işlerden uzaklaş, hayır nasibini al.',
+        en: 'A day of mental clarity and wakefulness. Keep away from vain deeds and receive your share of good.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 3,
       dayCount: 29,
@@ -453,11 +476,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 4. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 4. Gün — Rahmet',
+        en: 'Ramadan Day 4 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-22',
       hijriDate: '4 Ramazan 1447',
-      description: 'Zikrin tadını alma günü. Emri yaşat, şükrünü eda et, hıfz ile örtün.',
+      description: {
+        tr: 'Zikrin tadını alma günü. Emri yaşat, şükrünü eda et, hıfz ile örtün.',
+        en: 'A day to taste the sweetness of dhikr. Uphold His command, fulfill your gratitude, and shield yourself with His protection.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 4,
       dayCount: 29,
@@ -471,11 +500,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 5. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 5. Gün — Rahmet',
+        en: 'Ramadan Day 5 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-23',
       hijriDate: '5 Ramazan 1447',
-      description: 'Mukarrebûn derecesine yükselme günü. İstiğfar et, salihler arasına gir.',
+      description: {
+        tr: 'Mukarrebûn derecesine yükselme günü. İstiğfar et, salihler arasına gir.',
+        en: 'A day to rise to the rank of the muqarrabun (those brought near). Seek forgiveness and enter among the righteous.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 5,
       dayCount: 29,
@@ -489,11 +524,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 6. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 6. Gün — Rahmet',
+        en: 'Ramadan Day 6 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-24',
       hijriDate: '6 Ramazan 1447',
-      description: 'İlahi himaye günü. Günah azabından, gazabın sebeplerinden uzak tut beni.',
+      description: {
+        tr: 'İlahi himaye günü. Günah azabından, gazabın sebeplerinden uzak tut beni.',
+        en: 'A day of divine protection. Keep me far from the punishment of sin and from the causes of Your wrath.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 6,
       dayCount: 29,
@@ -507,11 +548,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 7. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 7. Gün — Rahmet',
+        en: 'Ramadan Day 7 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-25',
       hijriDate: '7 Ramazan 1447',
-      description: 'Kesintisiz zikir günü. Oruç ve kıyam için ilahi yardım iste.',
+      description: {
+        tr: 'Kesintisiz zikir günü. Oruç ve kıyam için ilahi yardım iste.',
+        en: 'A day of unceasing dhikr. Ask for divine aid in your fasting and in your night prayer (qiyam).',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 7,
       dayCount: 29,
@@ -525,11 +572,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 8. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 8. Gün — Rahmet',
+        en: 'Ramadan Day 8 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-26',
       hijriDate: '8 Ramazan 1447',
-      description: 'Sosyal ahlak günü. Öksüzlere merhamet et, selam yay, kâmil insanlarla dost ol.',
+      description: {
+        tr: 'Sosyal ahlak günü. Öksüzlere merhamet et, selam yay, kâmil insanlarla dost ol.',
+        en: 'A day of social virtue. Show mercy to orphans, spread the greeting of peace (salam), and keep the company of the people of perfection.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 8,
       dayCount: 29,
@@ -543,11 +596,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 9. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 9. Gün — Rahmet',
+        en: 'Ramadan Day 9 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-27',
       hijriDate: '9 Ramazan 1447',
-      description: 'Acziyet ve tevekkül günü. La havle ile gücün kaynağını hatırla.',
+      description: {
+        tr: 'Acziyet ve tevekkül günü. La havle ile gücün kaynağını hatırla.',
+        en: 'A day of humility and trust in Allah (tawakkul). With "La hawla wa la quwwata illa billah," remember the source of all strength.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 9,
       dayCount: 29,
@@ -561,11 +620,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 10. Gün — Rahmet',
+      name: {
+        tr: 'Ramazan 10. Gün — Rahmet',
+        en: 'Ramadan Day 10 — Mercy',
+      },
       type: 'özel gün',
       date: '2026-02-28',
       hijriDate: '10 Ramazan 1447',
-      description: 'Rahmet on günlerinin son günü. Şükür ve tevhidle bu bölümü kapat.',
+      description: {
+        tr: 'Rahmet on günlerinin son günü. Şükür ve tevhidle bu bölümü kapat.',
+        en: 'The last of the ten days of mercy. Close this portion with gratitude and tawhid.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 10,
       dayCount: 29,
@@ -581,11 +646,17 @@ export const ramazanGunleri = {
 
     // ── MAĞFIRET (11–20) ──────────────────────────────────────────
     {
-      name: 'Ramazan 11. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 11. Gün — Mağfiret',
+        en: 'Ramadan Day 11 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-01',
       hijriDate: '11 Ramazan 1447',
-      description: 'Mağfiret on günlerinin başlangıcı. İstiğfar ve tevbeyi yoğunlaştır.',
+      description: {
+        tr: 'Mağfiret on günlerinin başlangıcı. İstiğfar ve tevbeyi yoğunlaştır.',
+        en: 'The beginning of the ten days of forgiveness (maghfirah). Intensify your seeking of forgiveness (istighfar) and repentance (tawbah).',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 11,
       dayCount: 29,
@@ -599,11 +670,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 12. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 12. Gün — Mağfiret',
+        en: 'Ramadan Day 12 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-02',
       hijriDate: '12 Ramazan 1447',
-      description: 'Tevbe ve dönüş günü. Günahların bağışlanması için Gaffâr ismine yönel.',
+      description: {
+        tr: 'Tevbe ve dönüş günü. Günahların bağışlanması için Gaffâr ismine yönel.',
+        en: 'A day of repentance and turning back to Allah. Turn to the Divine name Al-Ghaffar (The Ever-Forgiving) for the pardon of your sins.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 12,
       dayCount: 29,
@@ -617,11 +694,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 13. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 13. Gün — Mağfiret',
+        en: 'Ramadan Day 13 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-03',
       hijriDate: '13 Ramazan 1447',
-      description: 'Pişmanlık ve arınma günü. Hz. Adem\'in tevbe duasıyla kalbi temizle.',
+      description: {
+        tr: 'Pişmanlık ve arınma günü. Hz. Adem\'in tevbe duasıyla kalbi temizle.',
+        en: 'A day of remorse and purification. Cleanse your heart with the supplication of repentance of the Prophet Adam (peace be upon him).',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 13,
       dayCount: 29,
@@ -635,11 +718,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 14. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 14. Gün — Mağfiret',
+        en: 'Ramadan Day 14 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-04',
       hijriDate: '14 Ramazan 1447',
-      description: 'Hz. Adem\'in duasıyla nefis muhasebesini derinleştir.',
+      description: {
+        tr: 'Hz. Adem\'in duasıyla nefis muhasebesini derinleştir.',
+        en: 'Deepen the reckoning of your soul (muhasabah) through the supplication of the Prophet Adam (peace be upon him).',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 14,
       dayCount: 29,
@@ -653,11 +742,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 15. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 15. Gün — Mağfiret',
+        en: 'Ramadan Day 15 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-05',
       hijriDate: '15 Ramazan 1447',
-      description: 'Mağfiretin ortasında: istiğfar ve salavata yoğunlaş.',
+      description: {
+        tr: 'Mağfiretin ortasında: istiğfar ve salavata yoğunlaş.',
+        en: 'At the midpoint of forgiveness: devote yourself to seeking forgiveness (istighfar) and sending blessings upon the Prophet (salawat).',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 15,
       dayCount: 29,
@@ -671,11 +766,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 16. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 16. Gün — Mağfiret',
+        en: 'Ramadan Day 16 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-06',
       hijriDate: '16 Ramazan 1447',
-      description: 'Yeniden istiğfar ve tevbe. Günahların bağışlanması için sabırla devam et.',
+      description: {
+        tr: 'Yeniden istiğfar ve tevbe. Günahların bağışlanması için sabırla devam et.',
+        en: 'Renew your istighfar and repentance. Persevere with patience in seeking the forgiveness of your sins.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 16,
       dayCount: 29,
@@ -689,11 +790,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 17. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 17. Gün — Mağfiret',
+        en: 'Ramadan Day 17 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-07',
       hijriDate: '17 Ramazan 1447',
-      description: 'Bedir\'in yıl dönümü günü: imanı tazelemek için tevhid ve istiğfar.',
+      description: {
+        tr: 'Bedir\'in yıl dönümü günü: imanı tazelemek için tevhid ve istiğfar.',
+        en: 'The anniversary of the Battle of Badr: renew your faith through the declaration of divine oneness (tawhid) and seeking forgiveness (istighfar).',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 17,
       dayCount: 29,
@@ -707,11 +814,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 18. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 18. Gün — Mağfiret',
+        en: 'Ramadan Day 18 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-08',
       hijriDate: '18 Ramazan 1447',
-      description: 'İstiğfar ve ihlası artır; Gaffâr ismiyle günahların affını dile.',
+      description: {
+        tr: 'İstiğfar ve ihlası artır; Gaffâr ismiyle günahların affını dile.',
+        en: 'Increase your istighfar and sincerity (ikhlas); through the Divine name Al-Ghaffar, beseech the pardon of your sins.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 18,
       dayCount: 29,
@@ -725,11 +838,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 19. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 19. Gün — Mağfiret',
+        en: 'Ramadan Day 19 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-09',
       hijriDate: '19 Ramazan 1447',
-      description: 'Son mağfiret günlerine girerken tevbeyi kemale erdir.',
+      description: {
+        tr: 'Son mağfiret günlerine girerken tevbeyi kemale erdir.',
+        en: 'As you enter the final days of forgiveness, bring your repentance to perfection.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 19,
       dayCount: 29,
@@ -743,11 +862,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 20. Gün — Mağfiret',
+      name: {
+        tr: 'Ramazan 20. Gün — Mağfiret',
+        en: 'Ramadan Day 20 — Forgiveness',
+      },
       type: 'özel gün',
       date: '2026-03-10',
       hijriDate: '20 Ramazan 1447',
-      description: 'Mağfiret on günlerinin son günü. Bağışlanma umidiyle kalbini temizle.',
+      description: {
+        tr: 'Mağfiret on günlerinin son günü. Bağışlanma umidiyle kalbini temizle.',
+        en: 'The last of the ten days of forgiveness. Purify your heart in the hope of Allah\'s pardon.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 20,
       dayCount: 29,
@@ -763,11 +888,17 @@ export const ramazanGunleri = {
 
     // ── İTK (21–29) ───────────────────────────────────────────────
     {
-      name: 'Ramazan 21. Gün — İtk',
+      name: {
+        tr: 'Ramazan 21. Gün — İtk',
+        en: 'Ramadan Day 21 — Emancipation from Hellfire',
+      },
       type: 'özel gün',
       date: '2026-03-11',
       hijriDate: '21 Ramazan 1447',
-      description: 'Son on gecelerin başlangıcı. Kadir Gecesi\'ni arama vakti. İbadeti yoğunlaştır.',
+      description: {
+        tr: 'Son on gecelerin başlangıcı. Kadir Gecesi\'ni arama vakti. İbadeti yoğunlaştır.',
+        en: 'The beginning of the last ten nights. The time to seek Laylat al-Qadr. Intensify your worship.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 21,
       dayCount: 29,
@@ -781,11 +912,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 22. Gün — İtk',
+      name: {
+        tr: 'Ramazan 22. Gün — İtk',
+        en: 'Ramadan Day 22 — Emancipation from Hellfire',
+      },
       type: 'özel gün',
       date: '2026-03-12',
       hijriDate: '22 Ramazan 1447',
-      description: 'Ateşten kurtuluş gecelerinde. Mu\'tiga\'r-Rigâb esmasını çok tekrarla.',
+      description: {
+        tr: 'Ateşten kurtuluş gecelerinde. Mu\'tiga\'r-Rigâb esmasını çok tekrarla.',
+        en: 'In the nights of deliverance from the Fire. Abundantly repeat the Divine name Mu\'tiq ar-Riqab (The Liberator of Necks from bondage).',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 22,
       dayCount: 29,
@@ -799,11 +936,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 23. Gün — İtk',
+      name: {
+        tr: 'Ramazan 23. Gün — İtk',
+        en: 'Ramadan Day 23 — Emancipation from Hellfire',
+      },
       type: 'özel gün',
       date: '2026-03-13',
       hijriDate: '23 Ramazan 1447',
-      description: 'Son on gecelerde itikaf ve yoğun ibadet günü. Ayetel Kürsi\'yi ekle.',
+      description: {
+        tr: 'Son on gecelerde itikaf ve yoğun ibadet günü. Ayetel Kürsi\'yi ekle.',
+        en: 'A day of spiritual retreat (i\'tikaf) and intense worship in the last ten nights. Add the recitation of Ayat al-Kursi.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 23,
       dayCount: 29,
@@ -817,11 +960,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 24. Gün — İtk',
+      name: {
+        tr: 'Ramazan 24. Gün — İtk',
+        en: 'Ramadan Day 24 — Emancipation from Hellfire',
+      },
       type: 'özel gün',
       date: '2026-03-14',
       hijriDate: '24 Ramazan 1447',
-      description: 'Kadir\'e yaklaşılırken istiğfarı ve Ayetel Kürsi\'yi artır.',
+      description: {
+        tr: 'Kadir\'e yaklaşılırken istiğfarı ve Ayetel Kürsi\'yi artır.',
+        en: 'As Laylat al-Qadr draws near, increase your seeking of forgiveness (istighfar) and recitation of Ayat al-Kursi.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 24,
       dayCount: 29,
@@ -835,11 +984,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 25. Gün — İtk',
+      name: {
+        tr: 'Ramazan 25. Gün — İtk',
+        en: 'Ramadan Day 25 — Emancipation from Hellfire',
+      },
       type: 'özel gün',
       date: '2026-03-15',
       hijriDate: '25 Ramazan 1447',
-      description: 'Kadir Gecesi\'nden bir gün önce. Niyeti ve kalbini hazırla.',
+      description: {
+        tr: 'Kadir Gecesi\'nden bir gün önce. Niyeti ve kalbini hazırla.',
+        en: 'The day before Laylat al-Qadr. Prepare your intention (niyyah) and your heart.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 25,
       dayCount: 29,
@@ -853,12 +1008,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 26. Gün — Kadir Gecesi Arifesi',
+      name: {
+        tr: 'Ramazan 26. Gün — Kadir Gecesi Arifesi',
+        en: 'Ramadan Day 26 — Eve of Laylat al-Qadr',
+      },
       type: 'özel gün',
       date: '2026-03-16',
       hijriDate: '26 Ramazan 1447',
-      description:
-        'Bu akşam Kadir Gecesi başlıyor. Gün boyunca Kadir duasını ve itk esmasını çok tekrarla; gece ibadet için hazır ol.',
+      description: {
+        tr: 'Bu akşam Kadir Gecesi başlıyor. Gün boyunca Kadir duasını ve itk esmasını çok tekrarla; gece ibadet için hazır ol.',
+        en: 'Laylat al-Qadr begins this evening. Throughout the day, abundantly repeat the supplication of Laylat al-Qadr and the Divine names of emancipation; be ready for a night of worship.',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 26,
       dayCount: 29,
@@ -872,11 +1032,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 27. Gün — İtk',
+      name: {
+        tr: 'Ramazan 27. Gün — İtk',
+        en: 'Ramadan Day 27 — Emancipation from Hellfire',
+      },
       type: 'özel gün',
       date: '2026-03-17',
       hijriDate: '27 Ramazan 1447',
-      description: 'Kadir Gecesi\'nin sabahı. Geceyi ihya ettikten sonra şükür ve salavat.',
+      description: {
+        tr: 'Kadir Gecesi\'nin sabahı. Geceyi ihya ettikten sonra şükür ve salavat.',
+        en: 'The morning after Laylat al-Qadr. Having spent the night in worship, offer gratitude (shukr) and blessings upon the Prophet (salawat).',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 27,
       dayCount: 29,
@@ -890,11 +1056,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 28. Gün — İtk',
+      name: {
+        tr: 'Ramazan 28. Gün — İtk',
+        en: 'Ramadan Day 28 — Emancipation from Hellfire',
+      },
       type: 'özel gün',
       date: '2026-03-18',
       hijriDate: '28 Ramazan 1447',
-      description: 'Ramazana veda. Bayrama 2 gün kala son istiğfar ve şükür günü.',
+      description: {
+        tr: 'Ramazana veda. Bayrama 2 gün kala son istiğfar ve şükür günü.',
+        en: 'Bidding farewell to Ramadan. With two days until Eid, a day for final seeking of forgiveness (istighfar) and gratitude (shukr).',
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 28,
       dayCount: 29,
@@ -908,11 +1080,17 @@ export const ramazanGunleri = {
       ],
     },
     {
-      name: 'Ramazan 29. Gün — Vedâ',
+      name: {
+        tr: 'Ramazan 29. Gün — Vedâ',
+        en: 'Ramadan Day 29 — Farewell',
+      },
       type: 'özel gün',
       date: '2026-03-19',
       hijriDate: '29 Ramazan 1447',
-      description: "Ramazan'ın son günü. Şükür, istiğfar ve itk esmasıyla bu mübarek ayı kapat.",
+      description: {
+        tr: "Ramazan'ın son günü. Şükür, istiğfar ve itk esmasıyla bu mübarek ayı kapat.",
+        en: "The final day of Ramadan. Close this blessed month with gratitude (shukr), seeking of forgiveness (istighfar), and the Divine names of emancipation.",
+      },
       eventKey: 'ramazan-gunleri-2026',
       dayIndex: 29,
       dayCount: 29,

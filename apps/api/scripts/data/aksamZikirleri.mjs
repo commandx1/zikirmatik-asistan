@@ -1,8 +1,14 @@
 export const aksamZikirleri = {
   key: 'aksam-zikirleri',
-  label: 'Akşam Zikirleri',
+  label: {
+    tr: 'Akşam Zikirleri',
+    en: 'Evening Dhikrs',
+  },
   category: 'gunluk',
-  description: 'Akşam vaktinin bereketi için okunması tavsiye edilen zikirler ve dualar.',
+  description: {
+    tr: 'Akşam vaktinin bereketi için okunması tavsiye edilen zikirler ve dualar.',
+    en: 'Dhikrs and supplications recommended to recite for the blessing of the evening.',
+  },
   dhikrItems: [
     {
       key: 'aksam-emsena',

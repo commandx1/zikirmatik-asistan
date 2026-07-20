@@ -2,9 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const rizikMulkTertipleri = {
   key: 'rizik-ve-mulk-tertipleri',
-  label: 'Rızık ve Mülk Tertipleri',
+  label: {
+    tr: 'Rızık ve Mülk Tertipleri',
+    en: 'Regimens for Provision and Property',
+  },
   category: 'hayat',
-  description: 'Rızık genişliği ve bereket için okunacak dualar ve zikirler.',
+  description: {
+    tr: 'Rızık genişliği ve bereket için okunacak dualar ve zikirler.',
+    en: 'Supplications and dhikrs to be recited for abundance of provision and blessing.',
+  },
   dhikrItems: [
     {
       key: 'rizik-kombinasyon-ya-gani-ya-mugni',

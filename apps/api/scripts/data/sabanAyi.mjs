@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const sabanAyi = {
   key: 'saban-ayi-2026',
-  label: 'Şaban Ayı 2026',
+  label: {
+    tr: 'Şaban Ayı 2026',
+    en: "Month of Sha'ban 2026",
+  },
   category: 'ibadet',
-  description:
-    "Peygamber Efendimiz'in 'Benim ayım' dediği Şaban: üç onar günlük faz (Latîf→Rezzâk→Azîz esması), Berat Gecesi hazırlığı ve Ramazan'a köprü.",
+  description: {
+    tr: "Peygamber Efendimiz'in 'Benim ayım' dediği Şaban: üç onar günlük faz (Latîf→Rezzâk→Azîz esması), Berat Gecesi hazırlığı ve Ramazan'a köprü.",
+    en: "Sha'ban, which the Prophet (peace be upon him) called 'my month': three ten-day phases (the Divine Names al-Latif→ar-Razzaq→al-Aziz), preparation for Laylat al-Bara'ah, and a bridge to Ramadan.",
+  },
   dhikrItems: [
     {
       key: keyMap.YA_LATIF,
@@ -127,12 +132,17 @@ export const sabanAyi = {
   ],
   specialDays: [
     {
-      name: 'Şaban Ayı Girişi — 1. Faz (Latîf)',
+      name: {
+        tr: 'Şaban Ayı Girişi — 1. Faz (Latîf)',
+        en: "Beginning of the Month of Sha'ban — Phase 1 (al-Latif)",
+      },
       type: 'özel gün',
       date: '2026-01-20',
       hijriDate: '1 Şaban 1447',
-      description:
-        "Peygamber Efendimiz'in 'Şaban benim ayımdır' buyurduğu mübarek ayın başlangıcı. İlk on günde Yâ Latîf esmasıyla kalbi yumuşat, üç aylar duasını çok oku.",
+      description: {
+        tr: "Peygamber Efendimiz'in 'Şaban benim ayımdır' buyurduğu mübarek ayın başlangıcı. İlk on günde Yâ Latîf esmasıyla kalbi yumuşat, üç aylar duasını çok oku.",
+        en: "The beginning of the blessed month of which the Prophet (peace be upon him) said, 'Sha'ban is my month.' In the first ten days, soften the heart with the Divine Name Ya Latif and recite abundantly the supplication of the three holy months.",
+      },
       eventKey: 'saban-ayi-2026',
       dayIndex: 1,
       dayCount: 30,
@@ -146,12 +156,17 @@ export const sabanAyi = {
       ],
     },
     {
-      name: 'Şaban 11. Gün — 2. Faz (Rezzâk)',
+      name: {
+        tr: 'Şaban 11. Gün — 2. Faz (Rezzâk)',
+        en: "Sha'ban Day 11 — Phase 2 (ar-Razzaq)",
+      },
       type: 'özel gün',
       date: '2026-01-30',
       hijriDate: '11 Şaban 1447',
-      description:
-        "Şaban'ın ikinci on günlük faz başlangıcı. Nefis mücadelesi ve kararlılık dönemi. Yâ Rezzâk ile maddî-manevî rızık kapılarını aç.",
+      description: {
+        tr: "Şaban'ın ikinci on günlük faz başlangıcı. Nefis mücadelesi ve kararlılık dönemi. Yâ Rezzâk ile maddî-manevî rızık kapılarını aç.",
+        en: "The beginning of Sha'ban's second ten-day phase. A season of struggle against the self and steadfast resolve. With the Divine Name Ya Razzaq, open the gates of both material and spiritual provision.",
+      },
       eventKey: 'saban-ayi-2026',
       dayIndex: 11,
       dayCount: 30,
@@ -165,12 +180,17 @@ export const sabanAyi = {
       ],
     },
     {
-      name: 'Şaban 21. Gün — 3. Faz (Azîz)',
+      name: {
+        tr: 'Şaban 21. Gün — 3. Faz (Azîz)',
+        en: "Sha'ban Day 21 — Phase 3 (al-Aziz)",
+      },
       type: 'özel gün',
       date: '2026-02-09',
       hijriDate: '21 Şaban 1447',
-      description:
-        "Şaban'ın son on günü: doğrudan Ramazan'ın eşiği. Yâ Azîz ile manevî gücü pekiştir; 27. gece özel salavat oku, Berat Gecesi'nde kazanılanı tamamla.",
+      description: {
+        tr: "Şaban'ın son on günü: doğrudan Ramazan'ın eşiği. Yâ Azîz ile manevî gücü pekiştir; 27. gece özel salavat oku, Berat Gecesi'nde kazanılanı tamamla.",
+        en: "The final ten days of Sha'ban: the very threshold of Ramadan. With the Divine Name Ya Aziz, strengthen your spiritual might; recite the special salawat on the 27th night, and complete on Laylat al-Bara'ah what has been gained.",
+      },
       eventKey: 'saban-ayi-2026',
       dayIndex: 21,
       dayCount: 30,

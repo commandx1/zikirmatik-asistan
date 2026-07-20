@@ -1,8 +1,14 @@
 export const keffaretulMeclis = {
   key: 'keffaret-ul-meclis',
-  label: 'Oturum ve Meclis Duaları',
+  label: {
+    tr: 'Oturum ve Meclis Duaları',
+    en: 'Supplications for Sittings and Gatherings',
+  },
   category: 'gunluk',
-  description: 'Bir meclisten ya da toplantıdan kalkarken okunacak kefaret duası.',
+  description: {
+    tr: 'Bir meclisten ya da toplantıdan kalkarken okunacak kefaret duası.',
+    en: 'The expiation supplication to be recited when rising from a gathering or meeting.',
+  },
   dhikrItems: [
     {
       key: 'meclis-istigfar-100',

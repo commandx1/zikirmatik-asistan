@@ -1,8 +1,14 @@
 export const zinadanKorunma = {
   key: 'zinadan-korunma',
-  label: 'Zinadan Korunma Duaları',
+  label: {
+    tr: 'Zinadan Korunma Duaları',
+    en: 'Supplications for Protection from Adultery',
+  },
   category: 'koruma',
-  description: 'Zina ve şehevi düşüncelerden korunmak, iffeti muhafaza etmek için okunacak dualar.',
+  description: {
+    tr: 'Zina ve şehevi düşüncelerden korunmak, iffeti muhafaza etmek için okunacak dualar.',
+    en: 'Supplications to recite to guard against adultery and lustful thoughts and to preserve chastity.',
+  },
   dhikrItems: [
     {
       key: 'zina-korunma-kalp-temizligi',

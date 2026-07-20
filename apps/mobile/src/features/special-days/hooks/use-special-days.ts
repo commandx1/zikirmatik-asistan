@@ -13,7 +13,8 @@ import {
 } from "../services/special-days-api-client";
 import { useProfileStore } from "../../../store/profile-store";
 import { useAuthStore } from "../../../store/auth-store";
-import { toIntlLocale } from "../../../lib/locale-format";
+import { formatLongDate } from "../../../lib/locale-format";
+import { resolveLocalizedText } from "../../../store/dhikr-store";
 
 export function useSpecialDays() {
   const [heroCard, setHeroCard] = useState<HeroCardViewModel>(HERO_CARD);
@@ -25,6 +26,7 @@ export function useSpecialDays() {
 
   const notificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
+  const locale = useProfileStore((s) => s.locale);
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
   const accessToken = useAuthStore((s) => s.session?.accessToken);
@@ -42,25 +44,39 @@ export function useSpecialDays() {
         const days = daysUntil(response.hero.date);
         setHeroCard({
           id: response.hero.id,
-          badge: response.hero.badge,
-          title: response.hero.name,
-          dateLabel: response.hero.dateLabel,
+          badge: i18n.t(
+            response.hero.isToday ? "special-days:hero.badgeToday" : "special-days:hero.badgeUpcoming",
+          ),
+          title: resolveLocalizedText(response.hero.name, locale),
+          dateLabel: formatLongDate(response.hero.date, locale),
           countdown: [{ value: String(days), label: i18n.t("special-days:countdown.dayUnit") }],
           remaining: formatDaysRemaining(days),
           isLocked: response.hero.isLocked,
-          isTodaySpecial: response.hero.source === "today",
+          isTodaySpecial: response.hero.isToday,
         });
       }
 
-      setTodayAction(response.action);
-      setUpcomingDays(response.upcoming.map((item) => mapUpcomingDay(item, useProfileStore.getState().locale)));
+      setTodayAction(
+        response.action
+          ? {
+              specialDayId: response.action.specialDayId,
+              title: resolveLocalizedText(response.action.name, locale),
+              subtitle: response.action.description
+                ? resolveLocalizedText(response.action.description, locale)
+                : i18n.t("special-days:action.defaultSubtitle"),
+              ctaLabel: i18n.t("special-days:action.cta"),
+              isLocked: response.action.isLocked,
+            }
+          : null,
+      );
+      setUpcomingDays(response.upcoming.map((item) => mapUpcomingDay(item, locale)));
     } catch (error) {
       setError(error instanceof SpecialDaysApiError ? error.message : i18n.t("special-days:errors.homeLoadFailed"));
     } finally {
       setIsLoading(false);
       setHasLoadedOnce(true);
     }
-  }, [accessToken, authStatus, userId]);
+  }, [accessToken, authStatus, userId, locale]);
 
   useEffect(() => {
     void refresh();
@@ -83,31 +99,18 @@ export function useSpecialDays() {
 }
 
 function mapUpcomingDay(
-  item: BackendSpecialDayHomeItem & { remainingLabel: string },
+  item: BackendSpecialDayHomeItem & { isToday: boolean },
   locale: SupportedLocale,
 ): UpcomingDayViewModel {
   const icon = item.type === "bayram" ? "mosque" : item.type === "ramazan" ? "star" : "moon";
   return {
     id: item.id,
     icon,
-    title: item.name,
-    dateLabel: formatDayLabel(item.date, locale),
+    title: resolveLocalizedText(item.name, locale),
+    dateLabel: formatLongDate(item.date, locale),
     remaining: formatDaysRemaining(daysUntil(item.date)),
     isLocked: item.isLocked,
   };
-}
-
-function formatDayLabel(isoDate: string, locale: SupportedLocale) {
-  const date = new Date(`${isoDate}T00:00:00`);
-  if (Number.isNaN(date.getTime())) {
-    return isoDate;
-  }
-
-  const formatter = new Intl.DateTimeFormat(toIntlLocale(locale), {
-    day: "numeric",
-    month: "long",
-  });
-  return formatter.format(date);
 }
 
 function toDateKey(value: Date) {

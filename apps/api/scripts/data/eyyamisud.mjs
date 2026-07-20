@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const eyyamisud = {
   key: 'eyyami-sud-2026',
-  label: 'Eyyâm-ı Sud 2026–2027',
+  label: {
+    tr: 'Eyyâm-ı Sud 2026–2027',
+    en: 'Ayyam al-Sud (the Days of Darkness) 2026–2027',
+  },
   category: 'ibadet',
-  description:
-    'Her hicri ayın 28, 29 ve 30. günleri olan karanlık günler. Ayın ışığının tamamen kaybolduğu bu günlerde Sirar orucu tutulması, kalp ve ruhun manevi kirlerinden arınması için istiğfar ve dua ile meşgul olunması müstehab görülmüştür.',
+  description: {
+    tr: 'Her hicri ayın 28, 29 ve 30. günleri olan karanlık günler. Ayın ışığının tamamen kaybolduğu bu günlerde Sirar orucu tutulması, kalp ve ruhun manevi kirlerinden arınması için istiğfar ve dua ile meşgul olunması müstehab görülmüştür.',
+    en: "The dark days that fall on the 28th, 29th, and 30th of every Hijri month. On these days, when the moon's light has entirely disappeared, it is considered recommended (mustahabb) to observe the Sirar fast and to occupy oneself with seeking forgiveness (istighfar) and supplication in order to cleanse the heart and soul of their spiritual impurities.",
+  },
   dhikrItems: [
     {
       key: keyMap.LUTFU_HAFI_DUASI,
@@ -45,11 +50,17 @@ export const eyyamisud = {
   ],
   specialDays: [
     {
-      name: 'Eyyâm-ı Sud — Muharrem 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Muharrem 1448',
+        en: 'Ayyam al-Sud — Muharram 1448',
+      },
       type: 'özel gün',
       date: '2026-07-13',
       hijriDate: '28 Muharrem 1448',
-      description: 'Muharrem 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Muharrem 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Muharram 1448 (28–30). Bidding the month farewell with the Sirar fast and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -57,11 +68,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Safer 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Safer 1448',
+        en: 'Ayyam al-Sud — Safar 1448',
+      },
       type: 'özel gün',
       date: '2026-08-11',
       hijriDate: '28 Safer 1448',
-      description: 'Safer 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Safer 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Safar 1448 (28–30). Bidding the month farewell with the Sirar fast and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -69,11 +86,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Rebîulevvel 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Rebîulevvel 1448',
+        en: 'Ayyam al-Sud — Rabi al-Awwal 1448',
+      },
       type: 'özel gün',
       date: '2026-09-10',
       hijriDate: '28 Rebîulevvel 1448',
-      description: 'Rebîulevvel 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Rebîulevvel 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Rabi al-Awwal 1448 (28–30). Bidding the month farewell with the Sirar fast and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -81,11 +104,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Rebîulahir 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Rebîulahir 1448',
+        en: 'Ayyam al-Sud — Rabi al-Thani 1448',
+      },
       type: 'özel gün',
       date: '2026-10-09',
       hijriDate: '28 Rebîulahir 1448',
-      description: 'Rebîulahir 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Rebîulahir 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Rabi al-Thani 1448 (28–30). Bidding the month farewell with the Sirar fast and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -93,11 +122,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Cemaziyelevvel 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Cemaziyelevvel 1448',
+        en: 'Ayyam al-Sud — Jumada al-Awwal 1448',
+      },
       type: 'özel gün',
       date: '2026-11-07',
       hijriDate: '28 Cemaziyelevvel 1448',
-      description: 'Cemaziyelevvel 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Cemaziyelevvel 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Jumada al-Awwal 1448 (28–30). Bidding the month farewell with the Sirar fast and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -105,11 +140,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Cemaziyülahir 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Cemaziyülahir 1448',
+        en: 'Ayyam al-Sud — Jumada al-Thani 1448',
+      },
       type: 'özel gün',
       date: '2026-12-07',
       hijriDate: '28 Cemaziyülahir 1448',
-      description: 'Cemaziyülahir 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Cemaziyülahir 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Jumada al-Thani 1448 (28–30). Bidding the month farewell with the Sirar fast and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -117,11 +158,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Recep 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Recep 1448',
+        en: 'Ayyam al-Sud — Rajab 1448',
+      },
       type: 'özel gün',
       date: '2027-01-05',
       hijriDate: '28 Recep 1448',
-      description: 'Recep 1448 karanlık günleri (28–30). Üç Aylar içinde; Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Recep 1448 karanlık günleri (28–30). Üç Aylar içinde; Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Rajab 1448 (28–30). Within the Three Holy Months; bidding the month farewell with the Sirar fast and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -129,11 +176,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Şaban 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Şaban 1448',
+        en: "Ayyam al-Sud — Sha'ban 1448",
+      },
       type: 'özel gün',
       date: '2027-02-03',
       hijriDate: '28 Şaban 1448',
-      description: 'Şaban 1448 karanlık günleri (28–30). Üç Aylar içinde; Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Şaban 1448 karanlık günleri (28–30). Üç Aylar içinde; Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: "The dark days of Sha'ban 1448 (28–30). Within the Three Holy Months; bidding the month farewell with the Sirar fast and seeking forgiveness.",
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -141,11 +194,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Ramazan 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Ramazan 1448',
+        en: 'Ayyam al-Sud — Ramadan 1448',
+      },
       type: 'özel gün',
       date: '2027-03-05',
       hijriDate: '28 Ramazan 1448',
-      description: 'Ramazan 1448 karanlık günleri (28–30). Ramazan son günleri; Kadir gecesi arayışı ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Ramazan 1448 karanlık günleri (28–30). Ramazan son günleri; Kadir gecesi arayışı ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Ramadan 1448 (28–30). The final days of Ramadan; bidding the month farewell with the search for Laylat al-Qadr and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -153,11 +212,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Şevval 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Şevval 1448',
+        en: 'Ayyam al-Sud — Shawwal 1448',
+      },
       type: 'özel gün',
       date: '2027-04-03',
       hijriDate: '28 Şevval 1448',
-      description: 'Şevval 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Şevval 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Shawwal 1448 (28–30). Bidding the month farewell with the Sirar fast and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -165,11 +230,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Zilkade 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Zilkade 1448',
+        en: "Ayyam al-Sud — Dhul-Qi'dah 1448",
+      },
       type: 'özel gün',
       date: '2027-05-03',
       hijriDate: '28 Zilkade 1448',
-      description: 'Zilkade 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Zilkade 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: "The dark days of Dhul-Qi'dah 1448 (28–30). Bidding the month farewell with the Sirar fast and seeking forgiveness.",
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,
@@ -177,11 +248,17 @@ export const eyyamisud = {
       dhikrKeys: [keyMap.LUTFU_HAFI_DUASI, keyMap.ISTIGFAR],
     },
     {
-      name: 'Eyyâm-ı Sud — Zilhicce 1448',
+      name: {
+        tr: 'Eyyâm-ı Sud — Zilhicce 1448',
+        en: 'Ayyam al-Sud — Dhul-Hijjah 1448',
+      },
       type: 'özel gün',
       date: '2027-06-01',
       hijriDate: '28 Zilhicce 1448',
-      description: 'Zilhicce 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+      description: {
+        tr: 'Zilhicce 1448 karanlık günleri (28–30). Sirar orucu ve istiğfarla ayı uğurlama.',
+        en: 'The dark days of Dhul-Hijjah 1448 (28–30). Bidding the month farewell with the Sirar fast and seeking forgiveness.',
+      },
       eventKey: 'eyyami-sud-2026',
       dayIndex: 28,
       dayCount: 3,

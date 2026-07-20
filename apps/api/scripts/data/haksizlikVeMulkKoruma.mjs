@@ -1,8 +1,14 @@
 export const haksizlikVeMulkKoruma = {
   key: 'haksizlik-ve-mulk-koruma',
-  label: 'Zulüm, Haksızlık ve Mülkü Koruma Duaları',
+  label: {
+    tr: 'Zulüm, Haksızlık ve Mülkü Koruma Duaları',
+    en: 'Oppression, Injustice and Property Protection Supplications',
+  },
   category: 'koruma',
-  description: 'Haksızlığa uğramaktan korunmak ve malı muhafaza etmek için okunacak dualar.',
+  description: {
+    tr: 'Haksızlığa uğramaktan korunmak ve malı muhafaza etmek için okunacak dualar.',
+    en: "Supplications to be recited to be protected from suffering injustice and to safeguard one's property.",
+  },
   dhikrItems: [
     {
       key: 'mulk-masaallah-la-kuvvete-illa-billah',

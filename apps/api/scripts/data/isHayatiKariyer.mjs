@@ -1,9 +1,14 @@
 export const isHayatiKariyer = {
   key: 'is-hayati-zikirleri',
-  label: 'İş Hayatı ve Kariyer Zikirleri',
+  label: {
+    tr: 'İş Hayatı ve Kariyer Zikirleri',
+    en: 'Dhikrs for Work Life and Career',
+  },
   category: 'hayat',
-  description:
-    'İş hayatında başarı, bereket ve helal kazanç için okunacak dualar.',
+  description: {
+    tr: 'İş hayatında başarı, bereket ve helal kazanç için okunacak dualar.',
+    en: 'Supplications to recite for success, blessing, and lawful earnings in work life.',
+  },
   dhikrItems: [
     {
       key: 'is-allahumme-inni-eselukes-sebate',

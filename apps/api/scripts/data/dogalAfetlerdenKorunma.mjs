@@ -1,8 +1,14 @@
 export const dogalAfetlerdenKorunma = {
   key: 'dogal-afetlerden-korunma-zikirleri',
-  label: 'Doğal Afetlerden Korunma Zikirleri',
+  label: {
+    tr: 'Doğal Afetlerden Korunma Zikirleri',
+    en: 'Dhikrs for Protection from Natural Disasters',
+  },
   category: 'koruma',
-  description: 'Fırtına, deprem ve sel gibi afetlerde okunacak dualar.',
+  description: {
+    tr: 'Fırtına, deprem ve sel gibi afetlerde okunacak dualar.',
+    en: 'Supplications to recite during disasters such as storms, earthquakes, and floods.',
+  },
   dhikrItems: [
     {
       key: 'afet-allahumme-hfazni-min-beyni-yedeyye',

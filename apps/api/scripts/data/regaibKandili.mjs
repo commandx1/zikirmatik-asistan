@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const regaibKandili = {
   key: 'regaib-kandili-2025',
-  label: 'Regaib Kandili 2025',
+  label: {
+    tr: 'Regaib Kandili 2025',
+    en: "Laylat al-Ragha'ib 2025",
+  },
   category: 'ibadet',
-  description:
-    "Recep ayının ilk Cuma gecesi: meleklerin çokça rağbet ettiği, ilahi rahmetin sağanak gibi indiği ve duaların en üst mertebeye ulaştığı Regâib Kandili.",
+  description: {
+    tr: "Recep ayının ilk Cuma gecesi: meleklerin çokça rağbet ettiği, ilahi rahmetin sağanak gibi indiği ve duaların en üst mertebeye ulaştığı Regâib Kandili.",
+    en: "The first Friday night of the month of Rajab: Laylat al-Ragha'ib, the holy night much sought by the angels, on which divine mercy pours down in abundance and supplications reach their highest station.",
+  },
   dhikrItems: [
     {
       key: keyMap.RECEP_DUASI,
@@ -99,12 +104,17 @@ export const regaibKandili = {
   ],
   specialDays: [
     {
-      name: 'Regaib Kandili',
+      name: {
+        tr: 'Regaib Kandili',
+        en: "Laylat al-Ragha'ib",
+      },
       type: 'kandil',
       date: '2025-12-25',
       hijriDate: '5 Recep 1447',
-      description:
-        "Recep ayının ilk Cuma gecesi: ilahi rahmetin sağanak gibi indiği, meleklerin çokça rağbet ettiği mübarek gece. 12 rekatlık Regâib namazı, secdede özel tesbihat ve Seyyidü'l-İstiğfar ile ihya edilir.",
+      description: {
+        tr: "Recep ayının ilk Cuma gecesi: ilahi rahmetin sağanak gibi indiği, meleklerin çokça rağbet ettiği mübarek gece. 12 rekatlık Regâib namazı, secdede özel tesbihat ve Seyyidü'l-İstiğfar ile ihya edilir.",
+        en: "The first Friday night of the month of Rajab: the blessed night on which divine mercy pours down in abundance and the angels are abundantly present. It is kept alive with the twelve-rak'ah Ragha'ib prayer, special glorifications in prostration, and Sayyid al-Istighfar.",
+      },
       eventKey: 'regaib-kandili-2025',
       priority: 160,
       dhikrKeys: [

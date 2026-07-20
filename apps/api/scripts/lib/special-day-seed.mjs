@@ -90,7 +90,7 @@ export async function runSpecialDaySeed(dataset) {
 
       if (!Array.isArray(dhikrKeys) || dhikrKeys.length === 0) {
         throw new Error(
-          `specialDays içinde dhikrKeys boş olamaz: ${payload.name ?? payload.date}`,
+          `specialDays içinde dhikrKeys boş olamaz: ${payload.name?.tr ?? payload.name ?? payload.date}`,
         );
       }
 
@@ -152,7 +152,13 @@ function buildSpecialDayFilter(payload) {
   if (payload.dayIndex !== undefined) {
     filter.dayIndex = payload.dayIndex;
   } else if (payload.name) {
-    filter.name = payload.name;
+    // name artık { tr, en } nesnesi; eşleşmeyi Türkçe metin üzerinden kur
+    // (legacy düz string desteği için fallback bırakıldı).
+    const nameTr =
+      typeof payload.name === 'object' ? payload.name.tr : payload.name;
+    if (nameTr) {
+      filter['name.tr'] = nameTr;
+    }
   }
 
   return filter;

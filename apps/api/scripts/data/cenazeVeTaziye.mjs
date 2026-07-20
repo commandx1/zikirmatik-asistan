@@ -1,8 +1,14 @@
 export const cenazeVeTaziye = {
   key: 'cenaze-ve-taziye',
-  label: 'Cenaze ve Taziye Duaları',
+  label: {
+    tr: 'Cenaze ve Taziye Duaları',
+    en: 'Funeral and Condolence Supplications',
+  },
   category: 'ibadet',
-  description: 'Cenaze namazı, defin ve taziyede okunacak dualar.',
+  description: {
+    tr: 'Cenaze namazı, defin ve taziyede okunacak dualar.',
+    en: 'Supplications to recite during the funeral prayer, burial, and condolences.',
+  },
   dhikrItems: [
     {
       key: 'cenaze-namaz-duasi-uzun',

@@ -10,7 +10,9 @@ import {
   Matches,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { LocalizedTextDto } from '../../../common/dto/localized-text.dto';
 
 const SPECIAL_DAY_TYPE = {
   kandil: 'kandil',
@@ -20,8 +22,9 @@ const SPECIAL_DAY_TYPE = {
 
 export class UpdateSpecialDayDto {
   @IsOptional()
-  @IsString()
-  name?: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  name?: LocalizedTextDto;
 
   @IsOptional()
   @IsEnum(SPECIAL_DAY_TYPE)
@@ -37,8 +40,9 @@ export class UpdateSpecialDayDto {
   hijriDate?: string;
 
   @IsOptional()
-  @IsString()
-  description?: string;
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  description?: LocalizedTextDto;
 
   @IsOptional()
   @IsString()

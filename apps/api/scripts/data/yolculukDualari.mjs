@@ -1,8 +1,14 @@
 export const yolculukDualari = {
   key: 'yolculuk-dualari',
-  label: 'Yolculuk ve Seyahat Duaları',
+  label: {
+    tr: 'Yolculuk ve Seyahat Duaları',
+    en: 'Supplications for Journey and Travel',
+  },
   category: 'ibadet',
-  description: 'Yolculuk başlangıcında, süresince ve varışta okunacak dualar.',
+  description: {
+    tr: 'Yolculuk başlangıcında, süresince ve varışta okunacak dualar.',
+    en: 'Supplications to be recited at the start of a journey, during it, and upon arrival.',
+  },
   dhikrItems: [
     {
       key: 'yolculuk-seferin-duasi',

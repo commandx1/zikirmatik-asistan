@@ -2,9 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const mevlidKandili = {
   key: 'mevlid-kandili-2026',
-  label: 'Mevlid Kandili 2026',
+  label: {
+    tr: 'Mevlid Kandili 2026',
+    en: 'Mawlid al-Nabi 2026',
+  },
   category: 'ibadet',
-  description: 'Mevlid Kandili\'ne ait özel zikirler ve dualar.',
+  description: {
+    tr: 'Mevlid Kandili\'ne ait özel zikirler ve dualar.',
+    en: 'Special dhikrs and supplications for Mawlid al-Nabi.',
+  },
   dhikrItems: [
     {
       key: keyMap.LA_HAVLE,
@@ -290,12 +296,17 @@ export const mevlidKandili = {
   ],
   specialDays: [
     {
-      name: 'Mevlid Kandili',
+      name: {
+        tr: 'Mevlid Kandili',
+        en: 'Mawlid al-Nabi',
+      },
       type: 'kandil',
       date: '2026-08-24',
       hijriDate: '11 Rebiülevvel 1448',
-      description:
-        'Peygamber Efendimizin doğumunu salavat, tevhid, istiğfar ve dua ile ihya etme gecesi.',
+      description: {
+        tr: 'Peygamber Efendimizin doğumunu salavat, tevhid, istiğfar ve dua ile ihya etme gecesi.',
+        en: 'The night on which the birth of our Prophet is commemorated and kept alive with salawat, tawhid, istighfar, and supplication.',
+      },
       eventKey: 'mevlid-kandili-2026',
       priority: 180,
       dhikrKeys: [

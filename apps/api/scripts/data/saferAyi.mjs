@@ -2,10 +2,15 @@ import { keyMap } from './keyMap.mjs';
 
 export const saferAyi = {
   key: 'safer-ayi-2026',
-  label: 'Safer Ayı 1448',
+  label: {
+    tr: 'Safer Ayı 1448',
+    en: 'Month of Safar 1448',
+  },
   category: 'ibadet',
-  description:
-    "Hicri takvimin 2. ayı Safer. İslam inancında zamanın kendi başına uğursuzluk taşıyamayacağı; her belânın yalnızca Allah'ın takdiriyle gerçekleşeceği esasına dayanarak, ibadet, zikir ve dua ile bu ayın ihya edilmesi tavsiye edilmiştir.",
+  description: {
+    tr: "Hicri takvimin 2. ayı Safer. İslam inancında zamanın kendi başına uğursuzluk taşıyamayacağı; her belânın yalnızca Allah'ın takdiriyle gerçekleşeceği esasına dayanarak, ibadet, zikir ve dua ile bu ayın ihya edilmesi tavsiye edilmiştir.",
+    en: "Safar is the second month of the Hijri calendar. In Islamic belief, time itself can bear no misfortune; every affliction comes to pass solely by the decree of Allah. Upon this principle, it is recommended to revive this month through worship, dhikr, and supplication.",
+  },
   dhikrItems: [
     {
       key: keyMap.SAFER_GIRISI_DUASI,
@@ -218,12 +223,17 @@ export const saferAyi = {
   ],
   specialDays: [
     {
-      name: 'Safer Ayı Girişi — İlk Gece',
+      name: {
+        tr: 'Safer Ayı Girişi — İlk Gece',
+        en: 'Beginning of the Month of Safar — First Night',
+      },
       type: 'özel gün',
       date: '2026-07-15',
       hijriDate: '1 Safer 1448',
-      description:
-        "Safer'e giriş gecesi: yatsi namazının ardından, vitirden önce 4 rekatlık nafile (1. Kafirun, 2. 11x İhlas, 3. Felak, 4. Nas) kılınır; akabinde 70x birleşik tesbih ve Safer girişi duası okunur. İlk 15 gün boyunca giriş duası günde 100x tekrarlanır.",
+      description: {
+        tr: "Safer'e giriş gecesi: yatsi namazının ardından, vitirden önce 4 rekatlık nafile (1. Kafirun, 2. 11x İhlas, 3. Felak, 4. Nas) kılınır; akabinde 70x birleşik tesbih ve Safer girişi duası okunur. İlk 15 gün boyunca giriş duası günde 100x tekrarlanır.",
+        en: "The night of entering Safar: after the Isha prayer and before the Witr, a four-rakat voluntary prayer is performed (1st: al-Kafirun, 2nd: 11x al-Ikhlas, 3rd: al-Falaq, 4th: an-Nas); thereafter 70x of the combined tasbih and the supplication for the entry of Safar are recited. Throughout the first 15 days, the entry supplication is repeated 100x each day.",
+      },
       eventKey: 'safer-ayi-2026',
       priority: 150,
       dhikrKeys: [
@@ -235,12 +245,17 @@ export const saferAyi = {
       ],
     },
     {
-      name: 'Safer İlk Çarşamba Gecesi',
+      name: {
+        tr: 'Safer İlk Çarşamba Gecesi',
+        en: 'First Wednesday Night of Safar',
+      },
       type: 'özel gün',
       date: '2026-07-15',
       hijriDate: '1 Safer 1448',
-      description:
-        "Safer'in ilk çarşamba gecesi teheccüd vaktinde 4 rekat kılınır: her rekatta Fatiha + 17x Kevser + 5x İhlas + 1x Felak + 1x Nas. 1448'de 1 Safer, çarşambaya denk gelmektedir.",
+      description: {
+        tr: "Safer'in ilk çarşamba gecesi teheccüd vaktinde 4 rekat kılınır: her rekatta Fatiha + 17x Kevser + 5x İhlas + 1x Felak + 1x Nas. 1448'de 1 Safer, çarşambaya denk gelmektedir.",
+        en: "On the first Wednesday night of Safar, a four-rakat prayer is performed at the time of Tahajjud: in each rakat al-Fatihah + 17x al-Kawthar + 5x al-Ikhlas + 1x al-Falaq + 1x an-Nas. In 1448, the 1st of Safar falls on a Wednesday.",
+      },
       eventKey: 'safer-ayi-2026',
       priority: 148,
       dhikrKeys: [
@@ -252,12 +267,17 @@ export const saferAyi = {
       ],
     },
     {
-      name: 'Safer Son Çarşamba Gecesi',
+      name: {
+        tr: 'Safer Son Çarşamba Gecesi',
+        en: 'Last Wednesday Night of Safar',
+      },
       type: 'özel gün',
       date: '2026-08-12',
       hijriDate: '29 Safer 1448',
-      description:
-        "Safer'in en çetin gecesi: teheccüd vaktinde 4 rekat namaz; ardından selam ayetleri gül suyu/misk karışımlı saf suya yazılarak şifa suyuna bırakılır; hane halkı şifa niyetiyle içer ve muhafaza duası okunur. Bismillah koruma duası 100x, Yâ Hâlik 100x, Sübbûhun Kuddûs 100x zikredilir.",
+      description: {
+        tr: "Safer'in en çetin gecesi: teheccüd vaktinde 4 rekat namaz; ardından selam ayetleri gül suyu/misk karışımlı saf suya yazılarak şifa suyuna bırakılır; hane halkı şifa niyetiyle içer ve muhafaza duası okunur. Bismillah koruma duası 100x, Yâ Hâlik 100x, Sübbûhun Kuddûs 100x zikredilir.",
+        en: "The most trying night of Safar: a four-rakat prayer is performed at the time of Tahajjud; thereafter the verses of peace (salam) are written upon pure water mixed with rose water and musk and left to become a water of healing; the household drinks it with the intention of healing, and the supplication of protection is recited. The Bismillah protection supplication is invoked 100x, Ya Khaliq 100x, and Subbuhun Quddus 100x.",
+      },
       eventKey: 'safer-ayi-2026',
       priority: 158,
       dhikrKeys: [

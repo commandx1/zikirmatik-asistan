@@ -2,9 +2,15 @@ import { keyMap } from './keyMap.mjs'
 
 export const zilhicceIlkOn = {
   key: 'zilhicce-ilk-10',
-  label: 'Zilhicce İlk 10 Gün 2026',
+  label: {
+    tr: 'Zilhicce İlk 10 Gün 2026',
+    en: 'First 10 Days of Dhu al-Hijjah 2026',
+  },
   category: 'ibadet',
-  description: 'Zilhicce\'nin ilk on gününe ait özel zikirler ve ibadetler.',
+  description: {
+    tr: 'Zilhicce\'nin ilk on gününe ait özel zikirler ve ibadetler.',
+    en: 'Special dhikrs and acts of worship pertaining to the first ten days of Dhu al-Hijjah.',
+  },
   dhikrItems: [
     {
       key: keyMap.VAHDEHU_LA,
@@ -235,11 +241,17 @@ export const zilhicceIlkOn = {
   ],
   specialDays: [
     {
-      name: '1 Zilhicce',
+      name: {
+        tr: '1 Zilhicce',
+        en: '1 Dhu al-Hijjah',
+      },
       type: 'özel gün',
       date: '2026-05-18',
       hijriDate: '1 Zilhicce 1447',
-      description: 'Niyet ve tevhid günü. Zikre güçlü bir başlangıç.',
+      description: {
+        tr: 'Niyet ve tevhid günü. Zikre güçlü bir başlangıç.',
+        en: 'A day of intention and tawhid. A strong beginning to dhikr.',
+      },
       eventKey: 'zilhicce-ilk-on-1447',
       dayIndex: 1,
       dayCount: 10,
@@ -247,11 +259,17 @@ export const zilhicceIlkOn = {
       dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.TEKBIR,keyMap.SALAVAT_SERIF],
     },
     {
-      name: '2 Zilhicce',
+      name: {
+        tr: '2 Zilhicce',
+        en: '2 Dhu al-Hijjah',
+      },
       type: 'özel gün',
       date: '2026-05-19',
       hijriDate: '2 Zilhicce 1447',
-      description: 'Samediyet ve teslimiyetin tefekkürü.',
+      description: {
+        tr: 'Samediyet ve teslimiyetin tefekkürü.',
+        en: "Contemplation of God's self-sufficiency (as-Samad) and submission.",
+      },
       eventKey: 'zilhicce-ilk-on-1447',
       dayIndex: 2,
       dayCount: 10,
@@ -259,11 +277,17 @@ export const zilhicceIlkOn = {
       dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.TEKBIR,keyMap.ISTIGFAR],
     },
     {
-      name: '3 Zilhicce',
+      name: {
+        tr: '3 Zilhicce',
+        en: '3 Dhu al-Hijjah',
+      },
       type: 'özel gün',
       date: '2026-05-20',
       hijriDate: '3 Zilhicce 1447',
-      description: 'Hayy olan Rabbe yöneliş ve tevekkül pratiği.',
+      description: {
+        tr: 'Hayy olan Rabbe yöneliş ve tevekkül pratiği.',
+        en: 'Turning to the Ever-Living Lord (al-Hayy) and the practice of trust in God.',
+      },
       eventKey: 'zilhicce-ilk-on-1447',
       dayIndex: 3,
       dayCount: 10,
@@ -271,11 +295,17 @@ export const zilhicceIlkOn = {
       dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.TEKBIR,keyMap.SALAVAT_SERIF],
     },
     {
-      name: '4 Zilhicce',
+      name: {
+        tr: '4 Zilhicce',
+        en: '4 Dhu al-Hijjah',
+      },
       type: 'özel gün',
       date: '2026-05-21',
       hijriDate: '4 Zilhicce 1447',
-      description: 'Hasbiye ile kalbi dünyalık endişeden arındırma.',
+      description: {
+        tr: 'Hasbiye ile kalbi dünyalık endişeden arındırma.',
+        en: 'Purifying the heart from worldly worries through the Hasbiya dhikr.',
+      },
       eventKey: 'zilhicce-ilk-on-1447',
       dayIndex: 4,
       dayCount: 10,
@@ -283,11 +313,17 @@ export const zilhicceIlkOn = {
       dhikrKeys: [keyMap.HASBIYE,keyMap.ISTIGFAR,keyMap.TEKBIR],
     },
     {
-      name: '5 Zilhicce',
+      name: {
+        tr: '5 Zilhicce',
+        en: '5 Dhu al-Hijjah',
+      },
       type: 'özel gün',
       date: '2026-05-22',
       hijriDate: '5 Zilhicce 1447',
-      description: 'Kapsamlı teslimiyet duası ve şükür bilinci.',
+      description: {
+        tr: 'Kapsamlı teslimiyet duası ve şükür bilinci.',
+        en: 'A comprehensive supplication of submission and consciousness of gratitude.',
+      },
       eventKey: 'zilhicce-ilk-on-1447',
       dayIndex: 5,
       dayCount: 10,
@@ -295,11 +331,17 @@ export const zilhicceIlkOn = {
       dhikrKeys: [keyMap.LEKEL_HAMD,keyMap.SALAVAT_SERIF,keyMap.TEKBIR],
     },
     {
-      name: '6 Zilhicce',
+      name: {
+        tr: '6 Zilhicce',
+        en: '6 Dhu al-Hijjah',
+      },
       type: 'özel gün',
       date: '2026-05-23',
       hijriDate: '6 Zilhicce 1447',
-      description: 'Tevhid tekrarları ile kalpte sebat oluşturma.',
+      description: {
+        tr: 'Tevhid tekrarları ile kalpte sebat oluşturma.',
+        en: 'Establishing steadfastness in the heart through repetitions of tawhid.',
+      },
       eventKey: 'zilhicce-ilk-on-1447',
       dayIndex: 6,
       dayCount: 10,
@@ -307,11 +349,17 @@ export const zilhicceIlkOn = {
       dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.ISTIGFAR],
     },
     {
-      name: '7 Zilhicce',
+      name: {
+        tr: '7 Zilhicce',
+        en: '7 Dhu al-Hijjah',
+      },
       type: 'özel gün',
       date: '2026-05-24',
       hijriDate: '7 Zilhicce 1447',
-      description: 'Tehlil ve hasbiye ile iç huzuru güçlendirme.',
+      description: {
+        tr: 'Tehlil ve hasbiye ile iç huzuru güçlendirme.',
+        en: 'Strengthening inner peace through tahlil and the Hasbiya dhikr.',
+      },
       eventKey: 'zilhicce-ilk-on-1447',
       dayIndex: 7,
       dayCount: 10,
@@ -319,11 +367,17 @@ export const zilhicceIlkOn = {
       dhikrKeys: [keyMap.VAHDEHU_LA,keyMap.HASBIYE,keyMap.SALAVAT_SERIF],
     },
     {
-      name: '8 Zilhicce',
+      name: {
+        tr: '8 Zilhicce',
+        en: '8 Dhu al-Hijjah',
+      },
       type: 'özel gün',
       date: '2026-05-25',
       hijriDate: '8 Zilhicce 1447',
-      description: 'Arefe hazırlığı: istiğfar, tekbir ve niyet tazeleme.',
+      description: {
+        tr: 'Arefe hazırlığı: istiğfar, tekbir ve niyet tazeleme.',
+        en: 'Preparation for the Day of Arafah: seeking forgiveness (istighfar), takbir, and renewing intention.',
+      },
       eventKey: 'zilhicce-ilk-on-1447',
       dayIndex: 8,
       dayCount: 10,

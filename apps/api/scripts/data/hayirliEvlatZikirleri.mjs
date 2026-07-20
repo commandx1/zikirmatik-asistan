@@ -1,9 +1,14 @@
 export const hayirliEvlatZikirleri = {
   key: 'hayirli-evlat-zikirleri',
-  label: 'Hayırlı Evlat Zikirleri',
+  label: {
+    tr: 'Hayırlı Evlat Zikirleri',
+    en: 'Dhikrs for Righteous Children',
+  },
   category: 'hayat',
-  description:
-    'Hayırlı evlat için dua etmeyi öğreten ve bu amaca özel zikirler.',
+  description: {
+    tr: 'Hayırlı evlat için dua etmeyi öğreten ve bu amaca özel zikirler.',
+    en: 'Dhikrs dedicated to this purpose that teach how to pray for righteous children.',
+  },
   dhikrItems: [
     {
       key: 'evlat-rabbi-la-tezerni',

@@ -1,8 +1,14 @@
 export const hastalıkVeŞifa = {
   key: 'hastalik-ve-sifa',
-  label: 'Hastalık ve Şifâ Duaları',
+  label: {
+    tr: 'Hastalık ve Şifâ Duaları',
+    en: 'Supplications for Illness and Healing',
+  },
   category: 'hayat',
-  description: 'Hastalık anında ve şifa için okunacak dualar.',
+  description: {
+    tr: 'Hastalık anında ve şifa için okunacak dualar.',
+    en: 'Supplications to be recited in times of illness and for healing.',
+  },
   dhikrItems: [
     {
       key: 'sifa-ezhibil-bese',
