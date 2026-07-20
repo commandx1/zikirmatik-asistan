@@ -3,7 +3,10 @@
     <item name="android:enforceNavigationBarContrast" tools:targetApi="29">true</item>
     <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     <item name="colorPrimary">@color/colorPrimary</item>
-    <item name="android:statusBarColor">#ffffff</item>
+    <!-- Edge-to-edge (Android 15+): do NOT set android:statusBarColor / android:navigationBarColor.
+         Setting them relies on Window.setStatusBarColor/setNavigationBarColor which are deprecated
+         on API 35 and ignored when the app draws edge-to-edge (edgeToEdgeEnabled=true).
+         Bar appearance (light/dark icons) is controlled from JS via expo-status-bar. -->
   </style>
   <style name="Theme.App.SplashScreen" parent="AppTheme">
     <item name="android:windowBackground">@drawable/ic_launcher_background</item>

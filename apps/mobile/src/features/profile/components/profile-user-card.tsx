@@ -1,5 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image } from "expo-image";
+import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 
@@ -40,7 +41,9 @@ export function ProfileUserCard({
             <Image
               source={{ uri: normalizedProfileImageUrl }}
               className="h-full w-full rounded-full"
-              resizeMode="cover"
+              contentFit="cover"
+              cachePolicy="memory-disk"
+              transition={200}
             />
           ) : (
             <>

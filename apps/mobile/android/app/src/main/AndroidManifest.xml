@@ -32,5 +32,15 @@
         <data android:scheme="exp+zikirmatik-rehber"/>
       </intent-filter>
     </activity>
+
+    <!-- Android 16 büyük ekran uyumu: com.google.android.gms:play-services-code-scanner
+         (ML Kit) transitively gelen bu activity'yi android:screenOrientation="portrait" ile
+         kilitliyor. Yön/boyut kısıtını kaldırmak için override ediyoruz. -->
+    <activity
+        android:name="com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity"
+        android:screenOrientation="fullUser"
+        android:resizeableActivity="true"
+        tools:replace="android:screenOrientation,android:resizeableActivity"
+        tools:node="merge" />
   </application>
 </manifest>
