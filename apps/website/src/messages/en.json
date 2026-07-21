@@ -1,0 +1,301 @@
+{
+  "meta": {
+    "siteName": "Zikirmatik Asistan AI",
+    "titleDefault": "Zikirmatik Asistan AI — Your Mindful Dhikr Companion",
+    "description": "Zikirmatik Asistan AI helps you track dhikr, build lasting habits, and stay connected to your daily worship with a calm, distraction-free counter and smart reminders.",
+    "titlePrivacy": "Privacy Policy — Zikirmatik Asistan AI",
+    "titleTerms": "Terms of Service — Zikirmatik Asistan AI",
+    "titleRefund": "Refund Policy — Zikirmatik Asistan AI"
+  },
+  "nav": {
+    "features": "Features",
+    "howItWorks": "How It Works",
+    "screenshots": "Screenshots",
+    "premium": "Premium",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "getOnPlay": "Get it on Google Play"
+  },
+  "hero": {
+    "eyebrow": "Zikirmatik Asistan AI",
+    "title": "A calm, focused companion for your daily dhikr",
+    "subtitle": "Count your dhikr with a beautifully simple counter, build consistent habits with gentle reminders, and keep your spiritual practice organized — all in one distraction-free app.",
+    "ctaPrimary": "Get it on Google Play",
+    "ctaSecondary": "See how it works",
+    "badge": "Android · Free to start"
+  },
+  "features": {
+    "title": "Everything you need for a consistent dhikr practice",
+    "subtitle": "Thoughtfully designed tools that keep your focus on remembrance, not on the app itself.",
+    "items": [
+      {
+        "title": "Elegant Dhikr Counter",
+        "description": "A clean, tactile counter with haptic feedback that lets you focus on your dhikr, not on the screen."
+      },
+      {
+        "title": "Custom Collections",
+        "description": "Organize your own dhikr sets and favorite collections so the ones you recite most are always within reach."
+      },
+      {
+        "title": "Daily & Special-Day Reminders",
+        "description": "Gentle notifications for daily targets and special occasions such as Kandil nights and blessed days keep your routine on track."
+      },
+      {
+        "title": "Streaks & Statistics",
+        "description": "Track streaks, totals and progress over time so you can see your consistency grow, day after day."
+      },
+      {
+        "title": "Personalization & Themes",
+        "description": "Choose the look, sounds and target counts that fit your routine, and make the app feel like your own."
+      },
+      {
+        "title": "Secure Cloud Sync (Google Sign-In)",
+        "description": "Sign in with Google to keep your collections, streaks and settings safely backed up and in sync across devices."
+      }
+    ]
+  },
+  "howItWorks": {
+    "title": "How Zikirmatik Asistan AI works",
+    "subtitle": "Get started in minutes and build a habit that lasts.",
+    "steps": [
+      {
+        "title": "Download & open",
+        "description": "Install Zikirmatik Asistan AI from Google Play and open the app — no complicated setup required."
+      },
+      {
+        "title": "Pick your dhikr",
+        "description": "Choose from ready-made dhikr and collections, or create your own with a target count."
+      },
+      {
+        "title": "Count mindfully",
+        "description": "Tap to count with smooth haptic feedback, and let gentle reminders help you stay consistent every day."
+      },
+      {
+        "title": "Track your progress",
+        "description": "Watch your streaks and statistics grow, and sign in with Google any time to keep everything safely synced."
+      }
+    ]
+  },
+  "screenshots": {
+    "title": "A closer look at the app",
+    "subtitle": "Simple, calm screens designed to keep your attention on your dhikr.",
+    "alt": "Zikirmatik Asistan AI app screenshot"
+  },
+  "premium": {
+    "title": "Zikirmatik Asistan Premium",
+    "subtitle": "Unlock deeper personalization and generous credit packages for AI-assisted features. See the Google Play listing for current pricing.",
+    "note": "For up-to-date pricing, please check the app's Google Play listing.",
+    "table": {
+      "headers": ["Feature", "Free", "Premium"],
+      "rows": [
+        ["Dhikr counter & collections", "Included", "Included"],
+        ["Daily & special-day reminders", "Included", "Included"],
+        ["Streaks & statistics", "Included", "Included"],
+        ["Google Sign-In cloud sync", "Included", "Included"],
+        ["AI Rehber credits", "1 free credit", "Credit packages: 3, 50, 10, 30 or 75"],
+        ["Advanced personalization", "Limited", "Full access"]
+      ]
+    },
+    "credits": {
+      "title": "AI Rehber credit packages",
+      "description": "Purchase the credit package that fits your needs directly from within the app.",
+      "items": ["1 free credit to try it out", "3 credits", "10 credits", "30 credits", "50 credits", "75 credits"]
+    },
+    "cta": "View plans on Google Play"
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Answers to the most common questions about Zikirmatik Asistan AI.",
+    "items": [
+      {
+        "question": "What is Zikirmatik Asistan AI?",
+        "answer": "Zikirmatik Asistan AI is a mindful dhikr counter and habit-building companion that helps you track, organize and stay consistent with your daily dhikr practice."
+      },
+      {
+        "question": "Is Zikirmatik Asistan AI free to use?",
+        "answer": "Yes. The core dhikr counter, collections, reminders, streaks and Google Sign-In sync are free to use. Optional Premium credit packages unlock the AI Rehber feature and additional personalization."
+      },
+      {
+        "question": "What is AI Rehber?",
+        "answer": "AI Rehber is an optional AI-assisted guidance feature. You start with 1 free credit, and additional credit packages (3, 10, 30, 50 or 75) can be purchased from within the app on Google Play."
+      },
+      {
+        "question": "Do I need an account to use the app?",
+        "answer": "No account is required to use the core features. Signing in with Google is optional and lets you securely back up and sync your collections, streaks and settings across devices."
+      },
+      {
+        "question": "What data does Zikirmatik Asistan AI collect?",
+        "answer": "We collect only the data necessary to provide the app's features, such as your dhikr collections, streaks and account information if you choose to sign in. See our Privacy Policy for full details."
+      },
+      {
+        "question": "Can I delete my account and data?",
+        "answer": "Yes. You can request deletion of your account and associated data at any time by contacting us at serhatbelen7.developer@gmail.com."
+      },
+      {
+        "question": "How do reminders and special-day notifications work?",
+        "answer": "You can set daily reminder times for your dhikr goals, and the app can also notify you about special days and Kandil nights so you never miss a meaningful occasion."
+      },
+      {
+        "question": "What is your refund policy for credit packages?",
+        "answer": "Credit package purchases are handled through Google Play and are subject to Google Play's billing policies. Please see our Refund Policy page for full details on how to request a refund."
+      },
+      {
+        "question": "How can I contact support?",
+        "answer": "You can reach our team any time at serhatbelen7.developer@gmail.com — we're happy to help with questions, feedback or issues."
+      }
+    ]
+  },
+  "contact": {
+    "title": "We'd love to hear from you",
+    "subtitle": "Questions, feedback or support requests — send us an email and we'll get back to you.",
+    "email": "serhatbelen7.developer@gmail.com",
+    "copy": "Copy email",
+    "copied": "Copied!",
+    "mailtoLabel": "Email us"
+  },
+  "footer": {
+    "tagline": "A calm, focused companion for your daily dhikr.",
+    "product": "Product",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "refund": "Refund Policy",
+    "language": "Language",
+    "rights": "All rights reserved.",
+    "getOnPlay": "Get it on Google Play"
+  },
+  "legal": {
+    "lastUpdated": "Last updated: July 22, 2026",
+    "backHome": "Back to home"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "intro": "This Privacy Policy explains how Zikirmatik Asistan AI (\"we\", \"us\", \"our app\") collects, uses, discloses and protects your information when you use our mobile application.",
+    "sections": [
+      {
+        "heading": "1. Information We Collect",
+        "body": "We collect information you provide directly, such as your dhikr collections, custom targets, preferences and, if you choose to sign in with Google, basic account information (name, email address and profile identifier) provided by Google Sign-In. We also collect usage information such as streaks, counts and app settings needed to provide the app's features, and technical information such as device type, operating system version and crash diagnostics to keep the app reliable."
+      },
+      {
+        "heading": "2. How We Use Your Information",
+        "body": "We use the information we collect to operate and improve the app, to securely back up and sync your collections, streaks and settings across your devices when you sign in with Google, to send you the reminders and notifications you configure (including daily targets and special-day/Kandil notifications), to process optional Premium credit purchases through Google Play, and to provide customer support when you contact us."
+      },
+      {
+        "heading": "3. Google Sign-In",
+        "body": "If you choose to sign in with Google, we receive limited profile information from Google (such as your name, email address and profile identifier) solely to create and secure your account and to sync your data across devices. We do not access your Google password, and you may revoke this access at any time from your Google account settings."
+      },
+      {
+        "heading": "4. Data Storage and Security",
+        "body": "Your data is stored using industry-standard security practices, including encrypted connections in transit. We retain your account data for as long as your account is active or as needed to provide the app's features, and we take reasonable technical and organizational measures to protect it against unauthorized access, alteration or loss."
+      },
+      {
+        "heading": "5. Data Sharing",
+        "body": "We do not sell your personal information. We may share limited information with trusted service providers who help us operate the app (such as cloud hosting, authentication and payment processing through Google Play), and only to the extent necessary for them to perform those services, or where required by law."
+      },
+      {
+        "heading": "6. Notifications",
+        "body": "The app may send local and push notifications for daily dhikr reminders and special-day/Kandil occasions that you configure. You can manage or disable notifications at any time from your device settings."
+      },
+      {
+        "heading": "7. Your Rights and Choices",
+        "body": "You may access, update or delete the dhikr collections and settings stored in the app at any time. You may request deletion of your account and associated data, or ask us questions about how your information is handled, by contacting us at serhatbelen7.developer@gmail.com. We will respond to and process such requests within a reasonable time."
+      },
+      {
+        "heading": "8. Children's Privacy",
+        "body": "Zikirmatik Asistan AI is not directed at children under the age of 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us so we can remove it."
+      },
+      {
+        "heading": "9. Changes to This Policy",
+        "body": "We may update this Privacy Policy from time to time to reflect changes to the app or applicable law. We will update the \"Last updated\" date above when we do, and encourage you to review this page periodically."
+      },
+      {
+        "heading": "10. Contact Us",
+        "body": "If you have any questions about this Privacy Policy or how your data is handled, please contact us at serhatbelen7.developer@gmail.com."
+      }
+    ]
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "intro": "These Terms of Service (\"Terms\") govern your access to and use of the Zikirmatik Asistan AI mobile application (the \"App\"). By downloading, accessing or using the App, you agree to be bound by these Terms.",
+    "sections": [
+      {
+        "heading": "1. Acceptance of Terms",
+        "body": "By installing or using Zikirmatik Asistan AI, you confirm that you have read, understood and agree to these Terms. If you do not agree, please do not use the App."
+      },
+      {
+        "heading": "2. Description of Service",
+        "body": "Zikirmatik Asistan AI provides a dhikr counter, custom collections, daily and special-day reminders, streaks and statistics, optional Google Sign-In cloud sync, and an optional AI Rehber feature that uses purchasable credit packages."
+      },
+      {
+        "heading": "3. Accounts",
+        "body": "Signing in with Google is optional. If you choose to sign in, you are responsible for maintaining the confidentiality of your Google account and for all activity that occurs through your account. You may sign out or revoke access at any time."
+      },
+      {
+        "heading": "4. Premium Credits and Purchases",
+        "body": "The App offers optional Premium credit packages (including options of 3, 10, 30, 50 or 75 credits, in addition to 1 free credit) that unlock the AI Rehber feature. All purchases are processed through Google Play and are subject to Google Play's payment terms and policies. Please see our Refund Policy for details on requesting refunds."
+      },
+      {
+        "heading": "5. Acceptable Use",
+        "body": "You agree to use the App only for lawful purposes and in accordance with these Terms. You may not reverse engineer, decompile, or attempt to extract the source code of the App, except where permitted by applicable law, and you may not use the App in any way that could disable, overburden or impair its functioning."
+      },
+      {
+        "heading": "6. Intellectual Property",
+        "body": "The App, including its design, content, branding and features, is owned by us or our licensors and is protected by applicable intellectual property laws. These Terms do not grant you any ownership rights in the App."
+      },
+      {
+        "heading": "7. Reminders and Notifications",
+        "body": "Notifications and reminders provided by the App (including daily targets and special-day/Kandil notifications) are provided as a convenience. We do not guarantee delivery at any specific time, as this may depend on your device settings, operating system and network conditions."
+      },
+      {
+        "heading": "8. Disclaimer of Warranties",
+        "body": "The App is provided \"as is\" and \"as available\" without warranties of any kind, whether express or implied. We do not warrant that the App will be uninterrupted, error-free, or fully accurate at all times."
+      },
+      {
+        "heading": "9. Limitation of Liability",
+        "body": "To the maximum extent permitted by law, we shall not be liable for any indirect, incidental or consequential damages arising from your use of, or inability to use, the App."
+      },
+      {
+        "heading": "10. Changes to the Terms",
+        "body": "We may update these Terms from time to time. Continued use of the App after changes take effect constitutes acceptance of the revised Terms. We will update the \"Last updated\" date whenever changes are made."
+      },
+      {
+        "heading": "11. Termination",
+        "body": "We may suspend or terminate your access to the App if you violate these Terms. You may stop using the App and delete your account at any time by contacting us."
+      },
+      {
+        "heading": "12. Contact Us",
+        "body": "If you have any questions about these Terms, please contact us at serhatbelen7.developer@gmail.com."
+      }
+    ]
+  },
+  "refund": {
+    "title": "Refund Policy",
+    "intro": "This Refund Policy explains how refund requests for optional Premium credit purchases made within Zikirmatik Asistan AI are handled.",
+    "sections": [
+      {
+        "heading": "1. Purchases Through Google Play",
+        "body": "All Premium credit package purchases (3, 10, 30, 50 or 75 credits) are processed and billed through Google Play. As a result, refunds are subject to Google Play's own refund policies and timeframes, in addition to the guidance below."
+      },
+      {
+        "heading": "2. How to Request a Refund",
+        "body": "To request a refund, you may (a) use Google Play's own refund request process from your Google Play purchase history, which is the fastest method for eligible recent purchases, or (b) contact us directly at serhatbelen7.developer@gmail.com with your purchase details (order ID, purchase date and the credit package purchased) so we can assist you or forward your request to Google Play as needed."
+      },
+      {
+        "heading": "3. Eligibility",
+        "body": "Refund eligibility generally depends on how recently the purchase was made and whether the purchased credits have already been used. We reserve the right to evaluate refund requests on a case-by-case basis, consistent with Google Play's policies and applicable consumer protection laws."
+      },
+      {
+        "heading": "4. Unused Credits",
+        "body": "Purchased AI Rehber credits that have not yet been used are generally more likely to be eligible for a refund than credits that have already been consumed. Please contact us as soon as possible if you believe a purchase was made in error."
+      },
+      {
+        "heading": "5. Processing Time",
+        "body": "Refunds processed directly through Google Play typically follow Google's standard processing timeframes. Refund requests sent to us directly will be acknowledged promptly and, where applicable, forwarded for processing as soon as possible."
+      },
+      {
+        "heading": "6. Contact Us",
+        "body": "For any questions about this Refund Policy or to start a refund request, please contact us at serhatbelen7.developer@gmail.com."
+      }
+    ]
+  }
+}

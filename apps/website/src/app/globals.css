@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white text-ink antialiased;
+}
+
+.prose-legal h2 {
+  @apply mt-10 mb-3 text-xl font-semibold text-ink;
+}
+
+.prose-legal h3 {
+  @apply mt-6 mb-2 text-lg font-semibold text-ink;
+}
+
+.prose-legal p,
+.prose-legal li {
+  @apply text-base leading-7 text-ink/80;
+}
+
+.prose-legal ul {
+  @apply list-disc space-y-2 pl-6;
+}
+
+.prose-legal ol {
+  @apply list-decimal space-y-2 pl-6;
+}

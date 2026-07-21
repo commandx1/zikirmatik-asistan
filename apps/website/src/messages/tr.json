@@ -1,0 +1,302 @@
+{
+  "meta": {
+    "siteName": "Zikirmatik Asistan AI",
+    "titleDefault": "Zikirmatik Asistan AI — Zikirlerinizin Sadık Yardımcısı",
+    "description": "Zikirmatik Asistan AI; sakin, dikkat dağıtmayan bir sayaç ve akıllı hatırlatıcılarla zikirlerinizi takip etmenize ve kalıcı alışkanlıklar oluşturmanıza yardımcı olur.",
+    "titlePrivacy": "Gizlilik Politikası — Zikirmatik Asistan AI",
+    "titleTerms": "Kullanım Şartları — Zikirmatik Asistan AI",
+    "titleRefund": "İade Politikası — Zikirmatik Asistan AI"
+  },
+  "nav": {
+    "features": "Özellikler",
+    "howItWorks": "Nasıl Çalışır",
+    "screenshots": "Ekran Görüntüleri",
+    "premium": "Premium",
+    "faq": "SSS",
+    "contact": "İletişim",
+    "getOnPlay": "Google Play'den İndirin"
+  },
+  "hero": {
+    "eyebrow": "Zikirmatik Asistan AI",
+    "title": "Günlük zikirleriniz için sakin ve odaklı bir yardımcı",
+    "subtitle": "Şık ve sade bir sayaçla zikirlerinizi sayın, nazik hatırlatıcılarla düzenli bir alışkanlık oluşturun ve manevi pratiğinizi tek, dikkat dağıtmayan bir uygulamada düzenli tutun.",
+    "ctaPrimary": "Google Play'den İndirin",
+    "ctaSecondary": "Nasıl çalıştığını görün",
+    "badge": "Android · Ücretsiz başlayın"
+  },
+  "features": {
+    "title": "Düzenli bir zikir pratiği için ihtiyacınız olan her şey",
+    "subtitle": "Odağınızı uygulamada değil, zikirde tutacak şekilde özenle tasarlandı.",
+    "items": [
+      {
+        "title": "Şık Zikir Sayacı",
+        "description": "Titreşimli geri bildirimli, sade ve dokunsal bir sayaç ile ekrana değil zikrinize odaklanın."
+      },
+      {
+        "title": "Özel Koleksiyonlar",
+        "description": "Kendi zikir setlerinizi ve favori koleksiyonlarınızı oluşturun; en çok çektikleriniz her zaman elinizin altında olsun."
+      },
+      {
+        "title": "Günlük ve Özel Gün Hatırlatıcıları",
+        "description": "Günlük hedefleriniz ve kandil geceleri gibi özel günler için nazik bildirimlerle rutininizi sürdürün."
+      },
+      {
+        "title": "Seri ve İstatistikler",
+        "description": "Serilerinizi, toplamlarınızı ve zaman içindeki ilerlemenizi takip ederek düzeninizin nasıl geliştiğini görün."
+      },
+      {
+        "title": "Kişiselleştirme ve Temalar",
+        "description": "Rutininize uygun görünüm, ses ve hedef sayıları seçin; uygulamayı tamamen kendinize ait hissettirin."
+      },
+      {
+        "title": "Güvenli Bulut Senkronizasyonu (Google ile Giriş)",
+        "description": "Google ile giriş yaparak koleksiyonlarınızı, serilerinizi ve ayarlarınızı güvenle yedekleyin ve cihazlar arasında senkronize edin."
+      }
+    ]
+  },
+  "howItWorks": {
+    "title": "Zikirmatik Asistan AI nasıl çalışır",
+    "subtitle": "Dakikalar içinde başlayın ve kalıcı bir alışkanlık oluşturun.",
+    "steps": [
+      {
+        "title": "İndirin ve açın",
+        "description": "Zikirmatik Asistan AI'yı Google Play'den yükleyin ve uygulamayı açın — karmaşık bir kurulum gerekmez."
+      },
+      {
+        "title": "Zikrinizi seçin",
+        "description": "Hazır zikir ve koleksiyonlardan seçin veya hedef sayısı belirleyerek kendi zikrinizi oluşturun."
+      },
+      {
+        "title": "Bilinçli şekilde sayın",
+        "description": "Yumuşak titreşim geri bildirimiyle dokunarak sayın ve nazik hatırlatıcılarla her gün düzenli kalın."
+      },
+      {
+        "title": "İlerlemenizi takip edin",
+        "description": "Serilerinizin ve istatistiklerinizin gelişimini izleyin; her şeyin güvenle senkronize kalması için istediğiniz zaman Google ile giriş yapın."
+      }
+    ]
+  },
+  "screenshots": {
+    "title": "Uygulamaya yakından bakış",
+    "subtitle": "Dikkatinizi zikrinizde tutmak için tasarlanmış sade ve sakin ekranlar.",
+    "alt": "Zikirmatik Asistan AI uygulama ekran görüntüsü"
+  },
+  "premium": {
+    "title": "Zikirmatik Asistan Premium",
+    "subtitle": "Daha derin kişiselleştirmenin ve yapay zekâ destekli özellikler için cömert kredi paketlerinin kilidini açın. Güncel fiyat için Google Play sayfasına bakın.",
+    "note": "Güncel fiyat bilgisi için lütfen uygulamanın Google Play sayfasını kontrol edin.",
+    "table": {
+      "headers": ["Özellik", "Ücretsiz", "Premium"],
+      "rows": [
+        ["Zikir sayacı ve koleksiyonlar", "Dahil", "Dahil"],
+        ["Günlük ve özel gün hatırlatıcıları", "Dahil", "Dahil"],
+        ["Seri ve istatistikler", "Dahil", "Dahil"],
+        ["Google ile giriş bulut senkronizasyonu", "Dahil", "Dahil"],
+        ["AI Rehber kredisi", "1 ücretsiz kredi", "Kredi paketleri: 3, 50, 10, 30 veya 75"],
+        ["Gelişmiş kişiselleştirme", "Sınırlı", "Tam erişim"]
+      ]
+    },
+    "credits": {
+      "title": "AI Rehber kredi paketleri",
+      "description": "İhtiyacınıza uygun kredi paketini doğrudan uygulama içinden satın alabilirsiniz.",
+      "items": ["Denemek için 1 ücretsiz kredi", "3 kredi", "10 kredi", "30 kredi", "50 kredi", "75 kredi"]
+    },
+    "cta": "Google Play'de planları görüntüleyin"
+  },
+  "faq": {
+    "title": "Sıkça sorulan sorular",
+    "subtitle": "Zikirmatik Asistan AI hakkında en çok merak edilen sorular.",
+    "items": [
+      {
+        "question": "Zikirmatik Asistan AI nedir?",
+        "answer": "Zikirmatik Asistan AI; günlük zikir pratiğinizi takip etmenize, düzenlemenize ve sürdürmenize yardımcı olan bilinçli bir zikir sayacı ve alışkanlık yardımcısıdır."
+      },
+      {
+        "question": "Zikirmatik Asistan AI ücretsiz mi?",
+        "answer": "Evet. Temel zikir sayacı, koleksiyonlar, hatırlatıcılar, seriler ve Google ile giriş senkronizasyonu ücretsizdir. İsteğe bağlı Premium kredi paketleri AI Rehber özelliğinin ve ek kişiselleştirmenin kilidini açar."
+      },
+      {
+        "question": "AI Rehber nedir?",
+        "answer": "AI Rehber, isteğe bağlı yapay zekâ destekli bir rehberlik özelliğidir. 1 ücretsiz krediyle başlarsınız; ek kredi paketleri (3, 10, 30, 50 veya 75) uygulama içinden Google Play üzerinden satın alınabilir."
+      },
+      {
+        "question": "Uygulamayı kullanmak için hesap gerekli mi?",
+        "answer": "Temel özellikleri kullanmak için hesap gerekmez. Google ile giriş yapmak isteğe bağlıdır ve koleksiyonlarınızı, serilerinizi ve ayarlarınızı cihazlar arasında güvenle yedekleyip senkronize etmenizi sağlar."
+      },
+      {
+        "question": "Zikirmatik Asistan AI hangi verileri toplar?",
+        "answer": "Yalnızca uygulamanın özelliklerini sağlamak için gerekli verileri toplarız: zikir koleksiyonlarınız, serileriniz ve giriş yapmayı tercih ederseniz hesap bilgileriniz. Ayrıntılar için Gizlilik Politikamıza bakın."
+      },
+      {
+        "question": "Hesabımı ve verilerimi silebilir miyim?",
+        "answer": "Evet. serhatbelen7.developer@gmail.com adresinden bize ulaşarak istediğiniz zaman hesabınızın ve ilişkili verilerinizin silinmesini talep edebilirsiniz."
+      },
+      {
+        "question": "Hatırlatıcılar ve özel gün bildirimleri nasıl çalışır?",
+        "answer": "Zikir hedefleriniz için günlük hatırlatma saatleri belirleyebilirsiniz; uygulama ayrıca kandil geceleri gibi özel günler için de sizi bilgilendirebilir, böylece anlamlı bir günü kaçırmazsınız."
+      },
+      {
+        "question": "Kredi paketleri için iade politikanız nedir?",
+        "answer": "Kredi paketi satın alımları Google Play üzerinden işlenir ve Google Play'in faturalandırma politikalarına tabidir. İade talebinde nasıl bulunacağınıza dair ayrıntılar için İade Politikası sayfamıza bakın."
+      },
+      {
+        "question": "Destek ekibine nasıl ulaşabilirim?",
+        "answer": "serhatbelen7.developer@gmail.com adresinden bize her zaman ulaşabilirsiniz — sorularınız, geri bildirimleriniz veya sorunlarınız için memnuniyetle yardımcı oluruz."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Sizden haber almak isteriz",
+    "subtitle": "Sorularınız, geri bildirimleriniz veya destek talepleriniz için bize e-posta gönderin, size dönüş yapalım.",
+    "email": "serhatbelen7.developer@gmail.com",
+    "copy": "E-postayı kopyala",
+    "copied": "Kopyalandı!",
+    "mailtoLabel": "Bize e-posta gönderin"
+  },
+  "footer": {
+    "tagline": "Günlük zikirleriniz için sakin ve odaklı bir yardımcı.",
+    "product": "Ürün",
+    "legal": "Yasal",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Şartları",
+    "refund": "İade Politikası",
+    "language": "Dil",
+    "rights": "Tüm hakları saklıdır.",
+    "getOnPlay": "Google Play'den İndirin"
+  },
+  "legal": {
+    "lastUpdated": "Son güncelleme: 22 Temmuz 2026",
+    "backHome": "Ana sayfaya dön"
+  },
+  "privacy": {
+    "title": "Gizlilik Politikası",
+    "intro": "Bu Gizlilik Politikası, Zikirmatik Asistan AI (\"biz\", \"uygulamamız\") mobil uygulamasını kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı, açıkladığımızı ve koruduğumuzu açıklar.",
+    "sections": [
+      {
+        "heading": "1. Topladığımız Bilgiler",
+        "body": "Zikir koleksiyonlarınız, özel hedefleriniz, tercihleriniz gibi doğrudan sağladığınız bilgileri ve Google ile giriş yapmayı tercih ederseniz Google Sign-In tarafından sağlanan temel hesap bilgilerini (ad, e-posta adresi ve profil tanımlayıcısı) toplarız. Ayrıca uygulamanın özelliklerini sunmak için gerekli olan seriler, sayımlar ve uygulama ayarları gibi kullanım bilgilerini, uygulamayı güvenilir tutmak için cihaz türü, işletim sistemi sürümü ve çökme teşhisleri gibi teknik bilgileri de topluyoruz."
+      },
+      {
+        "heading": "2. Bilgilerinizi Nasıl Kullanıyoruz",
+        "body": "Topladığımız bilgileri uygulamayı işletmek ve geliştirmek, Google ile giriş yaptığınızda koleksiyonlarınızı, serilerinizi ve ayarlarınızı cihazlarınız arasında güvenle yedeklemek ve senkronize etmek, yapılandırdığınız hatırlatıcı ve bildirimleri (günlük hedefler ve özel gün/kandil bildirimleri dahil) göndermek, isteğe bağlı Premium kredi satın alımlarını Google Play üzerinden işlemek ve bizimle iletişime geçtiğinizde müşteri desteği sağlamak için kullanırız."
+      },
+      {
+        "heading": "3. Google ile Giriş",
+        "body": "Google ile giriş yapmayı tercih ederseniz, hesabınızı oluşturmak, güvence altına almak ve verilerinizi cihazlar arasında senkronize etmek amacıyla Google'dan sınırlı profil bilgisi (ad, e-posta adresi ve profil tanımlayıcısı gibi) alırız. Google şifrenize erişimimiz yoktur ve bu erişimi istediğiniz zaman Google hesap ayarlarınızdan iptal edebilirsiniz."
+      },
+      {
+        "heading": "4. Veri Depolama ve Güvenlik",
+        "body": "Verileriniz, aktarım sırasında şifreleme dahil olmak üzere sektör standardı güvenlik uygulamaları kullanılarak saklanır. Hesap verilerinizi, hesabınız aktif olduğu veya uygulamanın özelliklerini sağlamak için gerekli olduğu sürece saklarız ve yetkisiz erişime, değiştirilmeye veya kayba karşı korumak için makul teknik ve organizasyonel önlemler alırız."
+      },
+      {
+        "heading": "5. Veri Paylaşımı",
+        "body": "Kişisel bilgilerinizi satmayız. Uygulamayı işletmemize yardımcı olan güvenilir hizmet sağlayıcılarla (bulut barındırma, kimlik doğrulama ve Google Play üzerinden ödeme işleme gibi) yalnızca hizmetlerini yerine getirmeleri için gerekli ölçüde veya yasalarca gerekli kılındığında sınırlı bilgi paylaşabiliriz."
+      },
+      {
+        "heading": "6. Bildirimler",
+        "body": "Uygulama, yapılandırdığınız günlük zikir hatırlatıcıları ve özel gün/kandil bildirimleri için yerel ve push bildirimleri gönderebilir. Bildirimleri istediğiniz zaman cihaz ayarlarınızdan yönetebilir veya kapatabilirsiniz."
+      },
+      {
+        "heading": "7. Haklarınız ve Seçenekleriniz",
+        "body": "Uygulamada saklanan zikir koleksiyonlarınıza ve ayarlarınıza istediğiniz zaman erişebilir, bunları güncelleyebilir veya silebilirsiniz. serhatbelen7.developer@gmail.com adresinden bize ulaşarak hesabınızın ve ilişkili verilerinizin silinmesini talep edebilir veya verilerinizin nasıl işlendiği hakkında sorular sorabilirsiniz. Bu tür talepleri makul bir süre içinde yanıtlayıp işleme alacağız."
+      },
+      {
+        "heading": "8. Çocukların Gizliliği",
+        "body": "Zikirmatik Asistan AI, 13 yaşın altındaki çocuklara yönelik değildir ve bilerek çocuklardan kişisel bilgi toplamayız. Bir çocuğun bize kişisel bilgi sağladığını düşünüyorsanız, bu bilgiyi kaldırabilmemiz için lütfen bizimle iletişime geçin."
+      },
+      {
+        "heading": "9. Bu Politikadaki Değişiklikler",
+        "body": "Uygulamadaki veya yürürlükteki mevzuattaki değişiklikleri yansıtmak için bu Gizlilik Politikasını zaman zaman güncelleyebiliriz. Değişiklik yaptığımızda yukarıdaki \"Son güncelleme\" tarihini güncelleriz ve bu sayfayı periyodik olarak gözden geçirmenizi öneririz."
+      },
+      {
+        "heading": "10. Bize Ulaşın",
+        "body": "Bu Gizlilik Politikası veya verilerinizin nasıl işlendiği hakkında sorularınız varsa lütfen serhatbelen7.developer@gmail.com adresinden bize ulaşın."
+      }
+    ]
+  },
+  "terms": {
+    "title": "Kullanım Şartları",
+    "intro": "Bu Kullanım Şartları (\"Şartlar\"), Zikirmatik Asistan AI mobil uygulamasına (\"Uygulama\") erişiminizi ve kullanımınızı düzenler. Uygulamayı indirerek, erişerek veya kullanarak bu Şartlara bağlı kalmayı kabul edersiniz."
+    ,
+    "sections": [
+      {
+        "heading": "1. Şartların Kabulü",
+        "body": "Zikirmatik Asistan AI'yı yükleyerek veya kullanarak, bu Şartları okuduğunuzu, anladığınızı ve kabul ettiğinizi onaylarsınız. Kabul etmiyorsanız, lütfen Uygulamayı kullanmayın."
+      },
+      {
+        "heading": "2. Hizmetin Tanımı",
+        "body": "Zikirmatik Asistan AI; bir zikir sayacı, özel koleksiyonlar, günlük ve özel gün hatırlatıcıları, seri ve istatistikler, isteğe bağlı Google ile giriş bulut senkronizasyonu ve satın alınabilir kredi paketleri kullanan isteğe bağlı bir AI Rehber özelliği sunar."
+      },
+      {
+        "heading": "3. Hesaplar",
+        "body": "Google ile giriş yapmak isteğe bağlıdır. Giriş yapmayı tercih ederseniz, Google hesabınızın gizliliğini korumaktan ve hesabınız üzerinden gerçekleşen tüm etkinliklerden siz sorumlusunuz. İstediğiniz zaman çıkış yapabilir veya erişimi iptal edebilirsiniz."
+      },
+      {
+        "heading": "4. Premium Krediler ve Satın Alımlar",
+        "body": "Uygulama, AI Rehber özelliğinin kilidini açan isteğe bağlı Premium kredi paketleri sunar (1 ücretsiz kredinin yanı sıra 3, 10, 30, 50 veya 75 kredi seçenekleri dahil). Tüm satın alımlar Google Play üzerinden işlenir ve Google Play'in ödeme şartlarına ve politikalarına tabidir. İade talebinde bulunma hakkında ayrıntılar için İade Politikamıza bakın."
+      },
+      {
+        "heading": "5. Kabul Edilebilir Kullanım",
+        "body": "Uygulamayı yalnızca yasal amaçlarla ve bu Şartlara uygun şekilde kullanmayı kabul edersiniz. Uygulanabilir mevzuatın izin verdiği durumlar dışında Uygulamanın kaynak kodunu tersine mühendislik yapamaz, derleyemez veya çıkaramazsınız ve Uygulamanın işlevselliğini devre dışı bırakabilecek, aşırı yükleyebilecek veya bozabilecek şekilde kullanamazsınız."
+      },
+      {
+        "heading": "6. Fikri Mülkiyet",
+        "body": "Tasarımı, içeriği, markası ve özellikleri dahil olmak üzere Uygulama, bize veya lisans verenlerimize aittir ve geçerli fikri mülkiyet yasalarıyla korunmaktadır. Bu Şartlar size Uygulama üzerinde herhangi bir mülkiyet hakkı vermez."
+      },
+      {
+        "heading": "7. Hatırlatıcılar ve Bildirimler",
+        "body": "Uygulama tarafından sağlanan bildirimler ve hatırlatıcılar (günlük hedefler ve özel gün/kandil bildirimleri dahil) bir kolaylık olarak sunulur. Cihaz ayarlarınıza, işletim sisteminize ve ağ koşullarınıza bağlı olabileceğinden, belirli bir zamanda teslim edileceğini garanti etmeyiz."
+      },
+      {
+        "heading": "8. Garanti Reddi",
+        "body": "Uygulama, açık veya zımni herhangi bir garanti olmaksızın \"olduğu gibi\" ve \"mevcut haliyle\" sunulmaktadır. Uygulamanın kesintisiz, hatasız veya her zaman tam olarak doğru olacağını garanti etmiyoruz."
+      },
+      {
+        "heading": "9. Sorumluluğun Sınırlandırılması",
+        "body": "Yasaların izin verdiği azami ölçüde, Uygulamayı kullanımınızdan veya kullanamamanızdan kaynaklanan dolaylı, arızi veya sonuç niteliğindeki zararlardan sorumlu olmayacağız."
+      },
+      {
+        "heading": "10. Şartlardaki Değişiklikler",
+        "body": "Bu Şartları zaman zaman güncelleyebiliriz. Değişiklikler yürürlüğe girdikten sonra Uygulamayı kullanmaya devam etmeniz, güncellenmiş Şartları kabul ettiğiniz anlamına gelir. Değişiklik yapıldığında \"Son güncelleme\" tarihini güncelleriz."
+      },
+      {
+        "heading": "11. Fesih",
+        "body": "Bu Şartları ihlal etmeniz durumunda Uygulamaya erişiminizi askıya alabilir veya sonlandırabiliriz. İstediğiniz zaman bizimle iletişime geçerek Uygulamayı kullanmayı bırakabilir ve hesabınızı silebilirsiniz."
+      },
+      {
+        "heading": "12. Bize Ulaşın",
+        "body": "Bu Şartlar hakkında sorularınız varsa lütfen serhatbelen7.developer@gmail.com adresinden bize ulaşın."
+      }
+    ]
+  },
+  "refund": {
+    "title": "İade Politikası",
+    "intro": "Bu İade Politikası, Zikirmatik Asistan AI içinde yapılan isteğe bağlı Premium kredi satın alımları için iade taleplerinin nasıl ele alındığını açıklar.",
+    "sections": [
+      {
+        "heading": "1. Google Play Üzerinden Satın Alımlar",
+        "body": "Tüm Premium kredi paketi satın alımları (3, 10, 30, 50 veya 75 kredi) Google Play üzerinden işlenir ve faturalandırılır. Bu nedenle iadeler, aşağıdaki rehberliğe ek olarak Google Play'in kendi iade politikalarına ve zaman çizelgelerine tabidir."
+      },
+      {
+        "heading": "2. İade Talebinde Nasıl Bulunulur",
+        "body": "İade talep etmek için (a) uygun yakın tarihli satın alımlar için en hızlı yöntem olan Google Play satın alma geçmişinizden Google Play'in kendi iade talep sürecini kullanabilir veya (b) size yardımcı olabilmemiz ya da talebinizi gerektiğinde Google Play'e iletebilmemiz için satın alma bilgilerinizle (sipariş kimliği, satın alma tarihi ve satın alınan kredi paketi) doğrudan serhatbelen7.developer@gmail.com adresinden bizimle iletişime geçebilirsiniz."
+      },
+      {
+        "heading": "3. Uygunluk",
+        "body": "İade uygunluğu genellikle satın alımın ne kadar yakın zamanda yapıldığına ve satın alınan kredilerin daha önce kullanılıp kullanılmadığına bağlıdır. İade taleplerini, Google Play'in politikaları ve geçerli tüketici koruma yasalarıyla tutarlı şekilde, duruma göre değerlendirme hakkını saklı tutarız."
+      },
+      {
+        "heading": "4. Kullanılmamış Krediler",
+        "body": "Henüz kullanılmamış satın alınmış AI Rehber kredileri, genellikle zaten tüketilmiş kredilere göre iade için daha uygun kabul edilir. Bir satın alımın hatalı yapıldığını düşünüyorsanız lütfen en kısa sürede bizimle iletişime geçin."
+      },
+      {
+        "heading": "5. İşlem Süresi",
+        "body": "Doğrudan Google Play üzerinden işlenen iadeler genellikle Google'ın standart işlem sürelerini takip eder. Doğrudan bize gönderilen iade talepleri hızla yanıtlanır ve uygun olduğunda işleme alınmak üzere en kısa sürede iletilir."
+      },
+      {
+        "heading": "6. Bize Ulaşın",
+        "body": "Bu İade Politikası hakkında sorularınız varsa veya bir iade talebi başlatmak istiyorsanız lütfen serhatbelen7.developer@gmail.com adresinden bize ulaşın."
+      }
+    ]
+  }
+}
