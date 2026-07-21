@@ -32,8 +32,8 @@ export const sabanAyi = {
         en: "This dhikr is recommended to be recited 100 times each day during the first ten days of the month of Sha'ban, inviting the manifestation of the divine name al-Latif. Al-Latif is one of the beautiful names of Allah, denoting One who is subtly and gently kind to His creation, reaching goodness to His servants through hidden means that they cannot perceive. Dedicating the first ten days to this dhikr softens hardness of the heart, brings tranquility to the soul, and draws the servant nearer to divine mercy. The Prophet (peace be upon him) accorded special importance to Sha'ban, honoring it with additional fasting and increased worship. Those who persist in this dhikr find the doors of divine ease and grace opened for them; their hearts expand and difficulties become lighter.",
       },
       source: {
-        tr: "Şaban-ı Şerif Risalesi; Lalegül Dergisi",
-        en: "Sha'ban al-Sharif Risala; Lalegul Magazine",
+        tr: "Şaban-ı Şerif Risalesi",
+        en: "Sha'ban al-Sharif Risala",
       },
       tags: ['şaban', 'esma', 'zikir', 'latif', 'lütuf'],
       categories: ['zikir', 'ibadet'],
@@ -61,8 +61,8 @@ export const sabanAyi = {
         en: "This dhikr is recommended to be recited 100 times each day during the middle ten days of Sha'ban, opening the door to the grace of the divine name ar-Razzaq. Ar-Razzaq is one of the exalted names of Allah, signifying the One who provides not only for the bodies but also for the souls and hearts of His creation, leaving no one deficient. The middle ten days of Sha'ban are a period of deepened dhikr, intensified struggle against the ego, and the blossoming of ma'rifa (knowledge of Allah) in the heart. Those who persevere in this dhikr find that even amid material hardship, their hearts expand in trust in Allah regarding provision; and spiritual sustenance is experienced in the blessings of knowledge, wisdom, and faith. The Prophet (peace be upon him) paid particular attention to the middle days of Sha'ban. Increasing istighfar, salawat upon the Prophet, and supplication is recommended during this period.",
       },
       source: {
-        tr: "Şaban-ı Şerif Risalesi; İDDEF Tesbihatı",
-        en: "Sha'ban al-Sharif Risala; IDDEF Tasbih Collection",
+        tr: "Şaban-ı Şerif Risalesi",
+        en: "Sha'ban al-Sharif Risala",
       },
       tags: ['şaban', 'esma', 'zikir', 'rezzak', 'rızık'],
       categories: ['zikir', 'ibadet'],
@@ -90,8 +90,8 @@ export const sabanAyi = {
         en: "This dhikr is recommended to be recited 100 times each day during the final ten days of Sha'ban, establishing in the heart the awe and power of the divine name al-Aziz. Al-Aziz is one of the exalted names of Allah, denoting One who can never be overcome by any force, existing in complete and perfect might from pre-eternity to post-eternity. The last ten days of Sha'ban are a period of spiritual preparation at the very threshold of Ramadan — a time to intensify self-reckoning, repentance, istighfar, and salawat upon the Prophet. Those who persist in this dhikr find that by taking refuge in Allah's power and acknowledging their own weakness, divine support arrives in overcoming the ego; the heart is strengthened and they enter Ramadan in a more spiritually prepared state. Reciting special salawat on the 27th night (the last Friday night of Sha'ban) and consolidating the gains of the Night of Bara'ah is recommended.",
       },
       source: {
-        tr: "Şaban-ı Şerif Risalesi; Lalegül Dergisi",
-        en: "Sha'ban al-Sharif Risala; Lalegul Magazine",
+        tr: "Şaban-ı Şerif Risalesi",
+        en: "Sha'ban al-Sharif Risala",
       },
       tags: ['şaban', 'esma', 'zikir', 'aziz', 'güç'],
       categories: ['zikir', 'ibadet'],

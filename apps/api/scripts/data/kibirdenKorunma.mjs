@@ -179,8 +179,8 @@ export const kibirdenKorunma = {
         en: 'This is a powerful dhikr that removes the artificial constriction, inner restlessness, and blockages created by the ego and arrogance, bringing relief to the soul and granting instant tranquility.',
       },
       source: {
-        tr: 'Lalegül Dergisi',
-        en: 'Lalegül Magazine',
+        tr: 'Geleneksel tesbih ve vird derlemeleri',
+        en: 'Traditional collections of tasbih and litanies',
       },
       tags: ['kibir', 'korunma', 'tevhid', 'tenzih', 'hamd', 'ferahlama', 'sükûnet'],
       categories: ['genel', 'nefis terbiyesi', 'manevi destek', 'dua'],

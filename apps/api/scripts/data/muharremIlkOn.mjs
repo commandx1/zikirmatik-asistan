@@ -341,8 +341,8 @@ export const muharremIlkOn = {
         en: "This supplication, specific to the Day of Ashura, seeks divine aid by recalling the miracles and deliverances of seven prophets on that day. Strength and intercession are sought through the mention of each prophet's name.",
       },
       source: {
-        tr: 'Lalegül Dergisi',
-        en: 'Lalegul Journal',
+        tr: 'Geleneksel Aşure duaları derlemesi',
+        en: 'Traditional compilation of Ashura supplications',
       },
       tags: ['aşure', 'muharrem', 'enbiya', 'kurtuluş', 'şefaat', 'dua'],
       categories: ['dua', 'ibadet', 'özel gün'],

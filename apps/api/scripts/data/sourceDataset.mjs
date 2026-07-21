@@ -52,7 +52,6 @@ import { ramazanGirisi } from './ramazanGirisi.mjs';
 import { zilkadeAyi } from './zilkadeAyi.mjs';
 import { mevlidHaftasi } from './mevlidHaftasi.mjs';
 import { eyyamibiyd } from './eyyamibiyd.mjs';
-import { eyyamisud } from './eyyamisud.mjs';
 import { saferAyi } from './saferAyi.mjs';
 import { ramazanGunleri } from './ramazanGunleri.mjs';
 
@@ -71,7 +70,6 @@ export const SOURCE_DATASETS = [
   zilhicceIlkOn,
   kurbanBayrami,
   eyyamibiyd,
-  eyyamisud,
   saferAyi,
   mevlidHaftasi,
   mevlidKandili,
