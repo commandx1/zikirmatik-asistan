@@ -13,8 +13,8 @@ export type CollectionCategory =
 export type BackendCollection = {
   _id: string;
   key: string;
-  label: string;
-  description?: string;
+  label: LocalizedText;
+  description?: LocalizedText;
   category: CollectionCategory;
   dhikrCount: number;
 };

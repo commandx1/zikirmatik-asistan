@@ -146,7 +146,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
   return (
     <PageLayout>
       <PageHeader
-        title={detail?.label ?? t("collections:detail.defaultTitle")}
+        title={detail ? resolveLocalizedText(detail.label, locale) : t("collections:detail.defaultTitle")}
         leftIconName="arrow-left"
         onPressLeft={() => router.back()}
       />
@@ -167,7 +167,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
           {detail?.description ? (
             <ThemedCard className="mb-5 rounded-2xl px-4 py-3" accent="accentSoft">
               <Text className="text-sm leading-5 text-[--text-muted]">
-                {detail.description}
+                {resolveLocalizedText(detail.description, locale)}
               </Text>
             </ThemedCard>
           ) : null}

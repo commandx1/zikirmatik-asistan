@@ -3,6 +3,7 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import type { ComponentProps } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { resolveLocalizedText } from "../../../store/dhikr-store";
 import type { BackendCollection } from "../services/collections-api-client";
 import { COLLECTION_CATEGORIES } from "../types";
 
@@ -25,7 +26,8 @@ type Props = {
 
 export function CollectionCard({ item, onPress, isLocked = false }: Props) {
   const { tokens } = useThemeTokens();
-  const { t } = useTranslation("collections");
+  const { t, i18n } = useTranslation("collections");
+  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const iconName = CATEGORY_ICONS[item.category] ?? "book";
   const categoryLabelKey = COLLECTION_CATEGORIES.find(
     (c) => c.key === item.category,
@@ -60,7 +62,7 @@ export function CollectionCard({ item, onPress, isLocked = false }: Props) {
         className="mb-1 text-base font-semibold leading-5 text-[--text-primary]"
         numberOfLines={2}
       >
-        {item.label}
+        {resolveLocalizedText(item.label, locale)}
       </Text>
 
       <View className="mt-auto flex-row items-center justify-between pt-2">
