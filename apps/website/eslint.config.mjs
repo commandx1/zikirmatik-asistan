@@ -3,6 +3,6 @@ import base from "../../eslint.config.mjs";
 export default [
   ...base,
   {
-    ignores: ["**/.next/**"]
+    ignores: ["**/.next/**", "next-env.d.ts"]
   }
 ];

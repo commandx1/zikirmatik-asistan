@@ -9,6 +9,7 @@
   },
   "nav": {
     "features": "Features",
+    "aiGuide": "AI Guide",
     "howItWorks": "How It Works",
     "screenshots": "Screenshots",
     "premium": "Premium",
@@ -19,7 +20,7 @@
   "hero": {
     "eyebrow": "Zikirmatik Asistan AI",
     "title": "A calm, focused companion for your daily dhikr",
-    "subtitle": "Count your dhikr with a beautifully simple counter, build consistent habits with gentle reminders, and keep your spiritual practice organized — all in one distraction-free app.",
+    "subtitle": "Count your dhikr with a beautifully simple counter, build consistent habits with gentle reminders, and, whenever you like, ask AI Guide for a dhikr suited to your moment, complete with its virtue and purpose — all in one distraction-free app.",
     "ctaPrimary": "Get it on Google Play",
     "ctaSecondary": "See how it works",
     "badge": "Android · Free to start"
@@ -28,6 +29,10 @@
     "title": "Everything you need for a consistent dhikr practice",
     "subtitle": "Thoughtfully designed tools that keep your focus on remembrance, not on the app itself.",
     "items": [
+      {
+        "title": "AI Guide",
+        "description": "Your personal AI companion that recommends a dhikr suited to your moment and mood, complete with its sourced virtue hadith and a clear purpose."
+      },
       {
         "title": "Elegant Dhikr Counter",
         "description": "A clean, tactile counter with haptic feedback that lets you focus on your dhikr, not on the screen."
@@ -54,6 +59,26 @@
       }
     ]
   },
+  "aiGuide": {
+    "eyebrow": "AI Guide",
+    "title": "Your intelligent guide to the right dhikr, sourced and explained",
+    "subtitle": "AI Guide recommends a dhikr suited to your need, mood and time of day, drawing on trusted Islamic sources.",
+    "pillars": [
+      {
+        "title": "Virtue hadith + clear purpose",
+        "description": "Every recommended dhikr comes with a hadith on its virtue and a clear explanation of why and when to recite it."
+      },
+      {
+        "title": "Trusted Islamic sources",
+        "description": "Recommendations are drawn from a carefully curated pool grounded in classical sources such as Hisnul Muslim and Imam Nawawi's Al-Adhkar."
+      },
+      {
+        "title": "Personalization",
+        "description": "Suggestions are tailored to your current need, mood and the time of day."
+      }
+    ],
+    "note": "1 free credit to try it out — see the Premium section for details on credit packages."
+  },
   "howItWorks": {
     "title": "How Zikirmatik Asistan AI works",
     "subtitle": "Get started in minutes and build a habit that lasts.",
@@ -65,6 +90,10 @@
       {
         "title": "Pick your dhikr",
         "description": "Choose from ready-made dhikr and collections, or create your own with a target count."
+      },
+      {
+        "title": "Ask AI Guide",
+        "description": "Optionally ask AI Guide for a recommendation suited to your moment and mood, and receive the suggested dhikr along with its virtue hadith and clear purpose."
       },
       {
         "title": "Count mindfully",

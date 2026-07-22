@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, routing } from "../../i18n/routing";
 import { Hero } from "../../components/sections/Hero";
 import { Features } from "../../components/sections/Features";
+import { AiGuide } from "../../components/sections/AiGuide";
 import { HowItWorks } from "../../components/sections/HowItWorks";
 import { Screenshots } from "../../components/sections/Screenshots";
 import { Premium } from "../../components/sections/Premium";
@@ -26,6 +27,7 @@ export default async function LocaleHomePage({
     <>
       <Hero />
       <Features />
+      <AiGuide />
       <HowItWorks />
       <Screenshots />
       <Premium />

@@ -9,6 +9,7 @@
   },
   "nav": {
     "features": "Özellikler",
+    "aiGuide": "AI Rehber",
     "howItWorks": "Nasıl Çalışır",
     "screenshots": "Ekran Görüntüleri",
     "premium": "Premium",
@@ -19,7 +20,7 @@
   "hero": {
     "eyebrow": "Zikirmatik Asistan AI",
     "title": "Günlük zikirleriniz için sakin ve odaklı bir yardımcı",
-    "subtitle": "Şık ve sade bir sayaçla zikirlerinizi sayın, nazik hatırlatıcılarla düzenli bir alışkanlık oluşturun ve manevi pratiğinizi tek, dikkat dağıtmayan bir uygulamada düzenli tutun.",
+    "subtitle": "Şık ve sade bir sayaçla zikirlerinizi sayın, nazik hatırlatıcılarla düzenli bir alışkanlık oluşturun; isterseniz AI Rehber'e danışarak o anınıza uygun zikri, fazilet hadisi ve açık amacıyla birlikte keşfedin — hepsi tek, dikkat dağıtmayan bir uygulamada.",
     "ctaPrimary": "Google Play'den İndirin",
     "ctaSecondary": "Nasıl çalıştığını görün",
     "badge": "Android · Ücretsiz başlayın"
@@ -28,6 +29,10 @@
     "title": "Düzenli bir zikir pratiği için ihtiyacınız olan her şey",
     "subtitle": "Odağınızı uygulamada değil, zikirde tutacak şekilde özenle tasarlandı.",
     "items": [
+      {
+        "title": "AI Rehber",
+        "description": "Anınıza ve ruh halinize uygun zikri, fazilet hadisi ve açık kullanım amacıyla birlikte öneren kişisel yapay zekâ rehberiniz."
+      },
       {
         "title": "Şık Zikir Sayacı",
         "description": "Titreşimli geri bildirimli, sade ve dokunsal bir sayaç ile ekrana değil zikrinize odaklanın."
@@ -54,6 +59,26 @@
       }
     ]
   },
+  "aiGuide": {
+    "eyebrow": "AI Rehber",
+    "title": "Anınıza uygun zikri, kaynağıyla birlikte öneren akıllı rehberiniz",
+    "subtitle": "AI Rehber; ihtiyacınıza, ruh halinize ve günün vaktine göre size uygun zikri güvenilir İslami kaynaklardan seçerek önerir.",
+    "pillars": [
+      {
+        "title": "Fazilet hadisi + açık amaç",
+        "description": "Önerilen her zikir; faziletine dair bir hadis ve o zikri neden, ne zaman okuyabileceğinize dair açık bir açıklamayla birlikte gelir."
+      },
+      {
+        "title": "Güvenilir İslami kaynaklar",
+        "description": "Öneriler; Hısnu'l-Müslim ve İmam Nevevî'nin El-Ezkar'ı gibi klasik kaynaklara dayanan özenle derlenmiş bir havuzdan seçilir."
+      },
+      {
+        "title": "Kişiselleştirme",
+        "description": "Öneriler; o anki ihtiyacınıza, ruh halinize ve günün vaktine göre size özel şekilde uyarlanır."
+      }
+    ],
+    "note": "Denemek için 1 ücretsiz kredi — kredi paketleri hakkında ayrıntı için Premium bölümüne bakın."
+  },
   "howItWorks": {
     "title": "Zikirmatik Asistan AI nasıl çalışır",
     "subtitle": "Dakikalar içinde başlayın ve kalıcı bir alışkanlık oluşturun.",
@@ -65,6 +90,10 @@
       {
         "title": "Zikrinizi seçin",
         "description": "Hazır zikir ve koleksiyonlardan seçin veya hedef sayısı belirleyerek kendi zikrinizi oluşturun."
+      },
+      {
+        "title": "AI Rehber'e danışın",
+        "description": "İsterseniz o anınıza ve ruh halinize uygun bir öneri için AI Rehber'e danışın; önerilen zikri fazilet hadisi ve açık kullanım amacıyla birlikte alın."
       },
       {
         "title": "Bilinçli şekilde sayın",
@@ -86,20 +115,55 @@
     "subtitle": "Daha derin kişiselleştirmenin ve yapay zekâ destekli özellikler için cömert kredi paketlerinin kilidini açın. Güncel fiyat için Google Play sayfasına bakın.",
     "note": "Güncel fiyat bilgisi için lütfen uygulamanın Google Play sayfasını kontrol edin.",
     "table": {
-      "headers": ["Özellik", "Ücretsiz", "Premium"],
+      "headers": [
+        "Özellik",
+        "Ücretsiz",
+        "Premium"
+      ],
       "rows": [
-        ["Zikir sayacı ve koleksiyonlar", "Dahil", "Dahil"],
-        ["Günlük ve özel gün hatırlatıcıları", "Dahil", "Dahil"],
-        ["Seri ve istatistikler", "Dahil", "Dahil"],
-        ["Google ile giriş bulut senkronizasyonu", "Dahil", "Dahil"],
-        ["AI Rehber kredisi", "1 ücretsiz kredi", "Kredi paketleri: 3, 50, 10, 30 veya 75"],
-        ["Gelişmiş kişiselleştirme", "Sınırlı", "Tam erişim"]
+        [
+          "Zikir sayacı ve koleksiyonlar",
+          "Dahil",
+          "Dahil"
+        ],
+        [
+          "Günlük ve özel gün hatırlatıcıları",
+          "Dahil",
+          "Dahil"
+        ],
+        [
+          "Seri ve istatistikler",
+          "Dahil",
+          "Dahil"
+        ],
+        [
+          "Google ile giriş bulut senkronizasyonu",
+          "Dahil",
+          "Dahil"
+        ],
+        [
+          "AI Rehber kredisi",
+          "1 ücretsiz kredi",
+          "Kredi paketleri: 3, 50, 10, 30 veya 75"
+        ],
+        [
+          "Gelişmiş kişiselleştirme",
+          "Sınırlı",
+          "Tam erişim"
+        ]
       ]
     },
     "credits": {
       "title": "AI Rehber kredi paketleri",
       "description": "İhtiyacınıza uygun kredi paketini doğrudan uygulama içinden satın alabilirsiniz.",
-      "items": ["Denemek için 1 ücretsiz kredi", "3 kredi", "10 kredi", "30 kredi", "50 kredi", "75 kredi"]
+      "items": [
+        "Denemek için 1 ücretsiz kredi",
+        "3 kredi",
+        "10 kredi",
+        "30 kredi",
+        "50 kredi",
+        "75 kredi"
+      ]
     },
     "cta": "Google Play'de planları görüntüleyin"
   },
@@ -216,8 +280,7 @@
   },
   "terms": {
     "title": "Kullanım Şartları",
-    "intro": "Bu Kullanım Şartları (\"Şartlar\"), Zikirmatik Asistan AI mobil uygulamasına (\"Uygulama\") erişiminizi ve kullanımınızı düzenler. Uygulamayı indirerek, erişerek veya kullanarak bu Şartlara bağlı kalmayı kabul edersiniz."
-    ,
+    "intro": "Bu Kullanım Şartları (\"Şartlar\"), Zikirmatik Asistan AI mobil uygulamasına (\"Uygulama\") erişiminizi ve kullanımınızı düzenler. Uygulamayı indirerek, erişerek veya kullanarak bu Şartlara bağlı kalmayı kabul edersiniz.",
     "sections": [
       {
         "heading": "1. Şartların Kabulü",
