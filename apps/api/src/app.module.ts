@@ -6,6 +6,7 @@ import { validateEnv } from './config/env.validation';
 import { AppController } from './app.controller';
 import { RenderKeepAliveService } from './common/services/render-keep-alive.service';
 import { AiModule } from './modules/ai/ai.module';
+import { AiChatModule } from './modules/ai-chat/ai-chat.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DevicesModule } from './modules/devices/devices.module';
 import { DhikrLogsModule } from './modules/dhikr-logs/dhikr-logs.module';
@@ -43,6 +44,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     DhikrLogsModule,
     StreaksModule,
     AiModule,
+    AiChatModule,
     SpecialDaysModule,
     SubscriptionsModule,
     UserDhikrsModule,

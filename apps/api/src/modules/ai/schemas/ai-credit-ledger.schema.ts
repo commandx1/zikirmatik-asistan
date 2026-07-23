@@ -91,6 +91,17 @@ AiCreditLedgerSchema.index(
 );
 
 AiCreditLedgerSchema.index(
+  { userId: 1, reason: 1, flowId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      reason: AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
+      flowId: { $exists: true, $type: 'string' },
+    },
+  },
+);
+
+AiCreditLedgerSchema.index(
   { reason: 1, providerEventId: 1 },
   {
     unique: true,

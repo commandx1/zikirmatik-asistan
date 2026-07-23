@@ -277,6 +277,8 @@ function createService(initialPremium = false) {
     {} as never,
     userModel as never,
     {} as never,
+    {} as never,
+    { record: jest.fn(() => Promise.resolve()) } as never,
   );
 
   return {

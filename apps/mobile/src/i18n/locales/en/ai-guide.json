@@ -93,6 +93,9 @@
     "title": "AI Guide",
     "subtitle": "Dhikrs based on your state of mind"
   },
+  "chatEntry": {
+    "title": "Chat with the AI guide"
+  },
   "verificationFooter": {
     "text": "All content is sourced from trusted religious references."
   }

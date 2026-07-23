@@ -1,0 +1,42 @@
+{
+  "topBar": {
+    "title": "Asistan Sohbeti",
+    "subtitle": "Çok turlu zikir/dua rehberi"
+  },
+  "input": {
+    "placeholder": "Mesajını yaz...",
+    "creditBalanceLabel": "Kalan kredi: {{count}}",
+    "creditBalance": "{{count}} kredi"
+  },
+  "emptyState": {
+    "title": "Asistanla sohbet et",
+    "subtitle": "İhtiyacını, duygunu veya niyetini yaz; asistan sana uygun zikir/dua önerisi için birkaç soru sorabilir."
+  },
+  "history": {
+    "title": "Son Sohbetler",
+    "showAll": "Tümünü Göster",
+    "showLess": "Daha Az Göster",
+    "today": "Bugün",
+    "yesterday": "Dün"
+  },
+  "loading": {
+    "defaultStep": "Asistan yazıyor...",
+    "creditsLoading": "Kredin yükleniyor…",
+    "creditsLoadingRetry": "Kredilerin yükleniyor; birkaç saniye içinde mesajını tekrar gönderebilirsin.",
+    "steps": {
+      "creating": "Sohbet başlatılıyor...",
+      "thinking": "Mesajın değerlendiriliyor...",
+      "searching": "Zikirler taranıyor...",
+      "widening": "Arama genişletiliyor...",
+      "selecting": "Öneriler hazırlanıyor..."
+    }
+  },
+  "errors": {
+    "sendFailed": "Mesaj gönderilemedi. Lütfen tekrar deneyin.",
+    "historyFailed": "Sohbet geçmişi yüklenemedi.",
+    "serviceUnavailable": "Asistan servisi şu anda yanıt veremiyor.",
+    "serviceUnreachable": "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin.",
+    "loginRequiredToSave": "Kaydetmek için giriş yapmalısın.",
+    "dhikrSaveFailed": "Zikir kaydedilemedi."
+  }
+}

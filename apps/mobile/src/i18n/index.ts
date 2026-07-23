@@ -6,6 +6,7 @@ import trProfile from "./locales/tr/profile.json";
 import trHome from "./locales/tr/home.json";
 import trFocus from "./locales/tr/focus.json";
 import trAiGuide from "./locales/tr/ai-guide.json";
+import trAiChat from "./locales/tr/ai-chat.json";
 import trCollections from "./locales/tr/collections.json";
 import trSpecialDays from "./locales/tr/special-days.json";
 import trStats from "./locales/tr/stats.json";
@@ -24,6 +25,7 @@ import enProfile from "./locales/en/profile.json";
 import enHome from "./locales/en/home.json";
 import enFocus from "./locales/en/focus.json";
 import enAiGuide from "./locales/en/ai-guide.json";
+import enAiChat from "./locales/en/ai-chat.json";
 import enCollections from "./locales/en/collections.json";
 import enSpecialDays from "./locales/en/special-days.json";
 import enStats from "./locales/en/stats.json";
@@ -50,6 +52,7 @@ const resources = {
     home: trHome,
     focus: trFocus,
     "ai-guide": trAiGuide,
+    "ai-chat": trAiChat,
     collections: trCollections,
     "special-days": trSpecialDays,
     stats: trStats,
@@ -70,6 +73,7 @@ const resources = {
     home: enHome,
     focus: enFocus,
     "ai-guide": enAiGuide,
+    "ai-chat": enAiChat,
     collections: enCollections,
     "special-days": enSpecialDays,
     stats: enStats,
@@ -102,6 +106,7 @@ void i18n.use(initReactI18next).init({
     "home",
     "focus",
     "ai-guide",
+    "ai-chat",
     "collections",
     "special-days",
     "stats",

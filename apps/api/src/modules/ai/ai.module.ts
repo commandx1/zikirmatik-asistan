@@ -10,6 +10,8 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 import { AiController } from './ai.controller';
 import { AiProgressGateway } from './ai-progress.gateway';
 import { AiService } from './ai.service';
+import { AiUsageService } from './ai-usage.service';
+import { AiUsageLog, AiUsageLogSchema } from './schemas/ai-usage-log.schema';
 import {
   AiRecommendation,
   AiRecommendationSchema,
@@ -26,6 +28,10 @@ import {
   AiCreditLedger,
   AiCreditLedgerSchema,
 } from './schemas/ai-credit-ledger.schema';
+import {
+  SourcePassage,
+  SourcePassageSchema,
+} from './schemas/source-passage.schema';
 
 @Module({
   imports: [
@@ -37,11 +43,13 @@ import {
       { name: Dhikr.name, schema: DhikrSchema },
       { name: DhikrLog.name, schema: DhikrLogSchema },
       { name: User.name, schema: UserSchema },
+      { name: SourcePassage.name, schema: SourcePassageSchema },
+      { name: AiUsageLog.name, schema: AiUsageLogSchema },
     ]),
     EmbeddingModule,
   ],
   controllers: [AiController],
-  providers: [AiService, AiProgressGateway],
-  exports: [AiService],
+  providers: [AiService, AiProgressGateway, AiUsageService],
+  exports: [AiService, AiProgressGateway, AiUsageService],
 })
 export class AiModule {}

@@ -10,4 +10,12 @@ export class AiProgressGateway {
   emitStep(socketId: string, key: string, message: string) {
     this.server.to(socketId).emit('ai:step', { key, message });
   }
+
+  /**
+   * Çok turlu sohbet akışı (ai-chat modülü) için ayrı event adı — mevcut
+   * tek-atım öneri akışının 'ai:step' event'iyle karışmaması için.
+   */
+  emitChatStep(socketId: string, key: string, message: string) {
+    this.server.to(socketId).emit('ai-chat:step', { key, message });
+  }
 }

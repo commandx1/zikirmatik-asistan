@@ -93,6 +93,9 @@
     "title": "Asistan Rehber",
     "subtitle": "Ruh haline göre zikirler"
   },
+  "chatEntry": {
+    "title": "Asistanla sohbet et"
+  },
   "verificationFooter": {
     "text": "Tüm içerikler güvenilir dini kaynaklardan alınmıştır."
   }

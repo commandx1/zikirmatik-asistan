@@ -27,10 +27,19 @@ export function createAiProgressSocket() {
     socket?.on('ai:step', cb);
   }
 
+  /**
+   * Çok turlu sohbet akışı (ai-chat modülü) ayrı bir event adı kullanır
+   * (bkz. AiProgressGateway.emitChatStep) — mevcut 'ai:step' dinleyicisiyle
+   * karışmaması için. Aynı socket bağlantısı üzerinden dinlenir.
+   */
+  function onChatStep(cb: (event: AiStepEvent) => void) {
+    socket?.on('ai-chat:step', cb);
+  }
+
   function disconnect() {
     socket?.disconnect();
     socket = null;
   }
 
-  return { connect, onStep, disconnect };
+  return { connect, onStep, onChatStep, disconnect };
 }

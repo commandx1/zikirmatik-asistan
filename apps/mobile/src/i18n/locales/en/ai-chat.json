@@ -1,0 +1,42 @@
+{
+  "topBar": {
+    "title": "AI Chat",
+    "subtitle": "Multi-turn dhikr/dua guide"
+  },
+  "input": {
+    "placeholder": "Type your message...",
+    "creditBalanceLabel": "Remaining credit: {{count}}",
+    "creditBalance": "{{count}} credits"
+  },
+  "emptyState": {
+    "title": "Chat with the guide",
+    "subtitle": "Write your need, feeling, or intention; the assistant may ask a few questions before suggesting a suitable dhikr/dua."
+  },
+  "history": {
+    "title": "Recent Chats",
+    "showAll": "Show All",
+    "showLess": "Show Less",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "loading": {
+    "defaultStep": "The assistant is typing...",
+    "creditsLoading": "Loading your credit…",
+    "creditsLoadingRetry": "Your credits are loading; you can resend your message in a few seconds.",
+    "steps": {
+      "creating": "Starting the chat...",
+      "thinking": "Reviewing your message...",
+      "searching": "Searching dhikrs...",
+      "widening": "Widening the search...",
+      "selecting": "Preparing recommendations..."
+    }
+  },
+  "errors": {
+    "sendFailed": "Couldn't send the message. Please try again.",
+    "historyFailed": "Couldn't load the chat history.",
+    "serviceUnavailable": "The assistant service isn't responding right now.",
+    "serviceUnreachable": "Couldn't reach the assistant service. Please try again.",
+    "loginRequiredToSave": "You need to sign in to save.",
+    "dhikrSaveFailed": "Couldn't save the dhikr."
+  }
+}

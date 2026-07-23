@@ -59,14 +59,27 @@ export class EmbeddingService {
   }
 
   async embed(text: string): Promise<number[] | null> {
+    const result = await this.embedWithUsage(text);
+    return result.vector;
+  }
+
+  /**
+   * embed() ile birebir aynı davranış (null durumları, try/catch) ancak
+   * ayrıca OpenAI yanıtındaki token kullanımını da döner — usage-tracking
+   * katmanı bunu ai_usage_log'a yazmak için kullanır. embed()'in imzasını
+   * bozmamak için ayrı bir method.
+   */
+  async embedWithUsage(
+    text: string,
+  ): Promise<{ vector: number[] | null; usage?: { inputTokens: number } }> {
     const trimmed = text?.trim();
     if (!trimmed) {
-      return null;
+      return { vector: null };
     }
 
     const client = this.getClient();
     if (!client) {
-      return null;
+      return { vector: null };
     }
 
     try {
@@ -78,13 +91,19 @@ export class EmbeddingService {
       const vector = response.data?.[0]?.embedding;
       if (!Array.isArray(vector) || vector.length === 0) {
         this.logger.warn('Embedding yanıtı boş döndü.');
-        return null;
+        return { vector: null };
       }
 
-      return vector;
+      const promptTokens = response.usage?.prompt_tokens;
+      const usage =
+        typeof promptTokens === 'number'
+          ? { inputTokens: promptTokens }
+          : undefined;
+
+      return { vector, usage };
     } catch (error) {
       this.logger.warn(`Embedding üretilemedi: ${describeError(error)}`);
-      return null;
+      return { vector: null };
     }
   }
 

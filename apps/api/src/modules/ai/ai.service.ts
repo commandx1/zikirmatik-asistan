@@ -20,6 +20,11 @@ import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
 import { EmbeddingService } from '../embedding/embedding.service';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { AiProgressGateway } from './ai-progress.gateway';
+import { AiUsageService } from './ai-usage.service';
+import {
+  SourcePassage,
+  type SourcePassageDocument,
+} from './schemas/source-passage.schema';
 import { CreateAiRecommendationDto } from './dto/create-ai-recommendation.dto';
 import { QueryAiRecommendationsDto } from './dto/query-ai-recommendations.dto';
 import { SelectAiRecommendationDto } from './dto/select-ai-recommendation.dto';
@@ -64,6 +69,19 @@ type UsedModel = 'openai' | 'fallback' | 'cache';
 
 type DhikrLean = Dhikr & { _id: Types.ObjectId };
 
+type SourcePassageLean = SourcePassage & { _id: Types.ObjectId };
+
+// Kaynak pasajı (kitap RAG) araması sonucu. Şu an yalnızca vektör tabanlı
+// arama sağlanır; sohbet agent'ına henüz bağlı değildir (ayrı bir görev).
+export type SourcePassageResult = {
+  text: string;
+  sourceTitle: string;
+  pageStart: number;
+  pageEnd: number;
+  type: string;
+  score?: number;
+};
+
 type CreditGrantStatus = {
   dailyGrant: number;
   monthlyGrant: number;
@@ -78,7 +96,7 @@ type CreditState = CreditGrantStatus & {
 // Ajanın LLM'e döndürdüğü arama sonucu — LLM şu an Türkçe akıl yürütür, bu
 // yüzden virtue yalnızca TR taşınır; name ise ileride İngilizce yanıt
 // üretimine hazır olsun diye tam LocalizedText olarak taşınır.
-type SearchResult = {
+export type SearchResult = {
   id: string;
   name: LocalizedText;
   virtue: string;
@@ -93,6 +111,12 @@ type AgentResult = {
   summary: string;
   items: Array<{ id: string; reason: string }>;
   offTopic?: boolean;
+  /**
+   * Faz F — ön-retrieval (RAG) ile summary'yi grounding etmek için kullanılan
+   * siyer kaynak pasajları. Şimdilik yalnızca backend'de tutulur/loglanır;
+   * client response'una taşınmaz (UI ayrı ele alınacak).
+   */
+  sources?: SourcePassageResult[];
 };
 
 const MONGO_FALLBACK_REASONING =
@@ -105,7 +129,7 @@ const MONGO_FALLBACK_REASONING =
  */
 const GENERAL_FALLBACK_CATEGORIES = ['genel', 'dua', 'şükür', 'sabır', 'huzur'];
 
-const KNOWN_CATEGORIES = [
+export const KNOWN_CATEGORIES = [
   'tehlikeli canlılardan korunma',
   'acil dua',
   'adab',
@@ -254,7 +278,10 @@ export class AiService {
     private readonly dhikrLogModel: Model<DhikrLogDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    @InjectModel(SourcePassage.name)
+    private readonly sourcePassageModel: Model<SourcePassageDocument>,
     private readonly embeddingService: EmbeddingService,
+    private readonly usageService: AiUsageService,
   ) {}
 
   private emitStep(socketId: string | undefined, key: string, message: string) {
@@ -416,6 +443,8 @@ export class AiService {
       maxRecommendations,
       socketId,
       locale,
+      flowId,
+      userId,
     });
 
     // ── Off-topic ───────────────────────────────────────────────────────────
@@ -558,6 +587,8 @@ export class AiService {
     maxRecommendations: number;
     socketId?: string;
     locale: SupportedAiLocale;
+    flowId?: string;
+    userId?: Types.ObjectId | string;
   }): Promise<AgentResult | null> {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
@@ -571,6 +602,42 @@ export class AiService {
       this.configService.get<string>('OPENAI_MODEL') ?? 'gpt-5-mini';
     const openaiProvider = createOpenAI({ apiKey });
     const timeOfDay = this.resolveTimeOfDay(input.timeContext);
+    // Denge kaldıraçları — env ile ayarlanabilir (default davranış değişmez).
+    // ai_usage_log'daki gerçek step/token dağılımına göre tune edilir.
+    const readIntEnv = (key: string, fallback: number): number => {
+      const raw = Number(this.configService.get<string | number>(key));
+      return Number.isInteger(raw) && raw > 0 ? raw : fallback;
+    };
+    const ragPassageLimit = readIntEnv('AI_RAG_PASSAGE_LIMIT', 4);
+    const recommendMaxSteps = readIntEnv('AI_RECOMMEND_MAX_STEPS', 4);
+
+    // ── Faz F: Ön-retrieval (RAG) ────────────────────────────────────────────
+    // freeText varsa siyer kaynaklarından ilgili pasajları çekip system prompt'a
+    // grounding bağlamı olarak enjekte ederiz. Deterministik, tek tur.
+    const sourceQuery = input.freeText?.trim();
+    const sources: SourcePassageResult[] = sourceQuery
+      ? await this.searchSourcePassagesForAgent(sourceQuery, ragPassageLimit)
+      : [];
+    if (sources.length > 0) {
+      this.logger.log(
+        `[agent:rag] ${sources.length} kaynak pasaj enjekte edildi (top skor=${sources[0].score?.toFixed(3) ?? '-'})`,
+      );
+    }
+
+    const sourceBlock =
+      sources.length > 0
+        ? [
+            '',
+            '**KAYNAK BAĞLAMI (siyer/İslami kaynaklardan alınmıştır):**',
+            'Aşağıdaki pasajları yalnızca summary/reason metnini zenginleştirmek ve',
+            'doğru bağlamı yakalamak için kullan. Zikir ID üretme, pasajları birebir',
+            'kopyalama; kendi sıcak ve samimi dilinle özetle.',
+            ...sources.map(
+              (s, i) =>
+                `${i + 1}. [${s.sourceTitle}, s.${s.pageStart}-${s.pageEnd}] ${s.text}`,
+            ),
+          ].join('\n')
+        : '';
 
     const systemPrompt = [
       'Sen bir İslami zikir öneri asistanısın.',
@@ -605,6 +672,7 @@ export class AiService {
       '- summary: Kullanıcının niyetini samimiyetle kabul eden sıcak 3-5 cümle. "inşallah", "Allah kabul etsin", "maşallah" gibi ifadeler kullan. Zikir ismi yazma.',
       '- reason: Her zikir için fazilet/etiket içeriğinden türeyen 1-2 cümle. Doğrudan kullanıcıya yönelik, insani ve sıcak bir dil kullan.',
       '',
+      sourceBlock,
       input.locale === 'en'
         ? 'Write the summary and each reason in English.'
         : 'Write the summary and each reason in Turkish.',
@@ -615,9 +683,9 @@ export class AiService {
     let searchCallCount = 0;
 
     try {
-      await generateText({
+      const genResult = await generateText({
         model: openaiProvider(modelName),
-        stopWhen: stepCountIs(4),
+        stopWhen: stepCountIs(recommendMaxSteps),
         system: systemPrompt,
         prompt: JSON.stringify({
           freeText: input.freeText ?? null,
@@ -703,6 +771,15 @@ export class AiService {
           }),
         },
       });
+
+      void this.usageService.record({
+        kind: 'recommend',
+        model: modelName,
+        usage: genResult.totalUsage,
+        steps: genResult.steps?.length,
+        flowId: input.flowId,
+        userId: input.userId,
+      });
     } catch (error) {
       this.logger.warn(
         `Agent çalıştırılamadı, fallback kullanılacak: ${this.describeError(error)}`,
@@ -713,7 +790,14 @@ export class AiService {
     if (offTopicDetected) {
       return { ids: [], summary: '', items: [], offTopic: true };
     }
-    return agentResult;
+    // Faz F: ön-retrieval sonuçlarını backend sonucuna iliştir (UI'a taşınmaz).
+    // agentResult closure içinde atandığından TS onu ana akışta 'null'a daraltır;
+    // cast ile bu daralmayı kırıyoruz.
+    const finalResult = agentResult as AgentResult | null;
+    if (finalResult && sources.length > 0) {
+      finalResult.sources = sources;
+    }
+    return finalResult;
   }
 
   /**
@@ -799,7 +883,7 @@ export class AiService {
    * erişilemez/embed() null) mevcut $setIntersection tabanlı skor veya
    * parametresiz popülerlik sıralamasına sessizce düşer.
    */
-  private async searchDhikrsForAgent(
+  async searchDhikrsForAgent(
     params: {
       suitableFor?: string[];
       tags?: string[];
@@ -830,7 +914,15 @@ export class AiService {
 
     const trimmedFreeText = freeText?.trim();
     if (trimmedFreeText) {
-      const queryVector = await this.embeddingService.embed(trimmedFreeText);
+      const { vector: queryVector, usage: embeddingUsage } =
+        await this.embeddingService.embedWithUsage(trimmedFreeText);
+      if (embeddingUsage) {
+        void this.usageService.record({
+          kind: 'embedding',
+          model: this.embeddingService.model,
+          usage: embeddingUsage,
+        });
+      }
       if (queryVector) {
         try {
           const scoreFields = this.buildIntersectionScoreFields(params);
@@ -895,6 +987,68 @@ export class AiService {
       .exec();
 
     return results.map(toSearchResult);
+  }
+
+  /**
+   * Kaynak pasajı (kitap RAG) koleksiyonunda salt vektör tabanlı anlamsal
+   * arama yapar (tag/kategori rerank yoktur — dhikr aramasından farklı
+   * olarak burada skorlama tamamen $vectorSearch'e aittir). Şu an sohbet
+   * agent'ına bağlı değildir; yalnızca ileride kullanılacak bir yapı taşı.
+   */
+  async searchSourcePassagesForAgent(
+    query: string,
+    limit = 4,
+  ): Promise<SourcePassageResult[]> {
+    const trimmedQuery = query?.trim();
+    if (!trimmedQuery) {
+      return [];
+    }
+
+    const { vector: queryVector, usage: embeddingUsage } =
+      await this.embeddingService.embedWithUsage(trimmedQuery);
+    if (embeddingUsage) {
+      void this.usageService.record({
+        kind: 'embedding',
+        model: this.embeddingService.model,
+        usage: embeddingUsage,
+      });
+    }
+    if (!queryVector) {
+      return [];
+    }
+
+    try {
+      const results = await this.sourcePassageModel
+        .aggregate<SourcePassageLean & { _vectorScore: number }>([
+          {
+            $vectorSearch: {
+              index: 'source_passages_vector_index',
+              path: 'embedding',
+              queryVector,
+              numCandidates: 100,
+              limit,
+            },
+          },
+          { $addFields: { _vectorScore: { $meta: 'vectorSearchScore' } } },
+          { $sort: { _vectorScore: -1 } },
+          { $limit: limit },
+        ])
+        .exec();
+
+      return results.map((item) => ({
+        text: item.text,
+        sourceTitle: item.sourceTitle,
+        pageStart: item.pageStart,
+        pageEnd: item.pageEnd,
+        type: item.type,
+        score: item._vectorScore,
+      }));
+    } catch (error) {
+      this.logger.warn(
+        `Source passage vector search başarısız: ${this.describeError(error)}`,
+      );
+      return [];
+    }
   }
 
   /** Agent başarısız olduğunda veya OPENAI_API_KEY yokken kullanılan zaman tabanlı fallback. */
@@ -1442,16 +1596,23 @@ export class AiService {
     }
   }
 
-  private async ensureCreditAccessForFlow(
+  /**
+   * `reason` opsiyoneldir ve varsayılan olarak RECOMMENDATION_DEBIT'tir —
+   * mevcut çağrı yerleri (createRecommendation) davranışı değişmeden
+   * çalışmaya devam eder. Chat akışı (ai-chat modülü) kendi
+   * CHAT_MESSAGE_DEBIT reason'ını geçirerek aynı deseni yeniden kullanır.
+   */
+  async ensureCreditAccessForFlow(
     userId: Types.ObjectId,
     flowId: string,
     isPremium: boolean,
     promptHash: string,
+    reason: AiCreditReason = AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
   ) {
     const existingDebit = await this.aiCreditLedgerModel
       .findOne({
         userId,
-        reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+        reason,
         flowId,
       })
       .lean()
@@ -1474,16 +1635,17 @@ export class AiService {
     });
   }
 
-  private async debitCreditForFlow(
+  async debitCreditForFlow(
     userId: Types.ObjectId,
     flowId: string,
     isPremium: boolean,
     promptHash: string,
+    reason: AiCreditReason = AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
   ): Promise<{ balance: number }> {
     const existingDebit = await this.aiCreditLedgerModel
       .findOne({
         userId,
-        reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+        reason,
         flowId,
       })
       .lean()
@@ -1512,7 +1674,7 @@ export class AiService {
     try {
       await this.aiCreditLedgerModel.create({
         userId,
-        reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+        reason,
         delta: -1,
         flowId,
         promptHash,
@@ -1522,7 +1684,7 @@ export class AiService {
         const duplicateDebit = await this.aiCreditLedgerModel
           .findOne({
             userId,
-            reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+            reason,
             flowId,
           })
           .lean()
@@ -1561,7 +1723,7 @@ export class AiService {
       await this.aiCreditLedgerModel
         .deleteOne({
           userId,
-          reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+          reason,
           flowId,
         })
         .exec();
@@ -1578,7 +1740,7 @@ export class AiService {
         .updateOne(
           {
             userId,
-            reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+            reason,
             flowId,
           },
           { $set: { balanceAfter: updatedWallet.balance } },
@@ -1593,7 +1755,7 @@ export class AiService {
     return { balance: updatedWallet.balance };
   }
 
-  private async ensureCreditState(
+  async ensureCreditState(
     userId: Types.ObjectId,
     isPremium: boolean,
   ): Promise<CreditState> {

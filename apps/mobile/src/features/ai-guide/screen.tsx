@@ -1,6 +1,6 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { DhikrResumeModal } from "../../components/ui/dhikr-resume-modal";
@@ -199,6 +199,22 @@ export function AiGuideScreen() {
             }}
             onSelectPrompt={guide.applyPrompt}
           />
+          {/* Faz 1.2: çok turlu sohbet ekranına minimal giriş noktası — mevcut
+              tek-atım öneri akışı (yukarıdaki IntentInputSection) değişmedi. */}
+          <Pressable
+            onPress={() => {
+              requireAuth(() => router.push("/ai-chat"));
+            }}
+            className="mb-6 flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
+          >
+            <View className="flex-row items-center gap-2.5">
+              <FontAwesome6 name="comments" iconStyle="solid" size={14} color="#D6A93D" />
+              <Text className="text-sm font-semibold text-[--text-primary]">
+                {t("ai-guide:chatEntry.title")}
+              </Text>
+            </View>
+            <FontAwesome6 name="chevron-right" size={12} color="#D6A93D" />
+          </Pressable>
           <DailyEsmaShortcutCard onPress={() => setDailyEsmaOpen(true)} />
           <HistorySection
             items={guide.visibleHistoryItems}
