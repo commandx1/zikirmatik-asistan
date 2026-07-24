@@ -19,7 +19,6 @@ import { UsersModule } from './modules/users/users.module';
 import { UserDhikrsModule } from './modules/user-dhikrs/user-dhikrs.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { DhikrCollectionsModule } from './modules/dhikr-collections/dhikr-collections.module';
-import { NotificationCampaignsModule } from './modules/notification-campaigns/notification-campaigns.module';
 import { StatsModule } from './modules/stats/stats.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
@@ -53,7 +52,6 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     StatsModule,
     DevicesModule,
     PushModule,
-    NotificationCampaignsModule,
   ],
   controllers: [AppController],
   providers: [JwtAuthGuard, RenderKeepAliveService],

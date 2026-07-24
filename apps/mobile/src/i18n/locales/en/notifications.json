@@ -8,5 +8,19 @@
     "title": "Time for your daily dhikr",
     "bodyWithNames": "Today's names: {{names}}",
     "bodyDefault": "Take a short break to finish today's dhikr."
+  },
+  "friday": {
+    "channelName": "Special Days",
+    "title": "Blessed Friday",
+    "body": "Make the most of this blessed day with salawat, Surah al-Kahf, and prayer."
+  },
+  "specialDay": {
+    "channelName": "Special Days",
+    "title": "Today: {{name}}",
+    "body": "Make the most of this blessed day with dhikr and prayer."
+  },
+  "kandil": {
+    "title": "Tonight: {{name}}",
+    "body": "Revive this blessed night with salawat, prayer, and seeking forgiveness."
   }
 }

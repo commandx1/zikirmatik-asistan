@@ -598,10 +598,15 @@ export class AiChatService {
       .find((m) => m.role === 'user')?.content;
 
     this.emitStep(input.socketId, 'thinking', 'Mesajın değerlendiriliyor...');
-    const mode = await this.classifyIntent(input.history, input.locale, undefined, {
-      flowId: input.flowId,
-      userId: input.userId,
-    });
+    const mode = await this.classifyIntent(
+      input.history,
+      input.locale,
+      undefined,
+      {
+        flowId: input.flowId,
+        userId: input.userId,
+      },
+    );
     let candidates: SearchResult[] = [];
     if (mode === 'recommend') {
       this.emitStep(input.socketId, 'searching', 'Zikirler taranıyor...');

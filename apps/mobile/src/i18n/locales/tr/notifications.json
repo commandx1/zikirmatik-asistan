@@ -8,5 +8,19 @@
     "title": "Günlük zikir vaktin",
     "bodyWithNames": "Bugünkü esma: {{names}}",
     "bodyDefault": "Bugünkü zikrini tamamlamak için kısa bir mola ver."
+  },
+  "friday": {
+    "channelName": "Özel Günler",
+    "title": "Cuman Mübarek Olsun",
+    "body": "Bu mübarek günü salavat, Kehf Suresi ve dua ile değerlendir."
+  },
+  "specialDay": {
+    "channelName": "Özel Günler",
+    "title": "Bugün: {{name}}",
+    "body": "Bu mübarek günü zikir ve dua ile değerlendir."
+  },
+  "kandil": {
+    "title": "Bu gece {{name}}",
+    "body": "Bu mübarek geceyi salavat, dua ve istiğfar ile ihya et."
   }
 }
