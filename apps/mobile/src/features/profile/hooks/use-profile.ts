@@ -22,7 +22,6 @@ import {
   type CreditTopupProduct
 } from "../../subscriptions/services/revenuecat-client";
 import { syncDailyReminderNotification } from "../services/daily-reminder-notifications";
-import { syncEventNotifications } from "../../notifications/services/event-notifications";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
@@ -464,22 +463,6 @@ export function useProfile() {
     },
     [authStatus, session?.accessToken, session?.userId, setHapticsEnabled]
   );
-
-  useEffect(() => {
-    // OS zamanlamasını tercihle senkronize et. İzin yoksa mevcut
-    // zamanlamaya dokunma; tercih yalnızca kullanıcı değiştirince değişmeli.
-    void syncDailyReminderNotification({
-      enabled: dailyReminderEnabled,
-      reminderTime,
-      requestPermission: false
-    }).catch(() => {});
-  }, [dailyReminderEnabled, reminderTime]);
-
-  useEffect(() => {
-    // Cuma + özel gün bildirimlerini her açılışta yeniden zamanla (tamamen lokal,
-    // tercihe bağlı değil). İzin yoksa dokunma; kullanıcıya prompt gösterme.
-    void syncEventNotifications({ requestPermission: false }).catch(() => {});
-  }, []);
 
   return {
     displayName: backendUser?.displayName ?? authDisplayName ?? fallbackDisplayName,

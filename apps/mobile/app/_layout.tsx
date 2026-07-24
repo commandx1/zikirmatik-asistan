@@ -26,6 +26,8 @@ import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-back
 import { useNotificationTapRouting } from "../src/features/notifications/hooks/use-notification-tap-routing";
 import { usePushDeviceRegistration } from "../src/features/notifications/hooks/use-push-device-registration";
 import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
+import { useEventNotificationSync } from "../src/features/notifications/hooks/use-event-notification-sync";
+import { useDailyReminderSync } from "../src/features/notifications/hooks/use-daily-reminder-sync";
 import { useTourNotificationOptIn } from "../src/features/tour/hooks/use-tour-notification-opt-in";
 import { useStreakReminderSync } from "../src/features/home/hooks/use-streak-reminder-sync";
 import { BadgeCelebrationHost } from "../src/features/stats/components/badge-celebration-host";
@@ -71,6 +73,8 @@ function RootProviders({ children }: { children: ReactNode }) {
   usePushDeviceRegistration();
   useNotificationTapRouting();
   useStreakReminderSync();
+  useEventNotificationSync();
+  useDailyReminderSync();
   const promptForDailyReminder = useTourNotificationOptIn();
 
   const resolvedFontFamily = resolveGlobalFontFamily(fontFamily, fontsLoaded);
