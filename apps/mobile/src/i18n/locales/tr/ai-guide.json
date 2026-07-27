@@ -37,8 +37,8 @@
     "steps": {
       "analyzing": "Niyetin analiz ediliyor...",
       "thinking": "Zikir veritabanı hazırlanıyor...",
+      "expanding": "Niyetin derinleştiriliyor...",
       "searching": "Zikirler taranıyor...",
-      "widening": "Arama genişletiliyor...",
       "selecting": "Sana en uygun zikirler seçiliyor...",
       "fallback": "Genel öneriler hazırlanıyor...",
       "finalizing": "Öneriler hazırlanıyor..."

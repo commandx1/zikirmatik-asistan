@@ -9,6 +9,7 @@ export type AiUsageKind =
   | 'chat'
   | 'chat_stream'
   | 'classify'
+  | 'expand'
   | 'embedding';
 
 export const AI_USAGE_KINDS: AiUsageKind[] = [
@@ -16,6 +17,7 @@ export const AI_USAGE_KINDS: AiUsageKind[] = [
   'chat',
   'chat_stream',
   'classify',
+  'expand',
   'embedding',
 ];
 

@@ -107,7 +107,10 @@ export class SpecialDaysService {
     // taşırlar (`/special-days/<eventKey>`). Bu yüzden detay her iki
     // tanımlayıcıyı da kabul eder. Çok fazlı olaylarda ilk gün döner.
     const specialDay = Types.ObjectId.isValid(id)
-      ? await this.specialDayModel.findById(new Types.ObjectId(id)).lean().exec()
+      ? await this.specialDayModel
+          .findById(new Types.ObjectId(id))
+          .lean()
+          .exec()
       : await this.specialDayModel
           .findOne({ eventKey: id })
           .sort({ dayIndex: 1, date: 1 })
@@ -122,7 +125,7 @@ export class SpecialDaysService {
     // içeriği (article + practices) döner. İçerik metinleri editoryal olarak
     // sonradan doldurulduğu için boş dönmesi geçerli bir durumdur.
     return {
-      ...this.mapSpecialDayBase(specialDay as SpecialDayLean),
+      ...this.mapSpecialDayBase(specialDay),
       article: specialDay.article,
       practices: specialDay.practices ?? [],
     };
@@ -252,7 +255,6 @@ export class SpecialDaysService {
 
     return new Types.ObjectId(rawId);
   }
-
 }
 
 function resolveDefaultPriority(type: SpecialDayLean['type']) {

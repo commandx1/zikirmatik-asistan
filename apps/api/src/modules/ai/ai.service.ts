@@ -9,7 +9,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
-import { generateText, stepCountIs, tool } from 'ai';
+import { generateObject, generateText, stepCountIs, tool } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { z } from 'zod';
 import {
@@ -128,145 +128,6 @@ const MONGO_FALLBACK_REASONING =
  * sunulacak, geniş kitleye uygun genel kategoriler.
  */
 const GENERAL_FALLBACK_CATEGORIES = ['genel', 'dua', 'şükür', 'sabır', 'huzur'];
-
-export const KNOWN_CATEGORIES = [
-  'acil dua',
-  'adab',
-  'adalet',
-  'afet',
-  'ahlak',
-  'aile',
-  'aile ilişkisi',
-  'akşam',
-  'arefe',
-  'ayet',
-  'aşure',
-  'basiret',
-  'bayram',
-  'başarı',
-  'berat',
-  'bereket',
-  'cami',
-  'cemaat',
-  'cenaze',
-  'cennet',
-  'cuma',
-  'dua',
-  'egitim',
-  'esma',
-  'esmaul husna',
-  'ev',
-  'ev hayatı',
-  'evlat',
-  'evlilik',
-  'eyyam-ı biyd',
-  'ezan',
-  'eğitim',
-  'farz',
-  'gece namazı',
-  'gelecek kaygısı',
-  'genel',
-  'günlük',
-  'günlük hayat',
-  'günlük sünnet',
-  'güzel ahlak',
-  'hac',
-  'hacet',
-  'haksızlık',
-  'hamd',
-  'hastalık',
-  'hidayet',
-  'hikmet',
-  'huzur',
-  'ibadet',
-  'ilim',
-  'ilişkiler',
-  'iman',
-  'ismi azam',
-  'istiaze',
-  'istikamet',
-  'istiğfar',
-  'itibar',
-  'iş hayatı',
-  'iş kariyer',
-  'kadir gecesi',
-  'kalp',
-  'kandil',
-  'kapsamlı',
-  'karakter',
-  'kariyer',
-  'kaygı yönetimi',
-  'koruma',
-  'korunma',
-  'koruyucu',
-  'kulluk',
-  "kur'an",
-  'kuran',
-  'kuran duası',
-  'kurân',
-  'liderlik',
-  'manevi arınma',
-  'manevi destek',
-  'manevi gelişim',
-  'maneviyat',
-  'mevlid',
-  'miraç',
-  'muhabbet',
-  'muharrem',
-  'mülk',
-  'nafile',
-  'namaz',
-  'nazar',
-  'nefis terbiyesi',
-  'oruç',
-  'rahmet',
-  'ramazan',
-  'recep',
-  'regaib',
-  'rukye',
-  'rızık',
-  'rızık bereket',
-  'sabah akşam',
-  'sabır',
-  'safer',
-  'salavat',
-  'sevgi',
-  'sinav',
-  'sosyal',
-  'sure',
-  'sünnet duaları',
-  'sıkıntı',
-  'sınav',
-  'tefekkür',
-  'teheccüd',
-  'tehlikeli canlılardan korunma',
-  'temel',
-  'tesbih',
-  'teselli',
-  'tevbe',
-  'tevekkül',
-  'tevhid',
-  'tövbe',
-  'umut',
-  'uyku uyanış',
-  'vesvese',
-  'vitir',
-  'yardım',
-  'yemek',
-  'yolculuk',
-  'zikir',
-  'zilhicce',
-  'zilkade',
-  'âfiyet',
-  'ölüm',
-  'özel gün',
-  'özel günler',
-  'özlü dualar',
-  'üç aylar',
-  'şaban',
-  'şifa',
-  'şükür',
-];
 
 @Injectable()
 export class AiService {
@@ -588,10 +449,90 @@ export class AiService {
   }
 
   /**
-   * Vercel AI SDK ile tek LLM turunda arama + seçim döngüsü çalıştırır.
-   * LLM üç araçtan birini (searchDhikrs / selectRecommendations / reportOffTopic) kullanarak
-   * kendi stratejisini belirler; gerekirse searchDhikrs'i farklı parametrelerle tekrar çağırabilir.
-   * OPENAI_API_KEY yoksa veya çağrı başarısız olursa null döner → fallback devreye girer.
+   * Kullanıcının kısa/örtük ifadesini ("canım sıkkın") anlamsal aramaya
+   * elverişli bir niyet cümlesine açar ve aynı turda off-topic tespitini yapar.
+   * Etiket (tag/kategori) ÜRETMEZ — çıktı tek bir vektöre dönüşecek serbest
+   * metindir; bu sayede eskiden LLM'in ürettiği etiketlerin rerank skorunu
+   * domine etmesinden kaynaklanan çarpıtma ortadan kalkar.
+   *
+   * Hata/timeout durumunda sessizce {offTopic:false, expandedQuery:freeText}
+   * döner — akış ham metinle devam eder, kullanıcı bir şey kaybetmez.
+   */
+  private async expandIntent(input: {
+    freeText: string;
+    timeOfDay: string;
+    locale: SupportedAiLocale;
+    modelName: string;
+    openaiProvider: ReturnType<typeof createOpenAI>;
+    flowId?: string;
+    userId?: Types.ObjectId | string;
+  }): Promise<{ offTopic: boolean; expandedQuery: string }> {
+    const fallback = { offTopic: false, expandedQuery: input.freeText };
+    const timeoutController = new AbortController();
+    const timeout = setTimeout(() => timeoutController.abort(), 4000);
+
+    try {
+      const result = await generateObject({
+        model: input.openaiProvider(input.modelName),
+        abortSignal: timeoutController.signal,
+        temperature: 0,
+        schema: z.object({
+          offTopic: z.boolean(),
+          expandedQuery: z.string(),
+        }),
+        system: [
+          'Sen bir İslami zikir öneri sisteminin niyet genişletme katmanısın.',
+          'Kullanıcının serbest metnini alıp iki şey üretirsin.',
+          '',
+          '**offTopic — yalnızca şu durumlarda true:**',
+          '- Anlamsız/rastgele karakter dizileri (ör. "sllsd", "asdfg", "123abc")',
+          '- Genel sohbet, selamlama, kısa tepki veya iltifat (ör. "teşekkürler", "harikasın", "nasılsın")',
+          '- Model, sistem veya teknik sorular',
+          '- İslami yaşam, manevi hal, duygu veya niyetle HİÇBİR bağlantısı olmayan içerik',
+          'Bunların dışındaki her şey (üzüntü, şükür, kaygı, hastalık, yolculuk, şükran, belirsiz manevi arayış) false olmalıdır.',
+          '',
+          '**expandedQuery — anlamsal vektör araması için niyet cümlesi:**',
+          '- Kullanıcının kısa veya örtük ifadesini, altında yatan manevi ihtiyacı açan 1-2 cümleye genişlet.',
+          '- Örnek: "canım sıkkın" → "iç sıkıntısı, keder ve daralma hali; gönül ferahlığı, teselli, sabır ve huzur arayışı".',
+          '- Eş anlamlı ve yakın kavramları serbestçe kullan; arama kapsamını genişletmek amaçtır.',
+          '- Düz metin yaz. Etiket listesi, kategori adı, JSON veya madde işareti KULLANMA.',
+          '- offTopic true ise expandedQuery boş string olabilir.',
+          '',
+          `Bilgi: şu anki zaman dilimi "${input.timeOfDay}". Kullanıcı açıkça zaman belirtmediyse bunu expandedQuery'ye katma.`,
+        ].join('\n'),
+        prompt: `Kullanıcı metni: ${input.freeText}\n\nLocale: ${input.locale}`,
+      });
+
+      void this.usageService.record({
+        kind: 'expand',
+        model: input.modelName,
+        usage: result.usage,
+        flowId: input.flowId,
+        userId: input.userId,
+      });
+
+      const expanded = result.object.expandedQuery?.trim();
+      return {
+        offTopic: result.object.offTopic,
+        expandedQuery: expanded || input.freeText,
+      };
+    } catch (error) {
+      this.logger.warn(
+        `Niyet genişletme başarısız, ham metinle devam ediliyor: ${this.describeError(error)}`,
+      );
+      return fallback;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  /**
+   * Öneri akışı: (1) ucuz niyet genişletme + off-topic turu, (2) deterministik
+   * aday çekme (saf $vectorSearch — LLM etiket üretmez), (3) tek LLM turunda
+   * seçim + metin yazımı.
+   *
+   * OPENAI_API_KEY yoksa, aday bulunamazsa veya LLM çağrısı başarısız olursa
+   * null döner → çağıran taraftaki fallback zinciri devreye girer.
    */
   private async runRecommendationAgent(input: {
     freeText?: string;
@@ -622,14 +563,42 @@ export class AiService {
       return Number.isInteger(raw) && raw > 0 ? raw : fallback;
     };
     const ragPassageLimit = readIntEnv('AI_RAG_PASSAGE_LIMIT', 4);
-    const recommendMaxSteps = readIntEnv('AI_RECOMMEND_MAX_STEPS', 4);
+    const candidateLimit = Math.min(readIntEnv('AI_CANDIDATE_LIMIT', 15), 20);
 
-    // ── Faz F: Ön-retrieval (RAG) ────────────────────────────────────────────
-    // freeText varsa siyer kaynaklarından ilgili pasajları çekip system prompt'a
-    // grounding bağlamı olarak enjekte ederiz. Deterministik, tek tur.
-    const sourceQuery = input.freeText?.trim();
-    const sources: SourcePassageResult[] = sourceQuery
-      ? await this.searchSourcePassagesForAgent(sourceQuery, ragPassageLimit)
+    // ── 1. Niyet genişletme + off-topic ──────────────────────────────────────
+    // freeText yoksa bu tur hiç çalışmaz (zaman tabanlı öneri yolu).
+    const trimmedFreeText = input.freeText?.trim();
+    let searchQuery = trimmedFreeText;
+    if (trimmedFreeText) {
+      this.emitStep(
+        input.socketId,
+        'expanding',
+        'Niyetin derinleştiriliyor...',
+      );
+      const expansion = await this.expandIntent({
+        freeText: trimmedFreeText,
+        timeOfDay,
+        locale: input.locale,
+        modelName,
+        openaiProvider,
+        flowId: input.flowId,
+        userId: input.userId,
+      });
+      if (expansion.offTopic) {
+        this.logger.log(`[agent:expand] off-topic tespit edildi`);
+        return { ids: [], summary: '', items: [], offTopic: true };
+      }
+      searchQuery = expansion.expandedQuery;
+      this.logger.log(
+        `[agent:expand] "${trimmedFreeText.slice(0, 40)}" → "${searchQuery.slice(0, 80)}"`,
+      );
+    }
+
+    // ── 2. Faz F: Ön-retrieval (RAG) ─────────────────────────────────────────
+    // Genişletilmiş niyetle siyer kaynaklarından ilgili pasajları çekip system
+    // prompt'a grounding bağlamı olarak enjekte ederiz. Deterministik, tek tur.
+    const sources: SourcePassageResult[] = searchQuery
+      ? await this.searchSourcePassagesForAgent(searchQuery, ragPassageLimit)
       : [];
     if (sources.length > 0) {
       this.logger.log(
@@ -652,34 +621,37 @@ export class AiService {
           ].join('\n')
         : '';
 
+    // ── 3. Deterministik aday çekme ──────────────────────────────────────────
+    // freeText varsa params BOŞ geçilir → hasAnySignal false → _tagScore 0 →
+    // sıralama tamamen $vectorSearch skoruna aittir (saf anlamsal arama).
+    // freeText yoksa timeOfDay bonuslu $setIntersection yoluna düşülür.
+    this.emitStep(input.socketId, 'searching', 'Zikirler taranıyor...');
+    const candidates = await this.searchDhikrsForAgent(
+      searchQuery
+        ? { limit: candidateLimit }
+        : { timeOfDay, limit: candidateLimit },
+      input.recentDhikrIds,
+      searchQuery,
+    );
+    this.logger.log(
+      `[agent:retrieval] ${candidates.length} aday (mode=${searchQuery ? 'vector' : 'timeOfDay'})`,
+    );
+    if (candidates.length === 0) {
+      this.logger.warn('[agent:retrieval] aday bulunamadı → fallback');
+      return null;
+    }
+
     const systemPrompt = [
       'Sen bir İslami zikir öneri asistanısın.',
       '',
       '**GÖREVİN:**',
-      'Kullanıcının niyetine, haline veya duygusal durumuna göre searchDhikrs aracıyla uygun zikirleri bul; ardından selectRecommendations ile seçimini raporla.',
-      '',
-      '**OFF-TOPIC TESPİTİ — yalnızca şu durumlarda reportOffTopic çağır:**',
-      '- Anlamsız/rastgele karakter dizileri (ör. "sllsd", "asdfg", "123abc")',
-      '- Genel sohbet, selamlama, kısa tepki veya iltifat (ör. "teşekkürler", "harikasın", "nasılsın")',
-      '- Model, sistem veya teknik sorular',
-      '- İslami yaşam, manevi hal, duygu veya niyetle HİÇBİR bağlantısı olmayan içerik',
-      '',
-      '**NORMAL AKIŞ:**',
-      "1. freeText null ise → searchDhikrs'i timeOfDay ile çağır, genel zaman önerisi yap.",
-      '2. freeText varsa → niyeti analiz et, uygun parametrelerle searchDhikrs çağır.',
-      "3. Sonuç zayıfsa (3'ten az veya alakasız) → farklı/daha geniş parametrelerle tekrar searchDhikrs çağır.",
-      '4. En uygun zikirleri seç → selectRecommendations çağır.',
-      '',
-      '**searchDhikrs PARAMETRELERİ:**',
-      '- suitableFor: Zikrin uygun olduğu durumlar (ör. "hasta", "yolcu", "anne")',
-      '- tags: Metinde geçen İslami temalar (ör. "şükür", "sabır", "şifa")',
-      `- categories: Yalnızca şu listeden eşleşenleri kullan: ${KNOWN_CATEGORIES.join(', ')}`,
-      `- timeOfDay: Şu anki zaman dilimi "${timeOfDay}" — niyete göre arama yapıyorsan öncelik niyette; yalnızca zaman tabanlı öneride bu alanı kullan`,
+      'Sana ADAY ZİKİRLER listesi verildi. Kullanıcının niyetine en uygun olanları seç ve selectRecommendations ile raporla. Başka araç yok, başka adım yok.',
       '',
       '**SEÇİM KRİTERLERİ:**',
       '- Niyete EN DOĞRUDAN hitap eden zikirleri öncele; dolaylı/teğet ilgilileri alta koy',
-      "- YALNIZCA searchDhikrs'ten dönen id'leri kullan, liste dışından ID üretme",
+      "- YALNIZCA aday listesindeki id'leri kullan, liste dışından ID üretme",
       `- Maksimum ${input.maxRecommendations} zikir; doldurmak için alakasız ekleme yapma`,
+      '- Listede niyete gerçekten uyan daha az zikir varsa daha az öner',
       '',
       '**selectRecommendations YAZIM KURALLARI:**',
       '- summary: Kullanıcının niyetini samimiyetle kabul eden sıcak 3-5 cümle. "inşallah", "Allah kabul etsin", "maşallah" gibi ifadeler kullan. Zikir ismi yazma.',
@@ -691,21 +663,22 @@ export class AiService {
         : 'Write the summary and each reason in Turkish.',
     ].join('\n');
 
+    const userPrompt = [
+      `Kullanıcı niyeti: ${input.freeText ?? '(belirtilmedi — zaman tabanlı genel öneri yap)'}`,
+      `Zaman dilimi: ${timeOfDay}`,
+      '',
+      'ADAY ZİKİRLER:',
+      ...candidates.map((c) => JSON.stringify(c)),
+    ].join('\n');
+
     let agentResult: AgentResult | null = null;
-    let offTopicDetected = false;
-    let searchCallCount = 0;
 
     try {
       const genResult = await generateText({
         model: openaiProvider(modelName),
-        stopWhen: stepCountIs(recommendMaxSteps),
+        stopWhen: stepCountIs(2),
         system: systemPrompt,
-        prompt: JSON.stringify({
-          freeText: input.freeText ?? null,
-          timeContext: input.timeContext,
-          recentDhikrIds: input.recentDhikrIds,
-          maxRecommendations: input.maxRecommendations,
-        }),
+        prompt: userPrompt,
         onStepFinish: ({ stepNumber, toolCalls, finishReason }) => {
           const tools = toolCalls?.map((t) => t.toolName).join(', ') || '-';
           this.logger.debug(
@@ -713,38 +686,6 @@ export class AiService {
           );
         },
         tools: {
-          searchDhikrs: tool({
-            description:
-              "MongoDB'den niyete göre zikir ara. Sonuç yetersizse farklı parametrelerle tekrar çağır.",
-            inputSchema: z.object({
-              suitableFor: z.array(z.string()).optional(),
-              tags: z.array(z.string()).optional(),
-              categories: z.array(z.string()).optional(),
-              timeOfDay: z
-                .enum(['morning', 'evening', 'night', 'any'])
-                .optional(),
-              limit: z.number().int().min(1).max(10).optional(),
-            }),
-            execute: async (params) => {
-              const stepKey = searchCallCount === 0 ? 'searching' : 'widening';
-              const stepMsg =
-                searchCallCount === 0
-                  ? 'Zikirler taranıyor...'
-                  : 'Arama genişletiliyor...';
-              this.emitStep(input.socketId, stepKey, stepMsg);
-              searchCallCount++;
-              this.logger.log(
-                `[agent:searchDhikrs] categories=[${params.categories?.join(', ') ?? ''}] tags=[${params.tags?.join(', ') ?? ''}] suitableFor=[${params.suitableFor?.join(', ') ?? ''}] timeOfDay=${params.timeOfDay ?? '-'}`,
-              );
-              const results = await this.searchDhikrsForAgent(
-                params,
-                input.recentDhikrIds,
-                input.freeText,
-              );
-              this.logger.log(`[agent:searchDhikrs] → ${results.length} sonuç`);
-              return results;
-            },
-          }),
           selectRecommendations: tool({
             description:
               'Seçilen zikirleri ve gerekçelerini raporla. Görev bu araçla tamamlanır.',
@@ -770,18 +711,6 @@ export class AiService {
               return { success: true };
             },
           }),
-          reportOffTopic: tool({
-            description:
-              'Kullanıcı içeriği zikir/dua/manevi konularla ilgili değilse çağır.',
-            inputSchema: z.object({ reason: z.string().optional() }),
-            execute: (params) => {
-              this.logger.log(
-                `[agent:reportOffTopic] reason="${params.reason ?? '-'}"`,
-              );
-              offTopicDetected = true;
-              return { acknowledged: true };
-            },
-          }),
         },
       });
 
@@ -800,9 +729,6 @@ export class AiService {
       return null;
     }
 
-    if (offTopicDetected) {
-      return { ids: [], summary: '', items: [], offTopic: true };
-    }
     // Faz F: ön-retrieval sonuçlarını backend sonucuna iliştir (UI'a taşınmaz).
     // agentResult closure içinde atandığından TS onu ana akışta 'null'a daraltır;
     // cast ile bu daralmayı kırıyoruz.
@@ -917,7 +843,9 @@ export class AiService {
       ...(recentObjectIds.length > 0 ? { _id: { $nin: recentObjectIds } } : {}),
     };
 
-    const limit = Math.min(params.limit ?? 10, 10);
+    // Tavan 20: $vectorSearch.limit = limit*3 = 60 olur ve numCandidates (100)
+    // altında kaldığı için Atlas index'inde değişiklik gerekmez.
+    const limit = Math.min(params.limit ?? 10, 20);
     const hasSuitableFor = (params.suitableFor?.length ?? 0) > 0;
     const hasTags = (params.tags?.length ?? 0) > 0;
     const hasCategories = (params.categories?.length ?? 0) > 0;

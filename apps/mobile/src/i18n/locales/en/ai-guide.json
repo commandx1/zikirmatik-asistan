@@ -37,8 +37,8 @@
     "steps": {
       "analyzing": "Analyzing your intention...",
       "thinking": "Preparing the dhikr database...",
+      "expanding": "Deepening your intention...",
       "searching": "Searching dhikrs...",
-      "widening": "Widening the search...",
       "selecting": "Selecting the best dhikrs for you...",
       "fallback": "Preparing general recommendations...",
       "finalizing": "Preparing recommendations..."
