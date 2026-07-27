@@ -7,14 +7,13 @@
     "dayUnit": "DAYS"
   },
   "hero": {
-    "premiumLocked": "Premium Locked",
     "remainingPrefix": "Remaining: {{remaining}}",
     "badgeToday": "TODAY",
     "badgeUpcoming": "UPCOMING"
   },
   "action": {
     "cta": "View",
-    "defaultSubtitle": "Recommended dhikrs for today"
+    "defaultSubtitle": "What you should know about this day"
   },
   "notificationSettings": {
     "title": "Get kandil notifications",
@@ -27,8 +26,7 @@
     "cta": "Go to Ramadan dhikrs"
   },
   "upcoming": {
-    "title": "Upcoming Days",
-    "premiumLocked": "Premium Locked"
+    "title": "Upcoming Days"
   },
   "remaining": {
     "today": "Today",
@@ -39,18 +37,18 @@
     "homeLoadFailed": "Special day data could not be retrieved.",
     "detailLoadFailed": "Special day detail could not be retrieved.",
     "fetchFailed": "Special day data could not be retrieved.",
-    "serverUnreachable": "Cannot reach the server. Please try again.",
-    "loginRequired": "You must sign in to save.",
-    "saveFailed": "Dhikr could not be saved."
+    "serverUnreachable": "Cannot reach the server. Please try again."
   },
   "detail": {
     "pageTitle": "Special Day Detail",
-    "notStarted": "Not started yet",
     "themeTitle": "Theme of the Day",
-    "completedLabel": "Completed: {{completed}}/{{total}}",
-    "recommendedDhikrs": "Recommended Dhikrs",
-    "completed": "Completed",
-    "target": "Target: {{target}} repetitions",
-    "start": "Start"
+    "article": "About This Day",
+    "practices": "Recommended Acts of Worship",
+    "aiCta": {
+      "title": "Dhikr suggestions for this day",
+      "subtitle": "Let AI Guide pick the dhikrs that fit this day and your situation.",
+      "button": "Get suggestions from AI Guide",
+      "prefill": "Which dhikrs should I recite for {{name}}?"
+    }
   }
 }

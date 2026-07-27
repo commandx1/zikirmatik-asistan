@@ -17,10 +17,10 @@
   "specialDay": {
     "channelName": "Özel Günler",
     "title": "Bugün: {{name}}",
-    "body": "Bu mübarek günü zikir ve dua ile değerlendir."
+    "body": "Bu güne dair açıklamayı oku ve tavsiye edilen ibadetlere göz at."
   },
   "kandil": {
     "title": "Bu gece {{name}}",
-    "body": "Bu mübarek geceyi salavat, dua ve istiğfar ile ihya et."
+    "body": "Bu gecenin anlamını oku ve nasıl ihya edebileceğine bak."
   }
 }

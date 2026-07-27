@@ -96,7 +96,13 @@ async function scheduleSpecialDays(now: Date): Promise<number> {
         title: i18n.t(titleKey, { name }),
         body: i18n.t(bodyKey),
         sound: Platform.OS === "ios" ? "default" : undefined,
-        data: { kind: SPECIAL_DAY_KIND, specialDayId: day.id }
+        data: {
+          kind: SPECIAL_DAY_KIND,
+          specialDayId: day.id,
+          // Detay ekranı eventKey ile de açılabiliyor (API `:id/detail`
+          // hem ObjectId hem eventKey kabul eder).
+          route: `/special-days/${day.id}`
+        }
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -110,13 +116,27 @@ async function scheduleSpecialDays(now: Date): Promise<number> {
   return scheduled;
 }
 
-/** Bugünkü (dahil) ve gelecekteki özel günleri kronolojik, sınırlı sayıda döndürür. */
+/**
+ * Bugünkü (dahil) ve gelecekteki özel günleri kronolojik, sınırlı sayıda
+ * döndürür. Aynı güne birden çok olay düşerse (ör. 10 Aralık 2026: Üç Aylar
+ * başlangıcı + Regaib Kandili) tek bildirim kalır; kandil öncelenir.
+ */
 export function selectUpcomingSpecialDays(now: Date): SpecialDayNotification[] {
-  return SPECIAL_DAY_NOTIFICATIONS.filter((day) => {
+  const byDate = new Map<string, SpecialDayNotification>();
+
+  for (const day of SPECIAL_DAY_NOTIFICATIONS) {
     const trigger = buildSpecialDayTriggerDate(day.date);
-    return trigger != null && trigger.getTime() > now.getTime();
-  })
-    .slice()
+    if (trigger == null || trigger.getTime() <= now.getTime()) {
+      continue;
+    }
+
+    const existing = byDate.get(day.date);
+    if (!existing || (day.type === "kandil" && existing.type !== "kandil")) {
+      byDate.set(day.date, day);
+    }
+  }
+
+  return [...byDate.values()]
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
     .slice(0, MAX_SPECIAL_DAY_NOTIFICATIONS);
 }

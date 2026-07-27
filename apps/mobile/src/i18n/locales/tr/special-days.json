@@ -7,14 +7,13 @@
     "dayUnit": "GÜN"
   },
   "hero": {
-    "premiumLocked": "Premium Kilidi",
     "remainingPrefix": "Kalan: {{remaining}}",
     "badgeToday": "BUGÜN",
     "badgeUpcoming": "YAKLAŞAN"
   },
   "action": {
     "cta": "İncele",
-    "defaultSubtitle": "Bugün için önerilen zikirler"
+    "defaultSubtitle": "Bu güne dair bilmen gerekenler"
   },
   "notificationSettings": {
     "title": "Kandil bildirimlerini al",
@@ -27,8 +26,7 @@
     "cta": "Ramazan zikirlerine git"
   },
   "upcoming": {
-    "title": "Yaklaşan Günler",
-    "premiumLocked": "Premium Kilidi"
+    "title": "Yaklaşan Günler"
   },
   "remaining": {
     "today": "Bugün",
@@ -39,18 +37,18 @@
     "homeLoadFailed": "Özel gün verisi alınamadı.",
     "detailLoadFailed": "Özel gün detayı alınamadı.",
     "fetchFailed": "Özel gün verisi alınamadı.",
-    "serverUnreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin.",
-    "loginRequired": "Kaydetmek için giriş yapmalısın.",
-    "saveFailed": "Zikir kaydedilemedi."
+    "serverUnreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin."
   },
   "detail": {
     "pageTitle": "Özel Gün Detayı",
-    "notStarted": "Henüz başlanmadı",
     "themeTitle": "Günün Teması",
-    "completedLabel": "Tamamlanan: {{completed}}/{{total}}",
-    "recommendedDhikrs": "Önerilen Zikirler",
-    "completed": "Tamamlandı",
-    "target": "Hedef: {{target}} tekrar",
-    "start": "Başla"
+    "article": "Bu Gün Hakkında",
+    "practices": "Tavsiye Edilen İbadetler",
+    "aiCta": {
+      "title": "Bu güne özel zikir önerisi",
+      "subtitle": "AI Rehber, bu güne uygun zikirleri senin durumuna göre seçsin.",
+      "button": "AI Rehber ile öneri al",
+      "prefill": "{{name}} için hangi zikirleri yapmalıyım?"
+    }
   }
 }

@@ -307,6 +307,70 @@ export const mevlidKandili = {
         tr: 'Peygamber Efendimizin doğumunu salavat, tevhid, istiğfar ve dua ile ihya etme gecesi.',
         en: 'The night on which the birth of our Prophet is commemorated and kept alive with salawat, tawhid, istighfar, and supplication.',
       },
+      article: {
+        tr: `Mevlid Kandili, Peygamber Efendimiz Muhammed Mustafa'nın (s.a.v.) dünyaya teşrif ettiği gecenin yıl dönümüdür. Rebiülevvel ayının on ikinci gecesi olarak anılır ve ülkemizde bu geceye "Mevlid Kandili" adı verilir. Kandil, Arapça'da "kandil, ışık" anlamına gelen bir kelimeden gelir; Osmanlı döneminde bu gecelerde camilerin minarelerinde kandiller yakıldığı için bu isim yerleşmiştir.
+
+Efendimiz'in doğduğu dönem, Arap Yarımadası'nda putperestliğin, kabile savaşlarının ve sosyal adaletsizliğin hüküm sürdüğü bir zamandı. Yüce Allah, insanlığa bir rahmet olarak O'nu göndermiştir: "Biz seni ancak âlemlere rahmet olarak gönderdik." (Enbiyâ, 21/107). Bu gece, sadece bir doğum yıl dönümü değil; karanlıktan aydınlığa çıkışın, bir rahmet çağının başlangıcının hatırlandığı gecedir.
+
+Mevlid gecesini ihya etmenin özü, gösterişli merasimler değil, Efendimiz'e olan sevgiyi amele dönüştürmektir. Bu sevginin en somut ifadesi salavattır. Yüce Allah şöyle buyurur: "Şüphesiz Allah ve melekleri Peygamber'e salât ediyorlar. Ey iman edenler! Siz de ona salât edin ve tam bir teslimiyetle selam verin." (Ahzâb, 33/56). Bu gece bol bol salavat getirmek, hem bu ilahî emre uymak hem de Efendimiz'e olan bağlılığı tazelemektir.
+
+Bu geceyi anlamlı kılmanın bir diğer yolu da O'nu daha yakından tanımaktır. Siyerini okumak, hadislerini öğrenmek, ahlakını hayatımıza taşımak — sevginin gerçek karşılığı budur. Zira Efendimiz'i sevmek, O'nun getirdiği ölçülerle yaşamayı da beraberinde getirir. Kandil geceleri, yılın geri kalanına dağılacak bir niyet tazeleme fırsatıdır: kul hakkını gözetmek, akrabayı ziyaret etmek, muhtacı görmek ve namazı ihmal etmemek gibi.
+
+Bu gece kılınan namaz, okunan Kur'an, yapılan dua ve verilen sadaka; kalbi yumuşatan, insanı Rabbine yaklaştıran amellerdir. Kandili tek başına bir "gece programı" olarak değil, hayatı yeniden Efendimiz'in izine yöneltmek için bir başlangıç olarak değerlendirmek en güzelidir.`,
+        en: `Mawlid al-Nabi marks the anniversary of the night on which the Prophet Muhammad (peace be upon him) came into the world. It is observed on the twelfth night of Rabi' al-Awwal, and in Türkiye it is known as a "kandil" night — a name that goes back to the Ottoman practice of lighting lamps on the minarets of mosques on such nights.
+
+The Prophet was born into an age in which idolatry, tribal warfare, and social injustice prevailed across the Arabian Peninsula. God sent him as a mercy to all creation: "We have sent you only as a mercy to the worlds." (al-Anbiya, 21:107). This night, then, is not merely the anniversary of a birth; it is a remembrance of the moment when an age of mercy began and darkness gave way to light.
+
+The heart of keeping this night alive is not elaborate ceremony but turning love for the Prophet into action. The most concrete expression of that love is the salawat. God says: "Indeed, God and His angels send blessings upon the Prophet. O you who believe, send blessings upon him and greet him with peace." (al-Ahzab, 33:56). Reciting salawat abundantly on this night is both obedience to this divine command and a renewal of one's attachment to him.
+
+Another way to give this night meaning is to come to know him better: reading his life story, learning his hadith, and carrying his character into our own lives. Love for the Prophet naturally entails living by the measures he brought. Kandil nights are an opportunity to renew intentions that will carry through the rest of the year — guarding the rights of others, visiting relatives, noticing those in need, and never neglecting the prayer.
+
+The prayers offered, the Qur'an recited, the supplications made, and the charity given on this night are all deeds that soften the heart and draw a person nearer to their Lord. It is best to treat this night not as a self-contained programme but as a starting point for reorienting one's life toward the Prophet's example.`,
+      },
+      practices: [
+        {
+          title: { tr: 'Bol bol salavat getirmek', en: 'Reciting salawat abundantly' },
+          description: {
+            tr: "Bu gecenin en belirgin ibadeti salavattır. Ahzâb sûresi 56. âyetteki emre uyarak gün boyu ve gece salavat getirilir. Sade \"Allâhümme salli alâ seyyidinâ Muhammed\" cümlesinden Salât-ı Fâtih ve Salât-ı Münciye gibi meşhur salavatlara kadar dilediğinizi tercih edebilirsiniz.",
+            en: 'Salawat is the most characteristic act of worship on this night. Following the command in al-Ahzab 33:56, blessings are sent upon the Prophet throughout the day and night — from the simple "Allahumma salli ala sayyidina Muhammad" to well-known formulas such as Salat al-Fatih and Salat al-Munjiya.',
+          },
+        },
+        {
+          title: { tr: 'Siyer ve hadis okumak', en: 'Reading the sira and hadith' },
+          description: {
+            tr: 'Efendimiz\'in hayatından bir bölüm okumak, çocuklara O\'nun ahlakından bir örnek anlatmak bu geceyi bilgiyle besler. Sevgi, tanımakla derinleşir.',
+            en: "Reading a passage from the Prophet's life, or telling children an example of his character, feeds this night with knowledge. Love deepens through acquaintance.",
+          },
+        },
+        {
+          title: { tr: 'Kaza ve nafile namaz kılmak', en: 'Praying missed and voluntary prayers' },
+          description: {
+            tr: 'Varsa kaza namazlarını kılmak öncelikli sayılır; ardından nafile namaz, tesbih namazı veya teheccüd ile gece ihya edilir. Kandile mahsus özel rekât sayısı yoktur; niyet ve huşû esastır.',
+            en: 'Making up any missed obligatory prayers takes priority; after that the night is kept alive with voluntary prayers, salat al-tasbih, or tahajjud. There is no fixed number of units specific to this night — intention and presence of heart are what matter.',
+          },
+        },
+        {
+          title: { tr: 'Kur\'an tilaveti ve istiğfar', en: 'Qur\'an recitation and istighfar' },
+          description: {
+            tr: 'Bir cüz veya gücünüz nispetinde Kur\'an okumak, ardından tevbe ve istiğfarla kalbi arındırmak bu gecenin bereketini artırır.',
+            en: 'Reciting a portion of the Qur\'an according to your capacity, then purifying the heart with repentance and seeking forgiveness, increases the blessing of this night.',
+          },
+        },
+        {
+          title: { tr: 'Sadaka vermek ve gönül almak', en: 'Giving charity and mending ties' },
+          description: {
+            tr: 'Muhtaç bir kimseye sadaka vermek, küskün olduğunuz biriyle barışmak, akrabayı arayıp hâlini sormak — Efendimiz\'in en çok üzerinde durduğu ameller bunlardır. Kandil, bu adımları atmak için iyi bir vesiledir.',
+            en: 'Giving charity to someone in need, reconciling with a person you have fallen out with, and calling on relatives to ask after them are among the deeds the Prophet emphasised most. This night is a good occasion for such steps.',
+          },
+        },
+        {
+          title: { tr: 'Dua etmek', en: 'Making supplication' },
+          description: {
+            tr: 'Kendiniz, aileniz ve tüm ümmet için dua edin. Duanın başında ve sonunda salavat getirmek, kabulüne vesile sayılan bir edeptir.',
+            en: 'Pray for yourself, your family, and the whole community. Beginning and ending supplication with salawat is an etiquette considered a means for its acceptance.',
+          },
+        },
+      ],
       eventKey: 'mevlid-kandili-2026',
       priority: 180,
       dhikrKeys: [

@@ -1,31 +1,15 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
 import type { LocalizedText } from '../../common/types/localized-text';
-import {
-  DhikrLog,
-  type DhikrLogDocument,
-} from '../dhikr-logs/schemas/dhikr-log.schema';
-import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
-import { User, type UserDocument } from '../users/schemas/user.schema';
 import { CreateSpecialDayDto } from './dto/create-special-day.dto';
-import { QuerySpecialDayDetailDto } from './dto/query-special-day-detail.dto';
 import { QuerySpecialDaysDto } from './dto/query-special-days.dto';
 import { QuerySpecialDaysHomeDto } from './dto/query-special-days-home.dto';
 import { UpdateSpecialDayDto } from './dto/update-special-day.dto';
-import { UpdateSpecialDayProgressDto } from './dto/update-special-day-progress.dto';
-import {
-  SpecialDayProgress,
-  type SpecialDayProgressDocument,
-} from './schemas/special-day-progress.schema';
 import {
   SpecialDay,
   type SpecialDayDocument,
+  type SpecialDayPractice,
 } from './schemas/special-day.schema';
 
 type SpecialDayLean = {
@@ -39,40 +23,24 @@ type SpecialDayLean = {
   dayIndex?: number;
   dayCount?: number;
   priority?: number;
-  recommendedDhikrIds: Types.ObjectId[];
+  article?: LocalizedText;
+  practices?: SpecialDayPractice[];
   hasSpecialFlow?: boolean;
   notifyBeforeMinutes?: number[];
   isActive?: boolean;
 };
-
-const FREE_VISIBLE_TYPES: Array<SpecialDayLean['type']> = ['kandil', 'bayram'];
-const MAX_SPECIAL_DAY_DHIKR_RECOMMENDATIONS = 5;
 
 @Injectable()
 export class SpecialDaysService {
   constructor(
     @InjectModel(SpecialDay.name)
     private readonly specialDayModel: Model<SpecialDayDocument>,
-    @InjectModel(SpecialDayProgress.name)
-    private readonly specialDayProgressModel: Model<SpecialDayProgressDocument>,
-    @InjectModel(Dhikr.name)
-    private readonly dhikrModel: Model<DhikrDocument>,
-    @InjectModel(DhikrLog.name)
-    private readonly dhikrLogModel: Model<DhikrLogDocument>,
-    @InjectModel(User.name)
-    private readonly userModel: Model<UserDocument>,
   ) {}
 
   async create(payload: CreateSpecialDayDto) {
-    const recommendedDhikrIds = payload.recommendedDhikrIds ?? [];
-    await this.ensureDhikrsExist(recommendedDhikrIds);
-
     const created = await this.specialDayModel.create({
       ...payload,
       eventKey: normalizeEventKey(payload.eventKey),
-      recommendedDhikrIds: recommendedDhikrIds.map(
-        (id) => new Types.ObjectId(id),
-      ),
       notifyBeforeMinutes: payload.notifyBeforeMinutes ?? [1440, 60],
       hasSpecialFlow: payload.hasSpecialFlow ?? false,
       priority: payload.priority ?? resolveDefaultPriority(payload.type),
@@ -105,7 +73,6 @@ export class SpecialDaysService {
 
   async getHome(query: QuerySpecialDaysHomeDto) {
     const date = query.date ?? toDateKey(new Date());
-    const isPremiumUser = await this.isPremiumUser(query.userId);
 
     const activeDays = await this.specialDayModel
       .find({
@@ -125,231 +92,39 @@ export class SpecialDaysService {
     const upcoming = activeDays
       .filter((item) => item.date > date)
       .slice(0, 18)
-      .map((item) => this.mapUpcoming(item as SpecialDayLean, isPremiumUser));
+      .map((item) => this.mapUpcoming(item as SpecialDayLean));
 
     return {
       referenceDate: date,
-      hero: hero ? this.mapHero(hero, heroSource, isPremiumUser) : null,
-      action: hero ? this.mapAction(hero, isPremiumUser) : null,
+      hero: hero ? this.mapHero(hero, heroSource) : null,
+      action: hero ? this.mapAction(hero) : null,
       upcoming,
     };
   }
 
-  async getDetail(id: string, userId?: QuerySpecialDayDetailDto['userId']) {
-    const specialDayId = this.asObjectId(id);
-    const specialDay = await this.specialDayModel
-      .findById(specialDayId)
-      .lean()
-      .exec();
-
-    if (!specialDay) {
-      throw new NotFoundException('Özel gün kaydı bulunamadı.');
-    }
-
-    const isPremiumUser = await this.isPremiumUser(userId);
-    if (!isPremiumUser && !FREE_VISIBLE_TYPES.includes(specialDay.type)) {
-      throw new ForbiddenException(
-        'Bu özel gün Premium üyelik ile görüntülenebilir.',
-      );
-    }
-
-    const recommendedIds = specialDay.recommendedDhikrIds.map((value) =>
-      value.toString(),
-    );
-    const recommendedItemsRaw =
-      recommendedIds.length > 0
-        ? await this.dhikrModel
-            .find({ _id: { $in: specialDay.recommendedDhikrIds } })
-            .lean()
-            .exec()
-        : [];
-
-    const itemById = new Map(
-      recommendedItemsRaw.map((item) => [item._id.toString(), item]),
-    );
-
-    let completedSet = new Set<string>();
-    let latestLogByDhikrId = new Map<
-      string,
-      {
-        count: number;
-        targetCount: number;
-      }
-    >();
-    if (userId) {
-      const userObjectId = this.asObjectId(userId);
-      const progress = await this.specialDayProgressModel
-        .findOne({
-          userId: userObjectId,
-          specialDayId,
-        })
-        .lean()
-        .exec();
-
-      completedSet = new Set(
-        (progress?.completedDhikrIds ?? []).map((value) => value.toString()),
-      );
-
-      if (specialDay.recommendedDhikrIds.length > 0) {
-        const logs = await this.dhikrLogModel
-          .find({
-            userId: userObjectId,
-            date: specialDay.date,
-            dhikrId: { $in: specialDay.recommendedDhikrIds },
-          })
-          .sort({ createdAt: -1 })
+  async getDetail(id: string) {
+    // Mobil lokal bildirimleri ObjectId'yi bilmez; payload'da `eventKey`
+    // taşırlar (`/special-days/<eventKey>`). Bu yüzden detay her iki
+    // tanımlayıcıyı da kabul eder. Çok fazlı olaylarda ilk gün döner.
+    const specialDay = Types.ObjectId.isValid(id)
+      ? await this.specialDayModel.findById(new Types.ObjectId(id)).lean().exec()
+      : await this.specialDayModel
+          .findOne({ eventKey: id })
+          .sort({ dayIndex: 1, date: 1 })
           .lean()
           .exec();
 
-        latestLogByDhikrId = new Map();
-        for (const item of logs) {
-          if (!item.dhikrId) {
-            continue;
-          }
-
-          const key = item.dhikrId.toString();
-          if (latestLogByDhikrId.has(key)) {
-            continue;
-          }
-
-          latestLogByDhikrId.set(key, {
-            count: item.count,
-            targetCount: item.targetCount,
-          });
-        }
-      }
-    }
-
-    const recommendedDhikrs = recommendedIds
-      .map((dhikrId) => {
-        const item = itemById.get(dhikrId);
-        if (!item) {
-          return null;
-        }
-
-        return {
-          id: item._id.toString(),
-          name: item.name,
-          nameArabic: item.nameArabic,
-          transliteration: item.transliteration,
-          meaning: item.meaning,
-          recommendedCount: item.recommendedCount,
-          progressCount:
-            latestLogByDhikrId.get(item._id.toString())?.count ?? 0,
-          progressTarget:
-            latestLogByDhikrId.get(item._id.toString())?.targetCount ??
-            item.recommendedCount,
-          isCompleted:
-            completedSet.has(item._id.toString()) ||
-            (latestLogByDhikrId.get(item._id.toString())?.count ?? 0) >=
-              (latestLogByDhikrId.get(item._id.toString())?.targetCount ??
-                item.recommendedCount),
-        };
-      })
-      .filter((item) => Boolean(item));
-
-    const completedTargetCount = this.getProgressTargetCount(specialDay);
-    const completedRawCount = recommendedDhikrs.filter(
-      (item) => item?.isCompleted,
-    ).length;
-    const completedCount = Math.min(completedRawCount, completedTargetCount);
-    const totalCount = completedTargetCount;
-
-    return {
-      ...this.mapSpecialDayBase(specialDay, true),
-      recommendedDhikrs,
-      progress: {
-        completedCount,
-        totalCount,
-        isCompleted: totalCount > 0 && completedRawCount >= totalCount,
-      },
-    };
-  }
-
-  async updateProgress(id: string, payload: UpdateSpecialDayProgressDto) {
-    const specialDayId = this.asObjectId(id);
-    const userId = this.asObjectId(payload.userId);
-    const dhikrId = this.asObjectId(payload.dhikrId);
-    const completed = payload.completed ?? true;
-
-    await this.ensureUserExists(userId);
-    const specialDay = await this.specialDayModel
-      .findById(specialDayId)
-      .lean()
-      .exec();
     if (!specialDay) {
       throw new NotFoundException('Özel gün kaydı bulunamadı.');
     }
 
-    const recommendedDhikrIdSet = new Set(
-      specialDay.recommendedDhikrIds.map((item) => item.toString()),
-    );
-    const isRecommendedDhikr = recommendedDhikrIdSet.has(dhikrId.toString());
-    if (!isRecommendedDhikr) {
-      throw new BadRequestException(
-        'İlerleme sadece önerilen zikirler için güncellenebilir.',
-      );
-    }
-
-    const updated = await this.specialDayProgressModel
-      .findOneAndUpdate(
-        { userId, specialDayId },
-        {
-          ...(completed
-            ? { $addToSet: { completedDhikrIds: dhikrId } }
-            : { $pull: { completedDhikrIds: dhikrId } }),
-        },
-        {
-          upsert: true,
-          returnDocument: 'after',
-          setDefaultsOnInsert: true,
-        },
-      )
-      .lean()
-      .exec();
-
-    const completedSet = new Set(
-      (updated?.completedDhikrIds ?? []).map((item) => item.toString()),
-    );
-    const progressTargetCount = this.getProgressTargetCount(specialDay);
-    const completedRawCount = Array.from(completedSet).filter((id) =>
-      recommendedDhikrIdSet.has(id),
-    ).length;
-    const isDayCompleted =
-      progressTargetCount > 0 && completedRawCount >= progressTargetCount;
-
-    const normalized = await this.specialDayProgressModel
-      .findOneAndUpdate(
-        { userId, specialDayId },
-        {
-          $set: {
-            isCompleted: isDayCompleted,
-            completedAt: isDayCompleted ? new Date() : null,
-          },
-        },
-        {
-          returnDocument: 'after',
-        },
-      )
-      .lean()
-      .exec();
-
-    const normalizedCompletedCountRaw = (
-      normalized?.completedDhikrIds ?? []
-    ).filter((item) => recommendedDhikrIdSet.has(item.toString())).length;
-    const completedCount = Math.min(
-      normalizedCompletedCountRaw,
-      progressTargetCount,
-    );
+    // Zikir önerisi artık AI Rehber'in işi; detay ekranı yalnızca okuma
+    // içeriği (article + practices) döner. İçerik metinleri editoryal olarak
+    // sonradan doldurulduğu için boş dönmesi geçerli bir durumdur.
     return {
-      userId: userId.toString(),
-      specialDayId: specialDayId.toString(),
-      completedDhikrIds:
-        normalized?.completedDhikrIds?.map((item) => item.toString()) ?? [],
-      completedCount,
-      totalCount: progressTargetCount,
-      isCompleted: Boolean(normalized?.isCompleted),
-      completedAt: normalized?.completedAt ?? undefined,
+      ...this.mapSpecialDayBase(specialDay as SpecialDayLean),
+      article: specialDay.article,
+      practices: specialDay.practices ?? [],
     };
   }
 
@@ -367,10 +142,6 @@ export class SpecialDaysService {
   }
 
   async update(id: string, payload: UpdateSpecialDayDto) {
-    if (payload.recommendedDhikrIds) {
-      await this.ensureDhikrsExist(payload.recommendedDhikrIds);
-    }
-
     const specialDay = await this.specialDayModel
       .findByIdAndUpdate(
         this.asObjectId(id),
@@ -382,13 +153,6 @@ export class SpecialDaysService {
               : {}),
             ...(payload.priority === undefined && payload.type
               ? { priority: resolveDefaultPriority(payload.type) }
-              : {}),
-            ...(payload.recommendedDhikrIds
-              ? {
-                  recommendedDhikrIds: payload.recommendedDhikrIds.map(
-                    (item) => new Types.ObjectId(item),
-                  ),
-                }
               : {}),
           },
         },
@@ -414,26 +178,17 @@ export class SpecialDaysService {
       throw new NotFoundException('Silinecek özel gün kaydı bulunamadı.');
     }
 
-    await this.specialDayProgressModel.deleteMany({
-      specialDayId: this.asObjectId(id),
-    });
-
     return {
       deleted: true,
       id,
     };
   }
 
-  private mapHero(
-    item: SpecialDayLean,
-    source: 'today' | 'upcoming',
-    isPremiumUser: boolean,
-  ) {
+  private mapHero(item: SpecialDayLean, source: 'today' | 'upcoming') {
     const diff = calculateDateDiff(item.date);
-    const isLocked = !isPremiumUser && !FREE_VISIBLE_TYPES.includes(item.type);
 
     return {
-      ...this.mapSpecialDayBase(item, isPremiumUser),
+      ...this.mapSpecialDayBase(item),
       source,
       isToday: source === 'today',
       // Ham sayısal geri sayım; etiketler (Gün/Sa/Dk) ve "Bugün/X gün"
@@ -443,29 +198,24 @@ export class SpecialDaysService {
         hours: Math.max(diff.hours, 0),
         minutes: Math.max(diff.minutes, 0),
       },
-      isLocked,
     };
   }
 
-  private mapAction(item: SpecialDayLean, isPremiumUser: boolean) {
-    const isLocked = !isPremiumUser && !FREE_VISIBLE_TYPES.includes(item.type);
-    // Sabit başlık/CTA ("Bugün Ne Yapabilirim?", "Detaya git", "Premium ile
-    // Aç") mobil i18n katmanında üretilir. API yalnızca ham çok dilli içerik
-    // ve kilit durumunu döner; alt metin mobilde description || name ile kurulur.
+  private mapAction(item: SpecialDayLean) {
+    // Sabit başlık/CTA ("Bugün Ne Yapabilirim?", "Detaya git") mobil i18n
+    // katmanında üretilir. API yalnızca ham çok dilli içeriği döner; alt metin
+    // mobilde description || name ile kurulur.
     return {
       specialDayId: item._id.toString(),
       name: item.name,
       description: item.description,
-      isLocked,
     };
   }
 
-  private mapUpcoming(item: SpecialDayLean, isPremiumUser: boolean) {
+  private mapUpcoming(item: SpecialDayLean) {
     const diff = calculateDateDiff(item.date);
-    const isLocked = !isPremiumUser && !FREE_VISIBLE_TYPES.includes(item.type);
     return {
-      ...this.mapSpecialDayBase(item, isPremiumUser),
-      isLocked,
+      ...this.mapSpecialDayBase(item),
       isToday: diff.totalMs <= 0,
       countdown: {
         days: Math.max(diff.days, 0),
@@ -475,10 +225,8 @@ export class SpecialDaysService {
     };
   }
 
-  private mapSpecialDayBase(item: SpecialDayLean, isPremiumUser: boolean) {
+  private mapSpecialDayBase(item: SpecialDayLean) {
     const theme = resolveSpecialDayTheme(item);
-    const isLocked = !isPremiumUser && !FREE_VISIBLE_TYPES.includes(item.type);
-    const effectiveRecommendedDhikrCount = this.getProgressTargetCount(item);
     return {
       id: item._id.toString(),
       name: item.name,
@@ -492,43 +240,9 @@ export class SpecialDaysService {
       dayIndex: item.dayIndex,
       dayCount: item.dayCount,
       hasSpecialFlow: Boolean(item.hasSpecialFlow),
-      recommendedDhikrCount: effectiveRecommendedDhikrCount,
       themeTitle: theme.title,
       themeSummary: theme.summary,
-      isLocked,
     };
-  }
-
-  private getProgressTargetCount(item: SpecialDayLean) {
-    return Math.min(
-      item.recommendedDhikrIds?.length ?? 0,
-      MAX_SPECIAL_DAY_DHIKR_RECOMMENDATIONS,
-    );
-  }
-
-  private async ensureDhikrsExist(ids: string[]) {
-    if (ids.length === 0) {
-      return;
-    }
-
-    const objectIds = ids.map((id) => this.asObjectId(id));
-    const uniqueIds = uniqueObjectIds(objectIds);
-
-    const count = await this.dhikrModel.countDocuments({
-      _id: { $in: uniqueIds },
-    });
-    if (count !== uniqueIds.length) {
-      throw new NotFoundException(
-        'recommendedDhikrIds içinde bulunamayan zikir(ler) var.',
-      );
-    }
-  }
-
-  private async ensureUserExists(userId: Types.ObjectId) {
-    const exists = await this.userModel.exists({ _id: userId });
-    if (!exists) {
-      throw new NotFoundException('Kullanıcı bulunamadı.');
-    }
   }
 
   private asObjectId(rawId: string) {
@@ -539,24 +253,6 @@ export class SpecialDaysService {
     return new Types.ObjectId(rawId);
   }
 
-  private async isPremiumUser(userId?: string) {
-    if (!userId || !Types.ObjectId.isValid(userId)) {
-      return false;
-    }
-
-    const user = await this.userModel
-      .findById(new Types.ObjectId(userId), { isPremium: 1 })
-      .lean()
-      .exec();
-
-    return Boolean(user?.isPremium);
-  }
-}
-
-function uniqueObjectIds(values: Types.ObjectId[]) {
-  return Array.from(
-    new Map(values.map((value) => [value.toHexString(), value])).values(),
-  );
 }
 
 function resolveDefaultPriority(type: SpecialDayLean['type']) {
@@ -690,10 +386,10 @@ function resolveSpecialDayTheme(item: SpecialDayLean): {
     summary: {
       tr:
         item.description?.tr?.trim() ||
-        `${item.name.tr} için önerilen zikir akışını takip edebilirsin.`,
+        `${item.name.tr} hakkında bilmen gerekenleri bu sayfada bulabilirsin.`,
       en:
         item.description?.en?.trim() ||
-        `Follow the recommended dhikr flow for ${item.name.en}.`,
+        `Everything you need to know about ${item.name.en} is on this page.`,
     },
   };
 }

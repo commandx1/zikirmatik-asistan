@@ -17,10 +17,10 @@
   "specialDay": {
     "channelName": "Special Days",
     "title": "Today: {{name}}",
-    "body": "Make the most of this blessed day with dhikr and prayer."
+    "body": "Read what this day is about and see the practices recommended for it."
   },
   "kandil": {
     "title": "Tonight: {{name}}",
-    "body": "Revive this blessed night with salawat, prayer, and seeking forgiveness."
+    "body": "Read what this night means and how it can be observed."
   }
 }

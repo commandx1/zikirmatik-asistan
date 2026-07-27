@@ -1,4 +1,5 @@
 import { SOURCE_DATASETS } from './data/sourceDataset.mjs';
+import { buildSpecialDayTagIndex } from './lib/special-day-tags.mjs';
 
 function uniq(items) {
   return [...new Set(items.filter(Boolean))];
@@ -89,11 +90,25 @@ for (const dataset of SOURCE_DATASETS) {
       continue;
     }
 
-    if (
+    // Aynı gün birden çok veri dosyasında tanımlıysa daha zengin dhikrKeys
+    // listesi kazanır; ancak okuma içeriği (`article`/`practices`) hangi
+    // kayıtta yazıldıysa korunur — aksi halde kaybolurdu.
+    const winner =
       (specialDay.dhikrKeys?.length ?? 0) > (existing.dhikrKeys?.length ?? 0)
-    ) {
-      specialDayByComposite.set(compositeKey, specialDay);
-    }
+        ? specialDay
+        : existing;
+    const loser = winner === specialDay ? existing : specialDay;
+
+    const article = winner.article ?? loser.article;
+    const practices = winner.practices?.length
+      ? winner.practices
+      : loser.practices;
+
+    specialDayByComposite.set(compositeKey, {
+      ...winner,
+      ...(article ? { article } : {}),
+      ...(practices?.length ? { practices } : {}),
+    });
   }
 }
 
@@ -104,11 +119,17 @@ const specialDays = Array.from(specialDayByComposite.values()).sort((a, b) => {
   return a.date.localeCompare(b.date);
 });
 
+// Zikir etiket indeksi HER ZAMAN tam özel gün listesinden kurulur; tek event
+// seed'lenirken bile. Aksi halde birden çok güne bağlı zikirlerin (ör. ISTIGFAR
+// 15 ayrı gün) diğer gün etiketleri `$set` ile silinirdi.
+const dhikrTagIndex = buildSpecialDayTagIndex(specialDays);
+
 export const SPECIAL_DAY_DATASET = {
   key: 'special-days-master-2026',
   label: 'Special Days Master 2026',
   dhikrItems,
   specialDays,
+  dhikrTagIndex,
 };
 
 export function getAvailableEventKeys() {
@@ -133,5 +154,6 @@ export function buildEventDataset(eventKey) {
     label: 'Special Days ' + eventKey,
     dhikrItems: filteredDhikrs,
     specialDays: filtered,
+    dhikrTagIndex,
   };
 }

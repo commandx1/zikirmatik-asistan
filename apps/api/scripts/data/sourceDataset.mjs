@@ -53,6 +53,7 @@ import { zilkadeAyi } from './zilkadeAyi.mjs';
 import { mevlidHaftasi } from './mevlidHaftasi.mjs';
 import { eyyamibiyd } from './eyyamibiyd.mjs';
 import { saferAyi } from './saferAyi.mjs';
+import { hicriAyBaslangiclari } from './hicriAyBaslangiclari.mjs';
 import { ramazanGunleri } from './ramazanGunleri.mjs';
 
 export const SOURCE_DATASETS = [
@@ -71,6 +72,7 @@ export const SOURCE_DATASETS = [
   kurbanBayrami,
   eyyamibiyd,
   saferAyi,
+  hicriAyBaslangiclari,
   mevlidHaftasi,
   mevlidKandili,
   muharremIlkOn,

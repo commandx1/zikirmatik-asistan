@@ -96,11 +96,6 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
       <View className="z-10 flex-row items-center justify-between gap-2">
         <ThemedTag label={data.badge} variant="accent" className="self-start px-3 py-[7px]" />
       </View>
-      {data.isLocked ? (
-        <View className="z-10 mt-2 self-start">
-          <ThemedTag label={t("special-days:hero.premiumLocked")} className="bg-[--bg] px-3 py-[6px]" />
-        </View>
-      ) : null}
       <View className="z-10 mb-6 mt-4">
         <Text
           className="text-2xl leading-[34px] font-semibold tracking-tight text-[--text-primary]"
@@ -135,8 +130,6 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
     return (
       <Pressable
         onPress={() => onPressDetail(data.id)}
-        disabled={data.isLocked}
-        className={data.isLocked ? "opacity-60" : undefined}
       >
         <Animated.View
           style={[
@@ -219,8 +212,6 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
   return (
     <Pressable
       onPress={() => onPressDetail(data.id)}
-      disabled={data.isLocked}
-      className={data.isLocked ? "opacity-60" : undefined}
     >
       <ThemedCard
         className="rounded-[24px] p-6"

@@ -16,6 +16,7 @@ import { ESMAUL_HUSNA } from "../focus/data";
 import type { EsmaulHusnaItem } from "../focus/types";
 import { resolveDailyEsmaSuggestions } from "../home/services/daily-esma-suggestion-service";
 import { useHomeNavigationIntentStore } from "../home/services/home-navigation-intent-store";
+import { useAiGuideNavigationIntentStore } from "./services/ai-guide-navigation-intent-store";
 import { DailyEsmaShortcutCard } from "./components/daily-esma-shortcut-card";
 import { HistorySection } from "./components/history-section";
 import { InfoTooltip } from "./components/info-tooltip";
@@ -151,6 +152,20 @@ export function AiGuideScreen() {
       );
     }
   }, [guide.isLoading]);
+  // Özel gün detayındaki CTA'dan gelen niyet: sadece girdi alanını doldurur.
+  // Otomatik gönderim yok — aksi hâlde ekrana girmek 1 kredi yakardı.
+  const pendingSpecialDayIntent = useAiGuideNavigationIntentStore((state) => state.pendingSpecialDayIntent);
+  const consumeSpecialDayIntent = useAiGuideNavigationIntentStore((state) => state.consumeSpecialDayIntent);
+  const applySpecialDayIntent = guide.applySpecialDayIntent;
+
+  useEffect(() => {
+    if (!pendingSpecialDayIntent) {
+      return;
+    }
+    applySpecialDayIntent(pendingSpecialDayIntent);
+    consumeSpecialDayIntent();
+  }, [applySpecialDayIntent, consumeSpecialDayIntent, pendingSpecialDayIntent]);
+
   const dailyEsmaSuggestions = useMemo(() => resolveDailyEsmaSuggestions(ESMAUL_HUSNA, new Date()), []);
   const requestDailyEsmaStart = useHomeNavigationIntentStore((state) => state.requestDailyEsmaStart);
   const requestEsmaListFocus = useHomeNavigationIntentStore((state) => state.requestEsmaListFocus);

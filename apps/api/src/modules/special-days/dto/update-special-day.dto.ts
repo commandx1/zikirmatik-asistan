@@ -4,7 +4,6 @@ import {
   IsBoolean,
   IsEnum,
   IsInt,
-  IsMongoId,
   IsOptional,
   IsString,
   Matches,
@@ -13,6 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { LocalizedTextDto } from '../../../common/dto/localized-text.dto';
+import { SpecialDayPracticeDto } from './special-day-practice.dto';
 
 const SPECIAL_DAY_TYPE = {
   kandil: 'kandil',
@@ -66,9 +66,15 @@ export class UpdateSpecialDayDto {
   priority?: number;
 
   @IsOptional()
+  @ValidateNested()
+  @Type(() => LocalizedTextDto)
+  article?: LocalizedTextDto;
+
+  @IsOptional()
   @IsArray()
-  @IsMongoId({ each: true })
-  recommendedDhikrIds?: string[];
+  @ValidateNested({ each: true })
+  @Type(() => SpecialDayPracticeDto)
+  practices?: SpecialDayPracticeDto[];
 
   @IsOptional()
   @IsBoolean()

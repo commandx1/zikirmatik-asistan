@@ -1,38 +1,18 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
-import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Pressable, Text, View } from 'react-native'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { useTranslation } from 'react-i18next'
-import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
-import { DhikrResumeModal } from '../../components/ui/dhikr-resume-modal'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
 import { ThemedCard } from '../../components/ui/themed-card'
-import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-transition-modal'
-import { useDhikrStartGuard } from '../../hooks/use-dhikr-start-guard'
-import { useAuthStore } from '../../store/auth-store'
-import { resolveLocalizedText, useDhikrStore } from '../../store/dhikr-store'
+import { resolveLocalizedText } from '../../store/dhikr-store'
 import { formatLongDate } from '../../lib/locale-format'
-import { createDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
+import { useAiGuideNavigationIntentStore } from '../ai-guide/services/ai-guide-navigation-intent-store'
 import { useSpecialDayDetail } from './hooks/use-special-day-detail'
-import type { BackendSpecialDayDetail } from './services/special-days-api-client'
 
 type SpecialDayDetailScreenProps = {
   id: string
-}
-
-type PendingStart = {
-  item: BackendSpecialDayDetail['recommendedDhikrs'][number]
-  target: number
-  progressCount: number
-}
-
-function toDateKey(value: Date) {
-  const year = value.getFullYear()
-  const month = String(value.getMonth() + 1).padStart(2, '0')
-  const day = String(value.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
 }
 
 export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
@@ -41,113 +21,24 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
   const { t, i18n } = useTranslation('special-days')
   const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
 
-  const dhikrItems = useDhikrStore(state => state.items)
-  const selectedDhikrId = useDhikrStore(state => state.selectedDhikrId)
-  const upsertDhikrSnapshot = useDhikrStore(state => state.upsertDhikrSnapshot)
-  const selectDhikr = useDhikrStore(state => state.selectDhikr)
-  const setSelectedTarget = useDhikrStore(state => state.setSelectedTarget)
-  const setSelectedCount = useDhikrStore(state => state.setSelectedCount)
-  const unsavedProgressDhikrIds = useDhikrStore(state => state.unsavedProgressDhikrIds)
-  const freeModeCount = useDhikrStore(state => state.freeModeCount)
-  const discardUnsavedProgress = useDhikrStore(state => state.discardUnsavedProgress)
-  const clearFreeModeSession = useDhikrStore(state => state.clearFreeModeSession)
-  const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
-  const activeAiContext = useDhikrStore(state => state.activeAiContext)
-  const setSelectedSource = useDhikrStore(state => state.setSelectedSource)
-
-  const authStatus = useAuthStore(s => s.status)
-  const sessionUserId = useAuthStore(s => s.session?.userId)
-  const sessionAccessToken = useAuthStore(s => s.session?.accessToken)
-
   const detail = useSpecialDayDetail(id)
-  const guard = useDhikrStartGuard()
+  const requestSpecialDayIntent = useAiGuideNavigationIntentStore(s => s.requestSpecialDayIntent)
 
-  const [pendingStart, setPendingStart] = useState<PendingStart | null>(null)
-  const [isSavingUnsaved, setIsSavingUnsaved] = useState(false)
-  const [unsavedSaveError, setUnsavedSaveError] = useState<string | null>(null)
+  const article = detail.detail?.article ? resolveLocalizedText(detail.detail.article, locale).trim() : ''
+  const practices = (detail.detail?.practices ?? []).filter(
+    item => resolveLocalizedText(item.title, locale).trim().length > 0
+  )
 
-  const startDhikr = (item: PendingStart['item'], target: number, progressCount: number) => {
-    guard.guardedStart({
-      id: item.id,
-      dhikrName: resolveLocalizedText(item.name, locale),
-      onFresh: () => {
-        upsertDhikrSnapshot({
-          id: item.id,
-          source: 'ready',
-          name: item.name,
-          arabic: item.nameArabic,
-          transliteration: item.transliteration,
-          meaning: item.meaning,
-          current: 0,
-          target,
-          lastActivityLabel: t('special-days:detail.notStarted'),
-          streakDays: 0,
-          isFavorite: false,
-        })
-        selectDhikr(item.id)
-        setSelectedSource('special-day')
-        setSelectedTarget(target)
-        setSelectedCount(0)
-        router.push('/(tabs)/home')
-      },
-      onContinue: () => {
-        selectDhikr(item.id)
-        setSelectedSource('special-day')
-        setSelectedTarget(target)
-        setSelectedCount(progressCount)
-        router.push('/(tabs)/home')
-      }
+  const handleAiCtaPress = () => {
+    if (!detail.detail) return
+    // Gün adı ekranda gösterilen hâliyle taşınır; seed'de zikirlerin
+    // `suitableFor` alanına yazılan değer de bu addır.
+    const specialDayName = resolveLocalizedText(detail.detail.name, locale)
+    requestSpecialDayIntent({
+      specialDayName,
+      freeText: t('special-days:detail.aiCta.prefill', { name: specialDayName })
     })
-  }
-
-  const handleStartPress = (item: PendingStart['item'], target: number, progressCount: number) => {
-    const isSameTarget = item.id === selectedDhikrId
-    const hasUnsaved = !isSameTarget && (
-      selectedDhikrId
-        ? unsavedProgressDhikrIds.includes(selectedDhikrId)
-        : freeModeCount > 0
-    )
-    if (hasUnsaved) {
-      setPendingStart({ item, target, progressCount })
-      setUnsavedSaveError(null)
-      return
-    }
-    startDhikr(item, target, progressCount)
-  }
-
-  const handleUnsavedSaveAndContinue = async () => {
-    if (!pendingStart || isSavingUnsaved) return
-    const selectedDhikr = dhikrItems.find(d => d.id === selectedDhikrId)
-    if (!selectedDhikr || authStatus !== 'authenticated' || !sessionUserId) {
-      setUnsavedSaveError(t('special-days:errors.loginRequired'))
-      return
-    }
-    setIsSavingUnsaved(true)
-    setUnsavedSaveError(null)
-    const count = Math.max(0, Math.floor(selectedDhikr.current))
-    const safeCount = selectedDhikr.target > 0 ? Math.min(selectedDhikr.target, count) : count
-    const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target
-    const sourceMeta = activeAiContext?.dhikrId === selectedDhikr.id
-      ? { source: 'special-day' as const, aiRecommendationId: activeAiContext.recommendationId, aiPrompt: activeAiContext.prompt, aiAssistantNote: activeAiContext.assistantNote }
-      : { source: 'special-day' as const }
-    const isObjectId = /^[a-f\d]{24}$/i.test(selectedDhikr.id)
-    const dateKey = toDateKey(new Date())
-    try {
-      const savedLog = await createDhikrLog(
-        isObjectId
-          ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...sourceMeta, isCompleted, isFavorite: selectedDhikr.isFavorite }
-          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: resolveLocalizedText(selectedDhikr.name, locale) || resolveLocalizedText(selectedDhikr.transliteration, locale), count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...sourceMeta, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
-        sessionAccessToken
-      )
-      applySavedBackendLog(savedLog)
-      const { item, target, progressCount } = pendingStart
-      setPendingStart(null)
-      startDhikr(item, target, progressCount)
-    } catch (e) {
-      setUnsavedSaveError(e instanceof Error ? e.message : t('special-days:errors.saveFailed'))
-    } finally {
-      setIsSavingUnsaved(false)
-    }
+    router.push('/(tabs)/ai-guide')
   }
 
   return (
@@ -186,15 +77,6 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                 {detail.detail.description ? (
                   <Text className='mt-3 text-sm leading-6 text-[--text-primary]'>{resolveLocalizedText(detail.detail.description, locale)}</Text>
                 ) : null}
-                <View className='mt-4 flex-row items-center gap-2'>
-                  <FontAwesome6 name='check-double' size={12} color={tokens.accent} />
-                  <Text className='text-xs text-[--text-muted]'>
-                    {t('special-days:detail.completedLabel', {
-                      completed: detail.detail.progress.completedCount,
-                      total: detail.detail.progress.totalCount
-                    })}
-                  </Text>
-                </View>
               </ThemedCard>
 
               <ThemedCard className='mt-4 rounded-2xl p-4' borderClassName='border-white/5'>
@@ -205,121 +87,53 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                 <Text className='mt-1 text-sm leading-6 text-[--text-muted]'>{resolveLocalizedText(detail.detail.themeSummary, locale)}</Text>
               </ThemedCard>
 
-              <View className='mt-6 gap-3'>
-                <Text className='px-1 text-sm font-semibold text-[--text-primary]'>{t('special-days:detail.recommendedDhikrs')}</Text>
-                {detail.detail.recommendedDhikrs.map(item => {
-                  const matchedLocal = dhikrItems.find(dhikr => dhikr.id === item.id)
-                  const target = Math.max(1, matchedLocal?.target ?? item.progressTarget ?? item.recommendedCount ?? 1)
-                  const progressCount = Math.max(
-                    0,
-                    Math.min(target, Math.max(item.progressCount ?? 0, matchedLocal?.current ?? 0))
-                  )
-                  const progressPct = Math.max(0, Math.min(100, Math.round((progressCount / target) * 100)))
-                  const isCompleted = item.isCompleted || progressCount >= target
+              {/* İçerik editoryal olarak sonradan doldurulur; boşken kart hiç
+                  render edilmez, ekranda boşluk görünmez. */}
+              {article ? (
+                <ThemedCard className='mt-4 rounded-2xl p-4' borderClassName='border-white/5'>
+                  <Text className='text-sm font-semibold text-[--text-primary]'>{t('special-days:detail.article')}</Text>
+                  <Text className='mt-2 text-sm leading-7 text-[--text-muted]'>{article}</Text>
+                </ThemedCard>
+              ) : null}
 
-                  return (
-                    <ThemedCard key={item.id} className='rounded-2xl p-4' borderClassName='border-white/5'>
-                      <View className='flex-row items-start justify-between gap-3'>
-                        <Text className='flex-1 text-base font-semibold text-[--text-primary]'>{resolveLocalizedText(item.name, locale)}</Text>
-                        <Text
-                          className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                            isCompleted ? 'bg-[--success]/15 text-[--success]' : 'bg-[--accent]/15 text-[--accent]'
-                          }`}
-                        >
-                          {isCompleted ? t('special-days:detail.completed') : `${progressCount}/${target}`}
-                        </Text>
-                      </View>
-
-                      <DhikrContentStack
-                        arabic={item.nameArabic}
-                        transliteration={resolveLocalizedText(item.transliteration, locale)}
-                        meaning={resolveLocalizedText(item.meaning, locale)}
-                      />
-
-                      <View className='mt-4'>
-                        <View className='mb-2 flex-row items-center justify-between'>
-                          <Text className='text-xs text-[--text-muted]'>{t('special-days:detail.target', { target })}</Text>
-                          <Text className={`text-xs font-semibold ${isCompleted ? 'text-[--success]' : 'text-[--accent]'}`}>
-                            %{Math.round(progressPct)}
-                          </Text>
+              {practices.length > 0 ? (
+                <ThemedCard className='mt-4 rounded-2xl p-4' borderClassName='border-white/5'>
+                  <Text className='text-sm font-semibold text-[--text-primary]'>{t('special-days:detail.practices')}</Text>
+                  <View className='mt-3 gap-4'>
+                    {practices.map((item, index) => (
+                      <View key={`${index}-${resolveLocalizedText(item.title, locale)}`} className='flex-row gap-3'>
+                        <View className='mt-1 h-6 w-6 items-center justify-center rounded-full border border-[--accent]/20 bg-[--bg]'>
+                          <FontAwesome6 name='hands-praying' size={11} color={tokens.accent} />
                         </View>
-                        <View
-                          className='h-2 overflow-hidden rounded-full'
-                          style={{ backgroundColor: withAlpha(tokens.textPrimary, 0.1) }}
-                        >
-                          <View
-                            className={`h-full rounded-full ${isCompleted ? 'bg-[--success]' : 'bg-[--accent]'}`}
-                            style={{ width: `${progressPct}%` }}
-                          />
+                        <View className='flex-1'>
+                          <Text className='text-sm font-semibold text-[--text-primary]'>{resolveLocalizedText(item.title, locale)}</Text>
+                          <Text className='mt-1 text-sm leading-6 text-[--text-muted]'>{resolveLocalizedText(item.description, locale)}</Text>
                         </View>
                       </View>
+                    ))}
+                  </View>
+                </ThemedCard>
+              ) : null}
 
-                      <View className='mt-4 flex-row items-center justify-end'>
-                        <Pressable
-                          onPress={() => handleStartPress(item, target, progressCount)}
-                          className='rounded-full bg-[--accent] px-4 py-2'
-                        >
-                          <Text className='text-xs font-semibold' style={{ color: tokens.bg }}>
-                            {t('special-days:detail.start')}
-                          </Text>
-                        </Pressable>
-                      </View>
-                    </ThemedCard>
-                  )
-                })}
-              </View>
+              <ThemedCard className='mt-6 rounded-2xl p-5' borderClassName='border-[--accent]/30' elevated>
+                <View className='flex-row items-center gap-2'>
+                  <FontAwesome6 name='wand-magic-sparkles' size={13} color={tokens.accent} />
+                  <Text className='text-sm font-semibold text-[--text-primary]'>{t('special-days:detail.aiCta.title')}</Text>
+                </View>
+                <Text className='mt-2 text-sm leading-6 text-[--text-muted]'>{t('special-days:detail.aiCta.subtitle')}</Text>
+                <Pressable
+                  onPress={handleAiCtaPress}
+                  className='mt-4 h-11 flex-row items-center justify-center gap-2 rounded-full bg-[--accent]'
+                >
+                  <Text className='text-sm font-semibold' style={{ color: tokens.bg }}>
+                    {t('special-days:detail.aiCta.button')}
+                  </Text>
+                </Pressable>
+              </ThemedCard>
             </>
           )}
         </PageScrollView>
-
-        <UnsavedDhikrTransitionModal
-          visible={Boolean(pendingStart)}
-          dhikrName={(() => {
-            const found = dhikrItems.find(d => d.id === selectedDhikrId)
-            return found ? resolveLocalizedText(found.name, locale) : ''
-          })()}
-          count={dhikrItems.find(d => d.id === selectedDhikrId)?.current ?? freeModeCount}
-          isSaving={isSavingUnsaved}
-          error={unsavedSaveError}
-          onSaveAndContinue={handleUnsavedSaveAndContinue}
-          onContinueWithoutSaving={() => {
-            const pending = pendingStart!
-            setPendingStart(null)
-            setUnsavedSaveError(null)
-            if (selectedDhikrId) {
-              discardUnsavedProgress(selectedDhikrId)
-            } else {
-              clearFreeModeSession()
-            }
-            startDhikr(pending.item, pending.target, pending.progressCount)
-          }}
-          onCancel={() => {
-            setPendingStart(null)
-            setUnsavedSaveError(null)
-          }}
-        />
-        <DhikrResumeModal
-          visible={guard.isGuardOpen}
-          dhikrName={guard.guardDhikrName}
-          currentCount={guard.guardCurrentCount}
-          onContinue={guard.onGuardContinue}
-          onFresh={guard.onGuardFresh}
-          onCancel={guard.onGuardCancel}
-        />
       </View>
     </PageLayout>
   )
-}
-
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace('#', '')
-  if (!(normalized.length === 6 || normalized.length === 8)) {
-    return hex
-  }
-
-  const r = Number.parseInt(normalized.slice(0, 2), 16)
-  const g = Number.parseInt(normalized.slice(2, 4), 16)
-  const b = Number.parseInt(normalized.slice(4, 6), 16)
-
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`
 }

@@ -9,8 +9,6 @@ import {
 } from "../services/special-days-api-client";
 
 export function useSpecialDayDetail(id: string) {
-  const authStatus = useAuthStore((s) => s.status);
-  const userId = useAuthStore((s) => s.session?.userId);
   const accessToken = useAuthStore((s) => s.session?.accessToken);
 
   const [detail, setDetail] = useState<BackendSpecialDayDetail | null>(null);
@@ -25,18 +23,14 @@ export function useSpecialDayDetail(id: string) {
     setIsLoading(true);
     setError(undefined);
     try {
-      const next = await getSpecialDayDetail(
-        id,
-        authStatus === "authenticated" ? userId : undefined,
-        accessToken
-      );
+      const next = await getSpecialDayDetail(id, accessToken);
       setDetail(next);
     } catch (error) {
       setError(error instanceof SpecialDaysApiError ? error.message : i18n.t("special-days:errors.detailLoadFailed"));
     } finally {
       setIsLoading(false);
     }
-  }, [accessToken, authStatus, id, userId]);
+  }, [accessToken, id]);
 
   useEffect(() => {
     void refresh();

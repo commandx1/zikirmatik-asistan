@@ -84,6 +84,9 @@ async function callWithAuthRetry<T>(call: (accessToken?: string) => Promise<T>):
 export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const { t } = useTranslation("ai-guide");
   const [intentInput, setIntentInput] = useState("");
+  // Özel gün detayından taşınan bağlam. State değil ref: yalnızca istek
+  // gönderilirken okunur, render'ı etkilemez.
+  const specialDayNameRef = useRef<string | undefined>(undefined);
   const [showInfo, setShowInfo] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -336,6 +339,15 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     setIntentInput(value);
   };
 
+  /**
+   * Özel gün detayından gelen niyeti girdi alanına yazar. Otomatik submit
+   * YOK: istek atmak 1 kredi yakar, kullanıcı butona kendisi basmalı.
+   */
+  const applySpecialDayIntent = (intent: { freeText: string; specialDayName: string }) => {
+    setIntentInput(intent.freeText);
+    specialDayNameRef.current = intent.specialDayName;
+  };
+
   const onIntentInputChange = (value: string) => {
     setIntentInput(value);
     setPostPurchaseNotice(undefined);
@@ -371,6 +383,10 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         }
 
         const now = new Date();
+        const matchedSpecialDayName = resolveSpecialDayContext(
+          specialDayNameRef.current,
+          request.freeText
+        );
         const response = await callWithAuthRetry((token) =>
           createAiRecommendation({
             userId,
@@ -382,7 +398,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
             timeContext: {
               hour: now.getHours(),
               dayOfWeek: now.getDay(),
-              isSpecialDay: false
+              // Özel gün bağlamı yalnızca gün adı metinde hâlâ duruyorsa
+              // gönderilir; kullanıcı adı silip başka bir şey sorduğunda
+              // retrieval yanlış güne kaymasın.
+              isSpecialDay: Boolean(matchedSpecialDayName),
+              ...(matchedSpecialDayName ? { specialDayName: matchedSpecialDayName } : {})
             }
           }, token)
         );
@@ -702,6 +722,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     closeInfo,
     toggleInfo,
     applyPrompt,
+    applySpecialDayIntent,
     onIntentInputChange,
     submitIntent,
     refresh,
@@ -731,4 +752,15 @@ function createFlowId() {
     const value = char === "x" ? random : (random & 0x3) | 0x8;
     return value.toString(16);
   });
+}
+
+function resolveSpecialDayContext(specialDayName?: string, freeText?: string) {
+  const name = specialDayName?.trim();
+  if (!name || !freeText) {
+    return undefined;
+  }
+
+  return freeText.toLocaleLowerCase("tr-TR").includes(name.toLocaleLowerCase("tr-TR"))
+    ? name
+    : undefined;
 }

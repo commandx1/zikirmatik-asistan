@@ -1,9 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import type { LocalizedText } from '../../../common/types/localized-text';
-import { Dhikr } from '../../dhikrs/schemas/dhikr.schema';
 
 export type SpecialDayDocument = HydratedDocument<SpecialDay>;
+
+/** Özel güne ait tek bir ibadet tavsiyesi (başlık + açıklama). */
+export type SpecialDayPractice = {
+  title: LocalizedText;
+  description: LocalizedText;
+};
 
 // Çok dilli alt-şema ({ tr, en }) — zikir kataloğundaki desenin aynısı. Her iki
 // dil de zorunludur; API yanıtları her zaman ikisini birden döner.
@@ -22,6 +27,19 @@ const LOCALIZED_TEXT_SCHEMA_OPTIONAL = {
     en: { type: String, trim: true },
   },
   required: false,
+};
+
+// practices[] alt-şeması. İçerik metinleri sonradan doldurulacağı için tüm
+// alanlar gevşek tanımlıdır; boş liste geçerli bir durumdur.
+const PRACTICE_SCHEMA = {
+  type: [
+    {
+      _id: false,
+      title: LOCALIZED_TEXT_SCHEMA_OPTIONAL,
+      description: LOCALIZED_TEXT_SCHEMA_OPTIONAL,
+    },
+  ],
+  default: [],
 };
 
 @Schema({ collection: 'special_days', timestamps: true, versionKey: false })
@@ -54,11 +72,19 @@ export class SpecialDay {
   @Prop({ type: Number, default: 0 })
   priority!: number;
 
+  // Liste/hero kartlarında görünen kısa özet.
   @Prop(LOCALIZED_TEXT_SCHEMA_OPTIONAL)
   description?: LocalizedText;
 
-  @Prop({ type: [Types.ObjectId], ref: Dhikr.name, default: [] })
-  recommendedDhikrIds!: Types.ObjectId[];
+  // Detay ekranında gösterilen uzun anlatım (günün anlamı, tarihi, fazileti).
+  // İçerik editoryal olarak sonradan doldurulur; boşken UI kartı render etmez.
+  @Prop(LOCALIZED_TEXT_SCHEMA_OPTIONAL)
+  article?: LocalizedText;
+
+  // "O gün yapılması tavsiye edilen diğer ibadetler" listesi. article ile aynı
+  // şekilde sonradan doldurulur.
+  @Prop(PRACTICE_SCHEMA)
+  practices!: SpecialDayPractice[];
 
   @Prop({ type: Boolean, default: false })
   hasSpecialFlow!: boolean;

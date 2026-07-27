@@ -23,10 +23,8 @@ export type BackendSpecialDayHomeItem = {
   dayIndex?: number;
   dayCount?: number;
   hasSpecialFlow: boolean;
-  recommendedDhikrCount: number;
   themeTitle: LocalizedText;
   themeSummary: LocalizedText;
-  isLocked: boolean;
 };
 
 export type BackendSpecialDayHomeResponse = {
@@ -43,7 +41,6 @@ export type BackendSpecialDayHomeResponse = {
         specialDayId: string;
         name: LocalizedText;
         description?: LocalizedText;
-        isLocked: boolean;
       }
     | null;
   upcoming: Array<
@@ -54,39 +51,17 @@ export type BackendSpecialDayHomeResponse = {
   >;
 };
 
+export type SpecialDayPractice = {
+  title: LocalizedText;
+  description: LocalizedText;
+};
+
+// Zikir önerisi artık AI Rehber'de; detay yalnızca okuma içeriği döner.
+// `article` ve `practices` editoryal olarak sonradan doldurulduğu için boş
+// gelebilir — UI bu durumda ilgili kartı hiç göstermez.
 export type BackendSpecialDayDetail = BackendSpecialDayHomeItem & {
-  recommendedDhikrs: Array<{
-    id: string;
-    name: LocalizedText;
-    nameArabic: string;
-    transliteration: LocalizedText;
-    meaning: LocalizedText;
-    recommendedCount: number;
-    progressCount: number;
-    progressTarget: number;
-    isCompleted: boolean;
-  }>;
-  progress: {
-    completedCount: number;
-    totalCount: number;
-    isCompleted: boolean;
-  };
-};
-
-export type UpdateSpecialDayProgressPayload = {
-  userId: string;
-  dhikrId: string;
-  completed?: boolean;
-};
-
-export type UpdateSpecialDayProgressResponse = {
-  userId: string;
-  specialDayId: string;
-  completedDhikrIds: string[];
-  completedCount: number;
-  totalCount: number;
-  isCompleted: boolean;
-  completedAt?: string;
+  article?: LocalizedText;
+  practices: SpecialDayPractice[];
 };
 
 export class SpecialDaysApiError extends Error {
@@ -104,15 +79,11 @@ const API_BASE_URL = resolveApiBaseUrl();
 
 export async function getSpecialDaysHome(
   date?: string,
-  userId?: string,
   accessToken?: string
 ): Promise<BackendSpecialDayHomeResponse> {
   const params = new URLSearchParams();
   if (date) {
     params.set("date", date);
-  }
-  if (userId) {
-    params.set("userId", userId);
   }
 
   const query = params.toString();
@@ -125,30 +96,10 @@ export async function getSpecialDaysHome(
 
 export async function getSpecialDayDetail(
   id: string,
-  userId?: string,
   accessToken?: string
 ): Promise<BackendSpecialDayDetail> {
-  const params = new URLSearchParams();
-  if (userId) {
-    params.set("userId", userId);
-  }
-
-  const query = params.toString();
-  const path = query ? `/v1/special-days/${id}/detail?${query}` : `/v1/special-days/${id}/detail`;
-  return requestJson<BackendSpecialDayDetail>(path, {
+  return requestJson<BackendSpecialDayDetail>(`/v1/special-days/${id}/detail`, {
     method: "GET",
-    accessToken,
-  });
-}
-
-export async function updateSpecialDayProgress(
-  id: string,
-  payload: UpdateSpecialDayProgressPayload,
-  accessToken?: string
-): Promise<UpdateSpecialDayProgressResponse> {
-  return requestJson<UpdateSpecialDayProgressResponse>(`/v1/special-days/${id}/progress`, {
-    method: "PATCH",
-    body: payload,
     accessToken,
   });
 }
@@ -166,7 +117,7 @@ function resolveApiBaseUrl() {
 
 async function requestJson<TResponse>(
   path: string,
-  options: { method: "GET" | "PATCH"; body?: unknown; accessToken?: string },
+  options: { method: "GET"; accessToken?: string },
 ): Promise<TResponse> {
   try {
     const headers: Record<string, string> = {
@@ -179,7 +130,6 @@ async function requestJson<TResponse>(
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: options.method,
       headers,
-      ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
     });
 
     const rawResponse = await response.text();

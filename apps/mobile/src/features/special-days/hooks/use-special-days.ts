@@ -27,19 +27,13 @@ export function useSpecialDays() {
   const notificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
   const locale = useProfileStore((s) => s.locale);
-  const authStatus = useAuthStore((s) => s.status);
-  const userId = useAuthStore((s) => s.session?.userId);
   const accessToken = useAuthStore((s) => s.session?.accessToken);
 
   const refresh = useCallback(async () => {
     setIsLoading(true);
     setError(undefined);
     try {
-      const response = await getSpecialDaysHome(
-        toDateKey(new Date()),
-        authStatus === "authenticated" ? userId : undefined,
-        accessToken,
-      );
+      const response = await getSpecialDaysHome(toDateKey(new Date()), accessToken);
       if (response.hero) {
         const days = daysUntil(response.hero.date);
         setHeroCard({
@@ -51,7 +45,6 @@ export function useSpecialDays() {
           dateLabel: formatLongDate(response.hero.date, locale),
           countdown: [{ value: String(days), label: i18n.t("special-days:countdown.dayUnit") }],
           remaining: formatDaysRemaining(days),
-          isLocked: response.hero.isLocked,
           isTodaySpecial: response.hero.isToday,
         });
       }
@@ -65,7 +58,6 @@ export function useSpecialDays() {
                 ? resolveLocalizedText(response.action.description, locale)
                 : i18n.t("special-days:action.defaultSubtitle"),
               ctaLabel: i18n.t("special-days:action.cta"),
-              isLocked: response.action.isLocked,
             }
           : null,
       );
@@ -76,7 +68,7 @@ export function useSpecialDays() {
       setIsLoading(false);
       setHasLoadedOnce(true);
     }
-  }, [accessToken, authStatus, userId, locale]);
+  }, [accessToken, locale]);
 
   useEffect(() => {
     void refresh();
@@ -109,7 +101,6 @@ function mapUpcomingDay(
     title: resolveLocalizedText(item.name, locale),
     dateLabel: formatLongDate(item.date, locale),
     remaining: formatDaysRemaining(daysUntil(item.date)),
-    isLocked: item.isLocked,
   };
 }
 

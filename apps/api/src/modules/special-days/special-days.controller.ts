@@ -9,14 +9,11 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CurrentUserId } from '../../common/auth/current-user-id.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateSpecialDayDto } from './dto/create-special-day.dto';
-import { QuerySpecialDayDetailDto } from './dto/query-special-day-detail.dto';
 import { QuerySpecialDaysHomeDto } from './dto/query-special-days-home.dto';
 import { QuerySpecialDaysDto } from './dto/query-special-days.dto';
 import { UpdateSpecialDayDto } from './dto/update-special-day.dto';
-import { UpdateSpecialDayProgressDto } from './dto/update-special-day-progress.dto';
 import { SpecialDaysService } from './special-days.service';
 
 @Controller('v1/special-days')
@@ -35,32 +32,13 @@ export class SpecialDaysController {
   }
 
   @Get('home')
-  getHome(
-    @Query() query: QuerySpecialDaysHomeDto,
-    @CurrentUserId() userId: string,
-  ) {
-    query.userId = userId;
+  getHome(@Query() query: QuerySpecialDaysHomeDto) {
     return this.specialDaysService.getHome(query);
   }
 
   @Get(':id/detail')
-  getDetail(
-    @Param('id') id: string,
-    @Query() query: QuerySpecialDayDetailDto,
-    @CurrentUserId() userId: string,
-  ) {
-    query.userId = userId;
-    return this.specialDaysService.getDetail(id, query.userId);
-  }
-
-  @Patch(':id/progress')
-  updateProgress(
-    @Param('id') id: string,
-    @Body() payload: UpdateSpecialDayProgressDto,
-    @CurrentUserId() userId: string,
-  ) {
-    payload.userId = userId;
-    return this.specialDaysService.updateProgress(id, payload);
+  getDetail(@Param('id') id: string) {
+    return this.specialDaysService.getDetail(id);
   }
 
   @Get(':id')

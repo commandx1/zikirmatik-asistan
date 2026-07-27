@@ -15,7 +15,6 @@ export type HeroCardViewModel = {
   dateLabel: string;
   countdown: CountdownSegment[];
   remaining: string;
-  isLocked: boolean;
   isTodaySpecial: boolean;
 };
 
@@ -25,7 +24,6 @@ export type UpcomingDayViewModel = {
   icon: SpecialDayIconName;
   remaining: string;
   title: string;
-  isLocked: boolean;
 };
 
 export type TodayActionViewModel = {
@@ -33,5 +31,4 @@ export type TodayActionViewModel = {
   title: string;
   subtitle: string;
   ctaLabel: string;
-  isLocked: boolean;
 };

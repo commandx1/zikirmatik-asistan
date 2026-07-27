@@ -33,15 +33,25 @@ export async function runSpecialDaySeed(dataset) {
       const { key, ...payload } = item;
       const now = new Date();
 
-      const tags = uniq(payload.tags ?? []);
-      const categories = uniq(payload.categories ?? []);
-      const suitableFor = uniq(payload.suitableFor ?? []);
-
       if (!key) {
         throw new Error(
           `Dhikr key tanımsız: ${payload.name?.tr}. Upsert için key zorunlu.`,
         );
       }
+
+      // Bağlı olduğu özel günlerden gelen etiketler dataset etiketleriyle
+      // birleştirilir; böylece kullanıcı AI Rehber'e "Regaib Kandili için
+      // zikir" yazdığında bu zikir retrieval'da yüzeye çıkar.
+      const dayTags = dataset.dhikrTagIndex?.get(key);
+      const tags = uniq([...(payload.tags ?? []), ...(dayTags?.tags ?? [])]);
+      const categories = uniq([
+        ...(payload.categories ?? []),
+        ...(dayTags?.categories ?? []),
+      ]);
+      const suitableFor = uniq([
+        ...(payload.suitableFor ?? []),
+        ...(dayTags?.suitableFor ?? []),
+      ]);
 
       // Mevcut kaydı yalnızca stabil `key` ile bul; legacy isim/transliterasyon
       // eşleşmesine gerek yok (DB tamamen key bazlı seed'lenir).
@@ -94,22 +104,32 @@ export async function runSpecialDaySeed(dataset) {
         );
       }
 
-      const recommendedDhikrIds = dhikrKeys.map((dhikrKey) => {
-        const dhikrId = dhikrIdMap.get(dhikrKey);
-        if (!dhikrId) {
+      // dhikrKeys artık öneri listesi değil, etiketleme talimatı (yukarıdaki
+      // dhikr döngüsünde uygulandı). Yine de kırık key'i erken yakalamak için
+      // doğrulanır.
+      for (const dhikrKey of dhikrKeys) {
+        if (!dhikrIdMap.has(dhikrKey)) {
           throw new Error(`Dhikr key bulunamadı: ${dhikrKey}`);
         }
-        return dhikrId;
-      });
+      }
 
       const now = new Date();
-      const filter = buildSpecialDayFilter(payload);
+      // Hedef kaydı önce ID olarak çöz: `name` alanı bir dönem düz string
+      // tutuluyordu ve yalnızca `name.tr` ile eşleşen bir filtre bu kayıtları
+      // ıskalayıp her seed'de kopya oluşturuyordu. Modern kayıt yoksa legacy
+      // kayıt bulunup yerinde güncellenir (adı çok dilli hâle gelir).
+      const existingId = await findExistingSpecialDayId(
+        specialDaysCollection,
+        payload,
+      );
+      const filter = existingId
+        ? { _id: existingId }
+        : buildSpecialDayFilter(payload);
       const result = await specialDaysCollection.updateOne(
         filter,
         {
           $set: {
             ...payload,
-            recommendedDhikrIds,
             priority: payload.priority ?? resolveDefaultPriority(payload.type),
             hasSpecialFlow: payload.hasSpecialFlow ?? true,
             notifyBeforeMinutes:
@@ -122,6 +142,8 @@ export async function runSpecialDaySeed(dataset) {
           },
           $unset: {
             dhikrKeys: 1,
+            // Zikir önerisi AI Rehber'e taşındı; eski kayıtlardan temizlenir.
+            recommendedDhikrIds: 1,
           },
         },
         { upsert: true },
@@ -140,6 +162,38 @@ export async function runSpecialDaySeed(dataset) {
   } finally {
     await mongoose.disconnect();
   }
+}
+
+/**
+ * Var olan özel gün kaydının _id'sini döndürür. Önce çok dilli (`name.tr`)
+ * kayıt aranır; bulunamazsa aynı gün için legacy düz-string `name` kaydı
+ * aranır. İkisi de yoksa null döner ve çağıran upsert'e düşer.
+ */
+async function findExistingSpecialDayId(collection, payload) {
+  const modern = await collection.findOne(buildSpecialDayFilter(payload), {
+    projection: { _id: 1 },
+  });
+  if (modern) {
+    return modern._id;
+  }
+
+  const nameTr = typeof payload.name === 'object' ? payload.name?.tr : payload.name;
+  if (!nameTr) {
+    return null;
+  }
+
+  const legacy = await collection.findOne(
+    {
+      date: payload.date,
+      type: payload.type,
+      eventKey: payload.eventKey,
+      ...(payload.dayIndex !== undefined ? { dayIndex: payload.dayIndex } : {}),
+      name: nameTr,
+    },
+    { projection: { _id: 1 } },
+  );
+
+  return legacy?._id ?? null;
 }
 
 function buildSpecialDayFilter(payload) {

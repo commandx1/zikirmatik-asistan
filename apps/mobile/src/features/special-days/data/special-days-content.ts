@@ -9,7 +9,6 @@ export const HERO_CARD: HeroCardViewModel = {
     { value: "03", label: "GÜN" }
   ],
   remaining: "3 gün",
-  isLocked: false,
   isTodaySpecial: false,
 };
 
@@ -20,7 +19,6 @@ export const UPCOMING_DAYS: UpcomingDayViewModel[] = [
     title: "Mevlid Kandili",
     dateLabel: "13 Eylül",
     remaining: "3 gün",
-    isLocked: false,
   },
   {
     id: "fallback-ramazan",
@@ -28,7 +26,6 @@ export const UPCOMING_DAYS: UpcomingDayViewModel[] = [
     title: "Ramazan Başlangıcı",
     dateLabel: "11 Mart",
     remaining: "18 gün",
-    isLocked: false,
   },
   {
     id: "fallback-kadir",
@@ -36,7 +33,6 @@ export const UPCOMING_DAYS: UpcomingDayViewModel[] = [
     title: "Kadir Gecesi",
     dateLabel: "5 Nisan",
     remaining: "43 gün",
-    isLocked: false,
   },
   {
     id: "fallback-kurban",
@@ -44,6 +40,5 @@ export const UPCOMING_DAYS: UpcomingDayViewModel[] = [
     title: "Kurban Bayramı",
     dateLabel: "16 Haziran",
     remaining: "115 gün",
-    isLocked: false,
   }
 ];
