@@ -1,5 +1,4 @@
 import { SOURCE_DATASETS } from './data/sourceDataset.mjs';
-import { buildSpecialDayTagIndex } from './lib/special-day-tags.mjs';
 
 function uniq(items) {
   return [...new Set(items.filter(Boolean))];
@@ -119,17 +118,11 @@ const specialDays = Array.from(specialDayByComposite.values()).sort((a, b) => {
   return a.date.localeCompare(b.date);
 });
 
-// Zikir etiket indeksi HER ZAMAN tam özel gün listesinden kurulur; tek event
-// seed'lenirken bile. Aksi halde birden çok güne bağlı zikirlerin (ör. ISTIGFAR
-// 15 ayrı gün) diğer gün etiketleri `$set` ile silinirdi.
-const dhikrTagIndex = buildSpecialDayTagIndex(specialDays);
-
 export const SPECIAL_DAY_DATASET = {
   key: 'special-days-master-2026',
   label: 'Special Days Master 2026',
   dhikrItems,
   specialDays,
-  dhikrTagIndex,
 };
 
 export function getAvailableEventKeys() {
@@ -154,6 +147,5 @@ export function buildEventDataset(eventKey) {
     label: 'Special Days ' + eventKey,
     dhikrItems: filteredDhikrs,
     specialDays: filtered,
-    dhikrTagIndex,
   };
 }

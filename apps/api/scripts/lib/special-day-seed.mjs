@@ -39,19 +39,11 @@ export async function runSpecialDaySeed(dataset) {
         );
       }
 
-      // Bağlı olduğu özel günlerden gelen etiketler dataset etiketleriyle
-      // birleştirilir; böylece kullanıcı AI Rehber'e "Regaib Kandili için
-      // zikir" yazdığında bu zikir retrieval'da yüzeye çıkar.
-      const dayTags = dataset.dhikrTagIndex?.get(key);
-      const tags = uniq([...(payload.tags ?? []), ...(dayTags?.tags ?? [])]);
-      const categories = uniq([
-        ...(payload.categories ?? []),
-        ...(dayTags?.categories ?? []),
-      ]);
-      const suitableFor = uniq([
-        ...(payload.suitableFor ?? []),
-        ...(dayTags?.suitableFor ?? []),
-      ]);
+      // Etiketler artık dataset içindeki dhikrItem tanımından (payload)
+      // doğrudan gelir; özel günlerden türetme adımı kaldırıldı.
+      const tags = uniq(payload.tags ?? []);
+      const categories = uniq(payload.categories ?? []);
+      const suitableFor = uniq(payload.suitableFor ?? []);
 
       // Mevcut kaydı yalnızca stabil `key` ile bul; legacy isim/transliterasyon
       // eşleşmesine gerek yok (DB tamamen key bazlı seed'lenir).
