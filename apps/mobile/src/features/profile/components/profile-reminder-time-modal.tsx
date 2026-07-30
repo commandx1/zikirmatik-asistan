@@ -45,7 +45,7 @@ export function ProfileReminderTimeModal({
     <KeyboardAwareBottomSheetModal
       visible={visible}
       onRequestClose={onClose}
-      animationType="slide"
+      animationType="fade"
       showHandle
       overlayClassName="flex-1 justify-end bg-black/55"
       sheetClassName="rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-10"

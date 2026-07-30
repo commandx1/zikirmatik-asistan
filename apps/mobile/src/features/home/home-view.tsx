@@ -330,10 +330,10 @@ function FreeSaveNameModal() {
     <KeyboardAwareBottomSheetModal
       visible={home.isFreeSaveNameModalOpen}
       onRequestClose={home.onFreeSaveNameCancel}
-      animationType='slide'
+      animationType='fade'
       showHandle
       overlayClassName='flex-1 justify-end bg-black/55'
-      sheetClassName='rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-10'
+      sheetClassName='rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-14'
       scrollContentContainerStyle={{ paddingBottom: 24 }}
     >
       <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>
