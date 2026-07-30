@@ -4,6 +4,7 @@ import type { ComponentProps } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { useLocaleUpper } from "../../../hooks/use-locale-upper";
 import type { BackendCollection } from "../services/collections-api-client";
 import { COLLECTION_CATEGORIES } from "../types";
 
@@ -28,6 +29,7 @@ export function CollectionCard({ item, onPress, isLocked = false }: Props) {
   const { tokens } = useThemeTokens();
   const { t, i18n } = useTranslation("collections");
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const upper = useLocaleUpper();
   const iconName = CATEGORY_ICONS[item.category] ?? "book";
   const categoryLabelKey = COLLECTION_CATEGORIES.find(
     (c) => c.key === item.category,
@@ -45,7 +47,7 @@ export function CollectionCard({ item, onPress, isLocked = false }: Props) {
       {isLocked ? (
         <View className="absolute right-2 top-2 z-10 flex-row items-center gap-1 rounded-full border border-[--accent]/30 bg-[--accent]/15 px-2 py-1">
           <FontAwesome6 name="lock" size={8} color="#C8972A" />
-          <Text className="text-xs font-bold uppercase tracking-[0.5px] text-[--accent]">{t("collections:card.premiumBadge")}</Text>
+          <Text className="text-xs font-bold tracking-[0.5px] text-[--accent]">{upper(t("collections:card.premiumBadge"))}</Text>
         </View>
       ) : null}
 

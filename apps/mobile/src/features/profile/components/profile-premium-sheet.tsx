@@ -3,6 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
+import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 
 type CreditTopupItem = {
   productId: string
@@ -53,6 +54,7 @@ export function ProfilePremiumSheet({
 }: ProfilePremiumSheetProps) {
   const { fontFamily } = useThemePreferences()
   const { t } = useTranslation('profile')
+  const upper = useLocaleUpper()
   const insets = useSafeAreaInsets()
   const MONTHLY_PRICE = 59.99
   const YEARLY_PRICE = 479.99
@@ -163,8 +165,8 @@ export function ProfilePremiumSheet({
             <View className='mb-3'>
               <View className='mb-4 flex-row items-center gap-3'>
                 <View className='h-px flex-1 bg-white/10' />
-                <Text className='text-xs font-semibold uppercase text-[--text-muted]' style={strongTextStyle}>
-                  {t('profile:premiumSheet.orBuyCredits')}
+                <Text className='text-xs font-semibold text-[--text-muted]' style={strongTextStyle}>
+                  {upper(t('profile:premiumSheet.orBuyCredits'))}
                 </Text>
                 <View className='h-px flex-1 bg-white/10' />
               </View>

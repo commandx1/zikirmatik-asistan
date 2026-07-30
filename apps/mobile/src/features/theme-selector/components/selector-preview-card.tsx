@@ -10,6 +10,7 @@ import { GalaksiGirdabiBg } from "../../../theme/galaksi-girdabi-bg";
 import { SuDalgasiBg } from "../../../theme/su-dalgasi-bg";
 import { HilalGecesiBg } from "../../../theme/hilal-gecesi-bg";
 import { THEME_STRAP_COLORS } from "../../../theme/strap-colors";
+import { useLocaleUpper } from "../../../hooks/use-locale-upper";
 
 type SelectorPreviewCardProps = {
   themeName: ThemeName;
@@ -28,6 +29,7 @@ const PREVIEW_ARABIC = "سُبْحَانَ اللّٰهِ وَبِحَمْدِه
 
 export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "default" }: SelectorPreviewCardProps) {
   const { t } = useTranslation("theme-selector");
+  const upper = useLocaleUpper();
   const backgroundImage = resolveThemeBackgroundImage(themeName);
   const isAnimated = themeName === "galaksi-girdabi" || themeName === "su-dalgasi" || themeName === "hilal-gecesi";
   const gradient = tokens.bgGradient;
@@ -55,8 +57,8 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
 
   return (
     <View className="items-center">
-      <Text className="mb-2 text-xs font-semibold uppercase tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
-        {t("theme-selector:previewCard.preview")}
+      <Text className="mb-2 text-xs font-semibold tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
+        {upper(t("theme-selector:previewCard.preview"))}
       </Text>
 
       <View className="w-full rounded-[24px] border-2 border-dashed p-5" style={{ borderColor: withAlpha(tokens.accent, 0.4), backgroundColor: tokens.card, overflow: "hidden" }}>
@@ -133,8 +135,8 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
             backgroundColor: withAlpha(tokens.bg, 0.9)
           }}
         >
-          <Text className="mb-1 text-xs font-semibold uppercase tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
-            {t("theme-selector:previewCard.dhikrDetail")}
+          <Text className="mb-1 text-xs font-semibold tracking-[1.1px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
+            {upper(t("theme-selector:previewCard.dhikrDetail"))}
           </Text>
           <View className="mt-3 gap-2">
             <PreviewDhikrBlock title={t("components:dhikrContentStack.transliteration")} value={PREVIEW_TRANSLITERATION} tokens={tokens} regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
@@ -209,6 +211,7 @@ function PreviewDhikrBlock({
   regularTextStyle?: { fontFamily: string };
   strongTextStyle?: { fontFamily: string };
 }) {
+  const upper = useLocaleUpper();
   return (
     <View
       className="rounded-xl px-3 py-2"
@@ -218,8 +221,8 @@ function PreviewDhikrBlock({
         backgroundColor: withAlpha(tokens.textPrimary, 0.04)
       }}
     >
-      <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
-        {title}
+      <Text className="mb-1 text-xs font-semibold tracking-[0.9px]" style={[{ color: tokens.textMuted }, strongTextStyle]}>
+        {upper(title)}
       </Text>
       <Text
         className={arabic ? "text-right text-xl leading-8" : "text-sm leading-5"}

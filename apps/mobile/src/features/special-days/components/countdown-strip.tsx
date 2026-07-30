@@ -1,11 +1,13 @@
 import { Text, View } from "react-native";
 import type { CountdownSegment } from "../types/view-model";
+import { useLocaleUpper } from "../../../hooks/use-locale-upper";
 
 type CountdownStripProps = {
   segments: CountdownSegment[];
 };
 
 export function CountdownStrip({ segments }: CountdownStripProps) {
+  const upper = useLocaleUpper();
   return (
     <View className="mb-6 flex-row items-center rounded-2xl border border-white/5 bg-[--bg]/60 p-4">
       {segments.map((segment, index) => (
@@ -14,8 +16,8 @@ export function CountdownStrip({ segments }: CountdownStripProps) {
             <Text className="text-4xl leading-[34px] font-semibold tracking-[0.6px] text-[--text-primary]">
               {segment.value}
             </Text>
-            <Text className="pt-1 text-xs leading-[14px] uppercase tracking-[0.8px] text-[--text-muted]">
-              {segment.label}
+            <Text className="pt-1 text-xs leading-[14px] tracking-[0.8px] text-[--text-muted]">
+              {upper(segment.label)}
             </Text>
           </View>
           {index < segments.length - 1 ? <Text className="px-1.5 text-lg font-semibold text-[--accent]/40">:</Text> : null}

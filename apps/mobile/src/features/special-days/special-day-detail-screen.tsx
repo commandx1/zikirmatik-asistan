@@ -10,6 +10,7 @@ import { resolveLocalizedText } from '../../store/dhikr-store'
 import { formatLongDate } from '../../lib/locale-format'
 import { useAiGuideNavigationIntentStore } from '../ai-guide/services/ai-guide-navigation-intent-store'
 import { useSpecialDayDetail } from './hooks/use-special-day-detail'
+import { useLocaleUpper } from '../../hooks/use-locale-upper'
 
 type SpecialDayDetailScreenProps = {
   id: string
@@ -20,6 +21,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
   const { tokens } = useThemeTokens()
   const { t, i18n } = useTranslation('special-days')
   const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const upper = useLocaleUpper()
 
   const detail = useSpecialDayDetail(id)
   const requestSpecialDayIntent = useAiGuideNavigationIntentStore(s => s.requestSpecialDayIntent)
@@ -67,8 +69,8 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
           {!detail.detail ? null : (
             <>
               <ThemedCard className='rounded-2xl p-5' borderClassName='border-white/5' elevated>
-                <Text className='text-xs font-semibold uppercase tracking-[1.1px] text-[--text-muted]'>
-                  {t('special-days:detail.pageTitle')}
+                <Text className='text-xs font-semibold tracking-[1.1px] text-[--text-muted]'>
+                  {upper(t('special-days:detail.pageTitle'))}
                 </Text>
                 <Text className='mt-2 text-2xl leading-[34px] font-semibold tracking-tight text-[--text-primary]' numberOfLines={2}>
                   {resolveLocalizedText(detail.detail.name, locale)}
@@ -80,8 +82,8 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
               </ThemedCard>
 
               <ThemedCard className='mt-4 rounded-2xl p-4' borderClassName='border-white/5'>
-                <Text className='text-xs font-semibold uppercase tracking-[1px] text-[--text-muted]'>
-                  {t('special-days:detail.themeTitle')}
+                <Text className='text-xs font-semibold tracking-[1px] text-[--text-muted]'>
+                  {upper(t('special-days:detail.themeTitle'))}
                 </Text>
                 <Text className='mt-1 text-base font-semibold text-[--text-primary]'>{resolveLocalizedText(detail.detail.themeTitle, locale)}</Text>
                 <Text className='mt-1 text-sm leading-6 text-[--text-muted]'>{resolveLocalizedText(detail.detail.themeSummary, locale)}</Text>

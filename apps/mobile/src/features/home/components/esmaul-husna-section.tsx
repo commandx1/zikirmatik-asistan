@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ESMAUL_HUSNA } from '../../focus/data'
 import type { EsmaulHusnaItem } from '../../focus/types'
+import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 
 type EsmaulHusnaTableEntry = {
   number: number
@@ -19,6 +20,7 @@ type EsmaulHusnaSectionProps = {
 export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, onSelect }: EsmaulHusnaSectionProps) {
   const { t } = useTranslation('home')
   const { tokens } = useThemeTokens()
+  const upper = useLocaleUpper()
 
   const rows = useMemo(() =>
     ESMAUL_HUSNA.reduce<EsmaulHusnaTableEntry[][]>((acc, item, index) => {
@@ -43,8 +45,8 @@ export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, 
           backgroundColor: withAlpha(tokens.card, 0.92)
         }}
       >
-        <Text className='mb-3 text-xs font-semibold uppercase tracking-[1.1px]' style={{ color: tokens.textMuted }}>
-          {t('home:esmaulHusnaSection.title')}
+        <Text className='mb-3 text-xs font-semibold tracking-[1.1px]' style={{ color: tokens.textMuted }}>
+          {upper(t('home:esmaulHusnaSection.title'))}
         </Text>
         <View className='overflow-hidden rounded-xl' style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.1) }}>
           {rows.map((row, rowIndex) => {

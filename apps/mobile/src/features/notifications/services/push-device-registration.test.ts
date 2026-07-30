@@ -79,8 +79,6 @@ describe("push-device-registration", () => {
     registerDevice.mockResolvedValue(undefined);
 
     const { registerPushDevice } = await import("./push-device-registration");
-    const { useDeviceNotificationPrefsStore } = await import("../../../store/device-notification-prefs-store");
-    useDeviceNotificationPrefsStore.setState({ specialDays: true, friday: true });
 
     await registerPushDevice("access-token-123");
 
@@ -89,8 +87,7 @@ describe("push-device-registration", () => {
       {
         deviceId: "generated-uuid-1234",
         expoPushToken: "ExponentPushToken[abc]",
-        platform: "ios",
-        prefs: { specialDays: true, friday: true }
+        platform: "ios"
       },
       "access-token-123"
     );
@@ -102,8 +99,6 @@ describe("push-device-registration", () => {
     registerDevice.mockResolvedValue(undefined);
 
     const { registerPushDevice } = await import("./push-device-registration");
-    const { useDeviceNotificationPrefsStore } = await import("../../../store/device-notification-prefs-store");
-    useDeviceNotificationPrefsStore.setState({ specialDays: false, friday: false });
 
     await registerPushDevice();
     await registerPushDevice();
@@ -115,8 +110,7 @@ describe("push-device-registration", () => {
       {
         deviceId: "generated-uuid-1234",
         expoPushToken: undefined,
-        platform: "ios",
-        prefs: { specialDays: false, friday: false }
+        platform: "ios"
       },
       undefined
     );
@@ -127,8 +121,6 @@ describe("push-device-registration", () => {
     registerDevice.mockResolvedValue(undefined);
 
     const { registerPushDevice } = await import("./push-device-registration");
-    const { useDeviceNotificationPrefsStore } = await import("../../../store/device-notification-prefs-store");
-    useDeviceNotificationPrefsStore.setState({ specialDays: false, friday: false });
 
     await registerPushDevice();
 
@@ -137,8 +129,7 @@ describe("push-device-registration", () => {
       {
         deviceId: "generated-uuid-1234",
         expoPushToken: undefined,
-        platform: "ios",
-        prefs: { specialDays: false, friday: false }
+        platform: "ios"
       },
       undefined
     );

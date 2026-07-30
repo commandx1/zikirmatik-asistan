@@ -15,6 +15,7 @@ import { MarkdownRenderer } from '../../../components/ui/markdown-renderer'
 import { ThemedCard } from '../../../components/ui/themed-card'
 import { useZikirlerim } from '../context/zikirlerim-context'
 import { resolveLocalizedText } from '../../../store/dhikr-store'
+import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 import type { ZikirItem } from '../types'
 
 type ZikirItemCardProps = {
@@ -66,6 +67,7 @@ const COLLAPSE_DURATION = 220
 const AccordionContent = memo(function AccordionContent({ item, tokens }: { item: ZikirItem; tokens: ThemeTokens }) {
   const { t, i18n } = useTranslation('focus')
   const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const upper = useLocaleUpper()
   const meaningText = item.meaning ? resolveLocalizedText(item.meaning, locale) : ''
   const virtueText = item.virtue ? resolveLocalizedText(item.virtue, locale) : ''
   const contentSourceText = item.contentSource ? resolveLocalizedText(item.contentSource, locale) : ''
@@ -102,10 +104,10 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
           }}
         >
           <Text
-            className='mb-1 text-xs font-semibold uppercase tracking-[0.9px]'
+            className='mb-1 text-xs font-semibold tracking-[0.9px]'
             style={{ color: tokens.textMuted }}
           >
-            {t('focus:card.meaning')}
+            {upper(t('focus:card.meaning'))}
           </Text>
           <Text className='text-xs leading-5' style={{ color: tokens.textPrimary, textAlign: 'justify' }}>
             {meaningText}
@@ -123,10 +125,10 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
           }}
         >
           <Text
-            className='mb-1 text-xs font-semibold uppercase tracking-[0.9px]'
+            className='mb-1 text-xs font-semibold tracking-[0.9px]'
             style={{ color: tokens.textMuted }}
           >
-            {t('focus:card.virtue')}
+            {upper(t('focus:card.virtue'))}
           </Text>
           <Text className='text-xs leading-5' style={{ color: tokens.textMuted, textAlign: 'justify' }}>
             {virtueText}
@@ -144,10 +146,10 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
           }}
         >
           <Text
-            className='mb-1 text-xs font-semibold uppercase tracking-[0.9px]'
+            className='mb-1 text-xs font-semibold tracking-[0.9px]'
             style={{ color: tokens.textMuted }}
           >
-            {t('focus:card.source')}
+            {upper(t('focus:card.source'))}
           </Text>
           <Text className='text-xs leading-5' style={{ color: tokens.textMuted, textAlign: 'justify' }}>
             {contentSourceText}
@@ -186,10 +188,10 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
           }}
         >
           <Text
-            className='mb-1.5 text-xs font-semibold uppercase tracking-[0.9px]'
+            className='mb-1.5 text-xs font-semibold tracking-[0.9px]'
             style={{ color: tokens.accent }}
           >
-            {t('focus:card.assistantNote')}
+            {upper(t('focus:card.assistantNote'))}
           </Text>
           <MarkdownRenderer markdown={item.aiAssistantNote} />
         </View>

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { DhikrContentStack } from "../../../components/ui/dhikr-content-stack";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { ThemedTag } from "../../../components/ui/themed-tag";
+import { useLocaleUpper } from "../../../hooks/use-locale-upper";
 import type { AiGuideRecommendation } from "../types";
 
 type RecommendationCardProps = {
@@ -81,6 +82,7 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
 
 function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
   const { t } = useTranslation("ai-guide");
+  const upper = useLocaleUpper();
 
   if (!item.virtue && !item.source && !item.recommendedCount) {
     return null;
@@ -90,7 +92,7 @@ function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
     <View className="mt-3 gap-2">
       {item.virtue ? (
         <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-          <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]">{t("ai-guide:recommendation.virtue")}</Text>
+          <Text className="mb-1 text-xs font-semibold tracking-[0.9px] text-[--text-muted]">{upper(t("ai-guide:recommendation.virtue"))}</Text>
           <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
             {item.virtue}
           </Text>
@@ -100,7 +102,7 @@ function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
         <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
           {item.source ? (
             <>
-              <Text className="mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]">{t("ai-guide:recommendation.source")}</Text>
+              <Text className="mb-1 text-xs font-semibold tracking-[0.9px] text-[--text-muted]">{upper(t("ai-guide:recommendation.source"))}</Text>
               <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
                 {item.source}
               </Text>

@@ -36,7 +36,18 @@ export default tseslint.config(
       }
     },
     rules: {
-      "no-console": "off"
+      "no-console": "off",
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXAttribute[name.name='className'] Literal[value=/\\buppercase\\b/]",
+          message: "className içinde 'uppercase' kullanma: RN'de textTransform cihaz locale'ini kullanıyor (tr cihazda I → İ). useLocaleUpper() hook'unu kullan."
+        },
+        {
+          selector: "JSXAttribute[name.name='className'] TemplateElement[value.raw=/\\buppercase\\b/]",
+          message: "className içinde 'uppercase' kullanma: RN'de textTransform cihaz locale'ini kullanıyor (tr cihazda I → İ). useLocaleUpper() hook'unu kullan."
+        }
+      ]
     }
   }
 );

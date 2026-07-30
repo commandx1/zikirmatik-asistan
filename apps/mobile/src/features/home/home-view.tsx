@@ -24,6 +24,7 @@ import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-t
 import { useHomeContext } from './home-context'
 import { AppleWatch } from './components/apple-watch'
 import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
+import { useLocaleUpper } from '../../hooks/use-locale-upper'
 
 const EsmaulHusnaSection = lazy(() =>
   import('./components/esmaul-husna-section').then((m) => ({ default: m.EsmaulHusnaSection }))
@@ -135,6 +136,7 @@ function SelectedDhikrMeaning() {
   const home = useHomeContext()
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('home')
+  const upper = useLocaleUpper()
   const title = (home.mainDhikr.displayName || home.mainDhikr.transliteration || '').trim()
   const transliteration = home.mainDhikr.transliteration?.trim()
   const arabic = home.mainDhikr.arabic?.trim()
@@ -155,13 +157,13 @@ function SelectedDhikrMeaning() {
           backgroundColor: withAlpha(tokens.card, 0.92)
         }}
       >
-        <Text className='mb-1 text-xs font-semibold uppercase tracking-[1.1px]' style={{ color: tokens.textMuted }}>
-          {t('home:selectedDhikrMeaning.title')}
+        <Text className='mb-1 text-xs font-semibold tracking-[1.1px]' style={{ color: tokens.textMuted }}>
+          {upper(t('home:selectedDhikrMeaning.title'))}
         </Text>
         {shouldShowTitleOnly ? (
           <View className='mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2'>
-            <Text className='mb-1 text-xs font-semibold uppercase tracking-[0.9px] text-[--text-muted]'>
-              {t('home:selectedDhikrMeaning.titleLabel')}
+            <Text className='mb-1 text-xs font-semibold tracking-[0.9px] text-[--text-muted]'>
+              {upper(t('home:selectedDhikrMeaning.titleLabel'))}
             </Text>
             <Text className='text-sm leading-5 text-[--text-primary]'>{title}</Text>
           </View>

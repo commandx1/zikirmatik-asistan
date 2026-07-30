@@ -180,8 +180,8 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
                 elevated
               >
                 <View className="mb-1 flex-row items-center justify-between">
-                  <Text className="text-xs font-semibold uppercase tracking-[0.8px] text-[--text-muted]">
-                    {index + 1}/{detail.dhikrs.length}
+                  <Text className="text-xs font-semibold tracking-[0.8px] text-[--text-muted]">
+                    {`${index + 1}/${detail.dhikrs.length}`}
                   </Text>
                   <View className="rounded-full bg-[--accent]/10 px-2.5 py-0.5">
                     <Text className="text-xs font-medium text-[--accent]">

@@ -4,6 +4,7 @@ import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { TogglePill } from "./toggle-pill";
+import { useLocaleUpper } from "../../../hooks/use-locale-upper";
 
 type RamadanModeCardProps = {
   enabled: boolean;
@@ -14,6 +15,7 @@ type RamadanModeCardProps = {
 export function RamadanModeCard({ enabled, showCta = true, onToggle }: RamadanModeCardProps) {
   const { tokens } = useThemeTokens();
   const { t } = useTranslation("special-days");
+  const upper = useLocaleUpper();
 
   return (
     <ThemedCard className="overflow-hidden rounded-[20px] p-5" borderClassName="border-[--success]/35">
@@ -35,11 +37,11 @@ export function RamadanModeCard({ enabled, showCta = true, onToggle }: RamadanMo
 
       <View className="relative z-10 flex-row rounded-xl border border-white/5 bg-[--bg]/30 px-4 py-3">
         <View className="flex-1 items-center border-r border-white/10">
-          <Text className="text-xs uppercase tracking-[1px] text-[--text-muted]">{t("special-days:ramadanMode.sahur")}</Text>
+          <Text className="text-xs tracking-[1px] text-[--text-muted]">{upper(t("special-days:ramadanMode.sahur"))}</Text>
           <Text className="pt-1 text-lg font-semibold text-[--text-primary]">04:23</Text>
         </View>
         <View className="flex-1 items-center">
-          <Text className="text-xs uppercase tracking-[1px] text-[--text-muted]">{t("special-days:ramadanMode.iftar")}</Text>
+          <Text className="text-xs tracking-[1px] text-[--text-muted]">{upper(t("special-days:ramadanMode.iftar"))}</Text>
           <Text className="pt-1 text-lg font-semibold text-[--text-primary]">19:45</Text>
         </View>
       </View>
