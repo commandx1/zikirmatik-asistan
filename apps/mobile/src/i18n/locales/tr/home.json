@@ -47,7 +47,8 @@
   },
   "toast": {
     "tapAnywhere": "Ekranın her yerine dokunarak sayabilirsin",
-    "tapCircleOnly": "Sadece yuvarlağa basınca sayar"
+    "tapCircleOnly": "Sadece yuvarlağa basınca sayar",
+    "autoSaved": "Hedefe ulaştın, otomatik kaydedildi"
   },
   "resetModal": {
     "title": "Sayacı Sıfırla",

@@ -466,19 +466,32 @@ export function HomeView() {
     }, [isTourCompleted, startTour])
   )
 
+  const showToast = useCallback((message: string) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    setToastMessage(message)
+    toastTimerRef.current = setTimeout(() => setToastMessage(null), 2500)
+  }, [])
+
   useEffect(() => {
     if (!isMountedRef.current) {
       isMountedRef.current = true
       return
     }
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
-    setToastMessage(
+    showToast(
       home.tapAnywhereEnabled
         ? t('home:toast.tapAnywhere')
         : t('home:toast.tapCircleOnly')
     )
-    toastTimerRef.current = setTimeout(() => setToastMessage(null), 2500)
-  }, [home.tapAnywhereEnabled, t])
+  }, [home.tapAnywhereEnabled, showToast, t])
+
+  useEffect(() => {
+    // Starts at 0 and is incremented once per successful auto-save, so the
+    // initial render must not surface a toast.
+    if (home.autoSaveNoticeId === 0) {
+      return
+    }
+    showToast(t('home:toast.autoSaved'))
+  }, [home.autoSaveNoticeId, showToast, t])
   const pendingDailyEsmaStart = useHomeNavigationIntentStore(state => state.pendingDailyEsmaStart)
   const consumeDailyEsmaStart = useHomeNavigationIntentStore(state => state.consumeDailyEsmaStart)
   const esmaListFocusRequestId = useHomeNavigationIntentStore(state => state.esmaListFocusRequestId)

@@ -98,6 +98,7 @@ type HomeContextValue = {
   freeSaveMeaningDraft: string
   freeSaveNameError: string | null
   freeSaveTargetDraft: string
+  autoSaveNoticeId: number
   refresh: () => Promise<void>
   onCountPress: () => void
   onResetPress: () => void
@@ -225,6 +226,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [isSavingLog, setIsSavingLog] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [streakDays, setStreakDays] = useState(0)
+  const [autoSaveNoticeId, setAutoSaveNoticeId] = useState(0)
   const [tapAnywhereEnabled, setTapAnywhereEnabled] = useState(false)
   const toggleTapAnywhere = useCallback(() => {
     setTapAnywhereEnabled(prev => {
@@ -242,6 +244,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
   const liveSelectedCountRef = useRef(0)
   const liveFreeCountRef = useRef(0)
+  // Guards the auto-save that fires when a target is reached: keyed by
+  // dhikr + day + target so resetting and re-reaching the same target on the
+  // same day does not overwrite the already stored log a second time. The
+  // manual save button is never gated by this.
+  const autoSavedKeyRef = useRef<string | null>(null)
   const freeAutoDhikrIdRef = useRef<string | undefined>(undefined)
   const freeAutoDhikrNameRef = useRef<string | undefined>(undefined)
 
@@ -483,9 +490,14 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
 
     const saveSelectedDhikrLog = async ({
-      countOverride
+      countOverride,
+      silent = false
     }: {
       countOverride?: number
+      // Auto-save (target reached) is not a user-initiated action, so a missing
+      // session must not surface an unsolicited error. Network failures are
+      // still reported so the user knows to press save manually.
+      silent?: boolean
     } = {}) => {
       if (!selectedDhikr) {
         return true
@@ -496,6 +508,10 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target
 
       if (authStatus !== 'authenticated' || !sessionUserId) {
+        if (silent) {
+          return false
+        }
+
         const message = t('home:errors.loginRequiredToSave')
         setSyncError(message)
         setUnsavedTransitionError(message)
@@ -536,7 +552,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             targetCount: selectedDhikr.target,
             date: toDateKey(new Date()),
             ...aiLogContext,
-            isCompleted: false,
+            isCompleted,
             isFavorite: selectedDhikr.isFavorite
           }
       try {
@@ -792,6 +808,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       freeSaveMeaningDraft,
       freeSaveNameError,
       freeSaveTargetDraft,
+      autoSaveNoticeId,
       refresh,
       onCountPress: () => {
         if (demoCompleted) {
@@ -808,6 +825,18 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             Vibration.vibrate(25)
           }
 
+          // Free mode has no dhikr identity yet, so it cannot be logged
+          // silently — reaching the target opens the naming modal instead.
+          if (freeTarget > 0 && prevCount < freeTarget && nextCount >= freeTarget) {
+            const autoSaveKey = `free:${toDateKey(new Date())}:${freeTarget}`
+            if (autoSavedKeyRef.current !== autoSaveKey) {
+              autoSavedKeyRef.current = autoSaveKey
+              setSyncError(undefined)
+              setFreeSaveTargetDraft(String(freeTarget))
+              setFreeSaveNameModalOpen(true)
+            }
+          }
+
           return
         }
 
@@ -820,6 +849,31 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         incrementSelected()
         if (hapticsEnabled && nextCount !== baseCount) {
           Vibration.vibrate(25)
+        }
+
+        // Reaching the target used to require pressing save for the day to
+        // count toward the streak; persist it here so the progress is never
+        // silently lost. Bound to the tap path on purpose: an effect would also
+        // fire on mount for a persisted at-target dhikr and for the tour's
+        // demo toggle, which must not write logs.
+        if (
+          selectedDhikr.target > 0 &&
+          baseCount < selectedDhikr.target &&
+          nextCount >= selectedDhikr.target
+        ) {
+          const autoSaveKey = `${selectedDhikr.id}:${toDateKey(new Date())}:${selectedDhikr.target}`
+          if (autoSavedKeyRef.current !== autoSaveKey) {
+            autoSavedKeyRef.current = autoSaveKey
+            void saveSelectedDhikrLog({ countOverride: nextCount, silent: true }).then(didSave => {
+              if (didSave) {
+                setAutoSaveNoticeId(prev => prev + 1)
+                return
+              }
+
+              // Allow another attempt once the user resets and re-reaches it.
+              autoSavedKeyRef.current = null
+            })
+          }
         }
       },
       onResetPress: () => {
@@ -990,7 +1044,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
                 targetCount: targetToSave,
                 date: toDateKey(new Date()),
                 source: 'manual',
-                isCompleted: false
+                isCompleted: targetToSave > 0 && countToSave >= targetToSave
               },
               sessionAccessToken
             )
@@ -1062,6 +1116,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     activeQuickDhikr,
     addCustomDhikr,
     applySavedBackendLog,
+    autoSaveNoticeId,
     clearSelectedDhikr,
     clearFreeModeSession,
     createArabicDraft,

@@ -47,7 +47,8 @@
   },
   "toast": {
     "tapAnywhere": "You can count by tapping anywhere on the screen",
-    "tapCircleOnly": "Only counts when you tap the circle"
+    "tapCircleOnly": "Only counts when you tap the circle",
+    "autoSaved": "Target reached, saved automatically"
   },
   "resetModal": {
     "title": "Reset Counter",

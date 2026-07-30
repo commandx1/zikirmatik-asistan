@@ -78,12 +78,23 @@ export class DhikrLogsService {
       filter.customDhikrId = customDhikrId;
     }
 
+    // A day holds at most one log per (user, dhikr), so a later write for the
+    // same day overwrites the earlier one. `isCompleted` must not follow that
+    // rule: once a target was reached that day the streak has been earned, and
+    // a subsequent partial session (reset + save 5 of 100) must not revoke it.
+    const existing = await this.dhikrLogModel
+      .findOne(filter, { isCompleted: 1 })
+      .lean()
+      .exec();
+    const isCompleted =
+      existing?.isCompleted === true ? true : (payload.isCompleted ?? false);
+
     const updateSet: Record<string, unknown> = {
       count: payload.count,
       targetCount: payload.targetCount,
       sessionDuration: payload.sessionDuration ?? 0,
       source: payload.source ?? 'manual',
-      isCompleted: payload.isCompleted ?? false,
+      isCompleted,
       customDhikrName: payload.customDhikrName?.trim() || undefined,
       customDhikrArabic: payload.customDhikrArabic?.trim() || undefined,
       aiRecommendationId: aiRecommendationObjectId,

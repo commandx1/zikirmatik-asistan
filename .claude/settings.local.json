@@ -50,7 +50,8 @@
       "Edit(*)",
       "WebFetch(domain:gemini.google.com)",
       "WebFetch(domain:docs.google.com)",
-      "Skill(run)"
+      "Skill(run)",
+      "mcp__codebase-memory-mcp__list_projects"
     ]
   }
 }
