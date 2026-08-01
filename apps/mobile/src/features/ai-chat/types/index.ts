@@ -20,6 +20,18 @@ export type ChatDhikrCardRaw = {
 
 export type ChatMessageRole = "user" | "assistant";
 
+/**
+ * "kaynak" modunda cevaba eşlik eden kaynak/sayfa referansı — bkz.
+ * apps/api/src/modules/ai-chat/ai-chat.service.ts AiSourceCitation.
+ * Yalnızca mode === "kaynak" olan assistant mesajlarında dolu gelir.
+ */
+export type AiSourceCitation = {
+  sourceId: string;
+  sourceTitle: string;
+  pageStart: number;
+  pageEnd: number;
+};
+
 export type ChatMessageRaw = {
   id: string;
   conversationId: string;
@@ -28,6 +40,7 @@ export type ChatMessageRaw = {
   usedModel?: string;
   createdAt: string;
   recommendedDhikrs: ChatDhikrCardRaw[];
+  sourceCitations?: AiSourceCitation[];
 };
 
 export type ChatConversationSummary = {

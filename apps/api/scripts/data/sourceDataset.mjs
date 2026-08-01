@@ -29,6 +29,7 @@ import { muharremIlkOn } from './muharremIlkOn.mjs';
 import { gunlukTesbih } from './gunlukTesbih.mjs';
 import { haksizlikVeMulkKoruma } from './haksizlikVeMulkKoruma.mjs';
 import { istihareDuasi } from './istihareDuasi.mjs';
+import { mubinDuasi } from './mubinDuasi.mjs';
 import { orucRamazan } from './orucRamazan.mjs';
 import { namazSonrasiZikir } from './namazSonrasiZikir.mjs';
 import { ezanDualari } from './ezanDualari.mjs';
@@ -82,6 +83,7 @@ export const SOURCE_DATASETS = [
   gunlukTesbih,
   haksizlikVeMulkKoruma,
   istihareDuasi,
+  mubinDuasi,
   orucRamazan,
   namazSonrasiZikir,
   ezanDualari,

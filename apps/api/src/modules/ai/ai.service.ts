@@ -74,6 +74,7 @@ type SourcePassageLean = SourcePassage & { _id: Types.ObjectId };
 // Kaynak pasajı (kitap RAG) araması sonucu. Şu an yalnızca vektör tabanlı
 // arama sağlanır; sohbet agent'ına henüz bağlı değildir (ayrı bir görev).
 export type SourcePassageResult = {
+  sourceId: string;
   text: string;
   sourceTitle: string;
   pageStart: number;
@@ -977,6 +978,7 @@ export class AiService {
         .exec();
 
       return results.map((item) => ({
+        sourceId: item.sourceId,
         text: item.text,
         sourceTitle: item.sourceTitle,
         pageStart: item.pageStart,

@@ -15,6 +15,7 @@ import {
   type ChatStreamHandlers
 } from "../services/ai-chat-api-client";
 import type {
+  AiSourceCitation,
   ChatConversationSummary,
   ChatDhikrCardRaw,
   ChatMessageRaw
@@ -38,6 +39,7 @@ export type ChatMessage = {
   content: string;
   createdAt: string;
   recommendedDhikrs: ChatDhikrCard[];
+  sourceCitations: AiSourceCitation[];
 };
 
 /**
@@ -220,6 +222,7 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
       let streamingStarted = false;
 
       setMessages((prev) => [...prev, optimisticUserMessage]);
+      setInputValue("");
 
       const abortController = new AbortController();
       streamAbortRef.current = abortController;
@@ -270,7 +273,9 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
           setMessages((prev) =>
             prev.map((m) => {
               if (m.id === optimisticUserMessage.id) return payload.userMessage;
-              if (m.id === streamingAssistantId) return { ...m, id: payload.messageId };
+              if (m.id === streamingAssistantId) {
+                return { ...m, id: payload.messageId, sourceCitations: payload.sourceCitations ?? [] };
+              }
               return m;
             })
           );
@@ -302,8 +307,6 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
             streamChatMessage(activeConversationId, { message: text, socketId }, token, handlers, abortController.signal)
           );
         }
-
-        setInputValue("");
       } catch (err) {
         setMessages((prev) =>
           prev.filter((m) => m.id !== optimisticUserMessage.id && m.id !== streamingAssistantId)
@@ -409,7 +412,8 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
         role: m.role,
         content: m.content,
         createdAt: m.createdAt,
-        recommendedDhikrs: (m.recommendedDhikrs ?? []).map(resolveDhikrCard)
+        recommendedDhikrs: (m.recommendedDhikrs ?? []).map(resolveDhikrCard),
+        sourceCitations: m.sourceCitations ?? []
       })),
     [messages, resolveDhikrCard]
   );

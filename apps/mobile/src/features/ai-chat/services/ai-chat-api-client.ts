@@ -5,7 +5,7 @@ import { Platform } from "react-native";
 // için (native EventSource POST body desteklemediğinden) elle kullanılıyor.
 import { fetch as streamFetch } from "expo/fetch";
 import { i18n } from "../../../i18n";
-import type { ChatConversationSummary, ChatDhikrCardRaw, ChatMessageRaw } from "../types";
+import type { AiSourceCitation, ChatConversationSummary, ChatDhikrCardRaw, ChatMessageRaw } from "../types";
 
 export const AI_CREDIT_INSUFFICIENT_CODE = "AI_CREDIT_INSUFFICIENT";
 
@@ -91,6 +91,7 @@ export type ChatStreamDonePayload = {
   conversationId: string;
   conversation?: CreateConversationResponse["conversation"];
   userMessage: ChatMessageRaw;
+  sourceCitations?: AiSourceCitation[];
 };
 
 export type ChatStreamHandlers = {

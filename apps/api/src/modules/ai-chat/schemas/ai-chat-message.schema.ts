@@ -9,6 +9,22 @@ export type AiChatMessageDocument = HydratedDocument<AiChatMessage>;
 export const AI_CHAT_MESSAGE_ROLES = ['user', 'assistant'] as const;
 export type AiChatMessageRole = (typeof AI_CHAT_MESSAGE_ROLES)[number];
 
+// 'kaynak' modunda cevabın dayandığı kitap pasajları — sohbette
+// "kaynak: <kitap adı>, s.X-Y" şeklinde gösterim için.
+export class AiSourceCitation {
+  @Prop({ type: String, required: true })
+  sourceId!: string;
+
+  @Prop({ type: String, required: true })
+  sourceTitle!: string;
+
+  @Prop({ type: Number, required: true })
+  pageStart!: number;
+
+  @Prop({ type: Number, required: true })
+  pageEnd!: number;
+}
+
 @Schema({
   collection: 'ai_messages',
   timestamps: { createdAt: true, updatedAt: false },
@@ -40,6 +56,10 @@ export class AiChatMessage {
   // Yalnızca assistant mesajlarında dolu: 'openai' | 'fallback'.
   @Prop({ type: String })
   usedModel?: string;
+
+  // Yalnızca 'kaynak' modunda dolu: cevabın dayandığı kaynak pasajlar.
+  @Prop({ type: [Object], default: undefined })
+  sourceCitations?: AiSourceCitation[];
 
   readonly createdAt!: Date;
 }

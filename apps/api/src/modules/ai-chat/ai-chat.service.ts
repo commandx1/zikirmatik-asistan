@@ -19,7 +19,11 @@ import { createOpenAI } from '@ai-sdk/openai';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { AiProgressGateway } from '../ai/ai-progress.gateway';
-import { AiService, type SearchResult } from '../ai/ai.service';
+import {
+  AiService,
+  type SearchResult,
+  type SourcePassageResult,
+} from '../ai/ai.service';
 import { AiUsageService } from '../ai/ai-usage.service';
 import { AI_CREDIT_REASONS } from '../ai/credits.constants';
 import type { SupportedAiLocale } from '../ai/utils/locale';
@@ -29,6 +33,7 @@ import {
   AiChatMessage,
   type AiChatMessageDocument,
   type AiChatMessageRole,
+  type AiSourceCitation,
 } from './schemas/ai-chat-message.schema';
 import {
   AiConversation,
@@ -41,16 +46,18 @@ type ChatAgentResult = {
   replyText: string;
   recommendedDhikrIds: string[];
   usedModel: 'openai' | 'fallback';
+  sourceCitations?: AiSourceCitation[];
 };
 
 /**
  * Intent sınıflandırıcının çıktısı — retrieval'i tetikleyip tetiklemeyeceğimizi
  * ve hangi sistem prompt'unun kullanılacağını belirler (bkz. classifyIntent).
  */
-type ChatMode = 'recommend' | 'chat' | 'clarify' | 'out_of_scope';
+type ChatMode = 'recommend' | 'chat' | 'clarify' | 'kaynak' | 'out_of_scope';
 
 const MAX_CONTEXT_MESSAGES = 10;
 const MAX_RECOMMENDATIONS_PER_REPLY = 3;
+const MAX_SOURCE_CITATIONS = 3;
 const TITLE_MAX_LENGTH = 60;
 
 const AGENT_UNAVAILABLE_FALLBACK_REPLY =
@@ -275,6 +282,7 @@ export class AiChatService {
         conversationId: conversation._id.toString(),
         conversation: freshConversation,
         userMessage: this.toMessageResponse(userMessage),
+        sourceCitations: agentResult.sourceCitations ?? [],
       });
       finish();
     } catch (error) {
@@ -464,6 +472,7 @@ export class AiChatService {
         remainingCredits: wallet.balance,
         conversationId: conversationObjectId.toString(),
         userMessage: this.toMessageResponse(userMessage),
+        sourceCitations: agentResult.sourceCitations ?? [],
       });
       finish();
     } catch (error) {
@@ -608,14 +617,27 @@ export class AiChatService {
       },
     );
     let candidates: SearchResult[] = [];
+    let passages: SourcePassageResult[] = [];
     if (mode === 'recommend') {
       this.emitStep(input.socketId, 'searching', 'Zikirler taranıyor...');
       candidates = await this.fetchRecommendationCandidates(latestUserMessage);
+    } else if (mode === 'kaynak') {
+      this.emitStep(
+        input.socketId,
+        'searchingKaynak',
+        'Kaynaklar taranıyor...',
+      );
+      passages = await this.fetchSourcePassages(latestUserMessage);
     }
-    if (mode !== 'recommend') {
+    if (mode !== 'recommend' && mode !== 'kaynak') {
       this.emitStep(input.socketId, 'typing', 'Yazıyor...');
     }
-    const systemPrompt = this.selectPrompt(mode, input.locale, candidates);
+    const systemPrompt = this.selectPrompt(
+      mode,
+      input.locale,
+      candidates,
+      passages,
+    );
     let recommendedIds: string[] = [];
 
     const tools =
@@ -683,6 +705,8 @@ export class AiChatService {
         replyText,
         recommendedDhikrIds: validIds,
         usedModel: 'openai',
+        sourceCitations:
+          mode === 'kaynak' ? this.buildSourceCitations(passages) : undefined,
       };
     } catch (error) {
       this.logger.warn(
@@ -741,14 +765,27 @@ export class AiChatService {
       { flowId: input.flowId, userId: input.userId },
     );
     let candidates: SearchResult[] = [];
+    let passages: SourcePassageResult[] = [];
     if (mode === 'recommend') {
       this.emitStep(input.socketId, 'searching', 'Zikirler taranıyor...');
       candidates = await this.fetchRecommendationCandidates(latestUserMessage);
+    } else if (mode === 'kaynak') {
+      this.emitStep(
+        input.socketId,
+        'searchingKaynak',
+        'Kaynaklar taranıyor...',
+      );
+      passages = await this.fetchSourcePassages(latestUserMessage);
     }
-    if (mode !== 'recommend') {
+    if (mode !== 'recommend' && mode !== 'kaynak') {
       this.emitStep(input.socketId, 'typing', 'Yazıyor...');
     }
-    const systemPrompt = this.selectPrompt(mode, input.locale, candidates);
+    const systemPrompt = this.selectPrompt(
+      mode,
+      input.locale,
+      candidates,
+      passages,
+    );
     let recommendedIds: string[] = [];
     let anyTokenSent = false;
 
@@ -830,6 +867,8 @@ export class AiChatService {
         replyText,
         recommendedDhikrIds: validIds,
         usedModel: 'openai',
+        sourceCitations:
+          mode === 'kaynak' ? this.buildSourceCitations(passages) : undefined,
       };
     } catch (error) {
       if (error instanceof ChatStreamMidwayError) {
@@ -902,16 +941,23 @@ export class AiChatService {
         abortSignal: combinedSignal,
         temperature: 0,
         schema: z.object({
-          mode: z.enum(['recommend', 'chat', 'clarify', 'out_of_scope']),
+          mode: z.enum([
+            'recommend',
+            'chat',
+            'clarify',
+            'kaynak',
+            'out_of_scope',
+          ]),
         }),
         system: [
           'Sen bir İslami zikir/dua sohbet asistanının niyet sınıflandırıcısısın.',
-          'Kullanıcının son mesajını (ve varsa kısa bağlamı) tam olarak dört moddan birine ata:',
+          'Kullanıcının son mesajını (ve varsa kısa bağlamı) tam olarak beş moddan birine ata:',
           '',
           '- recommend: kullanıcı bir zikir/dua önerisine ihtiyaç duyacak bir hal/duygu/niyet belirtmiş (üzüntü, stres, şükür/pozitif duygu dahil, huzur arayışı, "ne okuyayım" vb.). Pozitif duygu/şükür ifadeleri de recommend sayılır (şükür zikri önerilebilir).',
           '- chat: genel sohbet/selam/teşekkür/hafif muhabbet/dertleşme — spesifik bir zikir önerisi gerekmiyor.',
           '- clarify: niyet belirsiz, öneri yapmak için daha fazla bilgiye ihtiyaç var.',
-          '- out_of_scope: fetva/hüküm soruları ("haram mı, caiz mi"), kitap/kaynak pasajı isteği, ya da zikir/duayla hiçbir ilgisi olmayan teknik/genel bilgi soruları.',
+          '- kaynak: kullanıcı Siyer-i Nebi (Peygamberimizin hayatı), İslam ilmihali/ibadet bilgisi (namaz, oruç, abdest vb. nasıl yapılır), ya da benzer dini bilgi/kaynak içeriği soruyor — fetva/hüküm sorusu DEĞİL, bilgi/anlatım sorusu.',
+          '- out_of_scope: fetva/hüküm soruları ("haram mı, caiz mi", şahsa özel dini hüküm), ya da zikir/duayla ve İslami bilgiyle hiçbir ilgisi olmayan teknik/genel sorular.',
           '',
           'Yalnızca tek bir mod döndür.',
         ].join('\n'),
@@ -946,6 +992,7 @@ export class AiChatService {
     mode: ChatMode,
     locale: SupportedAiLocale,
     candidates: SearchResult[],
+    passages: SourcePassageResult[] = [],
   ): string {
     switch (mode) {
       case 'recommend':
@@ -954,6 +1001,8 @@ export class AiChatService {
         return this.buildChatPrompt(locale);
       case 'clarify':
         return this.buildClarifyPrompt(locale);
+      case 'kaynak':
+        return this.buildKaynakPrompt(locale, passages);
       case 'out_of_scope':
         return this.buildBoundaryPrompt(locale);
     }
@@ -1053,9 +1102,45 @@ export class AiChatService {
     return [
       'Sen sıcak, samimi bir İslami zikir/dua rehberi asistanısın (Zikirmatik Asistan).',
       '',
-      'Kullanıcının sorusu kapsam dışı: fetva/hüküm ("haram mı, caiz mi" vb.), kitap/kaynak pasajı isteği ya da zikir/duayla ilgisi olmayan genel/teknik bir soru olabilir.',
+      'Kullanıcının sorusu kapsam dışı: fetva/hüküm ("haram mı, caiz mi" vb.) ya da zikir/duayla ve İslami bilgiyle ilgisi olmayan genel/teknik bir soru olabilir.',
       '',
       'Kısaca "bu konuda bir alime danışman daha doğru olur" de (fetva verme, hüküm bildirme) ve sohbeti nazikçe zikir/dua konusuna geri çevir.',
+      '',
+      locale === 'en' ? 'Reply in English.' : 'Türkçe cevap ver.',
+    ].join('\n');
+  }
+
+  /**
+   * mode='kaynak': kullanıcı Siyer-i Nebi / ilmihal gibi dini bilgi/kaynak
+   * içeriği soruyor. Cevap YALNIZCA aşağıya gömülen onaylı kaynak
+   * pasajlarına dayanmalı — pasajlarda olmayan bilgi uydurulmamalı. İlgili
+   * pasaj yoksa bunu açıkça söyle, uydurma yapma.
+   */
+  private buildKaynakPrompt(
+    locale: SupportedAiLocale,
+    passages: SourcePassageResult[],
+  ): string {
+    const passagesBlock = passages.length
+      ? passages
+          .map(
+            (p, i) =>
+              `#${i + 1} [${p.sourceTitle}, s. ${p.pageStart}${
+                p.pageEnd !== p.pageStart ? `-${p.pageEnd}` : ''
+              }]\n${p.text}`,
+          )
+          .join('\n\n')
+      : null;
+
+    return [
+      'Sen sıcak, samimi bir İslami zikir/dua rehberi asistanısın (Zikirmatik Asistan).',
+      '',
+      'Kullanıcı Siyer-i Nebi veya İslam ilmihali/ibadet bilgisi gibi bir dini bilgi/kaynak sorusu sordu. Aşağıda ilgili KAYNAK PASAJLARI var — cevabını YALNIZCA bu pasajlara dayandır, pasajlarda olmayan bilgiyi kesinlikle uydurma.',
+      '',
+      'Cevabın sonuna kaynak adı/sayfa belirten bir not EKLEME (ör. "(Kaynak: ...)" gibi) — bu bilgi ayrı bir kart olarak zaten kullanıcıya ayrıca gösteriliyor, metinde tekrar etme. Fetva/hüküm bildirme, sadece kaynaktaki bilgiyi aktar.',
+      '',
+      passagesBlock
+        ? `KAYNAK PASAJLARI:\n${passagesBlock}`
+        : 'KAYNAK PASAJLARI: (bu soru için ilgili pasaj bulunamadı — bunu kullanıcıya açıkça belirt, konuyla ilgili bir alime veya güvenilir bir kaynağa bakmasını öner, bilgi uydurma.)',
       '',
       locale === 'en' ? 'Reply in English.' : 'Türkçe cevap ver.',
     ].join('\n');
@@ -1082,6 +1167,57 @@ export class AiChatService {
       );
       return [];
     }
+  }
+
+  private async fetchSourcePassages(
+    latestUserMessage?: string,
+  ): Promise<SourcePassageResult[]> {
+    if (!latestUserMessage) {
+      return [];
+    }
+    try {
+      return await this.aiService.searchSourcePassagesForAgent(
+        latestUserMessage,
+        4,
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Kaynak pasajları getirilemedi, boş listeyle devam edilecek: ${this.describeError(error)}`,
+      );
+      return [];
+    }
+  }
+
+  /**
+   * mode='kaynak' pasajlarını mesaja iliştirilecek kısa kaynak referanslarına
+   * (kitap adı + sayfa aralığı) indirger. Aynı sourceTitle'dan gelen birden
+   * fazla pasaj tek kayda birleştirilir (en düşük pageStart / en yüksek
+   * pageEnd), passages'ın geliş sırası (retrieval skoruna göre) korunur.
+   */
+  private buildSourceCitations(
+    passages: SourcePassageResult[],
+  ): AiSourceCitation[] {
+    const bySourceTitle = new Map<string, AiSourceCitation>();
+
+    for (const passage of passages) {
+      if (!passage.sourceTitle) continue;
+
+      const existing = bySourceTitle.get(passage.sourceTitle);
+      if (!existing) {
+        bySourceTitle.set(passage.sourceTitle, {
+          sourceId: passage.sourceId,
+          sourceTitle: passage.sourceTitle,
+          pageStart: passage.pageStart,
+          pageEnd: passage.pageEnd,
+        });
+        continue;
+      }
+
+      existing.pageStart = Math.min(existing.pageStart, passage.pageStart);
+      existing.pageEnd = Math.max(existing.pageEnd, passage.pageEnd);
+    }
+
+    return Array.from(bySourceTitle.values()).slice(0, MAX_SOURCE_CITATIONS);
   }
 
   private buildFallbackResult(): ChatAgentResult {
@@ -1278,6 +1414,7 @@ export class AiChatService {
         (id) => new Types.ObjectId(id),
       ),
       usedModel: agentResult.usedModel,
+      sourceCitations: agentResult.sourceCitations,
     });
   }
 
@@ -1328,6 +1465,7 @@ export class AiChatService {
       usedModel: doc.usedModel,
       createdAt: doc.createdAt,
       recommendedDhikrs: dhikrItems ?? [],
+      sourceCitations: doc.sourceCitations ?? [],
     };
   }
 

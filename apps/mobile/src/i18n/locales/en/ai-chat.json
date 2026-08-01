@@ -27,6 +27,7 @@
       "creating": "Starting the chat...",
       "thinking": "Reviewing your message...",
       "searching": "Searching dhikrs...",
+      "searchingKaynak": "Searching sources...",
       "widening": "Widening the search...",
       "selecting": "Preparing recommendations..."
     }
@@ -38,5 +39,9 @@
     "serviceUnreachable": "Couldn't reach the assistant service. Please try again.",
     "loginRequiredToSave": "You need to sign in to save.",
     "dhikrSaveFailed": "Couldn't save the dhikr."
+  },
+  "citation": {
+    "singlePage": "{{title}}, p. {{page}}",
+    "pageRange": "{{title}}, pp. {{pageStart}}-{{pageEnd}}"
   }
 }

@@ -27,6 +27,7 @@
       "creating": "Sohbet başlatılıyor...",
       "thinking": "Mesajın değerlendiriliyor...",
       "searching": "Zikirler taranıyor...",
+      "searchingKaynak": "Kaynaklar taranıyor...",
       "widening": "Arama genişletiliyor...",
       "selecting": "Öneriler hazırlanıyor..."
     }
@@ -38,5 +39,9 @@
     "serviceUnreachable": "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin.",
     "loginRequiredToSave": "Kaydetmek için giriş yapmalısın.",
     "dhikrSaveFailed": "Zikir kaydedilemedi."
+  },
+  "citation": {
+    "singlePage": "{{title}}, s. {{page}}",
+    "pageRange": "{{title}}, s. {{pageStart}}-{{pageEnd}}"
   }
 }
