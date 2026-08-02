@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { validateEnv } from './config/env.validation';
 import { AppController } from './app.controller';
-import { RenderKeepAliveService } from './common/services/render-keep-alive.service';
 import { AiModule } from './modules/ai/ai.module';
 import { AiChatModule } from './modules/ai-chat/ai-chat.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -54,6 +53,6 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     PushModule,
   ],
   controllers: [AppController],
-  providers: [JwtAuthGuard, RenderKeepAliveService],
+  providers: [JwtAuthGuard],
 })
 export class AppModule {}
