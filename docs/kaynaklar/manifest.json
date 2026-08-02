@@ -1,0 +1,92 @@
+{
+  "sources": [
+    {
+      "source_id": "siyeri-nebi",
+      "title": "Siyer-i Nebi (Nûrlar Bahçesinden Seçkin Peygamber)",
+      "type": "siyer",
+      "file": "SiyeriNebi.pdf",
+      "index_file": null,
+      "version": 1
+    },
+    {
+      "source_id": "hisnul-muslim",
+      "title": "Hısnu'l-Muslim",
+      "type": "dua",
+      "file": "Hısnu’l-Muslim.pdf",
+      "index_file": "../hisnul-muslim-index.md",
+      "version": 1
+    },
+    {
+      "source_id": "el-ezkar-cilt-1",
+      "title": "El-Ezkar İmam Nevevi (1. Cilt)",
+      "type": "dua",
+      "file": "[El-Ezkar] İmam Nevevi/[El-Ezkar] İmam Nevevi 01.Cilt.pdf",
+      "index_file": "../el-ezkar-cilt-1-index.md",
+      "version": 1
+    },
+    {
+      "source_id": "el-ezkar-cilt-2",
+      "title": "El-Ezkar İmam Nevevi (2. Cilt)",
+      "type": "dua",
+      "file": "[El-Ezkar] İmam Nevevi/[El-Ezkar] İmam Nevevi 02.Cilt.pdf",
+      "index_file": "../el-ezkar-cilt-2-index.md",
+      "version": 1
+    },
+    {
+      "source_id": "muhtasar-ilmihal",
+      "title": "Muhtasar İlmihal (Fazilet Neşriyat)",
+      "type": "ilmihal",
+      "file": "Muhtasar_ilmihal_fazilet.pdf",
+      "index_file": null,
+      "version": 1
+    },
+    {
+      "source_id": "dogru-inanc",
+      "title": "Doğru İnanç ve Bu İnanca Aykırı Olan Şeyler (Abdulaziz b. Abdullah b. Baz)",
+      "type": "akide",
+      "file": "dogru-inanc.ocr.pdf",
+      "index_file": null,
+      "version": 1
+    },
+    {
+      "source_id": "ehli-sunnet-akide",
+      "title": "Ehli Sünnet vel-Cemaat Akidesi (Muhammed b. Salih el-Useymîn)",
+      "type": "akide",
+      "file": "ehli-sunnet-akide.ocr.pdf",
+      "index_file": null,
+      "version": 1
+    },
+    {
+      "source_id": "hac-umre-nasil-yapilir",
+      "title": "Hac ve Umre Nasıl Yapılır (Abdulaziz b. Abdullah Al-Şeyh)",
+      "type": "hac",
+      "file": "sıradakiler/Abdulaziz b. Abdullah Al-Şeyh - Hac ve Umre Nasıl Yapılır.pdf",
+      "index_file": null,
+      "version": 1
+    },
+    {
+      "source_id": "namazin-kilinisi",
+      "title": "Peygamber -sallallahu aleyhi ve sellem-'in Sünnetine Göre Namazın Kılınışı (Abdulaziz b. Abdullah Al-Şeyh)",
+      "type": "namaz",
+      "file": "sıradakiler/Abdulaziz b. Abdullah Al-Şeyh - Peygamber -sallallahu aleyhi ve sellem-’in Sünnetine Göre Namazın Kılınışı.pdf",
+      "index_file": null,
+      "version": 1
+    },
+    {
+      "source_id": "islam-esaslari-sorular-2",
+      "title": "İslâm'ın Beş Rüknü İle İlgili Sorulara Önemli Cevaplar (Abdulaziz b. Abdullah b. Baz)",
+      "type": "fetva",
+      "file": "sıradakiler/Abdulaziz b. Abdullah b. Baz - İslam Esasları İle İlgili Sorulara Önemli Cevaplar 2.pdf",
+      "index_file": null,
+      "version": 1
+    },
+    {
+      "source_id": "sihir-kahinlik-hukmu",
+      "title": "Sihir Yapmanın ve Kâhinlikte Bulunmanın Hükmü (Abdulaziz b. Abdullah b. Baz)",
+      "type": "akide",
+      "file": "sihir-kahinlik-hukmu.ocr.pdf",
+      "index_file": null,
+      "version": 1
+    }
+  ]
+}

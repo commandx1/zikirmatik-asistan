@@ -15,7 +15,9 @@ android-logs
 .env
 .env.*
 *.env
-docs
+docs/**/*.pdf
+docs/**/*.html
+docs/**/*.pptx
 *.jks
 *.aab
 *.apk
