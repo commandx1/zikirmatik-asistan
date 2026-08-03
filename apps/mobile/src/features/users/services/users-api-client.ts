@@ -47,6 +47,8 @@ export class UsersApiError extends Error {
 }
 
 const API_BASE_URL = resolveApiBaseUrl();
+// The API can cold-start, so requests need an upper bound instead of hanging forever.
+const REQUEST_TIMEOUT_MS = 20_000;
 
 export async function getUserById(userId: string, accessToken?: string): Promise<BackendUser> {
   return requestJson<BackendUser>(`/v1/users/${userId}`, {
@@ -111,11 +113,20 @@ async function requestJson<TResponse>(
       headers.authorization = `Bearer ${options.accessToken}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: options.method,
-      headers,
-      ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {})
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    let response: Response;
+    try {
+      response = await fetch(`${API_BASE_URL}${path}`, {
+        method: options.method,
+        headers,
+        signal: controller.signal,
+        ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {})
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     const rawResponse = await response.text();
     const parsed = safeParseJson(rawResponse);
