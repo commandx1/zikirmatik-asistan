@@ -1,7 +1,7 @@
 {
   "topBar": {
     "title": "AI Chat",
-    "subtitle": "Multi-turn dhikr/dua guide"
+    "subtitle": "Chat and source-backed knowledge assistant"
   },
   "input": {
     "placeholder": "Type your message...",
@@ -10,7 +10,7 @@
   },
   "emptyState": {
     "title": "Chat with the guide",
-    "subtitle": "Write your need, feeling, or intention; the assistant may ask a few questions before suggesting a suitable dhikr/dua."
+    "subtitle": "Ask what's on your mind or share what you're going through; the assistant answers based on reliable sources."
   },
   "history": {
     "title": "Recent Chats",
@@ -26,19 +26,15 @@
     "steps": {
       "creating": "Starting the chat...",
       "thinking": "Reviewing your message...",
-      "searching": "Searching dhikrs...",
       "searchingKaynak": "Searching sources...",
-      "widening": "Widening the search...",
-      "selecting": "Preparing recommendations..."
+      "typing": "Typing..."
     }
   },
   "errors": {
     "sendFailed": "Couldn't send the message. Please try again.",
     "historyFailed": "Couldn't load the chat history.",
     "serviceUnavailable": "The assistant service isn't responding right now.",
-    "serviceUnreachable": "Couldn't reach the assistant service. Please try again.",
-    "loginRequiredToSave": "You need to sign in to save.",
-    "dhikrSaveFailed": "Couldn't save the dhikr."
+    "serviceUnreachable": "Couldn't reach the assistant service. Please try again."
   },
   "citation": {
     "singlePage": "{{title}}, p. {{page}}",

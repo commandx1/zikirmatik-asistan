@@ -1,7 +1,7 @@
 {
   "topBar": {
     "title": "Asistan Sohbeti",
-    "subtitle": "Çok turlu zikir/dua rehberi"
+    "subtitle": "Sohbet ve kaynaklı bilgi asistanı"
   },
   "input": {
     "placeholder": "Mesajını yaz...",
@@ -10,7 +10,7 @@
   },
   "emptyState": {
     "title": "Asistanla sohbet et",
-    "subtitle": "İhtiyacını, duygunu veya niyetini yaz; asistan sana uygun zikir/dua önerisi için birkaç soru sorabilir."
+    "subtitle": "Aklına takılanı sor ya da içinden geçeni anlat; asistan güvenilir kaynaklara dayanarak cevaplar."
   },
   "history": {
     "title": "Son Sohbetler",
@@ -26,19 +26,15 @@
     "steps": {
       "creating": "Sohbet başlatılıyor...",
       "thinking": "Mesajın değerlendiriliyor...",
-      "searching": "Zikirler taranıyor...",
       "searchingKaynak": "Kaynaklar taranıyor...",
-      "widening": "Arama genişletiliyor...",
-      "selecting": "Öneriler hazırlanıyor..."
+      "typing": "Yazıyor..."
     }
   },
   "errors": {
     "sendFailed": "Mesaj gönderilemedi. Lütfen tekrar deneyin.",
     "historyFailed": "Sohbet geçmişi yüklenemedi.",
     "serviceUnavailable": "Asistan servisi şu anda yanıt veremiyor.",
-    "serviceUnreachable": "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin.",
-    "loginRequiredToSave": "Kaydetmek için giriş yapmalısın.",
-    "dhikrSaveFailed": "Zikir kaydedilemedi."
+    "serviceUnreachable": "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin."
   },
   "citation": {
     "singlePage": "{{title}}, s. {{page}}",

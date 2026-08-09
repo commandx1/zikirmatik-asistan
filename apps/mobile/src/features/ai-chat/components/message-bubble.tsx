@@ -1,34 +1,12 @@
 import { Text, View } from "react-native";
 import { i18n } from "../../../i18n";
-import { RecommendationCard } from "../../ai-guide/components/recommendation-card";
-import type { AiGuideRecommendation } from "../../ai-guide/types";
-import type { ChatDhikrCard, ChatMessage } from "../hooks/use-ai-chat";
+import type { ChatMessage } from "../hooks/use-ai-chat";
 
 type MessageBubbleProps = {
   message: ChatMessage;
-  onSelectDhikr: (item: ChatDhikrCard) => void;
 };
 
-function toRecommendation(card: ChatDhikrCard, index: number): AiGuideRecommendation {
-  return {
-    id: card.id,
-    title: card.title,
-    chipEmoji: index === 0 ? "💆" : "✨",
-    chipLabel:
-      index === 0
-        ? i18n.t("ai-guide:recommendation.chipLabelPrimary")
-        : i18n.t("ai-guide:recommendation.chipLabelSecondary"),
-    arabic: card.arabic,
-    transliteration: card.transliteration || card.title || "",
-    meaning: card.meaning,
-    virtue: card.virtue,
-    source: card.source,
-    recommendedCount: card.recommendedCount,
-    isPrimary: index === 0
-  };
-}
-
-export function MessageBubble({ message, onSelectDhikr }: MessageBubbleProps) {
+export function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.role === "user";
 
   return (
@@ -64,18 +42,6 @@ export function MessageBubble({ message, onSelectDhikr }: MessageBubbleProps) {
           </View>
         ) : null}
       </View>
-
-      {!isUser && message.recommendedDhikrs.length > 0 ? (
-        <View className="mt-3 w-full gap-3">
-          {message.recommendedDhikrs.map((card, index) => (
-            <RecommendationCard
-              key={card.id}
-              item={toRecommendation(card, index)}
-              onSelect={() => onSelectDhikr(card)}
-            />
-          ))}
-        </View>
-      ) : null}
     </View>
   );
 }

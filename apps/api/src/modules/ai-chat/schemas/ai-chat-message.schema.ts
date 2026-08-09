@@ -50,6 +50,12 @@ export class AiChatMessage {
   @Prop({ type: String, required: true, trim: true })
   content!: string;
 
+  /**
+   * @deprecated Sohbet artık zikir önermiyor (öneri akışı tamamen AI
+   * Rehber'e taşındı), bu alan yeni mesajlarda yazılmıyor ve API yanıtına
+   * taşınmıyor. Yalnızca eski kayıtlar okunabilir kalsın diye şemada
+   * tutuluyor — veri silen bir migration çalıştırılmadı.
+   */
   @Prop({ type: [Types.ObjectId], ref: Dhikr.name })
   recommendedDhikrIds?: Types.ObjectId[];
 
@@ -57,7 +63,7 @@ export class AiChatMessage {
   @Prop({ type: String })
   usedModel?: string;
 
-  // Yalnızca 'kaynak' modunda dolu: cevabın dayandığı kaynak pasajlar.
+  // Yalnızca 'bilgi' modunda dolu: cevabın dayandığı kaynak pasajlar.
   @Prop({ type: [Object], default: undefined })
   sourceCitations?: AiSourceCitation[];
 

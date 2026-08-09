@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Dhikr, DhikrSchema } from '../dhikrs/schemas/dhikr.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { AiModule } from '../ai/ai.module';
 import { AiChatController } from './ai-chat.controller';
@@ -19,10 +18,9 @@ import {
     MongooseModule.forFeature([
       { name: AiConversation.name, schema: AiConversationSchema },
       { name: AiChatMessage.name, schema: AiChatMessageSchema },
-      { name: Dhikr.name, schema: DhikrSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    // AiService (searchDhikrsForAgent, ensureCreditAccessForFlow,
+    // AiService (searchSourcePassagesForAgent, ensureCreditAccessForFlow,
     // debitCreditForFlow) ve AiProgressGateway'i (exports listesine
     // yeni bir şey eklemeden) yeniden kullanmak için AiModule import edilir.
     AiModule,

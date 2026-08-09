@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../../store/auth-store";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { createAiProgressSocket } from "../../ai-guide/services/ai-progress-socket";
 import {
@@ -14,31 +13,14 @@ import {
   streamCreateConversation,
   type ChatStreamHandlers
 } from "../services/ai-chat-api-client";
-import type {
-  AiSourceCitation,
-  ChatConversationSummary,
-  ChatDhikrCardRaw,
-  ChatMessageRaw
-} from "../types";
+import type { AiSourceCitation, ChatConversationSummary, ChatMessageRaw } from "../types";
 import { getAiCredits, getAiDailyQuota } from "../../ai-guide/services/ai-api-client";
-
-export type ChatDhikrCard = {
-  id: string;
-  title?: string;
-  arabic: string;
-  transliteration: string;
-  meaning: string;
-  virtue?: string;
-  source?: string;
-  recommendedCount?: number;
-};
 
 export type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
   createdAt: string;
-  recommendedDhikrs: ChatDhikrCard[];
   sourceCitations: AiSourceCitation[];
 };
 
@@ -215,8 +197,7 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
         conversationId: activeConversationId ?? "",
         role: "user",
         content: text,
-        createdAt: new Date().toISOString(),
-        recommendedDhikrs: []
+        createdAt: new Date().toISOString()
       };
       const streamingAssistantId = `streaming-${Date.now()}`;
       let streamingStarted = false;
@@ -239,18 +220,12 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
                 conversationId: activeConversationId ?? "",
                 role: "assistant",
                 content: "",
-                createdAt: new Date().toISOString(),
-                recommendedDhikrs: []
+                createdAt: new Date().toISOString()
               }
             ]);
           }
           setMessages((prev) =>
             prev.map((m) => (m.id === streamingAssistantId ? { ...m, content: m.content + delta } : m))
-          );
-        },
-        onRecommendations: (recommendedDhikrs) => {
-          setMessages((prev) =>
-            prev.map((m) => (m.id === streamingAssistantId ? { ...m, recommendedDhikrs } : m))
           );
         },
         onDone: (payload) => {
@@ -391,20 +366,6 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
     }
   }, [inputValue, isSending, refreshCredits, runSend, t]);
 
-  const resolveDhikrCard = useCallback(
-    (raw: ChatDhikrCardRaw): ChatDhikrCard => ({
-      id: raw.id,
-      title: raw.name ? resolveLocalizedText(raw.name, locale) : undefined,
-      arabic: raw.nameArabic,
-      transliteration: resolveLocalizedText(raw.transliteration, locale),
-      meaning: resolveLocalizedText(raw.meaning, locale),
-      virtue: raw.virtue ? resolveLocalizedText(raw.virtue, locale) : undefined,
-      source: raw.source ? resolveLocalizedText(raw.source, locale) : undefined,
-      recommendedCount: raw.recommendedCount
-    }),
-    [locale]
-  );
-
   const resolvedMessages = useMemo<ChatMessage[]>(
     () =>
       messages.map((m) => ({
@@ -412,10 +373,9 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
         role: m.role,
         content: m.content,
         createdAt: m.createdAt,
-        recommendedDhikrs: (m.recommendedDhikrs ?? []).map(resolveDhikrCard),
         sourceCitations: m.sourceCitations ?? []
       })),
-    [messages, resolveDhikrCard]
+    [messages]
   );
 
   return {

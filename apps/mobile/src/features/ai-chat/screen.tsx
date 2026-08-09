@@ -1,35 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { useTranslation } from "react-i18next";
-import { DhikrResumeModal } from "../../components/ui/dhikr-resume-modal";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
-import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
-import { useAuthStore } from "../../store/auth-store";
-import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
 import { usePremiumSheet } from "../../hooks/use-premium-sheet";
 import { useRequireAuth } from "../auth/hooks/use-require-auth";
 import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
-import { resolveLocalizedText, useDhikrStore } from "../../store/dhikr-store";
-import { createDhikrLog } from "../dhikrs/services/dhikr-logs-api-client";
 import { ChatEmptyState } from "./components/empty-state";
 import { ChatInput } from "./components/chat-input";
 import { ChatTopBar } from "./components/chat-top-bar";
 import { ConversationListSection } from "./components/conversation-list-section";
 import { MessageBubble } from "./components/message-bubble";
 import { TypingIndicator } from "./components/typing-indicator";
-import { useAiChat, type ChatDhikrCard } from "./hooks/use-ai-chat";
-
-function toDateKey(value: Date) {
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+import { useAiChat } from "./hooks/use-ai-chat";
 
 export function AiChatScreen() {
-  const { t, i18n } = useTranslation("ai-chat");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const router = useRouter();
   const resumeAfterCreditPurchaseRef = useRef<() => void>(() => {});
   const premiumSheet = usePremiumSheet({
@@ -41,24 +25,7 @@ export function AiChatScreen() {
     void chat.resumeAfterCreditPurchase();
   };
 
-  const guard = useDhikrStartGuard();
-  const clearDhikrProgress = useDhikrStore((s) => s.clearDhikrProgress);
-  const storeItems = useDhikrStore((s) => s.items);
-  const selectedDhikrId = useDhikrStore((s) => s.selectedDhikrId);
-  const unsavedProgressDhikrIds = useDhikrStore((s) => s.unsavedProgressDhikrIds);
-  const freeModeCount = useDhikrStore((s) => s.freeModeCount);
-  const discardUnsavedProgress = useDhikrStore((s) => s.discardUnsavedProgress);
-  const clearFreeModeSession = useDhikrStore((s) => s.clearFreeModeSession);
-  const applySavedBackendLog = useDhikrStore((s) => s.applySavedBackendLog);
-  const selectDhikr = useDhikrStore((s) => s.selectDhikr);
-  const authStatus = useAuthStore((s) => s.status);
-  const sessionUserId = useAuthStore((s) => s.session?.userId);
-  const sessionAccessToken = useAuthStore((s) => s.session?.accessToken);
-
   const scrollRef = useRef<ScrollView>(null);
-  const [pendingCard, setPendingCard] = useState<ChatDhikrCard | null>(null);
-  const [isSavingUnsaved, setIsSavingUnsaved] = useState(false);
-  const [unsavedSaveError, setUnsavedSaveError] = useState<string | null>(null);
   // Android'de KeyboardAvoidingView "padding" davranışı edge-to-edge ile
   // güvenilir değil (kapanışta bazen stale offset bırakıyor). Bu yüzden
   // Android'de klavye yüksekliğini event'ten okuyup ChatInput'un altına
@@ -86,102 +53,6 @@ export function AiChatScreen() {
       hideSub.remove();
     };
   }, []);
-
-  const proceedWithCard = (item: ChatDhikrCard) => {
-    guard.guardedStart({
-      id: item.id,
-      dhikrName: item.title ?? item.transliteration,
-      onFresh: () => {
-        clearDhikrProgress(item.id);
-        selectDhikr(item.id, {
-          recommendationId: chat.conversationId ?? "",
-          prompt: chat.inputValue,
-          assistantNote: item.virtue
-        });
-        router.push("/(tabs)/home");
-      },
-      onContinue: () => {
-        selectDhikr(item.id, {
-          recommendationId: chat.conversationId ?? "",
-          prompt: chat.inputValue,
-          assistantNote: item.virtue
-        });
-        router.push("/(tabs)/home");
-      }
-    });
-  };
-
-  const handleSelectDhikr = (item: ChatDhikrCard) => {
-    const isSameTarget = item.id === selectedDhikrId;
-    const hasUnsaved = !isSameTarget && (
-      selectedDhikrId ? unsavedProgressDhikrIds.includes(selectedDhikrId) : freeModeCount > 0
-    );
-
-    if (hasUnsaved) {
-      setPendingCard(item);
-      setUnsavedSaveError(null);
-      return;
-    }
-
-    proceedWithCard(item);
-  };
-
-  const handleUnsavedSaveAndContinue = async () => {
-    const item = pendingCard;
-    if (!item || isSavingUnsaved) return;
-
-    const selectedDhikr = storeItems.find((d) => d.id === selectedDhikrId);
-    if (!selectedDhikr || authStatus !== "authenticated" || !sessionUserId) {
-      setUnsavedSaveError(t("ai-chat:errors.loginRequiredToSave"));
-      return;
-    }
-
-    setIsSavingUnsaved(true);
-    setUnsavedSaveError(null);
-
-    const count = Math.max(0, Math.floor(selectedDhikr.current));
-    const safeCount = selectedDhikr.target > 0 ? Math.min(selectedDhikr.target, count) : count;
-    const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target;
-    const isObjectId = /^[a-f\d]{24}$/i.test(selectedDhikr.id);
-    const dateKey = toDateKey(new Date());
-
-    try {
-      const savedLog = await createDhikrLog(
-        isObjectId
-          ? {
-              userId: sessionUserId,
-              dhikrId: selectedDhikr.id,
-              count: safeCount,
-              targetCount: selectedDhikr.target,
-              date: dateKey,
-              source: "manual",
-              isCompleted,
-              isFavorite: selectedDhikr.isFavorite
-            }
-          : {
-              userId: sessionUserId,
-              customDhikrId: selectedDhikr.id,
-              customDhikrName:
-                resolveLocalizedText(selectedDhikr.name, locale) ||
-                resolveLocalizedText(selectedDhikr.transliteration, locale),
-              count: safeCount,
-              targetCount: selectedDhikr.target,
-              date: dateKey,
-              source: "manual",
-              isCompleted: false,
-              isFavorite: selectedDhikr.isFavorite
-            },
-        sessionAccessToken
-      );
-      applySavedBackendLog(savedLog);
-      setPendingCard(null);
-      proceedWithCard(item);
-    } catch (e) {
-      setUnsavedSaveError(e instanceof Error ? e.message : t("ai-chat:errors.dhikrSaveFailed"));
-    } finally {
-      setIsSavingUnsaved(false);
-    }
-  };
 
   return (
     <PageLayout>
@@ -223,9 +94,7 @@ export function AiChatScreen() {
           {chat.messages.length === 0 ? (
             <ChatEmptyState />
           ) : (
-            chat.messages.map((message) => (
-              <MessageBubble key={message.id} message={message} onSelectDhikr={handleSelectDhikr} />
-            ))
+            chat.messages.map((message) => <MessageBubble key={message.id} message={message} />)
           )}
 
           {chat.isSending && chat.isAwaitingFirstToken ? (
@@ -247,41 +116,6 @@ export function AiChatScreen() {
             }}
           />
         </View>
-
-        <UnsavedDhikrTransitionModal
-          visible={Boolean(pendingCard)}
-          dhikrName={(() => {
-            const found = storeItems.find((d) => d.id === selectedDhikrId);
-            return found ? resolveLocalizedText(found.name, locale) : "";
-          })()}
-          count={storeItems.find((d) => d.id === selectedDhikrId)?.current ?? freeModeCount}
-          isSaving={isSavingUnsaved}
-          error={unsavedSaveError}
-          onSaveAndContinue={handleUnsavedSaveAndContinue}
-          onContinueWithoutSaving={() => {
-            const item = pendingCard!;
-            setPendingCard(null);
-            setUnsavedSaveError(null);
-            if (selectedDhikrId) {
-              discardUnsavedProgress(selectedDhikrId);
-            } else {
-              clearFreeModeSession();
-            }
-            proceedWithCard(item);
-          }}
-          onCancel={() => {
-            setPendingCard(null);
-            setUnsavedSaveError(null);
-          }}
-        />
-        <DhikrResumeModal
-          visible={guard.isGuardOpen}
-          dhikrName={guard.guardDhikrName}
-          currentCount={guard.guardCurrentCount}
-          onContinue={guard.onGuardContinue}
-          onFresh={guard.onGuardFresh}
-          onCancel={guard.onGuardCancel}
-        />
 
         <ProfilePremiumSheet
           visible={premiumSheet.isOpen}

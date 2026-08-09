@@ -1,6 +1,24 @@
 import { NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
+import { generateObject, generateText } from 'ai';
 import { AiChatService } from './ai-chat.service';
+
+// Vercel AI SDK'sı ağ çağrısı yaptığı için mock'lanır: böylece
+// classifyIntent → retrieval → prompt seçimi zinciri gerçek kodla,
+// LLM cevabı ise deterministik olarak test edilebilir.
+jest.mock('ai', () => ({
+  generateObject: jest.fn(),
+  generateText: jest.fn(),
+  streamText: jest.fn(),
+  stepCountIs: jest.fn(() => 'stop-condition'),
+}));
+
+jest.mock('@ai-sdk/openai', () => ({
+  createOpenAI: jest.fn(() => (modelId: string) => ({ modelId })),
+}));
+
+const generateObjectMock = generateObject as unknown as jest.Mock;
+const generateTextMock = generateText as unknown as jest.Mock;
 
 type ConversationDoc = {
   _id: Types.ObjectId;
@@ -17,8 +35,13 @@ type MessageDoc = {
   userId: Types.ObjectId;
   role: 'user' | 'assistant';
   content: string;
-  recommendedDhikrIds?: Types.ObjectId[];
   usedModel?: string;
+  sourceCitations?: Array<{
+    sourceId: string;
+    sourceTitle: string;
+    pageStart: number;
+    pageEnd: number;
+  }>;
   createdAt: Date;
 };
 
@@ -34,7 +57,7 @@ function chain<T>(resolve: () => T) {
   return api;
 }
 
-function createHarness() {
+function createHarness(options: { withApiKey?: boolean } = {}) {
   const conversations: ConversationDoc[] = [];
   const messages: MessageDoc[] = [];
 
@@ -94,8 +117,8 @@ function createHarness() {
         userId: payload.userId!,
         role: payload.role!,
         content: payload.content!,
-        recommendedDhikrIds: payload.recommendedDhikrIds ?? [],
         usedModel: payload.usedModel,
+        sourceCitations: payload.sourceCitations,
         createdAt: new Date(),
       };
       messages.push(doc);
@@ -117,10 +140,6 @@ function createHarness() {
     ),
   };
 
-  const dhikrModel = {
-    find: jest.fn(() => chain(() => [])),
-  };
-
   const user = { _id: new Types.ObjectId(), isPremium: false };
   const userModel = {
     findById: jest.fn(() => ({
@@ -131,11 +150,17 @@ function createHarness() {
   const aiService = {
     ensureCreditAccessForFlow: jest.fn(() => Promise.resolve()),
     debitCreditForFlow: jest.fn(() => Promise.resolve({ balance: 4 })),
-    searchDhikrsForAgent: jest.fn(() => Promise.resolve([])),
+    searchSourcePassagesForAgent: jest.fn(() => Promise.resolve([])),
   };
 
   const progressGateway = { emitChatStep: jest.fn() };
-  const configService = { get: jest.fn(() => undefined) }; // no OPENAI_API_KEY → agent falls back
+  // withApiKey=false → OPENAI_API_KEY yok, agent fallback metnine düşer ve
+  // LLM/retrieval hiç çalışmaz (kredi/sahiplik testleri bu yolu kullanır).
+  const configService = {
+    get: jest.fn((key: string) =>
+      key === 'OPENAI_API_KEY' && options.withApiKey ? 'test-key' : undefined,
+    ),
+  };
   const usageService = { record: jest.fn(() => Promise.resolve()) };
 
   const service = new AiChatService(
@@ -145,7 +170,6 @@ function createHarness() {
     usageService as never,
     conversationModel as never,
     messageModel as never,
-    dhikrModel as never,
     userModel as never,
   );
 
@@ -156,10 +180,26 @@ function createHarness() {
     messages,
     aiService,
     conversationModel,
+    progressGateway,
   };
 }
 
+/** classifyIntent'in döneceği modu ve LLM cevabını sabitler. */
+function stubAgent(intent: { mode: 'chat' | 'bilgi'; searchQuery: string }) {
+  generateObjectMock.mockResolvedValue({ object: intent, usage: {} });
+  generateTextMock.mockResolvedValue({
+    text: 'Deterministik test cevabı.',
+    totalUsage: {},
+    steps: [],
+  });
+}
+
 describe('AiChatService', () => {
+  beforeEach(() => {
+    generateObjectMock.mockReset();
+    generateTextMock.mockReset();
+  });
+
   it('debits exactly one credit per createConversation call', async () => {
     const { service, user, aiService } = createHarness();
 
@@ -256,5 +296,117 @@ describe('AiChatService', () => {
     });
 
     expect(conversations[0].title).toBe('Kısa mesaj');
+  });
+
+  describe('retrieval routing', () => {
+    it("searches source passages in 'bilgi' mode using the classifier's rewritten query", async () => {
+      const { service, user, aiService } = createHarness({ withApiKey: true });
+      stubAgent({
+        mode: 'bilgi',
+        searchQuery: 'oruçluyken sakız çiğnemek orucu bozar mı',
+      });
+
+      await service.createConversation(user._id.toString(), {
+        firstMessage: 'sakız orucu bozar mı',
+      });
+
+      expect(aiService.searchSourcePassagesForAgent).toHaveBeenCalledTimes(1);
+      // Ham kullanıcı mesajı değil, bağlamdan arındırılmış sorgu kullanılmalı.
+      expect(aiService.searchSourcePassagesForAgent).toHaveBeenCalledWith(
+        'oruçluyken sakız çiğnemek orucu bozar mı',
+        6,
+      );
+    });
+
+    it("does not search source passages in 'chat' mode", async () => {
+      const { service, user, aiService } = createHarness({ withApiKey: true });
+      stubAgent({ mode: 'chat', searchQuery: '' });
+
+      await service.createConversation(user._id.toString(), {
+        firstMessage: 'selam, bugün çok yorgunum',
+      });
+
+      expect(aiService.searchSourcePassagesForAgent).not.toHaveBeenCalled();
+    });
+
+    it("falls back to 'bilgi' with the raw message when classification fails", async () => {
+      const { service, user, aiService } = createHarness({ withApiKey: true });
+      generateObjectMock.mockRejectedValue(new Error('timeout'));
+      generateTextMock.mockResolvedValue({
+        text: 'Deterministik test cevabı.',
+        totalUsage: {},
+        steps: [],
+      });
+
+      await service.createConversation(user._id.toString(), {
+        firstMessage: 'abdest nasıl alınır',
+      });
+
+      expect(aiService.searchSourcePassagesForAgent).toHaveBeenCalledWith(
+        'abdest nasıl alınır',
+        6,
+      );
+    });
+
+    it("attaches source citations in 'bilgi' mode and never returns dhikr recommendations", async () => {
+      const { service, user, aiService } = createHarness({ withApiKey: true });
+      stubAgent({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
+      aiService.searchSourcePassagesForAgent.mockResolvedValue([
+        {
+          sourceId: 'muhtasar-ilmihal',
+          sourceTitle: 'Muhtasar İlmihal',
+          sectionHeading: 'Abdest',
+          text: 'Abdestin farzları...',
+          pageStart: 40,
+          pageEnd: 41,
+          type: 'ilmihal',
+        },
+      ] as never);
+
+      const result = await service.createConversation(user._id.toString(), {
+        firstMessage: 'abdestin farzları nelerdir',
+      });
+
+      const reply = result.messages[1];
+      expect(reply.sourceCitations).toEqual([
+        {
+          sourceId: 'muhtasar-ilmihal',
+          sourceTitle: 'Muhtasar İlmihal',
+          pageStart: 40,
+          pageEnd: 41,
+        },
+      ]);
+      expect(reply).not.toHaveProperty('recommendedDhikrs');
+    });
+
+    it('grounds the system prompt on the retrieved passages', async () => {
+      const { service, user, aiService } = createHarness({ withApiKey: true });
+      stubAgent({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
+      aiService.searchSourcePassagesForAgent.mockResolvedValue([
+        {
+          sourceId: 'muhtasar-ilmihal',
+          sourceTitle: 'Muhtasar İlmihal',
+          sectionHeading: 'Abdest',
+          text: 'BENZERSIZ_PASAJ_METNI',
+          pageStart: 40,
+          pageEnd: 41,
+          type: 'ilmihal',
+        },
+      ] as never);
+
+      await service.createConversation(user._id.toString(), {
+        firstMessage: 'abdestin farzları nelerdir',
+      });
+
+      const [firstCallArgs] = generateTextMock.mock.calls as Array<
+        [{ system: string }]
+      >;
+      const systemPrompt = firstCallArgs[0].system;
+      expect(systemPrompt).toContain('BENZERSIZ_PASAJ_METNI');
+      expect(systemPrompt).toContain('Muhtasar İlmihal — Abdest, s. 40-41');
+      // Öneri talimatları prompt'tan tamamen çıkmış olmalı.
+      expect(systemPrompt).not.toContain('ADAYLAR');
+      expect(systemPrompt).not.toContain('attachRecommendations');
+    });
   });
 });

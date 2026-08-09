@@ -71,12 +71,15 @@ type DhikrLean = Dhikr & { _id: Types.ObjectId };
 
 type SourcePassageLean = SourcePassage & { _id: Types.ObjectId };
 
-// Kaynak pasajı (kitap RAG) araması sonucu. Şu an yalnızca vektör tabanlı
-// arama sağlanır; sohbet agent'ına henüz bağlı değildir (ayrı bir görev).
+// Kaynak pasajı (kitap RAG) araması sonucu. Yalnızca vektör tabanlı arama
+// sağlanır. AiChatService 'bilgi' modunda bunu kullanır.
 export type SourcePassageResult = {
   sourceId: string;
   text: string;
   sourceTitle: string;
+  // Pasajın kitap içindeki bölüm başlığı (varsa). Prompt'a gömüldüğünde
+  // modelin pasajı doğru bağlamda okumasına yardım eder.
+  sectionHeading?: string;
   pageStart: number;
   pageEnd: number;
   type: string;
@@ -934,8 +937,8 @@ export class AiService {
   /**
    * Kaynak pasajı (kitap RAG) koleksiyonunda salt vektör tabanlı anlamsal
    * arama yapar (tag/kategori rerank yoktur — dhikr aramasından farklı
-   * olarak burada skorlama tamamen $vectorSearch'e aittir). Şu an sohbet
-   * agent'ına bağlı değildir; yalnızca ileride kullanılacak bir yapı taşı.
+   * olarak burada skorlama tamamen $vectorSearch'e aittir).
+   * AiChatService 'bilgi' modunda bu aramayı kullanır.
    */
   async searchSourcePassagesForAgent(
     query: string,
@@ -981,6 +984,7 @@ export class AiService {
         sourceId: item.sourceId,
         text: item.text,
         sourceTitle: item.sourceTitle,
+        sectionHeading: item.sectionHeading,
         pageStart: item.pageStart,
         pageEnd: item.pageEnd,
         type: item.type,

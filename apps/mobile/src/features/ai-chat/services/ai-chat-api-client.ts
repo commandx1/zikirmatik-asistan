@@ -5,7 +5,7 @@ import { Platform } from "react-native";
 // için (native EventSource POST body desteklemediğinden) elle kullanılıyor.
 import { fetch as streamFetch } from "expo/fetch";
 import { i18n } from "../../../i18n";
-import type { AiSourceCitation, ChatConversationSummary, ChatDhikrCardRaw, ChatMessageRaw } from "../types";
+import type { AiSourceCitation, ChatConversationSummary, ChatMessageRaw } from "../types";
 
 export const AI_CREDIT_INSUFFICIENT_CODE = "AI_CREDIT_INSUFFICIENT";
 
@@ -96,7 +96,6 @@ export type ChatStreamDonePayload = {
 
 export type ChatStreamHandlers = {
   onToken?: (delta: string) => void;
-  onRecommendations?: (recommendedDhikrs: ChatDhikrCardRaw[]) => void;
   onDone?: (payload: ChatStreamDonePayload) => void;
   /** Akış `event: error` gönderirse çağrılır (bağlantı hatalarından farklı — akış zaten başlamıştır). */
   onError?: (message: string) => void;
@@ -105,8 +104,8 @@ export type ChatStreamHandlers = {
 /**
  * Yeni konuşma + ilk mesaj için SSE akışı. REST karşılığı olan
  * createChatConversation ile aynı payload'ı kabul eder; token'lar
- * `handlers.onToken` ile parça parça, sonuçlar `onRecommendations`/`onDone`
- * ile bir kerede gelir. `signal` ile istemci tarafından iptal edilebilir
+ * `handlers.onToken` ile parça parça, sonuç ise `onDone` ile bir kerede
+ * gelir. `signal` ile istemci tarafından iptal edilebilir
  * (AbortController) — sunucu bunu bağlantı kopması olarak algılar ve
  * mesajı kalıcılaştırmaz / kredi düşmez.
  */
@@ -227,12 +226,6 @@ function processSseEvent(rawEvent: string, handlers: ChatStreamHandlers) {
       if (typeof delta === "string") {
         handlers.onToken?.(delta);
       }
-      break;
-    }
-    case "recommendations": {
-      const recs =
-        (data as { recommendedDhikrs?: ChatDhikrCardRaw[] } | undefined)?.recommendedDhikrs ?? [];
-      handlers.onRecommendations?.(recs);
       break;
     }
     case "done": {
