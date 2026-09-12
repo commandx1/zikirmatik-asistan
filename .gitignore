@@ -15,6 +15,8 @@ android-logs
 .env
 .env.*
 *.env
+!.env.example
+!**/.env.example
 docs/**/*.pdf
 docs/**/*.html
 docs/**/*.pptx
@@ -27,3 +29,7 @@ apps/mobile/android/keystore.properties
 apps/promo-video
 .claude
 store-assets
+
+# AI eval harness raporları (üretilen çıktı — bkz. apps/api/scripts/eval/README.md)
+apps/api/scripts/eval/reports/*
+!apps/api/scripts/eval/reports/.gitkeep

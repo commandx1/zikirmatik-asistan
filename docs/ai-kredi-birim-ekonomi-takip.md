@@ -6,7 +6,8 @@ Bu dosya, AI Rehber kredi modelinin karlilik takibini tek yerden yapmak icin kul
 
 - Model: Hibrit (flow bazli tek kesim)
 - Kesim: Basarili oneride 1 kredi
-- Clarification/off-topic/hata: 0 kredi
+- Clarification/off-topic/AI hatasi (503 AI_UNAVAILABLE): 0 kredi
+- Cache yolu yok: `recommendation_cache` kaldirildi, her istek canli LLM cagrisidir
 - Premium grant: 50 kredi / UTC ay
 - Free grant: 1 kredi / UTC gun
 - Top-up: RevenueCat `NON_SUBSCRIPTION_PURCHASE`

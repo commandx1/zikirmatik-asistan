@@ -5,9 +5,11 @@ import { Platform } from "react-native";
 // için (native EventSource POST body desteklemediğinden) elle kullanılıyor.
 import { fetch as streamFetch } from "expo/fetch";
 import { i18n } from "../../../i18n";
-import type { AiSourceCitation, ChatConversationSummary, ChatMessageRaw } from "../types";
+import { AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
+import type { AiSourceCitation, ChatConversationSummary, ChatMessageRaw, ChatMode, ChatCoverage } from "../types";
 
 export const AI_CREDIT_INSUFFICIENT_CODE = "AI_CREDIT_INSUFFICIENT";
+export { AI_UNAVAILABLE_CODE };
 
 export class AiChatApiError extends Error {
   constructor(
@@ -87,18 +89,34 @@ export async function sendChatMessage(
 
 export type ChatStreamDonePayload = {
   messageId: string;
+  /** Nihai/otoriter asistan metni — akış sırasında biriken token'ların yerine geçer. */
+  content: string;
   remainingCredits?: number;
   conversationId: string;
   conversation?: CreateConversationResponse["conversation"];
   userMessage: ChatMessageRaw;
   sourceCitations?: AiSourceCitation[];
+  mode?: ChatMode;
+  coverage?: ChatCoverage;
+};
+
+/** `event: error` ile gelen gövde — bkz. AI_UNAVAILABLE_CODE. */
+export type ChatStreamErrorPayload = {
+  code?: string;
+  reason?: string;
+  requestId?: string;
+  message: string;
 };
 
 export type ChatStreamHandlers = {
   onToken?: (delta: string) => void;
   onDone?: (payload: ChatStreamDonePayload) => void;
-  /** Akış `event: error` gönderirse çağrılır (bağlantı hatalarından farklı — akış zaten başlamıştır). */
-  onError?: (message: string) => void;
+  /**
+   * Akış `event: error` gönderirse çağrılır (bağlantı hatalarından farklı —
+   * akış zaten başlamış olabilir). `code === AI_UNAVAILABLE_CODE` ise hiçbir
+   * şey kalıcılaştırılmamış ve kredi düşülmemiştir.
+   */
+  onError?: (payload: ChatStreamErrorPayload) => void;
 };
 
 /**
@@ -233,9 +251,17 @@ function processSseEvent(rawEvent: string, handlers: ChatStreamHandlers) {
       break;
     }
     case "error": {
+      const candidate = (data as { code?: unknown; reason?: unknown; requestId?: unknown; message?: unknown } | undefined) ?? {};
       const message =
-        (data as { message?: unknown } | undefined)?.message;
-      handlers.onError?.(typeof message === "string" && message.trim() ? message : i18n.t("ai-chat:errors.sendFailed"));
+        typeof candidate.message === "string" && candidate.message.trim()
+          ? candidate.message
+          : i18n.t("ai-chat:errors.sendFailed");
+      handlers.onError?.({
+        code: typeof candidate.code === "string" ? candidate.code : undefined,
+        reason: typeof candidate.reason === "string" ? candidate.reason : undefined,
+        requestId: typeof candidate.requestId === "string" ? candidate.requestId : undefined,
+        message
+      });
       break;
     }
     default:

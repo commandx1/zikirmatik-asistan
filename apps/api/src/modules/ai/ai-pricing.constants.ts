@@ -5,6 +5,7 @@
  * kaynak DEĞİLDİR.
  */
 export const MODEL_PRICES: Record<string, { input: number; output: number }> = {
+  'gpt-5': { input: 1.25, output: 10.0 },
   'gpt-5-mini': { input: 0.25, output: 2.0 },
   'gpt-4o-mini': { input: 0.15, output: 0.6 },
   'text-embedding-3-large': { input: 0.13, output: 0 },
@@ -41,13 +42,16 @@ const RESOLVED_PRICES: Record<string, { input: number; output: number }> = {
 
 /**
  * Model adını fiyat tablosundaki köke normalize eder (tarih/suffix atar).
- * Örn: 'gpt-5-mini-2025-08-07' → 'gpt-5-mini'.
+ * Örn: 'gpt-5-mini-2025-08-07' → 'gpt-5-mini'. Birden fazla anahtar eşleşirse
+ * (ör. 'gpt-5' ve 'gpt-5-mini' ikisi de 'gpt-5-mini-2025-08-07' ile eşleşir)
+ * EN UZUN eşleşen anahtar seçilir, aksi halde daha genel bir kök ('gpt-5')
+ * daha spesifik olanın ('gpt-5-mini') önüne geçebilir.
  */
 export function normalizeModelName(model: string): string {
   const trimmed = model?.trim() ?? '';
-  const match = Object.keys(RESOLVED_PRICES).find((key) =>
-    trimmed.startsWith(key),
-  );
+  const match = Object.keys(RESOLVED_PRICES)
+    .filter((key) => trimmed.startsWith(key))
+    .sort((a, b) => b.length - a.length)[0];
   return match ?? trimmed;
 }
 

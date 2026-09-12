@@ -14,10 +14,13 @@ import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-clien
 import {
   AiApiError,
   AI_CREDIT_INSUFFICIENT_CODE,
+  AI_UNAVAILABLE_CODE,
   DAILY_LIMIT_REACHED_CODE,
   createAiRecommendation,
   getAiCredits,
   getAiDailyQuota,
+  isAiClarificationResponse,
+  isAiOffTopicResponse,
   listAiRecommendations,
   selectAiRecommendation
 } from "../services/ai-api-client";
@@ -46,12 +49,14 @@ type LastAiGuideResult = {
 
 type ClarificationState = {
   message: string;
-  suggestedCategories: string[];
+};
+
+type AiUnavailableState = {
+  message: string;
 };
 
 type PendingAiRequest = {
   freeText?: string;
-  selectedCategory?: string;
   flowId: string;
 };
 
@@ -93,6 +98,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [error, setError] = useState<string>();
   const [offTopicMessage, setOffTopicMessage] = useState<string>();
   const [clarification, setClarification] = useState<ClarificationState>();
+  const [aiUnavailable, setAiUnavailable] = useState<AiUnavailableState | null>(null);
   const [recommendationId, setRecommendationId] = useState<string>();
   // Dil-bağımlı alanlar RAW (LocalizedText) saklanır; ekrana basılacak
   // çözülmüş string'ler aşağıda `resolvedRecommendations`/`resolvedHistoryItems`
@@ -112,6 +118,10 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [loadingStep, setLoadingStep] = useState("");
   const [postPurchaseNotice, setPostPurchaseNotice] = useState<string>();
   const pendingRequestRef = useRef<PendingAiRequest | null>(null);
+  // AI_UNAVAILABLE (503) alındığında son isteği burada saklarız — kredi
+  // düşülmediği için pendingRequestRef'ten (kredi satın alma akışı) ayrı
+  // tutulur; retryLastRequest aynı flowId ile aynı isteği tekrar gönderir.
+  const aiUnavailableRequestRef = useRef<PendingAiRequest | null>(null);
 
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
@@ -361,6 +371,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       setError(undefined);
       setOffTopicMessage(undefined);
       setClarification(undefined);
+      setAiUnavailable(null);
 
       const progressSocket = createAiProgressSocket();
       let socketId: string | undefined;
@@ -394,7 +405,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
             freeText: request.freeText,
             maxRecommendations: 3,
             socketId,
-            selectedCategory: request.selectedCategory,
             timeContext: {
               hour: now.getHours(),
               dayOfWeek: now.getDay(),
@@ -407,7 +417,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           }, token)
         );
 
-        if (response.offTopic) {
+        if (isAiOffTopicResponse(response)) {
           setOffTopicMessage(response.message);
           setRecommendations([]);
           setAssistantNote(undefined);
@@ -417,11 +427,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           return;
         }
 
-        if (response.needsClarification) {
-          setClarification({
-            message: response.message,
-            suggestedCategories: response.suggestedCategories
-          });
+        if (isAiClarificationResponse(response)) {
+          setClarification({ message: response.message });
           setRecommendations([]);
           setAssistantNote(undefined);
           setRecommendationId(undefined);
@@ -491,6 +498,11 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           setCreditsConfirmed(true);
           pendingRequestRef.current = request;
           onOpenPremiumSheet?.();
+        } else if (error instanceof AiApiError && error.code === AI_UNAVAILABLE_CODE) {
+          // 503: kredi düşülmedi, bakiyeye ya da premium sheet'e dokunma —
+          // yalnızca aynı flowId ile tekrar denemeyi teklif et.
+          aiUnavailableRequestRef.current = request;
+          setAiUnavailable({ message: error.message || t("ai-guide:errors.aiUnavailable") });
         } else if (error instanceof AiApiError) {
           setError(error.message);
         } else {
@@ -512,6 +524,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
     Keyboard.dismiss();
     setPostPurchaseNotice(undefined);
+    setAiUnavailable(null);
     const flowId = createFlowId();
     setActiveFlowId(flowId);
     const request = { freeText: intentInput.trim() || undefined, flowId };
@@ -524,22 +537,23 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     await executeRecommendationRequest(request);
   };
 
-  const submitClarificationCategory = async (category: string) => {
+  /**
+   * AI_UNAVAILABLE (503) sonrası "Tekrar dene" — aynı istek nesnesini
+   * (dolayısıyla aynı flowId'yi) yeniden gönderir. Sunucu flowId+promptHash
+   * üzerinden idempotency uyguladığı için aynı flowId'nin tekrar
+   * kullanılması güvenlidir; kredi zaten düşülmemişti.
+   */
+  const retryLastRequest = async () => {
     if (isLoading) {
       return;
     }
 
-    setPostPurchaseNotice(undefined);
-    const flowId = activeFlowId || createFlowId();
-    if (!activeFlowId) {
-      setActiveFlowId(flowId);
+    const request = aiUnavailableRequestRef.current;
+    if (!request) {
+      return;
     }
 
-    const request = {
-      freeText: intentInput.trim() || undefined,
-      selectedCategory: category,
-      flowId
-    };
+    setPostPurchaseNotice(undefined);
 
     if (!(await ensureCreditsAvailable())) {
       pendingRequestRef.current = request;
@@ -707,7 +721,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     resumeAfterCreditPurchase,
     offTopicMessage,
     clarification,
-    submitClarificationCategory,
+    aiUnavailable,
+    retryLastRequest,
     recommendationId,
     lastPrompt,
     assistantNote,

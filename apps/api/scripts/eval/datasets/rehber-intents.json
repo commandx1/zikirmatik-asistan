@@ -1,0 +1,296 @@
+[
+  {
+    "id": "r001",
+    "freeText": "çok kaygılıyım, içim huzursuz",
+    "locale": "tr",
+    "category": "emotion",
+    "expect": { "kind": "recommendations", "tagsAny": ["kaygı yönetimi", "huzur", "sabır", "teselli"] }
+  },
+  {
+    "id": "r002",
+    "freeText": "Allah'a şükretmek istiyorum",
+    "locale": "tr",
+    "category": "gratitude",
+    "expect": { "kind": "recommendations", "tagsAny": ["şükür", "hamd"] }
+  },
+  {
+    "id": "r003",
+    "freeText": "günahlarımdan tövbe etmek istiyorum",
+    "locale": "tr",
+    "category": "repentance",
+    "expect": { "kind": "recommendations", "tagsAny": ["tövbe", "istiğfar"] }
+  },
+  {
+    "id": "r004",
+    "freeText": "sınavım var, başarı ve kolaylık için dua",
+    "locale": "tr",
+    "category": "work",
+    "expect": { "kind": "recommendations", "tagsAny": ["sınav", "başarı", "sınav ve kolaylık"] }
+  },
+  {
+    "id": "r005",
+    "freeText": "asdfgh123",
+    "locale": "tr",
+    "category": "offtopic",
+    "expect": { "kind": "offTopic" }
+  },
+  {
+    "id": "r006",
+    "freeText": "içim kan ağlıyor, çok üzgünüm",
+    "locale": "tr",
+    "category": "emotion",
+    "expect": { "kind": "recommendations", "tagsAny": ["üzüntü", "teselli", "sabır"] }
+  },
+  {
+    "id": "r007",
+    "freeText": "sürekli sinirleniyorum, öfkemi kontrol edemiyorum",
+    "locale": "tr",
+    "category": "emotion",
+    "expect": { "kind": "recommendations", "tagsAny": ["öfke", "sabır", "nefis terbiyesi"] }
+  },
+  {
+    "id": "r008",
+    "freeText": "kendimi çok yalnız hissediyorum, kimsem yok gibi",
+    "locale": "tr",
+    "category": "emotion",
+    "expect": { "kind": "recommendations", "tagsAny": ["yalnızlık", "teselli", "huzur"] }
+  },
+  {
+    "id": "r009",
+    "freeText": "gelecek kaygısı beni her gün eziyor, ne olacağını bilmiyorum",
+    "locale": "tr",
+    "category": "emotion",
+    "expect": { "kind": "recommendations", "tagsAny": ["gelecek kaygısı", "tevekkül", "kaygı yönetimi"] }
+  },
+  {
+    "id": "r010",
+    "freeText": "sabah namazından sonra ne okumalıyım",
+    "locale": "tr",
+    "category": "worship",
+    "expect": { "kind": "recommendations", "tagsAny": ["sabah akşam", "namaz"] }
+  },
+  {
+    "id": "r011",
+    "freeText": "yatmadan önce hangi duaları okumalıyım",
+    "locale": "tr",
+    "category": "worship",
+    "expect": { "kind": "recommendations", "tagsAny": ["uyku uyanış", "uyku"] }
+  },
+  {
+    "id": "r012",
+    "freeText": "cuma günü için özel bir zikir var mı",
+    "locale": "tr",
+    "category": "worship",
+    "expect": { "kind": "recommendations", "tagsAny": ["cuma", "namaz", "özel günler"] }
+  },
+  {
+    "id": "r013",
+    "freeText": "hastayım, şifa bulmak için dua istiyorum",
+    "locale": "tr",
+    "category": "health",
+    "expect": { "kind": "recommendations", "tagsAny": ["şifa", "hastalık"] }
+  },
+  {
+    "id": "r014",
+    "freeText": "annem hastanede yatıyor, ona şifa duası okumak istiyorum",
+    "locale": "tr",
+    "category": "health",
+    "expect": { "kind": "recommendations", "tagsAny": ["şifa", "hastalık", "aile"] }
+  },
+  {
+    "id": "r015",
+    "freeText": "yarın uzun bir yolculuğa çıkıyorum, yolculuk duası öner",
+    "locale": "tr",
+    "category": "travel",
+    "expect": { "kind": "recommendations", "tagsAny": ["yolculuk"] }
+  },
+  {
+    "id": "r016",
+    "freeText": "evleniyorum, huzurlu ve bereketli bir evlilik için dua istiyorum",
+    "locale": "tr",
+    "category": "family",
+    "expect": { "kind": "recommendations", "tagsAny": ["evlilik", "aile", "bereket"] }
+  },
+  {
+    "id": "r017",
+    "freeText": "çocuğum için hayırlı bir evlat olması adına dua etmek istiyorum",
+    "locale": "tr",
+    "category": "family",
+    "expect": { "kind": "recommendations", "tagsAny": ["evlat", "aile"] }
+  },
+  {
+    "id": "r018",
+    "freeText": "hacdayım, Safa tepesindeyim şu an ne okumalıyım",
+    "locale": "tr",
+    "category": "niche",
+    "expect": { "kind": "recommendations", "tagsAny": ["hac", "umre"] }
+  },
+  {
+    "id": "r019",
+    "freeText": "umre için Kabe'yi ilk gördüğüm anda ne okumalıyım",
+    "locale": "tr",
+    "category": "niche",
+    "expect": { "kind": "recommendations", "tagsAny": ["umre", "hac"] }
+  },
+  {
+    "id": "r020",
+    "freeText": "ramazanda iftar vaktinde okunacak dua nedir",
+    "locale": "tr",
+    "category": "niche",
+    "expect": { "kind": "recommendations", "tagsAny": ["ramazan", "oruç"] }
+  },
+  {
+    "id": "r021",
+    "freeText": "abdest alırken hangi duayı okumalıyım",
+    "locale": "tr",
+    "category": "worship",
+    "expect": { "kind": "recommendations", "tagsAny": ["abdest", "namaz"] }
+  },
+  {
+    "id": "r022",
+    "freeText": "huzur",
+    "locale": "tr",
+    "category": "vague",
+    "expect": { "kind": "any" }
+  },
+  {
+    "id": "r023",
+    "freeText": "yardım",
+    "locale": "tr",
+    "category": "vague",
+    "expect": { "kind": "any" }
+  },
+  {
+    "id": "r024",
+    "freeText": "sllsd asdasd 1234",
+    "locale": "tr",
+    "category": "offtopic",
+    "expect": { "kind": "offTopic" }
+  },
+  {
+    "id": "r025",
+    "freeText": "nasılsın",
+    "locale": "tr",
+    "category": "offtopic",
+    "expect": { "kind": "offTopic" }
+  },
+  {
+    "id": "r026",
+    "freeText": "python kodu yaz bana",
+    "locale": "tr",
+    "category": "offtopic",
+    "expect": { "kind": "offTopic" }
+  },
+  {
+    "id": "r027",
+    "freeText": "I feel very anxious lately and can't sleep at night",
+    "locale": "en",
+    "category": "emotion",
+    "expect": { "kind": "recommendations", "tagsAny": ["kaygı yönetimi", "uyku", "huzur"] }
+  },
+  {
+    "id": "r028",
+    "freeText": "I want to thank Allah for everything He has given me",
+    "locale": "en",
+    "category": "gratitude",
+    "expect": { "kind": "recommendations", "tagsAny": ["şükür", "hamd"] }
+  },
+  {
+    "id": "r029",
+    "freeText": "how are you today, what's up",
+    "locale": "en",
+    "category": "offtopic",
+    "expect": { "kind": "offTopic" }
+  },
+  {
+    "id": "r030",
+    "freeText": "son zamanlarda hayatım çok karışık, işimde sürekli baskı altındayım, evde de eşimle küçük şeyler yüzünden tartışıyoruz, geceleri uyuyamıyorum, kafamda sürekli kötü senaryolar dönüyor ve Allah'a karşı bile bir uzaklık hissediyorum, bu durumdan nasıl çıkabilirim bilmiyorum, biraz huzur ve teselli bulmak istiyorum",
+    "locale": "tr",
+    "category": "vague",
+    "expect": { "kind": "recommendations", "tagsAny": ["kaygı yönetimi", "sabır", "huzur", "teselli"] }
+  },
+  {
+    "id": "r031",
+    "freeText": "geçen hafta işimi kaybettim, aynı gün eve dönerken küçük bir trafik kazası geçirdim, çok şükür yaralanan olmadı ama araç hasar gördü, üstüne bir de annemin sağlık durumu kötüleşti, tüm bunlar üst üste gelince dayanacak gücüm kalmadı gibi hissediyorum, rızkım ve ailem için ne okumalıyım bilmiyorum",
+    "locale": "tr",
+    "category": "life-event",
+    "expect": { "kind": "recommendations", "tagsAny": ["sabır", "tevekkül", "rızık", "rızık bereket"] }
+  },
+  {
+    "id": "r032",
+    "freeText": "işten kovulacağım diye çok korkuyorum, rızkım için dua etmek istiyorum",
+    "locale": "tr",
+    "category": "work",
+    "expect": { "kind": "recommendations", "tagsAny": ["rızık", "iş hayatı", "tevekkül", "iş kariyer"] }
+  },
+  {
+    "id": "r033",
+    "freeText": "yeni bir eve taşınıyoruz, hayırlı ve bereketli olması için ne okumalıyım",
+    "locale": "tr",
+    "category": "life-event",
+    "expect": { "kind": "recommendations", "tagsAny": ["ev", "bereket", "ev hayatı"] }
+  },
+  {
+    "id": "r034",
+    "freeText": "büyük bir günah işledim, çok pişmanım, Allah'tan af diliyorum",
+    "locale": "tr",
+    "category": "repentance",
+    "expect": { "kind": "recommendations", "tagsAny": ["tövbe", "istiğfar"] }
+  },
+  {
+    "id": "r035",
+    "freeText": "yarın ameliyat olacağım, çok korkuyorum, benim için dua öner",
+    "locale": "tr",
+    "category": "health",
+    "expect": { "kind": "recommendations", "tagsAny": ["hastalık", "şifa", "koruma", "korunma"] }
+  },
+  {
+    "id": "r036",
+    "freeText": "sürekli kabuslar görüyorum, uykularım kaçtı, korunmak için ne okumalıyım",
+    "locale": "tr",
+    "category": "emotion",
+    "expect": { "kind": "recommendations", "tagsAny": ["uyku", "koruma", "kaygı yönetimi", "korunma"] }
+  },
+  {
+    "id": "r037",
+    "freeText": "gece namazına kalkmak istiyorum ama nefsime yeniliyorum, yardımcı olacak bir zikir var mı",
+    "locale": "tr",
+    "category": "worship",
+    "expect": { "kind": "recommendations", "tagsAny": ["gece namazı", "nefis terbiyesi", "teheccüd"] }
+  },
+  {
+    "id": "r038",
+    "freeText": "eşimle aramız son zamanlarda bozuk, evimize huzur gelmesi için dua istiyorum",
+    "locale": "tr",
+    "category": "family",
+    "expect": { "kind": "recommendations", "tagsAny": ["aile ilişkisi", "huzur", "sabır", "ev hayatı"] }
+  },
+  {
+    "id": "r039",
+    "freeText": "bugün küçük ama benim için çok kıymetli bir mucize yaşadım, şükretmek istiyorum",
+    "locale": "tr",
+    "category": "gratitude",
+    "expect": { "kind": "recommendations", "tagsAny": ["şükür", "hamd"] }
+  },
+  {
+    "id": "r040",
+    "freeText": "asdkjaslkdjaslkdj",
+    "locale": "tr",
+    "category": "offtopic",
+    "expect": { "kind": "offTopic" }
+  },
+  {
+    "id": "r041",
+    "freeText": "dua",
+    "locale": "tr",
+    "category": "vague",
+    "expect": { "kind": "any" }
+  },
+  {
+    "id": "r042",
+    "freeText": "kurban bayramı arefe gününde hangi zikirleri çekmeliyim",
+    "locale": "tr",
+    "category": "niche",
+    "expect": { "kind": "recommendations", "tagsAny": ["kurban", "bayram", "zilhicce", "özel günler"] }
+  }
+]

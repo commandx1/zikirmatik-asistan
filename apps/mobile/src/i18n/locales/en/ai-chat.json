@@ -34,7 +34,11 @@
     "sendFailed": "Couldn't send the message. Please try again.",
     "historyFailed": "Couldn't load the chat history.",
     "serviceUnavailable": "The assistant service isn't responding right now.",
-    "serviceUnreachable": "Couldn't reach the assistant service. Please try again."
+    "serviceUnreachable": "Couldn't reach the assistant service. Please try again.",
+    "aiUnavailable": "The assistant can't respond right now. Your credit wasn't charged, you can try again."
+  },
+  "actions": {
+    "retry": "Try again"
   },
   "citation": {
     "singlePage": "{{title}}, p. {{page}}",

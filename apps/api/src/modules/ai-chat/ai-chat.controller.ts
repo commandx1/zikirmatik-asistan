@@ -8,19 +8,31 @@ import {
   Query,
   Req,
   Res,
+  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { CurrentUserId } from '../../common/auth/current-user-id.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { AiPipelineExceptionFilter } from '../ai/ai-pipeline.filter';
 import { resolveAiRecommendationLocale } from '../ai/utils/locale';
 import { AiChatService } from './ai-chat.service';
 import { CreateChatConversationDto } from './dto/create-chat-conversation.dto';
 import { QueryPaginationDto } from './dto/query-pagination.dto';
 import { SendChatMessageDto } from './dto/send-chat-message.dto';
 
+/**
+ * `AiPipelineExceptionFilter` sınıf seviyesinde uygulanır: REST rotaları
+ * (createConversation, sendMessage, listConversations, listMessages) için
+ * `AiPipelineError` fırlatıldığında standart 503 gövdesine çevrilir. SSE
+ * rotaları (@Res() ile manuel yanıt yazan createConversationStream/
+ * sendMessageStream) kendi hata yönetimini (AiChatService.handleStreamFailure)
+ * içeride yapar ve Nest'in filter zincirine hiç düşmez — bu filter onlar için
+ * etkisizdir, zararsızdır.
+ */
 @Controller('v1/ai/chat')
 @UseGuards(JwtAuthGuard)
+@UseFilters(AiPipelineExceptionFilter)
 export class AiChatController {
   constructor(private readonly aiChatService: AiChatService) {}
 

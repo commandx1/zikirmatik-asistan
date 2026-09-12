@@ -57,6 +57,14 @@ export class Dhikr {
   @Prop({ type: Number, min: 1, default: 33 })
   recommendedCount!: number;
 
+  // Bu zikrin PATCH .../select ile kaç kez fiilen seçildiğinin sayacı.
+  // recommendedCount ile KARIŞTIRILMAMALI: recommendedCount mobil tarafta
+  // "kaç kez çekilecek" tekrar hedefidir (statik katalog verisi), buysa
+  // gerçek kullanıcı seçim telemetrisidir. Eskiden ikisi yanlışlıkla aynı
+  // alanda tutuluyordu (bkz. selectRecommendation).
+  @Prop({ type: Number, default: 0 })
+  selectionCount!: number;
+
   @Prop({ type: [String], default: [] })
   suitableFor!: string[];
 
@@ -98,3 +106,37 @@ DhikrSchema.index({ categories: 1 });
 DhikrSchema.index({ suitableFor: 1 });
 DhikrSchema.index({ isVerified: 1, isActive: 1 });
 DhikrSchema.index({ timeOfDay: 1, isVerified: 1 });
+
+// Standart MongoDB $text index — Atlas Search (FTS) index kotası dolu
+// olduğu için hibrit aramanın zikir bacağı (RetrievalService.
+// searchDhikrsByText → runDhikrTextSearch) Atlas $search yerine bunu
+// kullanır (bkz. docs/ai-mimari.md §6). Koleksiyon başına yalnızca BİR
+// text index olabilir — bu yüzden tüm aranabilir alanlar tek index'te
+// weight'lerle toplanır (isim/transliterasyon en yüksek ağırlıkta).
+// autoIndex:true (bkz. app.module.ts) ile app açılışında da oluşur;
+// prod'da garanti için ayrıca `scripts/create-dhikr-text-index.mjs`
+// çalıştırılır.
+DhikrSchema.index(
+  {
+    'name.tr': 'text',
+    'transliteration.tr': 'text',
+    'meaning.tr': 'text',
+    'virtue.tr': 'text',
+    tags: 'text',
+    suitableFor: 'text',
+    categories: 'text',
+  },
+  {
+    name: 'dhikr_text_idx',
+    default_language: 'turkish',
+    weights: {
+      'name.tr': 10,
+      'transliteration.tr': 8,
+      tags: 5,
+      suitableFor: 5,
+      categories: 3,
+      'meaning.tr': 2,
+      'virtue.tr': 1,
+    },
+  },
+);

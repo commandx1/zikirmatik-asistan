@@ -6,6 +6,7 @@ import { useProfileStore } from "../../../store/profile-store";
 import { createAiProgressSocket } from "../../ai-guide/services/ai-progress-socket";
 import {
   AI_CREDIT_INSUFFICIENT_CODE,
+  AI_UNAVAILABLE_CODE,
   AiChatApiError,
   listChatConversations,
   listChatMessages,
@@ -13,7 +14,7 @@ import {
   streamCreateConversation,
   type ChatStreamHandlers
 } from "../services/ai-chat-api-client";
-import type { AiSourceCitation, ChatConversationSummary, ChatMessageRaw } from "../types";
+import type { AiSourceCitation, ChatConversationSummary, ChatCoverage, ChatMessageRaw, ChatMode } from "../types";
 import { getAiCredits, getAiDailyQuota } from "../../ai-guide/services/ai-api-client";
 
 export type ChatMessage = {
@@ -22,6 +23,12 @@ export type ChatMessage = {
   content: string;
   createdAt: string;
   sourceCitations: AiSourceCitation[];
+  mode?: ChatMode;
+  coverage?: ChatCoverage;
+};
+
+type AiUnavailableState = {
+  message: string;
 };
 
 /**
@@ -69,9 +76,14 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
   const [isAwaitingFirstToken, setIsAwaitingFirstToken] = useState(false);
   const [loadingStep, setLoadingStep] = useState("");
   const [error, setError] = useState<string>();
+  const [aiUnavailable, setAiUnavailable] = useState<AiUnavailableState | null>(null);
   const [creditBalance, setCreditBalance] = useState(0);
   const [creditsConfirmed, setCreditsConfirmed] = useState(false);
   const pendingMessageRef = useRef<string>("");
+  // AI_UNAVAILABLE alındığında son gönderilen metni burada saklarız —
+  // kredi düşülmediği/hiçbir şey kalıcılaştırılmadığı için pendingMessageRef'ten
+  // (kredi satın alma sonrası devam akışı) ayrı tutulur.
+  const aiUnavailableMessageRef = useRef<string>("");
   const streamAbortRef = useRef<AbortController | undefined>(undefined);
 
   useEffect(() => {
@@ -175,6 +187,7 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
       setIsAwaitingFirstToken(true);
       setLoadingStep("");
       setError(undefined);
+      setAiUnavailable(null);
 
       const progressSocket = createAiProgressSocket();
       let socketId: string | undefined;
@@ -249,7 +262,17 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
             prev.map((m) => {
               if (m.id === optimisticUserMessage.id) return payload.userMessage;
               if (m.id === streamingAssistantId) {
-                return { ...m, id: payload.messageId, sourceCitations: payload.sourceCitations ?? [] };
+                return {
+                  ...m,
+                  id: payload.messageId,
+                  // `content` nihai/otoriter metindir — geldiğinde akış
+                  // sırasında biriken metnin yerine geçer; gelmezse akıştan
+                  // birikeni koru.
+                  content: typeof payload.content === "string" && payload.content.length > 0 ? payload.content : m.content,
+                  sourceCitations: payload.sourceCitations ?? [],
+                  mode: payload.mode,
+                  coverage: payload.coverage
+                };
               }
               return m;
             })
@@ -260,11 +283,11 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
             setCreditsConfirmed(true);
           }
         },
-        onError: (message) => {
+        onError: (payload) => {
           // Akış zaten başlamıştı (bkz. ChatStreamMidwayError backend'de) —
           // event: error'ı normal bir hata olarak işlemek için throw ediyoruz,
           // dıştaki catch bloğu optimistic/streaming mesajları temizler.
-          throw new AiChatApiError("transient", message);
+          throw new AiChatApiError("transient", payload.message, undefined, payload.code);
         }
       };
 
@@ -292,6 +315,12 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
           setCreditsConfirmed(true);
           pendingMessageRef.current = text;
           onOpenPremiumSheet?.();
+        } else if (err instanceof AiChatApiError && err.code === AI_UNAVAILABLE_CODE) {
+          // Kredi düşülmedi, hiçbir şey kalıcılaştırılmadı — kullanıcının
+          // metnini girdiye geri koy ve "Tekrar dene" seçeneği sun.
+          aiUnavailableMessageRef.current = text;
+          setInputValue(text);
+          setAiUnavailable({ message: err.message || t("ai-chat:errors.aiUnavailable") });
         } else if (err instanceof AiChatApiError) {
           setError(err.message);
         } else {
@@ -317,6 +346,31 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
     }
 
     Keyboard.dismiss();
+    setAiUnavailable(null);
+
+    if (!(await ensureCreditsAvailable())) {
+      pendingMessageRef.current = text;
+      return;
+    }
+
+    await runSend(text);
+  }, [ensureCreditsAvailable, inputValue, isSending, runSend]);
+
+  /**
+   * AI_UNAVAILABLE sonrası "Tekrar dene" — aynı metni yeniden gönderir.
+   * Sohbet akışında flowId sunucu tarafında üretildiği için (bkz.
+   * ai-chat.service.ts) burada yeni bir istek her zaman güvenlidir;
+   * hiçbir şey kalıcılaştırılmamış/kredi düşülmemişti.
+   */
+  const retryLastMessage = useCallback(async () => {
+    if (isSending) {
+      return;
+    }
+
+    const text = aiUnavailableMessageRef.current || inputValue.trim();
+    if (!text) {
+      return;
+    }
 
     if (!(await ensureCreditsAvailable())) {
       pendingMessageRef.current = text;
@@ -373,7 +427,9 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
         role: m.role,
         content: m.content,
         createdAt: m.createdAt,
-        sourceCitations: m.sourceCitations ?? []
+        sourceCitations: m.sourceCitations ?? [],
+        mode: m.mode,
+        coverage: m.coverage
       })),
     [messages]
   );
@@ -389,6 +445,8 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
     isAwaitingFirstToken,
     loadingStep,
     error,
+    aiUnavailable,
+    retryLastMessage,
     creditBalance,
     sendMessage,
     resumeAfterCreditPurchase,

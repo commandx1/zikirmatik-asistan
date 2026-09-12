@@ -20,9 +20,10 @@ import {
       { name: AiChatMessage.name, schema: AiChatMessageSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    // AiService (searchSourcePassagesForAgent, ensureCreditAccessForFlow,
-    // debitCreditForFlow) ve AiProgressGateway'i (exports listesine
-    // yeni bir şey eklemeden) yeniden kullanmak için AiModule import edilir.
+    // RetrievalService (searchSourcePassages), AiCreditsService
+    // (ensureCreditAccessForFlow, debitCreditForFlow) ve AiProgressGateway'i
+    // (exports listesine yeni bir şey eklemeden) yeniden kullanmak için
+    // AiModule import edilir.
     AiModule,
   ],
   controllers: [AiChatController],

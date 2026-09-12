@@ -8,18 +8,18 @@ import { Dhikr, DhikrSchema } from '../dhikrs/schemas/dhikr.schema';
 import { EmbeddingModule } from '../embedding/embedding.module';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { AiController } from './ai.controller';
+import { AiCreditsService } from './ai-credits.service';
 import { AiProgressGateway } from './ai-progress.gateway';
+import { AiRuntimeService } from './ai-runtime.service';
 import { AiService } from './ai.service';
 import { AiUsageService } from './ai-usage.service';
+import { RecommendationAgentService } from './recommendation-agent.service';
+import { RetrievalService } from './retrieval.service';
 import { AiUsageLog, AiUsageLogSchema } from './schemas/ai-usage-log.schema';
 import {
   AiRecommendation,
   AiRecommendationSchema,
 } from './schemas/ai-recommendation.schema';
-import {
-  RecommendationCache,
-  RecommendationCacheSchema,
-} from './schemas/recommendation-cache.schema';
 import {
   AiCreditWallet,
   AiCreditWalletSchema,
@@ -37,7 +37,6 @@ import {
   imports: [
     MongooseModule.forFeature([
       { name: AiRecommendation.name, schema: AiRecommendationSchema },
-      { name: RecommendationCache.name, schema: RecommendationCacheSchema },
       { name: AiCreditWallet.name, schema: AiCreditWalletSchema },
       { name: AiCreditLedger.name, schema: AiCreditLedgerSchema },
       { name: Dhikr.name, schema: DhikrSchema },
@@ -49,7 +48,22 @@ import {
     EmbeddingModule,
   ],
   controllers: [AiController],
-  providers: [AiService, AiProgressGateway, AiUsageService],
-  exports: [AiService, AiProgressGateway, AiUsageService],
+  providers: [
+    AiService,
+    AiCreditsService,
+    AiProgressGateway,
+    AiUsageService,
+    AiRuntimeService,
+    RetrievalService,
+    RecommendationAgentService,
+  ],
+  exports: [
+    AiService,
+    AiCreditsService,
+    AiProgressGateway,
+    AiUsageService,
+    AiRuntimeService,
+    RetrievalService,
+  ],
 })
 export class AiModule {}

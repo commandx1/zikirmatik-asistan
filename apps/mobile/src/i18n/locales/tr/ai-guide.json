@@ -17,13 +17,19 @@
     "dhikrSaveFailed": "Zikir kaydedilemedi.",
     "recommendationFailed": "Asistan önerisi alınamadı. Lütfen tekrar deneyin.",
     "serviceUnavailable": "Asistan servisi şu anda yanıt veremiyor.",
-    "serviceUnreachable": "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin."
+    "serviceUnreachable": "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin.",
+    "aiUnavailableTitle": "Asistan şu anda meşgul",
+    "aiUnavailable": "Asistan şu anda yanıt veremiyor. Kredin düşülmedi, tekrar deneyebilirsin."
+  },
+  "actions": {
+    "retry": "Tekrar dene"
   },
   "offTopic": {
     "title": "Konu dışı"
   },
   "clarify": {
-    "title": "Biraz daha netleştirelim"
+    "title": "Biraz daha netleştirelim",
+    "hint": "Cevabını yukarıya yazıp tekrar gönderebilirsin."
   },
   "noTimeInfo": "Vakit bilgisi yok",
   "genericPrompt": "Genel öneri",
@@ -36,11 +42,10 @@
     "defaultStep": "Hazırlanıyor...",
     "steps": {
       "analyzing": "Niyetin analiz ediliyor...",
-      "thinking": "Zikir veritabanı hazırlanıyor...",
       "expanding": "Niyetin derinleştiriliyor...",
       "searching": "Zikirler taranıyor...",
+      "researching": "Farklı zikirler aranıyor...",
       "selecting": "Sana en uygun zikirler seçiliyor...",
-      "fallback": "Genel öneriler hazırlanıyor...",
       "finalizing": "Öneriler hazırlanıyor..."
     }
   },

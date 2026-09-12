@@ -9,7 +9,13 @@ export type AiChatMessageDocument = HydratedDocument<AiChatMessage>;
 export const AI_CHAT_MESSAGE_ROLES = ['user', 'assistant'] as const;
 export type AiChatMessageRole = (typeof AI_CHAT_MESSAGE_ROLES)[number];
 
-// 'kaynak' modunda cevabın dayandığı kitap pasajları — sohbette
+export const AI_CHAT_MESSAGE_MODES = ['chat', 'bilgi'] as const;
+export type AiChatMessageMode = (typeof AI_CHAT_MESSAGE_MODES)[number];
+
+export const AI_CHAT_MESSAGE_COVERAGES = ['full', 'partial', 'none'] as const;
+export type AiChatMessageCoverage = (typeof AI_CHAT_MESSAGE_COVERAGES)[number];
+
+// 'bilgi' modunda cevabın dayandığı kitap pasajları — sohbette
 // "kaynak: <kitap adı>, s.X-Y" şeklinde gösterim için.
 export class AiSourceCitation {
   @Prop({ type: String, required: true })
@@ -59,9 +65,20 @@ export class AiChatMessage {
   @Prop({ type: [Types.ObjectId], ref: Dhikr.name })
   recommendedDhikrIds?: Types.ObjectId[];
 
-  // Yalnızca assistant mesajlarında dolu: 'openai' | 'fallback'.
+  // Yalnızca assistant mesajlarında dolu: her zaman 'openai' (AI-only akış —
+  // fallback modeli artık yok).
   @Prop({ type: String })
   usedModel?: string;
+
+  // Yalnızca assistant mesajlarında dolu: bu turda hangi ajan modu
+  // çalıştı ('chat' | 'bilgi'). classifyIntent'in çıktısıdır.
+  @Prop({ type: String, enum: AI_CHAT_MESSAGE_MODES })
+  mode?: AiChatMessageMode;
+
+  // Yalnızca mode='bilgi' assistant mesajlarında dolu: cevabın kaynak
+  // pasajlarla ne kadar örtüştüğü ('full' | 'partial' | 'none').
+  @Prop({ type: String, enum: AI_CHAT_MESSAGE_COVERAGES })
+  coverage?: AiChatMessageCoverage;
 
   // Yalnızca 'bilgi' modunda dolu: cevabın dayandığı kaynak pasajlar.
   @Prop({ type: [Object], default: undefined })

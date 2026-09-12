@@ -1,0 +1,379 @@
+[
+  {
+    "id": "c001",
+    "message": "Abdest nasıl alınır, adımlarını anlatır mısın?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "abdest"
+  },
+  {
+    "id": "c002",
+    "message": "Namaz nasıl kılınır, baştan sona anlatır mısın?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "namaz"
+  },
+  {
+    "id": "c003",
+    "message": "Orucun şartları nelerdir?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "oruc"
+  },
+  {
+    "id": "c004",
+    "message": "Teyemmüm ne zaman ve nasıl yapılır?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "abdest"
+  },
+  {
+    "id": "c005",
+    "message": "Sakız çiğnemek orucu bozar mı?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "oruc-fetva"
+  },
+  {
+    "id": "c006",
+    "message": "Kan aldırmak (hacamat yaptırmak) orucu bozar mı?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "oruc-fetva"
+  },
+  {
+    "id": "c007",
+    "message": "Diş çektirmek orucu bozar mı?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "partial",
+    "topic": "oruc-fetva"
+  },
+  {
+    "id": "c008",
+    "message": "Hicret ne zaman ve neden gerçekleşti, biraz anlatır mısın?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "siyer"
+  },
+  {
+    "id": "c009",
+    "message": "Bedir Savaşı hakkında bilgi verir misin?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "siyer"
+  },
+  {
+    "id": "c010",
+    "message": "Hz. Hatice validemiz kimdir, Peygamberimizle evliliği nasıl başladı?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "siyer"
+  },
+  {
+    "id": "c011",
+    "message": "Ehli sünnet akidesinin temel esasları nelerdir?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "akide"
+  },
+  {
+    "id": "c012",
+    "message": "Kadere iman etmek ne demektir?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "akide"
+  },
+  {
+    "id": "c013",
+    "message": "Sabah kalkınca hangi duayı okumalıyım?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "dua"
+  },
+  {
+    "id": "c014",
+    "message": "Uyumadan önce hangi duayı okumalıyım?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "dua"
+  },
+  {
+    "id": "c015",
+    "message": "Evden çıkarken okunacak dua nedir?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "dua"
+  },
+  {
+    "id": "c016",
+    "message": "Kripto para ile alışveriş yapmak veya kripto paraya yatırım yapmak caiz mi?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "none",
+    "topic": "fetva-modern"
+  },
+  {
+    "id": "c017",
+    "message": "Kredi kartıyla taksitli alışveriş yapmak caiz mi?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "none",
+    "topic": "fetva-modern"
+  },
+  {
+    "id": "c018",
+    "message": "Tüp bebek yöntemiyle çocuk sahibi olmak dinen caiz mi?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "none",
+    "topic": "fetva-modern"
+  },
+  {
+    "id": "c019",
+    "message": "Merhaba, nasılsın?",
+    "locale": "tr",
+    "expectMode": "chat",
+    "topic": "greeting"
+  },
+  {
+    "id": "c020",
+    "message": "Çok teşekkür ederim, yardımların için sağ ol",
+    "locale": "tr",
+    "expectMode": "chat",
+    "topic": "thanks"
+  },
+  {
+    "id": "c021",
+    "message": "Bugün çok yorgunum, hiçbir şey yapasım yok",
+    "locale": "tr",
+    "expectMode": "chat",
+    "topic": "feelings"
+  },
+  {
+    "id": "c022",
+    "message": "Sen kimsin, nasıl çalışıyorsun?",
+    "locale": "tr",
+    "expectMode": "chat",
+    "topic": "about-assistant"
+  },
+  {
+    "id": "c023",
+    "message": "peki ya sigara içmek orucu bozar mı?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "oruc-followup",
+    "history": [
+      {
+        "role": "user",
+        "content": "Oruç kimlere farzdır?"
+      },
+      {
+        "role": "assistant",
+        "content": "Oruç, akıl baliğ olmuş, aklı yerinde ve oruca gücü yeten her Müslüman'a farzdır; hasta, yolcu, yaşlı ve mazereti olan kadınlar için ise ruhsat vardır."
+      }
+    ]
+  },
+  {
+    "id": "c024",
+    "message": "peki kaç rekat kılınıyor?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "namaz-followup",
+    "history": [
+      {
+        "role": "user",
+        "content": "Sabah namazı nasıl kılınır?"
+      },
+      {
+        "role": "assistant",
+        "content": "Sabah namazı iki rekat sünnet ve iki rekat farzdan oluşur; önce sünnet, ardından farz kılınır."
+      }
+    ]
+  },
+  {
+    "id": "c025",
+    "message": "peki umre ile farkı nedir?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "hac-followup",
+    "history": [
+      {
+        "role": "user",
+        "content": "Hac nasıl yapılır, kısaca anlatır mısın?"
+      },
+      {
+        "role": "assistant",
+        "content": "Hac; ihrama girme, Arafat'ta vakfe, Müzdelife'de gecelemek, şeytan taşlama, kurban ve tavaf gibi belirli zaman ve mekânlarda yapılması gereken ibadetlerden oluşur."
+      }
+    ]
+  },
+  {
+    "id": "c026",
+    "message": "How do I perform ablution (wudu) step by step?",
+    "locale": "en",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "abdest"
+  },
+  {
+    "id": "c027",
+    "message": "What are the pillars of Islam?",
+    "locale": "en",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "akide"
+  },
+  {
+    "id": "c028",
+    "message": "Teheccüd namazı nasıl kılınır, en fazla kaç rekattır?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "namaz"
+  },
+  {
+    "id": "c029",
+    "message": "Zekat kimlere farzdır, hangi mala verilir?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "ilmihal"
+  },
+  {
+    "id": "c030",
+    "message": "Cuma namazının şartları nelerdir?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "namaz"
+  },
+  {
+    "id": "c031",
+    "message": "Hastalık anında okunacak dua nedir?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "dua"
+  },
+  {
+    "id": "c032",
+    "message": "Sınav öncesi okunabilecek bir dua var mı?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "partial",
+    "topic": "dua"
+  },
+  {
+    "id": "c033",
+    "message": "Adak kurban etmek nasıl yapılır?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "partial",
+    "topic": "kurban"
+  },
+  {
+    "id": "c034",
+    "message": "Zina büyük günahlardan mıdır, tövbesi nasıl olur?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "fetva"
+  },
+  {
+    "id": "c035",
+    "message": "Miraç hadisesi nedir, o gece neler yaşandı?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "siyer"
+  },
+  {
+    "id": "c036",
+    "message": "Şefaat nedir, kimler şefaat edebilir?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "akide"
+  },
+  {
+    "id": "c037",
+    "message": "İyi geceler, yarın görüşürüz",
+    "locale": "tr",
+    "expectMode": "chat",
+    "topic": "greeting"
+  },
+  {
+    "id": "c038",
+    "message": "Yapay zeka ile fetva üretmek veya yapay zekaya dini soru sorup onu tek kaynak kabul etmek caiz mi?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "none",
+    "topic": "fetva-modern"
+  },
+  {
+    "id": "c039",
+    "message": "Yağmur duası (istiska) nasıl yapılır?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "partial",
+    "topic": "dua"
+  },
+  {
+    "id": "c040",
+    "message": "Gusül abdesti nasıl alınır, hangi durumlarda farz olur?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "abdest"
+  },
+  {
+    "id": "c041",
+    "message": "Seyyidül istiğfar duası nedir, nasıl okunur?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "dua-isim"
+  },
+  {
+    "id": "c042",
+    "message": "Allahümme ente rabbi lâ ilâhe illâ ente halaktenî ve ene abdüke diye başlayan dua hangisi, anlamı ne?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "dua-translit"
+  },
+  {
+    "id": "c043",
+    "message": "Bismillâhillezî lâ yedurru maasmihî şey'ün duası ne zaman okunur?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "full",
+    "topic": "dua-translit"
+  },
+  {
+    "id": "c044",
+    "message": "Cevşen duası hakkında bilgi verir misin?",
+    "locale": "tr",
+    "expectMode": "bilgi",
+    "expectCoverage": "none",
+    "topic": "dua-isim-yok"
+  }
+]

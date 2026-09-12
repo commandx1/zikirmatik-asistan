@@ -5,7 +5,9 @@ export type SourcePassageDocument = HydratedDocument<SourcePassage>;
 
 // Kitap/kaynak pasajı RAG koleksiyonu. Seed script'i (seed-source-passages.mjs)
 // docs/kaynaklar/<source_id>.passages.jsonl içindeki review==="approved"
-// kayıtları buraya upsert eder. Şu an sohbet agent'ına bağlanmamıştır.
+// kayıtları buraya upsert eder. RetrievalService.searchSourcePassages
+// üzerinden hem AiChatService'in 'bilgi' modu hem de AI Rehber'in RAG
+// bağlamı (RecommendationAgentService) tarafından paylaşılır.
 @Schema({ collection: 'source_passages', timestamps: true, versionKey: false })
 export class SourcePassage {
   // Seed'deki stabil tanımlayıcı (sourceId:chunkIndex hash'i). Upsert bu

@@ -7,10 +7,13 @@ import {
   Patch,
   Post,
   Query,
+  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUserId } from '../../common/auth/current-user-id.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { AiCreditsService } from './ai-credits.service';
+import { AiPipelineExceptionFilter } from './ai-pipeline.filter';
 import { AiService } from './ai.service';
 import { CreateAiRecommendationDto } from './dto/create-ai-recommendation.dto';
 import { QueryAiRecommendationsDto } from './dto/query-ai-recommendations.dto';
@@ -19,8 +22,12 @@ import { resolveAiRecommendationLocale } from './utils/locale';
 
 @Controller('v1/ai')
 @UseGuards(JwtAuthGuard)
+@UseFilters(AiPipelineExceptionFilter)
 export class AiController {
-  constructor(private readonly aiService: AiService) {}
+  constructor(
+    private readonly aiService: AiService,
+    private readonly aiCreditsService: AiCreditsService,
+  ) {}
 
   @Post('recommendations')
   createRecommendation(
@@ -35,12 +42,12 @@ export class AiController {
 
   @Get('quota')
   getDailyQuota(@CurrentUserId() userId: string) {
-    return this.aiService.getDailyQuota(userId);
+    return this.aiCreditsService.getDailyQuota(userId);
   }
 
   @Get('credits')
   getCredits(@CurrentUserId() userId: string) {
-    return this.aiService.getCredits(userId);
+    return this.aiCreditsService.getCredits(userId);
   }
 
   @Get('recommendations')

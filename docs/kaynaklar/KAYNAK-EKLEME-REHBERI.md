@@ -25,6 +25,8 @@ docs/kaynaklar/<kitap>.pdf
         ↓
 docs/kaynaklar/<source_id>.passages.jsonl      ← ÜRETİLEN dosya, elle düzenlenmez
         ↓
+review-passages.mjs   (--report → gözden geçir → --approve/--reject)
+        ↓
 prune-stale-source-passages.mjs   (bayat kayıtları temizle)
         ↓
 seed-source-passages.mjs --seed   (embed + upsert)
@@ -78,10 +80,88 @@ node scripts/seed-source-passages.mjs --extract --source ornek-kaynak
 
 Bu komut PDF'ten sayfa sayfa metni çeker, chunk'lar ve
 `docs/kaynaklar/ornek-kaynak.passages.jsonl` dosyasını yazar. Ardından
-**5. bölüme** geç.
+pasajları gözden geçir (aşağıdaki bölüm), sonra **5. bölüme** geç.
 
 > Üretilen jsonl'de `review` alanı vardır; yalnızca `approved` olan pasajlar
 > seed edilir. Gözden geçirme yapıp onaylamak gerekir.
+
+### `--strip-arabic` — garbled Arapça glyph temizliği
+
+Bazı kaynaklarda (örn. Hısnu'l-Muslim) `pdftotext` Arapça metni ters/bozuk
+glif dizileri hâlinde, Türkçe metnin arasına karışmış biçimde döker (bidi
+sıralama sorunu). Türkçe meal kendi başına temizdir; sorun yalnızca aradaki
+Arapça karakter döküntüsüdür. Bu durumda `--extract` çağrısına
+`--strip-arabic` ekle:
+
+```bash
+node scripts/seed-source-passages.mjs --extract --source hisnul-muslim --strip-arabic
+```
+
+- Sayfa metni, chunk'lamadan **önce** temizlenir — yani `--strip-arabic` ile
+  ve onsuz üretilen jsonl'lerin chunk sınırları/`chunkIndex`'leri **farklı
+  olur**. Bu yüzden bir kaynak için bu bayrak seçildiyse, o kaynağın her yeniden
+  `--extract` çalıştırılışında **tutarlı biçimde aynı bayrakla** kullanılmalı
+  (bir seferinde açık, bir seferinde kapalı kullanmak aynı `chunkIndex`'in
+  farklı sınırlara denk gelmesine, dolayısıyla review durumunun anlamını
+  yitirmesine yol açar).
+- Varsayılan **kapalı**'dır; Arapça glif sızıntısı olmayan kaynaklarda
+  (el-ezkar, muhtasar-ilmihal gibi) kullanılmamalı — çıktıyı değiştirmez ama
+  gereksizdir.
+- `[özet]` çıktısında `arapça temizleme: açık/kapalı` satırı ve (açıksa)
+  temizlenen toplam Arapça karakter sayısı basılır.
+- Temizleme mantığı `apps/api/scripts/lib/chunking.mjs` içindeki
+  `stripArabicScript(text)` fonksiyonundadır: Arapça script Unicode
+  aralıklarını (U+0600–06FF, U+0750–077F, U+08A0–08FF, U+FB50–FDFF,
+  U+FE70–FEFF) ve bidi/format kontrol karakterlerini satır satır siler; bir
+  satır bu işlemden sonra tamamen boşalırsa ya da geriye yalnızca
+  noktalama/rakam kalırsa (ör. yalancı bir dipnot numarası) o satır tamamen
+  atılır. Zaten boş olan paragraf ayırıcı satırlara dokunmaz.
+
+### `--heading-colon` — sonu ":" ile biten başlıkları tanı
+
+Bazı kaynaklarda (örn. Hısnu'l-Muslim) bölüm başlıkları BÜYÜK HARF/Title Case
+olmakla birlikte sonunda ":" ile biter (ör. `EVDEN ÇIKARKEN YAPILAN DUÂ:`).
+Varsayılan başlık sezgisi `. , ; :` ile biten satırları başlık saymadığı için
+bu satırlar `sectionHeading` olarak yakalanmaz. Bu durumda `--extract`
+çağrısına `--heading-colon` ekle:
+
+```bash
+node scripts/seed-source-passages.mjs --extract --source hisnul-muslim --strip-arabic --heading-colon
+```
+
+- Sonunda **tek** ":" olan (": :" gibi çiftler hariç) kısa, BÜYÜK HARF/Title
+  Case bir satır artık başlık kabul edilir; kaydedilen `sectionHeading`'de
+  ":" kaldırılır ve metin baştan/sondan trim edilir.
+- Tıpkı `--strip-arabic` gibi chunk sınırlarını etkiler: bir kaynak için bu
+  bayrak seçildiyse, o kaynağın her yeniden `--extract` çalıştırılışında
+  **tutarlı biçimde aynı bayrakla** kullanılmalı — bir seferinde açık, bir
+  seferinde kapalı kullanmak aynı `chunkIndex`'in farklı sınırlara denk
+  gelmesine, dolayısıyla review durumunun anlamını yitirmesine yol açar.
+- Varsayılan **kapalı**'dır; mevcut kaynakların çıktısı bu bayrak olmadan
+  bayt bazında aynı kalır.
+- `[özet]` çıktısında `heading-colon: açık/kapalı` satırı basılır.
+- Mantık `apps/api/scripts/lib/chunking.mjs` içinde `classifyHeading` /
+  `stripSingleTrailingColon` fonksiyonlarındadır; varsayılan (bayrak kapalı)
+  yol hâlâ doğrudan `isHeadingCandidate`'i kullanır ve değişmedi.
+- Aynı bayrak, blank satırla ayrılmadan bir paragrafın ortasına gömülmüş
+  başlık satırlarını da (örn. bir cümlenin hemen ardından gelen
+  `EVDEN ÇIKARKEN YAPILAN DUÂ:` satırı) yakalar ve paragrafı o satırdan böler;
+  içindekiler (TOC) sayfalarındaki noktalı/sayfa numaralı satırlar bu taramada
+  başlık sayılmaz.
+- `--heading-colon` altında ayet/hadis kaynak satırları (`"X Sûresi"`,
+  `"X Sûresi: 255"`, `Bkz./Buhâri/Müslim/Tirmizi/Ebu Dâvud/Nesâi/İbn-i/Ahmed/
+  Hâkim/Elbâni` ile başlayan veya `(4/103)` gibi bir cilt/sayfa referansı
+  taşıyan satırlar) ve rivâyet giriş ifadeleri (sonu "ki"/"dedi"/"der"/
+  "buyurdu" ile biten, ör. `Buyurdu ki:`) hiçbir zaman başlık sayılmaz; ayrıca
+  bu bayrakta Title Case artık yeterli değildir — satırın harflerinin en az
+  %80'i (Türkçe'ye duyarlı `toLocaleUpperCase('tr')` karşılaştırmasıyla, sabit
+  "-sallallahu aleyhi ve sellem-" gibi hitap araları hariç) BÜYÜK HARF olmalı.
+- PDF sayfa düzeninin iki veya üç fiziksel satıra böldüğü başlıklar (ör.
+  `KÂFİR, AKSIRDIRDIĞI ZAMAN ALLAH'A HAMD EDERSE,` + `ONUN İÇİN YAPILAN DUÂ:`)
+  tek başlığa birleştirilir: BÜYÜK HARF, sonu `:`/`?` ile bitmeyen bir ilk
+  satırı — aralarında en fazla 2 boş/harfsiz satır ve en fazla 1 ek ara satır
+  atlanarak — sonu `:`/`?` ile biten tam bir başlık satırı takip ediyorsa
+  ikisi birleştirilir (`:` kaldırılır, `?` korunur).
 
 ---
 
@@ -134,6 +214,47 @@ içeriği boşaltılır (`''` yazılır).
 Sebep: "eksik sayfa yok" kontrolü dosyanın varlığına bakar. Dosyayı silmek
 üretimi durdurur; boşaltmak hem numara sürekliliğini korur hem içeriği
 korpustan çıkarır.
+
+---
+
+## Pasajları gözden geçir — `review-passages.mjs`
+
+jsonl üretildikten sonra (Yol A'da `--extract`, Yol B'de
+`build-passages-from-verified.mjs`), **seed edilmeden önce** bu adımda
+pasajlar gözden geçirilir. Betik MongoDB'ye bağlanmaz, hiçbir embedding/seed
+işlemi yapmaz; yalnızca jsonl'i okur/yazar.
+
+```bash
+# 1) rapor üret — hiçbir şeyi değiştirmez
+node scripts/review-passages.mjs --source ornek-kaynak --report
+```
+
+Bu komut `docs/kaynaklar/ornek-kaynak.review-subset.md` dosyasını yazar:
+toplam chunk/sayfa özeti, `pending`/`approved`/`rejected` sayıları ve
+"Otomatik bayraklar" bölümü (kapak/içindekiler olabilecek sayfa ≤ 12
+chunk'lar, <200 karakter kısa chunk'lar, Arapça harf oranı >%10 olan
+chunk'lar, birebir mükerrer metinler). Bayraklar yalnızca öneridir; kararı
+rapor okunarak insan verir.
+
+Rapor incelendikten sonra `review` alanı şu komutlarla güncellenir:
+
+```bash
+# çoğunu onayla, birkaçını dışarıda bırak (pending kalır)
+node scripts/review-passages.mjs --source ornek-kaynak --approve-all --except 3,7,9
+
+# tek tek onayla / reddet
+node scripts/review-passages.mjs --source ornek-kaynak --approve 1,2
+node scripts/review-passages.mjs --source ornek-kaynak --reject 5,9
+```
+
+Bu komutlar yalnızca `review` alanını değiştirir; `passageId`, key sırası ve
+metin aynen korunur. jsonl dosyası yoksa betik hata verip durur.
+
+> `--help` ile tüm seçenekler listelenir. `--file <path>` ile jsonl'in
+> varsayılan konumu (`docs/kaynaklar/<id>.passages.jsonl`) geçici olarak
+> geçersiz kılınabilir — örneğin bir kopya üzerinde deneme yapmak için.
+
+Onaylama bittiğinde **5. bölüme** geç.
 
 ---
 
@@ -199,6 +320,8 @@ ve `bayat kayıt: 0` olmalı.
   çıkarır ve elle yapılmış bütün düzeltmeleri siler.
 - ⛔ **`.passages.jsonl` elle düzenlenmez.** Üretilen dosyadır; bir sonraki
   build'de üzerine yazılır. Düzeltme her zaman `pNNN.txt` üzerinde yapılır.
+  (İstisna: `review-passages.mjs`, metne dokunmadan yalnızca `review`
+  alanını chunkIndex bazlı günceller — bu "elle düzenleme" sayılmaz.)
 - ⛔ **`verified/` dizini silinmez.** PDF'ler gitignore'da (`docs/**/*.pdf`),
   yani `verified/` bu kaynakların tek geri döndürülemez kopyasıdır.
 - ⛔ **Sayfa dosyası silinmez, boşaltılır.**
@@ -216,5 +339,14 @@ ve `bayat kayıt: 0` olmalı.
 | `docs/kaynaklar/<id>.passages.jsonl` | üretilen pasajlar |
 | `apps/api/scripts/build-passages-from-verified.mjs` | sayfa → jsonl |
 | `apps/api/scripts/seed-source-passages.mjs` | `--extract` / `--seed` |
+| `apps/api/scripts/review-passages.mjs` | rapor üretimi + `review` alanı güncelleme |
 | `apps/api/scripts/prune-stale-source-passages.mjs` | bayat kayıt temizliği |
-| `apps/api/scripts/lib/chunking.mjs` | chunk kuralları (800–1000 karakter, 150 örtüşme) |
+| `docs/kaynaklar/<id>.review-subset.md` | `--report` çıktısı, gözden geçirme raporu |
+| `apps/api/scripts/lib/chunking.mjs` | chunk kuralları (800–1000 karakter, 150 örtüşme) + `stripArabicScript` (`--strip-arabic`) + `classifyHeading`/`stripSingleTrailingColon` (`--heading-colon`) |
+| `docs/ai-mimari.md` | `source_passages` korpusunun AI Rehber ve AI Sohbet tarafından nasıl tüketildiği (retrieval, skor eşiği, mimari) |
+
+> **Not (hibrit arama):** `source_passages_text_index` full-text index'i
+> `dynamic: false` sabit alan listesiyle tanımlıdır (`text`,
+> `sectionHeading`, `sourceTitle`, `sourceId`) — yeni bir kaynak eklemek
+> bu index'i etkilemez, ekstra bir adım GEREKMEZ (bkz.
+> `docs/ai-mimari.md` §6).

@@ -34,7 +34,11 @@
     "sendFailed": "Mesaj gönderilemedi. Lütfen tekrar deneyin.",
     "historyFailed": "Sohbet geçmişi yüklenemedi.",
     "serviceUnavailable": "Asistan servisi şu anda yanıt veremiyor.",
-    "serviceUnreachable": "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin."
+    "serviceUnreachable": "Asistan servisine ulaşılamadı. Lütfen tekrar deneyin.",
+    "aiUnavailable": "Asistan şu anda yanıt veremiyor. Kredin düşülmedi, tekrar deneyebilirsin."
+  },
+  "actions": {
+    "retry": "Tekrar dene"
   },
   "citation": {
     "singlePage": "{{title}}, s. {{page}}",

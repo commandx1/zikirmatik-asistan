@@ -17,13 +17,19 @@
     "dhikrSaveFailed": "Couldn't save the dhikr.",
     "recommendationFailed": "Couldn't get a recommendation. Please try again.",
     "serviceUnavailable": "The guide service isn't responding right now.",
-    "serviceUnreachable": "Couldn't reach the guide service. Please try again."
+    "serviceUnreachable": "Couldn't reach the guide service. Please try again.",
+    "aiUnavailableTitle": "The guide is busy right now",
+    "aiUnavailable": "The guide can't respond right now. Your credit wasn't charged, you can try again."
+  },
+  "actions": {
+    "retry": "Try again"
   },
   "offTopic": {
     "title": "Off topic"
   },
   "clarify": {
-    "title": "Let's clarify a bit more"
+    "title": "Let's clarify a bit more",
+    "hint": "You can edit your text above and send it again."
   },
   "noTimeInfo": "No time info",
   "genericPrompt": "General recommendation",
@@ -36,11 +42,10 @@
     "defaultStep": "Preparing...",
     "steps": {
       "analyzing": "Analyzing your intention...",
-      "thinking": "Preparing the dhikr database...",
       "expanding": "Deepening your intention...",
       "searching": "Searching dhikrs...",
+      "researching": "Searching for other dhikrs...",
       "selecting": "Selecting the best dhikrs for you...",
-      "fallback": "Preparing general recommendations...",
       "finalizing": "Preparing recommendations..."
     }
   },

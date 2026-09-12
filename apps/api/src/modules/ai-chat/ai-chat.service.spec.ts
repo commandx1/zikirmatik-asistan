@@ -1,24 +1,46 @@
+import { EventEmitter } from 'node:events';
 import { NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { generateObject, generateText } from 'ai';
+import { generateObject, generateText, streamText } from 'ai';
+import type { Request, Response } from 'express';
+import { AiPipelineError, classifyAiError } from '../ai/ai-errors';
 import { AiChatService } from './ai-chat.service';
 
 // Vercel AI SDK'sı ağ çağrısı yaptığı için mock'lanır: böylece
 // classifyIntent → retrieval → prompt seçimi zinciri gerçek kodla,
-// LLM cevabı ise deterministik olarak test edilebilir.
-jest.mock('ai', () => ({
-  generateObject: jest.fn(),
-  generateText: jest.fn(),
-  streamText: jest.fn(),
-  stepCountIs: jest.fn(() => 'stop-condition'),
-}));
+// LLM cevabı ise deterministik olarak test edilebilir. ai-errors.ts da bu
+// modülden sınıf isimleri import ettiği için (APICallError, RetryError vb.)
+// classifyAiError'ın çökmemesi için sahte (her zaman false dönen) isInstance
+// implementasyonları sağlanır.
+jest.mock('ai', () => {
+  class FakeAiError extends Error {
+    static isInstance(): boolean {
+      return false;
+    }
+  }
 
-jest.mock('@ai-sdk/openai', () => ({
-  createOpenAI: jest.fn(() => (modelId: string) => ({ modelId })),
-}));
+  return {
+    generateObject: jest.fn(),
+    generateText: jest.fn(),
+    streamText: jest.fn(),
+    stepCountIs: jest.fn(() => 'stop-condition'),
+    Output: {
+      object: (spec: unknown) => spec,
+      text: () => ({}),
+    },
+    APICallError: FakeAiError,
+    RetryError: FakeAiError,
+    NoObjectGeneratedError: FakeAiError,
+    NoOutputGeneratedError: FakeAiError,
+    InvalidToolInputError: FakeAiError,
+    JSONParseError: FakeAiError,
+    TypeValidationError: FakeAiError,
+  };
+});
 
 const generateObjectMock = generateObject as unknown as jest.Mock;
 const generateTextMock = generateText as unknown as jest.Mock;
+const streamTextMock = streamText as unknown as jest.Mock;
 
 type ConversationDoc = {
   _id: Types.ObjectId;
@@ -36,6 +58,8 @@ type MessageDoc = {
   role: 'user' | 'assistant';
   content: string;
   usedModel?: string;
+  mode?: string;
+  coverage?: string;
   sourceCitations?: Array<{
     sourceId: string;
     sourceTitle: string;
@@ -57,7 +81,7 @@ function chain<T>(resolve: () => T) {
   return api;
 }
 
-function createHarness(options: { withApiKey?: boolean } = {}) {
+function createHarness() {
   const conversations: ConversationDoc[] = [];
   const messages: MessageDoc[] = [];
 
@@ -118,6 +142,8 @@ function createHarness(options: { withApiKey?: boolean } = {}) {
         role: payload.role!,
         content: payload.content!,
         usedModel: payload.usedModel,
+        mode: payload.mode,
+        coverage: payload.coverage,
         sourceCitations: payload.sourceCitations,
         createdAt: new Date(),
       };
@@ -147,27 +173,54 @@ function createHarness(options: { withApiKey?: boolean } = {}) {
     })),
   };
 
-  const aiService = {
+  const retrievalService = {
+    searchSourcePassages: jest.fn(() => Promise.resolve([])),
+  };
+
+  const aiCreditsService = {
     ensureCreditAccessForFlow: jest.fn(() => Promise.resolve()),
     debitCreditForFlow: jest.fn(() => Promise.resolve({ balance: 4 })),
-    searchSourcePassagesForAgent: jest.fn(() => Promise.resolve([])),
   };
 
   const progressGateway = { emitChatStep: jest.fn() };
-  // withApiKey=false → OPENAI_API_KEY yok, agent fallback metnine düşer ve
-  // LLM/retrieval hiç çalışmaz (kredi/sahiplik testleri bu yolu kullanır).
-  const configService = {
-    get: jest.fn((key: string) =>
-      key === 'OPENAI_API_KEY' && options.withApiKey ? 'test-key' : undefined,
-    ),
-  };
+
+  // AI_CHAT_PASSAGE_LIMIT gibi ortam değişkenleri okunmadığında varsayılana
+  // (CHAT_PASSAGE_LIMIT_DEFAULT=6) düşülür.
+  const configService = { get: jest.fn(() => undefined) };
+
   const usageService = { record: jest.fn(() => Promise.resolve()) };
+
+  // withAiRetry'nin gerçek davranışını (tek deneme + hatayı her zaman
+  // AiPipelineError olarak fırlatma) taklit eder — retry sayısı testler için
+  // önemli değil, önemli olan hatanın her zaman sınıflandırılmış dönmesi.
+  const aiRuntimeService = {
+    model: jest.fn(() => 'model'),
+    modelName: jest.fn(() => 'model-name'),
+    settings: jest.fn(() => ({})),
+    withAiRetry: jest.fn(
+      async (_label: string, fn: (attempt: number) => Promise<unknown>) => {
+        try {
+          return await fn(1);
+        } catch (rawError) {
+          throw classifyAiError(rawError);
+        }
+      },
+    ),
+    flowLog: jest.fn(() => ({
+      log: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      debug: jest.fn(),
+    })),
+  };
 
   const service = new AiChatService(
     progressGateway as never,
     configService as never,
-    aiService as never,
+    aiRuntimeService as never,
+    aiCreditsService as never,
     usageService as never,
+    retrievalService as never,
     conversationModel as never,
     messageModel as never,
     userModel as never,
@@ -178,38 +231,154 @@ function createHarness(options: { withApiKey?: boolean } = {}) {
     user,
     conversations,
     messages,
-    aiService,
+    retrievalService,
+    aiCreditsService,
     conversationModel,
     progressGateway,
+    aiRuntimeService,
   };
 }
 
-/** classifyIntent'in döneceği modu ve LLM cevabını sabitler. */
-function stubAgent(intent: { mode: 'chat' | 'bilgi'; searchQuery: string }) {
+/** classifyIntent'in döneceği modu/sorguyu sabitler. */
+function stubClassify(intent: { mode: 'chat' | 'bilgi'; searchQuery: string }) {
   generateObjectMock.mockResolvedValue({ object: intent, usage: {} });
+}
+
+/** mode='chat' için deterministik generateText cevabı. */
+function stubChatAnswer(text = 'Deterministik test cevabı.') {
+  generateTextMock.mockResolvedValue({ text, totalUsage: {}, steps: [] });
+}
+
+/** mode='bilgi' için deterministik generateText yapılandırılmış çıktısı. */
+function stubBilgiAnswer(output: {
+  coverage: 'full' | 'partial' | 'none';
+  usedPassages: string[];
+  answer: string;
+}) {
   generateTextMock.mockResolvedValue({
-    text: 'Deterministik test cevabı.',
+    output,
+    text: '',
     totalUsage: {},
     steps: [],
   });
+}
+
+function samplePassage(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    sourceId: 'muhtasar-ilmihal',
+    sourceTitle: 'Muhtasar İlmihal',
+    sectionHeading: 'Abdest',
+    text: 'BENZERSIZ_PASAJ_METNI',
+    pageStart: 40,
+    pageEnd: 41,
+    type: 'ilmihal',
+    ...overrides,
+  };
+}
+
+function createFakeRes() {
+  const res: {
+    headersSent: boolean;
+    writableEnded: boolean;
+    statusCode?: number;
+    setHeader: jest.Mock;
+    flushHeaders: jest.Mock;
+    write: jest.Mock;
+    end: jest.Mock;
+    status: jest.Mock;
+    json: jest.Mock;
+  } = {
+    headersSent: false,
+    writableEnded: false,
+    setHeader: jest.fn(),
+    flushHeaders: jest.fn(),
+    write: jest.fn(() => true),
+    end: jest.fn(),
+    status: jest.fn(),
+    json: jest.fn(),
+  };
+  res.status.mockImplementation(() => res);
+  res.json.mockImplementation(() => res);
+  res.end.mockImplementation(() => {
+    res.writableEnded = true;
+  });
+  return res as unknown as Response & typeof res;
+}
+
+function createFakeReq() {
+  return new EventEmitter() as unknown as Request;
+}
+
+/** writeSse'nin ürettiği event/data çiftlerini res.write çağrılarından ayrıştırır. */
+function collectSseEvents(res: {
+  write: jest.Mock;
+}): Array<{ event: string; data: unknown }> {
+  const calls = res.write.mock.calls.map((c: unknown[]) => c[0] as string);
+  const events: Array<{ event: string; data: unknown }> = [];
+  for (let i = 0; i < calls.length; i += 2) {
+    const eventLine = calls[i] ?? '';
+    const dataLine = calls[i + 1] ?? '';
+    const event = eventLine.replace(/^event: /, '').trim();
+    const jsonText = dataLine.replace(/^data: /, '').trim();
+    events.push({ event, data: jsonText ? JSON.parse(jsonText) : undefined });
+  }
+  return events;
+}
+
+/**
+ * `partialOutputStream` hata fırlattığı testlerde `result.output` hiç
+ * `await` edilmez — ama Promise.reject(...) hemen oluşturulduğu için Node
+ * bunu "unhandled rejection" sayıp süreci çökertir. Burada baştan bir
+ * no-op `.catch` ekleyerek bunu bastırıyoruz; kod gerçekten `await` ederse
+ * reddedilme aynen yayılır.
+ */
+function neverResolves(error: Error): Promise<never> {
+  const promise = Promise.reject<never>(error);
+  promise.catch(() => {});
+  return promise;
+}
+
+function asyncIterableFrom<T>(items: T[], errorAfter?: Error) {
+  return {
+    [Symbol.asyncIterator]() {
+      let i = 0;
+      return {
+        next(): Promise<IteratorResult<T>> {
+          if (i < items.length) {
+            const value = items[i++];
+            return Promise.resolve({ value, done: false });
+          }
+          if (errorAfter) {
+            return Promise.reject<IteratorResult<T>>(errorAfter);
+          }
+          return Promise.resolve({ value: undefined as never, done: true });
+        },
+      };
+    },
+  };
 }
 
 describe('AiChatService', () => {
   beforeEach(() => {
     generateObjectMock.mockReset();
     generateTextMock.mockReset();
+    streamTextMock.mockReset();
+    // Varsayılan: sınıflandırma 'chat' döner, arama/pasaj akışı hiç
+    // tetiklenmez — kredi/sahiplik/başlık testleri bu yolu kullanır.
+    stubClassify({ mode: 'chat', searchQuery: '' });
+    stubChatAnswer();
   });
 
   it('debits exactly one credit per createConversation call', async () => {
-    const { service, user, aiService } = createHarness();
+    const { service, user, aiCreditsService } = createHarness();
 
     await service.createConversation(user._id.toString(), {
       firstMessage: 'Bugün çok üzgünüm, ne okuyayım?',
     });
 
-    expect(aiService.ensureCreditAccessForFlow).toHaveBeenCalledTimes(1);
-    expect(aiService.debitCreditForFlow).toHaveBeenCalledTimes(1);
-    expect(aiService.debitCreditForFlow).toHaveBeenCalledWith(
+    expect(aiCreditsService.ensureCreditAccessForFlow).toHaveBeenCalledTimes(1);
+    expect(aiCreditsService.debitCreditForFlow).toHaveBeenCalledTimes(1);
+    expect(aiCreditsService.debitCreditForFlow).toHaveBeenCalledWith(
       user._id,
       expect.any(String),
       false,
@@ -219,15 +388,15 @@ describe('AiChatService', () => {
   });
 
   it('debits exactly one credit per sendMessage call', async () => {
-    const { service, user, aiService } = createHarness();
+    const { service, user, aiCreditsService } = createHarness();
 
     const { conversation } = await service.createConversation(
       user._id.toString(),
       { firstMessage: 'Selam' },
     );
 
-    aiService.debitCreditForFlow.mockClear();
-    aiService.ensureCreditAccessForFlow.mockClear();
+    aiCreditsService.debitCreditForFlow.mockClear();
+    aiCreditsService.ensureCreditAccessForFlow.mockClear();
 
     await service.sendMessage(
       user._id.toString(),
@@ -237,8 +406,8 @@ describe('AiChatService', () => {
       },
     );
 
-    expect(aiService.ensureCreditAccessForFlow).toHaveBeenCalledTimes(1);
-    expect(aiService.debitCreditForFlow).toHaveBeenCalledTimes(1);
+    expect(aiCreditsService.ensureCreditAccessForFlow).toHaveBeenCalledTimes(1);
+    expect(aiCreditsService.debitCreditForFlow).toHaveBeenCalledTimes(1);
   });
 
   it('throws 404 when sending a message to a conversation owned by another user', async () => {
@@ -300,68 +469,69 @@ describe('AiChatService', () => {
 
   describe('retrieval routing', () => {
     it("searches source passages in 'bilgi' mode using the classifier's rewritten query", async () => {
-      const { service, user, aiService } = createHarness({ withApiKey: true });
-      stubAgent({
+      const { service, user, retrievalService } = createHarness();
+      stubClassify({
         mode: 'bilgi',
         searchQuery: 'oruçluyken sakız çiğnemek orucu bozar mı',
+      });
+      stubBilgiAnswer({
+        coverage: 'none',
+        usedPassages: [],
+        answer: 'Bu konuda elimde kaynak yok, bir alime danışmanı öneririm.',
       });
 
       await service.createConversation(user._id.toString(), {
         firstMessage: 'sakız orucu bozar mı',
       });
 
-      expect(aiService.searchSourcePassagesForAgent).toHaveBeenCalledTimes(1);
+      expect(retrievalService.searchSourcePassages).toHaveBeenCalledTimes(1);
       // Ham kullanıcı mesajı değil, bağlamdan arındırılmış sorgu kullanılmalı.
-      expect(aiService.searchSourcePassagesForAgent).toHaveBeenCalledWith(
+      expect(retrievalService.searchSourcePassages).toHaveBeenCalledWith(
         'oruçluyken sakız çiğnemek orucu bozar mı',
         6,
+        { flowId: expect.any(String) as string, userId: user._id.toString() },
       );
     });
 
     it("does not search source passages in 'chat' mode", async () => {
-      const { service, user, aiService } = createHarness({ withApiKey: true });
-      stubAgent({ mode: 'chat', searchQuery: '' });
+      const { service, user, retrievalService } = createHarness();
+      stubClassify({ mode: 'chat', searchQuery: '' });
+      stubChatAnswer();
 
       await service.createConversation(user._id.toString(), {
         firstMessage: 'selam, bugün çok yorgunum',
       });
 
-      expect(aiService.searchSourcePassagesForAgent).not.toHaveBeenCalled();
+      expect(retrievalService.searchSourcePassages).not.toHaveBeenCalled();
     });
 
-    it("falls back to 'bilgi' with the raw message when classification fails", async () => {
-      const { service, user, aiService } = createHarness({ withApiKey: true });
+    it('throws AiPipelineError and persists nothing when classification fails', async () => {
+      const { service, user, conversations, messages, aiCreditsService } =
+        createHarness();
       generateObjectMock.mockRejectedValue(new Error('timeout'));
-      generateTextMock.mockResolvedValue({
-        text: 'Deterministik test cevabı.',
-        totalUsage: {},
-        steps: [],
-      });
 
-      await service.createConversation(user._id.toString(), {
-        firstMessage: 'abdest nasıl alınır',
-      });
+      await expect(
+        service.createConversation(user._id.toString(), {
+          firstMessage: 'abdest nasıl alınır',
+        }),
+      ).rejects.toBeInstanceOf(AiPipelineError);
 
-      expect(aiService.searchSourcePassagesForAgent).toHaveBeenCalledWith(
-        'abdest nasıl alınır',
-        6,
-      );
+      expect(conversations).toHaveLength(0);
+      expect(messages).toHaveLength(0);
+      expect(aiCreditsService.debitCreditForFlow).not.toHaveBeenCalled();
     });
 
     it("attaches source citations in 'bilgi' mode and never returns dhikr recommendations", async () => {
-      const { service, user, aiService } = createHarness({ withApiKey: true });
-      stubAgent({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
-      aiService.searchSourcePassagesForAgent.mockResolvedValue([
-        {
-          sourceId: 'muhtasar-ilmihal',
-          sourceTitle: 'Muhtasar İlmihal',
-          sectionHeading: 'Abdest',
-          text: 'Abdestin farzları...',
-          pageStart: 40,
-          pageEnd: 41,
-          type: 'ilmihal',
-        },
+      const { service, user, retrievalService } = createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
+      retrievalService.searchSourcePassages.mockResolvedValue([
+        samplePassage(),
       ] as never);
+      stubBilgiAnswer({
+        coverage: 'full',
+        usedPassages: ['P1'],
+        answer: 'Abdestin farzları şunlardır...',
+      });
 
       const result = await service.createConversation(user._id.toString(), {
         firstMessage: 'abdestin farzları nelerdir',
@@ -380,19 +550,16 @@ describe('AiChatService', () => {
     });
 
     it('grounds the system prompt on the retrieved passages', async () => {
-      const { service, user, aiService } = createHarness({ withApiKey: true });
-      stubAgent({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
-      aiService.searchSourcePassagesForAgent.mockResolvedValue([
-        {
-          sourceId: 'muhtasar-ilmihal',
-          sourceTitle: 'Muhtasar İlmihal',
-          sectionHeading: 'Abdest',
-          text: 'BENZERSIZ_PASAJ_METNI',
-          pageStart: 40,
-          pageEnd: 41,
-          type: 'ilmihal',
-        },
+      const { service, user, retrievalService } = createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
+      retrievalService.searchSourcePassages.mockResolvedValue([
+        samplePassage(),
       ] as never);
+      stubBilgiAnswer({
+        coverage: 'full',
+        usedPassages: ['P1'],
+        answer: 'Abdestin farzları şunlardır...',
+      });
 
       await service.createConversation(user._id.toString(), {
         firstMessage: 'abdestin farzları nelerdir',
@@ -404,9 +571,233 @@ describe('AiChatService', () => {
       const systemPrompt = firstCallArgs[0].system;
       expect(systemPrompt).toContain('BENZERSIZ_PASAJ_METNI');
       expect(systemPrompt).toContain('Muhtasar İlmihal — Abdest, s. 40-41');
+      expect(systemPrompt).toContain('#P1 [');
       // Öneri talimatları prompt'tan tamamen çıkmış olmalı.
       expect(systemPrompt).not.toContain('ADAYLAR');
       expect(systemPrompt).not.toContain('attachRecommendations');
+    });
+
+    it('orders KAYNAK PASAJLARI < SON HATIRLATMA < ÇIKTI ALANLARI in the bilgi system prompt', async () => {
+      const { service, user, retrievalService } = createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
+      retrievalService.searchSourcePassages.mockResolvedValue([
+        samplePassage(),
+      ] as never);
+      stubBilgiAnswer({
+        coverage: 'full',
+        usedPassages: ['P1'],
+        answer: 'Abdestin farzları şunlardır...',
+      });
+
+      await service.createConversation(user._id.toString(), {
+        firstMessage: 'abdestin farzları nelerdir',
+      });
+
+      const [firstCallArgs] = generateTextMock.mock.calls as Array<
+        [{ system: string }]
+      >;
+      const systemPrompt = firstCallArgs[0].system;
+
+      const kaynakIdx = systemPrompt.indexOf('KAYNAK PASAJLARI');
+      const sonIdx = systemPrompt.indexOf('SON HATIRLATMA');
+      const ciktiIdx = systemPrompt.indexOf('ÇIKTI ALANLARI');
+
+      expect(kaynakIdx).toBeGreaterThan(-1);
+      expect(sonIdx).toBeGreaterThan(kaynakIdx);
+      expect(ciktiIdx).toBeGreaterThan(sonIdx);
+    });
+  });
+
+  describe('coverage/citation consistency (bilgi mode)', () => {
+    it("returns empty citations when coverage is 'none'", async () => {
+      const { service, user, retrievalService } = createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'kripto para caiz mi' });
+      retrievalService.searchSourcePassages.mockResolvedValue([
+        samplePassage(),
+      ] as never);
+      stubBilgiAnswer({
+        coverage: 'none',
+        usedPassages: [],
+        answer: 'Bu konuda elimde kaynak yok, bir alime danışmalısın.',
+      });
+
+      const result = await service.createConversation(user._id.toString(), {
+        firstMessage: 'kripto para caiz mi',
+      });
+
+      const reply = result.messages[1];
+      expect(reply.coverage).toBe('none');
+      expect(reply.sourceCitations).toEqual([]);
+    });
+
+    it("downgrades coverage to 'none' when usedPassages references an unknown passage", async () => {
+      const { service, user, retrievalService } = createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
+      retrievalService.searchSourcePassages.mockResolvedValue([
+        samplePassage(),
+      ] as never);
+      stubBilgiAnswer({
+        coverage: 'full',
+        usedPassages: ['P9'],
+        answer: 'Abdestin farzları şunlardır...',
+      });
+
+      const result = await service.createConversation(user._id.toString(), {
+        firstMessage: 'abdestin farzları nelerdir',
+      });
+
+      const reply = result.messages[1];
+      expect(reply.sourceCitations).toEqual([]);
+      expect(reply.coverage).toBe('none');
+    });
+
+    it('sanitizes stray passage refs out of the answer text', async () => {
+      const { service, user, retrievalService } = createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'sakız orucu bozar mı' });
+      retrievalService.searchSourcePassages.mockResolvedValue([
+        samplePassage(),
+      ] as never);
+      stubBilgiAnswer({
+        coverage: 'none',
+        usedPassages: [],
+        answer: 'Bozmaz (P2).',
+      });
+
+      const result = await service.createConversation(user._id.toString(), {
+        firstMessage: 'sakız orucu bozar mı',
+      });
+
+      const reply = result.messages[1];
+      expect(reply.content).toBe('Bozmaz.');
+    });
+  });
+
+  describe('streamCreateConversation (SSE)', () => {
+    it('writes an AI_UNAVAILABLE error event and persists nothing when the stream fails before any token', async () => {
+      const { service, user, conversations, messages, aiCreditsService } =
+        createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
+
+      streamTextMock.mockReturnValue({
+        partialOutputStream: asyncIterableFrom([], new Error('provider down')),
+        output: neverResolves(new Error('never reached')),
+      });
+
+      const res = createFakeRes();
+      const req = createFakeReq();
+
+      await service.streamCreateConversation(
+        user._id.toString(),
+        { firstMessage: 'abdestin farzları nelerdir' },
+        req,
+        res,
+      );
+
+      const events = collectSseEvents(res);
+      const errorEvent = events.find((e) => e.event === 'error');
+      expect(errorEvent).toBeDefined();
+      expect((errorEvent!.data as { code: string }).code).toBe(
+        'AI_UNAVAILABLE',
+      );
+
+      expect(conversations).toHaveLength(0);
+      expect(messages).toHaveLength(0);
+      expect(aiCreditsService.debitCreditForFlow).not.toHaveBeenCalled();
+    });
+
+    it('writes tokens then an error when the stream fails mid-way, without persisting or debiting', async () => {
+      const { service, user, conversations, messages, aiCreditsService } =
+        createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'abdestin farzları' });
+
+      streamTextMock.mockReturnValue({
+        partialOutputStream: asyncIterableFrom(
+          [{ coverage: 'full', usedPassages: ['P1'], answer: 'Sakız ' }],
+          new Error('connection reset'),
+        ),
+        output: neverResolves(new Error('never reached')),
+      });
+
+      const res = createFakeRes();
+      const req = createFakeReq();
+
+      await service.streamCreateConversation(
+        user._id.toString(),
+        { firstMessage: 'abdestin farzları nelerdir' },
+        req,
+        res,
+      );
+
+      const events = collectSseEvents(res);
+      expect(events.some((e) => e.event === 'token')).toBe(true);
+      const errorEvent = events.find((e) => e.event === 'error');
+      expect(errorEvent).toBeDefined();
+      expect((errorEvent!.data as { code: string }).code).toBe(
+        'AI_UNAVAILABLE',
+      );
+
+      expect(conversations).toHaveLength(0);
+      expect(messages).toHaveLength(0);
+      expect(aiCreditsService.debitCreditForFlow).not.toHaveBeenCalled();
+    });
+
+    it('streams partial answer deltas and finishes with a done event carrying content/coverage/mode/citations', async () => {
+      const { service, user, retrievalService, aiCreditsService } =
+        createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'sakız orucu bozar mı' });
+      retrievalService.searchSourcePassages.mockResolvedValue([
+        samplePassage(),
+      ] as never);
+
+      streamTextMock.mockReturnValue({
+        partialOutputStream: asyncIterableFrom([
+          { coverage: 'full' },
+          { coverage: 'full', usedPassages: ['P1'], answer: 'Sak' },
+          { coverage: 'full', usedPassages: ['P1'], answer: 'Sakız bozmaz' },
+        ]),
+        output: Promise.resolve({
+          coverage: 'full',
+          usedPassages: ['P1'],
+          answer: 'Sakız bozmaz',
+        }),
+      });
+
+      const res = createFakeRes();
+      const req = createFakeReq();
+
+      await service.streamCreateConversation(
+        user._id.toString(),
+        { firstMessage: 'sakız orucu bozar mı' },
+        req,
+        res,
+      );
+
+      const events = collectSseEvents(res);
+      const tokens = events
+        .filter((e) => e.event === 'token')
+        .map((e) => (e.data as { delta: string }).delta);
+      expect(tokens).toEqual(['Sak', 'ız bozmaz']);
+
+      const doneEvent = events.find((e) => e.event === 'done');
+      expect(doneEvent).toBeDefined();
+      const done = doneEvent!.data as {
+        content: string;
+        coverage: string;
+        mode: string;
+        sourceCitations: unknown[];
+      };
+      expect(done.content).toBe('Sakız bozmaz');
+      expect(done.coverage).toBe('full');
+      expect(done.mode).toBe('bilgi');
+      expect(done.sourceCitations).toEqual([
+        {
+          sourceId: 'muhtasar-ilmihal',
+          sourceTitle: 'Muhtasar İlmihal',
+          pageStart: 40,
+          pageEnd: 41,
+        },
+      ]);
+      expect(aiCreditsService.debitCreditForFlow).toHaveBeenCalledTimes(1);
     });
   });
 });

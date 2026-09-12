@@ -11,6 +11,9 @@
  *
  * Kullanım:
  *   node prune-stale-source-passages.mjs [--source <source_id>] [--apply]
+ *
+ * "Bayat" = DB'de olup jsonl'de APPROVED olmayan chunkIndex (jsonl'den düşmüş
+ * ya da sonradan rejected/pending'e çekilmiş).
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -49,7 +52,11 @@ function loadChunkIndexes(sourceId) {
   const indexes = new Set();
   for (const line of readFileSync(jsonlPath, 'utf8').split(/\r?\n/)) {
     if (!line.trim()) continue;
-    indexes.add(JSON.parse(line).chunkIndex);
+    const record = JSON.parse(line);
+    // Yalnızca approved kayıtlar seed edilir; rejected/pending olanlar DB'de
+    // kalmışsa (sonradan reddedildiyse) bayat sayılıp silinmelidir.
+    if (record.review !== 'approved') continue;
+    indexes.add(record.chunkIndex);
   }
   return indexes;
 }

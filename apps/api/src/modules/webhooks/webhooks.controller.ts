@@ -9,7 +9,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AiService } from '../ai/ai.service';
+import { AiCreditsService } from '../ai/ai-credits.service';
 import { CreateSubscriptionDto } from '../subscriptions/dto/create-subscription.dto';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import type {
@@ -31,7 +31,7 @@ export class WebhooksController {
 
   constructor(
     private readonly subscriptionsService: SubscriptionsService,
-    private readonly aiService: AiService,
+    private readonly aiCreditsService: AiCreditsService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -146,7 +146,7 @@ export class WebhooksController {
         String(event.purchased_at_ms ?? ''),
       ].join(':');
 
-    const result = await this.aiService.applyTopupPurchase({
+    const result = await this.aiCreditsService.applyTopupPurchase({
       userId,
       productId: event.product_id,
       providerEventId,

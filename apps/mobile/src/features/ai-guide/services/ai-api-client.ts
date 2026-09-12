@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
 import type { LocalizedText } from "@zikirmatik/shared";
+import { AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
 
 export type CreateAiRecommendationPayload = {
   userId: string;
@@ -14,15 +15,29 @@ export type CreateAiRecommendationPayload = {
   };
   maxRecommendations?: number;
   socketId?: string;
-  /**
-   * needsClarification yanıtından sonra kullanıcının seçtiği kategoriyi
-   * geri göndermek için. 'genel' değeri zaman tabanlı genel öneriyi tetikler.
-   */
-  selectedCategory?: string;
 };
 
+export type CreateAiRecommendationItem = {
+  id: string;
+  name: LocalizedText;
+  nameArabic: string;
+  transliteration: LocalizedText;
+  meaning: LocalizedText;
+  virtue?: LocalizedText;
+  source?: LocalizedText;
+  recommendedCount?: number;
+};
+
+/**
+ * Yeni sözleşme `kind` alanıyla ayrımlanır (recommendations/offTopic/
+ * clarification). `offTopic`/`needsClarification` bayrakları geriye
+ * dönük uyumluluk için hâlâ okunabilir durumda — API `kind`'ı henüz
+ * göndermiyorsa bu bayraklara göre karar verilir (bkz.
+ * isAiOffTopicResponse / isAiClarificationResponse).
+ */
 export type CreateAiRecommendationResponse =
   | {
+      kind?: "offTopic";
       offTopic: true;
       needsClarification?: false;
       message: string;
@@ -31,36 +46,70 @@ export type CreateAiRecommendationResponse =
       usedModel: "openai";
     }
   | {
+      kind?: "clarification";
       offTopic?: false;
       needsClarification: true;
+      /** AI tarafından üretilen tek cümlelik netleştirme sorusu. */
       message: string;
-      suggestedCategories: string[];
+      // Not: sunucu geriye dönük uyumluluk için hâlâ legacy bir kategori
+      // dizisi alanı gönderiyor (her zaman boş, kaldırılacak) — istemci
+      // artık kategori seçim akışı kullanmadığından bilerek tipe eklenmedi.
       recommendedIds: [];
       items: [];
-      usedModel: "fallback";
+      usedModel: "openai";
     }
   | {
+      kind?: "recommendations";
       offTopic?: false;
       needsClarification?: false;
       recommendationId: string;
       recommendedIds: string[];
       reasoning: string;
-      items: Array<{
-        id: string;
-        name: LocalizedText;
-        nameArabic: string;
-        transliteration: LocalizedText;
-        meaning: LocalizedText;
-        virtue?: LocalizedText;
-        source?: LocalizedText;
-        recommendedCount?: number;
-      }>;
+      items: CreateAiRecommendationItem[];
       usedModel: "openai" | "fallback" | "retrieval" | "cache";
+      locale?: string;
       remainingCredits?: number;
     };
 
+export type AiOffTopicRecommendationResponse = Extract<
+  CreateAiRecommendationResponse,
+  { offTopic: true }
+>;
+export type AiClarificationRecommendationResponse = Extract<
+  CreateAiRecommendationResponse,
+  { needsClarification: true }
+>;
+
+/**
+ * `response.kind` sunucudan geliyorsa onu kullanır; henüz gelmiyorsa eski
+ * `offTopic` bayrağına düşer. Rollout sırası garanti edilmediği için her
+ * iki şekil de desteklenir (bkz. görev tanımı).
+ */
+export function isAiOffTopicResponse(
+  response: CreateAiRecommendationResponse
+): response is AiOffTopicRecommendationResponse {
+  return response.kind ? response.kind === "offTopic" : Boolean(response.offTopic);
+}
+
+/**
+ * `response.kind` sunucudan geliyorsa onu kullanır; henüz gelmiyorsa eski
+ * `needsClarification` bayrağına düşer.
+ */
+export function isAiClarificationResponse(
+  response: CreateAiRecommendationResponse
+): response is AiClarificationRecommendationResponse {
+  return response.kind ? response.kind === "clarification" : Boolean(response.needsClarification);
+}
+
 export const DAILY_LIMIT_REACHED_CODE = "DAILY_LIMIT_REACHED";
 export const AI_CREDIT_INSUFFICIENT_CODE = "AI_CREDIT_INSUFFICIENT";
+/**
+ * Sunucu tarafında geçici bir kesinti/hata durumunda (503) dönen kod.
+ * Bu hata alındığında kredi düşülmemiştir — istemci aynı flowId ile
+ * "Tekrar dene" seçeneği sunmalı (bkz. use-ai-guide.ts retryLastRequest).
+ * Ortak tanım: ../../ai-shared/ai-error-codes (ai-chat ile paylaşılır).
+ */
+export { AI_UNAVAILABLE_CODE };
 
 export type BackendAiRecommendation = {
   _id: string;

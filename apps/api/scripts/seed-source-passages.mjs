@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chunkPages } from './lib/chunking.mjs';
+import { chunkPages, countArabicScriptChars, stripArabicScript } from './lib/chunking.mjs';
 import { embed, embeddingModel, sourceHash } from './lib/embedding.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -49,11 +49,15 @@ async function main() {
   const args = process.argv.slice(2);
   const extract = args.includes('--extract');
   const seed = args.includes('--seed');
+  const stripArabic = args.includes('--strip-arabic');
+  const headingColon = args.includes('--heading-colon');
   const sourceArgIndex = args.indexOf('--source');
   const sourceId = sourceArgIndex !== -1 ? args[sourceArgIndex + 1] : undefined;
 
   if (!sourceId) {
-    throw new Error('Kullanım: node seed-source-passages.mjs --extract --source <source_id>');
+    throw new Error(
+      'Kullanım: node seed-source-passages.mjs --extract --source <source_id> [--strip-arabic] [--heading-colon] | --seed --source <source_id>',
+    );
   }
 
   if (!extract && !seed) {
@@ -71,7 +75,7 @@ async function main() {
   }
 
   if (extract) {
-    await runExtractPhase(source);
+    await runExtractPhase(source, { stripArabic, headingColon });
   }
 
   if (seed) {
@@ -124,7 +128,7 @@ function passageId(sourceId, chunkIndex) {
   return createHash('sha1').update(`${sourceId}:${chunkIndex}`).digest('hex');
 }
 
-async function runExtractPhase(source) {
+async function runExtractPhase(source, { stripArabic = false, headingColon = false } = {}) {
   assertPdfToolsAvailable();
 
   const pdfPath = resolve(KAYNAKLAR_DIR, source.file);
@@ -133,20 +137,33 @@ async function runExtractPhase(source) {
   }
 
   console.log(`[extract] ${source.source_id}: ${pdfPath}`);
+  if (stripArabic) {
+    console.log('[extract] --strip-arabic aktif: sayfa metni chunk\'lamadan önce temizlenecek.');
+  }
+  if (headingColon) {
+    console.log(
+      '[extract] --heading-colon aktif: sonunda tek ":" olan BÜYÜK HARF/Title Case satırlar da başlık (sectionHeading) sayılacak, ":" kaldırılacak.',
+    );
+  }
 
   const pageCount = getPageCount(pdfPath);
   console.log(`[extract] toplam sayfa: ${pageCount}`);
 
   const pages = [];
+  let arabicCharsRemoved = 0;
   for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
-    const text = extractPageText(pdfPath, pageNumber);
+    let text = extractPageText(pdfPath, pageNumber);
+    if (stripArabic) {
+      arabicCharsRemoved += countArabicScriptChars(text);
+      text = stripArabicScript(text);
+    }
     pages.push({ page: pageNumber, text });
     if (pageNumber % 25 === 0 || pageNumber === pageCount) {
       console.log(`  ... ${pageNumber}/${pageCount} sayfa çıkarıldı`);
     }
   }
 
-  const chunks = chunkPages(pages);
+  const chunks = chunkPages(pages, { headingColon });
 
   const outputPath = resolve(KAYNAKLAR_DIR, `${source.source_id}.passages.jsonl`);
   const lines = chunks.map((chunk) => {
@@ -165,10 +182,16 @@ async function runExtractPhase(source) {
   });
   writeFileSync(outputPath, lines.join('\n') + (lines.length > 0 ? '\n' : ''), 'utf8');
 
-  printSummary(source, pageCount, chunks, outputPath);
+  printSummary(source, pageCount, chunks, outputPath, { stripArabic, arabicCharsRemoved, headingColon });
 }
 
-function printSummary(source, pageCount, chunks, outputPath) {
+function printSummary(
+  source,
+  pageCount,
+  chunks,
+  outputPath,
+  { stripArabic = false, arabicCharsRemoved = 0, headingColon = false } = {},
+) {
   const lengths = chunks.map((c) => c.text.length);
   const total = lengths.reduce((a, b) => a + b, 0);
   const avg = lengths.length > 0 ? Math.round(total / lengths.length) : 0;
@@ -177,6 +200,10 @@ function printSummary(source, pageCount, chunks, outputPath) {
 
   console.log('');
   console.log(`[özet] kaynak: ${source.source_id}`);
+  console.log(
+    `[özet] arapça temizleme: ${stripArabic ? `açık (temizlenen arapça karakter: ${arabicCharsRemoved})` : 'kapalı'}`,
+  );
+  console.log(`[özet] heading-colon: ${headingColon ? 'açık' : 'kapalı'}`);
   console.log(`[özet] toplam sayfa: ${pageCount}`);
   console.log(`[özet] toplam chunk: ${chunks.length}`);
   console.log(`[özet] ortalama chunk uzunluğu: ${avg} karakter`);

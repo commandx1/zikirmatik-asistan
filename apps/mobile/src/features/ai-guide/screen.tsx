@@ -274,20 +274,34 @@ export function AiGuideScreen() {
                   {t("ai-guide:clarify.title")}
                 </Text>
               </View>
-              <Text className="mb-3 text-sm leading-5 text-amber-100/80">
+              <Text className="mb-2 text-sm leading-5 text-amber-100/80">
                 {guide.clarification.message}
               </Text>
-              <View className="flex-row flex-wrap gap-2">
-                {guide.clarification.suggestedCategories.map((category) => (
-                  <View
-                    key={category}
-                    onTouchEnd={() => void guide.submitClarificationCategory(category)}
-                    className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1.5"
-                  >
-                    <Text className="text-xs font-medium text-amber-200">{category}</Text>
-                  </View>
-                ))}
+              <Text className="text-xs leading-4 text-amber-200/70">
+                {t("ai-guide:clarify.hint")}
+              </Text>
+            </View>
+          ) : guide.aiUnavailable ? (
+            <View className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-4">
+              <View className="mb-2 flex-row items-center gap-2">
+                <FontAwesome6 name="triangle-exclamation" size={14} color="#fbbf24" />
+                <Text className="text-sm font-semibold text-amber-400">
+                  {t("ai-guide:errors.aiUnavailableTitle")}
+                </Text>
               </View>
+              <Text className="mb-3 text-sm leading-5 text-amber-100/80">
+                {guide.aiUnavailable.message || t("ai-guide:errors.aiUnavailable")}
+              </Text>
+              <Pressable
+                onPress={() => void guide.retryLastRequest()}
+                className="self-start rounded-full bg-amber-500/15 px-4 py-2"
+                accessibilityRole="button"
+                accessibilityLabel={t("ai-guide:actions.retry")}
+              >
+                <Text className="text-xs font-semibold text-amber-200">
+                  {t("ai-guide:actions.retry")}
+                </Text>
+              </Pressable>
             </View>
           ) : (
             <RecommendationsSection
