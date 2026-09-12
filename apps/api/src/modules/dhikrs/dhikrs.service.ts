@@ -1,16 +1,22 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Binary } from 'mongodb';
 import { Types, type Model } from 'mongoose';
-import { EmbeddingService } from '../embedding/embedding.service';
+import {
+  EMBEDDING_TEXT_VERSION,
+  EmbeddingService,
+} from '../embedding/embedding.service';
 import { CreateDhikrDto } from './dto/create-dhikr.dto';
 import { QueryDhikrsDto } from './dto/query-dhikrs.dto';
 import { UpdateDhikrDto } from './dto/update-dhikr.dto';
 import { Dhikr, type DhikrDocument } from './schemas/dhikr.schema';
+import { canonicalKeyFromArabic } from './utils/canonical-key';
 
 type EmbeddingFields = {
-  embedding: number[];
+  embedding: Binary;
   embeddingSourceHash: string;
   embeddingModel: string;
+  embeddingTextVersion: string;
   embeddingUpdatedAt: Date;
 };
 
@@ -27,6 +33,7 @@ export class DhikrsService {
     const embeddingFields = await this.buildEmbeddingFields(payload);
     const created = await this.dhikrModel.create({
       ...payload,
+      canonicalKey: canonicalKeyFromArabic(payload.nameArabic),
       ...(embeddingFields ?? {}),
     });
     return created.toObject();
@@ -72,10 +79,17 @@ export class DhikrsService {
 
   async update(id: string, payload: UpdateDhikrDto) {
     const objectId = this.asObjectId(id);
+    const updatePayload =
+      payload.nameArabic !== undefined
+        ? {
+            ...payload,
+            canonicalKey: canonicalKeyFromArabic(payload.nameArabic),
+          }
+        : payload;
     const dhikr = await this.dhikrModel
       .findByIdAndUpdate(
         objectId,
-        { $set: payload },
+        { $set: updatePayload },
         { returnDocument: 'after' },
       )
       .lean()
@@ -85,8 +99,10 @@ export class DhikrsService {
       throw new NotFoundException('Güncellenecek zikir bulunamadı.');
     }
 
-    // Embedding kaynağı (name.tr/suitableFor/tags/categories/virtue.tr)
-    // değiştiyse vektörü yenile. Hash aynıysa gereksiz embedding maliyeti yok.
+    // Embedding kaynağı (name.tr/suitableFor/tags/categories/meaning.tr/
+    // virtue.tr — bkz. EmbeddingService.buildSourceText şablon v3;
+    // transliteration.tr ARTIK dahil değil) değiştiyse vektörü yenile. Hash
+    // aynıysa gereksiz embedding maliyeti yok.
     const sourceText = this.embeddingService.buildSourceText(dhikr);
     const hash = this.embeddingService.sourceHash(sourceText);
     if (hash !== dhikr.embeddingSourceHash) {
@@ -120,9 +136,10 @@ export class DhikrsService {
     }
 
     return {
-      embedding,
+      embedding: this.embeddingService.toVectorBinary(embedding),
       embeddingSourceHash: this.embeddingService.sourceHash(sourceText),
       embeddingModel: this.embeddingService.model,
+      embeddingTextVersion: EMBEDDING_TEXT_VERSION,
       embeddingUpdatedAt: new Date(),
     };
   }

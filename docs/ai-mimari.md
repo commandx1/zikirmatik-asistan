@@ -68,10 +68,17 @@ listesi, model geçersiz çıktı vb.) akış `AiPipelineExceptionFilter`'a dü�
 
 ### 2.2 Aday zikir + kaynak pasajı çekme (deterministik, LLM'siz)
 
-- `freeText` varsa: `RetrievalService.searchSourcePassages` (RAG bağlamı,
-  `AI_RAG_PASSAGE_LIMIT`) ve `searchDhikrsByText` (`$vectorSearch`
-  `dhikr_vector_index`, `AI_CANDIDATE_LIMIT`, son 7 günde gösterilen
-  zikirler `getRecentDhikrIds` ile dışlanır).
+- `freeText` varsa: sorgu metni `RetrievalService.embedQuery` ile **bir kez**
+  embed edilir; dönen `queryVector` hem `searchSourcePassages` (RAG bağlamı,
+  `AI_RAG_PASSAGE_LIMIT`) hem `searchDhikrsByText` (`$vectorSearch`
+  `dhikr_vector_index`, `AI_CANDIDATE_LIMIT`) çağrısına geçirilir — eskiden
+  aynı metin iki kez embed ediliyordu. Kullanıcının son 7 günde zaten
+  çektiği zikirler (`getRecentDhikrIds`) artık aday havuzundan
+  **dışlanmıyor**; bunun yerine her aday üzerinde `recentlyPracticed:true`
+  ile işaretlenir ve prompt'a `[son 7 günde çekildi]` etiketiyle geçilir —
+  model eşit derecede uygun işaretsiz bir alternatifi tercih eder, ama niyete
+  en uygun aday işaretliyse yine onu önerir (isabet çeşitlilikten önce
+  gelir, bkz. §6 ve `prompts.ts`).
 - `freeText` yoksa (zaman tabanlı genel öneri): `searchDhikrsByTimeOfDay`
   (`$sample` ile rastgele örnekleme — **artık `recommendedCount`'a göre
   sıralanmıyor**, bkz. §6).
@@ -274,7 +281,43 @@ birlikte gönderilmez.
 - **Zikir kataloğu:** 541 doğrulanmış zikir/dua (`isVerified && isActive`
   filtresiyle sorgulanır). Anlamsal arama `dhikr_vector_index` Atlas
   $vectorSearch index'i üzerinden yapılır — **index tanımı kodda değil,
-  yalnızca Atlas'ta** (manuel oluşturulur/güncellenir).
+  yalnızca Atlas'ta** (manuel oluşturulur/güncellenir). Zikir bacağı
+  `exact: true` (ENN — Exact Nearest Neighbor) ile sorgulanır, `numCandidates`
+  **verilmez**; koleksiyon boyutu (~541 kayıt) yaklaşık aramayı (ANN)
+  gereksiz kılıyor. Kaynak pasajı bacağı ise `numCandidates: 200` ile
+  yaklaşık aramaya devam eder (bkz. `PASSAGE_VECTOR_NUM_CANDIDATES`,
+  `retrieval.service.ts`).
+- **Embedding kaynak metni (şablon v3, `EMBEDDING_TEXT_VERSION`):** hem
+  `EmbeddingService.buildSourceText` (API) hem `scripts/lib/embedding.mjs#
+  buildSourceText` (script) aynı byte-byte metni üretir — etiketli, salt
+  Türkçe satırlar (`Zikir` / `Ne zaman / kim için` / `Konular` / `Anlam` /
+  `Fazilet`), boş alan satırı tamamen düşer. **v3'te `Okunuş`
+  (transliterasyon) satırı YOK** — v2'de vardı, eval kanıtı aşağıdaki
+  "Hibrit arama" notunda. Kaynak pasajları için
+  embedding girdisi salt `text` değil, `"{sourceTitle} — {sectionHeading}\n
+  {text}"` (`buildPassageEmbeddingText`) — hangi kaynağın/bölümün parçası
+  olduğunu gömerek bağlamsal benzerliği iyileştirir; depolanan `text` alanı
+  bundan etkilenmez, yalnız embedding girdisi değişir. Şablon değiştiğinde
+  iki dosya birlikte artırılmalı, aksi halde script/API embedding'leri
+  karşılaştırılamaz hale gelir.
+- **Vektör depolama biçimi:** embedding vektörleri düz `number[]` **değil**,
+  BSON float32 (subtype 9, `Binary.fromFloat32Array`) olarak saklanır — hem
+  `dhikr.embedding` hem `source_passages.embedding` şema alanı
+  `Schema.Types.Mixed` (Mongoose'un Buffer temsili subtype bilgisini
+  kaybedip Atlas `$vectorSearch`'ün vektörü tanımasını engellediği için).
+  Bu temsil boyut başına ~5 kat daha az yer kaplar (float64 + JSON/BSON
+  array overhead yerine 4 byte/boyut) — M0 (512 MB) küme kotası için önemli.
+  Sorgu vektörü (`queryVector`) hâlâ düz `number[]`dir; yalnızca depolanan
+  alan Binary'dir.
+- **`canonicalKey` dedupe:** her zikrin `nameArabic`'i harekesiz/
+  noktalamasız normalize edilip sha1'in ilk 12 karakteri alınır
+  (`canonicalKeyFromArabic`, seed sırasında hesaplanır ve `dhikr.canonicalKey`
+  alanına yazılır). Aynı duanın harekeli/harekesiz birden fazla kopyası
+  arama sonuçlarında aday listesine tek seferden fazla girmesin diye
+  `RetrievalService.dedupeByCanonicalKey`, tüm arama yollarında (vektör-only,
+  hibrit, zaman-tabanlı `$sample`) sıralamadaki İLK kaydı tutup sonrakileri
+  eler. `canonicalKey` alanı yoksa (eski kayıt) `nameArabic`'ten aynı
+  algoritmayla türetilir; ikisi de yoksa aday dedupe'a dahil edilmez.
 - **Kaynak pasajları (`source_passages`):** kitap/siyer/ilmihal RAG
   korpusu. Arama `source_passages_vector_index` ile yapılır, index
   `apps/api/scripts/create-source-passage-index.mjs` ile oluşturulur.
@@ -282,14 +325,29 @@ birlikte gönderilmez.
   `bilgi` modu hem de AI Rehber'in RAG bağlamı tarafından paylaşılır.
   Yeni kaynak ekleme akışı için bkz.
   [`docs/kaynaklar/KAYNAK-EKLEME-REHBERI.md`](kaynaklar/KAYNAK-EKLEME-REHBERI.md).
-- **Hibrit arama (`AI_HYBRID_SEARCH`, varsayılan `'1'`):** Faz 4'ten
-  itibaren `RetrievalService.searchSourcePassages` ve
-  `searchDhikrsByText`, `$vectorSearch`'e paralel olarak Atlas Search
-  (full-text, `lucene.turkish` analyzer) sorgusu da çalıştırır ve iki
-  listeyi **Reciprocal Rank Fusion** (RRF, `k=60`,
+- **Hibrit arama (`AI_HYBRID_SEARCH` pasaj bacağı varsayılan `'1'`,
+  `AI_DHIKR_HYBRID_SEARCH` zikir bacağı VARSAYILAN `'0'` — eval-driven,
+  bkz. aşağıdaki not):** Faz 4'ten itibaren `RetrievalService.
+  searchSourcePassages` ve `searchDhikrsByText`, `$vectorSearch`'e paralel
+  olarak Atlas Search (full-text, `lucene.turkish` analyzer) sorgusu da
+  çalıştırır ve iki listeyi **Reciprocal Rank Fusion** (RRF, `k=60`,
   `apps/api/src/modules/ai/retrieval-fusion.ts`) ile birleştirir. RRF her
   listedeki 1-indeksli sıraya göre `1/(k+rank)` katkısı verir; bir öğe
   her iki listede de geçiyorsa katkılar toplanır (doğal "both" boost'u).
+  - **2026-09-12 eval notu (zikir bacağı neden varsayılan kapalı):** 33
+    altın etiketli intent üzerinde pure-vector ablation, "Okunuş"
+    (transliterasyon) satırlı şablonla recall@15 0.732 / MRR 0.614,
+    satırsız 0.763 / 0.635, etiketsiz sorguda 0.722 / 0.648 verdi. Aynı
+    setle zikir `$text` hibrit bacağı (RRF k=60) genişletilmiş sorguda
+    0.677 / 0.562'ye, ham freeText'te 0.672 / 0.517'ye düştü — isim-gated
+    varyantlar bile ≤0.717 / 0.605 ile hepsi vektör-only'nin (0.763 /
+    0.650) altında kaldı. Sentetik isim/transliterasyon sorguları
+    (Seyyidü'l-İstiğfar, "Allahümme ente rabbi…", Hasbünallah, Âyetel
+    Kürsî) vektör-only'de zaten 1-2. sırada çıkıyor çünkü `expandIntent`
+    dua adını ve Türkçe anlamını genişletilmiş sorguya yazıyor — `$text`
+    bacağı ek değer katmıyor, gürültü ekliyor. Kaynak pasajı hibrit bacağı
+    (AI Sohbet) bu eval'de YENİDEN DEĞERLENDİRİLMEDİ ve `AI_HYBRID_SEARCH`
+    ile açık kalmaya devam ediyor.
   - **İki farklı full-text mekanizması (kasıtlı asimetri):**
     - **Kaynak pasajı bacağı** Atlas Search kullanır:
       `source_passages_text_index` (`source_passages`, alanlar: `text`,
@@ -341,7 +399,8 @@ birlikte gönderilmez.
     kez `flowLog.warn` basar ve vektör-only sonuçla devam eder. Farklı bir
     hata (index eksikliğiyle ilgisiz) her zamanki gibi
     `AiRetrievalError('retrieval_failed')` olarak yükselir.
-  - `AI_HYBRID_SEARCH=0` davranışı, hibrit kod eklenmeden ÖNCEKİ
+  - `AI_HYBRID_SEARCH=0` (pasaj) ve `AI_DHIKR_HYBRID_SEARCH` kapalıyken
+    (zikir, varsayılan durum) davranış, hibrit kod eklenmeden ÖNCEKİ
     pipeline'larla bayt bazında birebir aynıdır (regresyon güvencesi).
 - **`recommendedCount`** (Dhikr şeması): mobilde "bu zikir kaç kez
   çekilecek" statik tekrar hedefi. **Artık bir sıralama/popülerlik sinyali
@@ -350,6 +409,39 @@ birlikte gönderilmez.
 - **`selectionCount`** (Dhikr şeması): `PATCH
   /v1/ai/recommendations/:id/select` ile artan gerçek kullanıcı seçim
   sayacı — `recommendedCount` ile karıştırılmamalı, salt telemetri amaçlı.
+- **`timeOfDay`** (Dhikr şeması): tek değer değil, **dizi**
+  (`'morning'|'afternoon'|'evening'|'night'|'any'`, bkz.
+  `TIME_OF_DAY_VALUES`). Seed, Türkçe kaynak verisindeki serbest metin
+  değerleri (`sabah`, `akşam` vb.) bu enum'a normalize eder
+  (`normalizeTimeOfDay`); saat → vakit eşlemesi `searchDhikrsByTimeOfDay`
+  çağıranında 05–12 sabah, 12–17 öğleden sonra, 17–21 akşam, geri kalanı
+  gece'dir.
+
+### Veri migrasyonu (2026-09-12)
+
+Embedding şablonu v3'e ve BinData vektör depolamaya geçişte izlenen sıra —
+şablon/depolama tekrar değiştiğinde aynı sıra tekrarlanır:
+
+```bash
+cd apps/api
+node scripts/seed-dhikrs.mjs                                    # 1) katalog upsert (canonicalKey + timeOfDay normalize dahil)
+node scripts/backfill-dhikr-embeddings.mjs --force               # 2) tüm zikirleri v3 şablonuyla yeniden embed et
+node scripts/seed-source-passages.mjs --seed --source <id>       # 3) her kaynak için ayrı ayrı (hash değişen chunk'lar yeniden embed edilir)
+pnpm eval:retrieval -- --baseline docs/eval/retrieval-baseline-2026-09-12.json  # 4) regresyon kontrolü
+```
+
+**Uygulandı (2026-09-12):** sıra üretim cluster'ında (M0) çalıştırıldı — seed 541
+(3 insert/538 update), zikir backfill v3 `--force` (541, 9 istek, ~$0.025, 20 s), 11 kaynak
+için pasaj seed (4.114 pasaj, ~$0.20, ~3 dk). Sonuç: tüm vektörler BinData float32 v3,
+`db.stats().dataSize` 202.9 MB → 65.4 MB; `eval:retrieval` baseline'a karşı recall@15
+0.712 → 0.763, hit@5 %79 → %82, MRR 0.542 → 0.650, tekrar 0.71 → 0
+(`docs/eval/retrieval-after-2026-09-12.*`).
+
+`--force` olmadan (2) yalnızca hash/versiyon uyuşmayan kayıtları yeniden
+embed eder — normal (rutin) senkronizasyon için `--force` GEREKMEZ, yalnızca
+şablon/model değişikliğinde kullanılır. (3) `--seed` her kaynak için ayrı
+çalıştırılır (`--source <id>` zorunlu); mevcut bir kaynağı yeniden seed etmek
+yalnızca metni (dolayısıyla hash'i) değişen chunk'ları yeniden embed eder.
 
 ---
 

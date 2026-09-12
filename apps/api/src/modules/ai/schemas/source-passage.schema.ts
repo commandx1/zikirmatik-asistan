@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 
 export type SourcePassageDocument = HydratedDocument<SourcePassage>;
 
@@ -43,10 +43,13 @@ export class SourcePassage {
   version!: number;
 
   // Anlamsal arama (source passage RAG) için önceden hesaplanmış embedding
-  // vektörü. select:false → normal sorgularda taşınmaz, yalnız AI servisi
-  // açıkça ister. Bkz. EmbeddingService / scripts/lib/embedding.mjs.
-  @Prop({ type: [Number], default: undefined, select: false })
-  embedding?: number[];
+  // vektörü. BSON float32 vektörü (mongodb Binary, subtype 9) olarak
+  // saklanır — Mixed kullanılır çünkü Mongoose'un tipik Buffer temsili
+  // subtype bilgisini kaybeder ve Atlas $vectorSearch vektörü tanıyamaz
+  // hale gelir. select:false → normal sorgularda taşınmaz, yalnız AI
+  // servisi açıkça ister. Bkz. EmbeddingService / scripts/lib/embedding.mjs.
+  @Prop({ type: MongooseSchema.Types.Mixed, select: false })
+  embedding?: unknown;
 
   // Embedding'in türetildiği kaynak metnin hash'i; metin değişmediyse
   // güncelleme sırasında yeniden embed etmemek için kullanılır.
@@ -55,6 +58,10 @@ export class SourcePassage {
 
   @Prop({ type: String })
   embeddingModel?: string;
+
+  // Embedding kaynak metni şablonunun sürümü (bkz. EMBEDDING_TEXT_VERSION).
+  @Prop({ type: String })
+  embeddingTextVersion?: string;
 
   @Prop({ type: Date })
   embeddingUpdatedAt?: Date;

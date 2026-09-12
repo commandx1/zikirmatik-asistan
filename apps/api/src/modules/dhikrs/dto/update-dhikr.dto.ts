@@ -1,8 +1,8 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
-  IsEnum,
+  IsIn,
   IsInt,
   IsOptional,
   IsString,
@@ -10,13 +10,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { LocalizedTextDto } from './create-dhikr.dto';
-
-const TIME_OF_DAY = {
-  morning: 'morning',
-  evening: 'evening',
-  night: 'night',
-  any: 'any',
-} as const;
+import { TIME_OF_DAY_VALUES, type TimeOfDay } from '../schemas/dhikr.schema';
+import { normalizeTimeOfDay } from '../utils/time-of-day';
 
 export class UpdateDhikrDto {
   @IsOptional()
@@ -59,8 +54,16 @@ export class UpdateDhikrDto {
   categories?: string[];
 
   @IsOptional()
-  @IsEnum(TIME_OF_DAY)
-  timeOfDay?: 'morning' | 'evening' | 'night' | 'any';
+  @Transform(({ value }: { value: unknown }): unknown => {
+    try {
+      return normalizeTimeOfDay(value);
+    } catch {
+      return value;
+    }
+  })
+  @IsArray()
+  @IsIn(TIME_OF_DAY_VALUES, { each: true })
+  timeOfDay?: TimeOfDay[];
 
   @IsOptional()
   @IsInt()

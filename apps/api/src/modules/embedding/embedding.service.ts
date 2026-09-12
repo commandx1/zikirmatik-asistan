@@ -1,9 +1,18 @@
 import { createHash } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Binary } from 'mongodb';
 import OpenAI from 'openai';
 
 export const DEFAULT_EMBEDDING_MODEL = 'text-embedding-3-large';
+
+// scripts/lib/embedding.mjs ile aynı sürüm — şablon (buildSourceText)
+// değiştiğinde ikisi birlikte artırılmalı.
+//
+// v3 (2026-09): retrieval eval'inde (33 altın etiketli intent, pure-vector
+// ablation) "Okunuş:" (transliterasyon) satırı recall@15/MRR'yi düşürdüğü
+// için şablondan çıkarıldı — bkz. docs/ai-mimari.md §6.
+export const EMBEDDING_TEXT_VERSION = 'v3';
 
 type EmbeddingSource = {
   name?: { tr?: string };
@@ -37,25 +46,45 @@ export class EmbeddingService {
   }
 
   /**
-   * Bir zikir kaydından embedding'in türetileceği kaynak metni kurar.
-   * Fazilet (virtue) ve amaç (suitableFor) anlamsal eşleşmenin çekirdeğidir.
+   * Bir zikir kaydından embedding'in türetileceği kaynak metni kurar
+   * (şablon v3). scripts/lib/embedding.mjs#buildSourceText ile byte-byte
+   * aynı tutulmalıdır — aksi halde script ile API'nin ürettiği embedding'ler
+   * karşılaştırılamaz hale gelir. Etiketli, sadece Türkçe satırlardan
+   * oluşur; boş alanlar tamamen düşer. v3'te "Okunuş" (transliterasyon)
+   * satırı YOK — bkz. EMBEDDING_TEXT_VERSION yorumu.
    */
   buildSourceText(source: EmbeddingSource): string {
-    return [
-      source.name?.tr,
-      (source.suitableFor ?? []).join(', '),
+    const topics = [
       (source.tags ?? []).join(', '),
       (source.categories ?? []).join(', '),
-      source.meaning?.tr,
-      source.virtue?.tr,
     ]
-      .map((part) => (part ?? '').trim())
+      .map((part) => part.trim())
       .filter((part) => part.length > 0)
-      .join('\n');
+      .join('; ');
+
+    const lines = [
+      labeledLine('Zikir', source.name?.tr),
+      labeledLine('Ne zaman / kim için', (source.suitableFor ?? []).join(', ')),
+      labeledLine('Konular', topics),
+      labeledLine('Anlam', source.meaning?.tr),
+      labeledLine('Fazilet', source.virtue?.tr),
+    ].filter((line): line is string => line !== null);
+
+    return lines.join('\n');
   }
 
   sourceHash(text: string): string {
     return createHash('sha256').update(text).digest('hex');
+  }
+
+  /**
+   * Sayısal embedding vektörünü BSON float32 vektörü (subtype 9) olarak
+   * kodlar. Mongoose Schema.Types.Mixed bu Binary'i olduğu gibi geçirir;
+   * düz Buffer/number[] kullanmak subtype bilgisini kaybeder ve Atlas
+   * $vectorSearch'ün vektörü tanımasını engeller.
+   */
+  toVectorBinary(vector: number[]): Binary {
+    return Binary.fromFloat32Array(Float32Array.from(vector));
   }
 
   async embed(text: string): Promise<number[] | null> {
@@ -137,6 +166,11 @@ export class EmbeddingService {
     this.client = new OpenAI({ apiKey, timeout, maxRetries });
     return this.client;
   }
+}
+
+function labeledLine(label: string, value: string | undefined): string | null {
+  const trimmed = (value ?? '').trim();
+  return trimmed.length > 0 ? `${label}: ${trimmed}` : null;
 }
 
 /** İki vektör arasındaki kosinüs benzerliği (-1..1). */

@@ -1,16 +1,10 @@
-import { IsBooleanString, IsEnum, IsOptional, IsString } from 'class-validator';
-
-const TIME_OF_DAY = {
-  morning: 'morning',
-  evening: 'evening',
-  night: 'night',
-  any: 'any',
-} as const;
+import { IsBooleanString, IsIn, IsOptional, IsString } from 'class-validator';
+import { TIME_OF_DAY_VALUES, type TimeOfDay } from '../schemas/dhikr.schema';
 
 export class QueryDhikrsDto {
   @IsOptional()
-  @IsEnum(TIME_OF_DAY)
-  timeOfDay?: 'morning' | 'evening' | 'night' | 'any';
+  @IsIn(TIME_OF_DAY_VALUES)
+  timeOfDay?: TimeOfDay;
 
   @IsOptional()
   @IsString()

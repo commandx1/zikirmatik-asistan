@@ -7,6 +7,7 @@ import {
   type DhikrLogDocument,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
+import { canonicalKeyFromArabic } from '../dhikrs/utils/canonical-key';
 import { EmbeddingService } from '../embedding/embedding.service';
 import { AiRuntimeService } from './ai-runtime.service';
 import { AiRetrievalError } from './ai-errors';
@@ -40,6 +41,11 @@ const DEFAULT_PASSAGE_MIN_SCORE = 0.68;
 // eşleşmeleri bastırır). Bkz. applyTextRelativeFloor.
 const DEFAULT_TEXT_MIN_REL_SCORE = 0.35;
 
+// Kaynak pasajı $vectorSearch numCandidates — bu bacak ENN'e (exact: true)
+// GEÇMEDİ (zikir bacağının aksine); yalnızca aday havuzu 100 → 200'e
+// büyütüldü (bkz. worker brief, madde 2).
+const PASSAGE_VECTOR_NUM_CANDIDATES = 200;
+
 export type MatchedBy = 'vector' | 'text' | 'both';
 
 // Ajanın LLM'e döndürdüğü zikir adayı — retrieval katmanı artık locale'e göre
@@ -53,13 +59,24 @@ export type DhikrCandidate = {
   tags: string[];
   categories: string[];
   suitableFor: string[];
-  timeOfDay: string;
+  timeOfDay: string[];
+  // Seed'deki stabil anahtar ve orijinal Arapça metin — LLM prompt'unda
+  // KULLANILMAZ, yalnızca eval harness'inin (scripts/eval/run-retrieval-eval.ts)
+  // altın veri (`expectedKeys`) eşleştirmesi ve near-duplicate tespiti için
+  // eklendi (bkz. docs/ai-mimari.md retrieval eval notu). Additive alanlar.
+  key?: string;
+  nameArabic?: string;
   score?: number;
   // Hibrit arama (AI_HYBRID_SEARCH=1) alanları — vektör-only modda hiç
   // dolmaz (bkz. searchDhikrsByText).
   textScore?: number;
   fusedScore?: number;
   matchedBy?: MatchedBy;
+  // Kullanıcının son 7 günde zaten çektiği bir zikirse true — sert bir
+  // excludeIds elemesi yerine bir işaret (bkz. RecommendationAgentService.run
+  // ve buildRecommendationSystemPrompt'taki seçim kuralı). Retrieval katmanı
+  // bu alanı KENDİSİ doldurmaz; ajan initialCandidates üzerinde işaretler.
+  recentlyPracticed?: boolean;
 };
 
 // Kaynak pasajı (kitap RAG) araması sonucu. AiChatService 'bilgi' modunda ve
@@ -107,6 +124,8 @@ function toDhikrCandidate(
     categories: item.categories,
     suitableFor: item.suitableFor,
     timeOfDay: item.timeOfDay,
+    ...(item.key ? { key: item.key } : {}),
+    ...(item.nameArabic ? { nameArabic: item.nameArabic } : {}),
     ...(typeof item._vectorScore === 'number'
       ? { score: item._vectorScore }
       : {}),
@@ -118,6 +137,48 @@ function toDhikrCandidate(
       : {}),
     ...(extra?.matchedBy ? { matchedBy: extra.matchedBy } : {}),
   };
+}
+
+// Adayın canonicalKey'i — seed'de zaten hesaplanmış alan varsa onu kullanır,
+// yoksa (reseed öncesi eski kayıtlar) Arapça metinden aynı algoritmayla
+// türetir (bkz. canonicalKeyFromArabic). Her iki alan da yoksa undefined
+// döner — böyle adaylar dedupe'a dahil edilmez (tekil kabul edilir).
+function resolveCanonicalKey(doc: {
+  canonicalKey?: string;
+  nameArabic?: string;
+}): string | undefined {
+  return doc.canonicalKey ?? canonicalKeyFromArabic(doc.nameArabic);
+}
+
+/**
+ * Aynı duanın (harekeli/harekesiz varyantlar dahil) birden fazla kayıt
+ * olarak adaylar arasında görünmesini engeller — sıralamadaki İLK (en
+ * yüksek rank'lı) kayıt tutulur, sonrakiler elenir. `keyOf` çağırana göre
+ * ham dhikr dokümanını ya da fused/candidate sarmalayıcısını okur.
+ */
+function dedupeByCanonicalKey<T>(
+  items: T[],
+  keyOf: (item: T) => string | undefined,
+  debug: (message: string) => void,
+  label: string,
+): T[] {
+  const seen = new Set<string>();
+  const kept: T[] = [];
+  for (const item of items) {
+    const key = keyOf(item);
+    if (key) {
+      if (seen.has(key)) continue;
+      seen.add(key);
+    }
+    kept.push(item);
+  }
+  const dropped = items.length - kept.length;
+  if (dropped > 0) {
+    debug(
+      `${label}: canonicalKey dedupe ${dropped}/${items.length} adayı eledi`,
+    );
+  }
+  return kept;
 }
 
 function toDateString(date: Date): string {
@@ -189,15 +250,16 @@ function isSearchIndexMissingError(error: unknown, indexName: string): boolean {
  * yeniden yazılabilmesi için buraya taşındı — davranış (bugfix'ler hariç)
  * korunur.
  *
- * Faz 4 (hibrit arama, `AI_HYBRID_SEARCH`): `searchDhikrsByText` ve
- * `searchSourcePassages`, Atlas $vectorSearch'e ek olarak bir full-text
- * sorgusu çalıştırıp iki listeyi Reciprocal Rank Fusion
+ * Faz 4 (hibrit arama): `searchSourcePassages` (bayrak: `AI_HYBRID_SEARCH`,
+ * varsayılan açık) ve `searchDhikrsByText` (bayrak: `AI_DHIKR_HYBRID_SEARCH`,
+ * varsayılan KAPALI — bkz. docs/ai-mimari.md §6), Atlas $vectorSearch'e ek
+ * olarak bir full-text sorgusu çalıştırıp iki listeyi Reciprocal Rank Fusion
  * (`retrieval-fusion.ts`) ile birleştirir. Kaynak pasajı bacağı Atlas
  * Search (`lucene.turkish`) kullanır; zikir bacağı ise standart Mongo
  * `$text` (`dhikr_text_idx`) kullanır — Atlas FTS index kotası dolu olduğu
- * için (bkz. metod yorumları ve `docs/ai-mimari.md` §6). Her iki bacakta da
- * zayıf metin eşleşmeleri `AI_TEXT_MIN_REL_SCORE` göreli eşiğiyle elenir
- * (bkz. `applyTextRelativeFloor`).
+ * için (bkz. metod yorumları). Her iki bacakta da zayıf metin eşleşmeleri
+ * `AI_TEXT_MIN_REL_SCORE` göreli eşiğiyle elenir (bkz.
+ * `applyTextRelativeFloor`).
  */
 @Injectable()
 export class RetrievalService {
@@ -226,12 +288,17 @@ export class RetrievalService {
    * bu parametreler zaten hiç dolmuyordu, yani etkisizdi (bkz. eski
    * buildIntersectionScoreFields çağrısı — hasAnySignal her zaman false'du).
    *
-   * `AI_HYBRID_SEARCH` (varsayılan '1') açıkken bu vektör aramaya paralel
-   * olarak standart Mongo `$text` (`dhikr_text_idx`) full-text araması da
-   * çalışır ve iki liste RRF ile birleştirilir (bkz. `retrieval-fusion.ts`).
-   * Atlas Search DEĞİL — bu bacak için Atlas FTS index kotası dolu olduğu
-   * için `$text`'e geçildi (bkz. docs/ai-mimari.md §6). `'0'` iken davranış
-   * eskisiyle bayt bazında aynıdır.
+   * `AI_DHIKR_HYBRID_SEARCH` ('1'/'true' iken açık; VARSAYILAN KAPALI) açıkken
+   * bu vektör aramaya paralel olarak standart Mongo `$text` (`dhikr_text_idx`)
+   * full-text araması da çalışır ve iki liste RRF ile birleştirilir (bkz.
+   * `retrieval-fusion.ts`). Atlas Search DEĞİL — bu bacak için Atlas FTS
+   * index kotası dolu olduğu için `$text`'e geçildi. Varsayılan kapatıldı:
+   * retrieval eval'inde (33 altın etiketli intent) bu bacak vektör-only'nin
+   * altında kaldı (0.677/0.562 ve altı vs. 0.763/0.650) — isim/transliterasyon
+   * sorguları zaten `expandIntent` sayesinde vektör-only ile üst sırada
+   * çıkıyor (bkz. docs/ai-mimari.md §6). Kapalıyken davranış eskisiyle bayt
+   * bazında aynıdır. Kaynak pasajı bacağı ayrı bayrakla (`AI_HYBRID_SEARCH`,
+   * varsayılan açık) yönetilir ve etkilenmez.
    */
   async searchDhikrsByText(params: {
     query: string;
@@ -240,11 +307,15 @@ export class RetrievalService {
     locale: SupportedAiLocale;
     flowId?: string;
     userId?: string;
+    // Önceden hesaplanmış sorgu vektörü — verilirse embedding atlanır (bkz.
+    // embedQuery). Ajan aynı sorgu metnini iki kez embed etmemek için ilk
+    // aramada bunu kullanır; searchDhikrs tool'u kendi yeni sorgusu için
+    // vermez (yeniden embed edilir).
+    queryVector?: number[];
   }): Promise<DhikrCandidate[]> {
     const { warn, debug } = this.aiRuntime.flowLog(params.flowId);
     const trimmedQuery = params.query?.trim();
-    // Tavan 20: $vectorSearch.limit = limit*3 = 60 olur ve numCandidates (100)
-    // altında kaldığı için Atlas index'inde değişiklik gerekmez.
+    // Tavan 20: $vectorSearch.limit = limit*3 = 60 olur.
     const limit = Math.min(params.limit ?? 10, 20);
 
     const excludeObjectIds = params.excludeIds
@@ -259,22 +330,16 @@ export class RetrievalService {
         : {}),
     };
 
-    const { vector: queryVector, usage: embeddingUsage } =
-      await this.embeddingService.embedWithUsage(trimmedQuery ?? '');
-    if (embeddingUsage) {
-      void this.usageService.record({
-        kind: 'embedding',
-        model: this.embeddingService.model,
-        usage: embeddingUsage,
-        flowId: params.flowId,
-        userId: params.userId,
-      });
-    }
-    if (!queryVector) {
-      throw new AiRetrievalError('embedding_failed');
-    }
+    const queryVector =
+      params.queryVector ??
+      (
+        await this.embedQuery(trimmedQuery ?? '', {
+          flowId: params.flowId,
+          userId: params.userId,
+        })
+      ).vector;
 
-    if (!this.hybridSearchEnabled()) {
+    if (!this.dhikrHybridSearchEnabled()) {
       return this.searchDhikrsVectorOnly(
         queryVector,
         limit,
@@ -297,7 +362,37 @@ export class RetrievalService {
     );
   }
 
-  /** Vektör-only yol — AI_HYBRID_SEARCH='0' iken davranış eskisiyle aynıdır. */
+  /**
+   * Bir sorgu metnini bir kez embed eder ve kullanım kaydını tek yerde
+   * tutar (`ai_usage_log` kind:'embedding'). `searchSourcePassages` ve
+   * `searchDhikrsByText` çağıranı (RecommendationAgentService.run) aynı
+   * `searchQuery` metnini hem pasaj hem zikir aramasına vermek için bunu
+   * BİR KEZ çağırır ve döndürülen vektörü her iki çağrıya `queryVector`
+   * olarak geçirir — eskiden aynı metin iki kez embed ediliyordu.
+   */
+  async embedQuery(
+    text: string,
+    ctx: { flowId?: string; userId?: string },
+  ): Promise<{ vector: number[]; usage?: { inputTokens: number } }> {
+    const trimmed = text?.trim() ?? '';
+    const { vector, usage: embeddingUsage } =
+      await this.embeddingService.embedWithUsage(trimmed);
+    if (embeddingUsage) {
+      void this.usageService.record({
+        kind: 'embedding',
+        model: this.embeddingService.model,
+        usage: embeddingUsage,
+        flowId: ctx.flowId,
+        userId: ctx.userId,
+      });
+    }
+    if (!vector) {
+      throw new AiRetrievalError('embedding_failed');
+    }
+    return { vector, usage: embeddingUsage };
+  }
+
+  /** Vektör-only yol — AI_DHIKR_HYBRID_SEARCH kapalıyken (varsayılan) davranış budur. */
   private async searchDhikrsVectorOnly(
     queryVector: number[],
     limit: number,
@@ -314,19 +409,25 @@ export class RetrievalService {
               index: 'dhikr_vector_index',
               path: 'embedding',
               queryVector,
-              numCandidates: 100,
+              exact: true,
               limit: limit * 3,
             },
           },
           { $match: baseMatch },
           { $addFields: { _vectorScore: { $meta: 'vectorSearchScore' } } },
           { $sort: { _vectorScore: -1 } },
-          { $limit: limit },
         ])
         .exec();
 
-      debug(`searchDhikrsByText: ${results.length} aday döndü`);
-      return results.map((item) => toDhikrCandidate(item, locale));
+      const deduped = dedupeByCanonicalKey(
+        results,
+        (item) => resolveCanonicalKey(item),
+        debug,
+        'searchDhikrsByText(vector-only)',
+      ).slice(0, limit);
+
+      debug(`searchDhikrsByText: ${deduped.length} aday döndü`);
+      return deduped.map((item) => toDhikrCandidate(item, locale));
     } catch (error) {
       warn(`Dhikr vector search başarısız: ${describeError(error)}`);
       throw new AiRetrievalError('retrieval_failed', undefined, error);
@@ -353,7 +454,7 @@ export class RetrievalService {
               index: 'dhikr_vector_index',
               path: 'embedding',
               queryVector,
-              numCandidates: 100,
+              exact: true,
               limit: limit * 3,
             },
           },
@@ -384,7 +485,13 @@ export class RetrievalService {
     );
 
     const fused = rrfFuse([vectorRanked, textRanked]);
-    const top = fused.slice(0, limit);
+    const dedupedFused = dedupeByCanonicalKey(
+      fused,
+      (entry) => resolveCanonicalKey(entry.item),
+      debug,
+      'searchDhikrsByText(hybrid)',
+    );
+    const top = dedupedFused.slice(0, limit);
 
     debug(
       `searchDhikrsByText(hybrid): vector=${vectorResults.length} text=${textResults.length} fused=${fused.length}` +
@@ -443,6 +550,8 @@ export class RetrievalService {
               categories: 1,
               suitableFor: 1,
               timeOfDay: 1,
+              canonicalKey: 1,
+              nameArabic: 1,
               _textScore: 1,
             },
           },
@@ -472,6 +581,7 @@ export class RetrievalService {
     excludeIds: string[];
     locale: SupportedAiLocale;
   }): Promise<DhikrCandidate[]> {
+    const { debug } = this.aiRuntime.flowLog();
     const excludeObjectIds = params.excludeIds
       .filter((id) => Types.ObjectId.isValid(id))
       .map((id) => new Types.ObjectId(id));
@@ -488,11 +598,20 @@ export class RetrievalService {
             timeOfDay: { $in: [params.timeOfDay, 'any'] },
           },
         },
-        { $sample: { size: params.limit } },
+        // canonicalKey dedupe sonrası hâlâ `limit` kadar aday kalabilsin diye
+        // örneklem büyütüldü (bkz. dedupeByCanonicalKey).
+        { $sample: { size: params.limit * 3 } },
       ])
       .exec();
 
-    return results.map((item) => toDhikrCandidate(item, params.locale));
+    const deduped = dedupeByCanonicalKey(
+      results,
+      (item) => resolveCanonicalKey(item),
+      debug,
+      'searchDhikrsByTimeOfDay',
+    ).slice(0, params.limit);
+
+    return deduped.map((item) => toDhikrCandidate(item, params.locale));
   }
 
   /**
@@ -511,7 +630,15 @@ export class RetrievalService {
   async searchSourcePassages(
     query: string,
     limit = 4,
-    opts?: { minScore?: number; flowId?: string; userId?: string },
+    opts?: {
+      minScore?: number;
+      flowId?: string;
+      userId?: string;
+      // Önceden hesaplanmış sorgu vektörü — verilirse embedding atlanır
+      // (bkz. embedQuery). Ajan searchQuery'yi tek seferde embed edip
+      // hem bu metoda hem searchDhikrsByText'e geçirir.
+      queryVector?: number[];
+    },
   ): Promise<SourcePassageResult[]> {
     const { warn, debug } = this.aiRuntime.flowLog(opts?.flowId);
     const trimmedQuery = query?.trim();
@@ -519,20 +646,14 @@ export class RetrievalService {
       return [];
     }
 
-    const { vector: queryVector, usage: embeddingUsage } =
-      await this.embeddingService.embedWithUsage(trimmedQuery);
-    if (embeddingUsage) {
-      void this.usageService.record({
-        kind: 'embedding',
-        model: this.embeddingService.model,
-        usage: embeddingUsage,
-        flowId: opts?.flowId,
-        userId: opts?.userId,
-      });
-    }
-    if (!queryVector) {
-      throw new AiRetrievalError('embedding_failed');
-    }
+    const queryVector =
+      opts?.queryVector ??
+      (
+        await this.embedQuery(trimmedQuery, {
+          flowId: opts?.flowId,
+          userId: opts?.userId,
+        })
+      ).vector;
 
     const minScore = opts?.minScore ?? this.passageMinScore();
 
@@ -572,7 +693,7 @@ export class RetrievalService {
               index: 'source_passages_vector_index',
               path: 'embedding',
               queryVector,
-              numCandidates: 100,
+              numCandidates: PASSAGE_VECTOR_NUM_CANDIDATES,
               limit,
             },
           },
@@ -625,7 +746,7 @@ export class RetrievalService {
               index: 'source_passages_vector_index',
               path: 'embedding',
               queryVector,
-              numCandidates: 100,
+              numCandidates: PASSAGE_VECTOR_NUM_CANDIDATES,
               limit: limit * 2,
             },
           },
@@ -835,7 +956,10 @@ export class RetrievalService {
     return kept;
   }
 
-  /** `AI_HYBRID_SEARCH` — varsayılan '1' (açık); yalnızca '0' devre dışı bırakır. */
+  /**
+   * `AI_HYBRID_SEARCH` (yalnız kaynak pasajı bacağı) — varsayılan '1'
+   * (açık); yalnızca '0' devre dışı bırakır.
+   */
   private hybridSearchEnabled(): boolean {
     const raw = this.configService.get<string | number | boolean>(
       'AI_HYBRID_SEARCH',
@@ -844,6 +968,19 @@ export class RetrievalService {
       return true;
     }
     return String(raw) !== '0';
+  }
+
+  /**
+   * `AI_DHIKR_HYBRID_SEARCH` (yalnız zikir `$text` bacağı) — VARSAYILAN
+   * KAPALI; yalnızca literal '1' veya 'true' açar (bkz. searchDhikrsByText
+   * yorumu ve docs/ai-mimari.md §6 — eval'de bu bacak vektör-only'nin
+   * altında kaldı).
+   */
+  private dhikrHybridSearchEnabled(): boolean {
+    const raw = this.configService.get<string | number | boolean>(
+      'AI_DHIKR_HYBRID_SEARCH',
+    );
+    return raw === '1' || raw === 1 || raw === true || raw === 'true';
   }
 
   private warnMissingTextIndexOnce(

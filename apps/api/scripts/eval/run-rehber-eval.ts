@@ -116,7 +116,7 @@ function printDryRunSummary(
 function renderSelectedItemLine(
   dhikr: {
     name: { tr: string; en: string };
-    timeOfDay: string;
+    timeOfDay: string | string[];
     tags: string[];
     suitableFor: string[];
     virtue: { tr: string; en: string };
@@ -130,7 +130,7 @@ function renderSelectedItemLine(
   };
   return [
     pickLocaleText(dhikr.name, locale),
-    dhikr.timeOfDay,
+    Array.isArray(dhikr.timeOfDay) ? dhikr.timeOfDay.join('/') : dhikr.timeOfDay,
     dhikr.tags.join(', '),
     dhikr.suitableFor.join(', '),
     trimTo(pickLocaleText(dhikr.virtue, locale), 300),

@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import { RetrievalService } from './retrieval.service';
 import { AiRetrievalError } from './ai-errors';
+import { canonicalKeyFromArabic } from '../dhikrs/utils/canonical-key';
 
 type AggregateHandler = (
   pipeline: unknown[],
@@ -416,7 +417,7 @@ describe('RetrievalService', () => {
           tags: ['tag1'],
           categories: ['cat1'],
           suitableFor: ['sabah'],
-          timeOfDay: 'morning',
+          timeOfDay: ['morning'],
           _vectorScore: 0.9,
         },
       ]);
@@ -449,7 +450,7 @@ describe('RetrievalService', () => {
           tags: [],
           categories: [],
           suitableFor: [],
-          timeOfDay: 'any',
+          timeOfDay: ['any'],
         },
       ]);
 
@@ -480,7 +481,7 @@ describe('RetrievalService', () => {
       ).rejects.toThrow(AiRetrievalError);
     });
 
-    describe('hibrit mod (AI_HYBRID_SEARCH=1, varsayılan)', () => {
+    describe('hibrit mod (AI_DHIKR_HYBRID_SEARCH=1)', () => {
       const D1 = new Types.ObjectId();
       const D2 = new Types.ObjectId();
 
@@ -493,14 +494,14 @@ describe('RetrievalService', () => {
           tags: [],
           categories: [],
           suitableFor: [],
-          timeOfDay: 'any',
+          timeOfDay: ['any'],
           ...extra,
         };
       }
 
       it('uses a $match $text stage (not Atlas $search) for the text leg', async () => {
         const { service, setDhikrAggregateHandler, getDhikrPipelines } =
-          createHarness();
+          createHarness({ configValues: { AI_DHIKR_HYBRID_SEARCH: '1' } });
 
         setDhikrAggregateHandler((pipeline) => {
           if (hasStage(pipeline, '$vectorSearch')) {
@@ -535,7 +536,7 @@ describe('RetrievalService', () => {
 
       it('fuses vector + text candidates and tags matchedBy', async () => {
         const { service, setDhikrAggregateHandler, getDhikrPipelines } =
-          createHarness();
+          createHarness({ configValues: { AI_DHIKR_HYBRID_SEARCH: '1' } });
 
         setDhikrAggregateHandler((pipeline) => {
           if (hasStage(pipeline, '$vectorSearch')) {
@@ -559,7 +560,9 @@ describe('RetrievalService', () => {
 
       it('drops weak text hits below the relative floor (scores [5,4,1] -> 2 kept)', async () => {
         const D3 = new Types.ObjectId();
-        const { service, setDhikrAggregateHandler } = createHarness();
+        const { service, setDhikrAggregateHandler } = createHarness({
+          configValues: { AI_DHIKR_HYBRID_SEARCH: '1' },
+        });
 
         setDhikrAggregateHandler((pipeline) => {
           if (hasStage(pipeline, '$vectorSearch')) {
@@ -587,8 +590,9 @@ describe('RetrievalService', () => {
       });
 
       it("degrades to vector-only when the $text index is missing ('text index required')", async () => {
-        const { service, setDhikrAggregateHandler, flowLogger } =
-          createHarness();
+        const { service, setDhikrAggregateHandler, flowLogger } = createHarness(
+          { configValues: { AI_DHIKR_HYBRID_SEARCH: '1' } },
+        );
 
         setDhikrAggregateHandler((pipeline) => {
           if (hasStage(pipeline, '$vectorSearch')) {
@@ -617,9 +621,9 @@ describe('RetrievalService', () => {
       });
     });
 
-    it('AI_HYBRID_SEARCH=0 calls aggregate exactly once (vector-only)', async () => {
+    it('AI_DHIKR_HYBRID_SEARCH=0 calls aggregate exactly once (vector-only)', async () => {
       const { service, setDhikrAggregateResult, getDhikrPipelines } =
-        createHarness({ configValues: { AI_HYBRID_SEARCH: '0' } });
+        createHarness({ configValues: { AI_DHIKR_HYBRID_SEARCH: '0' } });
       setDhikrAggregateResult([]);
 
       await service.searchDhikrsByText({
@@ -630,6 +634,24 @@ describe('RetrievalService', () => {
       });
 
       expect(getDhikrPipelines()).toHaveLength(1);
+    });
+
+    it('default env (AI_DHIKR_HYBRID_SEARCH unset) does not call $text — dhikr path stays vector-only', async () => {
+      const { service, setDhikrAggregateResult, getDhikrPipelines } =
+        createHarness();
+      setDhikrAggregateResult([]);
+
+      await service.searchDhikrsByText({
+        query: 'huzur',
+        limit: 5,
+        excludeIds: [],
+        locale: 'tr',
+      });
+
+      const pipelines = getDhikrPipelines();
+      expect(pipelines).toHaveLength(1);
+      expect(pipelines.some((p) => hasTextMatch(p))).toBe(false);
+      expect(hasStage(pipelines[0], '$vectorSearch')).toBe(true);
     });
   });
 
@@ -663,6 +685,208 @@ describe('RetrievalService', () => {
       );
       expect(hasSample).toBe(true);
       expect(hasRecommendedCountSort).toBe(false);
+    });
+
+    it('overfetches via $sample (limit*3) and dedupes by canonicalKey', async () => {
+      const { service, setDhikrAggregateResult, getLastDhikrPipeline } =
+        createHarness();
+      const dupKey = canonicalKeyFromArabic('السَّلَامُ');
+      setDhikrAggregateResult([
+        {
+          _id: new Types.ObjectId(),
+          name: { tr: 'A', en: 'A' },
+          virtue: { tr: '', en: '' },
+          meaning: { tr: '', en: '' },
+          tags: [],
+          categories: [],
+          suitableFor: [],
+          timeOfDay: ['morning'],
+          canonicalKey: dupKey,
+        },
+        {
+          _id: new Types.ObjectId(),
+          name: { tr: 'B (harekesiz varyant)', en: 'B' },
+          virtue: { tr: '', en: '' },
+          meaning: { tr: '', en: '' },
+          tags: [],
+          categories: [],
+          suitableFor: [],
+          timeOfDay: ['morning'],
+          nameArabic: 'السلام',
+        },
+      ]);
+
+      const result = await service.searchDhikrsByTimeOfDay({
+        timeOfDay: 'morning',
+        limit: 5,
+        excludeIds: [],
+        locale: 'tr',
+      });
+
+      expect(result).toHaveLength(1);
+
+      const pipeline = getLastDhikrPipeline();
+      const sampleStage = pipeline.find(
+        (stage): stage is { $sample: { size: number } } =>
+          typeof stage === 'object' &&
+          stage !== null &&
+          '$sample' in (stage as Record<string, unknown>),
+      );
+      expect(sampleStage?.$sample.size).toBe(15);
+    });
+  });
+
+  describe('canonicalKey dedupe ve ENN (exact vektör araması)', () => {
+    function dhikrDocWithArabic(
+      id: Types.ObjectId,
+      extra: Record<string, unknown>,
+    ) {
+      return {
+        _id: id,
+        name: { tr: 'Zikir', en: 'Zikir' },
+        virtue: { tr: 'Fazilet', en: 'Fazilet' },
+        meaning: { tr: 'Anlam', en: 'Anlam' },
+        tags: [],
+        categories: [],
+        suitableFor: [],
+        timeOfDay: ['any'],
+        ...extra,
+      };
+    }
+
+    it('vector-only $vectorSearch stage uses exact:true and no numCandidates', async () => {
+      const { service, setDhikrAggregateResult, getLastDhikrPipeline } =
+        createHarness({ configValues: { AI_HYBRID_SEARCH: '0' } });
+      setDhikrAggregateResult([]);
+
+      await service.searchDhikrsByText({
+        query: 'huzur',
+        limit: 5,
+        excludeIds: [],
+        locale: 'tr',
+      });
+
+      const pipeline = getLastDhikrPipeline();
+      const vectorStage = pipeline.find(
+        (stage): stage is { $vectorSearch: Record<string, unknown> } =>
+          typeof stage === 'object' &&
+          stage !== null &&
+          '$vectorSearch' in (stage as Record<string, unknown>),
+      );
+      expect(vectorStage?.$vectorSearch.exact).toBe(true);
+      expect(vectorStage?.$vectorSearch).not.toHaveProperty('numCandidates');
+    });
+
+    it('hybrid mode $vectorSearch leg also uses exact:true and no numCandidates', async () => {
+      const { service, setDhikrAggregateHandler, getDhikrPipelines } =
+        createHarness({ configValues: { AI_DHIKR_HYBRID_SEARCH: '1' } });
+
+      setDhikrAggregateHandler(() => []);
+
+      await service.searchDhikrsByText({
+        query: 'huzur',
+        limit: 5,
+        excludeIds: [],
+        locale: 'tr',
+      });
+
+      const vectorPipeline = getDhikrPipelines().find((p) =>
+        hasStage(p, '$vectorSearch'),
+      );
+      const vectorStage = vectorPipeline?.find(
+        (stage): stage is { $vectorSearch: Record<string, unknown> } =>
+          typeof stage === 'object' &&
+          stage !== null &&
+          '$vectorSearch' in (stage as Record<string, unknown>),
+      );
+      expect(vectorStage?.$vectorSearch.exact).toBe(true);
+      expect(vectorStage?.$vectorSearch).not.toHaveProperty('numCandidates');
+    });
+
+    it('two candidates with the same Arabic text (harakat vs. no harakat) dedupe to one, keeping the higher-ranked', async () => {
+      const D1 = new Types.ObjectId();
+      const D2 = new Types.ObjectId();
+      const { service, setDhikrAggregateResult } = createHarness({
+        configValues: { AI_HYBRID_SEARCH: '0' },
+      });
+
+      setDhikrAggregateResult([
+        dhikrDocWithArabic(D1, {
+          _vectorScore: 0.9,
+          nameArabic: 'سُبْحَانَ اللَّهِ',
+        }),
+        dhikrDocWithArabic(D2, {
+          _vectorScore: 0.8,
+          nameArabic: 'سبحان الله',
+        }),
+      ]);
+
+      const result = await service.searchDhikrsByText({
+        query: 'tesbih',
+        limit: 5,
+        excludeIds: [],
+        locale: 'tr',
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe(D1.toString());
+    });
+
+    it('passage $vectorSearch numCandidates is 200 (not exact, unchanged behavior otherwise)', async () => {
+      const { service, setPassageAggregateResult, getLastPassagePipeline } =
+        createHarness({ configValues: { AI_HYBRID_SEARCH: '0' } });
+      setPassageAggregateResult([]);
+
+      await service.searchSourcePassages('sorgu', 4, { minScore: 0 });
+
+      const pipeline = getLastPassagePipeline();
+      const vectorStage = pipeline.find(
+        (stage): stage is { $vectorSearch: Record<string, unknown> } =>
+          typeof stage === 'object' &&
+          stage !== null &&
+          '$vectorSearch' in (stage as Record<string, unknown>),
+      );
+      expect(vectorStage?.$vectorSearch.numCandidates).toBe(200);
+      expect(vectorStage?.$vectorSearch.exact).toBeUndefined();
+    });
+  });
+
+  describe('embedQuery / queryVector geçişi', () => {
+    it('searchDhikrsByText skips embedding when queryVector is provided', async () => {
+      const { service, setDhikrAggregateResult, embeddingService } =
+        createHarness({ configValues: { AI_HYBRID_SEARCH: '0' } });
+      setDhikrAggregateResult([]);
+
+      await service.searchDhikrsByText({
+        query: 'huzur',
+        limit: 5,
+        excludeIds: [],
+        locale: 'tr',
+        queryVector: [0.5, 0.5],
+      });
+
+      expect(embeddingService.embedWithUsage).not.toHaveBeenCalled();
+    });
+
+    it('searchSourcePassages skips embedding when queryVector is provided', async () => {
+      const { service, setPassageAggregateResult, embeddingService } =
+        createHarness({ configValues: { AI_HYBRID_SEARCH: '0' } });
+      setPassageAggregateResult([]);
+
+      await service.searchSourcePassages('sorgu', 4, {
+        minScore: 0,
+        queryVector: [0.5, 0.5],
+      });
+
+      expect(embeddingService.embedWithUsage).not.toHaveBeenCalled();
+    });
+
+    it('embedQuery records usage once and throws AiRetrievalError on null vector', async () => {
+      const { service } = createHarness({ embeddingVector: null });
+
+      await expect(
+        service.embedQuery('sorgu', { flowId: 'f1', userId: 'u1' }),
+      ).rejects.toThrow(AiRetrievalError);
     });
   });
 });

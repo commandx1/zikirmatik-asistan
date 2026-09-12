@@ -92,15 +92,19 @@ function trimTo(value: string, max: number): string {
 export function formatCandidateLine(
   candidate: DhikrCandidate & { ref: string },
 ): string {
-  return [
+  const base = [
     candidate.ref,
     candidate.name,
-    candidate.timeOfDay,
+    candidate.timeOfDay.join('/'),
     candidate.tags.join(', '),
     candidate.suitableFor.join(', '),
     trimTo(candidate.virtue, 300),
     trimTo(candidate.meaning, 200),
   ].join(' | ');
+
+  // Sert bir excludeIds elemesi yerine yumuşak bir işaret — bkz.
+  // buildRecommendationSystemPrompt'taki ilgili seçim kuralı.
+  return candidate.recentlyPracticed ? `${base} | [son 7 günde çekildi]` : base;
 }
 
 // ── Seçim/araştırma turu sistem/kullanıcı promptları ────────────────────────
@@ -141,6 +145,7 @@ export function buildRecommendationSystemPrompt(input: {
     '- YALNIZCA aday listesindeki C# referanslarını kullan (selectRecommendations.items[].ref). Asla ham id/ObjectId üretme veya yazma.',
     `- Maksimum ${input.maxRecommendations} zikir; doldurmak için alakasız ekleme yapma.`,
     '- Listede niyete gerçekten uyan daha az zikir varsa daha az öner.',
+    '- Adaylardan bazıları `[son 7 günde çekildi]` ile işaretlidir: kullanıcı bunları yakın zamanda zaten çekmiş. Eşit derecede uygun, işaretsiz bir alternatif varsa onu tercih et; ama niyete açıkça en uygun olan işaretli adaysa yine onu öner — isabet çeşitlilikten önce gelir.',
     '',
     '**selectRecommendations YAZIM KURALLARI:**',
     '- summary: Kullanıcının niyetini samimiyetle kabul eden sıcak 3-5 cümle. "inşallah", "Allah kabul etsin", "maşallah" gibi ifadeler kullan. Zikir ismi yazma.',

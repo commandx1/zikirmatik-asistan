@@ -1,8 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 import type { LocalizedText } from '../../../common/types/localized-text';
 
 export type DhikrDocument = HydratedDocument<Dhikr>;
+
+// Günün vakti değerleri: schema enum'u, DTO doğrulaması ve seed script'i
+// (scripts/lib/time-of-day.mjs) bu tek listeyi referans alır.
+export const TIME_OF_DAY_VALUES = [
+  'morning',
+  'afternoon',
+  'evening',
+  'night',
+  'any',
+] as const;
+export type TimeOfDay = (typeof TIME_OF_DAY_VALUES)[number];
 
 // Çok dilli alt-şema: her alan { tr, en } nesnesi olarak tutulur. Her iki dil
 // de zorunludur — API yanıtları her zaman ikisini birden döner (Accept-Language
@@ -26,6 +37,13 @@ export class Dhikr {
   @Prop({ type: String, required: true, trim: true })
   nameArabic!: string;
 
+  // nameArabic'in harekesiz/noktalamasız normalize edilmiş halinin sha1
+  // özeti (bkz. utils/canonical-key.ts). Aynı duanın harekeli/harekesiz
+  // farklı kopyalarını aynı köke bağlamak için kullanılır; benzersizlik
+  // zorunlu değildir (index unique değil).
+  @Prop({ type: String })
+  canonicalKey?: string;
+
   @Prop(LOCALIZED_TEXT_SCHEMA)
   name!: LocalizedText;
 
@@ -48,11 +66,11 @@ export class Dhikr {
   categories!: string[];
 
   @Prop({
-    type: String,
-    enum: ['morning', 'evening', 'night', 'any'],
-    default: 'any',
+    type: [String],
+    enum: TIME_OF_DAY_VALUES,
+    default: ['any'],
   })
-  timeOfDay!: 'morning' | 'evening' | 'night' | 'any';
+  timeOfDay!: TimeOfDay[];
 
   @Prop({ type: Number, min: 1, default: 33 })
   recommendedCount!: number;
@@ -78,10 +96,13 @@ export class Dhikr {
   audioUrl?: string;
 
   // Anlamsal arama (AI Rehber retrieval aşaması) için önceden hesaplanmış
-  // embedding vektörü. select:false → normal sorgularda taşınmaz, yalnız
-  // AI servisi açıkça ister. Bkz. EmbeddingService.
-  @Prop({ type: [Number], default: undefined, select: false })
-  embedding?: number[];
+  // embedding vektörü. BSON float32 vektörü (mongodb Binary, subtype 9)
+  // olarak saklanır — Mixed kullanılır çünkü Mongoose'un tipik Buffer
+  // temsili subtype bilgisini kaybeder ve Atlas $vectorSearch vektörü
+  // tanıyamaz hale gelir. select:false → normal sorgularda taşınmaz,
+  // yalnız AI servisi açıkça ister. Bkz. EmbeddingService.
+  @Prop({ type: MongooseSchema.Types.Mixed, select: false })
+  embedding?: unknown;
 
   // Embedding'in türetildiği kaynak metnin hash'i; metin değişmediyse
   // güncelleme sırasında yeniden embed etmemek için kullanılır.
@@ -90,6 +111,12 @@ export class Dhikr {
 
   @Prop({ type: String })
   embeddingModel?: string;
+
+  // Embedding kaynak metni şablonunun sürümü (bkz. EMBEDDING_TEXT_VERSION).
+  // Şablon değiştiğinde backfill script'i bu alanı kontrol ederek eski
+  // sürümle üretilmiş kayıtları yeniden embed eder.
+  @Prop({ type: String })
+  embeddingTextVersion?: string;
 
   @Prop({ type: Date })
   embeddingUpdatedAt?: Date;
@@ -106,6 +133,7 @@ DhikrSchema.index({ categories: 1 });
 DhikrSchema.index({ suitableFor: 1 });
 DhikrSchema.index({ isVerified: 1, isActive: 1 });
 DhikrSchema.index({ timeOfDay: 1, isVerified: 1 });
+DhikrSchema.index({ canonicalKey: 1 });
 
 // Standart MongoDB $text index — Atlas Search (FTS) index kotası dolu
 // olduğu için hibrit aramanın zikir bacağı (RetrievalService.

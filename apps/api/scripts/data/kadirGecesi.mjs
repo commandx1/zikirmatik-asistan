@@ -48,11 +48,11 @@ export const kadirGecesi = {
         tr: 'Tirmizî, Deavât, 84 (3513)',
         en: 'At-Tirmidhi, Supplications, 84 (3513)',
       },
-      tags: ['kadir gecesi', 'ramazan', 'af', 'mağfiret', 'dua', 'şaban', 'kandil', "sha'ban", 'ramadan', 'özel gün', 'laylat al-qadr', "laylat al-mi'raj", "laylat al-bara'ah"],
+      tags: ['kadir gecesi', 'ramazan', 'af', 'mağfiret', 'dua', 'şaban', 'kandil', 'özel gün'],
       categories: ['kandil', 'özel gün', 'ramazan', 'dua', 'miraç', 'berat', 'şaban', 'üç aylar', 'oruç', 'kadir gecesi', 'arefe'],
       timeOfDay: 'night',
       recommendedCount: 1000,
-      suitableFor: ['kadir gecesi', 'mağfiret talebi', 'af niyeti', 'gece ibadeti', 'ramazan son on', 'tevbe', 'yalvarış', 'şaban', "sha'ban", 'ramazan', 'ramadan', 'miraç kandili', 'berat kandili', 'laylat al-qadr', "laylat al-mi'raj", "laylat al-bara'ah"],
+      suitableFor: ['kadir gecesi', 'mağfiret talebi', 'af niyeti', 'gece ibadeti', 'ramazan son on', 'tevbe', 'yalvarış', 'şaban', 'ramazan', 'miraç kandili', 'berat kandili'],
     },
   ],
   specialDays: [

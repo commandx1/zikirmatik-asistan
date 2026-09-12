@@ -1,0 +1,50 @@
+{
+  "remove": [
+    "ayyam al-bid",
+    "beginning of jumada al-akhira",
+    "beginning of jumada al-ula",
+    "beginning of rabi al-akhir",
+    "beginning of rabi al-awwal",
+    "beginning of the month of dhu al-qi'dah",
+    "beginning of the month of rajab",
+    "beginning of the month of ramadan",
+    "beginning of the month of safar",
+    "beginning of the month of sha'ban",
+    "compound zikir",
+    "dhu al-hijjah",
+    "eid al-adha",
+    "eid al-adha day of arafah",
+    "eid al-adha of arafah",
+    "eid al-fitr",
+    "etiquette",
+    "first wednesday night of safar",
+    "hijri new year",
+    "last wednesday night of safar",
+    "laylat al-bara'ah",
+    "laylat al-mi'raj",
+    "laylat al-qadr",
+    "laylat al-ragha'ib",
+    "mawlid al-nabi",
+    "mawlid week",
+    "muharram",
+    "rajab",
+    "ramadan",
+    "sha'ban",
+    "the beginning of the three holy months"
+  ],
+  "ambiguous": [
+    "ayetel kursi",
+    "ayetel kürsi",
+    "dua",
+    "ego",
+    "esma",
+    "salavat",
+    "tawakkul ve teslimiyet"
+  ],
+  "stats": {
+    "distinct": 2370,
+    "en": 31,
+    "tr": 2332,
+    "ambiguous": 7
+  }
+}

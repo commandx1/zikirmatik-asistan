@@ -139,11 +139,60 @@ jest'in `rootDir`'i `src/` olduğu için (bkz. `apps/api/package.json`
 kapsamına girmesi için burası gerekliydi. Runner script'leri bu modülü
 relative import ile kullanır.
 
+## Retrieval eval (LLM-free)
+
+`run-retrieval-eval.ts`, `AI Rehber`/`AI Sohbet` judge'lı harness'lerinden
+FARKLI bir amaç güder: `RetrievalService.searchDhikrsByText()`'in KENDİSİNİ
+— hiçbir LLM hakem olmadan — golden dataset'teki `datasets/rehber-intents.json`
+`expectedKeys` altın verisine göre değerlendirir. `expectedKeys`, ilgili
+vakada döndürülmesi beklenen zikirlerin `dhikr.key`'leridir (seed'deki stabil
+tanımlayıcı); bazı vakalarda henüz boş/eksik olabilir — bu vakalar
+key-metrikleri (rank/hit@5/recall@15) için ATLANIR, yine de raporda görünür.
+`expectedKeys` etiketlemesinin nasıl/neden yapıldığı ve vaka bazlı gerekçeler
+için bkz. [`docs/eval/rehber-expected-keys-review.md`](../../../../docs/eval/rehber-expected-keys-review.md)
+(bkz. ayrıca [`docs/eval/README.md`](../../../../docs/eval/README.md)).
+
+Sorgu metni: dataset'te `case.expandedQuery` varsa DOĞRUDAN kullanılır (LLM
+çağrısı YOK); yoksa `RecommendationAgentService.expandIntentForEval()`
+(gerçek `expandIntent`'in eval'a açılmış public wrapper'ı) ile GERÇEK niyet
+genişletme çağrılır. `--write-expanded` verilirse üretilen `expandedQuery`
+(ve `offTopic` true ise o da) dataset JSON'ına geri yazılır — sonraki run'lar
+aynı sorguyu ücretsiz tekrar kullanır.
+
+Metrikler (vaka başına): ilk beklenen key'in rank'ı (`firstRank`, yoksa
+`null`), `hit@5`, `recall@15` (= beklenen ∩ ilk 15 / |beklenen|), gecikme, ve
+`dupCount` — adayların `nameArabic`'i harakat/tatvil/boşluk temizlenerek
+normalize edilip near-duplicate (aynı normalize metne sahip birden fazla
+aday) sayısı. Özet: mean recall@15, hit@5 oranı, MRR, ortalama dupCount,
+gecikme p50/p95.
+
+```bash
+pnpm --filter api eval:retrieval -- --dry-run           # ücretsiz, ağ çağrısı yok
+pnpm --filter api eval:retrieval -- --limit 5            # gerçek çalıştırma (embedding + gerekirse expand)
+pnpm --filter api eval:retrieval -- --write-expanded      # üretilen expandedQuery'leri dataset'e yaz
+pnpm --filter api eval:retrieval -- --baseline scripts/eval/reports/retrieval-<ISO>.json  # delta karşılaştırması
+```
+
+Referans bir taban çizgisi raporu `docs/eval/retrieval-baseline-2026-09-12.{json,md}` altında
+commit'lidir (embedding şablonu v2 + BinData depolamaya geçişten hemen sonra
+alınmıştır) — sonraki retrieval değişikliklerini bununla karşılaştırmak için:
+
+```bash
+pnpm --filter api eval:retrieval -- --baseline docs/eval/retrieval-baseline-2026-09-12.json
+```
+
+Aynı `--limit`/`--ids`/`--locale`/`--concurrency` bayrakları burada da
+geçerlidir (`--no-judge` retrieval eval'ında anlamsızdır, hiç judge yoktur).
+`AI_EVAL_USER_ID` set değilse (diğer eval'lerin aksine) sabit bir sahte
+ObjectId kullanılır — retrieval, kullanıcıyı hiçbir yolda doğrulamaz, yalnızca
+fire-and-forget usage log kaydında kullanılır.
+
 ## Doğrulama komutları
 
 ```bash
 pnpm --filter api eval:rehber -- --dry-run
 pnpm --filter api eval:chat -- --dry-run
+pnpm --filter api eval:retrieval -- --dry-run
 pnpm --filter api test
 pnpm --filter api lint
 pnpm --filter api exec tsc --noEmit -p tsconfig.json   # scripts/eval/** de bu tsconfig'e dahildir (ayrı tsconfig gerekmedi)

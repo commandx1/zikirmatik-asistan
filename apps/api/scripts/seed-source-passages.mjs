@@ -3,9 +3,26 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { chunkPages, countArabicScriptChars, stripArabicScript } from './lib/chunking.mjs';
-import { embed, embeddingModel, sourceHash } from './lib/embedding.mjs';
+import {
+  EMBEDDING_TEXT_VERSION,
+  buildPassageEmbeddingText,
+  embeddingModel,
+  embedMany,
+  getEmbeddingUsageSummary,
+  sourceHash,
+  toVectorBinary,
+} from './lib/embedding.mjs';
+
+// OpenAI embeddings.create() çağrısı başına gönderilecek maksimum girdi.
+const EMBED_BATCH_SIZE = 64;
+// Mongo bulkWrite başına yazılacak maksimum kayıt (M0 küme op limitlerine
+// takılmamak için).
+const WRITE_BATCH_SIZE = 50;
+// Ardışık yazma batch'leri arasındaki bekleme (ms).
+const WRITE_BATCH_SLEEP_MS = 250;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const KAYNAKLAR_DIR = resolve(__dirname, '../../../docs/kaynaklar');
@@ -51,6 +68,8 @@ async function main() {
   const seed = args.includes('--seed');
   const stripArabic = args.includes('--strip-arabic');
   const headingColon = args.includes('--heading-colon');
+  const force = args.includes('--force');
+  const dryRun = args.includes('--dry-run');
   const sourceArgIndex = args.indexOf('--source');
   const sourceId = sourceArgIndex !== -1 ? args[sourceArgIndex + 1] : undefined;
 
@@ -79,7 +98,7 @@ async function main() {
   }
 
   if (seed) {
-    await runSeedPhase(source);
+    await runSeedPhase(source, { force, dryRun });
   }
 }
 
@@ -238,7 +257,7 @@ function loadApprovedPassages(source) {
   return records.filter((record) => record.review === 'approved');
 }
 
-async function runSeedPhase(source) {
+async function runSeedPhase(source, { force = false, dryRun = false } = {}) {
   const approved = loadApprovedPassages(source);
 
   if (approved.length === 0) {
@@ -249,89 +268,142 @@ async function runSeedPhase(source) {
   }
 
   console.log(
-    `[seed] ${source.source_id}: ${approved.length} onaylanmış pasaj bulundu (model=${embeddingModel()}).`,
+    `[seed] ${source.source_id}: ${approved.length} onaylanmış pasaj bulundu (model=${embeddingModel()}, force=${force}, dry-run=${dryRun}).`,
   );
 
   const mongoUri = process.env.MONGODB_URI?.trim();
   if (!mongoUri) {
     throw new Error('MONGODB_URI bulunamadı. apps/api/.env dosyasını kontrol et.');
   }
+  if (!dryRun && !process.env.OPENAI_API_KEY?.trim()) {
+    throw new Error('OPENAI_API_KEY bulunamadı; embedding üretilemez.');
+  }
 
   const { default: mongoose } = await import('mongoose');
   await mongoose.connect(mongoUri, { autoIndex: false, serverSelectionTimeoutMS: 8000 });
 
-  let embedded = 0;
-  let skippedUnchanged = 0;
-  let failed = 0;
+  const startedAt = Date.now();
 
   try {
     const col = mongoose.connection.collection('source_passages');
 
-    for (const passage of approved) {
-      try {
-        const hash = sourceHash(passage.text);
-        const existing = await col.findOne(
-          { passageId: passage.passageId },
-          { projection: { embeddingSourceHash: 1 } },
-        );
+    // Mevcut hash/embedding durumunu tek sorguda çek (passage başına
+    // findOne yerine) — M0 kümesinde gereksiz round-trip'i azaltır.
+    const existingDocs = await col
+      .find(
+        { passageId: { $in: approved.map((passage) => passage.passageId) } },
+        { projection: { passageId: 1, embeddingSourceHash: 1, embedding: 1, embeddingTextVersion: 1 } },
+      )
+      .toArray();
+    const existingByPassageId = new Map(
+      existingDocs.map((doc) => [doc.passageId, doc]),
+    );
 
-        if (existing && existing.embeddingSourceHash === hash) {
-          skippedUnchanged += 1;
-          continue;
-        }
+    // Her pasaj için embedding girdi metnini (başlık + bölüm + metin) kur,
+    // hash'i hesapla ve yeniden embed gerekip gerekmediğine karar ver.
+    const candidates = approved.map((passage) => {
+      const composedText = buildPassageEmbeddingText({
+        sourceTitle: source.title,
+        sectionHeading: passage.sectionHeading,
+        text: passage.text,
+      });
+      const hash = sourceHash(composedText);
+      const existing = existingByPassageId.get(passage.passageId);
 
-        const vector = await embed(passage.text);
+      const needsReembed =
+        force ||
+        !existing ||
+        existing.embeddingSourceHash !== hash ||
+        Array.isArray(existing.embedding) ||
+        existing.embeddingTextVersion !== EMBEDDING_TEXT_VERSION;
+
+      return { passage, composedText, hash, needsReembed };
+    });
+
+    const toEmbed = candidates.filter((c) => c.needsReembed);
+    const unchanged = candidates.length - toEmbed.length;
+
+    console.log(
+      `[seed] onaylı=${approved.length}, güncellenecek=${toEmbed.length}, değişmeyen=${unchanged}.`,
+    );
+
+    if (dryRun) {
+      console.log('[seed] --dry-run: yazma yapılmadı, yalnızca sayımlar gösterildi.');
+      return;
+    }
+
+    let embedded = 0;
+    let failed = 0;
+
+    for (let start = 0; start < toEmbed.length; start += EMBED_BATCH_SIZE) {
+      const batch = toEmbed.slice(start, start + EMBED_BATCH_SIZE);
+      const vectors = await embedMany(
+        batch.map((item) => item.composedText),
+        { batchSize: EMBED_BATCH_SIZE },
+      );
+
+      const now = new Date();
+      const writeOps = [];
+      batch.forEach((item, index) => {
+        const vector = vectors[index];
         if (!vector) {
           failed += 1;
           console.warn(
-            `  ! passageId=${passage.passageId} embed üretilemedi (OPENAI_API_KEY eksik olabilir), atlanıyor.`,
+            `  ! passageId=${item.passage.passageId} embed üretilemedi, atlanıyor.`,
           );
+          return;
+        }
+
+        writeOps.push({
+          updateOne: {
+            filter: { passageId: item.passage.passageId },
+            update: {
+              $set: {
+                passageId: item.passage.passageId,
+                sourceId: source.source_id,
+                sourceTitle: source.title,
+                type: source.type,
+                sectionHeading: item.passage.sectionHeading ?? undefined,
+                pageStart: item.passage.pageStart,
+                pageEnd: item.passage.pageEnd,
+                chunkIndex: item.passage.chunkIndex,
+                text: item.passage.text,
+                version: source.version ?? 1,
+                embedding: toVectorBinary(vector),
+                embeddingModel: embeddingModel(),
+                embeddingSourceHash: item.hash,
+                embeddingTextVersion: EMBEDDING_TEXT_VERSION,
+                embeddingUpdatedAt: now,
+                updatedAt: now,
+              },
+              $setOnInsert: { createdAt: now },
+            },
+            upsert: true,
+          },
+        });
+      });
+
+      for (let writeStart = 0; writeStart < writeOps.length; writeStart += WRITE_BATCH_SIZE) {
+        const writeBatch = writeOps.slice(writeStart, writeStart + WRITE_BATCH_SIZE);
+        if (writeBatch.length === 0) {
           continue;
         }
-
-        const now = new Date();
-        await col.updateOne(
-          { passageId: passage.passageId },
-          {
-            $set: {
-              passageId: passage.passageId,
-              sourceId: source.source_id,
-              sourceTitle: source.title,
-              type: source.type,
-              sectionHeading: passage.sectionHeading ?? undefined,
-              pageStart: passage.pageStart,
-              pageEnd: passage.pageEnd,
-              chunkIndex: passage.chunkIndex,
-              text: passage.text,
-              version: source.version ?? 1,
-              embedding: vector,
-              embeddingModel: embeddingModel(),
-              embeddingSourceHash: hash,
-              embeddingUpdatedAt: now,
-              updatedAt: now,
-            },
-            $setOnInsert: { createdAt: now },
-          },
-          { upsert: true },
-        );
-        embedded += 1;
-
-        if (embedded % 10 === 0) {
-          console.log(`  ... ${embedded} pasaj embed edildi`);
-        }
-      } catch (error) {
-        failed += 1;
-        console.warn(
-          `  ! passageId=${passage.passageId} işlenemedi: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-        );
+        await col.bulkWrite(writeBatch, { ordered: false });
+        embedded += writeBatch.length;
+        console.log(`  ... ${embedded}/${toEmbed.length} pasaj embed edildi`);
+        await sleep(WRITE_BATCH_SLEEP_MS);
       }
     }
 
+    const usage = getEmbeddingUsageSummary();
+    const elapsedSec = ((Date.now() - startedAt) / 1000).toFixed(1);
+
     console.log('');
     console.log(
-      `[seed] özet — toplam_approved=${approved.length}, embed=${embedded}, degismeyen_atlandi=${skippedUnchanged}, hata=${failed}`,
+      `[seed] özet — toplam_approved=${approved.length}, embed=${embedded}, degismeyen_atlandi=${unchanged}, hata=${failed}`,
+    );
+    console.log(
+      `[seed] istek=${usage.requests}, girdi_token=${usage.inputTokens}, tahmini_maliyet_usd=${usage.estCostUsd.toFixed(4)}, süre=${elapsedSec}sn`,
     );
   } finally {
     await mongoose.disconnect();

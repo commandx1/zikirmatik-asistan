@@ -10,6 +10,7 @@ import type {
   RehberSummary,
   ChatSummary,
 } from '../../../src/modules/ai/eval/metrics';
+import type { RetrievalSummary } from './retrieval-metrics';
 
 const REPORTS_DIR = join(__dirname, '..', 'reports');
 
@@ -106,6 +107,67 @@ export type ChatRun = {
   meta: ReportMeta;
   summary: ChatSummary;
   cases: ChatReportCase[];
+};
+
+// ── Retrieval eval (run-retrieval-eval.ts) ──────────────────────────────────
+
+export type RetrievalReportMeta = {
+  runId: string;
+  startedAt: string;
+  finishedAt: string;
+  gitSha: string;
+  locale: string;
+  models: Record<string, string>;
+  datasetSize: number;
+  casesRun: number;
+  expansionsLlmCalls: number;
+  expansionsCached: number;
+  pipelineCostUsd: number;
+};
+
+export type RetrievalReportCandidate = {
+  key?: string;
+  id: string;
+  name: string;
+  score?: number;
+  isExpected?: boolean;
+};
+
+export type RetrievalReportCase = {
+  id: string;
+  freeText: string;
+  locale: string;
+  category: string;
+  expandedQuery: string;
+  expandedFromCache: boolean;
+  expectedKeys: string[];
+  skipped: boolean;
+  firstRank: number | null;
+  hit5: boolean;
+  recall15: number;
+  dupCount: number;
+  latencyMs: number;
+  top15: RetrievalReportCandidate[];
+  error?: string;
+};
+
+export type RetrievalDeltaRow = {
+  id: string;
+  before: number | null;
+  after: number | null;
+};
+
+export type RetrievalBaseline = {
+  reportPath: string;
+  summary: RetrievalSummary;
+  rankDeltas: RetrievalDeltaRow[];
+};
+
+export type RetrievalRun = {
+  meta: RetrievalReportMeta;
+  summary: RetrievalSummary;
+  cases: RetrievalReportCase[];
+  baseline?: RetrievalBaseline;
 };
 
 function truncate(value: string | undefined, max: number): string {
@@ -391,8 +453,8 @@ function renderChatCalibration(summary: ChatSummary): string {
 }
 
 function writeReportFiles(
-  kind: 'rehber' | 'chat',
-  meta: ReportMeta,
+  kind: 'rehber' | 'chat' | 'retrieval',
+  meta: { finishedAt: string },
   json: unknown,
   markdown: string,
 ): { jsonPath: string; mdPath: string } {
@@ -437,6 +499,111 @@ export function writeChatReport(run: ChatRun): {
   return writeReportFiles('chat', run.meta, run, markdown);
 }
 
+function renderRetrievalHeader(meta: RetrievalReportMeta): string {
+  const modelsLine = Object.entries(meta.models)
+    .map(([k, v]) => `${k}=${v}`)
+    .join(', ');
+  return [
+    '# Retrieval Eval Raporu',
+    '',
+    `- Tarih: ${meta.finishedAt}`,
+    `- Git SHA: \`${meta.gitSha}\``,
+    `- runId: \`${meta.runId}\``,
+    `- Locale: ${meta.locale}`,
+    `- Modeller: ${modelsLine || '—'}`,
+    `- Dataset boyutu: ${meta.datasetSize} (çalıştırılan: ${meta.casesRun})`,
+    `- Niyet genişletme: ${meta.expansionsLlmCalls} LLM çağrısı, ${meta.expansionsCached} cache'ten (dataset'teki expandedQuery)`,
+    `- Pipeline maliyeti: $${meta.pipelineCostUsd.toFixed(4)}`,
+    '',
+  ].join('\n');
+}
+
+function renderRetrievalSummaryTable(
+  summary: RetrievalSummary,
+  title = '## Özet',
+): string {
+  const rows = [
+    ['Toplam vaka', String(summary.total)],
+    ['Değerlendirilen (expectedKeys var)', String(summary.evaluated)],
+    ['Atlanan (expectedKeys yok)', String(summary.skipped)],
+    ['hata oranı', pct(summary.errorRate)],
+    ['mean recall@15', summary.meanRecall15.toFixed(3)],
+    ['hit@5 oranı', pct(summary.hit5Rate)],
+    ['MRR', summary.mrr.toFixed(3)],
+    ['ortalama dupCount', summary.meanDupCount.toFixed(2)],
+    ['gecikme p50', fmtMs(summary.latencyP50)],
+    ['gecikme p95', fmtMs(summary.latencyP95)],
+  ];
+  return [
+    title,
+    '',
+    '| Metrik | Değer |',
+    '| --- | --- |',
+    ...rows.map(([k, v]) => `| ${k} | ${v} |`),
+    '',
+  ].join('\n');
+}
+
+function renderRetrievalCasesTable(cases: RetrievalReportCase[]): string {
+  const header =
+    '| id | input | expandedQuery | beklenen | rank | top-5 key | latency |';
+  const sep = '| --- | --- | --- | --- | --- | --- | --- |';
+  const rows = cases.map((c) => {
+    const rankCell = c.error
+      ? `error: ${truncate(c.error, 30)}`
+      : c.skipped
+        ? '(atlandı)'
+        : (c.firstRank ?? '—');
+    const top5 = c.top15
+      .slice(0, 5)
+      .map((cand) => cand.key ?? cand.id)
+      .join(', ');
+    return `| ${c.id} | ${truncate(c.freeText, 40)} | ${truncate(c.expandedQuery, 40)} | ${c.expectedKeys.join(', ') || '—'} | ${rankCell} | ${top5} | ${fmtMs(c.latencyMs)} |`;
+  });
+  return ['## Vakalar', '', header, sep, ...rows, ''].join('\n');
+}
+
+function renderRetrievalBaseline(baseline: RetrievalBaseline): string {
+  const lines = [
+    '## Baseline Karşılaştırması',
+    '',
+    `Baseline rapor: \`${baseline.reportPath}\``,
+    '',
+    renderRetrievalSummaryTable(baseline.summary, '### Baseline özeti'),
+  ];
+  if (baseline.rankDeltas.length === 0) {
+    lines.push('Rank değişen vaka yok.', '');
+  } else {
+    lines.push(
+      '### Rank değişiklikleri',
+      '',
+      '| id | önce | sonra |',
+      '| --- | --- | --- |',
+      ...baseline.rankDeltas.map(
+        (d) => `| ${d.id} | ${d.before ?? '—'} | ${d.after ?? '—'} |`,
+      ),
+      '',
+    );
+  }
+  return lines.join('\n');
+}
+
+export function writeRetrievalReport(run: RetrievalRun): {
+  jsonPath: string;
+  mdPath: string;
+} {
+  const markdown = [
+    renderRetrievalHeader(run.meta),
+    renderRetrievalSummaryTable(run.summary),
+    run.baseline ? renderRetrievalBaseline(run.baseline) : undefined,
+    renderRetrievalCasesTable(run.cases),
+  ]
+    .filter((section): section is string => section !== undefined)
+    .join('\n');
+
+  return writeReportFiles('retrieval', run.meta, run, markdown);
+}
+
 export function writeReport(
   kind: 'rehber',
   run: RehberRun,
@@ -446,10 +613,14 @@ export function writeReport(
   run: ChatRun,
 ): { jsonPath: string; mdPath: string };
 export function writeReport(
-  kind: 'rehber' | 'chat',
-  run: RehberRun | ChatRun,
+  kind: 'retrieval',
+  run: RetrievalRun,
+): { jsonPath: string; mdPath: string };
+export function writeReport(
+  kind: 'rehber' | 'chat' | 'retrieval',
+  run: RehberRun | ChatRun | RetrievalRun,
 ): { jsonPath: string; mdPath: string } {
-  return kind === 'rehber'
-    ? writeRehberReport(run as RehberRun)
-    : writeChatReport(run as ChatRun);
+  if (kind === 'rehber') return writeRehberReport(run as RehberRun);
+  if (kind === 'chat') return writeChatReport(run as ChatRun);
+  return writeRetrievalReport(run as RetrievalRun);
 }

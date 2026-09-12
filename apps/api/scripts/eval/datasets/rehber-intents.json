@@ -4,293 +4,748 @@
     "freeText": "çok kaygılıyım, içim huzursuz",
     "locale": "tr",
     "category": "emotion",
-    "expect": { "kind": "recommendations", "tagsAny": ["kaygı yönetimi", "huzur", "sabır", "teselli"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "kaygı yönetimi",
+        "huzur",
+        "sabır",
+        "teselli"
+      ]
+    },
+    "expectedKeys": [
+      "sikinti-insirah-suresi",
+      "sikinti-la-ilahe-illallahul-azimul-halim",
+      "sikinti-ya-selam-ya-latif-ya-vedud"
+    ],
+    "expandedQuery": "yoğun kaygı, iç huzursuzluğu, gerginlik ve endişe hali; sakinleşme, gönül ferahlatma, sükunet, Allah’a tevekkül, sabır ve huzur arayışı"
   },
   {
     "id": "r002",
     "freeText": "Allah'a şükretmek istiyorum",
     "locale": "tr",
     "category": "gratitude",
-    "expect": { "kind": "recommendations", "tagsAny": ["şükür", "hamd"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "şükür",
+        "hamd"
+      ]
+    },
+    "expectedKeys": [
+      "tesbih-subhanallahil-azim-ve-bihamdihi",
+      "esmaul-husna-es-sekur"
+    ],
+    "expandedQuery": "Allah’a şükretme, şükür ve hamd duygusunu ifade etme niyeti; nimete şükran ile kalp huzuru, minnettarlık pratiği, şükür zikirleri ve duaları aracılığıyla Allah’a yakınlık ve teslimiyet arayışı."
   },
   {
     "id": "r003",
     "freeText": "günahlarımdan tövbe etmek istiyorum",
     "locale": "tr",
     "category": "repentance",
-    "expect": { "kind": "recommendations", "tagsAny": ["tövbe", "istiğfar"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "tövbe",
+        "istiğfar"
+      ]
+    },
+    "expectedKeys": [
+      "SEYYIDUL_ISTIGFAR",
+      "sifa-seyyidul-istigfar",
+      "ISTIGFAR"
+    ],
+    "expandedQuery": "tövbe ve istiğfar niyeti; geçmiş günahlar için pişmanlık, Allah’tan bağışlanma, kalbi arındırma ve günahlara geri dönmeme azmi; samimi tövbe, istiğfar duaları ve zikirleri arayışı"
   },
   {
     "id": "r004",
     "freeText": "sınavım var, başarı ve kolaylık için dua",
     "locale": "tr",
     "category": "work",
-    "expect": { "kind": "recommendations", "tagsAny": ["sınav", "başarı", "sınav ve kolaylık"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "sınav",
+        "başarı",
+        "sınav ve kolaylık"
+      ]
+    },
+    "expectedKeys": [
+      "sinav-rabbisrahli-sadri",
+      "sinav-rabbi-yessir",
+      "sinav-rabbi-edhilni"
+    ],
+    "expandedQuery": "sınav kaygısı, başarı, kolaylık ve zihinsel açıklık; sınav öncesi ve sırasında huzur, başarılı olma, dikkat ve hafıza artışı için dua ve zikir arayışı"
   },
   {
     "id": "r005",
     "freeText": "asdfgh123",
     "locale": "tr",
     "category": "offtopic",
-    "expect": { "kind": "offTopic" }
+    "expect": {
+      "kind": "offTopic"
+    },
+    "expectedKeys": [],
+    "expandedQuery": "asdfgh123",
+    "offTopic": true
   },
   {
     "id": "r006",
     "freeText": "içim kan ağlıyor, çok üzgünüm",
     "locale": "tr",
     "category": "emotion",
-    "expect": { "kind": "recommendations", "tagsAny": ["üzüntü", "teselli", "sabır"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "üzüntü",
+        "teselli",
+        "sabır"
+      ]
+    },
+    "expectedKeys": [
+      "sikinti-inni-abduk-ibnu-abduk",
+      "DUHA_SURESI",
+      "sikinti-ya-hayyu-ya-kayyum"
+    ],
+    "expandedQuery": "derin üzüntü, içsel keder ve ruhsal çöküntü hali; gözyaşı, mahzunluk ve kalp sancısı yaşayan kişiye teselli, sabır, gönül ferahlatma ve manevi huzur arayışı"
   },
   {
     "id": "r007",
     "freeText": "sürekli sinirleniyorum, öfkemi kontrol edemiyorum",
     "locale": "tr",
     "category": "emotion",
-    "expect": { "kind": "recommendations", "tagsAny": ["öfke", "sabır", "nefis terbiyesi"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "öfke",
+        "sabır",
+        "nefis terbiyesi"
+      ]
+    },
+    "expectedKeys": [
+      "ofke-euzubillah",
+      "ofke-rabbi-muhammed",
+      "esmaul-husna-el-halim"
+    ],
+    "expandedQuery": "sürekli öfke, sinirlilik ve kontrol edememe hali; öfke sabrı, hiddeti yatıştırma, kalp huzuru ve tahammül artırma, nefret/kızgınlıkla başa çıkma, sabır ve mânevî sakinlik arayışı"
   },
   {
     "id": "r008",
     "freeText": "kendimi çok yalnız hissediyorum, kimsem yok gibi",
     "locale": "tr",
     "category": "emotion",
-    "expect": { "kind": "recommendations", "tagsAny": ["yalnızlık", "teselli", "huzur"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "yalnızlık",
+        "teselli",
+        "huzur"
+      ]
+    },
+    "expectedKeys": [
+      "esmaul-husna-el-vahid",
+      "sikinti-euzu-bi-kelimatillahit-tammati-min-gadabihi"
+    ],
+    "expandedQuery": "yoğun yalnızlık, yalnız hissetme ve yalnızlık kaynaklı üzüntü; yalnızlıkla başa çıkma, Allah’a yakınlık, teselli, gönül ferahlığı, birlik ve aidiyet duygusu arayışı"
   },
   {
     "id": "r009",
     "freeText": "gelecek kaygısı beni her gün eziyor, ne olacağını bilmiyorum",
     "locale": "tr",
     "category": "emotion",
-    "expect": { "kind": "recommendations", "tagsAny": ["gelecek kaygısı", "tevekkül", "kaygı yönetimi"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "gelecek kaygısı",
+        "tevekkül",
+        "kaygı yönetimi"
+      ]
+    },
+    "expectedKeys": [
+      "RIZIK_EBU_UMAME",
+      "sikinti-insirah-suresi",
+      "sikinti-bismillahi-ala-nefsi"
+    ],
+    "expandedQuery": "gelecek kaygısı, belirsizlik ve endişe; geleceğe dair korku, huzursuzluk, karar verme zorluğu, sabır, tevekkül, teslimiyet ve içsel sakinlik arayışı; kaygıyı hafifletmeye yönelik teskin edici zikirler ve dualar"
   },
   {
     "id": "r010",
     "freeText": "sabah namazından sonra ne okumalıyım",
     "locale": "tr",
     "category": "worship",
-    "expect": { "kind": "recommendations", "tagsAny": ["sabah akşam", "namaz"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "sabah akşam",
+        "namaz"
+      ]
+    },
+    "expectedKeys": [
+      "namaz-sonrasi-33-tesbih-paketi",
+      "namaz-sonrasi-ayetel-kursi",
+      "sabah-subhanallah-bihamdihi"
+    ],
+    "expandedQuery": "sabah namazı sonrası okunabilecek zikirler ve dualar; sabahın bereketi, korunma, şükür, günün hayırlı geçmesi için istiğfar, Allah’a yakınlık ve iç huzuru sağlama amaçlı kısa Kur’an ayetleri, tesbihat, Sübhânallâh, Elhamdülillâh, Allâhu Ekber, Ayetel Kürsi, sabah duaları ve koruyucu zikirler arayışı"
   },
   {
     "id": "r011",
     "freeText": "yatmadan önce hangi duaları okumalıyım",
     "locale": "tr",
     "category": "worship",
-    "expect": { "kind": "recommendations", "tagsAny": ["uyku uyanış", "uyku"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "uyku uyanış",
+        "uyku"
+      ]
+    },
+    "expectedKeys": [
+      "uyku-ayetel-kursi",
+      "uyku-bismike-rabbi-yatak",
+      "uyku-tesbih-33-34"
+    ],
+    "expandedQuery": "yatmadan önce okunacak dualar, uykudan önce zikirler ve koruyucu okumalar; gece ibadeti, huzur ve güven hissetme, kötü rüya ve şeytan etkisinden korunma niyeti, uyku öncesi Allah’a yakınlaşma ve gece duası arayışı"
   },
   {
     "id": "r012",
     "freeText": "cuma günü için özel bir zikir var mı",
     "locale": "tr",
     "category": "worship",
-    "expect": { "kind": "recommendations", "tagsAny": ["cuma", "namaz", "özel günler"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "cuma",
+        "namaz",
+        "özel günler"
+      ]
+    },
+    "expectedKeys": [
+      "salavat-cuma-cok-getir",
+      "SEYYIDUL_ISTIGFAR"
+    ],
+    "expandedQuery": "Cuma günü yapılabilecek özel zikir, ibadet ve dua arayışı; Cuma günü bereket, sevap, günahların affı, sevap kazanma, cemaatle ve evde okunacak özel zikirler, Ayet el-Kürsi, Salavat-ı şerife ve kıymetli dualar gibi Cuma’ya mahsus veya faziletli kabul edilen zikir ve duaların anlamı, okunma şekli ve faziletleri."
   },
   {
     "id": "r013",
     "freeText": "hastayım, şifa bulmak için dua istiyorum",
     "locale": "tr",
     "category": "health",
-    "expect": { "kind": "recommendations", "tagsAny": ["şifa", "hastalık"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "şifa",
+        "hastalık"
+      ]
+    },
+    "expectedKeys": [
+      "sifa-ezhibil-bese",
+      "sifa-eselullahel-azime",
+      "sifa-la-bese-tahur"
+    ],
+    "expandedQuery": "hastalık ve bedeni/manevi rahatsızlık; şifa, sağlık, tevekkül, sabır ve Rabb’e yönelme niyeti; şifa duası, hastalar için okunacak zikirler ve Allah’tan afiyet isteme, teselli ve umut arayışı"
   },
   {
     "id": "r014",
     "freeText": "annem hastanede yatıyor, ona şifa duası okumak istiyorum",
     "locale": "tr",
     "category": "health",
-    "expect": { "kind": "recommendations", "tagsAny": ["şifa", "hastalık", "aile"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "şifa",
+        "hastalık",
+        "aile"
+      ]
+    },
+    "expectedKeys": [
+      "sifa-isfi-abdek",
+      "sifa-sefallahu-sekameke",
+      "sifa-ezhibil-bese"
+    ],
+    "expandedQuery": "annenin hastanede yatışı, sağlık sorunları, şifa ve çabuk iyileşme niyeti; şifa duası, Allah’tan afiyet, beden ve ruh için şifa diliyor; yakınlar için tevekkül, sabır ve huzur arayışı"
   },
   {
     "id": "r015",
     "freeText": "yarın uzun bir yolculuğa çıkıyorum, yolculuk duası öner",
     "locale": "tr",
     "category": "travel",
-    "expect": { "kind": "recommendations", "tagsAny": ["yolculuk"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "yolculuk"
+      ]
+    },
+    "expectedKeys": [
+      "yolculuk-seferin-duasi",
+      "yolculuk-estevdiullah-dine",
+      "yolculuk-konaklamada"
+    ],
+    "expandedQuery": "uzun yolculuğa çıkma; güvenli ulaşım, kazadan korunma, rahat ve bereketli seyahat; seyahat süresince sabır, kolaylık, evdekilere huzur ve manevi koruma dileği; yolculuk duası önerisi"
   },
   {
     "id": "r016",
     "freeText": "evleniyorum, huzurlu ve bereketli bir evlilik için dua istiyorum",
     "locale": "tr",
     "category": "family",
-    "expect": { "kind": "recommendations", "tagsAny": ["evlilik", "aile", "bereket"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "evlilik",
+        "aile",
+        "bereket"
+      ]
+    },
+    "expectedKeys": [
+      "evlilik-rum-21",
+      "evlilik-ellif-beyne-kulubina",
+      "evlilik-furkan-74"
+    ],
+    "expandedQuery": "evlilik niyeti, eşle uyum, huzur, sevgi, sadakat, karşılıklı anlayış ve sabır; evde bereket, rızkın genişlemesi, aile bağlarının güçlenmesi, mutlu ve istikrarlı bir yuva için dua ve zikir arayışı"
   },
   {
     "id": "r017",
     "freeText": "çocuğum için hayırlı bir evlat olması adına dua etmek istiyorum",
     "locale": "tr",
     "category": "family",
-    "expect": { "kind": "recommendations", "tagsAny": ["evlat", "aile"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "evlat",
+        "aile"
+      ]
+    },
+    "expectedKeys": [
+      "evlat-rabbi-heb-li-mine-salihin",
+      "evlat-rabbi-heb-li-min-ledunke",
+      "evlat-rabbi-la-tezerni"
+    ],
+    "expandedQuery": "çocuğumun ahlaklı, dindar, sağlıklı ve başarılı bir evlat olması için dua niyeti; evlat terbiyesi, hidayet, hayırlı evlat olma, sabır, bereket ve Allah’ın korunması ve rızası için yakarış arayışı"
   },
   {
     "id": "r018",
     "freeText": "hacdayım, Safa tepesindeyim şu an ne okumalıyım",
     "locale": "tr",
     "category": "niche",
-    "expect": { "kind": "recommendations", "tagsAny": ["hac", "umre"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "hac",
+        "umre"
+      ]
+    },
+    "expectedKeys": [
+      "hac-safa-zikri",
+      "hac-safa-merve-ayeti"
+    ],
+    "expandedQuery": "Hac ibadeti esnasında Safa tepesi üzerinde olma hali; tavaf, say, dualar, Peygamber ve İbrahim duası, tefekkür, tevbe ve niyetin kabulü için okunacak zikir ve dualar; Safa-merve sayının fazileti, Allah’a şükür, niyetin arınması ve manevi huzur arayışı"
   },
   {
     "id": "r019",
     "freeText": "umre için Kabe'yi ilk gördüğüm anda ne okumalıyım",
     "locale": "tr",
     "category": "niche",
-    "expect": { "kind": "recommendations", "tagsAny": ["umre", "hac"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "umre",
+        "hac"
+      ]
+    },
+    "expectedKeys": [
+      "hac-mekke-hareminde",
+      "hac-tavaf-baslangic"
+    ],
+    "expandedQuery": "Umre ziyareti sırasında Kâbe’yi ilk gördüğüm an; Kâbe’yi görmenin verdiği heyecan, huşu ve şükran duygusu; tavaf, dua, istiğfar, salavat ve tekbir ile kalp huzuru, kabul niyeti, sevap umudu ve Allah’a yakınlık arayışı."
   },
   {
     "id": "r020",
     "freeText": "ramazanda iftar vaktinde okunacak dua nedir",
     "locale": "tr",
     "category": "niche",
-    "expect": { "kind": "recommendations", "tagsAny": ["ramazan", "oruç"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "ramazan",
+        "oruç"
+      ]
+    },
+    "expectedKeys": [
+      "oruc-iftar-zehebez-zame",
+      "oruc-iftar-birahmetike"
+    ],
+    "expandedQuery": "Ramazan ayında iftar vaktinde okunacak dua arayışı; iftar duasının Türkçe anlamı, Arapça metni ve kısa fazileti; oruç açarken okunabilecek rivayet edilen dualar ve halk arasında yaygın olan iftar duaları (ör. ‘‘Allahümme inni leke sumtu...’’ vb.)"
   },
   {
     "id": "r021",
     "freeText": "abdest alırken hangi duayı okumalıyım",
     "locale": "tr",
     "category": "worship",
-    "expect": { "kind": "recommendations", "tagsAny": ["abdest", "namaz"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "abdest",
+        "namaz"
+      ]
+    },
+    "expectedKeys": [
+      "abdest-sonrasi-sehadet-dua"
+    ],
+    "expandedQuery": "abdest alma niyeti, abdeste başlarken okunabilecek dualar; abdest duası (Türkçe anlamı) ve abdest sırasında söylenebilecek zikirlere yönelim, abdesti bereketli, huşûlu ve dikkatli kılma arayışı"
   },
   {
     "id": "r022",
     "freeText": "huzur",
     "locale": "tr",
     "category": "vague",
-    "expect": { "kind": "any" }
+    "expect": {
+      "kind": "any"
+    },
+    "expectedKeys": [],
+    "expandedQuery": "iç huzuru, gönül dinginliği ve kaygı giderme ihtiyacı; sakinlik, teselli, sabır ve kalp ferahlığı arayışı"
   },
   {
     "id": "r023",
     "freeText": "yardım",
     "locale": "tr",
     "category": "vague",
-    "expect": { "kind": "any" }
+    "expect": {
+      "kind": "any"
+    },
+    "expectedKeys": [],
+    "expandedQuery": "yardım ihtiyacı, çaresizlik veya sıkıntı halinde destek, yönlendirme ve ferahlık arayışı; dua, zikir ve teslimiyetle Allah’tan yardım, kolaylık, sabır ve çözüm talebi"
   },
   {
     "id": "r024",
     "freeText": "sllsd asdasd 1234",
     "locale": "tr",
     "category": "offtopic",
-    "expect": { "kind": "offTopic" }
+    "expect": {
+      "kind": "offTopic"
+    },
+    "expectedKeys": [],
+    "expandedQuery": "sllsd asdasd 1234",
+    "offTopic": true
   },
   {
     "id": "r025",
     "freeText": "nasılsın",
     "locale": "tr",
     "category": "offtopic",
-    "expect": { "kind": "offTopic" }
+    "expect": {
+      "kind": "offTopic"
+    },
+    "expectedKeys": [],
+    "expandedQuery": "nasılsın",
+    "offTopic": true
   },
   {
     "id": "r026",
     "freeText": "python kodu yaz bana",
     "locale": "tr",
     "category": "offtopic",
-    "expect": { "kind": "offTopic" }
+    "expect": {
+      "kind": "offTopic"
+    },
+    "expectedKeys": [],
+    "expandedQuery": "python kodu yaz bana",
+    "offTopic": true
   },
   {
     "id": "r027",
     "freeText": "I feel very anxious lately and can't sleep at night",
     "locale": "en",
     "category": "emotion",
-    "expect": { "kind": "recommendations", "tagsAny": ["kaygı yönetimi", "uyku", "huzur"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "kaygı yönetimi",
+        "uyku",
+        "huzur"
+      ]
+    },
+    "expectedKeys": [
+      "sikinti-insirah-suresi",
+      "uyku-ayetel-kursi",
+      "sikinti-ya-selam-ya-latif-ya-vedud"
+    ],
+    "expandedQuery": "kaygı, endişe ve uykusuzluk hali; gece huzursuzluğu, sakinleşme, kalp huzuru, teselli, sakin uyku ve zihin dinginliği arayışı"
   },
   {
     "id": "r028",
     "freeText": "I want to thank Allah for everything He has given me",
     "locale": "en",
     "category": "gratitude",
-    "expect": { "kind": "recommendations", "tagsAny": ["şükür", "hamd"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "şükür",
+        "hamd"
+      ]
+    },
+    "expectedKeys": [
+      "tesbih-subhanallahil-azim-ve-bihamdihi",
+      "esmaul-husna-es-sekur"
+    ],
+    "expandedQuery": "şükür, minnettarlık ve Allah’a verilen nimetler için hamd niyeti; Allah’a teşekkür, şükretme bilinci, verilen dünya ve din nimetleri için şükür ve devamlı minnet hali arayışı"
   },
   {
     "id": "r029",
     "freeText": "how are you today, what's up",
     "locale": "en",
     "category": "offtopic",
-    "expect": { "kind": "offTopic" }
+    "expect": {
+      "kind": "offTopic"
+    },
+    "expectedKeys": [],
+    "expandedQuery": "how are you today, what's up",
+    "offTopic": true
   },
   {
     "id": "r030",
     "freeText": "son zamanlarda hayatım çok karışık, işimde sürekli baskı altındayım, evde de eşimle küçük şeyler yüzünden tartışıyoruz, geceleri uyuyamıyorum, kafamda sürekli kötü senaryolar dönüyor ve Allah'a karşı bile bir uzaklık hissediyorum, bu durumdan nasıl çıkabilirim bilmiyorum, biraz huzur ve teselli bulmak istiyorum",
     "locale": "tr",
     "category": "vague",
-    "expect": { "kind": "recommendations", "tagsAny": ["kaygı yönetimi", "sabır", "huzur", "teselli"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "kaygı yönetimi",
+        "sabır",
+        "huzur",
+        "teselli"
+      ]
+    },
+    "expectedKeys": [
+      "sikinti-insirah-suresi",
+      "sikinti-la-ilahe-illallahul-azimul-halim",
+      "sikinti-rabbena-efrig-sabran"
+    ],
+    "expandedQuery": "hayatın karışıklığı, işteki sürekli baskı, evde eşle süregelen tartışmalar, uykusuzluk, sürekli kötü senaryolar ve Allah’a karşı hissedilen uzaklık; için huzur, teselli, kalp ferahlığı, sabır, gönül yakınlığı ve Allah’a yönelme niyeti arayışı"
   },
   {
     "id": "r031",
     "freeText": "geçen hafta işimi kaybettim, aynı gün eve dönerken küçük bir trafik kazası geçirdim, çok şükür yaralanan olmadı ama araç hasar gördü, üstüne bir de annemin sağlık durumu kötüleşti, tüm bunlar üst üste gelince dayanacak gücüm kalmadı gibi hissediyorum, rızkım ve ailem için ne okumalıyım bilmiyorum",
     "locale": "tr",
     "category": "life-event",
-    "expect": { "kind": "recommendations", "tagsAny": ["sabır", "tevekkül", "rızık", "rızık bereket"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "sabır",
+        "tevekkül",
+        "rızık",
+        "rızık bereket"
+      ]
+    },
+    "expectedKeys": [
+      "sikinti-rabbena-efrig-sabran",
+      "RIZIK_EBU_UMAME",
+      "sikinti-hasbiye-tertibi"
+    ],
+    "expandedQuery": "iş kaybı, trafik kazası ve anne sağlığındaki kötüleşme nedeniyle yoğun stres, maddi ve duygusal sıkıntı; sabır, teslimiyet, rızık, aile koruması, şifa, ferahlık ve dayanma gücü dileği; rızkın genişlemesi, aile için bereket ve anneye şifa niyazı arayışı."
   },
   {
     "id": "r032",
     "freeText": "işten kovulacağım diye çok korkuyorum, rızkım için dua etmek istiyorum",
     "locale": "tr",
     "category": "work",
-    "expect": { "kind": "recommendations", "tagsAny": ["rızık", "iş hayatı", "tevekkül", "iş kariyer"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "rızık",
+        "iş hayatı",
+        "tevekkül",
+        "iş kariyer"
+      ]
+    },
+    "expectedKeys": [
+      "is-allahumme-ikfini-bi-helalike",
+      "is-allahumme-ya-ganiyyu-ya-hamidu",
+      "is-ya-rafi-kariyer-yukselis"
+    ],
+    "expandedQuery": "iş kaybı kaygısı ve gelecek için endişe; rızık artışı, iş bulma, geçim kolaylığı, kalp huzuru ve tevekkül için dua ve zikir arayışı; rızık genişletme, sabır, teslimiyet ve güven talebi"
   },
   {
     "id": "r033",
     "freeText": "yeni bir eve taşınıyoruz, hayırlı ve bereketli olması için ne okumalıyım",
     "locale": "tr",
     "category": "life-event",
-    "expect": { "kind": "recommendations", "tagsAny": ["ev", "bereket", "ev hayatı"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "ev",
+        "bereket",
+        "ev hayatı"
+      ]
+    },
+    "expectedKeys": [
+      "MUMINUN_29",
+      "MESKEN_GENISLIGI",
+      "EVE_GIRERKEN_DUA"
+    ],
+    "expandedQuery": "yeni bir eve taşınma, evin hayırlı, bereketli, huzurlu ve korunmuş olması niyeti; bereket, ev sakinleri için güven, sağlık, rızık kapılarının açılması, kötülüklerden korunma ve Rabb’e şükür, salih amellerle doldurma arzusu"
   },
   {
     "id": "r034",
     "freeText": "büyük bir günah işledim, çok pişmanım, Allah'tan af diliyorum",
     "locale": "tr",
     "category": "repentance",
-    "expect": { "kind": "recommendations", "tagsAny": ["tövbe", "istiğfar"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "tövbe",
+        "istiğfar"
+      ]
+    },
+    "expectedKeys": [
+      "SEYYIDUL_ISTIGFAR",
+      "sifa-seyyidul-istigfar",
+      "ISTIGFAR"
+    ],
+    "expandedQuery": "büyük günah işleme sonucu yoğun pişmanlık, tövbe ve bağışlanma arzusu; Allah'tan af, bağışlanma, rahmet ve manevî arınma talebi; tövbe süreci, keffaret, sabır ve iman tazelenmesi ihtiyacı"
   },
   {
     "id": "r035",
     "freeText": "yarın ameliyat olacağım, çok korkuyorum, benim için dua öner",
     "locale": "tr",
     "category": "health",
-    "expect": { "kind": "recommendations", "tagsAny": ["hastalık", "şifa", "koruma", "korunma"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "hastalık",
+        "şifa",
+        "koruma",
+        "korunma"
+      ]
+    },
+    "expectedKeys": [
+      "sifa-afiyete-dunya-ahiret",
+      "sifa-eselullahel-azime",
+      "sikinti-la-ilahe-illallahul-azimul-halim"
+    ],
+    "expandedQuery": "yarın ameliyat olacak olmanın getirdiği korku, endişe ve tedirginlik; ameliyat öncesi huzur, cesaret, güven, tevekkül, şifa ve başarılı sonuç için niyet ve dua arayışı"
   },
   {
     "id": "r036",
     "freeText": "sürekli kabuslar görüyorum, uykularım kaçtı, korunmak için ne okumalıyım",
     "locale": "tr",
     "category": "emotion",
-    "expect": { "kind": "recommendations", "tagsAny": ["uyku", "koruma", "kaygı yönetimi", "korunma"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "uyku",
+        "koruma",
+        "kaygı yönetimi",
+        "korunma"
+      ]
+    },
+    "expectedKeys": [
+      "uyku-ayetel-kursi",
+      "sikinti-euzu-bi-kelimatillahit-tammati-min-gadabihi",
+      "korunma-muavvizeteyn-felak-nas"
+    ],
+    "expandedQuery": "sürekli kabuslar, uykusuzluk ve gece korkusu; kötü rüyalardan korunma, huzurlu uyku, Allah’a sığınma, gece ibadeti ve dualarla ruhî ve manevi koruma arayışı"
   },
   {
     "id": "r037",
     "freeText": "gece namazına kalkmak istiyorum ama nefsime yeniliyorum, yardımcı olacak bir zikir var mı",
     "locale": "tr",
     "category": "worship",
-    "expect": { "kind": "recommendations", "tagsAny": ["gece namazı", "nefis terbiyesi", "teheccüd"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "gece namazı",
+        "nefis terbiyesi",
+        "teheccüd"
+      ]
+    },
+    "expectedKeys": [
+      "namaz-iftitah-veccehtu",
+      "vitr-kunut-hdini-fimen",
+      "sikinti-ya-allah-estagfirullah"
+    ],
+    "expandedQuery": "gece namazına kalkma isteği ve nefsin ağır gelmesi; irade güçsüzlüğü, uyanık kalma zorluğu, disiplin ve azim artırma, tevbe, Allah’tan yardım dileme ve uyanıklık/ibadet azmi kazanmaya yönelik zikirler, kısa tesbihatler ve niyet güçlendirici dualar"
   },
   {
     "id": "r038",
     "freeText": "eşimle aramız son zamanlarda bozuk, evimize huzur gelmesi için dua istiyorum",
     "locale": "tr",
     "category": "family",
-    "expect": { "kind": "recommendations", "tagsAny": ["aile ilişkisi", "huzur", "sabır", "ev hayatı"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "aile ilişkisi",
+        "huzur",
+        "sabır",
+        "ev hayatı"
+      ]
+    },
+    "expectedKeys": [
+      "evlilik-nisa-19",
+      "evlilik-ellif-beyne-kulubina",
+      "evlilik-nisa-128"
+    ],
+    "expandedQuery": "eşle ilgili anlaşmazlık, iletişim kopukluğu ve evde huzur eksikliği; aile içi barış, sevgi, sabır, anlayış, kırgınlıkların giderilmesi ve gönül birliği için dua ve zikir arayışı"
   },
   {
     "id": "r039",
     "freeText": "bugün küçük ama benim için çok kıymetli bir mucize yaşadım, şükretmek istiyorum",
     "locale": "tr",
     "category": "gratitude",
-    "expect": { "kind": "recommendations", "tagsAny": ["şükür", "hamd"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "şükür",
+        "hamd"
+      ]
+    },
+    "expectedKeys": [
+      "tesbih-subhanallahil-azim-ve-bihamdihi",
+      "esmaul-husna-es-sekur",
+      "sabah-nimet-sukur"
+    ],
+    "expandedQuery": "yaşanan küçük ama kişisel mucize için derin şükür, minnet ve hamd duygusu; Allah’a teşekkür, sürekli şükretme niyeti, kalp huzuru, şükürle bağ güçlendirme ve daha fazla nimet için farkındalık arzusu"
   },
   {
     "id": "r040",
     "freeText": "asdkjaslkdjaslkdj",
     "locale": "tr",
     "category": "offtopic",
-    "expect": { "kind": "offTopic" }
+    "expect": {
+      "kind": "offTopic"
+    },
+    "expectedKeys": [],
+    "expandedQuery": "asdkjaslkdjaslkdj",
+    "offTopic": true
   },
   {
     "id": "r041",
     "freeText": "dua",
     "locale": "tr",
     "category": "vague",
-    "expect": { "kind": "any" }
+    "expect": {
+      "kind": "any"
+    },
+    "expectedKeys": [],
+    "expandedQuery": "dua, Allah’a yönelme ve istediğini dileme niyeti; genel olarak ibadet, bağışlanma, yardım talebi, şükür veya niyaz amaçlı kısa veya uzun dualar arayışı"
   },
   {
     "id": "r042",
     "freeText": "kurban bayramı arefe gününde hangi zikirleri çekmeliyim",
     "locale": "tr",
     "category": "niche",
-    "expect": { "kind": "recommendations", "tagsAny": ["kurban", "bayram", "zilhicce", "özel günler"] }
+    "expect": {
+      "kind": "recommendations",
+      "tagsAny": [
+        "kurban",
+        "bayram",
+        "zilhicce",
+        "özel günler"
+      ]
+    },
+    "expectedKeys": [
+      "VAHDEHU_LA",
+      "hac-arefe-zikri",
+      "TESRIK_TEKBIRI"
+    ],
+    "expandedQuery": "Kurban Bayramı arefe günü, ibadet ve sevap artırma, tevbe, şükür, niyet/iade, kurban adak ve soma hazırlığı, Allah’a yakınlık, dualarla bağışlanma ve kabullerini dileme; arefe ve bayram öncesi zikir, teheccüd, istiğfar ve salavat arayışı"
   }
 ]

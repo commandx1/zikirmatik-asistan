@@ -103,7 +103,7 @@ export const gunlukTesbih = {
         tr: 'Müslim, Zikir, 6 (2695)',
         en: 'Sahih Muslim, Dhikr, 6 (2695)',
       },
-      tags: ['compound zikir', 'tevhid', 'tekbir', 'hamd', 'tesbih', 'la havle', 'günlük'],
+      tags: ['tevhid', 'tekbir', 'hamd', 'tesbih', 'la havle', 'günlük'],
       categories: ['genel', 'ibadet', 'zikir', 'günlük'],
       timeOfDay: 'any',
       recommendedCount: 10,

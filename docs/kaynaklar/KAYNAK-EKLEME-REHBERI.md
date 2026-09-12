@@ -280,7 +280,24 @@ node scripts/prune-stale-source-passages.mjs --source ornek-kaynak --apply
 node scripts/seed-source-passages.mjs --source ornek-kaynak --seed
 ```
 
-`--dry-run` ile 2. adımı dosya yazmadan deneyebilirsin.
+`--dry-run` ile 2. adımı dosya yazmadan deneyebilirsin. `--seed` adımı da
+kendi `--dry-run`'ını destekler (`--source ornek-kaynak --seed --dry-run`) —
+hiçbir embedding/yazma yapmadan kaç pasajın yeniden embed edileceğini
+gösterir; embed maliyetli bir OpenAI çağrısı olduğu için büyük/ilk seed'lerde
+önce bununla önizleme yapılması önerilir. `--force`, hash eşleşse bile
+TÜMÜNÜ yeniden embed eder — yalnızca embedding şablonu değiştiğinde (bkz.
+`docs/ai-mimari.md` "Veri migrasyonu" notu) kullanılır.
+
+**Embedding girdisi salt pasaj metni değildir:** `"{sourceTitle} —
+{sectionHeading}\n{text}"` (`buildPassageEmbeddingText`, hangi kaynağın/
+bölümün parçası olduğunu gömer) embed edilir; depolanan `text` alanı bundan
+etkilenmez. Vektörler OpenAI'a **64'lük gruplar** hâlinde gönderilir, Mongo'ya
+**50'lik gruplar** hâlinde (aralarında 250 ms bekleme ile, M0 küme op
+limitine takılmamak için) `bulkWrite` edilir ve BSON float32 (`Binary`,
+subtype 9) olarak saklanır — düz sayı dizisinden ~5 kat daha az yer kaplar
+(bkz. `docs/ai-mimari.md` §6). Bir kaynağı **yeniden** seed etmek yalnızca
+metni (dolayısıyla `embeddingSourceHash`'i) değişen chunk'ları yeniden embed
+eder, değişmeyenler atlanır.
 
 ### 3. ve 4. adım neden var?
 

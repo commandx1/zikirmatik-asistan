@@ -29,7 +29,7 @@ export type BackendCollectionDhikr = {
   virtue?: LocalizedText;
   source?: LocalizedText;
   recommendedCount: number;
-  timeOfDay?: string;
+  timeOfDay?: string[] | string;
 };
 
 export type BackendCollectionDetail = BackendCollection & {

@@ -1,0 +1,49 @@
+{
+  "dhikrs": [
+    {
+      "name": "tam alanlı zikir",
+      "source": {
+        "name": { "tr": "Sübhanallah" },
+        "transliteration": { "tr": "Sübhânallâh" },
+        "suitableFor": ["sabah", "akşam"],
+        "tags": ["tesbih", "zikir"],
+        "categories": ["günlük"],
+        "meaning": { "tr": "Allah her türlü eksiklikten münezzehtir." },
+        "virtue": { "tr": "Her tesbihte bir hasene yazılır." }
+      },
+      "expectedText": "Zikir: Sübhanallah\nNe zaman / kim için: sabah, akşam\nKonular: tesbih, zikir; günlük\nAnlam: Allah her türlü eksiklikten münezzehtir.\nFazilet: Her tesbihte bir hasene yazılır."
+    },
+    {
+      "name": "transliterasyon ve categories eksik",
+      "source": {
+        "name": { "tr": "Elhamdülillah" },
+        "suitableFor": ["her zaman"],
+        "tags": ["hamd"],
+        "categories": [],
+        "meaning": { "tr": "Hamd Allah'a mahsustur." },
+        "virtue": { "tr": "Mizanı doldurur." }
+      },
+      "expectedText": "Zikir: Elhamdülillah\nNe zaman / kim için: her zaman\nKonular: hamd\nAnlam: Hamd Allah'a mahsustur.\nFazilet: Mizanı doldurur."
+    }
+  ],
+  "passages": [
+    {
+      "name": "başlıklı pasaj",
+      "source": {
+        "sourceTitle": "Hısnu'l-Müslim",
+        "sectionHeading": "Sabah Zikirleri",
+        "text": "Allah'ım! Senin lütfunla sabahladık..."
+      },
+      "expectedText": "Hısnu'l-Müslim — Sabah Zikirleri\nAllah'ım! Senin lütfunla sabahladık..."
+    },
+    {
+      "name": "başlıksız pasaj",
+      "source": {
+        "sourceTitle": "El-Ezkar Cilt 1",
+        "sectionHeading": null,
+        "text": "Bismillahirrahmanirrahim ile başlanır."
+      },
+      "expectedText": "El-Ezkar Cilt 1\nBismillahirrahmanirrahim ile başlanır."
+    }
+  ]
+}

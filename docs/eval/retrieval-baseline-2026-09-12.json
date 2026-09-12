@@ -1,0 +1,4620 @@
+{
+  "meta": {
+    "runId": "2026-09-12T14-35-53-910Z",
+    "startedAt": "2026-09-12T14:35:53.910Z",
+    "finishedAt": "2026-09-12T14:36:40.267Z",
+    "gitSha": "c06c96f",
+    "locale": "tr+en",
+    "models": {
+      "expand": "gpt-5-mini"
+    },
+    "datasetSize": 42,
+    "casesRun": 42,
+    "expansionsLlmCalls": 42,
+    "expansionsCached": 0,
+    "pipelineCostUsd": 0.014318879999999999
+  },
+  "summary": {
+    "total": 42,
+    "evaluated": 33,
+    "skipped": 9,
+    "errorCount": 0,
+    "errorRate": 0,
+    "meanRecall15": 0.7121212121212122,
+    "hit5Rate": 0.7878787878787878,
+    "mrr": 0.5415084915084916,
+    "meanDupCount": 0.7142857142857143,
+    "latencyP50": 3064,
+    "latencyP95": 3912.9999999999995
+  },
+  "cases": [
+    {
+      "id": "r002",
+      "freeText": "Allah'a şükretmek istiyorum",
+      "locale": "tr",
+      "category": "gratitude",
+      "expandedQuery": "Allah’a şükretme, şükür ve hamd duygusunu ifade etme niyeti; nimete şükran ile kalp huzuru, minnettarlık pratiği, şükür zikirleri ve duaları aracılığıyla Allah’a yakınlık ve teslimiyet arayışı.",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "tesbih-subhanallahil-azim-ve-bihamdihi",
+        "esmaul-husna-es-sekur"
+      ],
+      "skipped": false,
+      "firstRank": 15,
+      "hit5": false,
+      "recall15": 0.5,
+      "dupCount": 0,
+      "latencyMs": 3754,
+      "top15": [
+        {
+          "key": "namaz-selamdan-once-zikredinme-yardim",
+          "id": "6a59ffb3a9004ba3e9f22055",
+          "name": "Selâmdan Önce — Zikir, Şükür ve İbadet İçin Yardım",
+          "score": 0.030330882352941176
+        },
+        {
+          "key": "LEKEL_HAMD",
+          "id": "6a59ffa5a9004ba3e9f21f7c",
+          "name": "Allâhümme Lekel Hamdü Duası",
+          "score": 0.030090497737556562
+        },
+        {
+          "key": "ISTIGFAR",
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.02878726010616578
+        },
+        {
+          "key": "KURBAN_SUKRU_DUASI",
+          "id": "6a59ffa5a9004ba3e9f21f85",
+          "name": "Şükür Duası",
+          "score": 0.028693528693528692
+        },
+        {
+          "key": "LA_MANIA_LIMA_ATAYTE",
+          "id": "6a59ffbea9004ba3e9f220e4",
+          "name": "Namaz Sonrası Teslimiyet Duası",
+          "score": 0.02857142857142857
+        },
+        {
+          "key": "sabah-nimet-sukur",
+          "id": "6a59ffc4a9004ba3e9f22143",
+          "name": "Sabah Nimet Şükrü",
+          "score": 0.027346637102734665
+        },
+        {
+          "key": "uyanis-hamd-ruh",
+          "id": "6a59ffc6a9004ba3e9f2215d",
+          "name": "Uyanınca Ruhu Geri Veren Allah'a Hamd",
+          "score": 0.027108970929195647
+        },
+        {
+          "key": "tesbih-bedevi-compound",
+          "id": "6a59ffb0a9004ba3e9f2202a",
+          "name": "Tüm Formülleri Birleştiren Zikir",
+          "score": 0.026916221033868093
+        },
+        {
+          "key": "aksirirken-elhamdulillah",
+          "id": "6a59ffb2a9004ba3e9f22045",
+          "name": "Aksırırken Hamd",
+          "score": 0.02532051282051282
+        },
+        {
+          "key": "sikinti-inna-lillahi-ve-inna-ileyhi-raciun",
+          "id": "6a59ffb9a9004ba3e9f220a7",
+          "name": "Musibet ve Teslimiyet Duası",
+          "score": 0.02439384979302188
+        },
+        {
+          "key": "namaz-secde-subhane-rabbiyel-ala",
+          "id": "6a59ffb3a9004ba3e9f2204e",
+          "name": "Secde Duası — Sübhâne Rabbiyel-A'lâ",
+          "score": 0.023839931885908897
+        },
+        {
+          "key": "BAKIYAT_SALIHAT",
+          "id": "6a59ffa7a9004ba3e9f21f9c",
+          "name": "Bakıyat-ı Salihat Zikri",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "MEVLID_HAMD",
+          "id": "6a59ffa6a9004ba3e9f21f98",
+          "name": "Mevlid Hamd ve Tesbih Zikri",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "esmaul-husna-es-sekur",
+          "id": "6a59ffaba9004ba3e9f21fdb",
+          "name": "Eş-Şekûr",
+          "score": 0.015625,
+          "isExpected": true
+        }
+      ]
+    },
+    {
+      "id": "r001",
+      "freeText": "çok kaygılıyım, içim huzursuz",
+      "locale": "tr",
+      "category": "emotion",
+      "expandedQuery": "yoğun kaygı, iç huzursuzluğu, gerginlik ve endişe hali; sakinleşme, gönül ferahlatma, sükunet, Allah’a tevekkül, sabır ve huzur arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "sikinti-insirah-suresi",
+        "sikinti-la-ilahe-illallahul-azimul-halim",
+        "sikinti-ya-selam-ya-latif-ya-vedud"
+      ],
+      "skipped": false,
+      "firstRank": 3,
+      "hit5": true,
+      "recall15": 0.6666666666666666,
+      "dupCount": 0,
+      "latencyMs": 3785,
+      "top15": [
+        {
+          "key": "sikinti-huvellezi-sekine",
+          "id": "6a59ffbaa9004ba3e9f220b9",
+          "name": "Sekine Ayeti",
+          "score": 0.030834914611005692
+        },
+        {
+          "key": "sikinti-hasbiye-tertibi",
+          "id": "6a59ffbaa9004ba3e9f220b8",
+          "name": "Hasbiye Tertibi",
+          "score": 0.028083267871170464
+        },
+        {
+          "key": "sikinti-ya-selam-ya-latif-ya-vedud",
+          "id": "6a59ffbaa9004ba3e9f220b3",
+          "name": "Yâ Selâm, Yâ Latîf, Yâ Vedûd",
+          "score": 0.02792120864410021,
+          "isExpected": true
+        },
+        {
+          "key": "ofke-hasbiyallahu",
+          "id": "6a59ffbfa9004ba3e9f220f6",
+          "name": "Hasbiyallâh Zikri",
+          "score": 0.027222222222222224
+        },
+        {
+          "key": "sikinti-inni-euzu-minel-hemmi",
+          "id": "6a59ffbba9004ba3e9f220c2",
+          "name": "Sekiz Şeyden Sığınma Duası — Kaygı ve Keder",
+          "score": 0.026742734890354787
+        },
+        {
+          "key": "LA_HAVLE",
+          "id": "6a59ffa6a9004ba3e9f21f91",
+          "name": "Lâ Havle Zikri",
+          "score": 0.025478740668614087
+        },
+        {
+          "key": "sikinti-la-ilahe-illallahul-azimul-halim",
+          "id": "6a59ffb9a9004ba3e9f220a5",
+          "name": "Kriz ve Keder Anı Tevhid Zikri",
+          "score": 0.0251821349382325,
+          "isExpected": true
+        },
+        {
+          "key": "sikinti-rabbena-efrig-sabran",
+          "id": "6a59ffbaa9004ba3e9f220bc",
+          "name": "Sabır Yağdırma Duası",
+          "score": 0.02353266888150609
+        },
+        {
+          "key": "sikinti-ya-muahhir",
+          "id": "6a59ffb9a9004ba3e9f220aa",
+          "name": "Yâ Mu'ahhir",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffa3a9004ba3e9f21f6b",
+          "name": "Ramazan Hilali Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f87",
+          "name": "Tevekkül ve Hasbiye Zikri",
+          "score": 0.015625
+        },
+        {
+          "key": "sikinti-ya-mumin",
+          "id": "6a59ffb9a9004ba3e9f220ae",
+          "name": "Yâ Mü'min",
+          "score": 0.015384615384615385
+        }
+      ]
+    },
+    {
+      "id": "r003",
+      "freeText": "günahlarımdan tövbe etmek istiyorum",
+      "locale": "tr",
+      "category": "repentance",
+      "expandedQuery": "tövbe ve istiğfar niyeti; geçmiş günahlar için pişmanlık, Allah’tan bağışlanma, kalbi arındırma ve günahlara geri dönmeme azmi; samimi tövbe, istiğfar duaları ve zikirleri arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "SEYYIDUL_ISTIGFAR",
+        "sifa-seyyidul-istigfar",
+        "ISTIGFAR"
+      ],
+      "skipped": false,
+      "firstRank": 2,
+      "hit5": true,
+      "recall15": 0.6666666666666666,
+      "dupCount": 2,
+      "latencyMs": 4563,
+      "top15": [
+        {
+          "key": "istigfar-gunluk",
+          "id": "6a59ffc2a9004ba3e9f2211d",
+          "name": "Günlük İstiğfar",
+          "score": 0.031754032258064516
+        },
+        {
+          "key": "ISTIGFAR",
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.031544957774465976,
+          "isExpected": true
+        },
+        {
+          "key": "istigfar-rabbena-zalemna",
+          "id": "6a59ffc2a9004ba3e9f2211c",
+          "name": "Hz. Âdem ve Havvâ'nın Tövbe Duası",
+          "score": 0.030834914611005692
+        },
+        {
+          "key": "sikinti-ya-allah-estagfirullah",
+          "id": "6a59ffbaa9004ba3e9f220bb",
+          "name": "Gece İstiğfarı",
+          "score": 0.03036576949620428
+        },
+        {
+          "key": "istigfar-rabbigfirli",
+          "id": "6a59ffc2a9004ba3e9f22119",
+          "name": "Rabbim Bağışla ve Tövbemi Kabul Et",
+          "score": 0.029211087420042643
+        },
+        {
+          "key": "istigfar-hayyel-kayyum",
+          "id": "6a59ffc2a9004ba3e9f2211a",
+          "name": "Hayy ve Kayyum Olan Allah'a İstiğfar",
+          "score": 0.02889344262295082
+        },
+        {
+          "key": "ozlu-hata-cehalet-israf-magrfet",
+          "id": "6a59ffb4a9004ba3e9f2205f",
+          "name": "Kapsamlı Mağfiret Duası — Üç Dörtlü Af",
+          "score": 0.027650648360030512
+        },
+        {
+          "key": "ofke-estagfirullah-hayy-kayyum",
+          "id": "6a59ffbfa9004ba3e9f220f7",
+          "name": "Hayy-Kayyûm İstiğfarı",
+          "score": 0.027106227106227107
+        },
+        {
+          "key": "namaz-secde-gunahlarin-bagisilmasi",
+          "id": "6a59ffb3a9004ba3e9f22050",
+          "name": "Secdede Günahların Bağışlanması Duası",
+          "score": 0.02649122807017544
+        },
+        {
+          "key": "istigfar-yunus-duasi",
+          "id": "6a59ffc2a9004ba3e9f2211b",
+          "name": "Hz. Yûnus'un Tövbe Duası",
+          "score": 0.026470588235294117
+        },
+        {
+          "key": "sifa-seyyidul-istigfar",
+          "id": "6a59ffc1a9004ba3e9f2210f",
+          "name": "Seyyidü'l-İstiğfar",
+          "score": 0.025252525252525252,
+          "isExpected": true
+        },
+        {
+          "key": "yolculuk-eve-donuste-tevbe",
+          "id": "6a59ffc4a9004ba3e9f2213d",
+          "name": "Eve Döndüğünde Tövbe Zikri",
+          "score": 0.02523809523809524
+        },
+        {
+          "key": "meclis-istigfar-100",
+          "id": "6a59ffc7a9004ba3e9f22165",
+          "name": "Oturumda İstiğfar Duası",
+          "score": 0.0251414204902577
+        },
+        {
+          "key": "tuvaletten-ciktiktan-sonra-dua",
+          "id": "6a59ffb2a9004ba3e9f22043",
+          "name": "Tuvaletten Çıktıktan Sonra Dua",
+          "score": 0.023399014778325122
+        },
+        {
+          "key": "esmaul-husna-et-tevvab",
+          "id": "6a59ffada9004ba3e9f22008",
+          "name": "Et-Tevvâb",
+          "score": 0.015873015873015872
+        }
+      ]
+    },
+    {
+      "id": "r005",
+      "freeText": "asdfgh123",
+      "locale": "tr",
+      "category": "offtopic",
+      "expandedQuery": "asdfgh123",
+      "expandedFromCache": false,
+      "expectedKeys": [],
+      "skipped": true,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 0,
+      "latencyMs": 3057,
+      "top15": [
+        {
+          "key": "afet-allahumme-la-tektulna-bi-gadabik",
+          "id": "6a59ffb8a9004ba3e9f2209f",
+          "name": "Gazaptan Sığınma Duası",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "SUBHANALLAH_GAFUR_RAHIM",
+          "id": "6a59ffa2a9004ba3e9f21f59",
+          "name": "Sübhânallâhi'l-Ğafûri'r-Rahîm — Recep 21-30. Günler Zikri",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "SUBHANALLAH_EHAD_SAMED",
+          "id": "6a59ffa2a9004ba3e9f21f58",
+          "name": "Sübhânallâhil-Ehadi's-Samed — Recep 11-20. Günler Zikri",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "tehlike-bismillah-havkale",
+          "id": "6a59ffbba9004ba3e9f220c0",
+          "name": "Tehlike Anında Besmeleli Havkale",
+          "score": 0.015625
+        },
+        {
+          "key": "haset-ya-hafiz",
+          "id": "6a59ffbea9004ba3e9f220e3",
+          "name": "Yâ Hâfız",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "esmaul-husna-el-ahir",
+          "id": "6a59ffada9004ba3e9f22002",
+          "name": "El-Âhir",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "sinav-bismillahi-ve-subhanellahi",
+          "id": "6a59ffa8a9004ba3e9f21fb3",
+          "name": "Tesbih ve Havkale Terkibi",
+          "score": 0.014925373134328358
+        },
+        {
+          "key": "esma-ya-melik",
+          "id": "6a59ffafa9004ba3e9f2201e",
+          "name": "Ya Melik",
+          "score": 0.014705882352941176
+        },
+        {
+          "key": "esmaul-husna-el-gaffar",
+          "id": "6a59ffa9a9004ba3e9f21fc5",
+          "name": "El-Gaffâr",
+          "score": 0.014492753623188406
+        },
+        {
+          "key": "afet-bismillahi-ma-saallah-la-kuvvete",
+          "id": "6a59ffb8a9004ba3e9f22096",
+          "name": "Bismillâhi Mâ Şâallah Tertibi",
+          "score": 0.014285714285714285
+        },
+        {
+          "key": "SUBHANALLAH_HAYY_KAYYUM",
+          "id": "6a59ffa2a9004ba3e9f21f57",
+          "name": "Sübhânallâhil-Hayyi'l-Kayyûm — Recep 1-10. Günler Zikri",
+          "score": 0.014084507042253521
+        },
+        {
+          "key": "sikinti-ya-selam-ya-latif-ya-vedud",
+          "id": "6a59ffbaa9004ba3e9f220b3",
+          "name": "Yâ Selâm, Yâ Latîf, Yâ Vedûd",
+          "score": 0.013888888888888888
+        },
+        {
+          "key": "YA_LATIF",
+          "id": "6a59ffa3a9004ba3e9f21f67",
+          "name": "Subhânallâhi'l-Latîf — Şaban 1-10. Günler Zikirı",
+          "score": 0.0136986301369863
+        },
+        {
+          "key": "YA_RAHMAN_YA_RAHIM",
+          "id": "6a59ffa7a9004ba3e9f21f9e",
+          "name": "Ya Rahman Ya Rahim",
+          "score": 0.013513513513513514
+        },
+        {
+          "key": "esmaul-husna-el-fettah",
+          "id": "6a59ffa9a9004ba3e9f21fc9",
+          "name": "El-Fettâh",
+          "score": 0.013333333333333334
+        }
+      ]
+    },
+    {
+      "id": "r004",
+      "freeText": "sınavım var, başarı ve kolaylık için dua",
+      "locale": "tr",
+      "category": "work",
+      "expandedQuery": "sınav kaygısı, başarı, kolaylık ve zihinsel açıklık; sınav öncesi ve sırasında huzur, başarılı olma, dikkat ve hafıza artışı için dua ve zikir arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "sinav-rabbisrahli-sadri",
+        "sinav-rabbi-yessir",
+        "sinav-rabbi-edhilni"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 0,
+      "latencyMs": 3659,
+      "top15": [
+        {
+          "key": "sinav-rabbi-edhilni",
+          "id": "6a59ffa7a9004ba3e9f21fa9",
+          "name": "Sınav Duası",
+          "score": 0.03278688524590164,
+          "isExpected": true
+        },
+        {
+          "key": "sinav-rabbi-yessir",
+          "id": "6a59ffa7a9004ba3e9f21fab",
+          "name": "Kolaylık Duası",
+          "score": 0.03200204813108039,
+          "isExpected": true
+        },
+        {
+          "key": "sinav-rabbisrahli-sadri",
+          "id": "6a59ffa7a9004ba3e9f21faa",
+          "name": "Hz. Mûsâ'nın Duası",
+          "score": 0.031054405392392875,
+          "isExpected": true
+        },
+        {
+          "key": "sinav-sekine-fetih",
+          "id": "6a59ffa8a9004ba3e9f21fac",
+          "name": "Sekîne ve Feth Terkibi (Geleneksel)",
+          "score": 0.029957522915269395
+        },
+        {
+          "key": "sinav-allahumme-la-sehle",
+          "id": "6a59ffa8a9004ba3e9f21fae",
+          "name": "Zorluğu Kolaylaştırma Duası",
+          "score": 0.029910714285714284
+        },
+        {
+          "key": "sinav-estovdiuke-ilim",
+          "id": "6a59ffa8a9004ba3e9f21faf",
+          "name": "İlmi Emanet Duası",
+          "score": 0.029083245521601686
+        },
+        {
+          "key": "ozlu-takva-nesip-faydali-ilim",
+          "id": "6a59ffb4a9004ba3e9f22062",
+          "name": "Üçlü Kapsamlı Dua — Âcizlik, Takvâ ve Faydalı İlim",
+          "score": 0.028404512489927477
+        },
+        {
+          "key": "sinav-allahumme-hirli",
+          "id": "6a59ffa8a9004ba3e9f21fb4",
+          "name": "Doğru Tercih Duası",
+          "score": 0.026419626007891578
+        },
+        {
+          "key": "sikinti-hasbiye-tertibi",
+          "id": "6a59ffbaa9004ba3e9f220b8",
+          "name": "Hasbiye Tertibi",
+          "score": 0.025035205758097326
+        },
+        {
+          "key": "sikinti-bismillahi-ala-nefsi",
+          "id": "6a59ffbaa9004ba3e9f220b6",
+          "name": "İlahi Zamana Razı Olma Duası",
+          "score": 0.02428613482484545
+        },
+        {
+          "key": "NUR",
+          "id": "6a59ffa5a9004ba3e9f21f80",
+          "name": "Nûr Duası",
+          "score": 0.023709315375982042
+        },
+        {
+          "id": "6a59ffb4a9004ba3e9f22065",
+          "name": "Peygamber Dualarının Tüm Özeti",
+          "score": 0.015625
+        },
+        {
+          "key": "sinav-ya-hayyu-ya-kayyum",
+          "id": "6a59ffa8a9004ba3e9f21fad",
+          "name": "Yâ Hayyü Yâ Kayyûm",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "sinav-bismillahi-ve-subhanellahi",
+          "id": "6a59ffa8a9004ba3e9f21fb3",
+          "name": "Tesbih ve Havkale Terkibi",
+          "score": 0.015151515151515152
+        },
+        {
+          "id": "6a59ffa8a9004ba3e9f21fb2",
+          "name": "Senukriuke Felâ Tensâ",
+          "score": 0.015151515151515152
+        }
+      ]
+    },
+    {
+      "id": "r006",
+      "freeText": "içim kan ağlıyor, çok üzgünüm",
+      "locale": "tr",
+      "category": "emotion",
+      "expandedQuery": "derin üzüntü, içsel keder ve ruhsal çöküntü hali; gözyaşı, mahzunluk ve kalp sancısı yaşayan kişiye teselli, sabır, gönül ferahlatma ve manevi huzur arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "sikinti-inni-abduk-ibnu-abduk",
+        "DUHA_SURESI",
+        "sikinti-ya-hayyu-ya-kayyum"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 0.3333333333333333,
+      "dupCount": 0,
+      "latencyMs": 3476,
+      "top15": [
+        {
+          "key": "sikinti-inni-abduk-ibnu-abduk",
+          "id": "6a59ffbba9004ba3e9f220bd",
+          "name": "Üzüntü ve Keder Duası — Kur'an'ı Kalbin Baharı Kıl",
+          "score": 0.03278688524590164,
+          "isExpected": true
+        },
+        {
+          "key": "sikinti-la-ilahe-illallahul-azimul-halim",
+          "id": "6a59ffb9a9004ba3e9f220a5",
+          "name": "Kriz ve Keder Anı Tevhid Zikri",
+          "score": 0.030330882352941176
+        },
+        {
+          "key": "sikinti-rabbena-efrig-sabran",
+          "id": "6a59ffbaa9004ba3e9f220bc",
+          "name": "Sabır Yağdırma Duası",
+          "score": 0.02761904761904762
+        },
+        {
+          "key": "sifa-la-bese-tahur",
+          "id": "6a59ffc0a9004ba3e9f22107",
+          "name": "Lâ Be'se Tahûrun Duası",
+          "score": 0.027271052146674038
+        },
+        {
+          "key": "mubin-duasi-tesbih",
+          "id": "6a6b630dc705e3924a43f9b0",
+          "name": "Mübin Duası",
+          "score": 0.02715098147128967
+        },
+        {
+          "key": "IMRAN_200",
+          "id": "6a59ffa6a9004ba3e9f21f94",
+          "name": "Sabır ve Sebat Ayeti",
+          "score": 0.026916221033868093
+        },
+        {
+          "key": "ofke-lokman-17",
+          "id": "6a59ffbfa9004ba3e9f220f8",
+          "name": "Hz. Lokman'ın Sabır Öğüdü",
+          "score": 0.026200135226504394
+        },
+        {
+          "key": "sikinti-ya-halik",
+          "id": "6a59ffb9a9004ba3e9f220b0",
+          "name": "Yâ Hâlık",
+          "score": 0.025320462098433298
+        },
+        {
+          "key": "sikinti-inna-lillahi-ve-inna-ileyhi-raciun",
+          "id": "6a59ffb9a9004ba3e9f220a7",
+          "name": "Musibet ve Teslimiyet Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "sikinti-ya-uddeti-inde-siddeti",
+          "id": "6a59ffb9a9004ba3e9f220a8",
+          "name": "Şiddet ve Kurbette İmdad Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffbea9004ba3e9f220e7",
+          "name": "Kalpleri Birleştirme Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "cenaze-taziye-duasi",
+          "id": "6a59ffc1a9004ba3e9f22116",
+          "name": "Taziye Duası",
+          "score": 0.015625
+        },
+        {
+          "key": "sikinti-ya-muahhir",
+          "id": "6a59ffb9a9004ba3e9f220aa",
+          "name": "Yâ Mu'ahhir",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f80",
+          "name": "Nûr Duası",
+          "score": 0.015384615384615385
+        }
+      ]
+    },
+    {
+      "id": "r007",
+      "freeText": "sürekli sinirleniyorum, öfkemi kontrol edemiyorum",
+      "locale": "tr",
+      "category": "emotion",
+      "expandedQuery": "sürekli öfke, sinirlilik ve kontrol edememe hali; öfke sabrı, hiddeti yatıştırma, kalp huzuru ve tahammül artırma, nefret/kızgınlıkla başa çıkma, sabır ve mânevî sakinlik arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "ofke-euzubillah",
+        "ofke-rabbi-muhammed",
+        "esmaul-husna-el-halim"
+      ],
+      "skipped": false,
+      "firstRank": 3,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 0,
+      "latencyMs": 3185,
+      "top15": [
+        {
+          "key": "esmaul-husna-es-sabur",
+          "id": "6a59ffafa9004ba3e9f2201d",
+          "name": "Es-Sabûr",
+          "score": 0.031754032258064516
+        },
+        {
+          "key": "ofke-lokman-17",
+          "id": "6a59ffbfa9004ba3e9f220f8",
+          "name": "Hz. Lokman'ın Sabır Öğüdü",
+          "score": 0.031746031746031744
+        },
+        {
+          "key": "ofke-rabbi-muhammed",
+          "id": "6a59ffbfa9004ba3e9f220f4",
+          "name": "Kalbimin Öfkesini Gider Duası",
+          "score": 0.030886196246139225,
+          "isExpected": true
+        },
+        {
+          "key": "sikinti-ya-muksit",
+          "id": "6a59ffb9a9004ba3e9f220ab",
+          "name": "Yâ Muksit",
+          "score": 0.029631255487269532
+        },
+        {
+          "key": "ofke-kelimetu-hak",
+          "id": "6a59ffbfa9004ba3e9f220f5",
+          "name": "Öfke Anında Hak Sözü Söyleme Duası",
+          "score": 0.02857142857142857
+        },
+        {
+          "key": "IMRAN_200",
+          "id": "6a59ffa6a9004ba3e9f21f94",
+          "name": "Sabır ve Sebat Ayeti",
+          "score": 0.02854251012145749
+        },
+        {
+          "key": "sikinti-rabbena-efrig-sabran",
+          "id": "6a59ffbaa9004ba3e9f220bc",
+          "name": "Sabır Yağdırma Duası",
+          "score": 0.028484848484848488
+        },
+        {
+          "key": "ofke-hasbiyallahu",
+          "id": "6a59ffbfa9004ba3e9f220f6",
+          "name": "Hasbiyallâh Zikri",
+          "score": 0.02728937728937729
+        },
+        {
+          "key": "RABBENA_GFIR_GILLA",
+          "id": "6a59ffbea9004ba3e9f220e0",
+          "name": "Kalpteki Kini Gideren Dua",
+          "score": 0.026992753623188405
+        },
+        {
+          "key": "evlilik-nisa-19",
+          "id": "6a59ffbea9004ba3e9f220ee",
+          "name": "Güzel Geçim ve Sabır Ayeti",
+          "score": 0.026356857985087564
+        },
+        {
+          "key": "esmaul-husna-el-afuvv",
+          "id": "6a59ffaea9004ba3e9f2200b",
+          "name": "El-Afüvv",
+          "score": 0.025849212924606464
+        },
+        {
+          "key": "esmaul-husna-el-halim",
+          "id": "6a59ffaaa9004ba3e9f21fd7",
+          "name": "El-Halîm",
+          "score": 0.02565359477124183,
+          "isExpected": true
+        },
+        {
+          "key": "esmaul-husna-er-rauf",
+          "id": "6a59ffaea9004ba3e9f2200c",
+          "name": "Er-Raûf",
+          "score": 0.024056467876692595
+        },
+        {
+          "key": "sikinti-ya-muahhir",
+          "id": "6a59ffb9a9004ba3e9f220aa",
+          "name": "Yâ Mu'ahhir",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "ofke-euzubillah",
+          "id": "6a59ffbfa9004ba3e9f220f3",
+          "name": "Eûzü Billâhi",
+          "score": 0.016129032258064516,
+          "isExpected": true
+        }
+      ]
+    },
+    {
+      "id": "r008",
+      "freeText": "kendimi çok yalnız hissediyorum, kimsem yok gibi",
+      "locale": "tr",
+      "category": "emotion",
+      "expandedQuery": "yoğun yalnızlık, yalnız hissetme ve yalnızlık kaynaklı üzüntü; yalnızlıkla başa çıkma, Allah’a yakınlık, teselli, gönül ferahlığı, birlik ve aidiyet duygusu arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "esmaul-husna-el-vahid",
+        "sikinti-euzu-bi-kelimatillahit-tammati-min-gadabihi"
+      ],
+      "skipped": false,
+      "firstRank": 4,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 0,
+      "latencyMs": 3449,
+      "top15": [
+        {
+          "key": "TEVHID",
+          "id": "6a59ffa7a9004ba3e9f21f9f",
+          "name": "Kelime-i Tevhid ve Risalet",
+          "score": 0.029513888888888888
+        },
+        {
+          "key": "sikinti-inni-abduk-ibnu-abduk",
+          "id": "6a59ffbba9004ba3e9f220bd",
+          "name": "Üzüntü ve Keder Duası — Kur'an'ı Kalbin Baharı Kıl",
+          "score": 0.029236022193768675
+        },
+        {
+          "key": "barisma-ellefe-beyne-kulubihim",
+          "id": "6a59ffbfa9004ba3e9f220f9",
+          "name": "Kalpleri Birleştiren Allah'tır",
+          "score": 0.028594771241830064
+        },
+        {
+          "key": "esmaul-husna-el-vahid",
+          "id": "6a59ffada9004ba3e9f21ffa",
+          "name": "El-Vâhid",
+          "score": 0.01639344262295082,
+          "isExpected": true
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "sikinti-euzu-bi-kelimatillahit-tammati-min-gadabihi",
+          "id": "6a59ffb9a9004ba3e9f220a6",
+          "name": "Gece Panik ve Vesvese Sığınma Duası",
+          "score": 0.016129032258064516,
+          "isExpected": true
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "sikinti-inna-lillahi-ve-inna-ileyhi-raciun",
+          "id": "6a59ffb9a9004ba3e9f220a7",
+          "name": "Musibet ve Teslimiyet Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffa3a9004ba3e9f21f6b",
+          "name": "Ramazan Hilali Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "HZYUSUF",
+          "id": "6a59ffb7a9004ba3e9f22091",
+          "name": "Hz. Yunus'un Duası",
+          "score": 0.015625
+        },
+        {
+          "key": "sikinti-ya-hayyu-ya-kayyum",
+          "id": "6a59ffbaa9004ba3e9f220b5",
+          "name": "Yâ Hayyü Yâ Kayyûmü İstiğâsesi",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f84",
+          "name": "Estağfirullâh",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "sikinti-la-ilahe-illallahul-azimul-halim",
+          "id": "6a59ffb9a9004ba3e9f220a5",
+          "name": "Kriz ve Keder Anı Tevhid Zikri",
+          "score": 0.014925373134328358
+        },
+        {
+          "id": "6a59ffb3a9004ba3e9f2204e",
+          "name": "Secde Duası — Sübhâne Rabbiyel-A'lâ",
+          "score": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "id": "r009",
+      "freeText": "gelecek kaygısı beni her gün eziyor, ne olacağını bilmiyorum",
+      "locale": "tr",
+      "category": "emotion",
+      "expandedQuery": "gelecek kaygısı, belirsizlik ve endişe; geleceğe dair korku, huzursuzluk, karar verme zorluğu, sabır, tevekkül, teslimiyet ve içsel sakinlik arayışı; kaygıyı hafifletmeye yönelik teskin edici zikirler ve dualar",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "RIZIK_EBU_UMAME",
+        "sikinti-insirah-suresi",
+        "sikinti-bismillahi-ala-nefsi"
+      ],
+      "skipped": false,
+      "firstRank": 3,
+      "hit5": true,
+      "recall15": 0.6666666666666666,
+      "dupCount": 0,
+      "latencyMs": 2971,
+      "top15": [
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.03177805800756621
+        },
+        {
+          "key": "sikinti-hasbiye-tertibi",
+          "id": "6a59ffbaa9004ba3e9f220b8",
+          "name": "Hasbiye Tertibi",
+          "score": 0.03177805800756621
+        },
+        {
+          "key": "sikinti-bismillahi-ala-nefsi",
+          "id": "6a59ffbaa9004ba3e9f220b6",
+          "name": "İlahi Zamana Razı Olma Duası",
+          "score": 0.03036576949620428,
+          "isExpected": true
+        },
+        {
+          "key": "sikinti-inna-lillahi-ve-inna-ileyhi-raciun",
+          "id": "6a59ffb9a9004ba3e9f220a7",
+          "name": "Musibet ve Teslimiyet Duası",
+          "score": 0.03007688828584351
+        },
+        {
+          "key": "sikinti-rabbena-efrig-sabran",
+          "id": "6a59ffbaa9004ba3e9f220bc",
+          "name": "Sabır Yağdırma Duası",
+          "score": 0.0277569392348087
+        },
+        {
+          "key": "sikinti-insirah-suresi",
+          "id": "6a59ffb9a9004ba3e9f220a4",
+          "name": "İnşirah Suresi",
+          "score": 0.027692895339954164,
+          "isExpected": true
+        },
+        {
+          "key": "HASBIYE",
+          "id": "6a59ffa5a9004ba3e9f21f87",
+          "name": "Tevekkül ve Hasbiye Zikri",
+          "score": 0.027673192771084338
+        },
+        {
+          "key": "sikinti-inni-euzu-minel-hemmi",
+          "id": "6a59ffbba9004ba3e9f220c2",
+          "name": "Sekiz Şeyden Sığınma Duası — Kaygı ve Keder",
+          "score": 0.027529761904761904
+        },
+        {
+          "key": "sikinti-kadderallahu",
+          "id": "6a59ffbaa9004ba3e9f220b7",
+          "name": "Kader Teslimiyet Zikri",
+          "score": 0.026120660599932594
+        },
+        {
+          "key": "sikinti-allahu-allahu-rabbi",
+          "id": "6a59ffb9a9004ba3e9f220a9",
+          "name": "Tevhid ile Panik Yatıştırma Zikri",
+          "score": 0.024922600619195046
+        },
+        {
+          "key": "sikinti-ya-allah-estagfirullah",
+          "id": "6a59ffbaa9004ba3e9f220bb",
+          "name": "Gece İstiğfarı",
+          "score": 0.02456928838951311
+        },
+        {
+          "key": "LEKEL_HAMD",
+          "id": "6a59ffa5a9004ba3e9f21f7c",
+          "name": "Allâhümme Lekel Hamdü Duası",
+          "score": 0.02439384979302188
+        },
+        {
+          "key": "korku-huvellahu-rabbi",
+          "id": "6a59ffbba9004ba3e9f220bf",
+          "name": "Korku Anı Tevhid Zikri",
+          "score": 0.02345679012345679
+        },
+        {
+          "key": "sikinti-ya-mumin",
+          "id": "6a59ffb9a9004ba3e9f220ae",
+          "name": "Yâ Mü'min",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffb0a9004ba3e9f22031",
+          "name": "Kısa İstihare Duası",
+          "score": 0.015873015873015872
+        }
+      ]
+    },
+    {
+      "id": "r010",
+      "freeText": "sabah namazından sonra ne okumalıyım",
+      "locale": "tr",
+      "category": "worship",
+      "expandedQuery": "sabah namazı sonrası okunabilecek zikirler ve dualar; sabahın bereketi, korunma, şükür, günün hayırlı geçmesi için istiğfar, Allah’a yakınlık ve iç huzuru sağlama amaçlı kısa Kur’an ayetleri, tesbihat, Sübhânallâh, Elhamdülillâh, Allâhu Ekber, Ayetel Kürsi, sabah duaları ve koruyucu zikirler arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "namaz-sonrasi-33-tesbih-paketi",
+        "namaz-sonrasi-ayetel-kursi",
+        "sabah-subhanallah-bihamdihi"
+      ],
+      "skipped": false,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 0,
+      "latencyMs": 3560,
+      "top15": [
+        {
+          "key": "sabah-mulk-rabbilalemin",
+          "id": "6a59ffc5a9004ba3e9f2214b",
+          "name": "Sabah — Günün Hayrını, Fethini, Nurunu ve Bereketini İsteme",
+          "score": 0.030886196246139225
+        },
+        {
+          "key": "sabah-ilim-rizik-amel",
+          "id": "6a59ffc5a9004ba3e9f22147",
+          "name": "Sabah Namazı Sonrası İlim-Rızık-Amel Duası",
+          "score": 0.029631255487269532
+        },
+        {
+          "key": "namaz-selamdan-once-zikredinme-yardim",
+          "id": "6a59ffb3a9004ba3e9f22055",
+          "name": "Selâmdan Önce — Zikir, Şükür ve İbadet İçin Yardım",
+          "score": 0.028484848484848488
+        },
+        {
+          "key": "sabah-nimet-sukur",
+          "id": "6a59ffc4a9004ba3e9f22143",
+          "name": "Sabah Nimet Şükrü",
+          "score": 0.02803379416282642
+        },
+        {
+          "key": "sabah-mumin-ayetulkursi",
+          "id": "6a59ffc6a9004ba3e9f22153",
+          "name": "Mümin Suresi İlk 3 Ayet + Ayetü'l-Kürsî (Sabah-Akşam)",
+          "score": 0.027984344422700584
+        },
+        {
+          "key": "sabah-mulk-kibriya-azamet",
+          "id": "6a59ffc5a9004ba3e9f22148",
+          "name": "Sabah — Mülk, Kibriya ve Azamet Allah'ındır",
+          "score": 0.027149321266968326
+        },
+        {
+          "key": "tesbih-bedevi-compound",
+          "id": "6a59ffb0a9004ba3e9f2202a",
+          "name": "Tüm Formülleri Birleştiren Zikir",
+          "score": 0.02478580171358629
+        },
+        {
+          "key": "sabah-rum-tesbihi",
+          "id": "6a59ffc5a9004ba3e9f2214d",
+          "name": "Rum Suresi 17-19 — Kaçırılan Zikirleri Telafi Ayetleri",
+          "score": 0.024696969696969696
+        },
+        {
+          "key": "sabah-vehebtü-nefsi",
+          "id": "6a59ffc5a9004ba3e9f22152",
+          "name": "Sabah — Nefs ve Şerefi Allah'a Bağışlama Duası",
+          "score": 0.02368937482478273
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffb1a9004ba3e9f22039",
+          "name": "Namaz Sonrası Âyetel Kürsî",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "sabah-subhane-la-kuvvete",
+          "id": "6a59ffc5a9004ba3e9f2214e",
+          "name": "Sabah — Havkale ve Meşîet ile Korunma Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "SUBHANALLAHI_VE_BIHAMDIHI",
+          "id": "6a59ffa5a9004ba3e9f21f83",
+          "name": "Tesbih Zikri",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffb1a9004ba3e9f22038",
+          "name": "Namaz Sonrası 33'lük Tesbih Zinciri",
+          "score": 0.015625
+        }
+      ]
+    },
+    {
+      "id": "r011",
+      "freeText": "yatmadan önce hangi duaları okumalıyım",
+      "locale": "tr",
+      "category": "worship",
+      "expandedQuery": "yatmadan önce okunacak dualar, uykudan önce zikirler ve koruyucu okumalar; gece ibadeti, huzur ve güven hissetme, kötü rüya ve şeytan etkisinden korunma niyeti, uyku öncesi Allah’a yakınlaşma ve gece duası arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "uyku-ayetel-kursi",
+        "uyku-bismike-rabbi-yatak",
+        "uyku-tesbih-33-34"
+      ],
+      "skipped": false,
+      "firstRank": 2,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 0,
+      "latencyMs": 3598,
+      "top15": [
+        {
+          "key": "uyanis-bismike-ahya-hamd",
+          "id": "6a59ffc6a9004ba3e9f2215c",
+          "name": "Uyku ve Uyanış İkiz Duası",
+          "score": 0.032266458495966696
+        },
+        {
+          "key": "uyku-ayetel-kursi",
+          "id": "6a59ffc6a9004ba3e9f2215f",
+          "name": "Âyetel Kürsî (Yatmadan Önce)",
+          "score": 0.03149801587301587,
+          "isExpected": true
+        },
+        {
+          "key": "uyku-bismike-rabbi-yatak",
+          "id": "6a59ffc6a9004ba3e9f22160",
+          "name": "Yatağa Uzanırken Dua",
+          "score": 0.030621785881252923,
+          "isExpected": true
+        },
+        {
+          "key": "uyku-eslemtu-nefsî",
+          "id": "6a59ffc7a9004ba3e9f22161",
+          "name": "Nefsimi Sana Teslim Ettim (Yatmadan Önce Son Dua)",
+          "score": 0.03055037313432836
+        },
+        {
+          "key": "aksam-emsena",
+          "id": "6a59ffc6a9004ba3e9f22155",
+          "name": "Akşam Duası",
+          "score": 0.02946912242686891
+        },
+        {
+          "key": "uyku-kafir-suresi",
+          "id": "6a59ffc7a9004ba3e9f22163",
+          "name": "Kâfirûn Sûresi (Yatmadan Önce)",
+          "score": 0.02904040404040404
+        },
+        {
+          "key": "uyku-istigfar-kayyum",
+          "id": "6a59ffc7a9004ba3e9f22164",
+          "name": "Yatmadan Önce İstiğfar (× 3)",
+          "score": 0.028665028665028666
+        },
+        {
+          "key": "sikinti-ya-allah-estagfirullah",
+          "id": "6a59ffbaa9004ba3e9f220bb",
+          "name": "Gece İstiğfarı",
+          "score": 0.028588564574170333
+        },
+        {
+          "key": "uyku-tesbih-33-34",
+          "id": "6a59ffc7a9004ba3e9f22162",
+          "name": "Yatmadan Önce Tesbih (33-33-34)",
+          "score": 0.028370221327967807,
+          "isExpected": true
+        },
+        {
+          "key": "yolculuk-gece-acik-alanda",
+          "id": "6a59ffc4a9004ba3e9f2213c",
+          "name": "Gece Açık Alanda Konaklamak İçin Dua",
+          "score": 0.027402402402402402
+        },
+        {
+          "key": "SEYTANDAN_SIGINMA",
+          "id": "6a59ffa6a9004ba3e9f21f93",
+          "name": "Şeytanın Şerrinden Sığınma Duası",
+          "score": 0.0273972602739726
+        },
+        {
+          "key": "aksam-kelimâtillah",
+          "id": "6a59ffc6a9004ba3e9f22156",
+          "name": "Akşam Korunma Duası",
+          "score": 0.027205882352941177
+        },
+        {
+          "key": "tuvalete-girmeden-once-dua",
+          "id": "6a59ffb2a9004ba3e9f22042",
+          "name": "Tuvalete Girmeden Önce Dua",
+          "score": 0.02548701298701299
+        },
+        {
+          "key": "evlat-bismillah-allahumme-cennibnes-seytan",
+          "id": "6a59ffb7a9004ba3e9f22088",
+          "name": "Birliktelik Öncesi Korunma Duası",
+          "score": 0.024652147610405323
+        },
+        {
+          "key": "sabah-subhane-la-kuvvete",
+          "id": "6a59ffc5a9004ba3e9f2214e",
+          "name": "Sabah — Havkale ve Meşîet ile Korunma Duası",
+          "score": 0.024056467876692595
+        }
+      ]
+    },
+    {
+      "id": "r012",
+      "freeText": "cuma günü için özel bir zikir var mı",
+      "locale": "tr",
+      "category": "worship",
+      "expandedQuery": "Cuma günü yapılabilecek özel zikir, ibadet ve dua arayışı; Cuma günü bereket, sevap, günahların affı, sevap kazanma, cemaatle ve evde okunacak özel zikirler, Ayet el-Kürsi, Salavat-ı şerife ve kıymetli dualar gibi Cuma’ya mahsus veya faziletli kabul edilen zikir ve duaların anlamı, okunma şekli ve faziletleri.",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "salavat-cuma-cok-getir",
+        "SEYYIDUL_ISTIGFAR"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 0.5,
+      "dupCount": 0,
+      "latencyMs": 4273,
+      "top15": [
+        {
+          "key": "salavat-cuma-cok-getir",
+          "id": "6a59ffc7a9004ba3e9f2216b",
+          "name": "Cuma Günü Salavat",
+          "score": 0.032266458495966696,
+          "isExpected": true
+        },
+        {
+          "key": "SALAVAT-I ŞERİFE",
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.03225806451612903
+        },
+        {
+          "key": "SELLIM_BARIK",
+          "id": "6a59ffc7a9004ba3e9f22168",
+          "name": "Salavat-ı Şerife (Salli Sellim Barik)",
+          "score": 0.030536130536130537
+        },
+        {
+          "key": "TEFRICIYE_SALAVATI",
+          "id": "6a59ffc8a9004ba3e9f22173",
+          "name": "Salavat-ı Tefriciyye",
+          "score": 0.030158730158730156
+        },
+        {
+          "key": "KEMALILLAHI",
+          "id": "6a59ffc7a9004ba3e9f2216d",
+          "name": "Kema Lillahi Salavatı",
+          "score": 0.02782608695652174
+        },
+        {
+          "key": "MESKEN_GENISLIGI",
+          "id": "6a59ffbca9004ba3e9f220cd",
+          "name": "Mesken Genişliği ve Bereket Duası",
+          "score": 0.027757078986587184
+        },
+        {
+          "key": "ISTIGFAR",
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.027271052146674038
+        },
+        {
+          "key": "FATIHA_SURESI",
+          "id": "6a59ffa7a9004ba3e9f21fa8",
+          "name": "Fatiha Suresi",
+          "score": 0.02557875991581674
+        },
+        {
+          "key": "rizik-fatiha-seher-41",
+          "id": "6a59ffb5a9004ba3e9f22073",
+          "name": "Fâtiha Suresi (Seher Tertibi)",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffbba9004ba3e9f220ca",
+          "name": "Mü'minûn Suresi 29. Ayeti (Bereketli Yerleşim Yakarışı)",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f2216a",
+          "name": "Salavât-i İbrahimiyye",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "SUBHANALLAHI_VE_BIHAMDIHI",
+          "id": "6a59ffa5a9004ba3e9f21f83",
+          "name": "Tesbih Zikri",
+          "score": 0.015151515151515152
+        },
+        {
+          "id": "6a59ffbda9004ba3e9f220d3",
+          "name": "Eve Girerken Okunacak Nebevi Sığınma",
+          "score": 0.014925373134328358
+        },
+        {
+          "key": "sabah-rabbiyallahu-tevekkel",
+          "id": "6a59ffc5a9004ba3e9f22151",
+          "name": "Sabah-Akşam Tevekkül Duası — Cenneti Müjdeli",
+          "score": 0.014705882352941176
+        },
+        {
+          "id": "6a59ffb0a9004ba3e9f22036",
+          "name": "İftara Davet Eden Ev Sahibi İçin Dua",
+          "score": 0.014705882352941176
+        }
+      ]
+    },
+    {
+      "id": "r013",
+      "freeText": "hastayım, şifa bulmak için dua istiyorum",
+      "locale": "tr",
+      "category": "health",
+      "expandedQuery": "hastalık ve bedeni/manevi rahatsızlık; şifa, sağlık, tevekkül, sabır ve Rabb’e yönelme niyeti; şifa duası, hastalar için okunacak zikirler ve Allah’tan afiyet isteme, teselli ve umut arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "sifa-ezhibil-bese",
+        "sifa-eselullahel-azime",
+        "sifa-la-bese-tahur"
+      ],
+      "skipped": false,
+      "firstRank": 3,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 0,
+      "latencyMs": 3442,
+      "top15": [
+        {
+          "key": "sifa-sefallahu-sekameke",
+          "id": "6a59ffc1a9004ba3e9f2210a",
+          "name": "Hz. Peygamberin Hastaya Okuduğu Şifa Duası",
+          "score": 0.03278688524590164
+        },
+        {
+          "key": "sifa-isfi-abdek",
+          "id": "6a59ffc0a9004ba3e9f22109",
+          "name": "Hasta Ziyaretinde Okunacak Şifa Duası",
+          "score": 0.03128054740957967
+        },
+        {
+          "key": "sifa-la-bese-tahur",
+          "id": "6a59ffc0a9004ba3e9f22107",
+          "name": "Lâ Be'se Tahûrun Duası",
+          "score": 0.031024531024531024,
+          "isExpected": true
+        },
+        {
+          "key": "sifa-uizuke-billahil-ehad",
+          "id": "6a59ffc1a9004ba3e9f2210b",
+          "name": "Hastalıktan Korunma Duası — İhlâs Özü",
+          "score": 0.03076923076923077
+        },
+        {
+          "key": "sifa-enni-messeniyeddurru",
+          "id": "6a59ffc0a9004ba3e9f22103",
+          "name": "Ennî Messeniyed-Durru Duası (Hz. Eyyûb)",
+          "score": 0.03021353930031804
+        },
+        {
+          "key": "sifa-afiyete-dunya-ahiret",
+          "id": "6a59ffc0a9004ba3e9f22105",
+          "name": "Âfiyete fi'd-Dünyâ ve'l-Âhirah Duası",
+          "score": 0.030158730158730156
+        },
+        {
+          "key": "sifa-eselullahel-azime",
+          "id": "6a59ffc0a9004ba3e9f22101",
+          "name": "Es'elullâhe'l-Azîm Duası",
+          "score": 0.029910714285714284,
+          "isExpected": true
+        },
+        {
+          "key": "sifa-bismillahi-davini",
+          "id": "6a59ffc0a9004ba3e9f22106",
+          "name": "Dâvinî bi-Devâike Duası",
+          "score": 0.029418126757516764
+        },
+        {
+          "key": "sifa-euzu-berasi-cunun",
+          "id": "6a59ffc0a9004ba3e9f22104",
+          "name": "Berasi ve'l-Cunûn Duası",
+          "score": 0.028594771241830064
+        },
+        {
+          "key": "sifa-ezhibil-bese",
+          "id": "6a59ffc0a9004ba3e9f220fe",
+          "name": "Ezhibi'l-Be'se Duası",
+          "score": 0.02819138376017471,
+          "isExpected": true
+        },
+        {
+          "key": "sifa-bismillahi-masaallah",
+          "id": "6a59ffc0a9004ba3e9f22108",
+          "name": "Bismillâhi Mâ Şâallah Duası",
+          "score": 0.027745885954841176
+        },
+        {
+          "key": "sabah-afini-fi-bedeni",
+          "id": "6a59ffc5a9004ba3e9f2214c",
+          "name": "Beden, İşitme ve Görme Âfiyeti Duası (Sabah-Akşam × 3)",
+          "score": 0.027071520029266508
+        },
+        {
+          "key": "sifa-bismillahi-arkike",
+          "id": "6a59ffc0a9004ba3e9f22102",
+          "name": "Bismillâhi Arkîke Rukyesi",
+          "score": 0.02638888888888889
+        },
+        {
+          "key": "sifa-euzu-bi-izzetillah",
+          "id": "6a59ffc0a9004ba3e9f22100",
+          "name": "Eûzü bi-izzetillâhi Duası",
+          "score": 0.025561706284597852
+        },
+        {
+          "key": "sifa-bismillahil-kebir-irkin",
+          "id": "6a59ffc1a9004ba3e9f2210c",
+          "name": "Ateşli Hastalık ve Baş Ağrısı Duası",
+          "score": 0.025528455284552845
+        }
+      ]
+    },
+    {
+      "id": "r014",
+      "freeText": "annem hastanede yatıyor, ona şifa duası okumak istiyorum",
+      "locale": "tr",
+      "category": "health",
+      "expandedQuery": "annenin hastanede yatışı, sağlık sorunları, şifa ve çabuk iyileşme niyeti; şifa duası, Allah’tan afiyet, beden ve ruh için şifa diliyor; yakınlar için tevekkül, sabır ve huzur arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "sifa-isfi-abdek",
+        "sifa-sefallahu-sekameke",
+        "sifa-ezhibil-bese"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 0,
+      "latencyMs": 3071,
+      "top15": [
+        {
+          "key": "sifa-sefallahu-sekameke",
+          "id": "6a59ffc1a9004ba3e9f2210a",
+          "name": "Hz. Peygamberin Hastaya Okuduğu Şifa Duası",
+          "score": 0.032266458495966696,
+          "isExpected": true
+        },
+        {
+          "key": "sifa-isfi-abdek",
+          "id": "6a59ffc0a9004ba3e9f22109",
+          "name": "Hasta Ziyaretinde Okunacak Şifa Duası",
+          "score": 0.03225806451612903,
+          "isExpected": true
+        },
+        {
+          "key": "sifa-la-bese-tahur",
+          "id": "6a59ffc0a9004ba3e9f22107",
+          "name": "Lâ Be'se Tahûrun Duası",
+          "score": 0.031024531024531024
+        },
+        {
+          "key": "sifa-afiyete-dunya-ahiret",
+          "id": "6a59ffc0a9004ba3e9f22105",
+          "name": "Âfiyete fi'd-Dünyâ ve'l-Âhirah Duası",
+          "score": 0.031009615384615385
+        },
+        {
+          "key": "sifa-ezhibil-bese",
+          "id": "6a59ffc0a9004ba3e9f220fe",
+          "name": "Ezhibi'l-Be'se Duası",
+          "score": 0.029631255487269532,
+          "isExpected": true
+        },
+        {
+          "key": "sifa-eselullahel-azime",
+          "id": "6a59ffc0a9004ba3e9f22101",
+          "name": "Es'elullâhe'l-Azîm Duası",
+          "score": 0.029236022193768675
+        },
+        {
+          "key": "sifa-bismillahi-davini",
+          "id": "6a59ffc0a9004ba3e9f22106",
+          "name": "Dâvinî bi-Devâike Duası",
+          "score": 0.028814262023217248
+        },
+        {
+          "key": "sabah-afini-fi-bedeni",
+          "id": "6a59ffc5a9004ba3e9f2214c",
+          "name": "Beden, İşitme ve Görme Âfiyeti Duası (Sabah-Akşam × 3)",
+          "score": 0.02844163539403516
+        },
+        {
+          "key": "sifa-enni-messeniyeddurru",
+          "id": "6a59ffc0a9004ba3e9f22103",
+          "name": "Ennî Messeniyed-Durru Duası (Hz. Eyyûb)",
+          "score": 0.02758751902587519
+        },
+        {
+          "key": "sabah-afiyet",
+          "id": "6a59ffc5a9004ba3e9f22144",
+          "name": "Kapsamlı Âfiyet Duası",
+          "score": 0.02625745950554135
+        },
+        {
+          "key": "SAFER_MUAFAZA_DUASI",
+          "id": "6a59ffa6a9004ba3e9f21f90",
+          "name": "Safer Muhafaza Duası (Şifa Suyu Sonrası)",
+          "score": 0.02594183740912095
+        },
+        {
+          "key": "cenaze-taziye-duasi",
+          "id": "6a59ffc1a9004ba3e9f22116",
+          "name": "Taziye Duası",
+          "score": 0.025807525807525808
+        },
+        {
+          "key": "ozlu-bagisla-merhamet-afiyet-rizik",
+          "id": "6a59ffb4a9004ba3e9f2205d",
+          "name": "Dört Talep Duası — Bağışla, Merhamet Et, Âfiyet Ver, Rızık Ver",
+          "score": 0.02314071696094168
+        },
+        {
+          "id": "6a59ffc5a9004ba3e9f22151",
+          "name": "Sabah-Akşam Tevekkül Duası — Cenneti Müjdeli",
+          "score": 0.015625
+        },
+        {
+          "key": "korunma-dua-i-sifa",
+          "id": "6a59ffb7a9004ba3e9f22093",
+          "name": "Dua-i Şifa",
+          "score": 0.015384615384615385
+        }
+      ]
+    },
+    {
+      "id": "r015",
+      "freeText": "yarın uzun bir yolculuğa çıkıyorum, yolculuk duası öner",
+      "locale": "tr",
+      "category": "travel",
+      "expandedQuery": "uzun yolculuğa çıkma; güvenli ulaşım, kazadan korunma, rahat ve bereketli seyahat; seyahat süresince sabır, kolaylık, evdekilere huzur ve manevi koruma dileği; yolculuk duası önerisi",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "yolculuk-seferin-duasi",
+        "yolculuk-estevdiullah-dine",
+        "yolculuk-konaklamada"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 2,
+      "latencyMs": 2865,
+      "top15": [
+        {
+          "key": "yolculuk-seferin-duasi",
+          "id": "6a59ffc3a9004ba3e9f22133",
+          "name": "Yola Çıkış Duası (Sefer Duası)",
+          "score": 0.03278688524590164,
+          "isExpected": true
+        },
+        {
+          "key": "hac-yolculuk-binit-duasi",
+          "id": "6a59ffc2a9004ba3e9f2211e",
+          "name": "Yolculuğa (Binite) Binerken Duası",
+          "score": 0.030776515151515152
+        },
+        {
+          "key": "yolculuk-konaklamada",
+          "id": "6a59ffc4a9004ba3e9f22136",
+          "name": "Konaklamada Korunma Duası",
+          "score": 0.02946912242686891,
+          "isExpected": true
+        },
+        {
+          "key": "yolculuk-sehre-girerken",
+          "id": "6a59ffc4a9004ba3e9f2213e",
+          "name": "Yeni Bir Şehre Girerken Duası",
+          "score": 0.029236022193768675
+        },
+        {
+          "key": "ev-cikis-bismillah-tevekkul",
+          "id": "6a59ffc8a9004ba3e9f22175",
+          "name": "Evden Çıkarken Duası",
+          "score": 0.029138513513513514
+        },
+        {
+          "key": "mulk-bismillahi-ala-nefsi-ve-mali",
+          "id": "6a59ffb0a9004ba3e9f2202c",
+          "name": "Can, Mal ve Din Koruması Duası",
+          "score": 0.028594771241830064
+        },
+        {
+          "key": "yolculuk-donuste-zikir",
+          "id": "6a59ffc4a9004ba3e9f22138",
+          "name": "Yolculuktan Dönüş Zikri",
+          "score": 0.026356857985087564
+        },
+        {
+          "key": "afet-euzu-bi-kelimatillahit-tammati-min-serri-ma-halak",
+          "id": "6a59ffb8a9004ba3e9f2209b",
+          "name": "Kelimatullah ile Sığınma Duası",
+          "score": 0.0260840108401084
+        },
+        {
+          "key": "sabah-afiyet",
+          "id": "6a59ffc5a9004ba3e9f22144",
+          "name": "Kapsamlı Âfiyet Duası",
+          "score": 0.025833333333333333
+        },
+        {
+          "key": "yolculuk-gemiye-binerken",
+          "id": "6a59ffc4a9004ba3e9f2213a",
+          "name": "Gemiye Binerken Okunacak Ayet",
+          "score": 0.025779967159277502
+        },
+        {
+          "key": "MESKEN_GENISLIGI",
+          "id": "6a59ffbca9004ba3e9f220cd",
+          "name": "Mesken Genişliği ve Bereket Duası",
+          "score": 0.023122159850307404
+        },
+        {
+          "key": "yolculuk-kalkisindan-dua",
+          "id": "6a59ffc4a9004ba3e9f22139",
+          "name": "Yola Çıkmadan Önce Oturulan Yerden Kalkarken Dua",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffc8a9004ba3e9f22176",
+          "name": "Eve Girerken Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "yolculuk-estevdiullah-dine",
+          "id": "6a59ffc3a9004ba3e9f22134",
+          "name": "Yolcuya Vedâ Duası",
+          "score": 0.015873015873015872,
+          "isExpected": true
+        },
+        {
+          "id": "6a59ffbba9004ba3e9f220ca",
+          "name": "Mü'minûn Suresi 29. Ayeti (Bereketli Yerleşim Yakarışı)",
+          "score": 0.015873015873015872
+        }
+      ]
+    },
+    {
+      "id": "r017",
+      "freeText": "çocuğum için hayırlı bir evlat olması adına dua etmek istiyorum",
+      "locale": "tr",
+      "category": "family",
+      "expandedQuery": "çocuğumun ahlaklı, dindar, sağlıklı ve başarılı bir evlat olması için dua niyeti; evlat terbiyesi, hidayet, hayırlı evlat olma, sabır, bereket ve Allah’ın korunması ve rızası için yakarış arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "evlat-rabbi-heb-li-mine-salihin",
+        "evlat-rabbi-heb-li-min-ledunke",
+        "evlat-rabbi-la-tezerni"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 4,
+      "latencyMs": 3219,
+      "top15": [
+        {
+          "key": "evlat-rabbi-heb-li-mine-salihin",
+          "id": "6a59ffb6a9004ba3e9f22081",
+          "name": "Hz. İbrahim'in Evlat Duası",
+          "score": 0.032266458495966696,
+          "isExpected": true
+        },
+        {
+          "key": "evlat-rabbi-heb-li-min-ledunke",
+          "id": "6a59ffb6a9004ba3e9f22080",
+          "name": "Temiz Nesil Duası",
+          "score": 0.03149801587301587,
+          "isExpected": true
+        },
+        {
+          "key": "evlat-rabbi-la-tezerni",
+          "id": "6a59ffb6a9004ba3e9f2207f",
+          "name": "Hz. Zekeriya Duası",
+          "score": 0.029857397504456328,
+          "isExpected": true
+        },
+        {
+          "key": "zina-korunma-huda-tukâ-afaf-gına",
+          "id": "6a59ffbda9004ba3e9f220dc",
+          "name": "Hidayet, Takva, İffet ve Gönül Zenginliği Duası",
+          "score": 0.027598020555767037
+        },
+        {
+          "key": "ozlu-huda-takva-iffet-gina",
+          "id": "6a59ffb3a9004ba3e9f2205c",
+          "name": "Hidayet, Takva, İffet ve Gönül Zenginliği Duası",
+          "score": 0.026856524873828405
+        },
+        {
+          "key": "evlat-bismillah-allahumme-cennibnes-seytan",
+          "id": "6a59ffb7a9004ba3e9f22088",
+          "name": "Birliktelik Öncesi Korunma Duası",
+          "score": 0.02564935064935065
+        },
+        {
+          "id": "6a59ffc5a9004ba3e9f2214b",
+          "name": "Sabah — Günün Hayrını, Fethini, Nurunu ve Bereketini İsteme",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "evlat-rabbi-inni-nezertu",
+          "id": "6a59ffb6a9004ba3e9f22083",
+          "name": "Hz. Meryem'in Annesinin Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffbca9004ba3e9f220cd",
+          "name": "Mesken Genişliği ve Bereket Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "evlat-rabbena-heb-lena-min-ezvacina",
+          "id": "6a59ffb6a9004ba3e9f22082",
+          "name": "Aile ve Zürriyet Duası",
+          "score": 0.015625
+        },
+        {
+          "key": "evlat-allahummecalni-zurriyyeten-tayyibeten",
+          "id": "6a59ffb7a9004ba3e9f22089",
+          "name": "Temiz ve İtaatkâr Nesil Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffc0a9004ba3e9f220fd",
+          "name": "Eşler İçin Bereket ve Birlik Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffc1a9004ba3e9f22113",
+          "name": "Musibet Anında Okunacak Dua",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "evlilik-furkan-74",
+          "id": "6a59ffbea9004ba3e9f220e6",
+          "name": "Göz Aydınlığı Duası",
+          "score": 0.014925373134328358
+        },
+        {
+          "id": "6a59ffc5a9004ba3e9f22152",
+          "name": "Sabah — Nefs ve Şerefi Allah'a Bağışlama Duası",
+          "score": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "id": "r016",
+      "freeText": "evleniyorum, huzurlu ve bereketli bir evlilik için dua istiyorum",
+      "locale": "tr",
+      "category": "family",
+      "expandedQuery": "evlilik niyeti, eşle uyum, huzur, sevgi, sadakat, karşılıklı anlayış ve sabır; evde bereket, rızkın genişlemesi, aile bağlarının güçlenmesi, mutlu ve istikrarlı bir yuva için dua ve zikir arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "evlilik-rum-21",
+        "evlilik-ellif-beyne-kulubina",
+        "evlilik-furkan-74"
+      ],
+      "skipped": false,
+      "firstRank": 2,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 2,
+      "latencyMs": 3818,
+      "top15": [
+        {
+          "key": "barisma-barekellahu-lekum",
+          "id": "6a59ffc0a9004ba3e9f220fd",
+          "name": "Eşler İçin Bereket ve Birlik Duası",
+          "score": 0.032018442622950824
+        },
+        {
+          "key": "evlilik-ellif-beyne-kulubina",
+          "id": "6a59ffbea9004ba3e9f220e7",
+          "name": "Kalpleri Birleştirme Duası",
+          "score": 0.03200204813108039,
+          "isExpected": true
+        },
+        {
+          "key": "evlilik-furkan-74",
+          "id": "6a59ffbea9004ba3e9f220e6",
+          "name": "Göz Aydınlığı Duası",
+          "score": 0.031099324975891997,
+          "isExpected": true
+        },
+        {
+          "key": "evlilik-rum-21",
+          "id": "6a59ffbea9004ba3e9f220e5",
+          "name": "Rum Suresi Evlilik Ayeti",
+          "score": 0.031024531024531024,
+          "isExpected": true
+        },
+        {
+          "key": "evlilik-zifaf-hayra-dua",
+          "id": "6a59ffbfa9004ba3e9f220f1",
+          "name": "Zifaf Öncesi — Eşin Hayrına Dua",
+          "score": 0.03076923076923077
+        },
+        {
+          "key": "evlilik-hubbeke-muaz",
+          "id": "6a59ffbfa9004ba3e9f220f2",
+          "name": "Muâz b. Cebel'in Hubb Duası",
+          "score": 0.030330882352941176
+        },
+        {
+          "key": "MESKEN_GENISLIGI",
+          "id": "6a59ffbca9004ba3e9f220cd",
+          "name": "Mesken Genişliği ve Bereket Duası",
+          "score": 0.02946236559139785
+        },
+        {
+          "key": "evlilik-nisa-19",
+          "id": "6a59ffbea9004ba3e9f220ee",
+          "name": "Güzel Geçim ve Sabır Ayeti",
+          "score": 0.02862400327131466
+        },
+        {
+          "key": "EVE_GIRERKEN_DUA",
+          "id": "6a59ffbda9004ba3e9f220d3",
+          "name": "Eve Girerken Okunacak Nebevi Sığınma",
+          "score": 0.02819138376017471
+        },
+        {
+          "key": "evlat-rabbena-heb-lena-min-ezvacina",
+          "id": "6a59ffb6a9004ba3e9f22082",
+          "name": "Aile ve Zürriyet Duası",
+          "score": 0.027972027972027972
+        },
+        {
+          "key": "MUMINUN_29",
+          "id": "6a59ffbba9004ba3e9f220ca",
+          "name": "Mü'minûn Suresi 29. Ayeti (Bereketli Yerleşim Yakarışı)",
+          "score": 0.027745885954841176
+        },
+        {
+          "key": "evlilik-ibrahim-40-41",
+          "id": "6a59ffbea9004ba3e9f220ec",
+          "name": "Hz. İbrahim'in Nesil Duası",
+          "score": 0.027598020555767037
+        },
+        {
+          "key": "evlilik-kasas-24",
+          "id": "6a59ffbea9004ba3e9f220eb",
+          "name": "Hz. Musa'nın Muhtaçlık Duası",
+          "score": 0.027479766610201392
+        },
+        {
+          "key": "evlilik-ali-imran-31",
+          "id": "6a59ffbea9004ba3e9f220e9",
+          "name": "Muhabbet Ayeti",
+          "score": 0.025252525252525252
+        },
+        {
+          "key": "ev-giris-bismillah",
+          "id": "6a59ffc8a9004ba3e9f22176",
+          "name": "Eve Girerken Duası",
+          "score": 0.025098039215686277
+        }
+      ]
+    },
+    {
+      "id": "r018",
+      "freeText": "hacdayım, Safa tepesindeyim şu an ne okumalıyım",
+      "locale": "tr",
+      "category": "niche",
+      "expandedQuery": "Hac ibadeti esnasında Safa tepesi üzerinde olma hali; tavaf, say, dualar, Peygamber ve İbrahim duası, tefekkür, tevbe ve niyetin kabulü için okunacak zikir ve dualar; Safa-merve sayının fazileti, Allah’a şükür, niyetin arınması ve manevi huzur arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "hac-safa-zikri",
+        "hac-safa-merve-ayeti"
+      ],
+      "skipped": false,
+      "firstRank": 3,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 0,
+      "latencyMs": 3296,
+      "top15": [
+        {
+          "key": "SALAVAT-I ŞERİFE",
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.031544957774465976
+        },
+        {
+          "key": "hac-tavaf-kabul-duasi",
+          "id": "6a59ffc2a9004ba3e9f22122",
+          "name": "Makbul Hac Duası (Tavafın İlk Üç Şavtında)",
+          "score": 0.03149801587301587
+        },
+        {
+          "key": "hac-safa-zikri",
+          "id": "6a59ffc2a9004ba3e9f22124",
+          "name": "Safâ Tepesi Zikri",
+          "score": 0.03131881575727918,
+          "isExpected": true
+        },
+        {
+          "key": "hac-safa-merve-ayeti",
+          "id": "6a59ffc2a9004ba3e9f22123",
+          "name": "Sa'y Başlangıç Âyeti (Safâ-Merve)",
+          "score": 0.030834914611005692,
+          "isExpected": true
+        },
+        {
+          "key": "namaz-selamdan-once-zikredinme-yardim",
+          "id": "6a59ffb3a9004ba3e9f22055",
+          "name": "Selâmdan Önce — Zikir, Şükür ve İbadet İçin Yardım",
+          "score": 0.02976190476190476
+        },
+        {
+          "key": "ISTIGFAR",
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.028177225029148854
+        },
+        {
+          "key": "hac-tavaf-baslangic",
+          "id": "6a59ffc2a9004ba3e9f22121",
+          "name": "Tavaf Başlangıcı (Hacerülesved Karşısında)",
+          "score": 0.028125
+        },
+        {
+          "key": "hac-zemzem-duasi",
+          "id": "6a59ffc3a9004ba3e9f22128",
+          "name": "Zemzem İçerken Dua",
+          "score": 0.027984344422700584
+        },
+        {
+          "key": "TEFRICIYE_SALAVATI",
+          "id": "6a59ffc8a9004ba3e9f22173",
+          "name": "Salavat-ı Tefriciyye",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffa3a9004ba3e9f21f6b",
+          "name": "Ramazan Hilali Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffc2a9004ba3e9f2211f",
+          "name": "İhlas Duası (Riyâdan Uzak Hac Duası)",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "hac-say-hervele-duasi",
+          "id": "6a59ffc3a9004ba3e9f22125",
+          "name": "Hervele (Yeşil Direkler Arası) Duası",
+          "score": 0.014925373134328358
+        },
+        {
+          "key": "yolculuk-tepede-zikir",
+          "id": "6a59ffc4a9004ba3e9f22137",
+          "name": "Yüksek Yerde Tekbir Zikri",
+          "score": 0.014705882352941176
+        },
+        {
+          "key": "BAKIYAT_SALIHAT",
+          "id": "6a59ffa7a9004ba3e9f21f9c",
+          "name": "Bakıyat-ı Salihat Zikri",
+          "score": 0.014492753623188406
+        },
+        {
+          "id": "6a59ffb4a9004ba3e9f22065",
+          "name": "Peygamber Dualarının Tüm Özeti",
+          "score": 0.014492753623188406
+        }
+      ]
+    },
+    {
+      "id": "r019",
+      "freeText": "umre için Kabe'yi ilk gördüğüm anda ne okumalıyım",
+      "locale": "tr",
+      "category": "niche",
+      "expandedQuery": "Umre ziyareti sırasında Kâbe’yi ilk gördüğüm an; Kâbe’yi görmenin verdiği heyecan, huşu ve şükran duygusu; tavaf, dua, istiğfar, salavat ve tekbir ile kalp huzuru, kabul niyeti, sevap umudu ve Allah’a yakınlık arayışı.",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "hac-mekke-hareminde",
+        "hac-tavaf-baslangic"
+      ],
+      "skipped": false,
+      "firstRank": 4,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 0,
+      "latencyMs": 3201,
+      "top15": [
+        {
+          "key": "hac-tavaf-kabul-duasi",
+          "id": "6a59ffc2a9004ba3e9f22122",
+          "name": "Makbul Hac Duası (Tavafın İlk Üç Şavtında)",
+          "score": 0.031746031746031744
+        },
+        {
+          "key": "hac-zemzem-duasi",
+          "id": "6a59ffc3a9004ba3e9f22128",
+          "name": "Zemzem İçerken Dua",
+          "score": 0.029709507042253523
+        },
+        {
+          "key": "ISTIGFAR",
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.029116045245077504
+        },
+        {
+          "key": "hac-tavaf-baslangic",
+          "id": "6a59ffc2a9004ba3e9f22121",
+          "name": "Tavaf Başlangıcı (Hacerülesved Karşısında)",
+          "score": 0.028588564574170333,
+          "isExpected": true
+        },
+        {
+          "key": "SALAVAT-I ŞERİFE",
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.02844163539403516
+        },
+        {
+          "key": "namaz-secde-subhane-rabbiyel-ala",
+          "id": "6a59ffb3a9004ba3e9f2204e",
+          "name": "Secde Duası — Sübhâne Rabbiyel-A'lâ",
+          "score": 0.02604430914933198
+        },
+        {
+          "key": "hac-mekke-hareminde",
+          "id": "6a59ffc3a9004ba3e9f2212a",
+          "name": "Mekke Haremîne Varınca Dua",
+          "score": 0.016129032258064516,
+          "isExpected": true
+        },
+        {
+          "key": "cenaze-kabir-ziyaret-selami",
+          "id": "6a59ffc1a9004ba3e9f22115",
+          "name": "Kabir Ziyareti Selamı",
+          "score": 0.015625
+        },
+        {
+          "key": "hac-telbiye",
+          "id": "6a59ffc2a9004ba3e9f22120",
+          "name": "Telbiye",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffa3a9004ba3e9f21f6b",
+          "name": "Ramazan Hilali Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "yolculuk-yeni-beldeyi-gorünce",
+          "id": "6a59ffc4a9004ba3e9f2213b",
+          "name": "Yeni Beldeyi Görünce Kapsamlı Dua",
+          "score": 0.015151515151515152
+        },
+        {
+          "id": "6a59ffbba9004ba3e9f220c3",
+          "name": "Ud'ûnî Estecib Lekum — Dua Kabulü Ayeti",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "hac-medine-veda-duasi",
+          "id": "6a59ffc3a9004ba3e9f22129",
+          "name": "Medine'den Ayrılırken Vedâ Duası",
+          "score": 0.014925373134328358
+        },
+        {
+          "id": "6a59ffbba9004ba3e9f220bd",
+          "name": "Üzüntü ve Keder Duası — Kur'an'ı Kalbin Baharı Kıl",
+          "score": 0.014925373134328358
+        },
+        {
+          "key": "hac-safa-zikri",
+          "id": "6a59ffc2a9004ba3e9f22124",
+          "name": "Safâ Tepesi Zikri",
+          "score": 0.014705882352941176
+        }
+      ]
+    },
+    {
+      "id": "r020",
+      "freeText": "ramazanda iftar vaktinde okunacak dua nedir",
+      "locale": "tr",
+      "category": "niche",
+      "expandedQuery": "Ramazan ayında iftar vaktinde okunacak dua arayışı; iftar duasının Türkçe anlamı, Arapça metni ve kısa fazileti; oruç açarken okunabilecek rivayet edilen dualar ve halk arasında yaygın olan iftar duaları (ör. ‘‘Allahümme inni leke sumtu...’’ vb.)",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "oruc-iftar-zehebez-zame",
+        "oruc-iftar-birahmetike"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 4,
+      "latencyMs": 3491,
+      "top15": [
+        {
+          "key": "oruc-iftar-zehebez-zame",
+          "id": "6a59ffb0a9004ba3e9f22034",
+          "name": "İftar Duası — Susuzluk Gitti",
+          "score": 0.032266458495966696,
+          "isExpected": true
+        },
+        {
+          "key": "oruc-iftar-birahmetike",
+          "id": "6a59ffb0a9004ba3e9f22035",
+          "name": "İftar Duası — Rahmetinle Bağışla",
+          "score": 0.03225806451612903,
+          "isExpected": true
+        },
+        {
+          "key": "IFTAR_DUASI",
+          "id": "6a59ffa4a9004ba3e9f21f6d",
+          "name": "İftar Duası",
+          "score": 0.032018442622950824
+        },
+        {
+          "key": "yemek-iftar-ev-sahibine",
+          "id": "6a59ffc3a9004ba3e9f22131",
+          "name": "İftar Ev Sahibine Dua",
+          "score": 0.031009615384615385
+        },
+        {
+          "key": "oruc-hilal-ramazan",
+          "id": "6a59ffb0a9004ba3e9f22033",
+          "name": "Ramazan Hilalini Görünce Dua",
+          "score": 0.030798389007344232
+        },
+        {
+          "key": "oruc-iftara-davet-eden-icin",
+          "id": "6a59ffb0a9004ba3e9f22036",
+          "name": "İftara Davet Eden Ev Sahibi İçin Dua",
+          "score": 0.030303030303030304
+        },
+        {
+          "key": "ZEHEBEZ_ZAMA",
+          "id": "6a59ffa4a9004ba3e9f21f6e",
+          "name": "Zehebe’z-Zameu — İftar Sonrası Dua",
+          "score": 0.02946912242686891
+        },
+        {
+          "key": "RAMAZAN_GUN_1",
+          "id": "6a59ffa4a9004ba3e9f21f72",
+          "name": "Ramazan 1. Gün Duası — İbn Abbas",
+          "score": 0.028985507246376812
+        },
+        {
+          "key": "RAMAZAN_GUN_7",
+          "id": "6a59ffa4a9004ba3e9f21f78",
+          "name": "Ramazan 7. Gün Duası — İbn Abbas",
+          "score": 0.02668564312399929
+        },
+        {
+          "key": "oruc-recep-saban-ramazana-yetistir",
+          "id": "6a59ffb0a9004ba3e9f22032",
+          "name": "Ramazan'a Ulaştır Duası",
+          "score": 0.026200135226504394
+        },
+        {
+          "key": "RAMAZAN_GUN_8",
+          "id": "6a59ffa4a9004ba3e9f21f79",
+          "name": "Ramazan 8. Gün Duası — İbn Abbas",
+          "score": 0.0259915611814346
+        },
+        {
+          "key": "RAMAZAN_GUN_2",
+          "id": "6a59ffa4a9004ba3e9f21f73",
+          "name": "Ramazan 2. Gün Duası — İbn Abbas",
+          "score": 0.025478740668614087
+        },
+        {
+          "key": "RAMAZAN_GUN_4",
+          "id": "6a59ffa4a9004ba3e9f21f75",
+          "name": "Ramazan 4. Gün Duası — İbn Abbas",
+          "score": 0.025
+        },
+        {
+          "key": "ezan-kamet-arasi-serbest-dua",
+          "id": "6a59ffb1a9004ba3e9f2203e",
+          "name": "Ezan ile Kamet Arası — Duanın Kabul Vakti",
+          "score": 0.024350649350649352
+        },
+        {
+          "key": "RAMAZAN_GUN_5",
+          "id": "6a59ffa4a9004ba3e9f21f76",
+          "name": "Ramazan 5. Gün Duası — İbn Abbas",
+          "score": 0.024096385542168676
+        }
+      ]
+    },
+    {
+      "id": "r021",
+      "freeText": "abdest alırken hangi duayı okumalıyım",
+      "locale": "tr",
+      "category": "worship",
+      "expandedQuery": "abdest alma niyeti, abdeste başlarken okunabilecek dualar; abdest duası (Türkçe anlamı) ve abdest sırasında söylenebilecek zikirlere yönelim, abdesti bereketli, huşûlu ve dikkatli kılma arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "abdest-sonrasi-sehadet-dua"
+      ],
+      "skipped": false,
+      "firstRank": 2,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 2,
+      "latencyMs": 3918,
+      "top15": [
+        {
+          "key": "MESKEN_GENISLIGI",
+          "id": "6a59ffbca9004ba3e9f220cd",
+          "name": "Mesken Genişliği ve Bereket Duası",
+          "score": 0.03252247488101534
+        },
+        {
+          "key": "abdest-sonrasi-sehadet-dua",
+          "id": "6a59ffb2a9004ba3e9f22044",
+          "name": "Abdest Sonrası Şehadet ve Dua",
+          "score": 0.032266458495966696,
+          "isExpected": true
+        },
+        {
+          "key": "hac-zemzem-duasi",
+          "id": "6a59ffc3a9004ba3e9f22128",
+          "name": "Zemzem İçerken Dua",
+          "score": 0.031754032258064516
+        },
+        {
+          "key": "hac-ihlas-duasi",
+          "id": "6a59ffc2a9004ba3e9f2211f",
+          "name": "İhlas Duası (Riyâdan Uzak Hac Duası)",
+          "score": 0.029910714285714284
+        },
+        {
+          "key": "yolculuk-kalkisindan-dua",
+          "id": "6a59ffc4a9004ba3e9f22139",
+          "name": "Yola Çıkmadan Önce Oturulan Yerden Kalkarken Dua",
+          "score": 0.025516795865633074
+        },
+        {
+          "key": "ozlu-huda-takva-iffet-gina",
+          "id": "6a59ffb3a9004ba3e9f2205c",
+          "name": "Hidayet, Takva, İffet ve Gönül Zenginliği Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "ozlu-takva-nesip-faydali-ilim",
+          "id": "6a59ffb4a9004ba3e9f22062",
+          "name": "Üçlü Kapsamlı Dua — Âcizlik, Takvâ ve Faydalı İlim",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffc1a9004ba3e9f2210c",
+          "name": "Ateşli Hastalık ve Baş Ağrısı Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "zina-korunma-huda-tukâ-afaf-gına",
+          "id": "6a59ffbda9004ba3e9f220dc",
+          "name": "Hidayet, Takva, İffet ve Gönül Zenginliği Duası",
+          "score": 0.015151515151515152
+        },
+        {
+          "id": "6a59ffb4a9004ba3e9f22065",
+          "name": "Peygamber Dualarının Tüm Özeti",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "namaz-selamdan-once-zikredinme-yardim",
+          "id": "6a59ffb3a9004ba3e9f22055",
+          "name": "Selâmdan Önce — Zikir, Şükür ve İbadet İçin Yardım",
+          "score": 0.014925373134328358
+        },
+        {
+          "id": "6a59ffc5a9004ba3e9f22144",
+          "name": "Kapsamlı Âfiyet Duası",
+          "score": 0.014925373134328358
+        },
+        {
+          "key": "zina-korunma-kalp-temizligi",
+          "id": "6a59ffbda9004ba3e9f220db",
+          "name": "Günah Affı, Kalp Temizliği ve İffet Muhafazası Duası",
+          "score": 0.014705882352941176
+        },
+        {
+          "id": "6a59ffb0a9004ba3e9f2202a",
+          "name": "Tüm Formülleri Birleştiren Zikir",
+          "score": 0.014705882352941176
+        },
+        {
+          "key": "tuvalete-girmeden-once-dua",
+          "id": "6a59ffb2a9004ba3e9f22042",
+          "name": "Tuvalete Girmeden Önce Dua",
+          "score": 0.014492753623188406
+        }
+      ]
+    },
+    {
+      "id": "r022",
+      "freeText": "huzur",
+      "locale": "tr",
+      "category": "vague",
+      "expandedQuery": "iç huzuru, gönül dinginliği ve kaygı giderme ihtiyacı; sakinlik, teselli, sabır ve kalp ferahlığı arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [],
+      "skipped": true,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 0,
+      "latencyMs": 2976,
+      "top15": [
+        {
+          "key": "sikinti-ya-selam-ya-latif-ya-vedud",
+          "id": "6a59ffbaa9004ba3e9f220b3",
+          "name": "Yâ Selâm, Yâ Latîf, Yâ Vedûd",
+          "score": 0.03200204813108039
+        },
+        {
+          "key": "sikinti-huvellezi-sekine",
+          "id": "6a59ffbaa9004ba3e9f220b9",
+          "name": "Sekine Ayeti",
+          "score": 0.031754032258064516
+        },
+        {
+          "key": "barisma-vela-tecal-fi-kulubina-gillen",
+          "id": "6a59ffc0a9004ba3e9f220fb",
+          "name": "Kalpteki Kini Giderme Duası",
+          "score": 0.02946912242686891
+        },
+        {
+          "key": "sikinti-ya-mumin",
+          "id": "6a59ffb9a9004ba3e9f220ae",
+          "name": "Yâ Mü'min",
+          "score": 0.029138513513513514
+        },
+        {
+          "key": "sikinti-inni-abduk-ibnu-abduk",
+          "id": "6a59ffbba9004ba3e9f220bd",
+          "name": "Üzüntü ve Keder Duası — Kur'an'ı Kalbin Baharı Kıl",
+          "score": 0.02844163539403516
+        },
+        {
+          "key": "sikinti-inni-euzu-minel-hemmi",
+          "id": "6a59ffbba9004ba3e9f220c2",
+          "name": "Sekiz Şeyden Sığınma Duası — Kaygı ve Keder",
+          "score": 0.027984344422700584
+        },
+        {
+          "key": "sikinti-insirah-suresi",
+          "id": "6a59ffb9a9004ba3e9f220a4",
+          "name": "İnşirah Suresi",
+          "score": 0.027651515151515153
+        },
+        {
+          "key": "sikinti-ya-muahhir",
+          "id": "6a59ffb9a9004ba3e9f220aa",
+          "name": "Yâ Mu'ahhir",
+          "score": 0.02750455373406193
+        },
+        {
+          "key": "esmaul-husna-el-gafur",
+          "id": "6a59ffaaa9004ba3e9f21fda",
+          "name": "El-Gafûr",
+          "score": 0.026709401709401708
+        },
+        {
+          "key": "esmaul-husna-es-sabur",
+          "id": "6a59ffafa9004ba3e9f2201d",
+          "name": "Es-Sabûr",
+          "score": 0.026709401709401708
+        },
+        {
+          "key": "ofke-rabbi-muhammed",
+          "id": "6a59ffbfa9004ba3e9f220f4",
+          "name": "Kalbimin Öfkesini Gider Duası",
+          "score": 0.025987006496751626
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "esmaul-husna-el-kayyum",
+          "id": "6a59ffaca9004ba3e9f21ff7",
+          "name": "El-Kayyûm",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffbaa9004ba3e9f220bc",
+          "name": "Sabır Yağdırma Duası",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "id": "r023",
+      "freeText": "yardım",
+      "locale": "tr",
+      "category": "vague",
+      "expandedQuery": "yardım ihtiyacı, çaresizlik veya sıkıntı halinde destek, yönlendirme ve ferahlık arayışı; dua, zikir ve teslimiyetle Allah’tan yardım, kolaylık, sabır ve çözüm talebi",
+      "expandedFromCache": false,
+      "expectedKeys": [],
+      "skipped": true,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 0,
+      "latencyMs": 2662,
+      "top15": [
+        {
+          "key": "sikinti-inna-lillahi-ve-inna-ileyhi-raciun",
+          "id": "6a59ffb9a9004ba3e9f220a7",
+          "name": "Musibet ve Teslimiyet Duası",
+          "score": 0.03125763125763126
+        },
+        {
+          "key": "sikinti-ya-uddeti-inde-siddeti",
+          "id": "6a59ffb9a9004ba3e9f220a8",
+          "name": "Şiddet ve Kurbette İmdad Duası",
+          "score": 0.029827662395050816
+        },
+        {
+          "key": "sikinti-ya-hayyu-ya-kayyum",
+          "id": "6a59ffbaa9004ba3e9f220b5",
+          "name": "Yâ Hayyü Yâ Kayyûmü İstiğâsesi",
+          "score": 0.029386529386529386
+        },
+        {
+          "key": "mubin-duasi-tesbih",
+          "id": "6a6b630dc705e3924a43f9b0",
+          "name": "Mübin Duası",
+          "score": 0.02921395544346364
+        },
+        {
+          "key": "ENBIYA_83",
+          "id": "6a59ffa6a9004ba3e9f21f97",
+          "name": "Hz. Eyyûb'un Duası",
+          "score": 0.028790389395194696
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.028588564574170333
+        },
+        {
+          "key": "haksizlik-fedea-rabbehu-magluban",
+          "id": "6a59ffb0a9004ba3e9f2202f",
+          "name": "Hz. Nuh'un (a.s.) Nusret Duası",
+          "score": 0.02797067901234568
+        },
+        {
+          "key": "sikinti-rabbena-efrig-sabran",
+          "id": "6a59ffbaa9004ba3e9f220bc",
+          "name": "Sabır Yağdırma Duası",
+          "score": 0.027623285131627734
+        },
+        {
+          "key": "LEKEL_HAMD",
+          "id": "6a59ffa5a9004ba3e9f21f7c",
+          "name": "Allâhümme Lekel Hamdü Duası",
+          "score": 0.02649122807017544
+        },
+        {
+          "key": "sikinti-kerimul-azim",
+          "id": "6a59ffbba9004ba3e9f220be",
+          "name": "Ali'ye Öğretilen Sıkıntı Zikri",
+          "score": 0.0259915611814346
+        },
+        {
+          "key": "evlilik-kasas-24",
+          "id": "6a59ffbea9004ba3e9f220eb",
+          "name": "Hz. Musa'nın Muhtaçlık Duası",
+          "score": 0.025793650793650792
+        },
+        {
+          "key": "sikinti-ahyini-teveffeni",
+          "id": "6a59ffbaa9004ba3e9f220ba",
+          "name": "Hayır Olan Olanla Razı Olma Duası",
+          "score": 0.023735955056179776
+        },
+        {
+          "key": "sikinti-la-ilahe-illallahul-azimul-halim",
+          "id": "6a59ffb9a9004ba3e9f220a5",
+          "name": "Kriz ve Keder Anı Tevhid Zikri",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffc5a9004ba3e9f22152",
+          "name": "Sabah — Nefs ve Şerefi Allah'a Bağışlama Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "sikinti-inni-euzu-minel-hemmi",
+          "id": "6a59ffbba9004ba3e9f220c2",
+          "name": "Sekiz Şeyden Sığınma Duası — Kaygı ve Keder",
+          "score": 0.015151515151515152
+        }
+      ]
+    },
+    {
+      "id": "r024",
+      "freeText": "sllsd asdasd 1234",
+      "locale": "tr",
+      "category": "offtopic",
+      "expandedQuery": "sllsd asdasd 1234",
+      "expandedFromCache": false,
+      "expectedKeys": [],
+      "skipped": true,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 2,
+      "latencyMs": 3053,
+      "top15": [
+        {
+          "key": "esmaul-husna-es-samed",
+          "id": "6a59ffada9004ba3e9f21ffb",
+          "name": "Es-Samed",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "SUBHANALLAH_EHAD_SAMED",
+          "id": "6a59ffa2a9004ba3e9f21f58",
+          "name": "Sübhânallâhil-Ehadi's-Samed — Recep 11-20. Günler Zikri",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "namaz-selamdan-once-kabir-fitne-istiaze",
+          "id": "6a59ffb3a9004ba3e9f22052",
+          "name": "Selâmdan Önce Dört Şeyden Sığınma Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "DELAIL_HAYRAT",
+          "id": "6a59ffc7a9004ba3e9f2216e",
+          "name": "Delailü'l-Hayrat Dengi Salavat",
+          "score": 0.015625
+        },
+        {
+          "key": "BISMILLAH_LA_YEDURRU",
+          "id": "6a59ffa6a9004ba3e9f21f8b",
+          "name": "Bismillâhillezî Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "esmaul-husna-es-selam",
+          "id": "6a59ffa9a9004ba3e9f21fbc",
+          "name": "Es-Selâm",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "evlat-es-samed",
+          "id": "6a59ffb7a9004ba3e9f2208d",
+          "name": "Es-Samed",
+          "score": 0.014925373134328358
+        },
+        {
+          "key": "YA_LATIF",
+          "id": "6a59ffa3a9004ba3e9f21f67",
+          "name": "Subhânallâhi'l-Latîf — Şaban 1-10. Günler Zikirı",
+          "score": 0.014705882352941176
+        },
+        {
+          "key": "esma-ya-melik",
+          "id": "6a59ffafa9004ba3e9f2201e",
+          "name": "Ya Melik",
+          "score": 0.014492753623188406
+        },
+        {
+          "key": "sikinti-ya-selam-ya-latif-ya-vedud",
+          "id": "6a59ffbaa9004ba3e9f220b3",
+          "name": "Yâ Selâm, Yâ Latîf, Yâ Vedûd",
+          "score": 0.014285714285714285
+        },
+        {
+          "key": "RECEP_HACET_2",
+          "id": "6a59ffa2a9004ba3e9f21f5c",
+          "name": "Recep İkinci 10 Gün Hacet Namazı Sonrası Duası",
+          "score": 0.014084507042253521
+        },
+        {
+          "key": "KEMALILLAHI",
+          "id": "6a59ffc7a9004ba3e9f2216d",
+          "name": "Kema Lillahi Salavatı",
+          "score": 0.013888888888888888
+        },
+        {
+          "key": "afet-bismillahi-ma-saallah-la-kuvvete",
+          "id": "6a59ffb8a9004ba3e9f22096",
+          "name": "Bismillâhi Mâ Şâallah Tertibi",
+          "score": 0.0136986301369863
+        },
+        {
+          "key": "haset-ya-hafiz",
+          "id": "6a59ffbea9004ba3e9f220e3",
+          "name": "Yâ Hâfız",
+          "score": 0.013513513513513514
+        },
+        {
+          "key": "HZ_FATIMA_SALAVATI",
+          "id": "6a59ffc8a9004ba3e9f22171",
+          "name": "Hz. Fatıma'nın Salavatı",
+          "score": 0.013333333333333334
+        }
+      ]
+    },
+    {
+      "id": "r025",
+      "freeText": "nasılsın",
+      "locale": "tr",
+      "category": "offtopic",
+      "expandedQuery": "nasılsın",
+      "expandedFromCache": false,
+      "expectedKeys": [],
+      "skipped": true,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 0,
+      "latencyMs": 2338,
+      "top15": [
+        {
+          "key": "aksirma-teshmit-cevabi",
+          "id": "6a59ffb2a9004ba3e9f22046",
+          "name": "Teşmite Cevap — Yehdîkümullah",
+          "score": 0.027205882352941177
+        },
+        {
+          "key": "esmaul-husna-el-hayy",
+          "id": "6a59ffaca9004ba3e9f21ff6",
+          "name": "El-Hayy",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f2216a",
+          "name": "Salavât-i İbrahimiyye",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "YA_SELAM",
+          "id": "6a59ffa7a9004ba3e9f21f9d",
+          "name": "Ya Selam (c.c.)",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffc2a9004ba3e9f22119",
+          "name": "Rabbim Bağışla ve Tövbemi Kabul Et",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "esma-ya-gani",
+          "id": "6a59ffafa9004ba3e9f22022",
+          "name": "Ya Ganî",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffb0a9004ba3e9f2202d",
+          "name": "Bir Topluluktan veya Gruptan Korkan için Dua",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "sifa-sefallahu-sekameke",
+          "id": "6a59ffc1a9004ba3e9f2210a",
+          "name": "Hz. Peygamberin Hastaya Okuduğu Şifa Duası",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffc8a9004ba3e9f22175",
+          "name": "Evden Çıkarken Duası",
+          "score": 0.015625
+        },
+        {
+          "key": "MEVLID_HAMD",
+          "id": "6a59ffa6a9004ba3e9f21f98",
+          "name": "Mevlid Hamd ve Tesbih Zikri",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f2216b",
+          "name": "Cuma Günü Salavat",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "evlilik-nisa-19",
+          "id": "6a59ffbea9004ba3e9f220ee",
+          "name": "Güzel Geçim ve Sabır Ayeti",
+          "score": 0.015151515151515152
+        },
+        {
+          "id": "6a59ffbaa9004ba3e9f220ba",
+          "name": "Hayır Olan Olanla Razı Olma Duası",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "sifa-bismillahi-masaallah",
+          "id": "6a59ffc0a9004ba3e9f22108",
+          "name": "Bismillâhi Mâ Şâallah Duası",
+          "score": 0.014925373134328358
+        },
+        {
+          "id": "6a59ffbea9004ba3e9f220e9",
+          "name": "Muhabbet Ayeti",
+          "score": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "id": "r026",
+      "freeText": "python kodu yaz bana",
+      "locale": "tr",
+      "category": "offtopic",
+      "expandedQuery": "python kodu yaz bana",
+      "expandedFromCache": false,
+      "expectedKeys": [],
+      "skipped": true,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 4,
+      "latencyMs": 2650,
+      "top15": [
+        {
+          "key": "sinav-nun-vel-kalemi",
+          "id": "6a59ffa8a9004ba3e9f21fb5",
+          "name": "Nûn Vel-Kalemi",
+          "score": 0.029551337359792925
+        },
+        {
+          "key": "zulum-allahümme-kfinihim",
+          "id": "6a59ffb0a9004ba3e9f2202d",
+          "name": "Bir Topluluktan veya Gruptan Korkan için Dua",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "afet-rabbi-kullu-seyin-hadimuke",
+          "id": "6a59ffb9a9004ba3e9f220a2",
+          "name": "Kozmik Korunma ve Nusret Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "sinav-rabbi-zidni-ilmen",
+          "id": "6a59ffa8a9004ba3e9f21fb1",
+          "name": "Rabbi Zidnî İlmen",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "afet-euzu-bi-kelimatillahit-tammati-min-serri-ma-halak",
+          "id": "6a59ffb8a9004ba3e9f2209b",
+          "name": "Kelimatullah ile Sığınma Duası",
+          "score": 0.015625
+        },
+        {
+          "key": "HZYUSUF",
+          "id": "6a59ffb7a9004ba3e9f22091",
+          "name": "Hz. Yunus'un Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "TAHA_25_28",
+          "id": "6a59ffbca9004ba3e9f220d1",
+          "name": "Tâhâ Suresi Kolaylık Ayeti",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "afet-allahumme-hfazni-min-beyni-yedeyye",
+          "id": "6a59ffb8a9004ba3e9f2209a",
+          "name": "Altı Yönden Korunma Duası",
+          "score": 0.014925373134328358
+        },
+        {
+          "key": "ENBIYA_83",
+          "id": "6a59ffa6a9004ba3e9f21f97",
+          "name": "Hz. Eyyûb'un Duası",
+          "score": 0.014705882352941176
+        },
+        {
+          "key": "istigfar-yunus-duasi",
+          "id": "6a59ffc2a9004ba3e9f2211b",
+          "name": "Hz. Yûnus'un Tövbe Duası",
+          "score": 0.014492753623188406
+        },
+        {
+          "key": "MEVLID_RAHMET",
+          "id": "6a59ffa6a9004ba3e9f21f99",
+          "name": "Mevlid Muhabbet Duası",
+          "score": 0.014285714285714285
+        },
+        {
+          "key": "hac-telbiye",
+          "id": "6a59ffc2a9004ba3e9f22120",
+          "name": "Telbiye",
+          "score": 0.014084507042253521
+        },
+        {
+          "key": "is-ibrahim-7-sukur-bereket",
+          "id": "6a59ffbba9004ba3e9f220c8",
+          "name": "İbrâhîm Sûresi 7. Ayet Şükür ve Artış Ayeti",
+          "score": 0.013888888888888888
+        },
+        {
+          "key": "RABBI_ENZELTELEYYE",
+          "id": "6a59ffa6a9004ba3e9f21f8f",
+          "name": "Rabbi İnnî Limâ Enzelte (Kasas 24)",
+          "score": 0.0136986301369863
+        },
+        {
+          "key": "sinav-rabbisrahli-sadri",
+          "id": "6a59ffa7a9004ba3e9f21faa",
+          "name": "Hz. Mûsâ'nın Duası",
+          "score": 0.013513513513513514
+        }
+      ]
+    },
+    {
+      "id": "r027",
+      "freeText": "I feel very anxious lately and can't sleep at night",
+      "locale": "en",
+      "category": "emotion",
+      "expandedQuery": "kaygı, endişe ve uykusuzluk hali; gece huzursuzluğu, sakinleşme, kalp huzuru, teselli, sakin uyku ve zihin dinginliği arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "sikinti-insirah-suresi",
+        "uyku-ayetel-kursi",
+        "sikinti-ya-selam-ya-latif-ya-vedud"
+      ],
+      "skipped": false,
+      "firstRank": 4,
+      "hit5": true,
+      "recall15": 0.6666666666666666,
+      "dupCount": 0,
+      "latencyMs": 2636,
+      "top15": [
+        {
+          "key": "sikinti-euzu-bi-kelimatillahit-tammati-min-gadabihi",
+          "id": "6a59ffb9a9004ba3e9f220a6",
+          "name": "Night Panic and Whispering Refuge Supplication",
+          "score": 0.031754032258064516
+        },
+        {
+          "key": "sikinti-ya-allah-estagfirullah",
+          "id": "6a59ffbaa9004ba3e9f220bb",
+          "name": "Night Seeking of Forgiveness",
+          "score": 0.031544957774465976
+        },
+        {
+          "key": "sikinti-huvellezi-sekine",
+          "id": "6a59ffbaa9004ba3e9f220b9",
+          "name": "The Verse of Sakinah (Tranquility)",
+          "score": 0.02976190476190476
+        },
+        {
+          "key": "sikinti-ya-selam-ya-latif-ya-vedud",
+          "id": "6a59ffbaa9004ba3e9f220b3",
+          "name": "Ya Salam, Ya Latif, Ya Wadud",
+          "score": 0.0293236301369863,
+          "isExpected": true
+        },
+        {
+          "key": "sikinti-ya-muahhir",
+          "id": "6a59ffb9a9004ba3e9f220aa",
+          "name": "Ya Mu'akhkhir",
+          "score": 0.029051670471052088
+        },
+        {
+          "key": "sikinti-inni-abduk-ibnu-abduk",
+          "id": "6a59ffbba9004ba3e9f220bd",
+          "name": "Supplication of Sorrow and Grief — Make the Quran the Spring of My Heart",
+          "score": 0.02821869488536155
+        },
+        {
+          "key": "sikinti-inni-euzu-minel-hemmi",
+          "id": "6a59ffbba9004ba3e9f220c2",
+          "name": "Supplication of Refuge from Eight Afflictions — Anxiety and Grief",
+          "score": 0.027799227799227798
+        },
+        {
+          "key": "sikinti-hasbiye-tertibi",
+          "id": "6a59ffbaa9004ba3e9f220b8",
+          "name": "The Hasbiya Litany",
+          "score": 0.02658450704225352
+        },
+        {
+          "key": "ofke-rabbi-muhammed",
+          "id": "6a59ffbfa9004ba3e9f220f4",
+          "name": "Supplication for Removing Anger from the Heart",
+          "score": 0.0264957264957265
+        },
+        {
+          "key": "sikinti-allahu-allahu-rabbi",
+          "id": "6a59ffb9a9004ba3e9f220a9",
+          "name": "Tawhid Dhikr for Calming Panic",
+          "score": 0.025893752088205813
+        },
+        {
+          "key": "esmaul-husna-el-gafur",
+          "id": "6a59ffaaa9004ba3e9f21fda",
+          "name": "Al-Ghafur",
+          "score": 0.02431476569407604
+        },
+        {
+          "id": "6a59ffc6a9004ba3e9f2215c",
+          "name": "Twin Supplication for Sleep and Waking",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "sikinti-ya-mumin",
+          "id": "6a59ffb9a9004ba3e9f220ae",
+          "name": "Ya Mu'min",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffc6a9004ba3e9f2215f",
+          "name": "Āyat al-Kursī (Before Sleep)",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "sikinti-insirah-suresi",
+          "id": "6a59ffb9a9004ba3e9f220a4",
+          "name": "Surah Ash-Sharh (Al-Inshirah)",
+          "score": 0.014925373134328358,
+          "isExpected": true
+        }
+      ]
+    },
+    {
+      "id": "r029",
+      "freeText": "how are you today, what's up",
+      "locale": "en",
+      "category": "offtopic",
+      "expandedQuery": "how are you today, what's up",
+      "expandedFromCache": false,
+      "expectedKeys": [],
+      "skipped": true,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 0,
+      "latencyMs": 2019,
+      "top15": [
+        {
+          "key": "RAMAZAN_GUN_8",
+          "id": "6a59ffa4a9004ba3e9f21f79",
+          "name": "Ramadan Day 8 Supplication — Ibn Abbas",
+          "score": 0.026334026334026334
+        },
+        {
+          "key": "RAMAZAN_GUN_3",
+          "id": "6a59ffa4a9004ba3e9f21f74",
+          "name": "Ramadan Day 3 Supplication — Ibn Abbas",
+          "score": 0.02454080096356519
+        },
+        {
+          "key": "sabah-nimet-afiyet-setr",
+          "id": "6a59ffc5a9004ba3e9f22149",
+          "name": "Morning — Supplication for the Completion of Blessing, Well-Being, and Concealment",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffa2a9004ba3e9f21f58",
+          "name": "Subhanallah al-Ahad as-Samad — Dhikr for the 11th-20th Days of Rajab",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "sabah-mulk-rabbilalemin",
+          "id": "6a59ffc5a9004ba3e9f2214b",
+          "name": "Morning — Seeking the Day's Good, Opening, Light, and Blessing",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f2216f",
+          "name": "Salawat al-Nur al-Zatiyya (The Light of the Divine Essence)",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "YA_SELAM",
+          "id": "6a59ffa7a9004ba3e9f21f9d",
+          "name": "Ya Salam",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffb7a9004ba3e9f22088",
+          "name": "Supplication for Protection Before Intimacy",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "sabah-nimet-sukur",
+          "id": "6a59ffc4a9004ba3e9f22143",
+          "name": "Morning Gratitude for Blessings",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffb9a9004ba3e9f220a3",
+          "name": "Surah Quraysh",
+          "score": 0.015625
+        },
+        {
+          "key": "sifa-bismillahi-masaallah",
+          "id": "6a59ffc0a9004ba3e9f22108",
+          "name": "Bismillahi Ma Sha'Allah Supplication",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffc1a9004ba3e9f22111",
+          "name": "Funeral Prayer Supplication",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "sabah-asbahnâ",
+          "id": "6a59ffc4a9004ba3e9f22141",
+          "name": "Morning and Evening Opening Supplication",
+          "score": 0.015151515151515152
+        },
+        {
+          "id": "6a59ffb0a9004ba3e9f2202f",
+          "name": "Prophet Noah's (Peace be Upon Him) Supplication for Divine Support",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "sifa-afiyete-dunya-ahiret",
+          "id": "6a59ffc0a9004ba3e9f22105",
+          "name": "Supplication for Well-Being in This World and the Hereafter",
+          "score": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "id": "r028",
+      "freeText": "I want to thank Allah for everything He has given me",
+      "locale": "en",
+      "category": "gratitude",
+      "expandedQuery": "şükür, minnettarlık ve Allah’a verilen nimetler için hamd niyeti; Allah’a teşekkür, şükretme bilinci, verilen dünya ve din nimetleri için şükür ve devamlı minnet hali arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "tesbih-subhanallahil-azim-ve-bihamdihi",
+        "esmaul-husna-es-sekur"
+      ],
+      "skipped": false,
+      "firstRank": 3,
+      "hit5": true,
+      "recall15": 0.5,
+      "dupCount": 0,
+      "latencyMs": 2561,
+      "top15": [
+        {
+          "key": "sabah-nimet-sukur",
+          "id": "6a59ffc4a9004ba3e9f22143",
+          "name": "Morning Gratitude for Blessings",
+          "score": 0.030536130536130537
+        },
+        {
+          "key": "KURBAN_SUKRU_DUASI",
+          "id": "6a59ffa5a9004ba3e9f21f85",
+          "name": "Supplication of Gratitude",
+          "score": 0.029910714285714284
+        },
+        {
+          "key": "esmaul-husna-es-sekur",
+          "id": "6a59ffaba9004ba3e9f21fdb",
+          "name": "Ash-Shakur",
+          "score": 0.029030910609857977,
+          "isExpected": true
+        },
+        {
+          "key": "is-ibrahim-7-sukur-bereket",
+          "id": "6a59ffbba9004ba3e9f220c8",
+          "name": "Surah Ibrahim, Verse 7 — Verse of Gratitude and Increase",
+          "score": 0.02900988017658188
+        },
+        {
+          "key": "elbise-giyerken-hamd",
+          "id": "6a59ffb1a9004ba3e9f2203f",
+          "name": "Supplication for Putting On Clothing",
+          "score": 0.02815814850530376
+        },
+        {
+          "key": "yemek-sonrasi-muslimiin",
+          "id": "6a59ffc3a9004ba3e9f2212f",
+          "name": "Brief Praise Supplication After Eating",
+          "score": 0.027692895339954164
+        },
+        {
+          "key": "ozlu-nimetin-zevalinden-siginma",
+          "id": "6a59ffb4a9004ba3e9f22061",
+          "name": "Protection from the Loss of Blessing and Allah's Wrath",
+          "score": 0.02758751902587519
+        },
+        {
+          "key": "namaz-selamdan-once-zikredinme-yardim",
+          "id": "6a59ffb3a9004ba3e9f22055",
+          "name": "Before the Salam — Seeking Help for Remembrance, Gratitude, and Worship",
+          "score": 0.027402402402402402
+        },
+        {
+          "key": "SUBHANALLAHI_VE_BIHAMDIHI",
+          "id": "6a59ffa5a9004ba3e9f21f83",
+          "name": "Tasbih of Glorification and Praise",
+          "score": 0.025978407557354925
+        },
+        {
+          "key": "aksirirken-elhamdulillah",
+          "id": "6a59ffb2a9004ba3e9f22045",
+          "name": "Praising Allah While Sneezing",
+          "score": 0.025528455284552845
+        },
+        {
+          "key": "BAKIYAT_SALIHAT",
+          "id": "6a59ffa7a9004ba3e9f21f9c",
+          "name": "Dhikr of the Enduring Righteous Deeds",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "MEVLID_HAMD",
+          "id": "6a59ffa6a9004ba3e9f21f98",
+          "name": "The Mawlid Dhikr of Praise and Glorification",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "Istighfar and Repentance",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffc6a9004ba3e9f2215d",
+          "name": "Praise for Allah Who Restores the Soul Upon Waking",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mawlid Salawat",
+          "score": 0.015625
+        }
+      ]
+    },
+    {
+      "id": "r030",
+      "freeText": "son zamanlarda hayatım çok karışık, işimde sürekli baskı altındayım, evde de eşimle küçük şeyler yüzünden tartışıyoruz, geceleri uyuyamıyorum, kafamda sürekli kötü senaryolar dönüyor ve Allah'a karşı bile bir uzaklık hissediyorum, bu durumdan nasıl çıkabilirim bilmiyorum, biraz huzur ve teselli bulmak istiyorum",
+      "locale": "tr",
+      "category": "vague",
+      "expandedQuery": "hayatın karışıklığı, işteki sürekli baskı, evde eşle süregelen tartışmalar, uykusuzluk, sürekli kötü senaryolar ve Allah’a karşı hissedilen uzaklık; için huzur, teselli, kalp ferahlığı, sabır, gönül yakınlığı ve Allah’a yönelme niyeti arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "sikinti-insirah-suresi",
+        "sikinti-la-ilahe-illallahul-azimul-halim",
+        "sikinti-rabbena-efrig-sabran"
+      ],
+      "skipped": false,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 0,
+      "latencyMs": 2928,
+      "top15": [
+        {
+          "key": "ISTIGFAR",
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.029116045245077504
+        },
+        {
+          "key": "mubin-duasi-tesbih",
+          "id": "6a6b630dc705e3924a43f9b0",
+          "name": "Mübin Duası",
+          "score": 0.02485334979932078
+        },
+        {
+          "key": "evlilik-nisa-19",
+          "id": "6a59ffbea9004ba3e9f220ee",
+          "name": "Güzel Geçim ve Sabır Ayeti",
+          "score": 0.024444444444444446
+        },
+        {
+          "key": "barisma-ellefe-beyne-kulubihim",
+          "id": "6a59ffbfa9004ba3e9f220f9",
+          "name": "Kalpleri Birleştiren Allah'tır",
+          "score": 0.023581634068525453
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "sikinti-inna-lillahi-ve-inna-ileyhi-raciun",
+          "id": "6a59ffb9a9004ba3e9f220a7",
+          "name": "Musibet ve Teslimiyet Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "sikinti-ya-muahhir",
+          "id": "6a59ffb9a9004ba3e9f220aa",
+          "name": "Yâ Mu'ahhir",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffbda9004ba3e9f220d3",
+          "name": "Eve Girerken Okunacak Nebevi Sığınma",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "sikinti-ya-allah-estagfirullah",
+          "id": "6a59ffbaa9004ba3e9f220bb",
+          "name": "Gece İstiğfarı",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffa3a9004ba3e9f21f6b",
+          "name": "Ramazan Hilali Duası",
+          "score": 0.015625
+        },
+        {
+          "key": "sikinti-ya-selam-ya-latif-ya-vedud",
+          "id": "6a59ffbaa9004ba3e9f220b3",
+          "name": "Yâ Selâm, Yâ Latîf, Yâ Vedûd",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffbba9004ba3e9f220bd",
+          "name": "Üzüntü ve Keder Duası — Kur'an'ı Kalbin Baharı Kıl",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "sikinti-bismillahi-ala-nefsi",
+          "id": "6a59ffbaa9004ba3e9f220b6",
+          "name": "İlahi Zamana Razı Olma Duası",
+          "score": 0.015151515151515152
+        },
+        {
+          "id": "6a59ffb6a9004ba3e9f2207c",
+          "name": "Çarşıda Yanlış İşten Korunma Duası",
+          "score": 0.015151515151515152
+        }
+      ]
+    },
+    {
+      "id": "r032",
+      "freeText": "işten kovulacağım diye çok korkuyorum, rızkım için dua etmek istiyorum",
+      "locale": "tr",
+      "category": "work",
+      "expandedQuery": "iş kaybı kaygısı ve gelecek için endişe; rızık artışı, iş bulma, geçim kolaylığı, kalp huzuru ve tevekkül için dua ve zikir arayışı; rızık genişletme, sabır, teslimiyet ve güven talebi",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "is-allahumme-ikfini-bi-helalike",
+        "is-allahumme-ya-ganiyyu-ya-hamidu",
+        "is-ya-rafi-kariyer-yukselis"
+      ],
+      "skipped": false,
+      "firstRank": 6,
+      "hit5": false,
+      "recall15": 0.6666666666666666,
+      "dupCount": 2,
+      "latencyMs": 2938,
+      "top15": [
+        {
+          "key": "sikinti-hasbiye-tertibi",
+          "id": "6a59ffbaa9004ba3e9f220b8",
+          "name": "Hasbiye Tertibi",
+          "score": 0.03252247488101534
+        },
+        {
+          "key": "rizik-talak-men-yettekillah",
+          "id": "6a59ffb6a9004ba3e9f2207d",
+          "name": "Beklenmedik Rızık Ayeti",
+          "score": 0.030330882352941176
+        },
+        {
+          "key": "HASBIYE",
+          "id": "6a59ffa5a9004ba3e9f21f87",
+          "name": "Tevekkül ve Hasbiye Zikri",
+          "score": 0.030158730158730156
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.028298204527712725
+        },
+        {
+          "key": "rizik-kfini-bihalali-an-harami",
+          "id": "6a59ffb6a9004ba3e9f2207b",
+          "name": "Helal Rızık ve Borçtan Kurtuluş Duası",
+          "score": 0.02819138376017471
+        },
+        {
+          "key": "is-allahumme-ya-ganiyyu-ya-hamidu",
+          "id": "6a59ffbba9004ba3e9f220c6",
+          "name": "İmam-ı Azam'dan Bereket ve Helal Rızık Duası",
+          "score": 0.027222222222222224,
+          "isExpected": true
+        },
+        {
+          "key": "ozlu-bagisla-merhamet-afiyet-rizik",
+          "id": "6a59ffb4a9004ba3e9f2205d",
+          "name": "Dört Talep Duası — Bağışla, Merhamet Et, Âfiyet Ver, Rızık Ver",
+          "score": 0.02712049508554787
+        },
+        {
+          "key": "ozlu-takva-nesip-faydali-ilim",
+          "id": "6a59ffb4a9004ba3e9f22062",
+          "name": "Üçlü Kapsamlı Dua — Âcizlik, Takvâ ve Faydalı İlim",
+          "score": 0.02674825174825175
+        },
+        {
+          "key": "esma-ya-rezzak",
+          "id": "6a59ffafa9004ba3e9f22020",
+          "name": "Ya Rezzâk",
+          "score": 0.025657894736842105
+        },
+        {
+          "key": "esmaul-husna-el-vehhab",
+          "id": "6a59ffa9a9004ba3e9f21fc7",
+          "name": "El-Vehhâb",
+          "score": 0.024448419797257006
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22161",
+          "name": "Nefsimi Sana Teslim Ettim (Yatmadan Önce Son Dua)",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "sikinti-inni-euzu-minel-hemmi",
+          "id": "6a59ffbba9004ba3e9f220c2",
+          "name": "Sekiz Şeyden Sığınma Duası — Kaygı ve Keder",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "sikinti-bismillahi-ala-nefsi",
+          "id": "6a59ffbaa9004ba3e9f220b6",
+          "name": "İlahi Zamana Razı Olma Duası",
+          "score": 0.015625
+        },
+        {
+          "key": "sikinti-inna-lillahi-ve-inna-ileyhi-raciun",
+          "id": "6a59ffb9a9004ba3e9f220a7",
+          "name": "Musibet ve Teslimiyet Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "is-allahumme-ikfini-bi-helalike",
+          "id": "6a59ffbba9004ba3e9f220c5",
+          "name": "Helal Rızık ve İstiğna Duası",
+          "score": 0.015151515151515152,
+          "isExpected": true
+        }
+      ]
+    },
+    {
+      "id": "r031",
+      "freeText": "geçen hafta işimi kaybettim, aynı gün eve dönerken küçük bir trafik kazası geçirdim, çok şükür yaralanan olmadı ama araç hasar gördü, üstüne bir de annemin sağlık durumu kötüleşti, tüm bunlar üst üste gelince dayanacak gücüm kalmadı gibi hissediyorum, rızkım ve ailem için ne okumalıyım bilmiyorum",
+      "locale": "tr",
+      "category": "life-event",
+      "expandedQuery": "iş kaybı, trafik kazası ve anne sağlığındaki kötüleşme nedeniyle yoğun stres, maddi ve duygusal sıkıntı; sabır, teslimiyet, rızık, aile koruması, şifa, ferahlık ve dayanma gücü dileği; rızkın genişlemesi, aile için bereket ve anneye şifa niyazı arayışı.",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "sikinti-rabbena-efrig-sabran",
+        "RIZIK_EBU_UMAME",
+        "sikinti-hasbiye-tertibi"
+      ],
+      "skipped": false,
+      "firstRank": 7,
+      "hit5": false,
+      "recall15": 0.3333333333333333,
+      "dupCount": 2,
+      "latencyMs": 3227,
+      "top15": [
+        {
+          "key": "mubin-duasi-tesbih",
+          "id": "6a6b630dc705e3924a43f9b0",
+          "name": "Mübin Duası",
+          "score": 0.029138513513513514
+        },
+        {
+          "key": "MESKEN_GENISLIGI",
+          "id": "6a59ffbca9004ba3e9f220cd",
+          "name": "Mesken Genişliği ve Bereket Duası",
+          "score": 0.028949545078577336
+        },
+        {
+          "key": "is-allahumme-ikfini-bi-helalike",
+          "id": "6a59ffbba9004ba3e9f220c5",
+          "name": "Helal Rızık ve İstiğna Duası",
+          "score": 0.028370221327967807
+        },
+        {
+          "key": "sikinti-inna-lillahi-ve-inna-ileyhi-raciun",
+          "id": "6a59ffb9a9004ba3e9f220a7",
+          "name": "Musibet ve Teslimiyet Duası",
+          "score": 0.028021349599695006
+        },
+        {
+          "key": "is-allahumme-ya-ganiyyu-ya-hamidu",
+          "id": "6a59ffbba9004ba3e9f220c6",
+          "name": "İmam-ı Azam'dan Bereket ve Helal Rızık Duası",
+          "score": 0.02750455373406193
+        },
+        {
+          "key": "rizik-nuh-istigfar-rizk",
+          "id": "6a59ffb6a9004ba3e9f2207e",
+          "name": "Hz. Nuh'un İstiğfar ve Rızık Ayeti",
+          "score": 0.027108970929195647
+        },
+        {
+          "key": "sikinti-rabbena-efrig-sabran",
+          "id": "6a59ffbaa9004ba3e9f220bc",
+          "name": "Sabır Yağdırma Duası",
+          "score": 0.026916221033868093,
+          "isExpected": true
+        },
+        {
+          "key": "esma-ya-basit",
+          "id": "6a59ffafa9004ba3e9f22024",
+          "name": "Ya Bâsıt",
+          "score": 0.02668564312399929
+        },
+        {
+          "key": "evlat-rabbi-inni-nezertu",
+          "id": "6a59ffb6a9004ba3e9f22083",
+          "name": "Hz. Meryem'in Annesinin Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "cenaze-taziye-duasi",
+          "id": "6a59ffc1a9004ba3e9f22116",
+          "name": "Taziye Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "evlilik-furkan-74",
+          "id": "6a59ffbea9004ba3e9f220e6",
+          "name": "Göz Aydınlığı Duası",
+          "score": 0.015625
+        },
+        {
+          "key": "evlat-rabbena-heb-lena-min-ezvacina",
+          "id": "6a59ffb6a9004ba3e9f22082",
+          "name": "Aile ve Zürriyet Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffafa9004ba3e9f2201e",
+          "name": "Ya Melik",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "evlat-ya-bari",
+          "id": "6a59ffb7a9004ba3e9f2208b",
+          "name": "Yâ Bâri'",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "evlat-ya-musavvir",
+          "id": "6a59ffb7a9004ba3e9f2208a",
+          "name": "Yâ Musavvir",
+          "score": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "id": "r033",
+      "freeText": "yeni bir eve taşınıyoruz, hayırlı ve bereketli olması için ne okumalıyım",
+      "locale": "tr",
+      "category": "life-event",
+      "expandedQuery": "yeni bir eve taşınma, evin hayırlı, bereketli, huzurlu ve korunmuş olması niyeti; bereket, ev sakinleri için güven, sağlık, rızık kapılarının açılması, kötülüklerden korunma ve Rabb’e şükür, salih amellerle doldurma arzusu",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "MUMINUN_29",
+        "MESKEN_GENISLIGI",
+        "EVE_GIRERKEN_DUA"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 0,
+      "latencyMs": 2884,
+      "top15": [
+        {
+          "key": "MUMINUN_29",
+          "id": "6a59ffbba9004ba3e9f220ca",
+          "name": "Mü'minûn Suresi 29. Ayeti (Bereketli Yerleşim Yakarışı)",
+          "score": 0.03278688524590164,
+          "isExpected": true
+        },
+        {
+          "key": "MESKEN_GENISLIGI",
+          "id": "6a59ffbca9004ba3e9f220cd",
+          "name": "Mesken Genişliği ve Bereket Duası",
+          "score": 0.0315136476426799,
+          "isExpected": true
+        },
+        {
+          "key": "EVE_GIRERKEN_DUA",
+          "id": "6a59ffbda9004ba3e9f220d3",
+          "name": "Eve Girerken Okunacak Nebevi Sığınma",
+          "score": 0.030834914611005692,
+          "isExpected": true
+        },
+        {
+          "key": "yolculuk-sehre-girerken",
+          "id": "6a59ffc4a9004ba3e9f2213e",
+          "name": "Yeni Bir Şehre Girerken Duası",
+          "score": 0.03036576949620428
+        },
+        {
+          "key": "esmaul-husna-es-sekur",
+          "id": "6a59ffaba9004ba3e9f21fdb",
+          "name": "Eş-Şekûr",
+          "score": 0.029957522915269395
+        },
+        {
+          "key": "esmaul-husna-el-vekil",
+          "id": "6a59ffaca9004ba3e9f21fec",
+          "name": "El-Vekîl",
+          "score": 0.02854251012145749
+        },
+        {
+          "key": "yolculuk-yeni-beldeyi-gorünce",
+          "id": "6a59ffc4a9004ba3e9f2213b",
+          "name": "Yeni Beldeyi Görünce Kapsamlı Dua",
+          "score": 0.02738970588235294
+        },
+        {
+          "key": "ev-giris-bismillah",
+          "id": "6a59ffc8a9004ba3e9f22176",
+          "name": "Eve Girerken Duası",
+          "score": 0.027364110201042444
+        },
+        {
+          "key": "ev-cikis-bismillah-tevekkul",
+          "id": "6a59ffc8a9004ba3e9f22175",
+          "name": "Evden Çıkarken Duası",
+          "score": 0.02564102564102564
+        },
+        {
+          "key": "mulk-bismillahi-ala-nefsi-ve-mali",
+          "id": "6a59ffb0a9004ba3e9f2202c",
+          "name": "Can, Mal ve Din Koruması Duası",
+          "score": 0.025396825396825397
+        },
+        {
+          "key": "GAZALI_ZENGINLIK",
+          "id": "6a59ffbca9004ba3e9f220cf",
+          "name": "İmam Gazalî'nin Zenginlik ve İktifa Duası",
+          "score": 0.024614919963757174
+        },
+        {
+          "id": "6a59ffbca9004ba3e9f220cb",
+          "name": "Âl-i İmrân Suresi 26. Ayeti (Mülk İsteme Ayeti)",
+          "score": 0.015625
+        },
+        {
+          "key": "korunma-nisa-100-ayet-tertibi",
+          "id": "6a59ffb8a9004ba3e9f22099",
+          "name": "Nisa Suresi 100. Ayet Tertibi",
+          "score": 0.015151515151515152
+        },
+        {
+          "id": "6a59ffbca9004ba3e9f220cc",
+          "name": "Hz. Muaz'ın Borç ve Mülk Duası",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "barisma-barekellahu-lekum",
+          "id": "6a59ffc0a9004ba3e9f220fd",
+          "name": "Eşler İçin Bereket ve Birlik Duası",
+          "score": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "id": "r035",
+      "freeText": "yarın ameliyat olacağım, çok korkuyorum, benim için dua öner",
+      "locale": "tr",
+      "category": "health",
+      "expandedQuery": "yarın ameliyat olacak olmanın getirdiği korku, endişe ve tedirginlik; ameliyat öncesi huzur, cesaret, güven, tevekkül, şifa ve başarılı sonuç için niyet ve dua arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "sifa-afiyete-dunya-ahiret",
+        "sifa-eselullahel-azime",
+        "sikinti-la-ilahe-illallahul-azimul-halim"
+      ],
+      "skipped": false,
+      "firstRank": 13,
+      "hit5": false,
+      "recall15": 0.3333333333333333,
+      "dupCount": 0,
+      "latencyMs": 2660,
+      "top15": [
+        {
+          "key": "sifa-bismillahi-davini",
+          "id": "6a59ffc0a9004ba3e9f22106",
+          "name": "Dâvinî bi-Devâike Duası",
+          "score": 0.03076923076923077
+        },
+        {
+          "key": "sifa-isfi-abdek",
+          "id": "6a59ffc0a9004ba3e9f22109",
+          "name": "Hasta Ziyaretinde Okunacak Şifa Duası",
+          "score": 0.03021353930031804
+        },
+        {
+          "key": "sifa-sefallahu-sekameke",
+          "id": "6a59ffc1a9004ba3e9f2210a",
+          "name": "Hz. Peygamberin Hastaya Okuduğu Şifa Duası",
+          "score": 0.02886002886002886
+        },
+        {
+          "key": "sabah-rabbiyallahu-tevekkel",
+          "id": "6a59ffc5a9004ba3e9f22151",
+          "name": "Sabah-Akşam Tevekkül Duası — Cenneti Müjdeli",
+          "score": 0.028309409888357256
+        },
+        {
+          "key": "korunma-dua-i-sifa",
+          "id": "6a59ffb7a9004ba3e9f22093",
+          "name": "Dua-i Şifa",
+          "score": 0.027364110201042444
+        },
+        {
+          "key": "esmaul-husna-es-selam",
+          "id": "6a59ffa9a9004ba3e9f21fbc",
+          "name": "Es-Selâm",
+          "score": 0.02604430914933198
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f87",
+          "name": "Tevekkül ve Hasbiye Zikri",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "sikinti-bismillahi-ala-nefsi",
+          "id": "6a59ffbaa9004ba3e9f220b6",
+          "name": "İlahi Zamana Razı Olma Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "sikinti-inni-euzu-minel-hemmi",
+          "id": "6a59ffbba9004ba3e9f220c2",
+          "name": "Sekiz Şeyden Sığınma Duası — Kaygı ve Keder",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "sikinti-ya-mumin",
+          "id": "6a59ffb9a9004ba3e9f220ae",
+          "name": "Yâ Mü'min",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22161",
+          "name": "Nefsimi Sana Teslim Ettim (Yatmadan Önce Son Dua)",
+          "score": 0.015625
+        },
+        {
+          "key": "sifa-afiyete-dunya-ahiret",
+          "id": "6a59ffc0a9004ba3e9f22105",
+          "name": "Âfiyete fi'd-Dünyâ ve'l-Âhirah Duası",
+          "score": 0.015151515151515152,
+          "isExpected": true
+        },
+        {
+          "key": "sikinti-inna-lillahi-ve-inna-ileyhi-raciun",
+          "id": "6a59ffb9a9004ba3e9f220a7",
+          "name": "Musibet ve Teslimiyet Duası",
+          "score": 0.014925373134328358
+        },
+        {
+          "id": "6a59ffbba9004ba3e9f220c3",
+          "name": "Ud'ûnî Estecib Lekum — Dua Kabulü Ayeti",
+          "score": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "id": "r034",
+      "freeText": "büyük bir günah işledim, çok pişmanım, Allah'tan af diliyorum",
+      "locale": "tr",
+      "category": "repentance",
+      "expandedQuery": "büyük günah işleme sonucu yoğun pişmanlık, tövbe ve bağışlanma arzusu; Allah'tan af, bağışlanma, rahmet ve manevî arınma talebi; tövbe süreci, keffaret, sabır ve iman tazelenmesi ihtiyacı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "SEYYIDUL_ISTIGFAR",
+        "sifa-seyyidul-istigfar",
+        "ISTIGFAR"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 0.3333333333333333,
+      "dupCount": 2,
+      "latencyMs": 2927,
+      "top15": [
+        {
+          "key": "ISTIGFAR",
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.032018442622950824,
+          "isExpected": true
+        },
+        {
+          "key": "istigfar-rabbena-zalemna",
+          "id": "6a59ffc2a9004ba3e9f2211c",
+          "name": "Hz. Âdem ve Havvâ'nın Tövbe Duası",
+          "score": 0.03131881575727918
+        },
+        {
+          "key": "ozlu-magfiratul-evsa",
+          "id": "6a59ffb4a9004ba3e9f2206a",
+          "name": "Affın Günahlardan Büyük Olduğunun İkrarı",
+          "score": 0.030834914611005692
+        },
+        {
+          "key": "istigfar-rabbigfirli",
+          "id": "6a59ffc2a9004ba3e9f22119",
+          "name": "Rabbim Bağışla ve Tövbemi Kabul Et",
+          "score": 0.028985507246376812
+        },
+        {
+          "key": "istigfar-yunus-duasi",
+          "id": "6a59ffc2a9004ba3e9f2211b",
+          "name": "Hz. Yûnus'un Tövbe Duası",
+          "score": 0.028371628371628373
+        },
+        {
+          "key": "evlilik-isra-25-evvabun",
+          "id": "6a59ffbfa9004ba3e9f220f0",
+          "name": "Evvâbîn Affı Ayeti",
+          "score": 0.02797339593114241
+        },
+        {
+          "key": "oruc-iftar-birahmetike",
+          "id": "6a59ffb0a9004ba3e9f22035",
+          "name": "İftar Duası — Rahmetinle Bağışla",
+          "score": 0.027526395173453996
+        },
+        {
+          "key": "ozlu-hata-cehalet-israf-magrfet",
+          "id": "6a59ffb4a9004ba3e9f2205f",
+          "name": "Kapsamlı Mağfiret Duası — Üç Dörtlü Af",
+          "score": 0.027222222222222224
+        },
+        {
+          "key": "esmaul-husna-el-afuvv",
+          "id": "6a59ffaea9004ba3e9f2200b",
+          "name": "El-Afüvv",
+          "score": 0.02694394213381555
+        },
+        {
+          "key": "namaz-secde-gunahlarin-bagisilmasi",
+          "id": "6a59ffb3a9004ba3e9f22050",
+          "name": "Secdede Günahların Bağışlanması Duası",
+          "score": 0.0264301860545992
+        },
+        {
+          "key": "istigfar-gunluk",
+          "id": "6a59ffc2a9004ba3e9f2211d",
+          "name": "Günlük İstiğfar",
+          "score": 0.026262626262626265
+        },
+        {
+          "key": "esmaul-husna-el-gaffar",
+          "id": "6a59ffa9a9004ba3e9f21fc5",
+          "name": "El-Gaffâr",
+          "score": 0.02452153110047847
+        },
+        {
+          "key": "RABBENA_ZALEMNA",
+          "id": "6a59ffa6a9004ba3e9f21f96",
+          "name": "Hz. Adem'in Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "ESTAGFIRULLAH",
+          "id": "6a59ffa5a9004ba3e9f21f84",
+          "name": "Estağfirullâh",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffc2a9004ba3e9f2211a",
+          "name": "Hayy ve Kayyum Olan Allah'a İstiğfar",
+          "score": 0.015873015873015872
+        }
+      ]
+    },
+    {
+      "id": "r036",
+      "freeText": "sürekli kabuslar görüyorum, uykularım kaçtı, korunmak için ne okumalıyım",
+      "locale": "tr",
+      "category": "emotion",
+      "expandedQuery": "sürekli kabuslar, uykusuzluk ve gece korkusu; kötü rüyalardan korunma, huzurlu uyku, Allah’a sığınma, gece ibadeti ve dualarla ruhî ve manevi koruma arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "uyku-ayetel-kursi",
+        "sikinti-euzu-bi-kelimatillahit-tammati-min-gadabihi",
+        "korunma-muavvizeteyn-felak-nas"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 0.6666666666666666,
+      "dupCount": 0,
+      "latencyMs": 2700,
+      "top15": [
+        {
+          "key": "sikinti-euzu-bi-kelimatillahit-tammati-min-gadabihi",
+          "id": "6a59ffb9a9004ba3e9f220a6",
+          "name": "Gece Panik ve Vesvese Sığınma Duası",
+          "score": 0.03177805800756621,
+          "isExpected": true
+        },
+        {
+          "key": "SEYTANDAN_SIGINMA",
+          "id": "6a59ffa6a9004ba3e9f21f93",
+          "name": "Şeytanın Şerrinden Sığınma Duası",
+          "score": 0.031754032258064516
+        },
+        {
+          "key": "uyku-bismike-rabbi-yatak",
+          "id": "6a59ffc6a9004ba3e9f22160",
+          "name": "Yatağa Uzanırken Dua",
+          "score": 0.03125763125763126
+        },
+        {
+          "key": "uyanis-bismike-ahya-hamd",
+          "id": "6a59ffc6a9004ba3e9f2215c",
+          "name": "Uyku ve Uyanış İkiz Duası",
+          "score": 0.029857397504456328
+        },
+        {
+          "key": "sikinti-ya-allah-estagfirullah",
+          "id": "6a59ffbaa9004ba3e9f220bb",
+          "name": "Gece İstiğfarı",
+          "score": 0.029030910609857977
+        },
+        {
+          "key": "uyku-ayetel-kursi",
+          "id": "6a59ffc6a9004ba3e9f2215f",
+          "name": "Âyetel Kürsî (Yatmadan Önce)",
+          "score": 0.026992753623188405,
+          "isExpected": true
+        },
+        {
+          "key": "yolculuk-gece-acik-alanda",
+          "id": "6a59ffc4a9004ba3e9f2213c",
+          "name": "Gece Açık Alanda Konaklamak İçin Dua",
+          "score": 0.026973565905412694
+        },
+        {
+          "key": "sabah-subhane-la-kuvvete",
+          "id": "6a59ffc5a9004ba3e9f2214e",
+          "name": "Sabah — Havkale ve Meşîet ile Korunma Duası",
+          "score": 0.02690501986276634
+        },
+        {
+          "key": "aksam-emsena",
+          "id": "6a59ffc6a9004ba3e9f22155",
+          "name": "Akşam Duası",
+          "score": 0.026687875574407917
+        },
+        {
+          "key": "sabah-keseli-heremi-sıgınma",
+          "id": "6a59ffc6a9004ba3e9f22154",
+          "name": "Tembellik, Yaşlılık ve Dünya Fitnesinden Sığınma (Sabah-Akşam)",
+          "score": 0.024562989752863168
+        },
+        {
+          "key": "aksam-kelimâtillah",
+          "id": "6a59ffc6a9004ba3e9f22156",
+          "name": "Akşam Korunma Duası",
+          "score": 0.023128342245989305
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffa3a9004ba3e9f21f6b",
+          "name": "Ramazan Hilali Duası",
+          "score": 0.015151515151515152
+        }
+      ]
+    },
+    {
+      "id": "r037",
+      "freeText": "gece namazına kalkmak istiyorum ama nefsime yeniliyorum, yardımcı olacak bir zikir var mı",
+      "locale": "tr",
+      "category": "worship",
+      "expandedQuery": "gece namazına kalkma isteği ve nefsin ağır gelmesi; irade güçsüzlüğü, uyanık kalma zorluğu, disiplin ve azim artırma, tevbe, Allah’tan yardım dileme ve uyanıklık/ibadet azmi kazanmaya yönelik zikirler, kısa tesbihatler ve niyet güçlendirici dualar",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "namaz-iftitah-veccehtu",
+        "vitr-kunut-hdini-fimen",
+        "sikinti-ya-allah-estagfirullah"
+      ],
+      "skipped": false,
+      "firstRank": 2,
+      "hit5": true,
+      "recall15": 0.3333333333333333,
+      "dupCount": 0,
+      "latencyMs": 2940,
+      "top15": [
+        {
+          "key": "namaz-selamdan-once-zikredinme-yardim",
+          "id": "6a59ffb3a9004ba3e9f22055",
+          "name": "Selâmdan Önce — Zikir, Şükür ve İbadet İçin Yardım",
+          "score": 0.029051670471052088
+        },
+        {
+          "key": "sikinti-ya-allah-estagfirullah",
+          "id": "6a59ffbaa9004ba3e9f220bb",
+          "name": "Gece İstiğfarı",
+          "score": 0.027757078986587184,
+          "isExpected": true
+        },
+        {
+          "key": "uyku-eslemtu-nefsî",
+          "id": "6a59ffc7a9004ba3e9f22161",
+          "name": "Nefsimi Sana Teslim Ettim (Yatmadan Önce Son Dua)",
+          "score": 0.024269005847953218
+        },
+        {
+          "key": "uyanis-bismike-ahya-hamd",
+          "id": "6a59ffc6a9004ba3e9f2215c",
+          "name": "Uyku ve Uyanış İkiz Duası",
+          "score": 0.016129032258064516
+        },
+        {
+          "id": "6a59ffb3a9004ba3e9f22057",
+          "name": "Vitir Kunut Duası — Temel Form",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "ozlu-acz-kesel-cubn-herem-kabir-fitne",
+          "id": "6a59ffb4a9004ba3e9f22069",
+          "name": "Âcizlik, Tembellik, Korkaklık, İhtiyarlık ve Kabir Azabından Sığınma",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffb3a9004ba3e9f2205b",
+          "name": "Vitir Selâmından Sonra Zikir",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "ozlu-takva-nesip-faydali-ilim",
+          "id": "6a59ffb4a9004ba3e9f22062",
+          "name": "Üçlü Kapsamlı Dua — Âcizlik, Takvâ ve Faydalı İlim",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffb3a9004ba3e9f22056",
+          "name": "Selâmdan Sonra İlk Zikir — Estağfirullah + Entes-Selâm",
+          "score": 0.015625
+        },
+        {
+          "key": "sabah-keseli-heremi-sıgınma",
+          "id": "6a59ffc6a9004ba3e9f22154",
+          "name": "Tembellik, Yaşlılık ve Dünya Fitnesinden Sığınma (Sabah-Akşam)",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffb3a9004ba3e9f22054",
+          "name": "Selâmdan Önce Mağfiret Duası — İnnî Zalemtü",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.015151515151515152
+        },
+        {
+          "id": "6a59ffb0a9004ba3e9f2202a",
+          "name": "Tüm Formülleri Birleştiren Zikir",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "SEYTAN_HEMZI_NEFHI",
+          "id": "6a59ffbda9004ba3e9f220d5",
+          "name": "Şeytanın Hemz, Nefh ve Nefsinden Sığınma",
+          "score": 0.014925373134328358
+        },
+        {
+          "id": "6a59ffb0a9004ba3e9f22029",
+          "name": "Allah'a En Sevimli Dört Söz",
+          "score": 0.014925373134328358
+        }
+      ]
+    },
+    {
+      "id": "r038",
+      "freeText": "eşimle aramız son zamanlarda bozuk, evimize huzur gelmesi için dua istiyorum",
+      "locale": "tr",
+      "category": "family",
+      "expandedQuery": "eşle ilgili anlaşmazlık, iletişim kopukluğu ve evde huzur eksikliği; aile içi barış, sevgi, sabır, anlayış, kırgınlıkların giderilmesi ve gönül birliği için dua ve zikir arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "evlilik-nisa-19",
+        "evlilik-ellif-beyne-kulubina",
+        "evlilik-nisa-128"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 1,
+      "dupCount": 2,
+      "latencyMs": 3252,
+      "top15": [
+        {
+          "key": "evlilik-ellif-beyne-kulubina",
+          "id": "6a59ffbea9004ba3e9f220e7",
+          "name": "Kalpleri Birleştirme Duası",
+          "score": 0.03252247488101534,
+          "isExpected": true
+        },
+        {
+          "key": "barisma-barekellahu-lekum",
+          "id": "6a59ffc0a9004ba3e9f220fd",
+          "name": "Eşler İçin Bereket ve Birlik Duası",
+          "score": 0.032018442622950824
+        },
+        {
+          "key": "evlilik-furkan-74",
+          "id": "6a59ffbea9004ba3e9f220e6",
+          "name": "Göz Aydınlığı Duası",
+          "score": 0.029827662395050816
+        },
+        {
+          "key": "evlilik-hubbeke-muaz",
+          "id": "6a59ffbfa9004ba3e9f220f2",
+          "name": "Muâz b. Cebel'in Hubb Duası",
+          "score": 0.02946912242686891
+        },
+        {
+          "key": "evlilik-zifaf-hayra-dua",
+          "id": "6a59ffbfa9004ba3e9f220f1",
+          "name": "Zifaf Öncesi — Eşin Hayrına Dua",
+          "score": 0.029418126757516764
+        },
+        {
+          "key": "evlilik-nisa-19",
+          "id": "6a59ffbea9004ba3e9f220ee",
+          "name": "Güzel Geçim ve Sabır Ayeti",
+          "score": 0.029211087420042643,
+          "isExpected": true
+        },
+        {
+          "key": "evlilik-rum-21",
+          "id": "6a59ffbea9004ba3e9f220e5",
+          "name": "Rum Suresi Evlilik Ayeti",
+          "score": 0.02904040404040404
+        },
+        {
+          "key": "evlat-rabbena-heb-lena-min-ezvacina",
+          "id": "6a59ffb6a9004ba3e9f22082",
+          "name": "Aile ve Zürriyet Duası",
+          "score": 0.0288981288981289
+        },
+        {
+          "key": "EVE_GIRERKEN_DUA",
+          "id": "6a59ffbda9004ba3e9f220d3",
+          "name": "Eve Girerken Okunacak Nebevi Sığınma",
+          "score": 0.028612012987012988
+        },
+        {
+          "key": "evlilik-ibrahim-40-41",
+          "id": "6a59ffbea9004ba3e9f220ec",
+          "name": "Hz. İbrahim'in Nesil Duası",
+          "score": 0.027417840375586856
+        },
+        {
+          "key": "barisma-ellif-beyne-kulubina",
+          "id": "6a59ffbfa9004ba3e9f220fa",
+          "name": "Kalplerimizi Birleştir Duası",
+          "score": 0.026333789329685362
+        },
+        {
+          "key": "evlilik-kasas-24",
+          "id": "6a59ffbea9004ba3e9f220eb",
+          "name": "Hz. Musa'nın Muhtaçlık Duası",
+          "score": 0.02484567901234568
+        },
+        {
+          "key": "esmaul-husna-es-semi",
+          "id": "6a59ffaaa9004ba3e9f21fd1",
+          "name": "Es-Semî",
+          "score": 0.02381289865343728
+        },
+        {
+          "key": "evlilik-nisa-128",
+          "id": "6a59ffbea9004ba3e9f220e8",
+          "name": "Sulh Ayeti",
+          "score": 0.015873015873015872,
+          "isExpected": true
+        },
+        {
+          "id": "6a59ffb4a9004ba3e9f22064",
+          "name": "Hz. Dâvûd'un Sevgi Duası",
+          "score": 0.015873015873015872
+        }
+      ]
+    },
+    {
+      "id": "r039",
+      "freeText": "bugün küçük ama benim için çok kıymetli bir mucize yaşadım, şükretmek istiyorum",
+      "locale": "tr",
+      "category": "gratitude",
+      "expandedQuery": "yaşanan küçük ama kişisel mucize için derin şükür, minnet ve hamd duygusu; Allah’a teşekkür, sürekli şükretme niyeti, kalp huzuru, şükürle bağ güçlendirme ve daha fazla nimet için farkındalık arzusu",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "tesbih-subhanallahil-azim-ve-bihamdihi",
+        "esmaul-husna-es-sekur",
+        "sabah-nimet-sukur"
+      ],
+      "skipped": false,
+      "firstRank": 1,
+      "hit5": true,
+      "recall15": 0.6666666666666666,
+      "dupCount": 0,
+      "latencyMs": 2782,
+      "top15": [
+        {
+          "key": "sabah-nimet-sukur",
+          "id": "6a59ffc4a9004ba3e9f22143",
+          "name": "Sabah Nimet Şükrü",
+          "score": 0.03007688828584351,
+          "isExpected": true
+        },
+        {
+          "key": "KURBAN_SUKRU_DUASI",
+          "id": "6a59ffa5a9004ba3e9f21f85",
+          "name": "Şükür Duası",
+          "score": 0.029709507042253523
+        },
+        {
+          "key": "is-ibrahim-7-sukur-bereket",
+          "id": "6a59ffbba9004ba3e9f220c8",
+          "name": "İbrâhîm Sûresi 7. Ayet Şükür ve Artış Ayeti",
+          "score": 0.028850145288501453
+        },
+        {
+          "key": "uyanis-hamd-ruh",
+          "id": "6a59ffc6a9004ba3e9f2215d",
+          "name": "Uyanınca Ruhu Geri Veren Allah'a Hamd",
+          "score": 0.028531243721117136
+        },
+        {
+          "key": "elbise-giyerken-hamd",
+          "id": "6a59ffb1a9004ba3e9f2203f",
+          "name": "Elbise Giyerken Hamd Duası",
+          "score": 0.027820121951219513
+        },
+        {
+          "key": "ISTIGFAR",
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.0277569392348087
+        },
+        {
+          "key": "yemek-sonrasi-muslimiin",
+          "id": "6a59ffc3a9004ba3e9f2212f",
+          "name": "Yemekten Sonra Kısa Hamd",
+          "score": 0.027106227106227107
+        },
+        {
+          "key": "ozlu-nimetin-zevalinden-siginma",
+          "id": "6a59ffb4a9004ba3e9f22061",
+          "name": "Nimetin Zevalinden ve Allah'ın Gazabından Korunma",
+          "score": 0.02702702702702703
+        },
+        {
+          "key": "SUBHANALLAHI_VE_BIHAMDIHI",
+          "id": "6a59ffa5a9004ba3e9f21f83",
+          "name": "Tesbih Zikri",
+          "score": 0.0260840108401084
+        },
+        {
+          "key": "aksirirken-elhamdulillah",
+          "id": "6a59ffb2a9004ba3e9f22045",
+          "name": "Aksırırken Hamd",
+          "score": 0.024696969696969696
+        },
+        {
+          "key": "BAKIYAT_SALIHAT",
+          "id": "6a59ffa7a9004ba3e9f21f9c",
+          "name": "Bakıyat-ı Salihat Zikri",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "esmaul-husna-es-sekur",
+          "id": "6a59ffaba9004ba3e9f21fdb",
+          "name": "Eş-Şekûr",
+          "score": 0.016129032258064516,
+          "isExpected": true
+        },
+        {
+          "key": "MEVLID_HAMD",
+          "id": "6a59ffa6a9004ba3e9f21f98",
+          "name": "Mevlid Hamd ve Tesbih Zikri",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "LA_HAVLE",
+          "id": "6a59ffa6a9004ba3e9f21f91",
+          "name": "Lâ Havle Zikri",
+          "score": 0.015384615384615385
+        }
+      ]
+    },
+    {
+      "id": "r040",
+      "freeText": "asdkjaslkdjaslkdj",
+      "locale": "tr",
+      "category": "offtopic",
+      "expandedQuery": "asdkjaslkdjaslkdj",
+      "expandedFromCache": false,
+      "expectedKeys": [],
+      "skipped": true,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 0,
+      "latencyMs": 2526,
+      "top15": [
+        {
+          "key": "KEMALILLAHI",
+          "id": "6a59ffc7a9004ba3e9f2216d",
+          "name": "Kema Lillahi Salavatı",
+          "score": 0.01639344262295082
+        },
+        {
+          "key": "cami-giris-cikis-besmele-salavat",
+          "id": "6a59ffc8a9004ba3e9f2217a",
+          "name": "Camiye Girerken ve Çıkarken Besmele ve Salavat",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "esmaul-husna-es-selam",
+          "id": "6a59ffa9a9004ba3e9f21fbc",
+          "name": "Es-Selâm",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "esmaul-husna-el-kuddus",
+          "id": "6a59ffa8a9004ba3e9f21fbb",
+          "name": "El-Kuddüs",
+          "score": 0.015625
+        },
+        {
+          "key": "SALAVAT-I ŞERİFE",
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "esmaul-husna-es-samed",
+          "id": "6a59ffada9004ba3e9f21ffb",
+          "name": "Es-Samed",
+          "score": 0.015151515151515152
+        },
+        {
+          "key": "IHLAS",
+          "id": "6a59ffa5a9004ba3e9f21f7d",
+          "name": "İhlâs Sûresi",
+          "score": 0.014925373134328358
+        },
+        {
+          "key": "FELAK_SURESI",
+          "id": "6a59ffbea9004ba3e9f220e1",
+          "name": "Felak Suresi",
+          "score": 0.014705882352941176
+        },
+        {
+          "key": "esmaul-husna-zul-celali-vel-ikram",
+          "id": "6a59ffaea9004ba3e9f2200e",
+          "name": "Zül-Celâli vel İkrâm",
+          "score": 0.014492753623188406
+        },
+        {
+          "key": "DELAIL_HAYRAT",
+          "id": "6a59ffc7a9004ba3e9f2216e",
+          "name": "Delailü'l-Hayrat Dengi Salavat",
+          "score": 0.014285714285714285
+        },
+        {
+          "key": "esmaul-husna-el-mukaddim",
+          "id": "6a59ffada9004ba3e9f21ffe",
+          "name": "El-Mukaddim",
+          "score": 0.014084507042253521
+        },
+        {
+          "key": "esmaul-husna-el-vedud",
+          "id": "6a59ffaba9004ba3e9f21fe7",
+          "name": "El-Vedûd",
+          "score": 0.013888888888888888
+        },
+        {
+          "key": "esma-ya-melik",
+          "id": "6a59ffafa9004ba3e9f2201e",
+          "name": "Ya Melik",
+          "score": 0.0136986301369863
+        },
+        {
+          "key": "HZ_FATIMA_SALAVATI",
+          "id": "6a59ffc8a9004ba3e9f22171",
+          "name": "Hz. Fatıma'nın Salavatı",
+          "score": 0.013513513513513514
+        },
+        {
+          "key": "haset-ya-hafiz",
+          "id": "6a59ffbea9004ba3e9f220e3",
+          "name": "Yâ Hâfız",
+          "score": 0.013333333333333334
+        }
+      ]
+    },
+    {
+      "id": "r041",
+      "freeText": "dua",
+      "locale": "tr",
+      "category": "vague",
+      "expandedQuery": "dua, Allah’a yönelme ve istediğini dileme niyeti; genel olarak ibadet, bağışlanma, yardım talebi, şükür veya niyaz amaçlı kısa veya uzun dualar arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [],
+      "skipped": true,
+      "firstRank": null,
+      "hit5": false,
+      "recall15": 0,
+      "dupCount": 0,
+      "latencyMs": 3163,
+      "top15": [
+        {
+          "key": "ozlu-bagisla-merhamet-afiyet-rizik",
+          "id": "6a59ffb4a9004ba3e9f2205d",
+          "name": "Dört Talep Duası — Bağışla, Merhamet Et, Âfiyet Ver, Rızık Ver",
+          "score": 0.029827662395050816
+        },
+        {
+          "key": "ozlu-hayrin-hepsi-serrin-hepsi",
+          "id": "6a59ffb4a9004ba3e9f22067",
+          "name": "Tüm Hayrı İsteme ve Tüm Şerden Sığınma Duası",
+          "score": 0.026973565905412694
+        },
+        {
+          "key": "ozlu-rabbi-ainni-kapsamli-kulluk",
+          "id": "6a59ffb4a9004ba3e9f22066",
+          "name": "Kapsamlı Kulluk Duası — Rabbi A'innî",
+          "score": 0.025974025974025976
+        },
+        {
+          "key": "ozlu-rabbena-atina-haseneten",
+          "id": "6a59ffb4a9004ba3e9f22068",
+          "name": "Dünya ve Ahirette İyilik Duası",
+          "score": 0.025708635464733027
+        },
+        {
+          "key": "oruc-kadir-gecesi-afv",
+          "id": "6a59ffb1a9004ba3e9f22037",
+          "name": "Kadir Gecesi Duası",
+          "score": 0.023000660938532716
+        },
+        {
+          "key": "namaz-iki-secde-arasi-rabbigfir",
+          "id": "6a59ffb3a9004ba3e9f2204f",
+          "name": "İki Secde Arası Duası",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffb3a9004ba3e9f22055",
+          "name": "Selâmdan Önce — Zikir, Şükür ve İbadet İçin Yardım",
+          "score": 0.01639344262295082
+        },
+        {
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.016129032258064516
+        },
+        {
+          "key": "ozlu-kalpleri-yonlendiren",
+          "id": "6a59ffb4a9004ba3e9f2205e",
+          "name": "Kalpleri Yönlendiren Allah — İtaat Duası",
+          "score": 0.015873015873015872
+        },
+        {
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.015873015873015872
+        },
+        {
+          "key": "ozlu-huda-takva-iffet-gina",
+          "id": "6a59ffb3a9004ba3e9f2205c",
+          "name": "Hidayet, Takva, İffet ve Gönül Zenginliği Duası",
+          "score": 0.015625
+        },
+        {
+          "id": "6a59ffb0a9004ba3e9f22031",
+          "name": "Kısa İstihare Duası",
+          "score": 0.015625
+        },
+        {
+          "key": "LEKEL_HAMD",
+          "id": "6a59ffa5a9004ba3e9f21f7c",
+          "name": "Allâhümme Lekel Hamdü Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "id": "6a59ffa3a9004ba3e9f21f6b",
+          "name": "Ramazan Hilali Duası",
+          "score": 0.015384615384615385
+        },
+        {
+          "key": "sikinti-rahmeteke-ercu",
+          "id": "6a59ffbaa9004ba3e9f220b4",
+          "name": "Rahmetine Sığınma Duası",
+          "score": 0.015151515151515152
+        }
+      ]
+    },
+    {
+      "id": "r042",
+      "freeText": "kurban bayramı arefe gününde hangi zikirleri çekmeliyim",
+      "locale": "tr",
+      "category": "niche",
+      "expandedQuery": "Kurban Bayramı arefe günü, ibadet ve sevap artırma, tevbe, şükür, niyet/iade, kurban adak ve soma hazırlığı, Allah’a yakınlık, dualarla bağışlanma ve kabullerini dileme; arefe ve bayram öncesi zikir, teheccüd, istiğfar ve salavat arayışı",
+      "expandedFromCache": false,
+      "expectedKeys": [
+        "VAHDEHU_LA",
+        "hac-arefe-zikri",
+        "TESRIK_TEKBIRI"
+      ],
+      "skipped": false,
+      "firstRank": 6,
+      "hit5": false,
+      "recall15": 0.6666666666666666,
+      "dupCount": 0,
+      "latencyMs": 3020,
+      "top15": [
+        {
+          "key": "ESTAGFIRULLAH",
+          "id": "6a59ffa5a9004ba3e9f21f84",
+          "name": "Estağfirullâh",
+          "score": 0.032266458495966696
+        },
+        {
+          "key": "ISTIGFAR",
+          "id": "6a59ffa5a9004ba3e9f21f7e",
+          "name": "İstiğfar ve Tövbe",
+          "score": 0.031544957774465976
+        },
+        {
+          "key": "SUBHANALLAHI_VE_BIHAMDIHI",
+          "id": "6a59ffa5a9004ba3e9f21f83",
+          "name": "Tesbih Zikri",
+          "score": 0.031024531024531024
+        },
+        {
+          "key": "KURBAN_SUKRU_DUASI",
+          "id": "6a59ffa5a9004ba3e9f21f85",
+          "name": "Şükür Duası",
+          "score": 0.03076923076923077
+        },
+        {
+          "key": "SALAVAT-I ŞERİFE",
+          "id": "6a59ffc7a9004ba3e9f22167",
+          "name": "Mevlid Salavatı",
+          "score": 0.0304147465437788
+        },
+        {
+          "key": "hac-arefe-zikri",
+          "id": "6a59ffc3a9004ba3e9f22126",
+          "name": "Arafât Zikri (Arefe Günü)",
+          "score": 0.03021353930031804,
+          "isExpected": true
+        },
+        {
+          "key": "namaz-selamdan-once-zikredinme-yardim",
+          "id": "6a59ffb3a9004ba3e9f22055",
+          "name": "Selâmdan Önce — Zikir, Şükür ve İbadet İçin Yardım",
+          "score": 0.0293236301369863
+        },
+        {
+          "key": "TESRIK_TEKBIRI",
+          "id": "6a59ffa5a9004ba3e9f21f81",
+          "name": "Teşrik Tekbiri",
+          "score": 0.02919863597612958,
+          "isExpected": true
+        },
+        {
+          "key": "HASBIYE",
+          "id": "6a59ffa5a9004ba3e9f21f87",
+          "name": "Tevekkül ve Hasbiye Zikri",
+          "score": 0.026742734890354787
+        },
+        {
+          "key": "ozlu-hata-cehalet-israf-magrfet",
+          "id": "6a59ffb4a9004ba3e9f2205f",
+          "name": "Kapsamlı Mağfiret Duası — Üç Dörtlü Af",
+          "score": 0.02565359477124183
+        },
+        {
+          "key": "istigfar-gunluk",
+          "id": "6a59ffc2a9004ba3e9f2211d",
+          "name": "Günlük İstiğfar",
+          "score": 0.025528455284552845
+        },
+        {
+          "key": "TEVHID",
+          "id": "6a59ffa7a9004ba3e9f21f9f",
+          "name": "Kelime-i Tevhid ve Risalet",
+          "score": 0.02506265664160401
+        },
+        {
+          "key": "salavat-cuma-cok-getir",
+          "id": "6a59ffc7a9004ba3e9f2216b",
+          "name": "Cuma Günü Salavat",
+          "score": 0.02399425287356322
+        },
+        {
+          "key": "hac-arefe-gecesi-tesbihi",
+          "id": "6a59ffc3a9004ba3e9f22127",
+          "name": "Arefe Gecesi Tesbihi (Sığınma Duası)",
+          "score": 0.015625
+        },
+        {
+          "key": "RABBENA_ZALEMNA",
+          "id": "6a59ffa6a9004ba3e9f21f96",
+          "name": "Hz. Adem'in Duası",
+          "score": 0.014925373134328358
+        }
+      ]
+    }
+  ]
+}

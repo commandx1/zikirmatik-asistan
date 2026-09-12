@@ -135,7 +135,7 @@ export const dogalAfetlerdenKorunma = {
       suitableFor: ['fırtına', 'yıldırım', 'gök gürültüsü'],
     },
     {
-      key: 'afet-bismillahi-ma-saallah-la-kuvvete',
+      key: 'afet-bismillahi-ma-saallah-tertibi',
       nameArabic:
         'بِسْمِ اللّٰهِ مَا شَاءَ اللّٰهُ لَا قُوَّةَ إِلَّا بِاللّٰهِ',
       name: {

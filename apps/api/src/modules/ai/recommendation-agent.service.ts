@@ -115,6 +115,18 @@ export class RecommendationAgentService {
       20,
     );
 
+    // searchQuery tek seferde embed edilir ve hem pasaj hem zikir aramasına
+    // aynı vektör geçirilir — eskiden aynı metin iki kez (ayrı ayrı) embed
+    // ediliyordu (bkz. retrieval.service.ts embedQuery yorumu).
+    const queryVector = searchQuery
+      ? (
+          await this.retrieval.embedQuery(searchQuery, {
+            flowId: input.flowId,
+            userId: input.userId,
+          })
+        ).vector
+      : undefined;
+
     const sources = searchQuery
       ? await this.retrieval.searchSourcePassages(
           searchQuery,
@@ -122,30 +134,44 @@ export class RecommendationAgentService {
           {
             flowId: input.flowId,
             userId: input.userId,
+            queryVector,
           },
         )
       : [];
 
     this.emitStep(input.socketId, 'searching', 'Zikirler taranıyor...');
-    const initialCandidates = searchQuery
+    // "Son 7 günde çekildi" artık SERT bir excludeIds elemesi DEĞİL — aday
+    // havuzundan tamamen çıkarmak yerine her adayı `recentlyPracticed` ile
+    // işaretleriz; model eşit derecede uygunlukta işaretsiz bir alternatifi
+    // tercih edebilir ama tek uygun aday işaretliyse yine onu önerebilir
+    // (bkz. prompts.ts seçim kuralı).
+    const rawInitialCandidates = searchQuery
       ? await this.retrieval.searchDhikrsByText({
           query: searchQuery,
           limit: candidateLimit,
-          excludeIds: input.recentDhikrIds,
+          excludeIds: [],
           locale: input.locale,
           flowId: input.flowId,
           userId: input.userId,
+          queryVector,
         })
       : await this.retrieval.searchDhikrsByTimeOfDay({
           timeOfDay: input.timeOfDay,
           limit: candidateLimit,
-          excludeIds: input.recentDhikrIds,
+          excludeIds: [],
           locale: input.locale,
         });
 
-    if (initialCandidates.length === 0) {
+    if (rawInitialCandidates.length === 0) {
       throw new AiRetrievalError('retrieval_failed', 'Aday zikir bulunamadı');
     }
+
+    const recentIds = new Set(input.recentDhikrIds);
+    const initialCandidates = rawInitialCandidates.map((candidate) =>
+      recentIds.has(candidate.id)
+        ? { ...candidate, recentlyPracticed: true }
+        : candidate,
+    );
 
     const selection = await this.runtime.withAiRetry(
       'select',
@@ -182,6 +208,22 @@ export class RecommendationAgentService {
     }
 
     return { kind: 'selected', summary: selection.summary, items, sources };
+  }
+
+  /**
+   * `expandIntent`'in eval harness'i (scripts/eval/run-retrieval-eval.ts)
+   * için public wrapper'ı — private metodun kendisine dokunmadan, retrieval
+   * eval'ının gerçek niyet genişletme adımını (LLM çağrısı) DI dışından
+   * çağırabilmesi için eklendi. Davranış birebir aynıdır.
+   */
+  async expandIntentForEval(input: {
+    freeText: string;
+    timeOfDay: string;
+    locale: SupportedAiLocale;
+    flowId: string;
+    userId: string;
+  }): Promise<{ offTopic: boolean; expandedQuery: string }> {
+    return this.expandIntent(input);
   }
 
   /**

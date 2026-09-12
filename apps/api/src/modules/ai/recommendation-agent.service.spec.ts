@@ -89,7 +89,7 @@ function candidate(
     tags: ['huzur'],
     categories: ['genel'],
     suitableFor: ['kaygı'],
-    timeOfDay: 'any',
+    timeOfDay: ['any'],
     ...overrides,
   };
 }
@@ -141,11 +141,18 @@ function createHarness(
   const loadDhikrsByIds = jest.fn<Promise<DhikrLeanStub[]>, [string[]]>();
   loadDhikrsByIds.mockResolvedValue([]);
 
+  const embedQuery = jest.fn<
+    Promise<{ vector: number[]; usage?: { inputTokens: number } }>,
+    [string, { flowId?: string; userId?: string }]
+  >();
+  embedQuery.mockResolvedValue({ vector: [0.1, 0.2, 0.3] });
+
   const retrieval = {
     searchSourcePassages,
     searchDhikrsByText,
     searchDhikrsByTimeOfDay,
     loadDhikrsByIds,
+    embedQuery,
   };
 
   const usage = { record: jest.fn(() => Promise.resolve()) };
@@ -224,6 +231,23 @@ describe('RecommendationAgentService', () => {
       activeTools: ['searchDhikrs', 'selectRecommendations'],
       toolChoice: 'required',
     });
+
+    // searchQuery tek seferde embed edilir; sonuç vektörü hem pasaj hem
+    // zikir aramasına geçirilir (bkz. retrieval.service.ts embedQuery).
+    expect(retrieval.embedQuery).toHaveBeenCalledTimes(1);
+    expect(retrieval.embedQuery).toHaveBeenCalledWith('huzur arayışı', {
+      flowId: 'flow-1',
+      userId: 'user-1',
+    });
+    expect(retrieval.searchSourcePassages).toHaveBeenCalledWith(
+      'huzur arayışı',
+      expect.any(Number),
+      expect.objectContaining({ queryVector: [0.1, 0.2, 0.3] }),
+    );
+    expect(retrieval.searchDhikrsByText.mock.calls[0][0]).toMatchObject({
+      queryVector: [0.1, 0.2, 0.3],
+      excludeIds: [],
+    });
   });
 
   it('re-search path: searchDhikrs excludes prior ids, then selectRecommendations picks a new ref', async () => {
@@ -274,8 +298,14 @@ describe('RecommendationAgentService', () => {
     if (outcome.kind !== 'selected') throw new Error('unexpected');
     expect(outcome.items.map((i) => i.dhikr._id.toString())).toEqual([id5]);
 
-    // searchDhikrs, ilk 3 adayın id'lerini + recentDhikrIds'i excludeIds'e
-    // eklemiş olmalı.
+    // İlk arama artık recentDhikrIds'i excludeIds olarak GEÇMEZ — yumuşak
+    // işaretlemeye (recentlyPracticed) geçildi.
+    const firstCallArgs = retrieval.searchDhikrsByText.mock.calls[0]?.[0];
+    expect(firstCallArgs?.excludeIds).toEqual([]);
+
+    // searchDhikrs (tool, ikinci arama) ilk 3 adayın id'lerini +
+    // recentDhikrIds'i excludeIds'e eklemeye devam eder — bu davranış
+    // değişmedi.
     const secondCallArgs = retrieval.searchDhikrsByText.mock.calls[1]?.[0];
     expect(secondCallArgs?.excludeIds).toEqual(
       expect.arrayContaining(['recent-1', id1, id2, id3]),
@@ -285,6 +315,54 @@ describe('RecommendationAgentService', () => {
       activeTools: ['selectRecommendations', 'askClarification'],
       toolChoice: 'required',
     });
+  });
+
+  it('marks a candidate that is in recentDhikrIds as recentlyPracticed in the prompt, without excluding it', async () => {
+    const { service, retrieval } = createHarness();
+    stubExpand({ offTopic: false, expandedQuery: 'huzur arayışı' });
+
+    const id1 = mkId();
+    const id2 = mkId();
+    retrieval.searchDhikrsByText.mockResolvedValueOnce([
+      candidate(id1),
+      candidate(id2),
+    ]);
+    retrieval.loadDhikrsByIds.mockResolvedValueOnce([dhikrLean(id1)]);
+
+    generateTextMock.mockImplementationOnce(async (opts: SelectStepOptions) => {
+      // id1 (C1) alakasız çekilmiş olsa bile aday listesinden ÇIKARILMADI —
+      // yalnızca satırında işaretli.
+      expect(opts.prompt).toContain('[son 7 günde çekildi]');
+      const c1Line = opts.prompt
+        .split('\n')
+        .find((line) => line.startsWith('C1 |'));
+      const c2Line = opts.prompt
+        .split('\n')
+        .find((line) => line.startsWith('C2 |'));
+      expect(c1Line).toContain('[son 7 günde çekildi]');
+      expect(c2Line).not.toContain('[son 7 günde çekildi]');
+
+      await opts.tools.selectRecommendations.execute({
+        summary: 'ozet',
+        items: [{ ref: 'C1', reason: 'reason' }],
+      });
+      return { totalUsage: {}, steps: [{}] };
+    });
+
+    const outcome = await service.run({
+      freeText: 'canım sıkkın',
+      timeOfDay: 'evening',
+      recentDhikrIds: [id1],
+      maxRecommendations: 5,
+      locale: 'tr',
+      flowId: 'flow-recent',
+      userId: 'user-1',
+    });
+
+    expect(outcome.kind).toBe('selected');
+    expect(retrieval.searchDhikrsByText.mock.calls[0][0].excludeIds).toEqual(
+      [],
+    );
   });
 
   it('clarification path: askClarification after a search sanitizes the question', async () => {
@@ -409,6 +487,7 @@ describe('RecommendationAgentService', () => {
     expect(generateTextMock).not.toHaveBeenCalled();
     expect(retrieval.searchDhikrsByText).not.toHaveBeenCalled();
     expect(retrieval.searchDhikrsByTimeOfDay).not.toHaveBeenCalled();
+    expect(retrieval.embedQuery).not.toHaveBeenCalled();
   });
 
   it('provider failure: classifies a 503 APICallError as provider_error after retrying once', async () => {
@@ -435,6 +514,8 @@ describe('RecommendationAgentService', () => {
     ).rejects.toMatchObject({ reason: 'provider_error', retryable: true });
 
     expect(generateTextMock).toHaveBeenCalledTimes(2);
+    // Zaman tabanlı yol (freeText yok) hiç embed etmemeli.
+    expect(retrieval.embedQuery).not.toHaveBeenCalled();
   });
 
   it('locale en: system prompt mentions English, user prompt uses C# refs', async () => {

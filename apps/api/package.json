@@ -27,7 +27,9 @@
     "seed:special-days:mevlid-2026": "node scripts/seed-special-days.mjs --event mevlid-kandili-2026",
     "seed:special-days:muharrem-2026": "node scripts/seed-special-days.mjs --event muharrem-ilk-on-2026",
     "eval:rehber": "ts-node -r tsconfig-paths/register scripts/eval/run-rehber-eval.ts",
-    "eval:chat": "ts-node -r tsconfig-paths/register scripts/eval/run-chat-eval.ts"
+    "eval:chat": "ts-node -r tsconfig-paths/register scripts/eval/run-chat-eval.ts",
+    "eval:retrieval": "ts-node -r tsconfig-paths/register scripts/eval/run-retrieval-eval.ts",
+    "test:scripts": "node --test scripts/lib/*.test.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.74",

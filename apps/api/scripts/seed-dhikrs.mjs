@@ -15,6 +15,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { SOURCE_DATASETS } from './data/sourceDataset.mjs';
+import { normalizeTimeOfDay } from './lib/time-of-day.mjs';
+import { canonicalKeyFromArabic } from './lib/canonical-key.mjs';
 
 function loadEnvFiles(paths) {
   for (const path of paths) {
@@ -63,8 +65,19 @@ function collectItems(datasets) {
 }
 
 /**
+ * `tags`/`categories`/`suitableFor` gibi alanların, verilmişse, yalnızca
+ * string eleman içeren bir dizi olduğunu doğrular.
+ */
+function isStringArrayOrEmpty(value) {
+  if (value === undefined || value === null) return true;
+  if (!Array.isArray(value)) return false;
+  return value.every((entry) => typeof entry === 'string');
+}
+
+/**
  * Her kaydı upsert için hazırlar ve doğrular. Geçersiz kayıtlar (key eksik,
- * name.tr boş) `invalid` listesine düşer ve seed'e dahil edilmez.
+ * name.tr boş, timeOfDay/tags/categories/suitableFor hatalı) `invalid`
+ * listesine düşer ve seed'e dahil edilmez.
  */
 function validateItems(flatItems) {
   const valid = [];
@@ -84,6 +97,29 @@ function validateItems(flatItems) {
       invalid.push({ datasetKey, key, reason: 'name.tr boş/eksik' });
       continue;
     }
+    if (
+      !isStringArrayOrEmpty(item.tags) ||
+      !isStringArrayOrEmpty(item.categories) ||
+      !isStringArrayOrEmpty(item.suitableFor)
+    ) {
+      invalid.push({
+        datasetKey,
+        key,
+        reason: 'tags/categories/suitableFor string dizisi olmalı',
+      });
+      continue;
+    }
+
+    try {
+      normalizeTimeOfDay(item.timeOfDay);
+    } catch (error) {
+      invalid.push({
+        datasetKey,
+        key,
+        reason: error instanceof Error ? error.message : String(error),
+      });
+      continue;
+    }
 
     keyCounts.set(key, (keyCounts.get(key) ?? 0) + 1);
     valid.push(entry);
@@ -101,6 +137,7 @@ function buildDoc(item) {
   return {
     key: item.key,
     nameArabic: item.nameArabic,
+    canonicalKey: canonicalKeyFromArabic(item.nameArabic),
     name: item.name,
     transliteration: item.transliteration,
     meaning: item.meaning,
@@ -108,7 +145,7 @@ function buildDoc(item) {
     source: item.source,
     tags: uniq(item.tags),
     categories: uniq(item.categories),
-    timeOfDay: item.timeOfDay ?? 'any',
+    timeOfDay: normalizeTimeOfDay(item.timeOfDay),
     recommendedCount: item.recommendedCount ?? 33,
     suitableFor: uniq(item.suitableFor),
     isVerified: true,
@@ -135,10 +172,7 @@ function printSummary({ flatItems, valid, invalid, duplicateKeys, perDataset }) 
   }
 
   if (duplicateKeys.length > 0) {
-    console.log('\n── Dataset\'ler arası tekrar eden key\'ler ──');
-    console.log(
-      '  (Bunlar hata değildir; aynı key birden çok dataset\'te geçiyorsa upsert son gelen değerle günceller.)',
-    );
+    console.log('\n── HATA: Dataset\'ler arası tekrar eden key\'ler ──');
     for (const entry of duplicateKeys) {
       console.log(`  ${entry.key} × ${entry.count}`);
     }
@@ -159,6 +193,18 @@ async function main() {
   }
 
   const { valid, invalid, duplicateKeys } = validateItems(flatItems);
+
+  if (duplicateKeys.length > 0) {
+    printSummary({ flatItems, valid, invalid, duplicateKeys, perDataset });
+    console.error(
+      `\nDataset'ler arası ${duplicateKeys.length} tekrar eden key bulundu, seed durduruldu:`,
+    );
+    for (const entry of duplicateKeys) {
+      console.error(`  ${entry.key} × ${entry.count}`);
+    }
+    process.exitCode = 1;
+    return;
+  }
 
   const mongoUri = process.env.MONGODB_URI?.trim();
   if (!mongoUri) {

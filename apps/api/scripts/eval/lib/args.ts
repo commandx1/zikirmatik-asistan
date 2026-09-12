@@ -7,6 +7,11 @@
  *   --concurrency N     eşzamanlı vaka sayısı (varsayılan 3)
  *   --locale tr|en      dataset'i yalnızca bu locale ile sınırla
  *   --dry-run           dataset'i yükle, ÖZET yazdır, hiçbir AI/Mongo çağrısı yapma
+ *
+ * Yalnızca `run-retrieval-eval.ts` tarafından kullanılan ek bayraklar (diğer
+ * runner'lar bunları basitçe hiç set etmez, zararsızdır):
+ *   --write-expanded    üretilen expandedQuery'yi dataset JSON'ına geri yaz
+ *   --baseline <path>   önceki bir JSON rapor ile delta karşılaştırması yap
  */
 export type EvalArgs = {
   limit?: number;
@@ -15,6 +20,8 @@ export type EvalArgs = {
   concurrency: number;
   locale?: 'tr' | 'en';
   dryRun: boolean;
+  writeExpanded: boolean;
+  baseline?: string;
 };
 
 function readValue(argv: string[], index: number, flag: string): string {
@@ -30,6 +37,7 @@ export function parseArgs(rawArgv: string[]): EvalArgs {
     noJudge: false,
     concurrency: 3,
     dryRun: false,
+    writeExpanded: false,
   };
 
   // pnpm ("pnpm --filter api eval:rehber -- --dry-run") bazı sürümlerde
@@ -86,6 +94,15 @@ export function parseArgs(rawArgv: string[]): EvalArgs {
       case '--dry-run':
         args.dryRun = true;
         break;
+      case '--write-expanded':
+        args.writeExpanded = true;
+        break;
+      case '--baseline': {
+        const value = readValue(argv, i, '--baseline');
+        args.baseline = value;
+        i++;
+        break;
+      }
       default:
         throw new Error(`Bilinmeyen argüman: ${token}`);
     }
