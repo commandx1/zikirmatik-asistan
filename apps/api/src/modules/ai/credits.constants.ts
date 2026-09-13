@@ -3,6 +3,7 @@ export const AI_CREDIT_REASONS = {
   PREMIUM_MONTHLY_GRANT: 'PREMIUM_MONTHLY_GRANT',
   RECOMMENDATION_DEBIT: 'RECOMMENDATION_DEBIT',
   CHAT_MESSAGE_DEBIT: 'CHAT_MESSAGE_DEBIT',
+  VIRD_PROGRAM_DEBIT: 'VIRD_PROGRAM_DEBIT',
   TOPUP_PURCHASE: 'TOPUP_PURCHASE',
   REFUND: 'REFUND',
 } as const;
@@ -12,6 +13,12 @@ export type AiCreditReason =
 
 export const FREE_DAILY_CREDIT_AMOUNT = 1;
 export const PREMIUM_MONTHLY_CREDIT_AMOUNT = 50;
+
+// AI Vird Programı üretimi (POST /v1/ai/vird-programs) tek seferde bu kadar
+// krediye mal olur — RECOMMENDATION_DEBIT/CHAT_MESSAGE_DEBIT'in aksine
+// amount=1 değildir (bkz. ai-credits.service.ts ensureCreditAccessForFlow/
+// debitCreditForFlow amount parametresi).
+export const VIRD_PROGRAM_CREDIT_COST = 3;
 
 // Kullanıcının hiç FREE_DAILY_GRANT almadığı ilk gün için tek seferlik
 // karşılama bonusu; sonraki günler FREE_DAILY_CREDIT_AMOUNT'a döner.

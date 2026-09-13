@@ -6,6 +6,10 @@ import { BottomActionFooter } from "../../components/ui/bottom-action-footer";
 import { useThemeTransition } from "../../contexts/theme-transition-context";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { PrimaryCtaButton } from "../../components/ui/primary-cta-button";
+import { usePremiumSheet } from "../../hooks/use-premium-sheet";
+import { trackEvent } from "../../lib/analytics";
+import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
+import { CounterStyleSection } from "./components/counter-style-section";
 import { SelectorHeader } from "./components/selector-header";
 import { SelectorPreviewCard } from "./components/selector-preview-card";
 import { ThemeGridSection } from "./components/theme-grid-section";
@@ -15,6 +19,7 @@ export function ThemeSelectorScreen() {
   const { t } = useTranslation("theme-selector");
   const selector = useThemeSelector();
   const { triggerTransition } = useThemeTransition();
+  const premiumSheet = usePremiumSheet();
   const selectedCardRef = useRef<View>(null);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -25,6 +30,11 @@ export function ThemeSelectorScreen() {
 
   function handleSave() {
     if (!selector.hasThemeChanges) return;
+    if (!selector.canSave) {
+      void trackEvent("theme_locked_tapped", { theme: selector.draftThemeName });
+      premiumSheet.open();
+      return;
+    }
     selectedCardRef.current?.measureInWindow((x, y, width, height) => {
       triggerTransition(x + width / 2, y + height / 2, () => selector.saveThemeChanges());
     });
@@ -36,6 +46,7 @@ export function ThemeSelectorScreen() {
         <SelectorHeader title={t("theme-selector:screen.title")} subtitle={t("theme-selector:screen.subtitle")} showBackButton />
         <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={24} scrollRef={scrollRef}>
           <View className="gap-8">
+            <CounterStyleSection onRequestPremium={premiumSheet.open} />
             {selector.isPremium ? (
               <View className="rounded-xl border border-[#C8972A]/30 bg-[#C8972A]/10 px-4 py-3">
                 <Text className="text-sm font-semibold text-[#EAC46B]">{t("theme-selector:screen.premiumActiveBanner")}</Text>
@@ -54,11 +65,6 @@ export function ThemeSelectorScreen() {
               onSelect={handleSelectTheme}
               selectedCardRef={selectedCardRef}
             />
-            {selector.lockedThemeMessage ? (
-              <View className="rounded-xl border border-[#C8972A]/30 bg-[#C8972A]/10 px-4 py-3">
-                <Text className="text-sm text-[#EAC46B]">{selector.lockedThemeMessage}</Text>
-              </View>
-            ) : null}
           </View>
         </PageScrollView>
 
@@ -72,6 +78,26 @@ export function ThemeSelectorScreen() {
           ) : null}
         </BottomActionFooter>
       </View>
+
+      <ProfilePremiumSheet
+        visible={premiumSheet.isOpen}
+        selectedPlan={premiumSheet.plan}
+        isActivating={premiumSheet.isActivating}
+        error={premiumSheet.error}
+        onSelectPlan={premiumSheet.setPlan}
+        onStartPremium={premiumSheet.activate}
+        onClose={premiumSheet.close}
+        topupProducts={premiumSheet.topupProducts}
+        purchasingTopupId={premiumSheet.purchasingTopupId}
+        topupError={premiumSheet.topupError}
+        onPurchaseTopup={(productId) => {
+          void premiumSheet.purchaseTopup(productId).then((purchased) => {
+            if (purchased) premiumSheet.close();
+          });
+        }}
+        subscriptionPrices={premiumSheet.subscriptionPrices}
+        source="theme_selector"
+      />
     </PageLayout>
   );
 }

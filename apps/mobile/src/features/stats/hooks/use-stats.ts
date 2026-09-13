@@ -19,6 +19,8 @@ export type UseStatsResult = {
   isRefreshing: boolean;
   error?: string;
   isPremium: boolean;
+  /** Server-authoritative (or, in guest mode, locally-derived) premium lock state for the detail sections. */
+  locked: boolean;
   refresh: () => Promise<void>;
 };
 
@@ -45,10 +47,10 @@ export function useStats(): UseStatsResult {
       return;
     }
 
-    setData(buildLocalStatsSummary(dhikrItems, freeModeCount));
+    setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium));
     setError(undefined);
     setIsLoading(false);
-  }, [dhikrItems, freeModeCount, isGuest]);
+  }, [dhikrItems, freeModeCount, isGuest, isPremium]);
 
   useEffect(() => {
     if (isGuest) {
@@ -85,11 +87,14 @@ export function useStats(): UseStatsResult {
     return () => {
       isCancelled = true;
     };
-  }, [accessToken, authStatus, isGuest]);
+    // `isPremium` is intentionally included: once the user activates premium
+    // (or it changes for any other reason), we must refetch so the
+    // server-enforced `locked` detail sections come back unlocked.
+  }, [accessToken, authStatus, isGuest, isPremium]);
 
   const refresh = useCallback(async () => {
     if (isGuest) {
-      setData(buildLocalStatsSummary(dhikrItems, freeModeCount));
+      setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium));
       return;
     }
 
@@ -106,12 +111,18 @@ export function useStats(): UseStatsResult {
     } finally {
       setIsRefreshing(false);
     }
-  }, [accessToken, authStatus, dhikrItems, freeModeCount, isGuest]);
+  }, [accessToken, authStatus, dhikrItems, freeModeCount, isGuest, isPremium]);
 
-  return { data, isLoading, isRefreshing, error, isPremium, refresh };
+  const locked = data?.locked ?? !isPremium;
+
+  return { data, isLoading, isRefreshing, error, isPremium, locked, refresh };
 }
 
-function buildLocalStatsSummary(items: ZikirItem[], freeModeCount: number): StatsSummary {
+function buildLocalStatsSummary(
+  items: ZikirItem[],
+  freeModeCount: number,
+  isPremium: boolean
+): StatsSummary {
   const today = new Date();
   const todayKey = toDateKey(today);
   const activityByDay = new Map<string, { count: number; completed: number }>();
@@ -179,6 +190,7 @@ function buildLocalStatsSummary(items: ZikirItem[], freeModeCount: number): Stat
       totalDaysActive: activeDays.length
     },
     dailySeries,
+    locked: !isPremium,
     heatmap,
     weekdayDistribution,
     hourDistribution: Array.from({ length: 24 }, (_, key) => ({ key, count: 0 })),

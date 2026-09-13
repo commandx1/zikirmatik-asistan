@@ -36,7 +36,7 @@ export function ProfileScreen() {
             />
             <ProfileSettingsSections
               reminderTime={profile.reminderTime}
-              hapticsEnabled={profile.hapticsEnabled}
+              hapticsPattern={profile.hapticsPattern}
               locale={profile.locale}
               onChangeLocale={profile.setLocale}
               onPressTheme={profile.goThemeSelector}
@@ -49,7 +49,7 @@ export function ProfileScreen() {
               onPressTourReplay={profile.tourReplay}
               onPressLogout={profile.onLogout}
               onPressDeleteAccount={profile.openDeleteAccountModal}
-              onToggleHaptics={profile.onToggleHaptics}
+              onChangeHapticsPattern={profile.onChangeHapticsPattern}
               notificationsEnabled={notificationSettings.notificationsEnabled}
               onToggleNotifications={notificationSettings.onToggleNotifications}
             />
@@ -72,6 +72,8 @@ export function ProfileScreen() {
               if (purchased) profile.closePremiumSheet();
             });
           }}
+          subscriptionPrices={profile.subscriptionPrices}
+          source="profile"
         />
         <ProfileReminderTimeModal
           visible={profile.isReminderTimeModalOpen}

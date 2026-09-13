@@ -1,14 +1,21 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
+import { useEffect, useRef } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
+import { trackEvent } from '../../../lib/analytics'
 
 type CreditTopupItem = {
   productId: string
   credits: number
   priceString: string
+}
+
+type SubscriptionPrices = {
+  monthly?: string
+  yearly?: string
 }
 
 type ProfilePremiumSheetProps = {
@@ -23,6 +30,8 @@ type ProfilePremiumSheetProps = {
   purchasingTopupId?: string
   topupError?: string
   onPurchaseTopup?: (productId: string) => void
+  subscriptionPrices?: SubscriptionPrices
+  source?: string
 }
 
 function BenefitItem({ title, description }: { title: string; description: string }) {
@@ -50,14 +59,22 @@ export function ProfilePremiumSheet({
   topupProducts,
   purchasingTopupId,
   topupError,
-  onPurchaseTopup
+  onPurchaseTopup,
+  subscriptionPrices,
+  source
 }: ProfilePremiumSheetProps) {
   const { fontFamily } = useThemePreferences()
   const { t } = useTranslation('profile')
   const upper = useLocaleUpper()
   const insets = useSafeAreaInsets()
-  const MONTHLY_PRICE = 59.99
-  const YEARLY_PRICE = 479.99
+  const wasVisibleRef = useRef(false)
+
+  useEffect(() => {
+    if (visible && !wasVisibleRef.current) {
+      void trackEvent('paywall_viewed', { source: source ?? 'unknown' })
+    }
+    wasVisibleRef.current = visible
+  }, [visible, source])
 
   if (!visible) {
     return null
@@ -108,9 +125,7 @@ export function ProfilePremiumSheet({
 
           <View className='mb-8 gap-4'>
             <BenefitItem title={t('profile:premiumSheet.benefits.aiCredits.title')} description={t('profile:premiumSheet.benefits.aiCredits.description')} />
-            <BenefitItem title={t('profile:premiumSheet.benefits.collections.title')} description={t('profile:premiumSheet.benefits.collections.description')} />
             <BenefitItem title={t('profile:premiumSheet.benefits.stats.title')} description={t('profile:premiumSheet.benefits.stats.description')} />
-            <BenefitItem title={t('profile:premiumSheet.benefits.specialDays.title')} description={t('profile:premiumSheet.benefits.specialDays.description')} />
             <BenefitItem title={t('profile:premiumSheet.benefits.themes.title')} description={t('profile:premiumSheet.benefits.themes.description')} />
           </View>
 
@@ -126,7 +141,9 @@ export function ProfilePremiumSheet({
                 }`}
                 style={strongTextStyle}
               >
-                {t('profile:premiumSheet.monthlyPlan', { price: MONTHLY_PRICE })}
+                {subscriptionPrices?.monthly
+                  ? t('profile:premiumSheet.monthlyPlan', { price: subscriptionPrices.monthly })
+                  : t('profile:premiumSheet.monthlyPlanNoPrice')}
               </Text>
             </Pressable>
             <Pressable
@@ -140,7 +157,9 @@ export function ProfilePremiumSheet({
                 }`}
                 style={strongTextStyle}
               >
-                {t('profile:premiumSheet.yearlyPlan', { price: YEARLY_PRICE })}
+                {subscriptionPrices?.yearly
+                  ? t('profile:premiumSheet.yearlyPlan', { price: subscriptionPrices.yearly })
+                  : t('profile:premiumSheet.yearlyPlanNoPrice')}
               </Text>
             </Pressable>
           </View>

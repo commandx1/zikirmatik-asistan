@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { ForbiddenException, Logger } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { AiCreditsService } from './ai-credits.service';
@@ -8,12 +10,16 @@ type PrivateAiService = {
     flowId: string,
     isPremium: boolean,
     promptHash: string,
+    reason?: string,
+    amount?: number,
   ) => Promise<{ balance: number }>;
   ensureCreditAccessForFlow: (
     userId: Types.ObjectId,
     flowId: string,
     isPremium: boolean,
     promptHash: string,
+    reason?: string,
+    amount?: number,
   ) => Promise<void>;
   logger: Logger;
 };
@@ -42,6 +48,75 @@ type LedgerEntry = {
 
 type MongoFilter = Record<string, unknown>;
 
+// debitCreditForFlow artık cüzdan düşümünü tek atomik aggregation-pipeline
+// update'iyle yapıyor ($set aşaması, $min/$subtract operatörleri) — bu mini
+// evaluator, gerçek MongoDB'nin $set/$addFields pipeline stage semantiğini
+// (bir stage'in tüm alan ifadeleri, stage'e giren ORİJİNAL dokümana göre
+// hesaplanır) sahte cüzdan modelinde yeniden üretir. İş mantığının formülünü
+// (grantTake/topupTake) KOPYALAMAZ — yalnızca genel $min/$subtract/$max/$add
+// operatörlerini ve alan referanslarını ($alan) yorumlar.
+type PipelineExpr = unknown;
+type PipelineStage = Record<string, unknown>;
+
+function evalPipelineExpr(
+  expr: PipelineExpr,
+  doc: Record<string, unknown>,
+): unknown {
+  if (typeof expr === 'string' && expr.startsWith('$')) {
+    return doc[expr.slice(1)];
+  }
+  if (Array.isArray(expr)) {
+    return expr.map((item) => evalPipelineExpr(item, doc));
+  }
+  if (expr && typeof expr === 'object') {
+    const entries = Object.entries(expr as Record<string, unknown>);
+    if (entries.length === 1) {
+      const [operator, rawArgs] = entries[0];
+      const args = (Array.isArray(rawArgs) ? rawArgs : [rawArgs]).map((arg) =>
+        evalPipelineExpr(arg, doc),
+      ) as number[];
+      switch (operator) {
+        case '$min':
+          return Math.min(...args);
+        case '$max':
+          return Math.max(...args);
+        case '$subtract':
+          return args[0] - args[1];
+        case '$add':
+          return args.reduce((sum, value) => sum + value, 0);
+        default:
+          throw new Error(
+            `Test mock: desteklenmeyen pipeline operatörü '${operator}'`,
+          );
+      }
+    }
+  }
+  return expr;
+}
+
+function applyPipelineUpdate(
+  doc: WalletState,
+  pipeline: PipelineStage[],
+): WalletState {
+  let working: Record<string, unknown> = { ...doc };
+  for (const stage of pipeline) {
+    const [stageName, spec] = Object.entries(stage)[0];
+    if (stageName !== '$set' && stageName !== '$addFields') {
+      throw new Error(
+        `Test mock: desteklenmeyen pipeline stage '${stageName}'`,
+      );
+    }
+    const updates: Record<string, unknown> = {};
+    for (const [field, expr] of Object.entries(
+      spec as Record<string, unknown>,
+    )) {
+      updates[field] = evalPipelineExpr(expr, working);
+    }
+    working = { ...working, ...updates };
+  }
+  return working as unknown as WalletState;
+}
+
 function createService(initialPremium = false) {
   const user = { _id: new Types.ObjectId(), isPremium: initialPremium };
   let wallet: WalletState | null = null;
@@ -61,6 +136,16 @@ function createService(initialPremium = false) {
         '$gt' in (condition as Record<string, unknown>)
       ) {
         if (!((value as number) > (condition as { $gt: number }).$gt)) {
+          return false;
+        }
+        continue;
+      }
+      if (
+        condition &&
+        typeof condition === 'object' &&
+        '$gte' in (condition as Record<string, unknown>)
+      ) {
+        if (!((value as number) >= (condition as { $gte: number }).$gte)) {
           return false;
         }
         continue;
@@ -107,12 +192,14 @@ function createService(initialPremium = false) {
     findOneAndUpdate: jest.fn(
       (
         filter: MongoFilter,
-        update: {
-          $set?: Partial<WalletState>;
-          $inc?: Partial<
-            Record<'balance' | 'grantCredits' | 'topupCredits', number>
-          >;
-        },
+        update:
+          | {
+              $set?: Partial<WalletState>;
+              $inc?: Partial<
+                Record<'balance' | 'grantCredits' | 'topupCredits', number>
+              >;
+            }
+          | PipelineStage[],
         options?: { upsert?: boolean },
       ) => ({
         exec: () => {
@@ -131,7 +218,13 @@ function createService(initialPremium = false) {
               return null;
             }
           }
-          applyWalletUpdate(update);
+          if (Array.isArray(update)) {
+            if (wallet) {
+              wallet = applyPipelineUpdate(wallet, update);
+            }
+          } else {
+            applyWalletUpdate(update);
+          }
           return wallet ? { ...wallet } : null;
         },
       }),
@@ -191,8 +284,13 @@ function createService(initialPremium = false) {
           return true;
         }
 
+        // flowId bazlı debit reason'larının (RECOMMENDATION_DEBIT,
+        // CHAT_MESSAGE_DEBIT, VIRD_PROGRAM_DEBIT, ...) hepsi aynı partial
+        // unique index şeklini paylaşır (userId, reason, flowId) — bkz.
+        // ai-credit-ledger.schema.ts. Reason'a göre ayrı ayrı dallanmak
+        // yerine "flowId'si olan her kayıt" için genel kural.
         if (
-          entry.reason === 'RECOMMENDATION_DEBIT' &&
+          entry.flowId &&
           item.reason === entry.reason &&
           item.userId?.equals(entry.userId ?? '') &&
           item.flowId === entry.flowId
@@ -505,5 +603,163 @@ describe('AiService credits', () => {
       expect.stringContaining('topup_small'),
     );
     expect(ledger.length).toBe(0);
+  });
+
+  describe('amount parameter (AI Vird Programı, VIRD_PROGRAM_DEBIT)', () => {
+    it('debits amount=3 in one shot from the grant bucket and reports the new balance', async () => {
+      jest.setSystemTime(new Date('2026-07-08T10:00:00.000Z'));
+      const { service, ledger } = createService(false);
+      // Karşılama bonusu: 3 kredi (grantCredits=3).
+      await service.getCredits(USER_ID);
+
+      const result = await (
+        service as unknown as PrivateAiService
+      ).debitCreditForFlow(
+        new Types.ObjectId(USER_ID),
+        'vird-flow-1',
+        false,
+        'hash-vird-1',
+        'VIRD_PROGRAM_DEBIT',
+        3,
+      );
+
+      expect(result.balance).toBe(0);
+      const entry = ledger.find((item) => item.reason === 'VIRD_PROGRAM_DEBIT');
+      expect(entry?.delta).toBe(-3);
+    });
+
+    it('rejects with 403 AI_CREDIT_INSUFFICIENT when balance (2) is below amount (3)', async () => {
+      jest.setSystemTime(new Date('2026-07-08T10:00:00.000Z'));
+      const { service, seedWallet } = createService(false);
+      // grantReason/grantCycleKey bilerek "bugüne" (2026-07-08, UTC dayKey)
+      // eşitlenir — aksi halde debitCreditForFlow'un içindeki ensureCreditState
+      // seed'i "eski döngü" sayıp yeni bir FREE_DAILY_GRANT uygulardı ve
+      // bakiyeyi seed'lenen 2'nin üzerine yazardı (bkz. diğer testlerdeki
+      // kasıtlı döngü-değişimi senaryoları).
+      seedWallet({
+        userId: new Types.ObjectId(USER_ID),
+        balance: 2,
+        grantCredits: 2,
+        topupCredits: 0,
+        grantReason: 'FREE_DAILY_GRANT',
+        grantCycleKey: '2026-07-08',
+      });
+
+      let debitError: unknown;
+      try {
+        await (service as unknown as PrivateAiService).debitCreditForFlow(
+          new Types.ObjectId(USER_ID),
+          'vird-flow-2',
+          false,
+          'hash-vird-2',
+          'VIRD_PROGRAM_DEBIT',
+          3,
+        );
+      } catch (error) {
+        debitError = error;
+      }
+      expect(debitError).toBeInstanceOf(ForbiddenException);
+      const debitResponse = (
+        debitError as ForbiddenException
+      ).getResponse() as { code?: string };
+      expect(debitResponse.code).toBe('AI_CREDIT_INSUFFICIENT');
+
+      await expect(
+        (service as unknown as PrivateAiService).ensureCreditAccessForFlow(
+          new Types.ObjectId(USER_ID),
+          'vird-flow-2',
+          false,
+          'hash-vird-2',
+          'VIRD_PROGRAM_DEBIT',
+          3,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('idempotent retry with the same flowId does not debit a second time', async () => {
+      jest.setSystemTime(new Date('2026-07-08T10:00:00.000Z'));
+      const { service, ledger, seedWallet } = createService(false);
+      seedWallet({
+        userId: new Types.ObjectId(USER_ID),
+        balance: 10,
+        grantCredits: 10,
+        topupCredits: 0,
+        grantReason: 'FREE_DAILY_GRANT',
+        grantCycleKey: '2026-07-08',
+      });
+      const userId = new Types.ObjectId(USER_ID);
+
+      const first = await (
+        service as unknown as PrivateAiService
+      ).debitCreditForFlow(
+        userId,
+        'vird-flow-3',
+        false,
+        'hash-vird-3',
+        'VIRD_PROGRAM_DEBIT',
+        3,
+      );
+      const second = await (
+        service as unknown as PrivateAiService
+      ).debitCreditForFlow(
+        userId,
+        'vird-flow-3',
+        false,
+        'hash-vird-3',
+        'VIRD_PROGRAM_DEBIT',
+        3,
+      );
+
+      expect(first.balance).toBe(7);
+      expect(second.balance).toBe(7);
+      expect(
+        ledger.filter((entry) => entry.reason === 'VIRD_PROGRAM_DEBIT').length,
+      ).toBe(1);
+    });
+
+    it('splits a mixed debit across the grant and topup buckets atomically', async () => {
+      jest.setSystemTime(new Date('2026-07-08T10:00:00.000Z'));
+      const { service, walletModel, seedWallet } = createService(false);
+      seedWallet({
+        userId: new Types.ObjectId(USER_ID),
+        balance: 7,
+        grantCredits: 2,
+        topupCredits: 5,
+        grantReason: 'FREE_DAILY_GRANT',
+        grantCycleKey: '2026-07-08',
+      });
+
+      const result = await (
+        service as unknown as PrivateAiService
+      ).debitCreditForFlow(
+        new Types.ObjectId(USER_ID),
+        'vird-flow-4',
+        false,
+        'hash-vird-4',
+        'VIRD_PROGRAM_DEBIT',
+        3,
+      );
+
+      // grantTake = min(2,3) = 2 -> grantCredits 2-2=0; topupTake = 3-2 = 1
+      // -> topupCredits 5-1=4; balance 7-3=4.
+      expect(result.balance).toBe(4);
+      const walletAfter = walletModel
+        .findOne({ userId: new Types.ObjectId(USER_ID) })
+        .exec();
+      expect(walletAfter?.grantCredits).toBe(0);
+      expect(walletAfter?.topupCredits).toBe(4);
+    });
+  });
+});
+
+describe('AiCreditsService wallet debit options', () => {
+  it('passes updatePipeline:true so Mongoose accepts the aggregation-pipeline update', () => {
+    const source = readFileSync(
+      join(__dirname, 'ai-credits.service.ts'),
+      'utf8',
+    );
+    const debitStart = source.indexOf('async debitCreditForFlow(');
+    const debitSource = source.slice(debitStart);
+    expect(debitSource).toContain('updatePipeline: true');
   });
 });

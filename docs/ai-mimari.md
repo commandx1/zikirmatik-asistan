@@ -1,11 +1,13 @@
 # AI Mimarisi (Salt-AI Pipeline)
 
-Bu doküman Zikirmatik API'sindeki **AI Rehber** (zikir önerisi) ve **AI Sohbet**
-(kaynak asistanı) akışlarının güncel mimarisini anlatır. İkisi de aynı alt
-yapıyı (`AiRuntimeService`, `RetrievalService`, `AiCreditsService`,
+Bu doküman Zikirmatik API'sindeki **AI Rehber** (zikir önerisi), **AI Sohbet**
+(kaynak asistanı) ve **AI Vird Programı** (fazlı zikir rutini üretimi,
+bkz. §2.5) akışlarının güncel mimarisini anlatır. Üçü de aynı alt yapıyı
+(`AiRuntimeService`, `RetrievalService`, `AiCreditsService`,
 `AiUsageService`, `AiPipelineExceptionFilter`) paylaşır ama ayrı ajanlardır.
 
-İlgili kod: `apps/api/src/modules/ai/*`, `apps/api/src/modules/ai-chat/*`.
+İlgili kod: `apps/api/src/modules/ai/*`, `apps/api/src/modules/ai-chat/*`,
+`apps/api/src/modules/vird/*` (AI taslağının kalıcılaştırıldığı yer).
 
 ---
 
@@ -118,6 +120,118 @@ mümkün değildir. `stopWhen: [stepCountIs(3), () => outcome !== null]`.
 | `clarification` | Model tek netleştirme sorusu sordu (`suggestedCategories:[]` legacy alanla birlikte) | **0** |
 | `recommendations` | Seçim başarılı, persist edildi | **1** |
 | AI hatası (`AiPipelineError`) | 503 `AI_UNAVAILABLE` | **0** |
+
+---
+
+## 2.5 AI Vird Programı Akışı
+
+Giriş noktası: `AiVirdService.createVirdProgram` (`POST /v1/ai/vird-programs`).
+Ajan mantığının tamamı `VirdProgramAgentService.run`'da. Niyet + süre
+(7/14/30 gün) + istenen dilimler (morning/prayer/evening/night/free) → fazlı
+bir vird rutini. AI Rehber ile aynı temel ilkeleri paylaşır (salt-AI, fallback
+yok, hata → 503 kredi yok) ama **3 kredi** tüketir (AI Rehber/Sohbet 1 kredi).
+
+```mermaid
+flowchart TD
+    A["POST /v1/ai/vird-programs"] --> B{"3 kredi var mı?\n(ensureCreditAccessForFlow, amount=3)"}
+    B -- Hayır --> B1["403 AI_CREDIT_INSUFFICIENT"]
+    B -- Evet --> C{"ai.flowId ile taslak var mı?"}
+    C -- Evet --> C1["mevcut taslağı dön — 0 kredi"]
+    C -- Hayır --> D["VirdProgramAgentService.run\n(expandIntent'i yeniden kullanır)"]
+    D --> E{"offTopic?"}
+    E -- Evet --> E1["kind=offTopic — 0 kredi"]
+    E -- Hayır --> F["Aday havuzu: genel + dilim bazlı aramalar\n(dedupeByCanonicalKey)"]
+    F --> G["runBuildStep: generateText + tools\n(searchDhikrs ≤1 / buildProgram)"]
+    G --> H["DB ikinci kapı: loadDhikrsByIds"]
+    H --> I["VirdProgramsService.createAiDraft\n(source:'ai', status:'draft')"]
+    I --> J["debitCreditForFlow — 3 kredi"]
+```
+
+### 2.5.1 Niyet genişletme (yeniden kullanım)
+
+`VirdProgramAgentService`, `RecommendationAgentService.expandIntent`'i
+(public) doğrudan enjekte edilen bağımlılık üzerinden çağırır — kendi bir
+kopyasını TUTMAZ. `offTopic=true` ise agent hiçbir aday aramadan
+`{kind:'offTopic'}` döner (kredi yok).
+
+### 2.5.2 Aday zikir havuzu (deterministik, LLM'siz)
+
+- Genel havuz: `searchDhikrsByText(expandedQuery, 15)`.
+- İstenen her dilim için ek bir hedefli arama: `morning`/`evening`/`night` →
+  `searchDhikrsByTimeOfDay` (6'şar); `prayer` → "namaz sonrası" sabit metin
+  sorgusuyla `searchDhikrsByText` (6); `free` için ek arama YAPILMAZ (genel
+  havuz yeterli çeşitliliği sağladığı kabul edilir).
+- Tüm listeler birleştirilip `RetrievalService.dedupeByCanonicalKey` (export
+  edildi) ile tekilleştirilir — `DhikrCandidate`'ta ham `canonicalKey` alanı
+  olmadığı için `canonicalKeyFromArabic(candidate.nameArabic)` ile türetilir.
+- `getRecentDhikrIds` işaretlemesi AI Rehber'deki ile **aynen** aynıdır: sert
+  bir dışlama değil, `recentlyPracticed:true` işareti.
+- Havuz boşsa `AiRetrievalError('retrieval_failed')` → 503.
+
+### 2.5.3 İnşa (build) turu ve doğrulama kapıları
+
+`generateText` + iki araç (`searchDhikrs` en fazla 1 kez, `buildProgram`),
+`prepareStep` ile aktif araç kapısı (AI Rehber'deki `searchDhikrs`/
+`selectRecommendations` gatingiyle aynı desen, yalnızca `askClarification`
+YOKTUR — vird üretiminde netleştirme sorusu dalı yoktur), `stopWhen:
+[stepCountIs(3), () => outcome !== null]`.
+
+`buildProgram.execute` beş kapıyı sırayla doğrular; herhangi biri ihlal
+edilirse `{ok:false, error}` ile model'e geri döner (kredi düşülmeden, aynı
+turda yeniden dener):
+
+1. Her `ref`, aday havuzundaki (`refMap`) bir C# referansına karşılık gelmeli.
+2. Fazlar `1..durationDays`'i **boşluksuz ve çakışmasız** kaplamalı
+   (`fromDay`/`toDay`) — sıralı fazlar arasında her `toDay+1 === nextFromDay`,
+   son fazın `toDay === durationDays`.
+3. Bir fazda yalnızca **istenen dilimler** kullanılabilir.
+4. Dilim başına en fazla `AI_VIRD_MAX_ITEMS_PER_SLOT` (varsayılan 4) zikir.
+5. `target` 1..1000 aralığında VE aday satırının `recommendedCount`'u
+   (Dhikr şemasının statik tekrar hedefi, varsa) aşılamaz.
+
+Faz sayısı önerisi (7→1-2, 14→2-3, 30→3-4) ve "her faz her istenen dilimde en
+az bir zikir" kuralı yalnızca **prompt rehberliğidir** — yukarıdaki 5 kapının
+aksine kod seviyesinde sert bir doğrulama YAPILMAZ.
+
+Model geçerli bir program üretemezse (`outcome` null kalır) `withAiRetry`
+tüm `runBuildStep`'i (yeni bir `generateText` çağrısıyla) bir kez tekrar
+dener; ikinci denemede de başarısızsa `AiInvalidOutputError`.
+
+**DB ikinci kapı:** Programda referans verilen TÜM dhikrId'ler
+`loadDhikrsByIds` ile yeniden doğrulanır (`isVerified && isActive`);
+doğrulanamayan bir id'nin bulunduğu satır sessizce düşer, program genel
+olarak BOŞ kalırsa `AiInvalidOutputError`.
+
+### 2.5.4 Persist, idempotency ve kredi
+
+- `VirdProgramsService.createAiDraft`: `source:'ai'`, `status:'draft'`,
+  `kind:'journey'`, `ai:{flowId, intent, durationDays, summary}`,
+  `expiresAt: +7 gün` (manuel/şablon taslaklarının 30 günlük TTL'inden farklı
+  — bkz. `vird.constants.ts` `VIRD_DRAFT_EXPIRES_AFTER_DAYS`). `title.tr`/
+  `title.en` aynı üretilen metinle doldurulur — model yalnızca istenen
+  locale'de üretir, şema ikisini de zorunlu kılar.
+- İdempotency İKİ katmanlıdır: (1) `AiVirdService`, ajanı ÇALIŞTIRMADAN önce
+  `ai.flowId` ile mevcut bir taslak arar (bulursa kredi düşülmez, ajan hiç
+  çalışmaz); (2) `createAiDraft` içinde bir E11000 (`ai.flowId` unique
+  sparse index, yarış durumu) alınırsa mevcut taslak tekrar okunup döner.
+- Kredi: `AI_CREDIT_REASONS.VIRD_PROGRAM_DEBIT`, `VIRD_PROGRAM_CREDIT_COST=3`.
+  `ensureCreditAccessForFlow`/`debitCreditForFlow` artık genel bir `amount`
+  parametresi alır (varsayılan 1 — AI Rehber/Sohbet çağıranları DEĞİŞMEDİ);
+  cüzdan düşümü grant/topup kovaları arasında TEK atomik aggregation-pipeline
+  `findOneAndUpdate`'iyle bölüşülür (`grantTake=min(grantCredits,amount)`,
+  `topupTake=amount-grantTake`). Ayrıntı: [`docs/ai-kredi-birim-ekonomi-takip.md`](ai-kredi-birim-ekonomi-takip.md).
+
+### 2.5.5 Cevap türleri ve kredi
+
+| `kind` | Açıklama | Kredi |
+|---|---|---|
+| `offTopic` | Niyet İslami zikir/dua bağlamıyla ilgisiz | **0** |
+| `program` (mevcut taslak) | Aynı flowId ile idempotent retry | **0** |
+| `program` (yeni) | Üretim + persist başarılı | **3** |
+| AI hatası (`AiPipelineError`) | 503 `AI_UNAVAILABLE` | **0** |
+
+Uç sözleşmesinin tam özeti (istek/yanıt şekli, `VirdSlotKey`, hata kodları):
+[`docs/vird-programi.md`](vird-programi.md).
 
 ---
 
@@ -250,22 +364,26 @@ Kaynak: `apps/api/src/modules/ai/ai-runtime.service.ts`,
 | `AI_CHAT_MODEL` | `gpt-5` | AI Sohbet `chat` + `bilgi` üretimi |
 | `AI_CLASSIFY_MODEL` | `gpt-5-mini` | Sohbet `classifyIntent` |
 | `AI_EXPAND_MODEL` | `gpt-5-mini` | Rehber `expandIntent` |
+| `AI_PROGRAM_MODEL` | `gpt-5` | AI Vird Programı `runBuildStep` |
 | `AI_SELECT_REASONING_EFFORT` | `minimal` | yalnız `select` reasoning modeliyse |
 | `AI_CHAT_REASONING_EFFORT` | `low` | yalnız `chat` reasoning modeliyse |
+| `AI_PROGRAM_REASONING_EFFORT` | `low` | yalnız `program` reasoning modeliyse |
 | *(classify/expand reasoning effort)* | `minimal` | env'den değil, sabit |
 | `AI_SELECT_TIMEOUT_MS` | `30000` | |
 | `AI_CHAT_TIMEOUT_MS` | `45000` | |
 | `AI_CLASSIFY_TIMEOUT_MS` | `8000` | |
 | `AI_EXPAND_TIMEOUT_MS` | `8000` | |
+| `AI_PROGRAM_TIMEOUT_MS` | `45000` | |
 | `AI_PASSAGE_MIN_SCORE` | `0.68` | `source_passages` vektör arama alt eşiği (`0` = eşik kapalı) |
 | `AI_CANDIDATE_LIMIT` | `15` (kod tavanı 20) | Rehber aday zikir sayısı |
 | `AI_RAG_PASSAGE_LIMIT` | `4` | Rehber bağlamı için pasaj sayısı |
 | `AI_CHAT_PASSAGE_LIMIT` | `6` | Sohbet `bilgi` modu pasaj sayısı |
+| `AI_VIRD_MAX_ITEMS_PER_SLOT` | `4` | Vird Programı — dilim başına en fazla zikir |
 | `OPENAI_EMBEDDING_MODEL` | `text-embedding-3-large` | tüm embedding'ler (dhikr + pasaj, `EmbeddingService`) |
 | `AI_MODEL_PRICES_JSON` | *(boş)* | `ai-cost-report.mjs` için liste fiyatı override'ı |
 
 Maksimum çıktı token'ları (`AiRuntimeService`, env'den değil sabit):
-`select`=3000, `chat`=2500, `classify`=800, `expand`=800.
+`select`=3000, `chat`=2500, `classify`=800, `expand`=800, `program`=4000.
 
 **Not — reasoning model ayrımı:** `gpt-5*` (`gpt-5-chat` hariç) ve
 `o1`/`o3`/`o4` "reasoning model" sayılır (`isReasoningModel`). Bu modellerde
@@ -454,7 +572,7 @@ yalnızca metni (dolayısıyla hash'i) değişen chunk'ları yeniden embed eder.
 - **`ai_usage_log` koleksiyonu** (`AiUsageService.record`, asla akışı
   bloklamayan fire-and-forget bir kayıt): her `generateText`/
   `generateObject`/`streamText`/embedding çağrısı için `kind` ∈
-  `recommend | chat | chat_stream | classify | expand | embedding`,
+  `recommend | chat | chat_stream | classify | expand | embedding | program`,
   `model`, `inputTokens`/`outputTokens`/`totalTokens`, `steps`, ve
   `ai-pricing.constants.ts`'teki liste fiyatlarından hesaplanan
   `estCostUsd`.
@@ -462,7 +580,9 @@ yalnızca metni (dolayısıyla hash'i) değişen chunk'ları yeniden embed eder.
   raporu üretir; kredi ekonomisi takibi için bkz.
   [`docs/ai-kredi-birim-ekonomi-takip.md`](ai-kredi-birim-ekonomi-takip.md).
 - **Eval harness (geliştiriliyor):** `pnpm --filter api eval:rehber` /
-  `eval:chat` (bkz. `apps/api/scripts/eval/README.md`).
+  `eval:chat` / `eval:vird` (bkz. `apps/api/scripts/eval/README.md`).
+  `eval:vird` henüz LLM-free yapısal kontrollerle sınırlı — bir judge katmanı
+  YOKTUR (bkz. `docs/vird-programi.md`).
 
 ---
 
@@ -506,5 +626,9 @@ yalnızca metni (dolayısıyla hash'i) değişen chunk'ları yeniden embed eder.
 | `apps/api/src/modules/ai/ai-credits.service.ts` | Kredi cüzdanı/ledger, flow bazlı idempotent kesim |
 | `apps/api/src/modules/ai-chat/ai-chat.service.ts` | AI Sohbet orkestrasyonu (REST + SSE) |
 | `apps/api/src/modules/ai-chat/prompts.ts` | AI Sohbet prompt/şema tanımları |
+| `apps/api/src/modules/ai/ai-vird.service.ts` | AI Vird Programı ince orkestrasyon katmanı (kredi, idempotency, önizleme) |
+| `apps/api/src/modules/ai/vird-program-agent.service.ts` | AI Vird Programı agent mantığı (aday havuzu + build turu + doğrulama kapıları) |
+| `apps/api/src/modules/vird/vird-programs.service.ts` | `createAiDraft`/`findAiDraftByFlowId` — AI taslağının tek yazma noktası |
 | `docs/ai-kredi-birim-ekonomi-takip.md` | Kredi birim ekonomisi takip rutini |
+| `docs/vird-programi.md` | AI Vird Programı uç sözleşmesi (istek/yanıt, sınırlar, hata kodları) |
 | `docs/kaynaklar/KAYNAK-EKLEME-REHBERI.md` | `source_passages` korpusuna kaynak ekleme akışı |

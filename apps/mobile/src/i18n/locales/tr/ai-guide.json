@@ -101,6 +101,65 @@
   "chatEntry": {
     "title": "Asistanla sohbet et"
   },
+  "virdProgram": {
+    "entry": {
+      "title": "AI ile Vird Programı Oluştur"
+    },
+    "title": "AI ile Vird Programı",
+    "subtitle": "Niyetini yaz, süreyi ve dilimleri seç",
+    "form": {
+      "freeTextLabel": "Niyetin (opsiyonel)",
+      "freeTextPlaceholder": "Ne için bir vird istiyorsun? (ör. sabır, şükür, tövbe)",
+      "durationLabel": "Süre",
+      "durationOption": "{{count}} gün",
+      "slotsLabel": "Dilimler",
+      "prayerSelectionLabel": "Hangi vakitlerde?",
+      "creditCost": "3 kredi",
+      "submit": "Program Oluştur",
+      "loading": "Program hazırlanıyor…"
+    },
+    "slots": {
+      "morning": "Sabah",
+      "prayer": "Namaz sonrası",
+      "evening": "Akşam",
+      "night": "Gece",
+      "free": "Serbest"
+    },
+    "prayerIndex": {
+      "1": "Sabah",
+      "2": "Öğle",
+      "3": "İkindi",
+      "4": "Akşam",
+      "5": "Yatsı"
+    },
+    "offTopic": {
+      "title": "Konu dışı"
+    },
+    "errors": {
+      "generationFailed": "Program oluşturulamadı. Lütfen tekrar dene.",
+      "aiUnavailableTitle": "Asistan şu anda meşgul",
+      "activationFailed": "Program aktifleştirilemedi. Lütfen tekrar dene.",
+      "slotsRequired": "En az bir dilim seçmelisin."
+    },
+    "loading": {
+      "creditsLoadingRetry": "Kredilerin yükleniyor; birkaç saniye içinde tekrar deneyebilirsin."
+    },
+    "actions": {
+      "start": "Programı Başlat",
+      "discard": "Vazgeç",
+      "pauseAndStart": "Mevcut programı duraklat ve başlat",
+      "goPremium": "Premium'a geç"
+    },
+    "preview": {
+      "phasesTitle": "Program",
+      "phaseDayRange": "{{from}}-{{to}}. gün",
+      "phaseDayRangeOpen": "{{from}}. günden itibaren",
+      "targetSuffix": "x{{count}}"
+    },
+    "activationConflict": {
+      "title": "Zaten aktif bir programın var"
+    }
+  },
   "verificationFooter": {
     "text": "Tüm içerikler güvenilir dini kaynaklardan alınmıştır."
   }

@@ -45,8 +45,14 @@ export type StatsSummary = {
     currentStreak: number;
     longestStreak: number;
     totalDaysActive: number;
+    virdCurrentStreak: number;
+    virdLongestStreak: number;
   };
   dailySeries: StatsDailyPoint[];
+  // true when the requesting user is not premium — the premium-only fields
+  // below are then emptied/zeroed server-side (never sent to free users).
+  locked: boolean;
+  // --- premium ---
   heatmap: StatsHeatmapPoint[];
   weekdayDistribution: StatsDistributionPoint[];
   hourDistribution: StatsDistributionPoint[];
@@ -136,6 +142,11 @@ export type StreakSnapshot = {
   currentStreak: number;
   longestStreak: number;
   totalDaysActive: number;
+  // Vird Programı serisi — opsiyonel: çağıran taraf (StatsService) her zaman
+  // geçirir, ancak eski çağrı yerleri/testler için geriye uyumluluk amacıyla
+  // opsiyonel bırakılmıştır (yoksa 0 kabul edilir).
+  virdCurrentStreak?: number;
+  virdLongestStreak?: number;
 };
 
 function round(value: number): number {
@@ -239,9 +250,17 @@ const STREAK_BADGES: { key: string; label: string; threshold: number }[] = [
   { key: 'streak-100', label: '100 günlük seri', threshold: 100 },
 ];
 
+const VIRD_STREAK_BADGES: { key: string; label: string; threshold: number }[] =
+  [
+    { key: 'vird-7', label: '7 günlük vird serisi', threshold: 7 },
+    { key: 'vird-30', label: '30 günlük vird serisi', threshold: 30 },
+    { key: 'vird-100', label: '100 günlük vird serisi', threshold: 100 },
+  ];
+
 export function computeBadges(
   allTimeCount: number,
   longestStreak: number,
+  virdLongestStreak = 0,
 ): StatsBadge[] {
   const countBadges = COUNT_BADGES.map((badge) => ({
     key: badge.key,
@@ -255,13 +274,54 @@ export function computeBadges(
     achieved: longestStreak >= badge.threshold,
     progress: Math.min(1, longestStreak / badge.threshold),
   }));
-  return [...countBadges, ...streakBadges];
+  const virdStreakBadges = VIRD_STREAK_BADGES.map((badge) => ({
+    key: badge.key,
+    label: badge.label,
+    achieved: virdLongestStreak >= badge.threshold,
+    progress: Math.min(1, virdLongestStreak / badge.threshold),
+  }));
+  return [...countBadges, ...streakBadges, ...virdStreakBadges];
+}
+
+const EMPTY_SOURCE_BREAKDOWN: StatsSourceBreakdown = {
+  manual: 0,
+  ai: 0,
+  'special-day': 0,
+  notification: 0,
+};
+
+const EMPTY_COMPARISON: StatsPeriodComparison = {
+  current: 0,
+  previous: 0,
+  changePercent: 0,
+};
+
+/**
+ * Ücretsiz kullanıcılar için premium'a özel detay bölümlerini boşaltır.
+ * Özet kartları, periyotlar, seri (streak), günlük 30 günlük seri ve
+ * rozetler serbest kaldığı için değişmeden kalır.
+ */
+function lockPremiumSections(summary: StatsSummary): StatsSummary {
+  return {
+    ...summary,
+    locked: true,
+    heatmap: [],
+    weekdayDistribution: [],
+    hourDistribution: [],
+    sourceBreakdown: { ...EMPTY_SOURCE_BREAKDOWN },
+    topDhikrs: [],
+    comparison: {
+      week: { ...EMPTY_COMPARISON },
+      month: { ...EMPTY_COMPARISON },
+    },
+  };
 }
 
 export function buildStatsSummary(
   facet: StatsFacetResult,
   streak: StreakSnapshot,
   windows: StatsDateWindows,
+  isPremium: boolean,
 ): StatsSummary {
   const rawTotals = facet.totals[0] ?? {};
   const allTimeCount = rawTotals.allTimeCount ?? 0;
@@ -314,7 +374,7 @@ export function buildStatsSummary(
     HEATMAP_DAYS,
   ).map((point) => ({ date: point.date, count: point.count }));
 
-  return {
+  const summary: StatsSummary = {
     totals: {
       allTimeCount,
       totalSessions,
@@ -329,8 +389,11 @@ export function buildStatsSummary(
       currentStreak: streak.currentStreak,
       longestStreak: streak.longestStreak,
       totalDaysActive: streak.totalDaysActive,
+      virdCurrentStreak: streak.virdCurrentStreak ?? 0,
+      virdLongestStreak: streak.virdLongestStreak ?? 0,
     },
     dailySeries,
+    locked: !isPremium,
     heatmap,
     weekdayDistribution: normalizeDistribution(
       facet.weekday,
@@ -346,6 +409,12 @@ export function buildStatsSummary(
       week: computeComparison(thisWeek, prevWeek),
       month: computeComparison(thisMonth, prevMonth),
     },
-    badges: computeBadges(allTimeCount, streak.longestStreak),
+    badges: computeBadges(
+      allTimeCount,
+      streak.longestStreak,
+      streak.virdLongestStreak ?? 0,
+    ),
   };
+
+  return isPremium ? summary : lockPremiumSections(summary);
 }

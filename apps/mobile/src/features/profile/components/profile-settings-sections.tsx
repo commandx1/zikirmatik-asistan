@@ -1,6 +1,8 @@
 import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import type { SupportedLocale } from "../../../i18n";
+import type { HapticsPattern } from "../../../services/haptics-pattern";
+import { ProfileHapticsPatternRow } from "./profile-haptics-pattern-row";
 import { ProfileLinkRow } from "./profile-link-row";
 import { ProfileLogoutRow } from "./profile-logout-row";
 import { ProfileSectionTitle } from "./profile-section-title";
@@ -11,7 +13,7 @@ import { ProfileToggleRow } from "./profile-toggle-row";
 type ProfileSettingsSectionsProps = {
   reminderTime: string;
   notificationsEnabled: boolean;
-  hapticsEnabled: boolean;
+  hapticsPattern: HapticsPattern;
   locale: SupportedLocale;
   onChangeLocale: (locale: SupportedLocale) => void;
   onPressTheme: () => void;
@@ -25,13 +27,13 @@ type ProfileSettingsSectionsProps = {
   onPressLogout: () => void;
   onPressDeleteAccount: () => void;
   onToggleNotifications: (value: boolean) => void;
-  onToggleHaptics: (value: boolean) => void;
+  onChangeHapticsPattern: (pattern: HapticsPattern) => void;
 };
 
 export function ProfileSettingsSections({
   reminderTime,
   notificationsEnabled,
-  hapticsEnabled,
+  hapticsPattern,
   locale,
   onChangeLocale,
   onPressTheme,
@@ -45,7 +47,7 @@ export function ProfileSettingsSections({
   onPressLogout,
   onPressDeleteAccount,
   onToggleNotifications,
-  onToggleHaptics
+  onChangeHapticsPattern
 }: ProfileSettingsSectionsProps) {
   const { t } = useTranslation("profile");
   const languageLabel = locale === "en" ? t("profile:language.english") : t("profile:language.turkish");
@@ -65,11 +67,11 @@ export function ProfileSettingsSections({
             onPress={toggleLocale}
             bottomBorder
           />
-          <ProfileToggleRow
+          <ProfileHapticsPatternRow
             label={t("profile:sections.personalization.haptics")}
             iconName="mobile-screen"
-            value={hapticsEnabled}
-            onChange={onToggleHaptics}
+            value={hapticsPattern}
+            onChange={onChangeHapticsPattern}
           />
         </ProfileSettingsCard>
       </View>

@@ -7,7 +7,7 @@ import { toIntlLocale } from "../lib/locale-format";
 import { ZIKIR_ITEMS } from "../features/focus/data";
 import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api-client";
 import type { AiDhikrContext, ZikirItem } from "../features/focus/types";
-import type { LocalizedText } from "@zikirmatik/shared";
+import type { LocalizedText, VirdSlotKey } from "@zikirmatik/shared";
 
 /**
  * Resolves a (possibly not-yet-localized) text field to a plain string for
@@ -44,20 +44,50 @@ type UnsavedProgressSnapshot = {
   lastActivityAt?: string;
 };
 
+/**
+ * activeAiContext'in vird ikizi: seçili zikrin sayacı şu an bir vird
+ * programının bir item'ı için ilerliyorsa dolu. features/vird/hooks/
+ * use-vird-counter-bridge.ts bunu okuyup her sayaç artışında
+ * useVirdStore.recordProgress'i tetikler ve saveSelectedDhikrLog
+ * payload'ına virdProgramId/virdSlot/virdDayIndex/virdPrayerIndex ekler.
+ * activeAiContext ile aynı yaşam döngüsü kuralına tabidir: selectDhikr,
+ * clearSelectedDhikr ve removePersonalDhikr (seçili zikir kaldırılıyorsa)
+ * bunu da temizler — bkz. o fonksiyonlardaki yorumlar.
+ */
+export type ActiveVirdContext = {
+  programId: string;
+  /** bkz. features/vird/services/vird-day.ts buildVirdItemKey. */
+  itemKey: string;
+  slot: VirdSlotKey;
+  /** Yalnız slot:'prayer' için dolu (1..5). */
+  prayerIndex?: number;
+  dayIndex: number;
+  target: number;
+};
+
 type DhikrStore = {
   items: ZikirItem[];
   selectedDhikrId: string;
   activeAiContext?: AiDhikrContext;
+  activeVirdContext: ActiveVirdContext | null;
   selectedSource?: 'special-day';
   freeModeCount: number;
   freeModeTarget: number;
+  // Serbest mod için tur ("lap") boyu — 33/99/özel. Seçili zikirlerde
+  // eşdeğeri ZikirItem.lapSize'dır (bkz. setSelectedLapSize).
+  freeModeLapSize: number;
   unsavedProgressDhikrIds: string[];
   unsavedProgressSnapshots: Record<string, UnsavedProgressSnapshot>;
   isHydratedFromBackend: boolean;
   lastSavedBackendLog?: BackendDhikrLog;
   syncError?: string;
-  selectDhikr: (id: string, aiContext?: Omit<AiDhikrContext, "dhikrId">) => void;
+  selectDhikr: (
+    id: string,
+    aiContext?: Omit<AiDhikrContext, "dhikrId">,
+    virdContext?: ActiveVirdContext
+  ) => void;
   clearSelectedDhikr: () => void;
+  setActiveVirdContext: (context: ActiveVirdContext | null) => void;
   upsertPersonalDhikr: (item: {
     id: string;
     name: string;
@@ -78,11 +108,13 @@ type DhikrStore = {
   resetSelected: () => void;
   setSelectedCount: (count: number) => void;
   setSelectedTarget: (target: number) => void;
+  setSelectedLapSize: (size: number) => void;
   discardUnsavedProgress: (id: string) => void;
   incrementFreeMode: () => void;
   resetFreeMode: () => void;
   clearFreeModeSession: () => void;
   setFreeModeTarget: (target: number) => void;
+  setFreeModeLapSize: (size: number) => void;
   hydrateReadyItems: (
     items: Array<{
       id: string;
@@ -148,6 +180,11 @@ function normalizeTarget(target: number | undefined) {
   }
 
   return Math.max(1, Math.min(MAX_DHIKR_TARGET, Math.floor(target)));
+}
+
+function normalizeLapSize(size: number | undefined) {
+  // Tur boyu için aynı sınırlar geçerli: 1..MAX_DHIKR_TARGET, varsayılan 33.
+  return normalizeTarget(size);
 }
 
 function resolveCustomTarget(target: number | undefined) {
@@ -249,14 +286,16 @@ export const useDhikrStore = create<DhikrStore>()(
     items: INITIAL_ITEMS,
     selectedDhikrId: "",
     activeAiContext: undefined,
+    activeVirdContext: null,
     selectedSource: undefined,
     freeModeCount: 0,
     freeModeTarget: 0,
+    freeModeLapSize: 33,
     unsavedProgressDhikrIds: [],
     unsavedProgressSnapshots: {},
     isHydratedFromBackend: false,
     lastSavedBackendLog: undefined,
-    selectDhikr: (id, aiContext) => {
+    selectDhikr: (id, aiContext, virdContext) => {
     if (!get().items.some((item) => item.id === id)) {
       return;
     }
@@ -269,10 +308,20 @@ export const useDhikrStore = create<DhikrStore>()(
             ...aiContext
           }
         : undefined,
+      // virdContext verilmemişse (AI/katalog/serbest -> zikir seçimi gibi
+      // vird'le ilgisiz her geçiş) temizlenir — aynen activeAiContext gibi.
+      // Verilmişse (features/vird/hooks/use-vird-counter-bridge.ts üzerinden,
+      // home-context.tsx'in startVirdItem'ı) seçimle ATOMIK olarak kurulur;
+      // burada koşulsuz null yazmak, seçim + bağlam kurulumunu iki ayrı
+      // set() çağrısına bölüp aradaki anda (ve unsaved-guard geçişi
+      // ertelerse KALICI olarak) bağlamı kaybettirirdi.
+      activeVirdContext: virdContext ?? null,
       selectedSource: undefined,
     });
   },
-  clearSelectedDhikr: () => set({ selectedDhikrId: "", activeAiContext: undefined, selectedSource: undefined }),
+  clearSelectedDhikr: () =>
+    set({ selectedDhikrId: "", activeAiContext: undefined, activeVirdContext: null, selectedSource: undefined }),
+  setActiveVirdContext: (context) => set({ activeVirdContext: context }),
   setSelectedSource: (source) => set({ selectedSource: source }),
   upsertPersonalDhikr: (item) =>
     set((state) => {
@@ -413,7 +462,14 @@ export const useDhikrStore = create<DhikrStore>()(
       return {
         items: state.items.filter((value) => value.id !== id),
         selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId,
-        activeAiContext: state.activeAiContext?.dhikrId === id ? undefined : state.activeAiContext
+        activeAiContext: state.activeAiContext?.dhikrId === id ? undefined : state.activeAiContext,
+        // ActiveVirdContext taşımadığı bir dhikrId alanı yok (bkz. tip
+        // tanımı) — ama selectDhikr/clearSelectedDhikr her zaman selection
+        // değiştiğinde onu temizlediğinden, dolu bir activeVirdContext HER
+        // ZAMAN o anki selectedDhikrId'ye karşılık gelir. Bu yüzden burada
+        // eşdeğer koşul activeAiContext?.dhikrId === id DEĞİL,
+        // selectedDhikrId === id'dir.
+        activeVirdContext: state.selectedDhikrId === id ? null : state.activeVirdContext
       };
     }),
   clearDhikrProgress: (id) =>
@@ -530,6 +586,12 @@ export const useDhikrStore = create<DhikrStore>()(
         ...markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, changedItem)
       };
     }),
+  setSelectedLapSize: (size) =>
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === state.selectedDhikrId ? { ...item, lapSize: normalizeLapSize(size) } : item
+      )
+    })),
   discardUnsavedProgress: (id) =>
     set((state) => {
       const snapshot = state.unsavedProgressSnapshots[id];
@@ -575,6 +637,7 @@ export const useDhikrStore = create<DhikrStore>()(
         freeModeCount: safeTarget > 0 ? Math.min(state.freeModeCount, safeTarget) : state.freeModeCount
       };
     }),
+  setFreeModeLapSize: (size) => set({ freeModeLapSize: normalizeLapSize(size) }),
   hydrateReadyItems: (readyItems) =>
     set((state) => {
       if (readyItems.length === 0) {
@@ -701,8 +764,10 @@ export const useDhikrStore = create<DhikrStore>()(
         items: INITIAL_ITEMS,
         selectedDhikrId: "",
         activeAiContext: undefined,
+        activeVirdContext: null,
         freeModeCount: 0,
         freeModeTarget: 0,
+        freeModeLapSize: 33,
         unsavedProgressDhikrIds: [],
         unsavedProgressSnapshots: {},
         isHydratedFromBackend: false,
@@ -713,16 +778,22 @@ export const useDhikrStore = create<DhikrStore>()(
   {
     name: "dhikr-store-v1",
     storage: createJSONStorage(() => safeAsyncStorage),
-    version: 1,
+    version: 2,
     migrate: (persistedState, version) => {
-      if (version >= 1) {
+      if (version >= 2) {
         return persistedState as DhikrStore;
       }
 
-      // Sürüm 0'dan (nameTurkish/plain-string alanlar) sürüm 1'e (LocalizedText)
-      // geçiş. Bozuk/eksik/beklenmeyen şekilde persist edilmiş eski state
-      // (örn. null, dizi olmayan items, obje olmayan öğeler) burada crash
-      // etmemeli — her adım defensive olmalı, en kötü ihtimalle öğe atlanır.
+      // Sürüm 0 (nameTurkish/plain-string alanlar) VEYA sürüm 1 (LocalizedText,
+      // henüz ZikirItem.lapSize'sız) durumundan sürüm 2'ye (opsiyonel lapSize)
+      // geçiş. v1 verisi zaten LocalizedText kullandığından aşağıdaki dönüşüm
+      // bloğu onun için idempotenttir (değerler değişmez, yalnızca yeni bir
+      // obje referansı döner). lapSize alanına burada kasıtlı olarak
+      // dokunulmaz — eksikse okuma tarafı 33'e düşer (bkz. resolveLapSize,
+      // features/home/services/lap-counter.ts). Bozuk/eksik/beklenmeyen
+      // şekilde persist edilmiş eski state (örn. null, dizi olmayan items,
+      // obje olmayan öğeler) burada crash etmemeli — her adım defensive
+      // olmalı, en kötü ihtimalle öğe atlanır.
       try {
         const state = (persistedState ?? {}) as { items?: unknown };
         const rawItems = Array.isArray(state.items) ? state.items : [];
@@ -775,8 +846,10 @@ export const useDhikrStore = create<DhikrStore>()(
       items: state.items,
       selectedDhikrId: state.selectedDhikrId,
       activeAiContext: state.activeAiContext,
+      activeVirdContext: state.activeVirdContext,
       freeModeCount: state.freeModeCount,
       freeModeTarget: state.freeModeTarget,
+      freeModeLapSize: state.freeModeLapSize,
       unsavedProgressDhikrIds: state.unsavedProgressDhikrIds,
       unsavedProgressSnapshots: state.unsavedProgressSnapshots
     })

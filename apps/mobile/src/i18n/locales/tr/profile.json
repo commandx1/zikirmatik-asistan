@@ -12,6 +12,12 @@
       "theme": "Tema Seçimi",
       "font": "Yazı Tipi",
       "haptics": "Titreşim",
+      "hapticsPattern": {
+        "off": "Kapalı",
+        "hafif": "Hafif",
+        "orta": "Orta",
+        "tesbih": "Tesbih"
+      },
       "language": "Dil"
     },
     "notifications": {
@@ -86,31 +92,25 @@
   },
   "premiumSheet": {
     "title": "Premium'a Geç",
-    "subtitle": "Manevi yolculuğunuzu Asistan destekli rehberlik ve özel içeriklerle derinleştirin.",
+    "subtitle": "Manevi yolculuğunu Asistan destekli rehberlik, detaylı istatistik ve kişiselleştirme ile derinleştir.",
     "benefits": {
       "aiCredits": {
         "title": "AI Rehber Kredileri",
-        "description": "Aylık 50 kredi + ihtiyaç halinde kredi paketi satın alma desteği."
-      },
-      "collections": {
-        "title": "Tüm Koleksiyonlar",
-        "description": "Hısnu'l-Muslim ve tüm dua koleksiyonlarına tam erişim."
+        "description": "Aylık 50 kredi; niyetine göre zikir önerisi ve kaynaklı sohbet."
       },
       "stats": {
         "title": "Detaylı İstatistikler",
         "description": "Isı haritası, dönem karşılaştırması ve daha fazlasıyla ilerlemeni derinlemesine takip et."
-      },
-      "specialDays": {
-        "title": "Tüm Özel Günler",
-        "description": "Kandil ve bayramların yanı sıra tüm özel günlerin içeriğine eriş."
       },
       "themes": {
         "title": "Tüm Temalar",
         "description": "Bütün temaları hiçbir kısıtlama olmadan kullan."
       }
     },
-    "monthlyPlan": "Aylık (₺{{price}})",
-    "yearlyPlan": "Yıllık (₺{{price}})",
+    "monthlyPlan": "Aylık ({{price}})",
+    "yearlyPlan": "Yıllık ({{price}})",
+    "monthlyPlanNoPrice": "Aylık",
+    "yearlyPlanNoPrice": "Yıllık",
     "creditsRenewNote": "Aylık 50 kredi her ay yenilenir; kullanılmayan krediler sonraki aya devretmez.",
     "startButton": "Hemen Başla",
     "activating": "Aktifleştiriliyor...",

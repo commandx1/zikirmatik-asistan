@@ -7,7 +7,7 @@ import {
   classifyAiError,
 } from './ai-errors';
 
-export type AiModelKind = 'select' | 'chat' | 'classify' | 'expand';
+export type AiModelKind = 'select' | 'chat' | 'classify' | 'expand' | 'program';
 
 type ReasoningEffort = 'minimal' | 'low' | 'medium' | 'high';
 
@@ -29,6 +29,7 @@ const DEFAULT_MODEL_ENV: Record<
   chat: { envKey: 'AI_CHAT_MODEL', fallback: 'gpt-5' },
   classify: { envKey: 'AI_CLASSIFY_MODEL', fallback: 'gpt-5-mini' },
   expand: { envKey: 'AI_EXPAND_MODEL', fallback: 'gpt-5-mini' },
+  program: { envKey: 'AI_PROGRAM_MODEL', fallback: 'gpt-5' },
 };
 
 const DEFAULT_REASONING_EFFORT_ENV: Record<
@@ -39,6 +40,7 @@ const DEFAULT_REASONING_EFFORT_ENV: Record<
   chat: { envKey: 'AI_CHAT_REASONING_EFFORT', fallback: 'low' },
   classify: { fallback: 'minimal' },
   expand: { fallback: 'minimal' },
+  program: { envKey: 'AI_PROGRAM_REASONING_EFFORT', fallback: 'low' },
 };
 
 const DEFAULT_TIMEOUT_MS: Record<
@@ -49,6 +51,7 @@ const DEFAULT_TIMEOUT_MS: Record<
   chat: { envKey: 'AI_CHAT_TIMEOUT_MS', fallback: 45000 },
   classify: { envKey: 'AI_CLASSIFY_TIMEOUT_MS', fallback: 8000 },
   expand: { envKey: 'AI_EXPAND_TIMEOUT_MS', fallback: 8000 },
+  program: { envKey: 'AI_PROGRAM_TIMEOUT_MS', fallback: 45000 },
 };
 
 const DEFAULT_MAX_OUTPUT_TOKENS: Record<AiModelKind, number> = {
@@ -56,6 +59,7 @@ const DEFAULT_MAX_OUTPUT_TOKENS: Record<AiModelKind, number> = {
   chat: 2500,
   classify: 800,
   expand: 800,
+  program: 4000,
 };
 
 /**

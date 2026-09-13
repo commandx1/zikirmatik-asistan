@@ -15,6 +15,8 @@ import { Streak } from '../streaks/schemas/streak.schema';
 import { Subscription } from '../subscriptions/schemas/subscription.schema';
 import { UserDhikr } from '../user-dhikrs/schemas/user-dhikr.schema';
 import { AuthIdentity } from '../auth/schemas/auth-identity.schema';
+import { VirdDayProgress } from '../vird/schemas/vird-day-progress.schema';
+import { VirdProgram } from '../vird/schemas/vird-program.schema';
 
 @Injectable()
 export class UsersService {
@@ -31,6 +33,10 @@ export class UsersService {
     private readonly userDhikrModel: Model<UserDhikr>,
     @InjectModel(AuthIdentity.name)
     private readonly authIdentityModel: Model<AuthIdentity>,
+    @InjectModel(VirdProgram.name)
+    private readonly virdProgramModel: Model<VirdProgram>,
+    @InjectModel(VirdDayProgress.name)
+    private readonly virdDayProgressModel: Model<VirdDayProgress>,
   ) {}
 
   async createUser(payload: CreateUserDto) {
@@ -117,6 +123,9 @@ export class UsersService {
             ...(payload.fontFamily ? { fontFamily: payload.fontFamily } : {}),
             ...(typeof payload.hapticsEnabled === 'boolean'
               ? { hapticsEnabled: payload.hapticsEnabled }
+              : {}),
+            ...(payload.hapticsPattern
+              ? { hapticsPattern: payload.hapticsPattern }
               : {}),
             ...notifSettingsUpdates,
             lastSeenAt: now,
@@ -220,6 +229,8 @@ export class UsersService {
       this.subscriptionModel.deleteMany({ userId: objectId }),
       this.aiRecommendationModel.deleteMany({ userId: objectId }),
       this.authIdentityModel.deleteMany({ userId: objectId }),
+      this.virdProgramModel.deleteMany({ userId: objectId }),
+      this.virdDayProgressModel.deleteMany({ userId: objectId }),
     ]);
     await this.userModel.findByIdAndDelete(objectId);
   }

@@ -72,7 +72,11 @@ export function useUserPreferencesSync() {
           reminderTime: user.notifSettings?.reminderTime,
           dailyReminderEnabled: user.notifSettings?.dailyReminder,
           kandilNotificationsEnabled: user.notifSettings?.kandilNotifications,
-          hapticsEnabled: user.hapticsEnabled
+          // hapticsEnabled eski istemciler/sunucular için korunuyor;
+          // hapticsPattern varsa önceliklidir, yoksa store içinde
+          // hapticsEnabled'dan türetilir (bkz. resolveHapticsPattern).
+          hapticsEnabled: user.hapticsEnabled,
+          hapticsPattern: user.hapticsPattern
         });
         hydrateAppearance({
           themeName: normalizeThemeName(user.theme),

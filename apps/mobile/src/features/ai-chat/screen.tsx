@@ -157,6 +157,8 @@ export function AiChatScreen() {
               void chat.resumeAfterCreditPurchase();
             });
           }}
+          subscriptionPrices={premiumSheet.subscriptionPrices}
+          source="ai_chat"
         />
       </KeyboardAvoidingView>
     </PageLayout>

@@ -7,14 +7,17 @@ import {
 import { Dhikr, DhikrSchema } from '../dhikrs/schemas/dhikr.schema';
 import { EmbeddingModule } from '../embedding/embedding.module';
 import { User, UserSchema } from '../users/schemas/user.schema';
+import { VirdModule } from '../vird/vird.module';
 import { AiController } from './ai.controller';
 import { AiCreditsService } from './ai-credits.service';
 import { AiProgressGateway } from './ai-progress.gateway';
 import { AiRuntimeService } from './ai-runtime.service';
 import { AiService } from './ai.service';
 import { AiUsageService } from './ai-usage.service';
+import { AiVirdService } from './ai-vird.service';
 import { RecommendationAgentService } from './recommendation-agent.service';
 import { RetrievalService } from './retrieval.service';
+import { VirdProgramAgentService } from './vird-program-agent.service';
 import { AiUsageLog, AiUsageLogSchema } from './schemas/ai-usage-log.schema';
 import {
   AiRecommendation,
@@ -46,6 +49,9 @@ import {
       { name: AiUsageLog.name, schema: AiUsageLogSchema },
     ]),
     EmbeddingModule,
+    // Yalnızca AiVirdService'in VirdProgramsService.createAiDraft'ı
+    // çağırması için — ters yön yok (VirdModule AiModule'ü import ETMEZ).
+    VirdModule,
   ],
   controllers: [AiController],
   providers: [
@@ -56,6 +62,8 @@ import {
     AiRuntimeService,
     RetrievalService,
     RecommendationAgentService,
+    VirdProgramAgentService,
+    AiVirdService,
   ],
   exports: [
     AiService,

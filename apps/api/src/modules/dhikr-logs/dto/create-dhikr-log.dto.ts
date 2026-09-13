@@ -6,9 +6,11 @@ import {
   IsOptional,
   IsString,
   Matches,
+  Max,
   Min,
   ValidateIf,
 } from 'class-validator';
+import { VIRD_SLOT_KEY_ENUM, type VirdSlotKey } from '../../vird/vird.types';
 
 const LOG_SOURCE = {
   manual: 'manual',
@@ -77,4 +79,24 @@ export class CreateDhikrLogDto {
   @IsString()
   @Matches(/^\d{4}-\d{2}-\d{2}$/)
   date!: string;
+
+  // --- Vird Programı alanları (opsiyonel) ---
+  @IsOptional()
+  @IsMongoId()
+  virdProgramId?: string;
+
+  @IsOptional()
+  @IsEnum(VIRD_SLOT_KEY_ENUM)
+  virdSlot?: VirdSlotKey;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  virdDayIndex?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  virdPrayerIndex?: number;
 }

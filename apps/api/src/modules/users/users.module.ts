@@ -24,6 +24,14 @@ import {
   AuthIdentity,
   AuthIdentitySchema,
 } from '../auth/schemas/auth-identity.schema';
+import {
+  VirdDayProgress,
+  VirdDayProgressSchema,
+} from '../vird/schemas/vird-day-progress.schema';
+import {
+  VirdProgram,
+  VirdProgramSchema,
+} from '../vird/schemas/vird-program.schema';
 
 @Module({
   imports: [
@@ -35,6 +43,10 @@ import {
       { name: Subscription.name, schema: SubscriptionSchema },
       { name: UserDhikr.name, schema: UserDhikrSchema },
       { name: AuthIdentity.name, schema: AuthIdentitySchema },
+      // Yalnız şema: deleteUserAllData bu modelleri doğrudan siler (VirdModule
+      // import edilmez, tıpkı diğer tüm bağımlılıklar gibi).
+      { name: VirdProgram.name, schema: VirdProgramSchema },
+      { name: VirdDayProgress.name, schema: VirdDayProgressSchema },
     ]),
   ],
   controllers: [UsersController],

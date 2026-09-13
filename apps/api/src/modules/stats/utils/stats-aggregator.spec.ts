@@ -49,6 +49,26 @@ describe('computeBadges', () => {
     expect(byKey['streak-7'].achieved).toBe(true);
     expect(byKey['streak-30'].achieved).toBe(false);
   });
+
+  it('defaults the vird streak badges to unachieved when virdLongestStreak is omitted', () => {
+    const badges = computeBadges(12000, 8);
+    const byKey = Object.fromEntries(badges.map((b) => [b.key, b]));
+    expect(byKey['vird-7'].achieved).toBe(false);
+    expect(byKey['vird-7'].progress).toBe(0);
+    expect(byKey['vird-30'].achieved).toBe(false);
+    expect(byKey['vird-100'].achieved).toBe(false);
+  });
+
+  it('marks vird streak badges achieved based on virdLongestStreak independently of the general streak', () => {
+    const badges = computeBadges(12000, 0, 30);
+    const byKey = Object.fromEntries(badges.map((b) => [b.key, b]));
+    expect(byKey['vird-7'].achieved).toBe(true);
+    expect(byKey['vird-30'].achieved).toBe(true);
+    expect(byKey['vird-100'].achieved).toBe(false);
+    expect(byKey['vird-100'].progress).toBeCloseTo(0.3);
+    // Genel seri rozetleri vird'den bağımsız kalır.
+    expect(byKey['streak-7'].achieved).toBe(false);
+  });
 });
 
 describe('buildStatsSummary', () => {
@@ -97,7 +117,7 @@ describe('buildStatsSummary', () => {
     ],
   };
 
-  const summary = buildStatsSummary(facet, streak, windows);
+  const summary = buildStatsSummary(facet, streak, windows, true);
 
   it('computes totals and derived rates', () => {
     expect(summary.totals.allTimeCount).toBe(1000);
@@ -105,6 +125,10 @@ describe('buildStatsSummary', () => {
     expect(summary.totals.averagePerActiveDay).toBe(50); // 1000/20
     expect(summary.totals.totalDurationSeconds).toBe(3600);
     expect(summary.totals.favoriteCount).toBe(5);
+  });
+
+  it('marks the summary unlocked for a premium user', () => {
+    expect(summary.locked).toBe(false);
   });
 
   it('computes period sums from the daily map', () => {
@@ -153,5 +177,52 @@ describe('buildStatsSummary', () => {
     });
     expect(summary.topDhikrs[1].label).toBe('Salavat');
     expect(summary.topDhikrs[1].key).toBe('custom-1');
+  });
+
+  it('propagates the vird streak snapshot into streak and badges, defaulting to 0 when absent', () => {
+    expect(summary.streak.virdCurrentStreak).toBe(0);
+    expect(summary.streak.virdLongestStreak).toBe(0);
+
+    const withVird = buildStatsSummary(
+      facet,
+      { ...streak, virdCurrentStreak: 3, virdLongestStreak: 12 },
+      windows,
+      true,
+    );
+    expect(withVird.streak.virdCurrentStreak).toBe(3);
+    expect(withVird.streak.virdLongestStreak).toBe(12);
+    const byKey = Object.fromEntries(withVird.badges.map((b) => [b.key, b]));
+    expect(byKey['vird-7'].achieved).toBe(true);
+    expect(byKey['vird-30'].achieved).toBe(false);
+  });
+
+  describe('premium locking', () => {
+    const lockedSummary = buildStatsSummary(facet, streak, windows, false);
+
+    it('flags the summary as locked and empties premium-only sections', () => {
+      expect(lockedSummary.locked).toBe(true);
+      expect(lockedSummary.heatmap).toEqual([]);
+      expect(lockedSummary.weekdayDistribution).toEqual([]);
+      expect(lockedSummary.hourDistribution).toEqual([]);
+      expect(lockedSummary.topDhikrs).toEqual([]);
+      expect(lockedSummary.sourceBreakdown).toEqual({
+        manual: 0,
+        ai: 0,
+        'special-day': 0,
+        notification: 0,
+      });
+      expect(lockedSummary.comparison).toEqual({
+        week: { current: 0, previous: 0, changePercent: 0 },
+        month: { current: 0, previous: 0, changePercent: 0 },
+      });
+    });
+
+    it('keeps the free sections identical to the premium summary', () => {
+      expect(lockedSummary.totals).toEqual(summary.totals);
+      expect(lockedSummary.periods).toEqual(summary.periods);
+      expect(lockedSummary.streak).toEqual(summary.streak);
+      expect(lockedSummary.dailySeries).toEqual(summary.dailySeries);
+      expect(lockedSummary.badges).toEqual(summary.badges);
+    });
   });
 });

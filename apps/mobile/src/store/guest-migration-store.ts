@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { VirdDayProgressByDate, VirdProgramLocal } from "../features/vird/types";
 
 export type GuestSnapshotItem = {
   id: string;
@@ -18,12 +19,35 @@ export type GuestSnapshotItem = {
   isFavorite: boolean;
 };
 
+/**
+ * Misafirin yerel vird (günlük zikir programı) state'inin göç anlık
+ * görüntüsü. Yalnızca `origin:'local'` programlar taşınır (bkz.
+ * captureGuestMigrationSnapshot) — bir misafirin ZATEN sunucuya senkronize
+ * olmuş (`origin:'server'`) bir programı olamaz (misafir authenticate
+ * olamaz). `dayProgress` yalnızca son 30 günle sınırlıdır (bkz.
+ * store/vird-store.ts pruneDayProgress) — tam 120 günlük pencereyi taşımak
+ * göç payload'ını gereksiz büyütür, göç zaten yalnızca YAKIN geçmişi
+ * kurtarmayı hedefler.
+ */
+export type GuestVirdSnapshot = {
+  programs: VirdProgramLocal[];
+  activeProgramId: string | null;
+  dayProgress: VirdDayProgressByDate;
+};
+
 export type GuestMigrationSnapshot = {
   id: string;
   capturedAt: string;
   /** Local calendar day (YYYY-MM-DD) the guest progress is attributed to. */
   dateKey: string;
   items: GuestSnapshotItem[];
+  /**
+   * v2 alanı (bkz. captureGuestMigrationSnapshot) — eski (bu alan eklenmeden
+   * önce kuyruğa alınmış) bekleyen bir snapshot'ta bulunmaz; okuma tarafı
+   * (planGuestMigration/runGuestMigration) bunu HER ZAMAN opsiyonel ele
+   * almalıdır.
+   */
+  vird?: GuestVirdSnapshot;
 };
 
 export type GuestMigrationStatus = "idle" | "pending" | "running" | "completed" | "failed";

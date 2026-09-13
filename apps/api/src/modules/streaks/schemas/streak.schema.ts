@@ -25,6 +25,18 @@ export class Streak {
   @Prop({ type: Number, required: true, default: 0 })
   totalDaysActive!: number;
 
+  // Vird Programı serisi — vird_day_progress.isDayComplete günlerinden
+  // türetilir (bkz. StreaksService.recalculateVirdForUser). Mevcut
+  // currentStreak/longestStreak (genel zikir serisi) ile bağımsızdır.
+  @Prop({ type: Number, required: true, default: 0 })
+  virdCurrentStreak!: number;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  virdLongestStreak!: number;
+
+  @Prop({ type: String })
+  virdLastCompleteDate?: string;
+
   readonly updatedAt!: Date;
 }
 

@@ -79,6 +79,7 @@ describe("push-device-registration", () => {
     registerDevice.mockResolvedValue(undefined);
 
     const { registerPushDevice } = await import("./push-device-registration");
+    const { usePushRegistrationStore } = await import("../../../store/push-registration-store");
 
     await registerPushDevice("access-token-123");
 
@@ -91,6 +92,34 @@ describe("push-device-registration", () => {
       },
       "access-token-123"
     );
+    expect(usePushRegistrationStore.getState().serverPushActive).toBe(true);
+  });
+
+  it("does not mark server push active when registration succeeds but no token was obtained", async () => {
+    getPermissionsAsync.mockResolvedValue({ granted: false, canAskAgain: false });
+    registerDevice.mockResolvedValue(undefined);
+
+    const { registerPushDevice } = await import("./push-device-registration");
+    const { usePushRegistrationStore } = await import("../../../store/push-registration-store");
+
+    await registerPushDevice();
+
+    expect(usePushRegistrationStore.getState().serverPushActive).toBe(false);
+  });
+
+  it("marks server push inactive and rethrows when registration fails", async () => {
+    getPermissionsAsync.mockResolvedValue({ granted: true, canAskAgain: true });
+    getExpoPushTokenAsync.mockResolvedValue({ data: "ExponentPushToken[abc]" });
+    const failure = new Error("server unreachable");
+    registerDevice.mockRejectedValue(failure);
+
+    const { registerPushDevice } = await import("./push-device-registration");
+    const { usePushRegistrationStore } = await import("../../../store/push-registration-store");
+    usePushRegistrationStore.getState().setServerPushActive(true);
+
+    await expect(registerPushDevice()).rejects.toThrow(failure);
+
+    expect(usePushRegistrationStore.getState().serverPushActive).toBe(false);
   });
 
   it("prompts for permission at most once when previously undetermined", async () => {
@@ -135,13 +164,29 @@ describe("push-device-registration", () => {
     );
   });
 
-  it("unlinks the persisted device id on logout", async () => {
+  it("unlinks the persisted device id on logout and resets server push active", async () => {
     unlinkDevice.mockResolvedValue(undefined);
 
     const { getOrCreateDeviceId, unlinkPushDevice } = await import("./push-device-registration");
+    const { usePushRegistrationStore } = await import("../../../store/push-registration-store");
+    usePushRegistrationStore.getState().setServerPushActive(true);
     const deviceId = await getOrCreateDeviceId();
     await unlinkPushDevice();
 
     expect(unlinkDevice).toHaveBeenCalledWith(deviceId);
+    expect(usePushRegistrationStore.getState().serverPushActive).toBe(false);
+  });
+
+  it("still resets server push active when the unlink request fails", async () => {
+    const failure = new Error("server unreachable");
+    unlinkDevice.mockRejectedValue(failure);
+
+    const { unlinkPushDevice } = await import("./push-device-registration");
+    const { usePushRegistrationStore } = await import("../../../store/push-registration-store");
+    usePushRegistrationStore.getState().setServerPushActive(true);
+
+    await expect(unlinkPushDevice()).rejects.toThrow(failure);
+
+    expect(usePushRegistrationStore.getState().serverPushActive).toBe(false);
   });
 });

@@ -12,6 +12,12 @@
       "theme": "Theme Selection",
       "font": "Font",
       "haptics": "Haptics",
+      "hapticsPattern": {
+        "off": "Off",
+        "hafif": "Light",
+        "orta": "Medium",
+        "tesbih": "Tasbih"
+      },
       "language": "Language"
     },
     "notifications": {
@@ -86,31 +92,25 @@
   },
   "premiumSheet": {
     "title": "Go Premium",
-    "subtitle": "Deepen your spiritual journey with AI-powered guidance and exclusive content.",
+    "subtitle": "Deepen your spiritual journey with AI-powered guidance, detailed statistics, and personalization.",
     "benefits": {
       "aiCredits": {
         "title": "AI Guide Credits",
-        "description": "50 monthly credits plus support for buying extra credit packs when needed."
-      },
-      "collections": {
-        "title": "All Collections",
-        "description": "Full access to Hisnul Muslim and all dua collections."
+        "description": "50 monthly credits for intention-based dhikr recommendations and source-cited chat."
       },
       "stats": {
         "title": "Detailed Statistics",
         "description": "Track your progress in depth with heat maps, period comparisons, and more."
-      },
-      "specialDays": {
-        "title": "All Special Days",
-        "description": "Access the content of all special days, not just Kandils and holidays."
       },
       "themes": {
         "title": "All Themes",
         "description": "Use every theme with no restrictions."
       }
     },
-    "monthlyPlan": "Monthly (₺{{price}})",
-    "yearlyPlan": "Yearly (₺{{price}})",
+    "monthlyPlan": "Monthly ({{price}})",
+    "yearlyPlan": "Yearly ({{price}})",
+    "monthlyPlanNoPrice": "Monthly",
+    "yearlyPlanNoPrice": "Yearly",
     "creditsRenewNote": "50 monthly credits renew every month; unused credits don't carry over.",
     "startButton": "Get Started",
     "activating": "Activating...",

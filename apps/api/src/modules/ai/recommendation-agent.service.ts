@@ -230,8 +230,13 @@ export class RecommendationAgentService {
    * Kullanıcının kısa/örtük ifadesini anlamsal aramaya elverişli bir niyet
    * cümlesine açar ve aynı turda off-topic tespitini yapar. expandedQuery
    * her zaman Türkçe döner (bkz. prompts.ts) — arama korpusu Türkçedir.
+   *
+   * Public: `VirdProgramAgentService` (AI Vird Programı ajanı) bu metodu
+   * doğrudan enjekte edilen `RecommendationAgentService` üzerinden yeniden
+   * kullanır — kendi bir niyet genişletme kopyası TUTMAZ. `expandIntentForEval`
+   * (retrieval eval harness'i) da hâlâ buna delege eder, davranışı değişmedi.
    */
-  private async expandIntent(input: {
+  async expandIntent(input: {
     freeText: string;
     timeOfDay: string;
     locale: SupportedAiLocale;

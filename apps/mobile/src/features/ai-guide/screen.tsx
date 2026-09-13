@@ -220,12 +220,28 @@ export function AiGuideScreen() {
             onPress={() => {
               requireAuth(() => router.push("/ai-chat"));
             }}
-            className="mb-6 flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
+            className="mb-3 flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">
               <FontAwesome6 name="comments" iconStyle="solid" size={14} color="#D6A93D" />
               <Text className="text-sm font-semibold text-[--text-primary]">
                 {t("ai-guide:chatEntry.title")}
+              </Text>
+            </View>
+            <FontAwesome6 name="chevron-right" size={12} color="#D6A93D" />
+          </Pressable>
+          {/* AI ile Vird Programı: niyet + süre + dilim seçimiyle günlük zikir
+              programı üreten ayrı akış (bkz. features/vird/screens/ai-create-screen.tsx). */}
+          <Pressable
+            onPress={() => {
+              requireAuth(() => router.push("/vird/ai-create"));
+            }}
+            className="mb-6 flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
+          >
+            <View className="flex-row items-center gap-2.5">
+              <FontAwesome6 name="calendar" iconStyle="solid" size={14} color="#D6A93D" />
+              <Text className="text-sm font-semibold text-[--text-primary]">
+                {t("ai-guide:virdProgram.entry.title")}
               </Text>
             </View>
             <FontAwesome6 name="chevron-right" size={12} color="#D6A93D" />
@@ -376,6 +392,8 @@ export function AiGuideScreen() {
               void guide.resumeAfterCreditPurchase();
             });
           }}
+          subscriptionPrices={premiumSheet.subscriptionPrices}
+          source="ai_guide"
         />
       </View>
     </PageLayout>

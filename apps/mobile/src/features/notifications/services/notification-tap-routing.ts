@@ -11,7 +11,10 @@ const ALLOWED_ROUTE_PATTERNS: RegExp[] = [
   /^\/\(tabs\)\/special-days$/,
   // Local streak reminder (streak-reminder-notifications.ts) deep-links to
   // the main dhikr screen.
-  /^\/\(tabs\)\/home$/
+  /^\/\(tabs\)\/home$/,
+  // Weekly summary campaign (weekly-summary.campaign.ts) deep-links to the
+  // stats tab.
+  /^\/\(tabs\)\/stats$/
 ];
 
 type NotificationResponseLike = {

@@ -10,7 +10,8 @@ export type AiUsageKind =
   | 'chat_stream'
   | 'classify'
   | 'expand'
-  | 'embedding';
+  | 'embedding'
+  | 'program';
 
 export const AI_USAGE_KINDS: AiUsageKind[] = [
   'recommend',
@@ -19,6 +20,7 @@ export const AI_USAGE_KINDS: AiUsageKind[] = [
   'classify',
   'expand',
   'embedding',
+  'program',
 ];
 
 @Schema({

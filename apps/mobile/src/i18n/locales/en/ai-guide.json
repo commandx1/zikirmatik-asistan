@@ -101,6 +101,65 @@
   "chatEntry": {
     "title": "Chat with the AI guide"
   },
+  "virdProgram": {
+    "entry": {
+      "title": "Create an AI Vird Program"
+    },
+    "title": "AI Vird Program",
+    "subtitle": "Write your intention, then pick a duration and slots",
+    "form": {
+      "freeTextLabel": "Your intention (optional)",
+      "freeTextPlaceholder": "What do you want a vird for? (e.g. patience, gratitude, repentance)",
+      "durationLabel": "Duration",
+      "durationOption": "{{count}} days",
+      "slotsLabel": "Slots",
+      "prayerSelectionLabel": "Which prayer times?",
+      "creditCost": "3 credits",
+      "submit": "Create Program",
+      "loading": "Preparing your program…"
+    },
+    "slots": {
+      "morning": "Morning",
+      "prayer": "After prayer",
+      "evening": "Evening",
+      "night": "Night",
+      "free": "Free"
+    },
+    "prayerIndex": {
+      "1": "Fajr",
+      "2": "Dhuhr",
+      "3": "Asr",
+      "4": "Maghrib",
+      "5": "Isha"
+    },
+    "offTopic": {
+      "title": "Off topic"
+    },
+    "errors": {
+      "generationFailed": "Couldn't create the program. Please try again.",
+      "aiUnavailableTitle": "The guide is busy right now",
+      "activationFailed": "Couldn't activate the program. Please try again.",
+      "slotsRequired": "Pick at least one slot."
+    },
+    "loading": {
+      "creditsLoadingRetry": "Your credits are loading; you can try again in a few seconds."
+    },
+    "actions": {
+      "start": "Start Program",
+      "discard": "Discard",
+      "pauseAndStart": "Pause the current program and start this one",
+      "goPremium": "Go Premium"
+    },
+    "preview": {
+      "phasesTitle": "Program",
+      "phaseDayRange": "Day {{from}}-{{to}}",
+      "phaseDayRangeOpen": "From day {{from}}",
+      "targetSuffix": "x{{count}}"
+    },
+    "activationConflict": {
+      "title": "You already have an active program"
+    }
+  },
   "verificationFooter": {
     "text": "All content is sourced from trusted religious references."
   }

@@ -4,6 +4,7 @@ import {
   DhikrLog,
   DhikrLogSchema,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
+import { User, UserSchema } from '../users/schemas/user.schema';
 import { StreaksModule } from '../streaks/streaks.module';
 import { StatsController } from './stats.controller';
 import { StatsService } from './stats.service';
@@ -12,6 +13,7 @@ import { StatsService } from './stats.service';
   imports: [
     MongooseModule.forFeature([
       { name: DhikrLog.name, schema: DhikrLogSchema },
+      { name: User.name, schema: UserSchema },
     ]),
     StreaksModule,
   ],

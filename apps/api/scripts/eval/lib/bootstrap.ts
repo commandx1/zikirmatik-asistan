@@ -17,6 +17,7 @@ import type { INestApplicationContext } from '@nestjs/common';
 import type { Model } from 'mongoose';
 import { AppModule } from '../../../src/app.module';
 import { RecommendationAgentService } from '../../../src/modules/ai/recommendation-agent.service';
+import { VirdProgramAgentService } from '../../../src/modules/ai/vird-program-agent.service';
 import { AiChatService } from '../../../src/modules/ai-chat/ai-chat.service';
 import {
   AiUsageLog,
@@ -27,6 +28,9 @@ export type EvalContext = {
   app: INestApplicationContext;
   agent: RecommendationAgentService;
   chat: AiChatService;
+  // run-vird-eval.ts için — AiModule zaten sağlar (bkz. ai.module.ts
+  // providers), burada yalnızca DI konteynerinden çekiliyor.
+  virdAgent: VirdProgramAgentService;
   usageLogModel: Model<AiUsageLogDocument>;
 };
 
@@ -37,10 +41,11 @@ export async function bootstrapEvalContext(): Promise<EvalContext> {
 
   const agent = app.get(RecommendationAgentService, { strict: false });
   const chat = app.get(AiChatService, { strict: false });
+  const virdAgent = app.get(VirdProgramAgentService, { strict: false });
   const usageLogModel = app.get<Model<AiUsageLogDocument>>(
     getModelToken(AiUsageLog.name),
     { strict: false },
   );
 
-  return { app, agent, chat, usageLogModel };
+  return { app, agent, chat, virdAgent, usageLogModel };
 }

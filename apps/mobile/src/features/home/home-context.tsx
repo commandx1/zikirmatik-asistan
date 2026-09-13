@@ -1,10 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { Vibration } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { i18n } from '../../i18n'
 import { useAuthStore } from '../../store/auth-store'
-import { MAX_DHIKR_TARGET, resolveLocalizedText, useDhikrStore } from '../../store/dhikr-store'
+import { MAX_DHIKR_TARGET, resolveLocalizedText, useDhikrStore, type ActiveVirdContext } from '../../store/dhikr-store'
 import { useProfileStore } from '../../store/profile-store'
 import { useOnboardingStore } from '../../store/onboarding-store'
 import { useNotificationPromptStore } from '../../store/notification-prompt-store'
@@ -20,6 +19,13 @@ import {
 } from './services/daily-esma-suggestion-service'
 import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
 import { shouldConfirmUnsavedDhikrTransition } from './services/unsaved-transition-guard'
+import { computeCurrentLap, computeLapProgress, didCompleteLap, lapNumberCompletedAt, resolveLapSize } from './services/lap-counter'
+import { fireLapHaptic, fireTapHaptic, resolveHapticsPattern } from '../../services/haptics'
+import { playClickSound } from '../../services/click-sound'
+import { useCounterStyleStore } from '../../store/counter-style-store'
+import { buildActiveVirdContext, useVirdCounterBridge } from '../vird/hooks/use-vird-counter-bridge'
+import { dayIndexFor, type ExpectedVirdItem } from '../vird/services/vird-day'
+import type { VirdProgramLocal } from '../vird/types'
 import type { LocalizedText } from '@zikirmatik/shared'
 
 type HomeDhikr = {
@@ -41,7 +47,11 @@ type HomeDhikrOption = {
 
 type PendingDhikrTransition =
   | { kind: 'free' }
-  | { kind: 'select'; id: string }
+  // virdContext opsiyoneldir: startVirdItem tarafından, seçimle ATOMIK
+  // olarak activeVirdContext kurmak için kullanılır (bkz.
+  // dhikr-store.ts selectDhikr üçüncü parametre notu) — onSelectDhikr gibi
+  // vird'le ilgisiz çağrılar bunu vermez, seçim vird bağlamını temizler.
+  | { kind: 'select'; id: string; virdContext?: ActiveVirdContext }
   | { kind: 'quick'; label: string }
   | { kind: 'esma'; item: EsmaulHusnaItem }
 
@@ -69,6 +79,17 @@ type HomeContextValue = {
   count: number
   target: number
   progress: number
+  // Tur ("lap") sayacı — hedeften bağımsız, mevcut sayının kaç adette bir tur
+  // saydığını belirler (seçili zikirde ZikirItem.lapSize, serbest modda
+  // freeModeLapSize; ikisi de eksikse 33).
+  lapSize: number
+  currentLap: number
+  lapProgress: number
+  setLapSize: (size: number) => void
+  // Bir tur tamamlandığında artan sayaç + hangi turun tamamlandığı — toast
+  // göstermek isteyen UI, autoSaveNoticeId ile aynı desende bunu izleyebilir.
+  lapCompletedNoticeId: number
+  lastCompletedLap: number
   mainDhikr: HomeDhikr
   quickDhikrs: string[]
   activeQuickDhikr: string
@@ -145,6 +166,16 @@ type HomeContextValue = {
   onDailyEsmaStart: (item: EsmaulHusnaItem) => void
   tapAnywhereEnabled: boolean
   toggleTapAnywhere: () => void
+  // Bir vird item'ını sayaca yükler: zikir dhikr-store'da yoksa program
+  // içindeki denormalize snapshot'tan ekler (bkz. use-vird-counter-bridge.ts
+  // ensureVirdItemSnapshot), ardından sayaç bağlamını (activeVirdContext)
+  // seçimle ATOMIK olarak kuracak şekilde mevcut unsaved-guard'lı
+  // requestDhikrTransition ile seçer (bkz. use-vird-counter-bridge.ts
+  // buildActiveVirdContext, dhikr-store.ts selectDhikr üçüncü parametresi).
+  // Bu görevde features/vird/components/todays-vird-card.tsx tarafından
+  // kullanılır; dışa açık kalır çünkü sonraki ekran worker'ı da (segment,
+  // editör) muhtemelen ihtiyaç duyacaktır.
+  startVirdItem: (program: VirdProgramLocal, item: ExpectedVirdItem) => void
 }
 
 const HomeContext = createContext<HomeContextValue | null>(null)
@@ -168,10 +199,13 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const setSelectedTarget = useDhikrStore(state => state.setSelectedTarget)
   const freeCount = useDhikrStore(state => state.freeModeCount)
   const freeTarget = useDhikrStore(state => state.freeModeTarget)
+  const freeModeLapSize = useDhikrStore(state => state.freeModeLapSize)
   const incrementFreeMode = useDhikrStore(state => state.incrementFreeMode)
   const resetFreeMode = useDhikrStore(state => state.resetFreeMode)
   const clearFreeModeSession = useDhikrStore(state => state.clearFreeModeSession)
   const setFreeModeTarget = useDhikrStore(state => state.setFreeModeTarget)
+  const setFreeModeLapSize = useDhikrStore(state => state.setFreeModeLapSize)
+  const setSelectedLapSize = useDhikrStore(state => state.setSelectedLapSize)
   const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
   const upsertDhikrSnapshot = useDhikrStore(state => state.upsertDhikrSnapshot)
   const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
@@ -183,11 +217,20 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const activeAiContext = useDhikrStore(state => state.activeAiContext)
   const selectedSource = useDhikrStore(state => state.selectedSource)
   const setSelectedSource = useDhikrStore(state => state.setSelectedSource)
+  const virdBridge = useVirdCounterBridge()
   const authDisplayName = useAuthStore(state => state.session?.displayName)
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
   const sessionAccessToken = useAuthStore(state => state.session?.accessToken)
-  const hapticsEnabled = useProfileStore(state => state.hapticsEnabled)
+  const storedHapticsPattern = useProfileStore(state => state.hapticsPattern)
+  const storedHapticsEnabled = useProfileStore(state => state.hapticsEnabled)
+  const hapticsPattern = resolveHapticsPattern(storedHapticsPattern, storedHapticsEnabled)
+  // Tık sesi de haptikler gibi her dokunuşta çalınır; premium olmayan
+  // kullanıcı bir ses paketi seçmiş olsa bile (ayar ekranında paywall
+  // arkasında kalır) burada sessize düşürülür.
+  const isPremium = useProfileStore(state => state.isPremium)
+  const soundPack = useCounterStyleStore(state => state.soundPack)
+  const effectiveSoundPack = isPremium ? soundPack : 'off'
   const isTourCompleted = useOnboardingStore(s => s.isTourCompleted)
   const isNotificationPromptBlocking = useNotificationPromptStore(s => s.isPending || s.visible || s.deniedVisible)
   const pendingNavigationDailyEsmaStart = useHomeNavigationIntentStore(state => state.pendingDailyEsmaStart)
@@ -227,6 +270,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [streakDays, setStreakDays] = useState(0)
   const [autoSaveNoticeId, setAutoSaveNoticeId] = useState(0)
+  const [lapCompletedNoticeId, setLapCompletedNoticeId] = useState(0)
+  const [lastCompletedLap, setLastCompletedLap] = useState(0)
   const [tapAnywhereEnabled, setTapAnywhereEnabled] = useState(false)
   const toggleTapAnywhere = useCallback(() => {
     setTapAnywhereEnabled(prev => {
@@ -439,6 +484,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<HomeContextValue>(() => {
     const isTargetMode = selectedDhikr ? selectedDhikr.target > 0 : freeTarget > 0
+    const effectiveLapSize = resolveLapSize(selectedDhikr ? selectedDhikr.lapSize : freeModeLapSize)
+    const currentLapCount = selectedDhikr?.current ?? freeCount
     const activeFreeModeTitle =
       freeAutoDhikrNameRef.current?.trim() ||
       (freeCount > 0 ? buildNextAutoFreeTitle(items) : '')
@@ -469,6 +516,15 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       setFreeModeTarget(nextTarget)
       setTargetDraft(String(nextTarget > 0 ? nextTarget : 100))
       setIsEditingTarget(false)
+    }
+
+    const applyLapSize = (size: number) => {
+      if (selectedDhikr) {
+        setSelectedLapSize(size)
+        return
+      }
+
+      setFreeModeLapSize(size)
     }
 
     const closeCreate = () => {
@@ -532,6 +588,11 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           : selectedSource === 'special-day'
             ? { source: 'special-day' as const }
             : { source: 'manual' as const }
+      // Sayaç şu an bir vird item'ı için ilerliyorsa (activeVirdContext),
+      // sunucunun vird ilerlemesini bu logdan türetebilmesi için ekler —
+      // bkz. features/vird/hooks/use-vird-counter-bridge.ts. Bağlam yoksa
+      // boş obje (hiçbir alan eklenmez).
+      const virdLogFields = virdBridge.buildLogFields()
       const payload = isObjectId(selectedDhikr.id)
         ? {
             userId: sessionUserId,
@@ -540,6 +601,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             targetCount: selectedDhikr.target,
             date: toDateKey(new Date()),
             ...aiLogContext,
+            ...virdLogFields,
             isCompleted,
             isFavorite: selectedDhikr.isFavorite
           }
@@ -552,6 +614,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             targetCount: selectedDhikr.target,
             date: toDateKey(new Date()),
             ...aiLogContext,
+            ...virdLogFields,
             isCompleted,
             isFavorite: selectedDhikr.isFavorite
           }
@@ -566,6 +629,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         setSelectedSource(undefined)
         return true
       } catch (error: unknown) {
+        console.warn('[dhikr-log] kayıt başarısız', error)
         const message = error instanceof Error ? error.message : t('home:errors.dhikrLogSaveFailed')
         setSyncError(message)
         setUnsavedTransitionError(message)
@@ -655,7 +719,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
       }
 
       if (transition.kind === 'select') {
-        selectDhikr(transition.id)
+        selectDhikr(transition.id, undefined, transition.virdContext)
         setIsSelectingDhikr(false)
         return
       }
@@ -765,6 +829,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         : freeTarget > 0
           ? freeCount / freeTarget
           : 0,
+      lapSize: effectiveLapSize,
+      currentLap: computeCurrentLap(currentLapCount, effectiveLapSize),
+      lapProgress: computeLapProgress(currentLapCount, effectiveLapSize),
+      setLapSize: applyLapSize,
+      lapCompletedNoticeId,
+      lastCompletedLap,
       mainDhikr: {
         id: selectedDhikr?.id ?? '',
         source: selectedDhikr?.source ?? 'personal',
@@ -821,8 +891,14 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           const nextCount = freeTarget > 0 ? Math.min(freeTarget, nextRawCount) : nextRawCount
           liveFreeCountRef.current = nextCount
           incrementFreeMode()
-          if (hapticsEnabled && nextCount !== prevCount) {
-            Vibration.vibrate(25)
+          if (nextCount !== prevCount) {
+            fireTapHaptic(hapticsPattern)
+            playClickSound(effectiveSoundPack)
+            if (didCompleteLap(prevCount, nextCount, effectiveLapSize)) {
+              fireLapHaptic(hapticsPattern)
+              setLastCompletedLap(lapNumberCompletedAt(nextCount, effectiveLapSize))
+              setLapCompletedNoticeId(prev => prev + 1)
+            }
           }
 
           // Free mode has no dhikr identity yet, so it cannot be logged
@@ -847,8 +923,19 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         liveSelectedCountRef.current = nextCount
 
         incrementSelected()
-        if (hapticsEnabled && nextCount !== baseCount) {
-          Vibration.vibrate(25)
+        if (nextCount !== baseCount) {
+          fireTapHaptic(hapticsPattern)
+          playClickSound(effectiveSoundPack)
+          if (didCompleteLap(baseCount, nextCount, effectiveLapSize)) {
+            fireLapHaptic(hapticsPattern)
+            setLastCompletedLap(lapNumberCompletedAt(nextCount, effectiveLapSize))
+            setLapCompletedNoticeId(prev => prev + 1)
+          }
+          // Bu sayaç şu an bir vird item'ı için ilerliyorsa (activeVirdContext),
+          // vird-store'daki günlük ilerlemeyi de günceller — misafirde de
+          // yerel olarak çalışır, sunucuya bağımlı değildir. Bkz.
+          // features/vird/hooks/use-vird-counter-bridge.ts.
+          virdBridge.recordProgress(nextCount)
         }
 
         // Reaching the target used to require pressing save for the day to
@@ -1110,7 +1197,18 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         ))
       },
       tapAnywhereEnabled,
-      toggleTapAnywhere
+      toggleTapAnywhere,
+      startVirdItem: (program, item) => {
+        // Zikir dhikr-store'da yoksa ekler (activeVirdContext'e dokunmaz).
+        virdBridge.ensureVirdItemSnapshot(program, item)
+        // Bağlam, seçimle ATOMIK olarak (aynı selectDhikr çağrısında)
+        // kurulur — requestDhikrTransition unsaved-guard nedeniyle seçimi
+        // ERTELEYEBİLİR; virdContext bu yüzden burada değil, transition
+        // objesinin İÇİNDE taşınır (bkz. selectDhikr üçüncü parametre notu,
+        // dhikr-store.ts).
+        const virdContext: ActiveVirdContext = buildActiveVirdContext(program, item, dayIndexFor(program, toDateKey(new Date())))
+        requestDhikrTransition({ kind: 'select', id: item.ref, virdContext }, item.ref)
+      }
     }
   }, [
     activeQuickDhikr,
@@ -1128,6 +1226,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     discardUnsavedProgress,
     freeCount,
     freeTarget,
+    freeModeLapSize,
     freeSaveNameDraft,
     freeSaveTransliterationDraft,
     freeSaveMeaningDraft,
@@ -1144,6 +1243,8 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     isEditingTarget,
     isSelectingDhikr,
     isFreeSaveNameModalOpen,
+    lapCompletedNoticeId,
+    lastCompletedLap,
     pendingFreeSaveTransition,
     markDailyEsmaWelcomeSeen,
     pendingDhikrTransition,
@@ -1166,15 +1267,19 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     streakDays,
     authDisplayName,
     authStatus,
-    hapticsEnabled,
+    hapticsPattern,
+    effectiveSoundPack,
     setSelectedCount,
     setSelectedTarget,
+    setSelectedLapSize,
     setFreeModeTarget,
+    setFreeModeLapSize,
     targetDraft,
     unsavedProgressDhikrIds,
     unsavedTransitionError,
     tapAnywhereEnabled,
     toggleTapAnywhere,
+    virdBridge,
     t,
     freeModeLabel
   ])

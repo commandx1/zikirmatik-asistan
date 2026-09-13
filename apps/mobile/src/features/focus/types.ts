@@ -34,6 +34,11 @@ export type ZikirItem = {
   lastActivityAt?: string
   streakDays: number
   isFavorite: boolean
+  // Free tur ("lap") boyu: 33, 99 veya kullanıcı tanımlı pozitif tamsayı.
+  // Eksik/geçersizse okuma tarafı 33'e düşer (bkz. resolveLapSize in
+  // features/home/services/lap-counter.ts) — bu alana burada dokunmak
+  // gerekmez.
+  lapSize?: number
 }
 
 export type EsmaulHusnaItem = {

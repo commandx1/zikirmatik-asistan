@@ -173,3 +173,138 @@ export function buildRecommendationUserPrompt(input: {
     ...input.candidates.map((c) => formatCandidateLine(c)),
   ].join('\n');
 }
+
+// ── AI Vird Programı: buildProgram tool şeması ──────────────────────────────
+
+const virdProgramSlotItemSchema = z.object({
+  ref: z.string(),
+  target: z.number().int(),
+});
+
+const virdProgramPhaseSlotsSchema = z.object({
+  morning: z.array(virdProgramSlotItemSchema).optional(),
+  prayer: z.array(virdProgramSlotItemSchema).optional(),
+  evening: z.array(virdProgramSlotItemSchema).optional(),
+  night: z.array(virdProgramSlotItemSchema).optional(),
+  free: z.array(virdProgramSlotItemSchema).optional(),
+});
+
+export const buildProgramInputSchema = z.object({
+  title: z.string(),
+  summary: z.string(),
+  phases: z.array(
+    z.object({
+      // Gün numaraları — tamsayı (bkz. vird-program-agent.service.ts
+      // validateBuiltProgram'ın 1..durationDays boşluksuz kaplama kontrolü,
+      // kesirli bir fromDay/toDay bu aritmetiği bozar).
+      fromDay: z.number().int(),
+      toDay: z.number().int(),
+      focus: z.string(),
+      slots: virdProgramPhaseSlotsSchema,
+    }),
+  ),
+});
+
+export type BuildProgramInput = z.infer<typeof buildProgramInputSchema>;
+
+// ── AI Vird Programı: aday satırı biçimi ────────────────────────────────────
+
+/**
+ * `formatCandidateLine`'ın vird'e özel uzantısı: sonuna tekrar hedefi
+ * (Dhikr.recommendedCount, varsa) kolonu ekler — model `target` alanını bu
+ * sayıyı aşmayacak şekilde seçmeli (bkz. buildVirdProgramSystemPrompt PROGRAM
+ * KURALLARI ve vird-program-agent.service.ts buildProgram.execute doğrulaması).
+ * Paylaşılan `formatCandidateLine`'ın kendisi DEĞİŞTİRİLMEDİ — AI Rehber akışı
+ * ve run-rehber-eval.ts bundan etkilenmez.
+ */
+export function formatVirdCandidateLine(
+  candidate: DhikrCandidate & { ref: string },
+): string {
+  const base = formatCandidateLine(candidate);
+  const target =
+    typeof candidate.recommendedCount === 'number'
+      ? String(candidate.recommendedCount)
+      : '—';
+  return `${base} | ${target}`;
+}
+
+/** 7→1-2, 14→2-3, 30→3-4 faz sayısı önerisi (yalnızca prompt rehberliği, sert bir doğrulama kapısı DEĞİL). */
+function virdPhaseCountGuidance(durationDays: number): string {
+  if (durationDays <= 7) return '1-2';
+  if (durationDays <= 14) return '2-3';
+  return '3-4';
+}
+
+export function buildVirdProgramSystemPrompt(input: {
+  locale: SupportedAiLocale;
+  durationDays: number;
+  slots: string[];
+  maxItemsPerSlot: number;
+}): string {
+  const slotList = input.slots.join(', ');
+  const phaseGuidance = virdPhaseCountGuidance(input.durationDays);
+
+  return [
+    '**ROL:**',
+    'Sen bir İslami vird (günlük zikir rutini) programı tasarlayan bir asistansın.',
+    '',
+    '**GÖREV:**',
+    `Kullanıcının niyetine göre ${input.durationDays} günlük, fazlara ayrılmış bir vird programı oluştur. Sana ADAY ZİKİRLER listesi verildi (C1, C2, … kısa referanslarla).`,
+    '',
+    '**ARAÇ SEÇİMİ:**',
+    '- Aday listesi niyete ve istenen dilimlere yetiyorsa doğrudan buildProgram çağır.',
+    '- Adaylar yetersizse searchDhikrs aracını EN FAZLA BİR KEZ çağır; query alanına Türkçe, yeniden yazılmış bir arama sorgusu ver.',
+    '- searchDhikrs kullandıysan sonrasında buildProgram çağırmak ZORUNLUDUR — elindeki adaylarla en iyi programı kur.',
+    '',
+    '**PROGRAM KURALLARI:**',
+    `- Programı ${phaseGuidance} faza ayır; fazlar fromDay/toDay ile 1'den ${input.durationDays}'e kadar BOŞLUKSUZ ve ÇAKIŞMASIZ kaplamalı (bir fazın toDay'i, bir sonrakinin fromDay-1'i olmalı; son fazın toDay'i ${input.durationDays} olmalı).`,
+    `- Yalnızca şu dilimleri kullan: ${slotList}. İstenmeyen bir dilim EKLEME.`,
+    '- "prayer" (namaz sonrası) dilimi kısa tesbihat niteliğinde olsun — az sayıda, kısa zikir; uzun dua/sureler bu dilime uygun değildir.',
+    '- Aynı zikir farklı dilimlerde (örn. hem sabah hem akşam) tekrar edilebilir.',
+    `- Bir dilimde en fazla ${input.maxItemsPerSlot} zikir olsun.`,
+    '- target (tekrar hedefi), aday satırındaki tekrar hedefi sayısını (varsa) AŞMASIN; yoksa niyete uygun makul bir sayı kullan.',
+    '- Her faz, istenen dilimlerin HER BİRİNDE en az bir zikir içersin.',
+    '',
+    '**C# REF KURALI:**',
+    '- Yalnızca aday listesindeki C# referanslarını kullan (slots içindeki ref alanları). Asla ham id/ObjectId üretme veya yazma.',
+    '',
+    '**YAZIM:**',
+    '- summary: Kullanıcının niyetini sıcak biçimde kabul eden 2-4 cümle. "inşallah", "Allah kabul etsin" gibi ifadeler doğal biçimde kullanılabilir.',
+    '- Her fazın focus alanı: o fazın amacını anlatan sıcak ve KISA (tek cümle) bir başlık.',
+    '- title: Programın kısa, akılda kalıcı bir adı (en fazla 6-7 kelime).',
+    '- Dini metin (ayet, hadis, dua metni) ÜRETME/YAZMA; fazilet iddiası EKLEME; kaynak uydurma. Yalnızca aday listesindeki bilgiyi kullan.',
+    '',
+    input.locale === 'en'
+      ? 'Write title, summary and each focus in English. If you call searchDhikrs, write the query in Turkish — the catalog is in Turkish.'
+      : 'title, summary ve focus alanlarını Türkçe yaz.',
+  ].join('\n');
+}
+
+export function buildVirdProgramUserPrompt(input: {
+  freeText: string;
+  expandedQuery: string;
+  durationDays: number;
+  slots: string[];
+  candidates: Array<DhikrCandidate & { ref: string }>;
+}): string {
+  return [
+    `Kullanıcı niyeti: ${input.freeText || '(belirtilmedi)'}`,
+    `Genişletilmiş niyet: ${input.expandedQuery}`,
+    `Program süresi: ${input.durationDays} gün`,
+    `İstenen dilimler: ${input.slots.join(', ')}`,
+    '',
+    'ADAY ZİKİRLER (ref | isim | zamanDilimi | etiketler | uygunOlduğuDurumlar | fazilet | anlam | tekrarHedefi):',
+    ...input.candidates.map((c) => formatVirdCandidateLine(c)),
+    '',
+    // formatVirdCandidateLine listesi UZUN olabileceğinden kurallar burada,
+    // adaylardan SONRA tekrarlanır (bkz. ai-chat/prompts.ts SON HATIRLATMA
+    // deseni — kurallar bir veri bloğunun ortasında kalınca modelin bunlara
+    // uyumu düşüyor).
+    'SON HATIRLATMA — bunlara mutlaka uy:',
+    `1. Fazlar 1'den ${input.durationDays}'e kadar boşluksuz ve çakışmasız olmalı (bir sonraki fazın fromDay'i öncekinin toDay+1'i, son fazın toDay'i ${input.durationDays} olmalı).`,
+    `2. Yalnızca şu dilimleri kullan: ${input.slots.join(', ')}. Başka bir dilim EKLEME.`,
+    '3. Yalnızca yukarıdaki listedeki C# referanslarını kullan; ham id/ObjectId YAZMA.',
+    '4. target, aday satırındaki tekrarHedefi sayısını (varsa) AŞMASIN.',
+    '5. Dini metin/fazilet/kaynak UYDURMA — yalnızca aday listesindeki bilgiye dayan.',
+  ].join('\n');
+}

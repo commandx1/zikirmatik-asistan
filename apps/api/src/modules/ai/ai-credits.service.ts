@@ -150,11 +150,23 @@ export class AiCreditsService {
     return { applied: true as const, reason: 'ok', credits };
   }
 
-  computePromptHash(input: { freeText?: string }): string {
+  /**
+   * `extra` opsiyoneldir — AI Vird Programı akışı burayı durationDays/slots/
+   * prayerSelection ile doldurur (aynı flowId'nin farklı bir program isteğiyle
+   * yeniden kullanılmasını da RECOMMENDATION_DEBIT'teki freeText gibi tespit
+   * eder). Var olan çağıranlar (yalnızca freeText) hash biçimini değiştirir —
+   * bkz. worker notu: bu, deploy anında tam o flowId için yarım kalmış bir
+   * retry varsa (çok nadir) "farklı istek içeriği" hatasına yol açabilir.
+   */
+  computePromptHash(input: {
+    freeText?: string;
+    extra?: Record<string, unknown>;
+  }): string {
     return createHash('sha256')
       .update(
         JSON.stringify({
           freeText: input.freeText ?? null,
+          extra: input.extra ?? null,
         }),
       )
       .digest('hex');
@@ -178,6 +190,9 @@ export class AiCreditsService {
    * mevcut çağrı yerleri (createRecommendation) davranışı değişmeden
    * çalışmaya devam eder. Chat akışı (ai-chat modülü) kendi
    * CHAT_MESSAGE_DEBIT reason'ını geçirerek aynı deseni yeniden kullanır.
+   * `amount` da opsiyoneldir (varsayılan 1) — mevcut çağıranlar (hepsi
+   * amount'u hiç geçmiyor) davranışı birebir korur. AI Vird Programı akışı
+   * `VIRD_PROGRAM_CREDIT_COST` (3) geçirir.
    */
   async ensureCreditAccessForFlow(
     userId: Types.ObjectId,
@@ -185,6 +200,7 @@ export class AiCreditsService {
     isPremium: boolean,
     promptHash: string,
     reason: AiCreditReason = AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+    amount = 1,
   ) {
     const existingDebit = await this.aiCreditLedgerModel
       .findOne({
@@ -201,7 +217,7 @@ export class AiCreditsService {
     }
 
     const creditState = await this.ensureCreditState(userId, isPremium);
-    if (creditState.balance > 0) {
+    if (creditState.balance >= amount) {
       return;
     }
 
@@ -218,6 +234,7 @@ export class AiCreditsService {
     isPremium: boolean,
     promptHash: string,
     reason: AiCreditReason = AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
+    amount = 1,
   ): Promise<{ balance: number }> {
     const existingDebit = await this.aiCreditLedgerModel
       .findOne({
@@ -238,7 +255,7 @@ export class AiCreditsService {
     }
 
     const creditState = await this.ensureCreditState(userId, isPremium);
-    if (creditState.balance <= 0) {
+    if (creditState.balance < amount) {
       throw new ForbiddenException({
         code: AI_CREDIT_INSUFFICIENT_CODE,
         message:
@@ -252,7 +269,7 @@ export class AiCreditsService {
       await this.aiCreditLedgerModel.create({
         userId,
         reason,
-        delta: -1,
+        delta: -amount,
         flowId,
         promptHash,
       });
@@ -276,23 +293,56 @@ export class AiCreditsService {
       throw error;
     }
 
-    // Wallet'ı koşullu atomik $inc ile düşür: önce grant kovası, yoksa topup.
-    let updatedWallet = await this.aiCreditWalletModel
-      .findOneAndUpdate(
-        { userId, grantCredits: { $gt: 0 } },
-        { $inc: { grantCredits: -1, balance: -1 } },
-        { new: true },
-      )
-      .exec();
-
-    if (!updatedWallet) {
+    // Wallet'ı TEK atomik pipeline update ile düşür: önce grant kovasından
+    // (grantTake = min(grantCredits, amount)), kalanı topup kovasından
+    // (topupTake = amount - grantTake). amount=1 çağıranlar için bu, eski
+    // iki adımlı (önce grant $gt:0, yoksa topup $gt:0) akışla BİREBİR aynı
+    // sonucu üretir — yalnızca tek bir atomik komuta indirgenmiş halidir,
+    // bu yüzden kısmi bir grant+topup karışık düşüm de (amount>1) race-safe.
+    // Her iki alanın yeni değeri de aynı $set aşamasında, orijinal (stage
+    // öncesi) grantCredits'e göre hesaplanır — aggregation $set/$addFields
+    // semantiğinde bir stage'in alanları birbirinin YENİ değerini görmez.
+    let updatedWallet: { balance: number } | null = null;
+    try {
       updatedWallet = await this.aiCreditWalletModel
         .findOneAndUpdate(
-          { userId, topupCredits: { $gt: 0 } },
-          { $inc: { topupCredits: -1, balance: -1 } },
-          { new: true },
+          { userId, balance: { $gte: amount } },
+          [
+            {
+              $set: {
+                grantCredits: {
+                  $subtract: [
+                    '$grantCredits',
+                    { $min: ['$grantCredits', amount] },
+                  ],
+                },
+                topupCredits: {
+                  $subtract: [
+                    '$topupCredits',
+                    {
+                      $subtract: [amount, { $min: ['$grantCredits', amount] }],
+                    },
+                  ],
+                },
+                balance: { $subtract: ['$balance', amount] },
+              },
+            },
+          ],
+          // Mongoose 9: aggregation pipeline'lı update için updatePipeline zorunlu;
+          // eksikse "Cannot pass an array to query updates" fırlatır (canlı testte 500).
+          { new: true, updatePipeline: true },
         )
         .exec();
+    } catch (error) {
+      // Cüzdan güncellemesi fırlatırsa ledger kaydı yetim kalmasın: telafi sil, yeniden fırlat.
+      try {
+        await this.aiCreditLedgerModel
+          .deleteOne({ userId, reason, flowId })
+          .exec();
+      } catch {
+        // telafi başarısız olsa da asıl hata yüzeye çıksın
+      }
+      throw error;
     }
 
     if (!updatedWallet) {

@@ -1,6 +1,6 @@
 import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
-import type { LocalizedText } from "@zikirmatik/shared";
+import type { LocalizedText, VirdSlotKey } from "@zikirmatik/shared";
 import { AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
 
 export type CreateAiRecommendationPayload = {
@@ -188,6 +188,79 @@ export async function getAiDailyQuota(accessToken?: string): Promise<AiDailyQuot
 export async function listAiRecommendations(accessToken?: string) {
   return requestJson<BackendAiRecommendation[]>("/v1/ai/recommendations", {
     method: "GET",
+    accessToken
+  });
+}
+
+// --- AI Vird Programı (POST /v1/ai/vird-programs) — sözleşme: docs/vird-programi.md
+// §3 + apps/api/src/modules/ai/{dto/create-ai-vird-program.dto.ts,ai-vird.service.ts}.
+// `userId` payload'da YOKTUR (sunucu @CurrentUserId() ile JWT'den okur) — yukarıdaki
+// CreateAiRecommendationPayload.userId deseninden BİLİNÇLİ bir sapma (bkz. dosya başı
+// notu create-ai-vird-program.dto.ts). 3 kredi (VIRD_PROGRAM_CREDIT_COST); hata kodları
+// AI_CREDIT_INSUFFICIENT_CODE / AI_UNAVAILABLE_CODE ile aynı (yukarıda tanımlı).
+
+export type CreateAiVirdProgramPayload = {
+  flowId: string;
+  freeText?: string;
+  durationDays: 7 | 14 | 30;
+  slots: VirdSlotKey[];
+  prayerSelection?: number[];
+  locale?: "tr" | "en";
+};
+
+export type AiVirdProgramPreviewItem = {
+  dhikrId: string;
+  /** Sunucu her zaman dhikr.name.tr döner (bkz. AiVirdService.buildPreview) — tek locale'lik düz metin, LocalizedText DEĞİL. */
+  name: string;
+  target: number;
+};
+
+export type AiVirdProgramPreviewPhase = {
+  fromDay: number;
+  /** null = bir sonraki faza/sonsuza dek sürer. */
+  toDay: number | null;
+  note?: string;
+  slots: Partial<Record<VirdSlotKey, AiVirdProgramPreviewItem[]>>;
+};
+
+export type AiVirdProgramPreview = {
+  title: string;
+  summary: string;
+  durationDays: number;
+  phases: AiVirdProgramPreviewPhase[];
+};
+
+export type CreateAiVirdProgramResponse =
+  | { kind: "offTopic"; message: string }
+  | {
+      kind: "program";
+      programId: string;
+      program: AiVirdProgramPreview;
+      remainingCredits: number;
+    };
+
+export type AiVirdOffTopicResponse = Extract<CreateAiVirdProgramResponse, { kind: "offTopic" }>;
+
+export function isAiVirdProgramOffTopicResponse(
+  response: CreateAiVirdProgramResponse
+): response is AiVirdOffTopicResponse {
+  return response.kind === "offTopic";
+}
+
+/**
+ * `POST /v1/ai/vird-programs` — üretilen program her zaman `draft` olarak
+ * kaydedilir (aktivasyon için bkz. features/vird/services/vird-api-client.ts
+ * activateVirdProgram). Aynı `flowId` ile ikinci çağrı agent'ı yeniden
+ * çalıştırmaz/kredi düşmez (idempotent) — 503 (AI_UNAVAILABLE_CODE) sonrası
+ * aynı flowId ile tekrar denemek güvenlidir.
+ */
+export async function createAiVirdProgram(
+  payload: CreateAiVirdProgramPayload,
+  accessToken?: string
+): Promise<CreateAiVirdProgramResponse> {
+  return requestJson<CreateAiVirdProgramResponse>("/v1/ai/vird-programs", {
+    method: "POST",
+    body: payload,
     accessToken
   });
 }

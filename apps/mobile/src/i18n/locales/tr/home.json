@@ -24,7 +24,16 @@
   },
   "targetModal": {
     "title": "Yeni hedef belirle",
-    "placeholder": "Hedef sayısı"
+    "placeholder": "Hedef sayısı",
+    "lapSizeLabel": "Tur boyu",
+    "lapSizeCustomOption": "Özel",
+    "lapSizeCustomPlaceholder": "Tur boyu (ör. 50)"
+  },
+  "lapIndicator": {
+    "label": "{{lap}}. tur"
+  },
+  "tesbihLock": {
+    "message": "Tesbih modu Premium ile açılır."
   },
   "targetDowngradeModal": {
     "title": "Sayım kırpılacak",
@@ -48,7 +57,8 @@
   "toast": {
     "tapAnywhere": "Ekranın her yerine dokunarak sayabilirsin",
     "tapCircleOnly": "Sadece yuvarlağa basınca sayar",
-    "autoSaved": "Hedefe ulaştın, otomatik kaydedildi"
+    "autoSaved": "Hedefe ulaştın, otomatik kaydedildi",
+    "lapCompleted": "{{lap}}. tur tamamlandı"
   },
   "resetModal": {
     "title": "Sayacı Sıfırla",

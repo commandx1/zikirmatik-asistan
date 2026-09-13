@@ -3,6 +3,9 @@ import { useTranslation } from "react-i18next";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
 import { resolveLocalizedText } from "../../store/dhikr-store";
+import { useVirdStore } from "../../store/vird-store";
+import { VirdSegmentControl } from "../vird/components/vird-segment-control";
+import { VirdSetupPanel } from "../vird/components/vird-setup-panel";
 import { ZikirFilterTabs } from "./components/zikir-filter-tabs";
 import { ZikirFormModal } from "./components/zikir-form-modal";
 import { ZikirListSection } from "./components/zikir-list-section";
@@ -39,6 +42,7 @@ function FocusContent() {
     saveAndContinueUnsavedTransition,
     continueWithoutSavingUnsavedTransition
   } = useZikirlerim();
+  const focusSegment = useVirdStore((state) => state.focusSegment);
 
   const initialValues = {
     name: (editingDhikr?.name ? resolveLocalizedText(editingDhikr.name, locale) : "") ||
@@ -52,9 +56,16 @@ function FocusContent() {
     <PageLayout>
       <View className="relative flex-1 w-full">
         <ZikirlerimHeader />
+        <VirdSegmentControl />
         <PageScrollView contentInnerClassName="w-full" bottomPadding={32} onRefresh={refresh} refreshing={isRefreshing}>
-          <ZikirFilterTabs />
-          <ZikirListSection />
+          {focusSegment === "vird" ? (
+            <VirdSetupPanel />
+          ) : (
+            <>
+              <ZikirFilterTabs />
+              <ZikirListSection />
+            </>
+          )}
         </PageScrollView>
         <ZikirFormModal
           visible={isUpdateOpen}

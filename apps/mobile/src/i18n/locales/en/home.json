@@ -24,7 +24,16 @@
   },
   "targetModal": {
     "title": "Set a new target",
-    "placeholder": "Target count"
+    "placeholder": "Target count",
+    "lapSizeLabel": "Lap size",
+    "lapSizeCustomOption": "Custom",
+    "lapSizeCustomPlaceholder": "Lap size (e.g. 50)"
+  },
+  "lapIndicator": {
+    "label": "Lap {{lap}}"
+  },
+  "tesbihLock": {
+    "message": "Tasbih mode unlocks with Premium."
   },
   "targetDowngradeModal": {
     "title": "Your count will be trimmed",
@@ -48,7 +57,8 @@
   "toast": {
     "tapAnywhere": "You can count by tapping anywhere on the screen",
     "tapCircleOnly": "Only counts when you tap the circle",
-    "autoSaved": "Target reached, saved automatically"
+    "autoSaved": "Target reached, saved automatically",
+    "lapCompleted": "Lap {{lap}} completed"
   },
   "resetModal": {
     "title": "Reset Counter",

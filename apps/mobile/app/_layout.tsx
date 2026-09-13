@@ -20,13 +20,16 @@ import { NotificationPermissionModal } from "../src/components/ui/notification-p
 import { NotificationPermissionDeniedModal } from "../src/components/ui/notification-permission-denied-modal";
 import { AuthPromptModal } from "../src/features/auth/components/auth-prompt-modal";
 import { fetchMinRequiredVersion, isUpdateRequired } from "../src/lib/app-config";
+import { initAnalytics } from "../src/lib/analytics";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useGuestMigration } from "../src/features/auth/hooks/use-guest-migration";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
+import { useVirdBackendSync } from "../src/features/vird/hooks/use-vird-backend-sync";
 import { useNotificationTapRouting } from "../src/features/notifications/hooks/use-notification-tap-routing";
 import { usePushDeviceRegistration } from "../src/features/notifications/hooks/use-push-device-registration";
 import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
 import { useEventNotificationSync } from "../src/features/notifications/hooks/use-event-notification-sync";
+import { useVirdReminderSync } from "../src/features/vird/hooks/use-vird-reminder-sync";
 import { useDailyReminderSync } from "../src/features/notifications/hooks/use-daily-reminder-sync";
 import { useTourNotificationOptIn } from "../src/features/tour/hooks/use-tour-notification-opt-in";
 import { useStreakReminderSync } from "../src/features/home/hooks/use-streak-reminder-sync";
@@ -66,14 +69,18 @@ function RootProviders({ children }: { children: ReactNode }) {
   });
   useAuthSessionSync();
   // Order matters: migration drains the pending guest snapshot and gates
-  // useDhikrBackendSync until it completes (see useGuestMigrationStore).
+  // useDhikrBackendSync (ve aynı gate'i paylaşan useVirdBackendSync)
+  // tamamlanana kadar (bkz. useGuestMigrationStore).
   useGuestMigration();
   useDhikrBackendSync();
+  useVirdBackendSync();
   useUserPreferencesSync();
   usePushDeviceRegistration();
+  initAnalytics();
   useNotificationTapRouting();
   useStreakReminderSync();
   useEventNotificationSync();
+  useVirdReminderSync();
   useDailyReminderSync();
   const promptForDailyReminder = useTourNotificationOptIn();
 

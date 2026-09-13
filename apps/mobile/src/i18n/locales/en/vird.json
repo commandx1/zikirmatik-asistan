@@ -1,0 +1,148 @@
+{
+  "home": {
+    "cardTitle": "Today's Vird",
+    "emptyTitle": "You don't have a vird program yet",
+    "emptySubtitle": "Create a vird to track your daily dhikrs.",
+    "emptyCta": "Set up a vird",
+    "streakLabel": "{{count}}-day streak",
+    "streakStart": "Start your streak today",
+    "dayCompleteBadge": "Today's vird is complete",
+    "completionPercent": "{{percent}}% complete",
+    "noItemsToday": "Nothing scheduled for today.",
+    "itemFallbackName": "Dhikr"
+  },
+  "slots": {
+    "morning": "Morning",
+    "prayer": "Prayer time",
+    "evening": "Evening",
+    "night": "Night",
+    "free": "Free"
+  },
+  "prayerIndex": {
+    "1": "Fajr",
+    "2": "Dhuhr",
+    "3": "Asr",
+    "4": "Maghrib",
+    "5": "Isha"
+  },
+  "programKind": {
+    "routine": "Routine",
+    "journey": "Journey"
+  },
+  "programStatus": {
+    "draft": "Draft",
+    "active": "Active",
+    "paused": "Paused",
+    "completed": "Completed",
+    "archived": "Archived"
+  },
+  "programSource": {
+    "manual": "Created manually",
+    "template": "From a template",
+    "ai": "Created with AI"
+  },
+  "segment": {
+    "vird": "Vird",
+    "list": "My Dhikrs"
+  },
+  "setup": {
+    "title": "Vird",
+    "newProgramButton": "New program",
+    "editButton": "Edit",
+    "noActiveProgram": "You don't have an active vird program.",
+    "activateHint": "You can activate one of the programs below.",
+    "dayLabelRoutine": "Day {{day}}",
+    "dayLabelJourney": "Day {{day}} of {{total}}",
+    "targetSuffix": "{{count}}x",
+    "otherProgramsHeading": "Other programs",
+    "pauseAction": "Pause",
+    "resumeAction": "Activate",
+    "deleteAction": "Delete",
+    "deleteConfirmTitle": "Delete program",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{title}}\"?",
+    "swapActiveTitle": "Switch active program",
+    "swapActiveMessage": "On the free plan you can have up to 1 active vird program. Pause \"{{current}}\" and activate \"{{next}}\" instead?",
+    "swapActiveConfirm": "Switch and start",
+    "swapActiveSubmitting": "Switching...",
+    "swapActiveUpgrade": "Go premium"
+  },
+  "editor": {
+    "titleNew": "New Vird Program",
+    "titleEdit": "Edit Vird",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g. My Morning Vird",
+    "kindNote": "Type: {{kind}}",
+    "addDhikrButton": "Add dhikr",
+    "slotEmpty": "No dhikr in this slot yet.",
+    "prayerSelectionHeading": "After which prayer times?",
+    "pickerTitle": "Choose a dhikr",
+    "searchPlaceholder": "Search dhikr",
+    "searchLoading": "Loading...",
+    "searchLoadError": "Couldn't load dhikrs.",
+    "searchEmpty": "No results found.",
+    "alreadyAdded": "Added",
+    "addAction": "Add",
+    "saveButton": "Save",
+    "savingButton": "Saving...",
+    "errors": {
+      "titleRequired": "Please enter a title.",
+      "atLeastOneDhikr": "Add at least one dhikr to a slot.",
+      "activateFailed": "The program was saved but couldn't be activated.",
+      "saveFailed": "Couldn't save the program. Please try again."
+    }
+  },
+  "templates": {
+    "shelfTitle": "Vird Programs",
+    "loadError": "Couldn't load templates.",
+    "premiumBadge": "Premium",
+    "untitledFallback": "Vird Program",
+    "dayCountLabel": "{{count}} days",
+    "detail": {
+      "phasesHeading": "Phases",
+      "dayRangeLabel": "Days {{from}}-{{to}}",
+      "dayRangeOpenLabel": "From day {{from}}",
+      "startButton": "Start program",
+      "startingButton": "Starting...",
+      "startFailed": "Couldn't start the program. Please try again."
+    }
+  },
+  "reminders": {
+    "channelName": "Vird Reminders",
+    "settingsTitle": "Reminders",
+    "settingsSubtitle": "Get notified when a slot starts.",
+    "requestingPermission": "Requesting notification permission...",
+    "premiumRequiredNote": "Reminders are a premium feature.",
+    "slotsHeading": "Which slots should remind you?",
+    "provinceLabel": "Province",
+    "provincePlaceholder": "Choose a province",
+    "provinceModalTitle": "Choose a province",
+    "provinceSearchPlaceholder": "Search province",
+    "provinceSearchEmpty": "No province found.",
+    "previewHeading": "Today's approximate times",
+    "approxNote": "Times are approximate.",
+    "morning": {
+      "title": "Morning Vird",
+      "body": "Your morning vird is waiting for you."
+    },
+    "prayer": {
+      "title": "Vird Reminder",
+      "body": "Don't forget to complete this prayer time's vird."
+    },
+    "evening": {
+      "title": "Evening Vird",
+      "body": "Your evening vird is waiting for you."
+    },
+    "night": {
+      "title": "Night Vird",
+      "body": "Your night vird is waiting for you."
+    }
+  },
+  "errors": {
+    "freeLimitDhikrs": "On the free plan, a manual vird program can include up to 3 different dhikrs. Upgrade to premium to add more.",
+    "freeLimitActive": "On the free plan, you can have up to 1 active vird program. Upgrade to premium to activate more.",
+    "premiumRequired": "This feature (reminders, templates, or creating a program with AI) requires premium membership.",
+    "premiumMaxActivePrograms": "You can have up to 10 active vird programs.",
+    "serviceUnavailable": "The vird service is unavailable right now. Please try again later.",
+    "serviceUnreachable": "Check your internet connection and try again."
+  }
+}

@@ -39,7 +39,7 @@ function Section({
 export function StatsScreen() {
   const { t } = useTranslation("stats");
   const { tokens } = useThemeTokens();
-  const { data, isLoading, isRefreshing, error, isPremium, refresh } = useStats();
+  const { data, isLoading, isRefreshing, error, locked, refresh } = useStats();
   const guestMode = useAuthStore((s) => s.guestMode);
   const authStatus = useAuthStore((s) => s.status);
   const premiumSheet = usePremiumSheet();
@@ -84,37 +84,37 @@ export function StatsScreen() {
           </Section>
 
           <Section title={t("stats:screen.sections.activityCalendar.title")} subtitle={t("stats:screen.sections.activityCalendar.subtitle")}>
-            <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
+            <PremiumLockOverlay locked={locked} onUnlock={premiumSheet.open}>
               <ActivityHeatmap heatmap={data.heatmap} />
             </PremiumLockOverlay>
           </Section>
 
           <Section title={t("stats:screen.sections.periodComparison.title")} subtitle={t("stats:screen.sections.periodComparison.subtitle")}>
-            <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
+            <PremiumLockOverlay locked={locked} onUnlock={premiumSheet.open}>
               <PeriodComparison comparison={data.comparison} />
             </PremiumLockOverlay>
           </Section>
 
           <Section title={t("stats:screen.sections.activeDays.title")} subtitle={t("stats:screen.sections.activeDays.subtitle")}>
-            <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
+            <PremiumLockOverlay locked={locked} onUnlock={premiumSheet.open}>
               <WeekdayDistribution distribution={data.weekdayDistribution} />
             </PremiumLockOverlay>
           </Section>
 
           <Section title={t("stats:screen.sections.activeHours.title")} subtitle={t("stats:screen.sections.activeHours.subtitle")}>
-            <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
+            <PremiumLockOverlay locked={locked} onUnlock={premiumSheet.open}>
               <HourDistribution distribution={data.hourDistribution} />
             </PremiumLockOverlay>
           </Section>
 
           <Section title={t("stats:screen.sections.sourceDistribution.title")} subtitle={t("stats:screen.sections.sourceDistribution.subtitle")}>
-            <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
+            <PremiumLockOverlay locked={locked} onUnlock={premiumSheet.open}>
               <SourceDonut breakdown={data.sourceBreakdown} />
             </PremiumLockOverlay>
           </Section>
 
           <Section title={t("stats:screen.sections.topDhikrs.title")} subtitle={t("stats:screen.sections.topDhikrs.subtitle")}>
-            <PremiumLockOverlay locked={!isPremium} onUnlock={premiumSheet.open}>
+            <PremiumLockOverlay locked={locked} onUnlock={premiumSheet.open}>
               <TopDhikrsList items={data.topDhikrs} />
             </PremiumLockOverlay>
           </Section>
@@ -142,6 +142,8 @@ export function StatsScreen() {
             if (purchased) premiumSheet.close();
           });
         }}
+        subscriptionPrices={premiumSheet.subscriptionPrices}
+        source="stats"
       />
     </PageLayout>
   );

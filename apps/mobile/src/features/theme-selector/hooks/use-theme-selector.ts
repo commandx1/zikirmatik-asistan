@@ -1,6 +1,5 @@
 import { resolveThemeTokens, type ThemeTokens, type ThemeName } from "@zikirmatik/shared";
 import { useEffect, useMemo, useState } from "react";
-import { i18n } from "../../../i18n";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useProfileStore } from "../../../store/profile-store";
 import { THEME_LABELS } from "../../../theme/labels";
@@ -207,7 +206,6 @@ export function useThemeSelector() {
   const { themeName, setThemeName } = useThemePreferences();
   const isPremium = useProfileStore((s) => s.isPremium);
   const [draftThemeName, setDraftThemeName] = useState<ThemeName>(themeName);
-  const [lockedThemeMessage, setLockedThemeMessage] = useState<string>();
 
   useEffect(() => {
     setDraftThemeName(themeName);
@@ -237,19 +235,12 @@ export function useThemeSelector() {
       return;
     }
 
-    if (selected.isPremiumLocked) {
-      setLockedThemeMessage(i18n.t("theme-selector:screen.lockedThemeMessage"));
-      return;
-    }
-
-    setLockedThemeMessage(undefined);
     setDraftThemeName(themeId);
   };
 
   const saveThemeChanges = () => {
     if (hasThemeChanges && canSave) {
       setThemeName(draftThemeName);
-      setLockedThemeMessage(undefined);
     }
   };
 
@@ -262,7 +253,6 @@ export function useThemeSelector() {
     setDraftThemeName: onSelectTheme,
     hasThemeChanges,
     canSave,
-    lockedThemeMessage,
     saveThemeChanges
   };
 }

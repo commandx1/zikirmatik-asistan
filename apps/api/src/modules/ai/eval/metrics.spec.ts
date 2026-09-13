@@ -3,8 +3,10 @@ import {
   rate,
   summarizeRehber,
   summarizeChat,
+  summarizeVird,
   type RehberCaseResult,
   type ChatCaseResult,
+  type VirdCaseResult,
 } from './metrics';
 
 describe('percentile', () => {
@@ -229,5 +231,81 @@ describe('summarizeChat', () => {
       correct: 1,
       missing: 1,
     });
+  });
+});
+
+function virdCase(overrides: Partial<VirdCaseResult>): VirdCaseResult {
+  return {
+    id: 'v1',
+    category: 'exam',
+    outcomeKind: 'program',
+    expectKind: 'program',
+    kindMatch: true,
+    latencyMs: 150,
+    ...overrides,
+  };
+}
+
+describe('summarizeVird', () => {
+  it('boş vaka listesinde oranlar 0 olur', () => {
+    const summary = summarizeVird([]);
+    expect(summary.total).toBe(0);
+    expect(summary.kindMatchRate).toBe(0);
+    expect(summary.phaseCountOkRate).toBe(0);
+    expect(summary.slotsCoveredOkRate).toBe(0);
+    expect(summary.tagsAnyHitRate).toBe(0);
+    expect(summary.latencyP50).toBe(0);
+  });
+
+  it('kindMatchRate ve byKind sayımını doğru hesaplar', () => {
+    const cases = [
+      virdCase({ id: '1', outcomeKind: 'program', kindMatch: true }),
+      virdCase({
+        id: '2',
+        outcomeKind: 'offTopic',
+        expectKind: 'offTopic',
+        kindMatch: true,
+      }),
+      virdCase({
+        id: '3',
+        outcomeKind: 'error',
+        expectKind: 'program',
+        kindMatch: false,
+        error: 'AI_UNAVAILABLE',
+      }),
+    ];
+    const summary = summarizeVird(cases);
+    expect(summary.total).toBe(3);
+    expect(summary.byKind).toEqual({ program: 1, offTopic: 1, error: 1 });
+    expect(summary.kindMatchRate).toBeCloseTo(2 / 3, 5);
+    expect(summary.offTopicRate).toBeCloseTo(1 / 3, 5);
+    expect(summary.errorRate).toBeCloseTo(1 / 3, 5);
+  });
+
+  it('phaseCountOkRate yalnızca phaseCountOk tanımlı vakaları hesaba katar', () => {
+    const cases = [
+      virdCase({ id: '1', phaseCountOk: true }),
+      virdCase({ id: '2', phaseCountOk: false }),
+      virdCase({ id: '3' }), // faz aralığı beklenmiyor — hesaba katılmaz
+    ];
+    expect(summarizeVird(cases).phaseCountOkRate).toBeCloseTo(0.5, 5);
+  });
+
+  it('slotsCoveredOkRate yalnızca slotsCoveredOk tanımlı vakaları hesaba katar', () => {
+    const cases = [
+      virdCase({ id: '1', slotsCoveredOk: true }),
+      virdCase({ id: '2', slotsCoveredOk: true }),
+      virdCase({ id: '3', slotsCoveredOk: false }),
+    ];
+    expect(summarizeVird(cases).slotsCoveredOkRate).toBeCloseTo(2 / 3, 5);
+  });
+
+  it('tagsAnyHitRate yalnızca tagsAnyHit tanımlı vakaları hesaba katar', () => {
+    const cases = [
+      virdCase({ id: '1', tagsAnyHit: true }),
+      virdCase({ id: '2', tagsAnyHit: false }),
+      virdCase({ id: '3' }),
+    ];
+    expect(summarizeVird(cases).tagsAnyHitRate).toBeCloseTo(0.5, 5);
   });
 });

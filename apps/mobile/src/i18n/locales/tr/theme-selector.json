@@ -4,8 +4,7 @@
     "subtitle": "Uygulamanın görünümünü kişiselleştir",
     "premiumActiveBanner": "Premium üyelik aktif: tüm temalar açık.",
     "premiumLockedBanner": "Bazı temalar Premium ile açılır.",
-    "saveChanges": "Değişiklikleri Kaydet",
-    "lockedThemeMessage": "Bu tema Premium üyelikte açılır."
+    "saveChanges": "Değişiklikleri Kaydet"
   },
   "previewCard": {
     "preview": "Önizleme",
@@ -14,5 +13,25 @@
   "gridSection": {
     "readyThemes": "Hazır Temalar",
     "premiumBadge": "Premium"
+  },
+  "counterStyle": {
+    "title": "Sayaç görünümü",
+    "halka": "Halka",
+    "tesbih": "Tesbih",
+    "materialLabel": "Malzeme",
+    "materials": {
+      "kehribar": "Kehribar",
+      "oltuTasi": "Oltu Taşı",
+      "zeytinCekirdegi": "Zeytin Çekirdeği",
+      "gumus": "Gümüş"
+    },
+    "soundPack": {
+      "title": "Tık sesi",
+      "options": {
+        "off": "Kapalı",
+        "tik": "Tık",
+        "ahsap": "Ahşap"
+      }
+    }
   }
 }

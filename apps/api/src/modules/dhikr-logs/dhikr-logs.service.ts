@@ -8,12 +8,20 @@ import { Types, type Model } from 'mongoose';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
 import { StreaksService } from '../streaks/streaks.service';
 import { User, type UserDocument } from '../users/schemas/user.schema';
+import { VirdProgressService } from '../vird/vird-progress.service';
+import type { VirdSlotKey } from '../vird/vird.types';
 import { CreateDhikrLogBulkDto } from './dto/create-dhikr-log-bulk.dto';
 import { CreateDhikrLogDto } from './dto/create-dhikr-log.dto';
 import { DeleteDhikrLogsByDhikrDto } from './dto/delete-dhikr-logs-by-dhikr.dto';
 import { QueryDhikrLogsDto } from './dto/query-dhikr-logs.dto';
 import { SetDhikrFavoriteDto } from './dto/set-dhikr-favorite.dto';
 import { DhikrLog, type DhikrLogDocument } from './schemas/dhikr-log.schema';
+
+type VirdLogRef = {
+  virdProgramId: Types.ObjectId;
+  virdSlot: VirdSlotKey;
+  virdPrayerIndex?: number;
+};
 
 @Injectable()
 export class DhikrLogsService {
@@ -23,6 +31,7 @@ export class DhikrLogsService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Dhikr.name) private readonly dhikrModel: Model<DhikrDocument>,
     private readonly streaksService: StreaksService,
+    private readonly virdProgressService: VirdProgressService,
   ) {}
 
   /**
@@ -38,6 +47,73 @@ export class DhikrLogsService {
     } catch {
       // intentionally swallowed
     }
+  }
+
+  /**
+   * Best-effort vird ilerleme türetimi. safeRecalcStreak ile aynı desen:
+   * asla throw etmez — bir vird türetim hatası dhikr log yazımını
+   * etkilememelidir.
+   */
+  private async safeApplyVirdProgress(input?: {
+    userId: string;
+    virdProgramId: string;
+    date: string;
+  }) {
+    if (!input) {
+      return;
+    }
+    try {
+      await this.virdProgressService.applyLogWrite(input);
+    } catch {
+      // intentionally swallowed
+    }
+  }
+
+  /**
+   * dhikr_logs upsert anahtarını kurar. `vird` verilmişse (virdProgramId +
+   * virdSlot) filtreye virdProgramId/virdSlot/virdPrayerIndex eklenir — aynı
+   * zikrin farklı vird dilimlerinde (veya prayer diliminde farklı vakitlerde)
+   * çakışmadan ayrı bir belge olarak tutulmasını sağlar. `vird` verilmezse
+   * filtreye AYRICA `virdProgramId: {$exists:false}` eklenir — sade (vird
+   * etiketsiz) bir yazımın, aynı gün aynı zikir için önceden yazılmış vird
+   * etiketli bir belgeyle eşleşip onun üzerine yazmasını engeller (iki akış
+   * her zaman ayrı belge kalır).
+   */
+  private buildLogFilter(
+    userId: Types.ObjectId,
+    date: string,
+    dhikrRef: { dhikrObjectId?: Types.ObjectId; customDhikrId?: string },
+    vird?: VirdLogRef,
+  ): Record<string, unknown> {
+    const filter: Record<string, unknown> = { userId, date };
+    if (dhikrRef.dhikrObjectId) {
+      filter.dhikrId = dhikrRef.dhikrObjectId;
+    } else if (dhikrRef.customDhikrId) {
+      filter.customDhikrId = dhikrRef.customDhikrId;
+    }
+    if (vird) {
+      filter.virdProgramId = vird.virdProgramId;
+      filter.virdSlot = vird.virdSlot;
+      filter.virdPrayerIndex = vird.virdPrayerIndex ?? null;
+    } else {
+      filter.virdProgramId = { $exists: false };
+    }
+    return filter;
+  }
+
+  private resolveVirdRef(payload: {
+    virdProgramId?: string;
+    virdSlot?: VirdSlotKey;
+    virdPrayerIndex?: number;
+  }): VirdLogRef | undefined {
+    if (!hasNonEmptyString(payload.virdProgramId) || !payload.virdSlot) {
+      return undefined;
+    }
+    return {
+      virdProgramId: this.asObjectId(payload.virdProgramId),
+      virdSlot: payload.virdSlot,
+      virdPrayerIndex: payload.virdPrayerIndex,
+    };
   }
 
   async create(payload: CreateDhikrLogDto) {
@@ -68,15 +144,13 @@ export class DhikrLogsService {
       dhikrObjectId ? [dhikrObjectId] : [],
     );
 
-    const filter: Record<string, unknown> = {
-      userId: userObjectId,
-      date: payload.date,
-    };
-    if (dhikrObjectId) {
-      filter.dhikrId = dhikrObjectId;
-    } else if (customDhikrId) {
-      filter.customDhikrId = customDhikrId;
-    }
+    const vird = this.resolveVirdRef(payload);
+    const filter = this.buildLogFilter(
+      userObjectId,
+      payload.date,
+      { dhikrObjectId, customDhikrId },
+      vird,
+    );
 
     // A day holds at most one log per (user, dhikr), so a later write for the
     // same day overwrites the earlier one. `isCompleted` must not follow that
@@ -114,6 +188,18 @@ export class DhikrLogsService {
     if (customDhikrId) {
       setOnInsert.customDhikrId = customDhikrId;
     }
+    if (vird) {
+      // Vird alanları YALNIZ $set'te olmalı: aynı yol hem $set hem $setOnInsert
+      // içinde geçerse MongoDB upsert'te "would create a conflict" (kod 40)
+      // fırlatır. Filtre zaten insert'te bu alanları tohumlar; $set hepsini
+      // (prayerIndex için null dahil, filtreyle aynı değer) açıkça yazar.
+      updateSet.virdProgramId = vird.virdProgramId;
+      updateSet.virdSlot = vird.virdSlot;
+      updateSet.virdPrayerIndex = vird.virdPrayerIndex ?? null;
+      if (typeof payload.virdDayIndex === 'number') {
+        updateSet.virdDayIndex = payload.virdDayIndex;
+      }
+    }
 
     const created = await this.dhikrLogModel
       .findOneAndUpdate(
@@ -132,6 +218,15 @@ export class DhikrLogsService {
       .exec();
 
     await this.safeRecalcStreak(payload.userId);
+    await this.safeApplyVirdProgress(
+      vird
+        ? {
+            userId: payload.userId,
+            virdProgramId: vird.virdProgramId.toString(),
+            date: payload.date,
+          }
+        : undefined,
+    );
 
     return created;
   }
@@ -152,48 +247,89 @@ export class DhikrLogsService {
     );
     await this.ensureReferencesExist(userObjectIds, dhikrObjectIds);
 
-    const operations = payload.items.map((item, index) => ({
-      updateOne: {
-        filter: {
-          userId: userObjectIds[index],
-          dhikrId: dhikrObjectIds[index],
-          date: item.date,
+    const virdRefs = payload.items.map((item) => this.resolveVirdRef(item));
+    const filters = payload.items.map((item, index) =>
+      this.buildLogFilter(
+        userObjectIds[index],
+        item.date,
+        { dhikrObjectId: dhikrObjectIds[index] },
+        virdRefs[index],
+      ),
+    );
+
+    const operations = payload.items.map((item, index) => {
+      const vird = virdRefs[index];
+      const set: Record<string, unknown> = {
+        count: item.count,
+        targetCount: item.targetCount,
+        sessionDuration: item.sessionDuration ?? 0,
+        source: item.source ?? 'manual',
+        isCompleted: item.isCompleted ?? false,
+      };
+      const setOnInsert: Record<string, unknown> = {
+        userId: userObjectIds[index],
+        dhikrId: dhikrObjectIds[index],
+        date: item.date,
+      };
+      if (vird) {
+        set.virdProgramId = vird.virdProgramId;
+        set.virdSlot = vird.virdSlot;
+        set.virdPrayerIndex = vird.virdPrayerIndex;
+        if (typeof item.virdDayIndex === 'number') {
+          set.virdDayIndex = item.virdDayIndex;
+        }
+        setOnInsert.virdProgramId = vird.virdProgramId;
+        setOnInsert.virdSlot = vird.virdSlot;
+        setOnInsert.virdPrayerIndex = vird.virdPrayerIndex;
+      }
+      return {
+        updateOne: {
+          filter: filters[index],
+          update: { $set: set, $setOnInsert: setOnInsert },
+          upsert: true,
         },
-        update: {
-          $set: {
-            count: item.count,
-            targetCount: item.targetCount,
-            sessionDuration: item.sessionDuration ?? 0,
-            source: item.source ?? 'manual',
-            isCompleted: item.isCompleted ?? false,
-          },
-          $setOnInsert: {
-            userId: userObjectIds[index],
-            dhikrId: dhikrObjectIds[index],
-            date: item.date,
-          },
-        },
-        upsert: true,
-      },
-    }));
+      };
+    });
 
     const result = await this.dhikrLogModel.bulkWrite(operations, {
       ordered: false,
     });
 
-    const keys = payload.items.map((item, index) => ({
-      userId: userObjectIds[index],
-      dhikrId: dhikrObjectIds[index],
-      date: item.date,
-    }));
-    const items = await this.dhikrLogModel.find({ $or: keys }).lean().exec();
+    const items = await this.dhikrLogModel.find({ $or: filters }).lean().exec();
 
     await this.safeRecalcStreak(payload.items[0]?.userId);
+    await this.applyVirdProgressForBulk(payload.items, virdRefs);
 
     return {
       insertedCount: result.upsertedCount,
       items,
     };
+  }
+
+  /** Bulk yazımdaki distinct (userId, virdProgramId, date) üçlüleri için
+   * tek tek (best-effort) vird ilerlemesi türetir. */
+  private async applyVirdProgressForBulk(
+    items: CreateDhikrLogDto[],
+    virdRefs: (VirdLogRef | undefined)[],
+  ) {
+    const seen = new Set<string>();
+    for (let index = 0; index < items.length; index += 1) {
+      const vird = virdRefs[index];
+      if (!vird) {
+        continue;
+      }
+      const item = items[index];
+      const key = `${item.userId}:${vird.virdProgramId.toString()}:${item.date}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      await this.safeApplyVirdProgress({
+        userId: item.userId,
+        virdProgramId: vird.virdProgramId.toString(),
+        date: item.date,
+      });
+    }
   }
 
   async findAll(query: QueryDhikrLogsDto) {

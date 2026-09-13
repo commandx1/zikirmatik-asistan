@@ -77,7 +77,7 @@
         "description": "Suggestions are tailored to your current need, mood and the time of day."
       }
     ],
-    "note": "1 free credit to try it out — see the Premium section for details on credit packages."
+    "note": "You get 1 free credit every day (plus a 3-credit welcome bonus on your first day) — see the Premium section for additional credits."
   },
   "howItWorks": {
     "title": "How Zikirmatik Asistan AI works",
@@ -112,23 +112,23 @@
   },
   "premium": {
     "title": "Zikirmatik Asistan Premium",
-    "subtitle": "Unlock deeper personalization and generous credit packages for AI-assisted features. See the Google Play listing for current pricing.",
+    "subtitle": "Unlock 50 monthly AI Rehber credits, detailed statistics and all themes. See the Google Play listing for current pricing.",
     "note": "For up-to-date pricing, please check the app's Google Play listing.",
     "table": {
       "headers": ["Feature", "Free", "Premium"],
       "rows": [
         ["Dhikr counter & collections", "Included", "Included"],
         ["Daily & special-day reminders", "Included", "Included"],
-        ["Streaks & statistics", "Included", "Included"],
+        ["Streaks & statistics", "Basic", "Detailed"],
         ["Google Sign-In cloud sync", "Included", "Included"],
-        ["AI Rehber credits", "1 free credit", "Credit packages: 3, 50, 10, 30 or 75"],
-        ["Advanced personalization", "Limited", "Full access"]
+        ["AI Rehber credits", "1 credit/day (+3 on day 1)", "50 credits/month + 10, 30 or 75-credit packs"],
+        ["Themes", "Limited", "All themes"]
       ]
     },
     "credits": {
       "title": "AI Rehber credit packages",
       "description": "Purchase the credit package that fits your needs directly from within the app.",
-      "items": ["1 free credit to try it out", "3 credits", "10 credits", "30 credits", "50 credits", "75 credits"]
+      "items": ["10 credits", "30 credits", "75 credits"]
     },
     "cta": "View plans on Google Play"
   },
@@ -142,11 +142,11 @@
       },
       {
         "question": "Is Zikirmatik Asistan AI free to use?",
-        "answer": "Yes. The core dhikr counter, collections, reminders, streaks and Google Sign-In sync are free to use. Optional Premium credit packages unlock the AI Rehber feature and additional personalization."
+        "answer": "Yes. The dhikr counter, the entire library of 541 dhikr, all collections, reminders, streaks and Google Sign-In sync are completely free. Premium unlocks 50 monthly AI Rehber credits, detailed statistics and all themes."
       },
       {
         "question": "What is AI Rehber?",
-        "answer": "AI Rehber is an optional AI-assisted guidance feature. You start with 1 free credit, and additional credit packages (3, 10, 30, 50 or 75) can be purchased from within the app on Google Play."
+        "answer": "AI Rehber is an optional AI-assisted guidance feature. You get 1 free credit every day (plus a 3-credit welcome bonus on your first day). Premium gives you 50 credits a month, and you can also purchase 10, 30 or 75-credit top-up packs from within the app on Google Play."
       },
       {
         "question": "Do I need an account to use the app?",
@@ -261,7 +261,7 @@
       },
       {
         "heading": "4. Premium Credits and Purchases",
-        "body": "The App offers optional Premium credit packages (including options of 3, 10, 30, 50 or 75 credits, in addition to 1 free credit) that unlock the AI Rehber feature. All purchases are processed through Google Play and are subject to Google Play's payment terms and policies. Please see our Refund Policy for details on requesting refunds."
+        "body": "The App gives free users 1 credit per day (plus a 3-credit welcome bonus on the first day), and Premium subscribers 50 credits per month, to use the AI Rehber feature. Optional one-time top-up packs of 10, 30 or 75 credits can also be purchased. All purchases are processed through Google Play and are subject to Google Play's payment terms and policies. Please see our Refund Policy for details on requesting refunds."
       },
       {
         "heading": "5. Acceptable Use",
@@ -303,7 +303,7 @@
     "sections": [
       {
         "heading": "1. Purchases Through Google Play",
-        "body": "All Premium credit package purchases (3, 10, 30, 50 or 75 credits) are processed and billed through Google Play. As a result, refunds are subject to Google Play's own refund policies and timeframes, in addition to the guidance below."
+        "body": "All Premium credit package purchases (10, 30 or 75 credits) are processed and billed through Google Play. As a result, refunds are subject to Google Play's own refund policies and timeframes, in addition to the guidance below."
       },
       {
         "heading": "2. How to Request a Refund",

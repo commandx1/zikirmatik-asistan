@@ -36,13 +36,19 @@ let syncQueue: Promise<unknown> = Promise.resolve();
 export function syncEventNotifications(input?: {
   requestPermission?: boolean;
   now?: Date;
+  // True once this device has a confirmed, working server-side push
+  // registration (see store/push-registration-store.ts). The server now
+  // sends its own kandil-eve/day pushes (apps/api push-campaigns), so local
+  // scheduling of the SAME special-day reminders is skipped to avoid
+  // duplicates — Friday stays local-only either way (no server equivalent).
+  serverPushActive?: boolean;
 }): Promise<{ permissionGranted: boolean; fridayScheduled: boolean; specialDaysScheduled: number }> {
   const next = syncQueue.then(() => runSync(input ?? {}));
   syncQueue = next.catch(() => {});
   return next;
 }
 
-async function runSync(input: { requestPermission?: boolean; now?: Date }) {
+async function runSync(input: { requestPermission?: boolean; now?: Date; serverPushActive?: boolean }) {
   const permissionGranted = await ensureNotificationsPermission(input.requestPermission ?? false);
   if (!permissionGranted) {
     // İzin yoksa mevcut zamanlamaya dokunma — OS zaten teslim etmez.
@@ -50,10 +56,16 @@ async function runSync(input: { requestPermission?: boolean; now?: Date }) {
   }
 
   await ensureAndroidChannel();
+  // Her sync'te önce mevcut Cuma + özel gün bildirimleri iptal edilir; özel
+  // gün için yeniden kurulum aşağıda serverPushActive'e göre koşullanır —
+  // böylece sunucu push'u aktifken eskiler iptal edilmiş olur ama yenisi
+  // kurulmaz (ayrı bir iptal adımına gerek yok).
   await cancelEventNotifications();
 
   await scheduleFriday();
-  const specialDaysScheduled = await scheduleSpecialDays(input.now ?? new Date());
+  const specialDaysScheduled = input.serverPushActive
+    ? 0
+    : await scheduleSpecialDays(input.now ?? new Date());
 
   return { permissionGranted: true, fridayScheduled: true, specialDaysScheduled };
 }

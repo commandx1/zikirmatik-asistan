@@ -56,6 +56,15 @@ export class User {
   @Prop({ type: Boolean, default: true })
   hapticsEnabled!: boolean;
 
+  // hapticsEnabled geriye uyumluluk için korunuyor. hapticsPattern, sayaç
+  // dokunuşlarında hangi haptik desenin çalınacağını belirler.
+  @Prop({
+    type: String,
+    enum: ['off', 'hafif', 'orta', 'tesbih'],
+    default: 'orta',
+  })
+  hapticsPattern!: 'off' | 'hafif' | 'orta' | 'tesbih';
+
   @Prop(
     raw({
       dailyReminder: { type: Boolean, default: false },

@@ -5,6 +5,7 @@ import {
   DhikrLog,
   type DhikrLogDocument,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
+import { User, type UserDocument } from '../users/schemas/user.schema';
 import { StreaksService } from '../streaks/streaks.service';
 import {
   STATS_TIMEZONE,
@@ -20,6 +21,8 @@ export class StatsService {
   constructor(
     @InjectModel(DhikrLog.name)
     private readonly dhikrLogModel: Model<DhikrLogDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
     private readonly streaksService: StreaksService,
   ) {}
 
@@ -27,7 +30,7 @@ export class StatsService {
     const objectId = this.asObjectId(userId);
     const windows = buildDateWindows(new Date());
 
-    const [facetRows, streakDoc] = await Promise.all([
+    const [facetRows, streakDoc, isPremium] = await Promise.all([
       this.dhikrLogModel
         .aggregate<StatsFacetResult>([
           { $match: { userId: objectId } },
@@ -126,6 +129,7 @@ export class StatsService {
         ])
         .exec(),
       this.streaksService.getByUser(userId),
+      this.isPremiumUser(objectId),
     ]);
 
     const facet = facetRows[0] ?? this.emptyFacet();
@@ -133,9 +137,23 @@ export class StatsService {
       currentStreak: streakDoc?.currentStreak ?? 0,
       longestStreak: streakDoc?.longestStreak ?? 0,
       totalDaysActive: streakDoc?.totalDaysActive ?? 0,
+      virdCurrentStreak: streakDoc?.virdCurrentStreak ?? 0,
+      virdLongestStreak: streakDoc?.virdLongestStreak ?? 0,
     };
 
-    return buildStatsSummary(facet, streak, windows);
+    return buildStatsSummary(facet, streak, windows, isPremium);
+  }
+
+  /** Detay bölümlerinin (heatmap, karşılaştırma, dağılımlar vb.) kilidini
+   * açıp açmayacağımızı belirler. Kullanıcı bulunamazsa güvenli taraf:
+   * kilitli (premium değil) kabul edilir. */
+  private async isPremiumUser(objectId: Types.ObjectId): Promise<boolean> {
+    const user = await this.userModel
+      .findById(objectId)
+      .select('isPremium')
+      .lean()
+      .exec();
+    return Boolean(user?.isPremium);
   }
 
   private emptyFacet(): StatsFacetResult {

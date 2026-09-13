@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsEnum,
+  IsIn,
   IsOptional,
   IsString,
   Matches,
@@ -31,6 +32,10 @@ export class UpdateUserPreferencesDto {
   @IsOptional()
   @IsBoolean()
   hapticsEnabled?: boolean;
+
+  @IsOptional()
+  @IsIn(['off', 'hafif', 'orta', 'tesbih'])
+  hapticsPattern?: 'off' | 'hafif' | 'orta' | 'tesbih';
 
   @IsOptional()
   @IsBoolean()

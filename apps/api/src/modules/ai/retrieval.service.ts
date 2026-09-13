@@ -77,6 +77,14 @@ export type DhikrCandidate = {
   // ve buildRecommendationSystemPrompt'taki seçim kuralı). Retrieval katmanı
   // bu alanı KENDİSİ doldurmaz; ajan initialCandidates üzerinde işaretler.
   recentlyPracticed?: boolean;
+  // Dhikr şemasındaki statik tekrar hedefi (bkz. docs/ai-mimari.md §6 —
+  // sıralama/popülerlik sinyali OLARAK kullanılmaz). AI Vird Programı
+  // ajanı bunu "target aday satırındaki sayıyı aşmaz" doğrulama kapısı için
+  // okur (bkz. vird-program-agent.service.ts). runDhikrTextSearch'ün $project
+  // aşaması bu alanı içermediği için hibrit modun metin-bacağı eşleşmelerinde
+  // undefined kalabilir — bu durumda ilgili doğrulama kuralı basitçe
+  // uygulanmaz (bkz. "varsa" koşulu).
+  recommendedCount?: number;
 };
 
 // Kaynak pasajı (kitap RAG) araması sonucu. AiChatService 'bilgi' modunda ve
@@ -136,6 +144,9 @@ function toDhikrCandidate(
       ? { fusedScore: extra.fusedScore }
       : {}),
     ...(extra?.matchedBy ? { matchedBy: extra.matchedBy } : {}),
+    ...(typeof item.recommendedCount === 'number'
+      ? { recommendedCount: item.recommendedCount }
+      : {}),
   };
 }
 
@@ -155,8 +166,17 @@ function resolveCanonicalKey(doc: {
  * olarak adaylar arasında görünmesini engeller — sıralamadaki İLK (en
  * yüksek rank'lı) kayıt tutulur, sonrakiler elenir. `keyOf` çağırana göre
  * ham dhikr dokümanını ya da fused/candidate sarmalayıcısını okur.
+ *
+ * `export`: AI Vird Programı ajanı (vird-program-agent.service.ts) birden
+ * fazla retrieval çağrısından (genel havuz + dilim bazlı aramalar) gelen
+ * `DhikrCandidate[]` listelerini BİRLEŞTİRDİKTEN sonra aynı genel dedupe
+ * mantığını yeniden kullanmak için bunu dışa aktarır (keyOf olarak
+ * `canonicalKeyFromArabic(candidate.nameArabic)` verir — DhikrCandidate'ta
+ * ham `canonicalKey` alanı yoktur, bkz. resolveCanonicalKey). Bu dosyanın
+ * kendi iç çağrıları (searchDhikrsByText/searchDhikrsByTimeOfDay/hibrit
+ * yollar) davranışsal olarak DEĞİŞMEDİ.
  */
-function dedupeByCanonicalKey<T>(
+export function dedupeByCanonicalKey<T>(
   items: T[],
   keyOf: (item: T) => string | undefined,
   debug: (message: string) => void,

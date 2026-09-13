@@ -1,12 +1,13 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native'
+import { Pressable, ScrollView, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { useThemeTokens } from '@zikirmatik/ui'
 import type { ThemeTokens } from '@zikirmatik/shared'
 import { THEME_STRAP_COLORS } from '../../../theme/strap-colors'
+import { WatchControlButtons } from './watch-control-buttons'
 import Animated, {
   Easing,
   Extrapolation,
@@ -31,7 +32,7 @@ const INNER_RING_SIZE = 122
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
-type AppleWatchProps = {
+export type AppleWatchProps = {
   previewTokens?: ThemeTokens;
   spotlightRef?: RefObject<View | null>;
   listBtnRef?: RefObject<View | null>;
@@ -102,8 +103,6 @@ export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnR
   const screenColor = withAlpha(tokens.bg, 0.96)
   const sideButtonPrimary = withAlpha(tokens.textMuted, 0.75)
   const sideButtonSecondary = withAlpha(tokens.textMuted, 0.55)
-  const controlButtonBorder = withAlpha(tokens.textPrimary, 0.12)
-  const controlButtonBg = withAlpha(tokens.textPrimary, 0.06)
   const ringTrackColor = withAlpha(tokens.textPrimary, 0.12)
 
   useEffect(() => {
@@ -254,50 +253,18 @@ export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnR
                 </Animated.Text>
               </View>
 
-              <View className='mt-3 flex-row gap-3'>
-                <Pressable
-                  ref={listBtnRef}
-                  onPress={() => router.push('/(tabs)/focus')}
-                  className='h-9 w-9 items-center justify-center rounded-full border'
-                  style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
-                >
-                  <FontAwesome6 name='list-ul' size={12} color={tokens.textPrimary} />
-                </Pressable>
-                <Pressable
-                  ref={targetBtnRef}
-                  onPress={home.onTargetPress}
-                  className='h-9 w-9 items-center justify-center rounded-full border'
-                  style={{
-                    borderColor: controlButtonBorder,
-                    backgroundColor: controlButtonBg
-                  }}
-                >
-                  <FontAwesome6 name='bullseye' size={12} color={tokens.textPrimary} />
-                </Pressable>
-                <Pressable
-                  ref={resetBtnRef}
-                  onPress={onResetConfirmPress}
-                  className='h-9 w-9 items-center justify-center rounded-full border'
-                  style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
-                >
-                  <FontAwesome6 name='arrow-rotate-left' size={12} color={tokens.textPrimary} />
-                </Pressable>
-                <Pressable
-                  ref={saveBtnRef}
-                  onPress={home.onSavePress}
-                  disabled={home.isSavingLog}
-                  className={`h-9 w-9 items-center justify-center rounded-full border ${
-                    home.isSavingLog ? 'opacity-50' : ''
-                  }`}
-                  style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
-                >
-                  {home.isSavingLog ? (
-                    <ActivityIndicator size='small' color={tokens.textPrimary} />
-                  ) : (
-                    <FontAwesome6 name='floppy-disk' size={12} color={tokens.textPrimary} />
-                  )}
-                </Pressable>
-              </View>
+              <WatchControlButtons
+                tokens={tokens}
+                listBtnRef={listBtnRef}
+                targetBtnRef={targetBtnRef}
+                resetBtnRef={resetBtnRef}
+                saveBtnRef={saveBtnRef}
+                onListPress={() => router.push('/(tabs)/focus')}
+                onTargetPress={home.onTargetPress}
+                onResetPress={onResetConfirmPress}
+                onSavePress={home.onSavePress}
+                isSaving={home.isSavingLog}
+              />
             </ScrollView>
           </Animated.View>
         </View>

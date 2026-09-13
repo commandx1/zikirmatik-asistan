@@ -31,6 +31,12 @@ describe("extractNotificationRoute", () => {
     expect(extractNotificationRoute(response)).toBe("/(tabs)/home");
   });
 
+  it("returns the stats tab route from the weekly summary campaign", () => {
+    const response = responseWithData({ route: "/(tabs)/stats" });
+
+    expect(extractNotificationRoute(response)).toBe("/(tabs)/stats");
+  });
+
   it("rejects routes outside the allowlist", () => {
     expect(
       extractNotificationRoute(responseWithData({ route: "/settings" }))

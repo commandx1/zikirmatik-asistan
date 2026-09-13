@@ -4,6 +4,7 @@ import * as Crypto from "expo-crypto";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { registerDevice, unlinkDevice } from "./devices-api-client";
+import { usePushRegistrationStore } from "../../../store/push-registration-store";
 
 const DEVICE_ID_STORAGE_KEY = "push-device-id-v1";
 const PERMISSION_PROMPTED_STORAGE_KEY = "push-permission-prompted-v1";
@@ -88,21 +89,35 @@ export async function registerPushDevice(accessToken?: string): Promise<void> {
   const granted = await ensurePushPermission();
   const expoPushToken = granted ? await getExpoPushToken() : undefined;
 
-  await registerDevice(
-    {
-      deviceId,
-      expoPushToken,
-      platform: resolvePlatform()
-    },
-    accessToken
-  );
+  try {
+    await registerDevice(
+      {
+        deviceId,
+        expoPushToken,
+        platform: resolvePlatform()
+      },
+      accessToken
+    );
+    // Only a genuine success (server 2xx above) AND a real push token counts
+    // as "reachable via server push" — see push-registration-store.ts.
+    usePushRegistrationStore.getState().setServerPushActive(Boolean(expoPushToken));
+  } catch (error) {
+    usePushRegistrationStore.getState().setServerPushActive(false);
+    throw error;
+  }
 }
 
 // Called on logout: unlinks the device from the signed-out user without
 // deleting it, so the same device keeps receiving guest-relevant pushes.
 export async function unlinkPushDevice(): Promise<void> {
   const deviceId = await getOrCreateDeviceId();
-  await unlinkDevice(deviceId);
+  try {
+    await unlinkDevice(deviceId);
+  } finally {
+    // Conservative reset: until the next registration reconfirms server
+    // reachability, fall back to local scheduling rather than risk silence.
+    usePushRegistrationStore.getState().setServerPushActive(false);
+  }
 }
 
 async function safeGetItem(key: string) {

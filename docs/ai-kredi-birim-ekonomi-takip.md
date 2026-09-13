@@ -5,12 +5,17 @@ Bu dosya, AI Rehber kredi modelinin karlilik takibini tek yerden yapmak icin kul
 ## Durum
 
 - Model: Hibrit (flow bazli tek kesim)
-- Kesim: Basarili oneride 1 kredi
+- Kesim: Basarili oneride/mesajda 1 kredi; basarili AI Vird Programi
+  uretiminde **3 kredi** (`VIRD_PROGRAM_DEBIT`, bkz. asagidaki bolum)
 - Clarification/off-topic/AI hatasi (503 AI_UNAVAILABLE): 0 kredi
 - Cache yolu yok: `recommendation_cache` kaldirildi, her istek canli LLM cagrisidir
 - Premium grant: 50 kredi / UTC ay
 - Free grant: 1 kredi / UTC gun
 - Top-up: RevenueCat `NON_SUBSCRIPTION_PURCHASE`
+- `ensureCreditAccessForFlow`/`debitCreditForFlow` genel bir `amount`
+  parametresi alir (varsayilan 1); cuzdan dusumu grant/topup kovalari
+  arasinda tek atomik aggregation-pipeline `findOneAndUpdate` ile bolusulur
+  (bkz. `apps/api/src/modules/ai/ai-credits.service.ts`)
 
 ## Guncelleme Rutini
 
@@ -45,6 +50,18 @@ db.ai_credit_ledger.aggregate([
   { $match: { reason: "RECOMMENDATION_DEBIT", createdAt: { $gte: since } } },
   { $group: { _id: null, count: { $sum: 1 }, credits: { $sum: "$delta" } } }
 ]);
+```
+
+### 1b) Son 7 gunde AI Vird Programi kesimleri (VIRD_PROGRAM_DEBIT, 3 kredi/basari)
+
+```javascript
+const since = new Date(Date.now() - 7*24*60*60*1000);
+db.ai_credit_ledger.aggregate([
+  { $match: { reason: "VIRD_PROGRAM_DEBIT", createdAt: { $gte: since } } },
+  { $group: { _id: null, count: { $sum: 1 }, credits: { $sum: "$delta" } } }
+]);
+// count * 3 === credits (delta her zaman -3) olmali; farkli ciktiysa
+// VIRD_PROGRAM_CREDIT_COST degisikligi/parsiyel bir migration olabilir.
 ```
 
 ### 2) Son 7 gunde basarili oneriler
@@ -173,3 +190,14 @@ db.ai_credit_wallets.aggregate([
 - En az 100-200 basarili oneride kredi kesimi gozlenmeli.
 - En az 10+ top-up olayi gorulmeli.
 - Sonra `estimated_cost_per_success` ve `estimated_gross_margin` alanlari dolu sekilde haftalik fiyat optimizasyonuna gecilmeli.
+
+## Operasyon Notu: ai_credit_ledger flowId index'i (2026-09-13)
+
+- Kodda reason basina ayri tanimlanan `{userId, reason, flowId}` kismi unique index'ler ayni otomatik ada
+  (`userId_1_reason_1_flowId_1`) dustugu icin yalnizca ilki (RECOMMENDATION_DEBIT) olusuyordu; CHAT_MESSAGE_DEBIT ve
+  VIRD_PROGRAM_DEBIT icin DB duzeyinde flowId tekilligi zorlanmiyordu.
+- Yeni tanim: tek kismi unique index `uniq_user_reason_flowId` (`{userId, reason, flowId}`, filtre `flowId` string).
+- DURUM (2026-09-13): `test` veritabaninda yapildi; uretim veritabani farkliysa orada tekrarlanmali.
+- Yapilacak (bir kez, Atlas mongosh): `db.ai_credit_ledger.dropIndex('userId_1_reason_1_flowId_1')` → API yeniden
+  basladiginda `autoIndex` yeni index'i olusturur. Dogrulama: `db.ai_credit_ledger.getIndexes()` icinde
+  `uniq_user_reason_flowId` gorunmeli.

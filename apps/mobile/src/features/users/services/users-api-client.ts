@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
+import type { HapticsPattern } from "../../../services/haptics-pattern";
 
 type UserNotifSettings = {
   dailyReminder?: boolean;
@@ -14,6 +15,7 @@ export type BackendUser = {
   theme?: string;
   fontFamily?: "default" | "merriweather" | "intel-one-mono" | "finlandica-headline" | "indie-flower";
   hapticsEnabled?: boolean;
+  hapticsPattern?: HapticsPattern;
   isPremium?: boolean;
   createdAt?: string;
   onboarding?: {
@@ -31,6 +33,7 @@ export type UpdateUserPreferencesPayload = {
   theme?: string;
   fontFamily?: "default" | "merriweather" | "intel-one-mono" | "finlandica-headline" | "indie-flower";
   hapticsEnabled?: boolean;
+  hapticsPattern?: HapticsPattern;
   dailyReminder?: boolean;
   reminderTime?: string;
 };

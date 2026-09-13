@@ -79,23 +79,21 @@ AiCreditLedgerSchema.index(
   },
 );
 
+// flowId bazlı idempotent debit'ler (RECOMMENDATION_DEBIT, CHAT_MESSAGE_DEBIT,
+// VIRD_PROGRAM_DEBIT): tek bir kısmi unique index yeter — anahtar zaten
+// `reason`'ı içerdiği için tekillik reason başına uygulanır; grant satırlarında
+// flowId olmadığı için filtre onları dışarıda bırakır. Reason başına ayrı ayrı
+// aynı anahtar deseninde index tanımlamak MongoDB'de aynı otomatik ada
+// (userId_1_reason_1_flowId_1) düştüğü için yalnız ilki oluşuyordu
+// (IndexOptionsConflict, kod 85). Eski otomatik adlı index Atlas'ta bir kez
+// elle düşürülmeli: db.ai_credit_ledger.dropIndex('userId_1_reason_1_flowId_1')
+// (bkz. docs/ai-kredi-birim-ekonomi-takip.md).
 AiCreditLedgerSchema.index(
   { userId: 1, reason: 1, flowId: 1 },
   {
+    name: 'uniq_user_reason_flowId',
     unique: true,
     partialFilterExpression: {
-      reason: AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
-      flowId: { $exists: true, $type: 'string' },
-    },
-  },
-);
-
-AiCreditLedgerSchema.index(
-  { userId: 1, reason: 1, flowId: 1 },
-  {
-    unique: true,
-    partialFilterExpression: {
-      reason: AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
       flowId: { $exists: true, $type: 'string' },
     },
   },

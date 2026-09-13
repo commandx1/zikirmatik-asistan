@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import type { SupportedLocale } from "../../../i18n";
 import { toIntlLocale } from "../../../lib/locale-format";
+import type { HapticsPattern } from "../../../services/haptics-pattern";
 import {
   getUserById,
   saveUserPreferences,
@@ -13,15 +14,18 @@ import {
 } from "../../users/services/users-api-client";
 import {
   CREDIT_TOPUP_FALLBACK,
+  fetchSubscriptionPrices,
   getCreditTopupProducts,
   isRevenueCatConfigured,
   purchaseCreditTopup,
   purchasePremiumWithRevenueCat,
   syncPremiumStatusWithRevenueCat,
   toRevenueCatMessage,
-  type CreditTopupProduct
+  type CreditTopupProduct,
+  type SubscriptionPrices
 } from "../../subscriptions/services/revenuecat-client";
 import { syncDailyReminderNotification } from "../services/daily-reminder-notifications";
+import { trackEvent } from "../../../lib/analytics";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
@@ -45,10 +49,10 @@ export function useProfile() {
   const reminderTime = useProfileStore((s) => s.reminderTime);
   const dailyReminderEnabled = useProfileStore((s) => s.dailyReminderEnabled);
   const kandilNotificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
-  const hapticsEnabled = useProfileStore((s) => s.hapticsEnabled);
+  const hapticsPattern = useProfileStore((s) => s.hapticsPattern);
   const setReminderTime = useProfileStore((s) => s.setReminderTime);
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
-  const setHapticsEnabled = useProfileStore((s) => s.setHapticsEnabled);
+  const setHapticsPattern = useProfileStore((s) => s.setHapticsPattern);
   const hydrateFromBackend = useProfileStore((s) => s.hydrateFromBackend);
   const authStatus = useAuthStore((s) => s.status);
   const session = useAuthStore((s) => s.session);
@@ -65,6 +69,7 @@ export function useProfile() {
   const [topupProducts, setTopupProducts] = useState<CreditTopupProduct[]>(CREDIT_TOPUP_FALLBACK);
   const [purchasingTopupId, setPurchasingTopupId] = useState<string | undefined>();
   const [topupError, setTopupError] = useState<string | undefined>();
+  const [subscriptionPrices, setSubscriptionPrices] = useState<SubscriptionPrices>({});
   const [isReminderTimeModalOpen, setIsReminderTimeModalOpen] = useState(false);
   const [reminderHourDraft, setReminderHourDraft] = useState("08");
   const [reminderMinuteDraft, setReminderMinuteDraft] = useState("00");
@@ -90,7 +95,8 @@ export function useProfile() {
       reminderTime: user.notifSettings?.reminderTime,
       dailyReminderEnabled: user.notifSettings?.dailyReminder,
       kandilNotificationsEnabled: user.notifSettings?.kandilNotifications,
-      hapticsEnabled: user.hapticsEnabled
+      hapticsEnabled: user.hapticsEnabled,
+      hapticsPattern: user.hapticsPattern
     });
     hydrateAppearance({
       themeName:
@@ -147,7 +153,18 @@ export function useProfile() {
     };
   }, [authStatus, session?.userId, syncBackendUser]);
 
-  const openPremiumSheet = () => setPremiumSheetOpen(true);
+  const loadSubscriptionPrices = async () => {
+    if (!session?.userId) {
+      return;
+    }
+    // fetchSubscriptionPrices hata/boş offering durumunda boş obje döner, throw etmez.
+    setSubscriptionPrices(await fetchSubscriptionPrices(session.userId));
+  };
+
+  const openPremiumSheet = () => {
+    setPremiumSheetOpen(true);
+    void loadSubscriptionPrices();
+  };
   const closePremiumSheet = () => {
     setPremiumError(undefined);
     setTopupError(undefined);
@@ -268,6 +285,7 @@ export function useProfile() {
       hydrateFromBackend({ isPremium: synced.isPremium });
       setBackendUser((current) => (current ? { ...current, isPremium: synced.isPremium } : current));
       if (synced.isPremium) {
+        void trackEvent("purchase_completed", { product: premiumPlan });
         closePremiumSheet();
       }
     } catch (error) {
@@ -307,6 +325,7 @@ export function useProfile() {
     setTopupError(undefined);
     try {
       await purchaseCreditTopup(session.userId, productId);
+      void trackEvent("credit_topup", { product: productId });
       await syncBackendUser();
       return true;
     } catch (error) {
@@ -445,9 +464,10 @@ export function useProfile() {
     }
   };
 
-  const onToggleHaptics = useCallback(
-    (enabled: boolean) => {
-      setHapticsEnabled(enabled);
+  const onChangeHapticsPattern = useCallback(
+    (pattern: HapticsPattern) => {
+      const previousPattern = hapticsPattern;
+      setHapticsPattern(pattern);
 
       if (authStatus !== "authenticated" || !session?.userId) {
         return;
@@ -455,13 +475,15 @@ export function useProfile() {
 
       void saveUserPreferences(
         session.userId,
-        { hapticsEnabled: enabled },
+        // hapticsEnabled geriye uyumluluk için türetilip birlikte gönderilir
+        // (bkz. store/profile-store.ts setHapticsPattern).
+        { hapticsPattern: pattern, hapticsEnabled: pattern !== "off" },
         session.accessToken
       ).catch(() => {
-        setHapticsEnabled(!enabled);
+        setHapticsPattern(previousPattern);
       });
     },
-    [authStatus, session?.accessToken, session?.userId, setHapticsEnabled]
+    [authStatus, hapticsPattern, session?.accessToken, session?.userId, setHapticsPattern]
   );
 
   return {
@@ -483,7 +505,7 @@ export function useProfile() {
     reminderTime,
     dailyReminderEnabled,
     kandilNotificationsEnabled,
-    hapticsEnabled,
+    hapticsPattern,
     isPremiumSheetOpen,
     isActivatingPremium,
     premiumPlan,
@@ -493,9 +515,10 @@ export function useProfile() {
     purchasingTopupId,
     topupError,
     purchaseTopup,
+    subscriptionPrices,
     refresh,
     setKandilNotificationsEnabled,
-    onToggleHaptics,
+    onChangeHapticsPattern,
     goThemeSelector,
     goFontSelector,
     openReminderTimeModal,

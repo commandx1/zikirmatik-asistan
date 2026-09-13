@@ -19,6 +19,9 @@ import { UserDhikrsModule } from './modules/user-dhikrs/user-dhikrs.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { DhikrCollectionsModule } from './modules/dhikr-collections/dhikr-collections.module';
 import { StatsModule } from './modules/stats/stats.module';
+import { EventsModule } from './modules/events/events.module';
+import { PushCampaignsModule } from './modules/push-campaigns/push-campaigns.module';
+import { VirdModule } from './modules/vird/vird.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
@@ -51,6 +54,9 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     StatsModule,
     DevicesModule,
     PushModule,
+    EventsModule,
+    PushCampaignsModule,
+    VirdModule,
   ],
   controllers: [AppController],
   providers: [JwtAuthGuard],

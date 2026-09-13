@@ -14,6 +14,7 @@ import {
   TOUR_REF_WATCH_RESET,
   TOUR_REF_WATCH_SAVE,
 } from '../../features/tour/tour-steps'
+import { TodaysVirdCard } from '../vird/components/todays-vird-card'
 import { EsmaulHusnaSectionSkeleton } from './components/esmaul-husna-section-skeleton'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { DhikrResumeModal } from '../../components/ui/dhikr-resume-modal'
@@ -23,8 +24,14 @@ import { PageHeader } from '../../components/ui/page-header'
 import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-transition-modal'
 import { useHomeContext } from './home-context'
 import { AppleWatch } from './components/apple-watch'
+import { LapSizeSelector } from './components/lap-size-selector'
+import { TesbihCounter } from './components/tesbih-counter'
 import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
 import { useLocaleUpper } from '../../hooks/use-locale-upper'
+import { usePremiumSheet } from '../../hooks/use-premium-sheet'
+import { useCounterStyleStore } from '../../store/counter-style-store'
+import { useProfileStore } from '../../store/profile-store'
+import { ProfilePremiumSheet } from '../profile/components/profile-premium-sheet'
 
 const EsmaulHusnaSection = lazy(() =>
   import('./components/esmaul-husna-section').then((m) => ({ default: m.EsmaulHusnaSection }))
@@ -237,6 +244,7 @@ function TargetModal() {
             }}
             onSubmitEditing={home.onTargetSubmit}
           />
+          <LapSizeSelector />
           <View className='flex-row justify-end gap-2'>
             <Pressable
               onPress={home.onTargetCancel}
@@ -434,6 +442,82 @@ function FreeSaveNameModal() {
   )
 }
 
+function CurrentLapBadge() {
+  const home = useHomeContext()
+  const { tokens } = useThemeTokens()
+  const { t } = useTranslation('home')
+
+  if (home.currentLap <= 0) {
+    return null
+  }
+
+  return (
+    <View className='-mt-6 mb-4 items-center'>
+      <Text className='text-xs font-semibold' style={{ color: tokens.textMuted }}>
+        {t('home:lapIndicator.label', { lap: home.currentLap })}
+      </Text>
+    </View>
+  )
+}
+
+function HomeCounterVisual({
+  spotlightRef,
+  listBtnRef,
+  targetBtnRef,
+  resetBtnRef,
+  saveBtnRef,
+  onUnlockPremium
+}: {
+  spotlightRef: React.RefObject<View | null>
+  listBtnRef: React.RefObject<View | null>
+  targetBtnRef: React.RefObject<View | null>
+  resetBtnRef: React.RefObject<View | null>
+  saveBtnRef: React.RefObject<View | null>
+  onUnlockPremium: () => void
+}) {
+  const { t } = useTranslation('home')
+  const counterStyle = useCounterStyleStore(s => s.counterStyle)
+  const isPremium = useProfileStore(s => s.isPremium)
+
+  const counterProps = { spotlightRef, listBtnRef, targetBtnRef, resetBtnRef, saveBtnRef }
+
+  if (counterStyle === 'tesbih' && isPremium) {
+    return <TesbihCounter {...counterProps} />
+  }
+
+  // Premium olmayan kullanıcıda tesbih seçili olsa bile sayaç KİLİTLENMEZ:
+  // normal halka (AppleWatch) sayaç tam işlevli render edilir, üstünde
+  // dokununca paywall açan küçük bir premium şeridi gösterilir.
+  return (
+    <>
+      {counterStyle === 'tesbih' ? (
+        <TesbihPremiumStrip message={t('home:tesbihLock.message')} onPress={onUnlockPremium} />
+      ) : null}
+      <AppleWatch {...counterProps} />
+      <CurrentLapBadge />
+    </>
+  )
+}
+
+function TesbihPremiumStrip({ message, onPress }: { message: string; onPress: () => void }) {
+  const { tokens } = useThemeTokens()
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole='button'
+      accessibilityLabel={message}
+      className='mb-3 flex-row items-center justify-center gap-2 self-center rounded-full px-4 py-2'
+      style={{ backgroundColor: tokens.card, borderWidth: 1, borderColor: tokens.accent }}
+    >
+      <FontAwesome6 name='lock' iconStyle='solid' size={12} color={tokens.accent} />
+      <Text className='text-xs font-semibold' style={{ color: tokens.accent }}>
+        {message}
+      </Text>
+    </Pressable>
+  )
+}
+
 export function HomeView() {
   const home = useHomeContext()
   const { t } = useTranslation('home')
@@ -450,6 +534,7 @@ export function HomeView() {
   const watchSaveBtnRef = useRef<View>(null)
   const { startTour, registerRef } = useTour()
   const isTourCompleted = useOnboardingStore((s) => s.isTourCompleted)
+  const premiumSheet = usePremiumSheet()
 
   useEffect(() => {
     registerRef(TOUR_REF_WATCH, appleWatchRef)
@@ -494,6 +579,15 @@ export function HomeView() {
     }
     showToast(t('home:toast.autoSaved'))
   }, [home.autoSaveNoticeId, showToast, t])
+
+  useEffect(() => {
+    // Starts at 0 and is incremented once per completed lap, so the initial
+    // render must not surface a toast (same guard as autoSaveNoticeId above).
+    if (home.lapCompletedNoticeId === 0) {
+      return
+    }
+    showToast(t('home:toast.lapCompleted', { lap: home.lastCompletedLap }))
+  }, [home.lapCompletedNoticeId, home.lastCompletedLap, showToast, t])
   const pendingDailyEsmaStart = useHomeNavigationIntentStore(state => state.pendingDailyEsmaStart)
   const consumeDailyEsmaStart = useHomeNavigationIntentStore(state => state.consumeDailyEsmaStart)
   const esmaListFocusRequestId = useHomeNavigationIntentStore(state => state.esmaListFocusRequestId)
@@ -549,14 +643,16 @@ export function HomeView() {
       >
         <Pressable onPress={home.tapAnywhereEnabled ? home.onCountPress : undefined} style={{ flex: 1 }}>
           <FreeModeButton />
-          <AppleWatch
+          <HomeCounterVisual
             spotlightRef={appleWatchRef}
             listBtnRef={watchListBtnRef}
             targetBtnRef={watchTargetBtnRef}
             resetBtnRef={watchResetBtnRef}
             saveBtnRef={watchSaveBtnRef}
+            onUnlockPremium={premiumSheet.open}
           />
           <SelectedDhikrMeaning />
+          <TodaysVirdCard />
           <View onLayout={event => {
             esmaSectionYRef.current = event.nativeEvent.layout.y
           }}>
@@ -601,6 +697,25 @@ export function HomeView() {
         onCancel={home.onUnsavedTransitionCancel}
       />
       <TapAnywhereToast message={toastMessage} />
+      <ProfilePremiumSheet
+        visible={premiumSheet.isOpen}
+        selectedPlan={premiumSheet.plan}
+        isActivating={premiumSheet.isActivating}
+        error={premiumSheet.error}
+        onSelectPlan={premiumSheet.setPlan}
+        onStartPremium={premiumSheet.activate}
+        onClose={premiumSheet.close}
+        topupProducts={premiumSheet.topupProducts}
+        purchasingTopupId={premiumSheet.purchasingTopupId}
+        topupError={premiumSheet.topupError}
+        onPurchaseTopup={(productId) => {
+          void premiumSheet.purchaseTopup(productId).then((purchased) => {
+            if (purchased) premiumSheet.close()
+          })
+        }}
+        subscriptionPrices={premiumSheet.subscriptionPrices}
+        source='tesbih_mode'
+      />
     </PageLayout>
   )
 }

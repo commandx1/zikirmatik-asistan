@@ -1,0 +1,202 @@
+[
+  {
+    "id": "v001",
+    "freeText": "sınav dönemindeyim, 2 hafta boyunca disiplinli bir vird istiyorum",
+    "locale": "tr",
+    "category": "exam",
+    "durationDays": 14,
+    "slots": ["morning", "evening"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [2, 3],
+      "slotsCovered": ["morning", "evening"],
+      "tagsAny": ["kolaylık", "başarı", "sabır", "konsantrasyon", "ilim"]
+    }
+  },
+  {
+    "id": "v002",
+    "freeText": "hastayım, şifa bulmak için dua etmek istiyorum",
+    "locale": "tr",
+    "category": "illness",
+    "durationDays": 7,
+    "slots": ["morning", "evening", "night"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [1, 2],
+      "slotsCovered": ["morning", "evening", "night"],
+      "tagsAny": ["şifa", "sağlık", "hastalık"]
+    }
+  },
+  {
+    "id": "v003",
+    "freeText": "borç içindeyim, maddi sıkıntımdan kurtulmak için zikir istiyorum",
+    "locale": "tr",
+    "category": "debt",
+    "durationDays": 30,
+    "slots": ["morning", "prayer"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [3, 4],
+      "slotsCovered": ["morning", "prayer"],
+      "tagsAny": ["rızık", "borç", "bereket", "maddi sıkıntı"]
+    }
+  },
+  {
+    "id": "v004",
+    "freeText": "sürekli kaygılıyım, içim rahat etmiyor",
+    "locale": "tr",
+    "category": "anxiety",
+    "durationDays": 7,
+    "slots": ["morning", "night"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [1, 2],
+      "slotsCovered": ["morning", "night"],
+      "tagsAny": ["kaygı yönetimi", "huzur", "sabır", "teselli"]
+    }
+  },
+  {
+    "id": "v005",
+    "freeText": "Allah'a şükretmek için günlük bir vird oluşturmak istiyorum",
+    "locale": "tr",
+    "category": "gratitude",
+    "durationDays": 7,
+    "slots": ["morning", "evening", "free"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [1, 2],
+      "slotsCovered": ["morning", "evening", "free"],
+      "tagsAny": ["şükür", "hamd"]
+    }
+  },
+  {
+    "id": "v006",
+    "freeText": "uzun bir yolculuğa çıkacağım, yol için dua/zikir programı ister misin",
+    "locale": "tr",
+    "category": "travel",
+    "durationDays": 7,
+    "slots": ["morning", "prayer", "evening"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [1, 2],
+      "slotsCovered": ["morning", "prayer", "evening"],
+      "tagsAny": ["yolculuk", "sefer", "emniyet", "koruma"]
+    }
+  },
+  {
+    "id": "v007",
+    "freeText": "Ramazan'a manevi olarak hazırlanmak istiyorum, 14 günlük bir program yapar mısın",
+    "locale": "tr",
+    "category": "ramadan-prep",
+    "durationDays": 14,
+    "slots": ["morning", "evening", "night"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [2, 3],
+      "slotsCovered": ["morning", "evening", "night"],
+      "tagsAny": ["tövbe", "istiğfar", "ibadet", "hazırlık"]
+    }
+  },
+  {
+    "id": "v008",
+    "freeText": "aile içi huzursuzluk yaşıyoruz, evimize huzur gelsin istiyorum",
+    "locale": "tr",
+    "category": "family",
+    "durationDays": 7,
+    "slots": ["morning", "night"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [1, 2],
+      "slotsCovered": ["morning", "night"],
+      "tagsAny": ["huzur", "aile", "sabır"]
+    }
+  },
+  {
+    "id": "v009",
+    "freeText": "iş yerinde çok stresliyim, işlerim rast gitsin istiyorum",
+    "locale": "tr",
+    "category": "work-stress",
+    "durationDays": 14,
+    "slots": ["morning", "prayer", "evening"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [2, 3],
+      "slotsCovered": ["morning", "prayer", "evening"],
+      "tagsAny": ["kolaylık", "rızık", "başarı", "sabır"]
+    }
+  },
+  {
+    "id": "v010",
+    "freeText": "günahlarımdan tövbe etmek için 30 günlük bir vird programı istiyorum",
+    "locale": "tr",
+    "category": "repentance",
+    "durationDays": 30,
+    "slots": ["morning", "evening", "night"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [3, 4],
+      "slotsCovered": ["morning", "evening", "night"],
+      "tagsAny": ["tövbe", "istiğfar"]
+    }
+  },
+  {
+    "id": "v011",
+    "freeText": "sabırlı olmayı öğrenmek istiyorum, bana yardımcı olacak bir vird kur",
+    "locale": "tr",
+    "category": "patience",
+    "durationDays": 7,
+    "slots": ["morning", "free"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [1, 2],
+      "slotsCovered": ["morning", "free"],
+      "tagsAny": ["sabır", "tevekkül"]
+    }
+  },
+  {
+    "id": "v012",
+    "freeText": "evleneceğim, hayırlısı olması için dua etmek istiyorum",
+    "locale": "tr",
+    "category": "marriage",
+    "durationDays": 14,
+    "slots": ["morning", "evening"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [2, 3],
+      "slotsCovered": ["morning", "evening"],
+      "tagsAny": ["hayırlı", "evlilik", "aile"]
+    }
+  },
+  {
+    "id": "v013",
+    "freeText": "yakında doğum yapacağım, kolay bir doğum için dua istiyorum",
+    "locale": "tr",
+    "category": "childbirth",
+    "durationDays": 7,
+    "slots": ["morning", "night"],
+    "expect": {
+      "kind": "program",
+      "phasesBetween": [1, 2],
+      "slotsCovered": ["morning", "night"],
+      "tagsAny": ["kolaylık", "şifa", "koruma"]
+    }
+  },
+  {
+    "id": "v014",
+    "freeText": "en iyi pizza tarifi hangisidir, bana tarif önerir misin",
+    "locale": "tr",
+    "category": "offTopic",
+    "durationDays": 7,
+    "slots": ["morning"],
+    "expect": { "kind": "offTopic" }
+  },
+  {
+    "id": "v015",
+    "freeText": "bugün hava çok güzel, biraz sohbet edelim mi",
+    "locale": "tr",
+    "category": "offTopic",
+    "durationDays": 7,
+    "slots": ["evening"],
+    "expect": { "kind": "offTopic" }
+  }
+]

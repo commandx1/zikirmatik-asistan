@@ -103,6 +103,40 @@ export async function getCreditTopupProducts(userId: string): Promise<CreditTopu
   return mapped.length > 0 ? mapped : CREDIT_TOPUP_FALLBACK;
 }
 
+export type SubscriptionPrices = {
+  monthly?: string;
+  yearly?: string;
+};
+
+export async function fetchSubscriptionPrices(userId: string): Promise<SubscriptionPrices> {
+  try {
+    await ensureRevenueCatConfigured(userId);
+
+    const offerings = await Purchases.getOfferings();
+    const offering = offerings.current;
+    if (!offering || offering.availablePackages.length === 0) {
+      return {};
+    }
+
+    const monthlyPackage = pickPackage(offering.availablePackages, "monthly");
+    const annualPackage = pickPackage(offering.availablePackages, "annual");
+
+    // pickPackage bir eşleşme bulamazsa ilk paketi döndürür; iki plan da aynı
+    // pakete düştüyse hangi plana ait olduğu belirsizdir. Yanlış fiyat
+    // göstermektense bu durumda boş obje dönülür.
+    if (monthlyPackage.identifier === annualPackage.identifier) {
+      return {};
+    }
+
+    return {
+      monthly: monthlyPackage.product.priceString,
+      yearly: annualPackage.product.priceString
+    };
+  } catch {
+    return {};
+  }
+}
+
 export async function purchaseCreditTopup(userId: string, productId: string): Promise<void> {
   await ensureRevenueCatConfigured(userId);
 

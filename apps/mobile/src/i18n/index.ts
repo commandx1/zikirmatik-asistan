@@ -20,6 +20,7 @@ import trFontSelector from "./locales/tr/font-selector.json";
 import trTour from "./locales/tr/tour.json";
 import trDhikrs from "./locales/tr/dhikrs.json";
 import trUsers from "./locales/tr/users.json";
+import trVird from "./locales/tr/vird.json";
 import enCommon from "./locales/en/common.json";
 import enProfile from "./locales/en/profile.json";
 import enHome from "./locales/en/home.json";
@@ -39,6 +40,7 @@ import enFontSelector from "./locales/en/font-selector.json";
 import enTour from "./locales/en/tour.json";
 import enDhikrs from "./locales/en/dhikrs.json";
 import enUsers from "./locales/en/users.json";
+import enVird from "./locales/en/vird.json";
 
 export type SupportedLocale = "tr" | "en";
 
@@ -65,7 +67,8 @@ const resources = {
     "font-selector": trFontSelector,
     tour: trTour,
     dhikrs: trDhikrs,
-    users: trUsers
+    users: trUsers,
+    vird: trVird
   },
   en: {
     common: enCommon,
@@ -86,7 +89,8 @@ const resources = {
     "font-selector": enFontSelector,
     tour: enTour,
     dhikrs: enDhikrs,
-    users: enUsers
+    users: enUsers,
+    vird: enVird
   }
 } as const;
 
@@ -119,7 +123,8 @@ void i18n.use(initReactI18next).init({
     "font-selector",
     "tour",
     "dhikrs",
-    "users"
+    "users",
+    "vird"
   ],
   defaultNS: "common",
   interpolation: { escapeValue: false },

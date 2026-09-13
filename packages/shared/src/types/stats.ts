@@ -67,9 +67,23 @@ export type StatsSummary = {
     currentStreak: number;
     longestStreak: number;
     totalDaysActive: number;
+    /**
+     * Vird Programı serisi — genel zikir serisinden bağımsız. Sunucu yanıtı
+     * bu alanları her zaman doldurur; optional işaretlenmesinin tek nedeni,
+     * bu tipi kullanan mevcut istemci kodunun (ör. çevrimdışı/yerel özet
+     * hesaplayan kod) bu alanları henüz üretmiyor olabilmesidir.
+     */
+    virdCurrentStreak?: number;
+    virdLongestStreak?: number;
   };
   /** ascending, last 30 days (free) */
   dailySeries: StatsDailyPoint[];
+  /**
+   * true when the caller is not premium. The server enforces this: every
+   * field below (--- premium ---) is then empty/zeroed rather than omitted,
+   * so consumers never need to null-check them — just gate the UI on this.
+   */
+  locked: boolean;
   // --- premium ---
   /** ascending, last 365 days */
   heatmap: StatsHeatmapPoint[];

@@ -28,8 +28,10 @@ describe("dhikr-store", () => {
       items: [],
       selectedDhikrId: "",
       activeAiContext: undefined,
+      activeVirdContext: null,
       freeModeCount: 0,
       freeModeTarget: 0,
+      freeModeLapSize: 33,
       unsavedProgressDhikrIds: [],
       unsavedProgressSnapshots: {},
       isHydratedFromBackend: false,
@@ -184,6 +186,106 @@ describe("dhikr-store", () => {
     expect(useDhikrStore.getState().activeAiContext).toBeUndefined();
   });
 
+  describe("activeVirdContext", () => {
+    const virdContext = {
+      programId: "program-a",
+      itemKey: "morning:0:ready-a",
+      slot: "morning" as const,
+      dayIndex: 3,
+      target: 33
+    };
+
+    beforeEach(() => {
+      useDhikrStore.setState({
+        items: [
+          {
+            id: "ready-a",
+            source: "ready",
+            name: { tr: "Dua A", en: "Dua A" },
+            transliteration: { tr: "Dua A", en: "Dua A" },
+            current: 0,
+            target: 33,
+            lastActivityLabel: "Henüz başlanmadı",
+            streakDays: 0,
+            isFavorite: false
+          },
+          {
+            id: "personal-a",
+            source: "personal",
+            name: "Kendi zikrim",
+            transliteration: "Kendi zikrim",
+            current: 0,
+            target: 33,
+            lastActivityLabel: "Henüz başlanmadı",
+            streakDays: 0,
+            isFavorite: false
+          }
+        ]
+      });
+    });
+
+    it("is set by setActiveVirdContext and cleared when the selection changes", () => {
+      useDhikrStore.getState().selectDhikr("ready-a");
+      useDhikrStore.getState().setActiveVirdContext(virdContext);
+      expect(useDhikrStore.getState().activeVirdContext).toEqual(virdContext);
+
+      useDhikrStore.getState().selectDhikr("personal-a");
+      expect(useDhikrStore.getState().activeVirdContext).toBeNull();
+    });
+
+    it("is cleared by clearSelectedDhikr", () => {
+      useDhikrStore.getState().selectDhikr("ready-a");
+      useDhikrStore.getState().setActiveVirdContext(virdContext);
+
+      useDhikrStore.getState().clearSelectedDhikr();
+
+      expect(useDhikrStore.getState().activeVirdContext).toBeNull();
+    });
+
+    it("is cleared by removePersonalDhikr when the removed dhikr is the current selection", () => {
+      useDhikrStore.getState().selectDhikr("personal-a");
+      useDhikrStore.getState().setActiveVirdContext({ ...virdContext, itemKey: "morning:0:personal-a" });
+
+      useDhikrStore.getState().removePersonalDhikr("personal-a");
+
+      expect(useDhikrStore.getState().activeVirdContext).toBeNull();
+    });
+
+    it("is left untouched by removePersonalDhikr when a different (unselected) dhikr is removed", () => {
+      useDhikrStore.getState().upsertPersonalDhikr({
+        id: "personal-b",
+        name: "Diğer zikrim",
+        transliteration: "Diğer zikrim",
+        current: 0,
+        target: 33
+      });
+      useDhikrStore.getState().selectDhikr("ready-a");
+      useDhikrStore.getState().setActiveVirdContext(virdContext);
+
+      useDhikrStore.getState().removePersonalDhikr("personal-b");
+
+      expect(useDhikrStore.getState().activeVirdContext).toEqual(virdContext);
+    });
+
+    it("is cleared by resetSessionScoped (logout)", () => {
+      useDhikrStore.getState().selectDhikr("ready-a");
+      useDhikrStore.getState().setActiveVirdContext(virdContext);
+
+      useDhikrStore.getState().resetSessionScoped();
+
+      expect(useDhikrStore.getState().activeVirdContext).toBeNull();
+    });
+
+    it("is included in the persisted (partialized) state, same as activeAiContext", () => {
+      useDhikrStore.getState().selectDhikr("ready-a");
+      useDhikrStore.getState().setActiveVirdContext(virdContext);
+
+      const options = useDhikrStore.persist.getOptions();
+      const persisted = options.partialize?.(useDhikrStore.getState()) as Record<string, unknown>;
+      expect(persisted).toHaveProperty("activeVirdContext", virdContext);
+    });
+  });
+
   describe("persisted state migration (v0 -> v1, nameTurkish -> LocalizedText)", () => {
     function migrate(persistedState: unknown, version: number) {
       const options = useDhikrStore.persist.getOptions() as {
@@ -250,7 +352,7 @@ describe("dhikr-store", () => {
 
     it("is a no-op once the persisted version is already current", () => {
       const persisted = { items: [{ id: "a", name: { tr: "X", en: "X" } }] };
-      const result = migrate(persisted, 1);
+      const result = migrate(persisted, 2);
       expect(result).toBe(persisted);
     });
 
@@ -321,6 +423,154 @@ describe("dhikr-store", () => {
       ) as { items: Array<Record<string, unknown>> };
 
       expect(result.items[0].name).toEqual({ tr: "Zaten migrate edilmiş", en: "Already migrated" });
+    });
+  });
+
+  describe("persisted state migration (v1 -> v2, optional lapSize)", () => {
+    function migrate(persistedState: unknown, version: number) {
+      const options = useDhikrStore.persist.getOptions() as {
+        migrate?: (state: unknown, version: number) => unknown;
+      };
+      if (!options.migrate) {
+        throw new Error("migrate fonksiyonu tanımlı değil");
+      }
+      return options.migrate(persistedState, version);
+    }
+
+    it("passes v1 (LocalizedText, no lapSize) items through without crashing or inventing a lapSize", () => {
+      const result = migrate(
+        {
+          items: [
+            {
+              id: "ready-a",
+              source: "ready",
+              name: { tr: "Estağfirullah", en: "Estağfirullah" },
+              transliteration: { tr: "Estağfirullah", en: "Estağfirullah" },
+              current: 5,
+              target: 33
+            }
+          ],
+          freeModeCount: 0,
+          freeModeTarget: 0
+        },
+        1
+      ) as { items: Array<Record<string, unknown>> };
+
+      expect(result.items).toHaveLength(1);
+      expect(result.items[0].lapSize).toBeUndefined();
+      expect(result.items[0].name).toEqual({ tr: "Estağfirullah", en: "Estağfirullah" });
+      expect(result.items[0].current).toBe(5);
+    });
+
+    it("keeps an already-set lapSize on a v1 item untouched", () => {
+      const result = migrate(
+        {
+          items: [
+            {
+              id: "personal-a",
+              source: "personal",
+              name: "Kendi zikrim",
+              current: 0,
+              target: 99,
+              lapSize: 99
+            }
+          ]
+        },
+        1
+      ) as { items: Array<Record<string, unknown>> };
+
+      expect(result.items[0].lapSize).toBe(99);
+    });
+
+    it("does not crash migrating v1 -> v2 on corrupted/missing state", () => {
+      expect(() => migrate(undefined, 1)).not.toThrow();
+      expect(() => migrate(null, 1)).not.toThrow();
+      expect(() => migrate({ items: "not-an-array" }, 1)).not.toThrow();
+      expect((migrate({ items: "not-an-array" }, 1) as { items: unknown }).items).toEqual([]);
+    });
+  });
+
+  describe("lap size", () => {
+    it("clamps setSelectedLapSize to 1..9999 (normalizeTarget pattern) and defaults non-numeric input to 33", () => {
+      useDhikrStore.setState({
+        items: [
+          {
+            id: "personal-a",
+            source: "personal",
+            name: "Test zikri",
+            transliteration: "Test zikri",
+            current: 0,
+            target: 0,
+            lastActivityLabel: "Henüz başlanmadı",
+            streakDays: 0,
+            isFavorite: false
+          }
+        ],
+        selectedDhikrId: "personal-a"
+      });
+
+      useDhikrStore.getState().setSelectedLapSize(99);
+      expect(useDhikrStore.getState().items[0].lapSize).toBe(99);
+
+      useDhikrStore.getState().setSelectedLapSize(50000);
+      expect(useDhikrStore.getState().items[0].lapSize).toBe(9999);
+
+      useDhikrStore.getState().setSelectedLapSize(-5);
+      expect(useDhikrStore.getState().items[0].lapSize).toBe(1);
+
+      useDhikrStore.getState().setSelectedLapSize(0);
+      expect(useDhikrStore.getState().items[0].lapSize).toBe(1);
+
+      useDhikrStore.getState().setSelectedLapSize(Number.NaN);
+      expect(useDhikrStore.getState().items[0].lapSize).toBe(33);
+    });
+
+    it("leaves other items' lapSize untouched", () => {
+      useDhikrStore.setState({
+        items: [
+          {
+            id: "personal-a",
+            source: "personal",
+            name: "A",
+            transliteration: "A",
+            current: 0,
+            target: 0,
+            lastActivityLabel: "Henüz başlanmadı",
+            streakDays: 0,
+            isFavorite: false
+          },
+          {
+            id: "personal-b",
+            source: "personal",
+            name: "B",
+            transliteration: "B",
+            current: 0,
+            target: 0,
+            lastActivityLabel: "Henüz başlanmadı",
+            streakDays: 0,
+            isFavorite: false,
+            lapSize: 99
+          }
+        ],
+        selectedDhikrId: "personal-a"
+      });
+
+      useDhikrStore.getState().setSelectedLapSize(11);
+
+      const items = useDhikrStore.getState().items;
+      expect(items.find((item) => item.id === "personal-a")?.lapSize).toBe(11);
+      expect(items.find((item) => item.id === "personal-b")?.lapSize).toBe(99);
+    });
+
+    it("clamps setFreeModeLapSize the same way", () => {
+      useDhikrStore.getState().setFreeModeLapSize(99);
+      expect(useDhikrStore.getState().freeModeLapSize).toBe(99);
+
+      useDhikrStore.getState().setFreeModeLapSize(-1);
+      expect(useDhikrStore.getState().freeModeLapSize).toBe(1);
+
+      useDhikrStore.getState().setFreeModeLapSize(20000);
+      expect(useDhikrStore.getState().freeModeLapSize).toBe(9999);
     });
   });
 });

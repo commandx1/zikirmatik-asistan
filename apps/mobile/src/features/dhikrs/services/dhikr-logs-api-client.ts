@@ -1,5 +1,23 @@
 import { Platform } from "react-native";
+import type { VirdSlotKey } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
+
+// --- Vird programı alanları (opsiyonel) ---
+// Bir log bir vird programının bir dilimine bağlıysa doldurulur (bkz.
+// apps/api/src/modules/dhikr-logs/schemas/dhikr-log.schema.ts — aynı adlarla
+// birebir sunucu karşılığı). Sunucu bu alanları GÖRDÜĞÜNDE dhikr_logs'u
+// (userId, dhikrId/customDhikrId, date, virdProgramId, virdSlot,
+// virdPrayerIndex) anahtarıyla upsert eder ve vird ilerlemesini bu logdan
+// türetir (VirdProgressService.applyLogWrite) — vird'in kendi ayrı bir
+// "ilerleme yaz" ucu YOKTUR, tek kaynak dhikr-logs'tur. bkz.
+// features/vird/hooks/use-vird-counter-bridge.ts.
+export type VirdLogFields = {
+  virdProgramId?: string;
+  virdSlot?: VirdSlotKey;
+  virdDayIndex?: number;
+  /** Yalnız virdSlot:'prayer' için anlamlıdır (1..5). */
+  virdPrayerIndex?: number;
+};
 
 export type BackendDhikrLog = {
   _id: string;
@@ -18,7 +36,7 @@ export type BackendDhikrLog = {
   isCompleted: boolean;
   isFavorite?: boolean;
   createdAt?: string;
-};
+} & VirdLogFields;
 
 export type CreateDhikrLogPayload = {
   userId: string;
@@ -35,7 +53,7 @@ export type CreateDhikrLogPayload = {
   source?: "manual" | "ai" | "special-day" | "notification";
   isCompleted?: boolean;
   isFavorite?: boolean;
-};
+} & VirdLogFields;
 
 export class DhikrLogsApiError extends Error {
   constructor(

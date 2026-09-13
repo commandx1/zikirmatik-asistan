@@ -77,7 +77,7 @@
         "description": "Öneriler; o anki ihtiyacınıza, ruh halinize ve günün vaktine göre size özel şekilde uyarlanır."
       }
     ],
-    "note": "Denemek için 1 ücretsiz kredi — kredi paketleri hakkında ayrıntı için Premium bölümüne bakın."
+    "note": "Her gün 1 ücretsiz krediniz yenilenir (ilk gün 3 kredi karşılama bonusuyla) — ek krediler için Premium bölümüne bakın."
   },
   "howItWorks": {
     "title": "Zikirmatik Asistan AI nasıl çalışır",
@@ -112,7 +112,7 @@
   },
   "premium": {
     "title": "Zikirmatik Asistan Premium",
-    "subtitle": "Daha derin kişiselleştirmenin ve yapay zekâ destekli özellikler için cömert kredi paketlerinin kilidini açın. Güncel fiyat için Google Play sayfasına bakın.",
+    "subtitle": "AI Rehber için aylık 50 kredi, detaylı istatistikler ve tüm temaların kilidini açın. Güncel fiyat için Google Play sayfasına bakın.",
     "note": "Güncel fiyat bilgisi için lütfen uygulamanın Google Play sayfasını kontrol edin.",
     "table": {
       "headers": [
@@ -133,8 +133,8 @@
         ],
         [
           "Seri ve istatistikler",
-          "Dahil",
-          "Dahil"
+          "Temel",
+          "Detaylı"
         ],
         [
           "Google ile giriş bulut senkronizasyonu",
@@ -143,13 +143,13 @@
         ],
         [
           "AI Rehber kredisi",
-          "1 ücretsiz kredi",
-          "Kredi paketleri: 3, 50, 10, 30 veya 75"
+          "Günde 1 kredi (ilk gün +3 bonus)",
+          "Ayda 50 kredi + 10, 30 veya 75 kredilik paketler"
         ],
         [
-          "Gelişmiş kişiselleştirme",
+          "Temalar",
           "Sınırlı",
-          "Tam erişim"
+          "Tüm temalar"
         ]
       ]
     },
@@ -157,11 +157,8 @@
       "title": "AI Rehber kredi paketleri",
       "description": "İhtiyacınıza uygun kredi paketini doğrudan uygulama içinden satın alabilirsiniz.",
       "items": [
-        "Denemek için 1 ücretsiz kredi",
-        "3 kredi",
         "10 kredi",
         "30 kredi",
-        "50 kredi",
         "75 kredi"
       ]
     },
@@ -177,11 +174,11 @@
       },
       {
         "question": "Zikirmatik Asistan AI ücretsiz mi?",
-        "answer": "Evet. Temel zikir sayacı, koleksiyonlar, hatırlatıcılar, seriler ve Google ile giriş senkronizasyonu ücretsizdir. İsteğe bağlı Premium kredi paketleri AI Rehber özelliğinin ve ek kişiselleştirmenin kilidini açar."
+        "answer": "Evet. Zikir sayacı, 541 zikirlik kütüphanenin tamamı, tüm koleksiyonlar, hatırlatıcılar, seriler ve Google ile giriş senkronizasyonu tamamen ücretsizdir. Premium abonelik; AI Rehber için aylık 50 kredi, detaylı istatistikler ve tüm temaların kilidini açar."
       },
       {
         "question": "AI Rehber nedir?",
-        "answer": "AI Rehber, isteğe bağlı yapay zekâ destekli bir rehberlik özelliğidir. 1 ücretsiz krediyle başlarsınız; ek kredi paketleri (3, 10, 30, 50 veya 75) uygulama içinden Google Play üzerinden satın alınabilir."
+        "answer": "AI Rehber, isteğe bağlı yapay zekâ destekli bir rehberlik özelliğidir. Her gün 1 ücretsiz krediniz yenilenir (ilk gün 3 kredi karşılama bonusuyla); Premium abonelikte ayda 50 kredi kazanırsınız ve dilediğinizde 10, 30 veya 75 kredilik ek paketleri Google Play üzerinden satın alabilirsiniz."
       },
       {
         "question": "Uygulamayı kullanmak için hesap gerekli mi?",
@@ -296,7 +293,7 @@
       },
       {
         "heading": "4. Premium Krediler ve Satın Alımlar",
-        "body": "Uygulama, AI Rehber özelliğinin kilidini açan isteğe bağlı Premium kredi paketleri sunar (1 ücretsiz kredinin yanı sıra 3, 10, 30, 50 veya 75 kredi seçenekleri dahil). Tüm satın alımlar Google Play üzerinden işlenir ve Google Play'in ödeme şartlarına ve politikalarına tabidir. İade talebinde bulunma hakkında ayrıntılar için İade Politikamıza bakın."
+        "body": "Uygulama, AI Rehber özelliği için ücretsiz kullanıcılara günde 1 kredi (ilk gün 3 kredi karşılama bonusuyla), Premium abonelere ise ayda 50 kredi sağlar; ayrıca isteğe bağlı olarak 10, 30 veya 75 kredilik tek seferlik paketler satın alınabilir. Tüm satın alımlar Google Play üzerinden işlenir ve Google Play'in ödeme şartlarına ve politikalarına tabidir. İade talebinde bulunma hakkında ayrıntılar için İade Politikamıza bakın."
       },
       {
         "heading": "5. Kabul Edilebilir Kullanım",
@@ -338,7 +335,7 @@
     "sections": [
       {
         "heading": "1. Google Play Üzerinden Satın Alımlar",
-        "body": "Tüm Premium kredi paketi satın alımları (3, 10, 30, 50 veya 75 kredi) Google Play üzerinden işlenir ve faturalandırılır. Bu nedenle iadeler, aşağıdaki rehberliğe ek olarak Google Play'in kendi iade politikalarına ve zaman çizelgelerine tabidir."
+        "body": "Tüm Premium kredi paketi satın alımları (10, 30 veya 75 kredi) Google Play üzerinden işlenir ve faturalandırılır. Bu nedenle iadeler, aşağıdaki rehberliğe ek olarak Google Play'in kendi iade politikalarına ve zaman çizelgelerine tabidir."
       },
       {
         "heading": "2. İade Talebinde Nasıl Bulunulur",

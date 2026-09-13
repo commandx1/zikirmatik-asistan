@@ -208,3 +208,77 @@ export function summarizeChat(cases: ChatCaseResult[]): ChatSummary {
 
   return summary;
 }
+
+// ── AI Vird Programı vakaları ────────────────────────────────────────────────
+
+export type VirdOutcomeKind = 'program' | 'offTopic' | 'error';
+export type VirdExpectKind = 'program' | 'offTopic' | 'any';
+
+export type VirdCaseResult = {
+  id: string;
+  category: string;
+  outcomeKind: VirdOutcomeKind;
+  expectKind: VirdExpectKind;
+  kindMatch: boolean;
+  /** outcome 'program' ve `expect.phasesBetween` verilmişse dolu — faz sayısı [min,max] aralığında mı. */
+  phaseCountOk?: boolean;
+  /** outcome 'program' ve `expect.slotsCovered` verilmişse dolu — istenen dilimlerin HEPSİ en az bir fazda kullanılmış mı. */
+  slotsCoveredOk?: boolean;
+  /** `expect.tagsAny` verilmişse ve outcome 'program' ise dolu. */
+  tagsAnyHit?: boolean;
+  latencyMs: number;
+  error?: string;
+};
+
+export type VirdSummary = {
+  total: number;
+  byKind: Record<string, number>;
+  kindMatchRate: number;
+  phaseCountOkRate: number;
+  slotsCoveredOkRate: number;
+  tagsAnyHitRate: number;
+  offTopicRate: number;
+  errorRate: number;
+  latencyP50: number;
+  latencyP95: number;
+};
+
+/**
+ * LLM-free yapısal özet — `run-vird-eval.ts`'in "kapsamayan faz/istenmeyen
+ * dilim/aşırı hedef → modele geri" doğrulama kapılarını (bkz.
+ * vird-program-agent.service.ts) DEĞİL, ajanın NİHAİ (doğrulanmış) çıktısının
+ * beklenen şekle uyup uymadığını (kind, faz sayısı aralığı, dilim kapsamı,
+ * etiket isabetleri) ölçer. Judge (LLM-as-judge) katmanı bu iterasyonda
+ * eklenmedi — bkz. docs/vird-programi.md "Eval" notu.
+ */
+export function summarizeVird(cases: VirdCaseResult[]): VirdSummary {
+  const total = cases.length;
+  const byKind = countBy(cases.map((c) => c.outcomeKind));
+  const latencies = cases.map((c) => c.latencyMs);
+
+  const phaseCountCases = cases.filter((c) => c.phaseCountOk !== undefined);
+  const slotsCoveredCases = cases.filter((c) => c.slotsCoveredOk !== undefined);
+  const tagsAnyCases = cases.filter((c) => c.tagsAnyHit !== undefined);
+
+  return {
+    total,
+    byKind,
+    kindMatchRate: rate(cases.filter((c) => c.kindMatch).length, total),
+    phaseCountOkRate: rate(
+      phaseCountCases.filter((c) => c.phaseCountOk).length,
+      phaseCountCases.length,
+    ),
+    slotsCoveredOkRate: rate(
+      slotsCoveredCases.filter((c) => c.slotsCoveredOk).length,
+      slotsCoveredCases.length,
+    ),
+    tagsAnyHitRate: rate(
+      tagsAnyCases.filter((c) => c.tagsAnyHit).length,
+      tagsAnyCases.length,
+    ),
+    offTopicRate: rate(byKind.offTopic ?? 0, total),
+    errorRate: rate(byKind.error ?? 0, total),
+    latencyP50: percentile(latencies, 50),
+    latencyP95: percentile(latencies, 95),
+  };
+}

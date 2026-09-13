@@ -15,7 +15,9 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { AiCreditsService } from './ai-credits.service';
 import { AiPipelineExceptionFilter } from './ai-pipeline.filter';
 import { AiService } from './ai.service';
+import { AiVirdService } from './ai-vird.service';
 import { CreateAiRecommendationDto } from './dto/create-ai-recommendation.dto';
+import { CreateAiVirdProgramDto } from './dto/create-ai-vird-program.dto';
 import { QueryAiRecommendationsDto } from './dto/query-ai-recommendations.dto';
 import { SelectAiRecommendationDto } from './dto/select-ai-recommendation.dto';
 import { resolveAiRecommendationLocale } from './utils/locale';
@@ -27,6 +29,7 @@ export class AiController {
   constructor(
     private readonly aiService: AiService,
     private readonly aiCreditsService: AiCreditsService,
+    private readonly aiVirdService: AiVirdService,
   ) {}
 
   @Post('recommendations')
@@ -66,5 +69,16 @@ export class AiController {
     @CurrentUserId() userId: string,
   ) {
     return this.aiService.selectRecommendation(id, payload, userId);
+  }
+
+  @Post('vird-programs')
+  createVirdProgram(
+    @Body() payload: CreateAiVirdProgramDto,
+    @CurrentUserId() userId: string,
+    @Headers('accept-language') acceptLanguage?: string,
+  ) {
+    const locale =
+      payload.locale ?? resolveAiRecommendationLocale(acceptLanguage);
+    return this.aiVirdService.createVirdProgram(userId, payload, locale);
   }
 }

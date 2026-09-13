@@ -6,6 +6,10 @@ import {
   type DhikrLogDocument,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { User, type UserDocument } from '../users/schemas/user.schema';
+import {
+  VirdDayProgress,
+  type VirdDayProgressDocument,
+} from '../vird/schemas/vird-day-progress.schema';
 import { istanbulDateKey } from '../../common/utils/date-keys';
 import { Streak, type StreakDocument } from './schemas/streak.schema';
 import { calculateCompletionStreak } from './utils/streak-calculator';
@@ -18,6 +22,8 @@ export class StreaksService {
     @InjectModel(DhikrLog.name)
     private readonly dhikrLogModel: Model<DhikrLogDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(VirdDayProgress.name)
+    private readonly virdDayProgressModel: Model<VirdDayProgressDocument>,
   ) {}
 
   async getByUser(userId: string) {
@@ -44,6 +50,8 @@ export class StreaksService {
       currentStreak: 0,
       longestStreak: 0,
       totalDaysActive: 0,
+      virdCurrentStreak: 0,
+      virdLongestStreak: 0,
     };
   }
 
@@ -81,6 +89,52 @@ export class StreaksService {
             longestStreak,
             totalDaysActive,
             lastActiveDate,
+          },
+        },
+        { upsert: true, returnDocument: 'after' },
+      )
+      .lean()
+      .exec();
+
+    return this.toPlain(updated);
+  }
+
+  /**
+   * Vird Programı serisi — genel zikir serisinden (recalculateForUser)
+   * bağımsız, vird_day_progress.isDayComplete günlerinden türetilir. Aynı
+   * calculateCompletionStreak yardımcı fonksiyonunu kullanır; mevcut genel
+   * seri hesabı değişmez (currentStreak/longestStreak/totalDaysActive bu
+   * $set'e dahil değildir).
+   */
+  async recalculateVirdForUser(userId: string) {
+    const objectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
+    await this.ensureUserExists(objectId);
+
+    const completedDates = await this.virdDayProgressModel.distinct('date', {
+      userId: objectId,
+      isDayComplete: true,
+    });
+
+    const todayKey = istanbulDateKey(new Date());
+    const { currentStreak, longestStreak } = calculateCompletionStreak(
+      completedDates,
+      todayKey,
+    );
+    const sortedCompleted = completedDates.slice().sort();
+    const virdLastCompleteDate =
+      sortedCompleted.length > 0
+        ? sortedCompleted[sortedCompleted.length - 1]
+        : undefined;
+
+    const updated = await this.streakModel
+      .findOneAndUpdate(
+        { userId: objectId },
+        {
+          $set: {
+            userId: objectId,
+            virdCurrentStreak: currentStreak,
+            virdLongestStreak: longestStreak,
+            virdLastCompleteDate,
           },
         },
         { upsert: true, returnDocument: 'after' },
