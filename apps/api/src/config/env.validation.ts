@@ -24,5 +24,18 @@ export function validateEnv(config: Record<string, unknown>) {
     );
   }
 
+  // Opsiyonel: GET /app-config üzerinden mobile duyurulan sunucu-push devir
+  // bayrağı (bkz. app.controller.ts, notification-campaigns-runbook.md
+  // "Devreye alma sırası"). Tanımsız veya boş string bırakılabilir (varsayılan
+  // false/kapalı); tanımlıysa yalnızca '0' veya '1' olmalıdır.
+  if (
+    config.SERVER_PUSH_ENABLED !== undefined &&
+    config.SERVER_PUSH_ENABLED !== '' &&
+    config.SERVER_PUSH_ENABLED !== '0' &&
+    config.SERVER_PUSH_ENABLED !== '1'
+  ) {
+    throw new Error("SERVER_PUSH_ENABLED tanımlıysa '0' veya '1' olmalıdır.");
+  }
+
   return config;
 }

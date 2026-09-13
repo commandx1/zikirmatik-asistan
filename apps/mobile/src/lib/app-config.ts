@@ -8,6 +8,17 @@ const APP_STORE_URL = `https://apps.apple.com/app/id000000000`;
 
 export const STORE_URL = Platform.OS === "android" ? PLAY_STORE_URL : APP_STORE_URL;
 
+type AppConfigPayload = {
+  minVersion: string | null;
+  serverPushEnabled: boolean;
+};
+
+type AppConfigResponseJson = {
+  data?: { minVersion?: string; serverPushEnabled?: boolean };
+  minVersion?: string;
+  serverPushEnabled?: boolean;
+};
+
 function resolveApiBaseUrl() {
   const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
   if (configured) return configured.replace(/\/+$/, "");
@@ -16,16 +27,40 @@ function resolveApiBaseUrl() {
   return `http://${host}:${port}`;
 }
 
-/** Returns the minimum required app version, or null if the check cannot be completed. */
-export async function fetchMinRequiredVersion(): Promise<string | null> {
+/**
+ * Raw GET /app-config call. Returns null when the request itself failed
+ * (network error, non-2xx, unparsable JSON) — as opposed to a value the
+ * server genuinely sent — so callers that must tell "server said no" apart
+ * from "couldn't reach the server" (e.g. deciding whether to overwrite a
+ * persisted flag) can do so. Most callers should use fetchAppConfig or
+ * fetchMinRequiredVersion instead, which collapse failures to safe defaults.
+ */
+export async function fetchAppConfigOrNull(): Promise<AppConfigPayload | null> {
   try {
     const response = await fetch(`${resolveApiBaseUrl()}/app-config`);
     if (!response.ok) return null;
-    const json = (await response.json()) as { data?: { minVersion?: string }; minVersion?: string };
-    return json?.data?.minVersion ?? json?.minVersion ?? null;
+    const json = (await response.json()) as AppConfigResponseJson;
+    const minVersion = json?.data?.minVersion ?? json?.minVersion ?? null;
+    const serverPushEnabled = (json?.data?.serverPushEnabled ?? json?.serverPushEnabled) === true;
+    return { minVersion, serverPushEnabled };
   } catch {
     return null;
   }
+}
+
+/**
+ * Best-effort /app-config: never throws. On failure resolves to the safe
+ * defaults — no forced update, and serverPushEnabled: false so mobile keeps
+ * scheduling local special-day reminders (see use-event-notification-sync.ts).
+ */
+export async function fetchAppConfig(): Promise<AppConfigPayload> {
+  return (await fetchAppConfigOrNull()) ?? { minVersion: null, serverPushEnabled: false };
+}
+
+/** Returns the minimum required app version, or null if the check cannot be completed. */
+export async function fetchMinRequiredVersion(): Promise<string | null> {
+  const { minVersion } = await fetchAppConfig();
+  return minVersion;
 }
 
 /**

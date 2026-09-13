@@ -142,3 +142,25 @@ describe("syncEventNotifications", () => {
     expect(scheduleNotificationAsync.mock.calls[0][0].content.data).toEqual({ kind: FRIDAY_KIND });
   });
 });
+
+describe("resolveServerPushActive", () => {
+  it("is false when the device is not registered, even if the rollout flag is on", async () => {
+    const { resolveServerPushActive } = await import("./event-notifications");
+    expect(resolveServerPushActive(false, true)).toBe(false);
+  });
+
+  it("is false when registered but the rollout flag is off (default / not rolled out yet)", async () => {
+    const { resolveServerPushActive } = await import("./event-notifications");
+    expect(resolveServerPushActive(true, false)).toBe(false);
+  });
+
+  it("is false when neither registered nor enabled", async () => {
+    const { resolveServerPushActive } = await import("./event-notifications");
+    expect(resolveServerPushActive(false, false)).toBe(false);
+  });
+
+  it("is true only once both registered and enabled", async () => {
+    const { resolveServerPushActive } = await import("./event-notifications");
+    expect(resolveServerPushActive(true, true)).toBe(true);
+  });
+});

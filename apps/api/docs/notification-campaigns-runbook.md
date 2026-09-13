@@ -146,13 +146,16 @@ db.special_days.find({ type: 'kandil', date: '2026-05-26' })
 1. **Dil yok, yalnız TR.** `Device` şemasında bir dil alanı bulunmuyor; tüm
    kampanya metinleri (`push-campaigns/templates.ts`) sabit Türkçe. Cihaz
    bazlı dil desteği eklenirse şema + template seçimi birlikte güncellenmeli.
-2. **Mobil yerel bildirimlerle çift bildirim riski.** Mobil uygulama
-   muhtemelen kandil/özel gün için kendi yerel (on-device) bildirimini de
-   zamanlıyor olabilir (`notifSettings.kandilNotifications` vb., bkz.
-   `user.schema.ts`). Bu API tarafındaki sunucu kampanyaları bundan
-   BAĞIMSIZDIR — aynı kullanıcı hem yerel hem sunucu push'u alabilir. İkisini
-   tekilleştirmek (ör. sunucu push'u geldiğinde yerel olanı iptal etmek veya
-   tam tersi) ayrı bir mobil-taraf işidir, bu görevin kapsamında değildir.
+2. **Mobil yerel bildirimlerle çift bildirim riski — mobil tarafta ele
+   alındı.** Mobil uygulama kandil/özel gün için kendi yerel (on-device)
+   bildirimini de zamanlar (`features/notifications/services/event-notifications.ts`).
+   Çift bildirimi önlemek için mobil taraf artık bu API'nin sunucu push'unu
+   hesaba katıyor: cihazın sunucu push kaydı doğrulanmışsa (`push-registration-store.ts`)
+   VE `GET /app-config`'in `serverPushEnabled` bayrağı açıksa
+   (`resolveServerPushActive`, bkz. § 10 "Devreye alma sırası"), yerel özel
+   gün zamanlaması atlanır; aksi halde (bayrak kapalı/erişilemedi) yerel
+   zamanlama aynen sürer. Cuma hatırlatması sunucu eşleniği olmadığı için bu
+   mantığın dışındadır, her zaman yereldir.
 3. **Winback pencere genişliği ~1 gün.** Cron günde bir kez çalıştığından her
    cihaz [3,4) ve [7,8) pencerelerine pratikte birer kez denk gelir; cron
    saati kayarsa (GH gecikmesi) bir pencere teorik olarak hiç yakalanmadan
@@ -172,3 +175,50 @@ Kapsanan senaryolar: dedupe (E11000 → skip), sessiz saat, winback pencere
 seçimi, kandil tarih eşleşmesi (eve/day), haftalık özet premium/ücretsiz
 metni + sıfır aktivite atlama, secret doğrulama (401 / dev bypass), `dryRun`
 modunda hiç gönderim yapılmaması.
+
+## 10. Devreye alma sırası (mobil yerel → sunucu push devri)
+
+Mobil, bir cihazın kandil/özel gün bildirimini yerelden bu API'nin sunucu
+push'una devretmesi için İKİ koşulun BİRDEN sağlanmasını ister
+(`resolveServerPushActive(registered, enabled)`,
+`apps/mobile/src/features/notifications/services/event-notifications.ts`):
+
+1. Cihazın sunucu push kaydı doğrulanmış olmalı (`registered` —
+   `push-registration-store.ts`'teki `serverPushActive`, `POST
+   /v1/devices/register` başarılı VE bir Expo push token alınmış).
+2. `GET /app-config`'in döndürdüğü `serverPushEnabled` bayrağı `true` olmalı
+   (mobilde `app-config-store.ts`'e yazılır) — bu da bu API'deki
+   `SERVER_PUSH_ENABLED` ortam değişkenine bağlıdır (`app.controller.ts`,
+   varsayılan `false`).
+
+Koşullardan biri bile sağlanmazsa (ya da `/app-config` isteği ağ
+hatası/timeout ile başarısız olursa) mobil SON BİLİNEN değeri korur ve yerel
+zamanlama aynen devam eder. Bu yüzden `SERVER_PUSH_ENABLED`'ı Render'da `1`
+yapmadan ÖNCE şu sıra izlenmeli:
+
+(a) **Secret'lar** — Render'da `CAMPAIGN_TRIGGER_SECRET` tanımlı ve GitHub
+    Actions repo secret'ıyla (`API_URL`, `CAMPAIGN_TRIGGER_SECRET`) birebir
+    eşleştiğini doğrula (bkz. §1-2).
+(b) **`dryRun` ile önizle, sonra `workflow_dispatch` ile gerçek tetikleme
+    dene.** `campaign-triggers.yml`'in `workflow_dispatch`'i şu an bir
+    `dryRun` input'u SUNMUYOR (yalnızca `campaign` seçimi) — önce §2'deki
+    doğrudan `curl ... -d '{"dryRun": true}'` ile her kampanya için
+    `candidates`/`sent`/`skipped` alanlarının beklendiği gibi göründüğünü
+    doğrula; ardından `workflow_dispatch` ile (Actions sekmesi veya `gh
+    workflow run campaign-triggers.yml -f campaign=kandil-eve`) gerçek
+    (dryRun olmayan) bir tetikleme yapıp §4'teki `push_dispatches`
+    koleksiyonunda beklenen kaydın oluştuğunu ve Expo push'un cihaza
+    gerçekten ulaştığını doğrula.
+(c) **`SERVER_PUSH_ENABLED=1` yap.** (a) ve (b) doğrulandıktan SONRA
+    Render'da bu değeri `1` yapıp deploy et. Yeni değer mobil tarafta bir
+    sonraki `GET /app-config` çağrısında (uygulama açılışı — zorunlu
+    güncelleme kontrolüyle aynı yerde, bkz. `app/_layout.tsx`) etkili olur;
+    mevcut açık oturumlar anında etkilenmez.
+
+Bayrak kapalıyken (varsayılan `SERVER_PUSH_ENABLED=0` veya tanımsız) ya da
+mobil `/app-config`'e hiç ulaşamadığında mobil cihazlar yerel kandil/özel gün
+bildirimlerini zamanlamaya HER ZAMAN aynen devam eder — hiçbir bildirim
+kaybolmaz; en kötü ihtimalle (bayrak yeni açıldığında, cihaz henüz
+senkronlanmadan) kısa bir süre iki bildirim birden gelebilir. Geçiş kademeli
+ve geri alınabilir: `SERVER_PUSH_ENABLED` tekrar `0`'a çekilirse mobil
+cihazlar bir sonraki `/app-config` çağrısında yerel zamanlamaya geri döner.

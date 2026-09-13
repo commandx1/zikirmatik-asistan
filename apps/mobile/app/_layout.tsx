@@ -19,7 +19,7 @@ import { ForceUpdateModal } from "../src/components/ui/force-update-modal";
 import { NotificationPermissionModal } from "../src/components/ui/notification-permission-modal";
 import { NotificationPermissionDeniedModal } from "../src/components/ui/notification-permission-denied-modal";
 import { AuthPromptModal } from "../src/features/auth/components/auth-prompt-modal";
-import { fetchMinRequiredVersion, isUpdateRequired } from "../src/lib/app-config";
+import { fetchAppConfigOrNull, isUpdateRequired } from "../src/lib/app-config";
 import { initAnalytics } from "../src/lib/analytics";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useGuestMigration } from "../src/features/auth/hooks/use-guest-migration";
@@ -37,6 +37,7 @@ import { BadgeCelebrationHost } from "../src/features/stats/components/badge-cel
 import { useThemePreferences } from "../src/hooks/use-theme-preferences";
 import type { AppFontFamily } from "../src/store/theme-store";
 import { useThemeStore } from "../src/store/theme-store";
+import { useAppConfigStore } from "../src/store/app-config-store";
 
 const queryClient = new QueryClient();
 
@@ -88,10 +89,17 @@ function RootProviders({ children }: { children: ReactNode }) {
   const resolvedStrongFontFamily = resolveGlobalStrongFontFamily(fontFamily, fontsLoaded);
 
   useEffect(() => {
-    fetchMinRequiredVersion().then((minVersion) => {
-      console.log(minVersion, 'MIN VERSION')
-      if (minVersion && isUpdateRequired(minVersion)) {
+    fetchAppConfigOrNull().then((config) => {
+      console.log(config?.minVersion, 'MIN VERSION')
+      if (config?.minVersion && isUpdateRequired(config.minVersion)) {
         setForceUpdate(true);
+      }
+      // Request failed (network error, non-2xx, bad JSON) -> config is null.
+      // Leave the persisted flag untouched rather than resetting it to
+      // false; a successful response always reflects the server's current
+      // value (true OR false), enabling both roll-out and roll-back.
+      if (config) {
+        useAppConfigStore.getState().setServerPushEnabled(config.serverPushEnabled);
       }
     });
   }, []);

@@ -33,6 +33,25 @@ const activeLanguage = (): "tr" | "en" => (i18n.language?.startsWith("en") ? "en
 // Eşzamanlı çağrıları sıraya alır; cancel+schedule bloğu çakışmaz.
 let syncQueue: Promise<unknown> = Promise.resolve();
 
+/**
+ * Sunucu push'unun BU cihaz için gerçekten devrede olup olmadığını çözen saf
+ * fonksiyon. İki koşulun ikisi de sağlanmalı:
+ *  - registered: bu cihazın sunucu push kaydı doğrulanmış mı (bkz.
+ *    push-registration-store.ts — POST /v1/devices/register başarılı VE bir
+ *    Expo push token alınmış).
+ *  - enabled: sunucu tarafının rollout bayrağı açık mı (bkz.
+ *    app-config-store.ts — GET /app-config { serverPushEnabled }, API'de
+ *    SERVER_PUSH_ENABLED ortam değişkenine bağlı, varsayılan false).
+ * Bayrak kapalıyken (ya da hiç alınamadığında, store varsayılanı false kalır)
+ * kayıt başarılı olsa bile false döner — yerel özel gün bildirimleri bu
+ * yüzden SERVER_PUSH_ENABLED üretimde '1' olana kadar zamanlanmaya devam
+ * eder (bkz. apps/api/docs/notification-campaigns-runbook.md
+ * "Devreye alma sırası").
+ */
+export function resolveServerPushActive(registered: boolean, enabled: boolean): boolean {
+  return registered && enabled;
+}
+
 export function syncEventNotifications(input?: {
   requestPermission?: boolean;
   now?: Date;
