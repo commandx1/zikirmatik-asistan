@@ -290,8 +290,7 @@ export const mevlidKandili = {
         en: 'Mawlid al-Nabi',
       },
       type: 'kandil',
-      date: '2026-08-24',
-      hijriDate: '11 Rebiülevvel 1448',
+      hijri: { month: 'rebiulevvel', day: 11 },
       description: {
         tr: 'Peygamber Efendimizin doğumunu salavat, tevhid, istiğfar ve dua ile ihya etme gecesi.',
         en: 'The night on which the birth of our Prophet is commemorated and kept alive with salawat, tawhid, istighfar, and supplication.',
@@ -360,7 +359,7 @@ The prayers offered, the Qur'an recited, the supplications made, and the charity
           },
         },
       ],
-      eventKey: 'mevlid-kandili-2026',
+      eventFamily: 'mevlid-kandili',
       priority: 180,
       dhikrKeys: [
         keyMap.SALAVAT_SERIF,

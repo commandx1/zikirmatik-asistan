@@ -19,13 +19,13 @@ export const ucAylarBaslangic = {
         en: 'The Beginning of the Three Holy Months (1 Rajab)',
       },
       type: 'özel gün',
-      date: '2025-12-21',
-      hijriDate: '1 Recep 1447',
+      hijri: { month: 'recep', day: 1 },
       description: {
         tr: "Allah'ın ayı Recep'in ilk günü ve Üç Aylar'ın kapısı. Peygamber Efendimiz bu günde Recep-Şaban-Ramazan duasını okur, mübarek aylara bereketli bir başlangıç niyetiyle girerdi.",
         en: "The first day of Rajab, the month of Allah, and the gateway to the Three Holy Months. On this day the Prophet (peace be upon him) would recite the supplication of Rajab, Sha'ban, and Ramadan, entering these blessed months with the intention of a bountiful beginning.",
       },
-      eventKey: 'uc-aylar-baslangic-2025',
+      eventFamily: 'uc-aylar-baslangic',
+      onlyHijriYears: [1447],
       priority: 155,
       dhikrKeys: [
         keyMap.RECEP_DUASI,
@@ -42,8 +42,7 @@ export const ucAylarBaslangic = {
       },
       type: 'özel gün',
       // Diyanet 2026 Dini Günler Listesi: 1 Receb 1448 → 10 Aralık 2026 Perşembe.
-      date: '2026-12-10',
-      hijriDate: '1 Recep 1448',
+      hijri: { month: 'recep', day: 1 },
       description: {
         tr: "Haram aylardan Recep'in ilk günü ve Recep–Şaban–Ramazan'dan oluşan Üç Aylar'ın kapısı. Kaza, oruç ve zikir düzenini kurmak için uygun bir başlangıç.",
         en: 'The first day of Rajab, one of the sacred months, and the gateway to the Three Holy Months of Rajab, Shaban, and Ramadan — a fitting point to establish a routine of make-up prayers, fasting, and remembrance.',
@@ -105,7 +104,8 @@ In sum, the real value of this day lies in meeting a three-month season with a d
           },
         },
       ],
-      eventKey: 'uc-aylar-baslangic-2026',
+      eventFamily: 'uc-aylar-baslangic',
+      excludeHijriYears: [1447],
       priority: 155,
       dhikrKeys: [
         keyMap.RECEP_DUASI,

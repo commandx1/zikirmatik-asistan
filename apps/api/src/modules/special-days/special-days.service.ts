@@ -1,6 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  type OnApplicationBootstrap,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
+import { istanbulDateKey } from '../../common/utils/date-keys';
 import type { LocalizedText } from '../../common/types/localized-text';
 import { CreateSpecialDayDto } from './dto/create-special-day.dto';
 import { QuerySpecialDaysDto } from './dto/query-special-days.dto';
@@ -11,6 +17,18 @@ import {
   type SpecialDayDocument,
   type SpecialDayPractice,
 } from './schemas/special-day.schema';
+import { SPECIAL_DAYS_MIN_COVERAGE_DAYS } from './special-days.constants';
+
+/**
+ * `getCoverage()` sonucu — aktif özel gün kayıtları ne kadar ileriye kadar
+ * veri içeriyor (bkz. SPECIAL_DAYS_MIN_COVERAGE_DAYS). Kayıt yoksa veya
+ * sorgu hata verirse alanlar null/false olur; throw edilmez.
+ */
+export type SpecialDaysCoverage = {
+  lastKnownDate: string | null;
+  daysAhead: number | null;
+  ok: boolean;
+};
 
 type SpecialDayLean = {
   _id: Types.ObjectId;
@@ -31,11 +49,81 @@ type SpecialDayLean = {
 };
 
 @Injectable()
-export class SpecialDaysService {
+export class SpecialDaysService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(SpecialDaysService.name);
+
   constructor(
     @InjectModel(SpecialDay.name)
     private readonly specialDayModel: Model<SpecialDayDocument>,
   ) {}
+
+  // Açılışta veri ufkunu kontrol eder. Test ortamında (jest) çalışmaz ki
+  // spec logları kirlenmesin; production/development'ta bootstrap'ı
+  // bloklamamak için await edilmez, sonuç .then/.catch ile ele alınır.
+  onApplicationBootstrap(): void {
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+
+    this.getCoverage()
+      .then((coverage) => this.warnIfCoverageInsufficient(coverage))
+      .catch((error: unknown) => {
+        this.logger.error(
+          `[special-days] açılış kapsama kontrolü başarısız: ${describeError(error)}`,
+        );
+      });
+  }
+
+  /**
+   * Aktif kayıtlar arasındaki en ileri `date` değerini bugüne (İstanbul)
+   * göre karşılaştırıp veri ufkunun SPECIAL_DAYS_MIN_COVERAGE_DAYS eşiğini
+   * karşılayıp karşılamadığını döner. Sorgu hatasında throw etmez; her
+   * zaman `ok:false` ve null alanlarla döner ki çağıran (örn. açılış
+   * uyarısı) güvenle kullanabilsin.
+   */
+  async getCoverage(): Promise<SpecialDaysCoverage> {
+    try {
+      const latest = await this.specialDayModel
+        .findOne({ isActive: true })
+        .sort({ date: -1 })
+        .select('date')
+        .lean()
+        .exec();
+
+      if (!latest?.date) {
+        return { lastKnownDate: null, daysAhead: null, ok: false };
+      }
+
+      const today = istanbulDateKey(new Date());
+      const daysAhead = diffDateKeysInDays(today, latest.date);
+
+      return {
+        lastKnownDate: latest.date,
+        daysAhead,
+        ok: daysAhead >= SPECIAL_DAYS_MIN_COVERAGE_DAYS,
+      };
+    } catch (error) {
+      this.logger.error(
+        `[special-days] kapsama sorgusu başarısız: ${describeError(error)}`,
+      );
+      return { lastKnownDate: null, daysAhead: null, ok: false };
+    }
+  }
+
+  private warnIfCoverageInsufficient(coverage: SpecialDaysCoverage): void {
+    if (coverage.ok) {
+      return;
+    }
+
+    const detail =
+      coverage.lastKnownDate && coverage.daysAhead !== null
+        ? `son tarih ${coverage.lastKnownDate}, ${coverage.daysAhead} gün kaldı (<${SPECIAL_DAYS_MIN_COVERAGE_DAYS})`
+        : 'hiç kayıt yok';
+
+    this.logger.warn(
+      `[special-days] veri ufku yetersiz: ${detail}. apps/api/scripts/data/hijri-calendar.mjs'e yeni hicri yılı ekleyip seed:special-days çalıştırın.`,
+    );
+  }
 
   async create(payload: CreateSpecialDayDto) {
     const created = await this.specialDayModel.create({
@@ -276,6 +364,26 @@ function normalizeEventKey(value?: string) {
   }
 
   return value.trim().toLocaleLowerCase('tr-TR').replace(/\s+/g, '-');
+}
+
+// Saf YYYY-MM-DD anahtarları arasındaki gün farkı (toKey - fromKey). UTC
+// tarih inşası kullanır (bkz. common/utils/date-keys.ts shiftDateKey) ki
+// yerel saat dilimi/DST kaymaları sonucu etkilemesin.
+function diffDateKeysInDays(fromKey: string, toKey: string): number {
+  const [fromYear, fromMonth, fromDay] = fromKey.split('-').map(Number);
+  const [toYear, toMonth, toDay] = toKey.split('-').map(Number);
+  const fromUtc = Date.UTC(fromYear, fromMonth - 1, fromDay);
+  const toUtc = Date.UTC(toYear, toMonth - 1, toDay);
+
+  return Math.round((toUtc - fromUtc) / (24 * 60 * 60 * 1000));
+}
+
+function describeError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return typeof error === 'string' ? error : 'bilinmeyen hata';
 }
 
 function toDateKey(value: Date) {

@@ -4,6 +4,10 @@ import { Types, type Model } from 'mongoose';
 import { istanbulDateKey, shiftDateKey } from '../../common/utils/date-keys';
 import type { LocalizedText } from '../../common/types/localized-text';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
+import {
+  SpecialDay,
+  type SpecialDayDocument,
+} from '../special-days/schemas/special-day.schema';
 import type {
   VirdProgramItem,
   VirdProgramPhase,
@@ -27,6 +31,11 @@ import {
 // Esma/Kandil dahil, ileride) statik seed verisidir ve dakikalar içinde
 // değişmez; bu yüzden sabit TTL'li basit bir Map yeterlidir.
 const DHIKR_CACHE_TTL_MS = 10 * 60 * 1000;
+
+// sourceEventKey (aile) -> özel günden çözülen anchorDate eşlemesi de aynı
+// desenle (bkz. yukarı) 10 dk bellekte tutulur — özel gün verisi yılda bir
+// güncellenir, bu yüzden kısa TTL'li basit bir Map fazlasıyla yeterlidir.
+const SPECIAL_DAY_ANCHOR_CACHE_TTL_MS = 10 * 60 * 1000;
 
 type DhikrCacheEntry = {
   dhikrId: string;
@@ -94,18 +103,26 @@ export class VirdTemplatesService {
     expiresAt: number;
     byKey: Map<string, DhikrCacheEntry>;
   };
+  private specialDayAnchorCache?: {
+    expiresAt: number;
+    byFamily: Map<string, string | null>;
+  };
 
   constructor(
     @InjectModel(VirdTemplate.name)
     private readonly virdTemplateModel: Model<VirdTemplateDocument>,
     @InjectModel(Dhikr.name) private readonly dhikrModel: Model<DhikrDocument>,
+    @InjectModel(SpecialDay.name)
+    private readonly specialDayModel: Model<SpecialDayDocument>,
   ) {}
 
   /**
-   * Aktif şablonların meta listesi. `anchorDate` dolu VE `anchorDate + dayCount`
-   * bugünden (İstanbul) önceyse (özel güne bağlı bir şablonun günü geçmişse)
-   * listeden gizlenir — klasik (routine, anchorDate'siz) şablonlar bu kurala
-   * hiç tabi değildir.
+   * Aktif şablonların meta listesi. `sourceEventKey` taşıyan şablonlarda
+   * anchorDate special_days'ten dinamik çözülür (bkz. resolveAnchorDate);
+   * özel günden gelecekte bir kayıt bulunamazsa şablon gizlenir. Diğer
+   * şablonlarda (statik anchorDate ya da hiç anchorDate'siz) eski davranış
+   * korunur: `anchorDate + dayCount` bugünden (İstanbul) önceyse gizlenir —
+   * klasik (routine, anchorDate'siz) şablonlar bu kurala hiç tabi değildir.
    */
   async findAllActive(): Promise<VirdTemplateSummary[]> {
     const templates = await this.virdTemplateModel
@@ -118,15 +135,27 @@ export class VirdTemplatesService {
         isPremium: 1,
         dayCount: 1,
         anchorDate: 1,
+        sourceEventKey: 1,
       })
       .sort({ createdAt: 1 })
       .lean()
       .exec();
 
     const todayKey = istanbulDateKey(new Date());
-    return templates
-      .filter((template) => !this.isPastAnchor(template, todayKey))
-      .map((template) => this.toSummary(template));
+    const visible: VirdTemplateSummary[] = [];
+    for (const template of templates) {
+      const anchorDate = await this.resolveAnchorDate(template, todayKey);
+      if (template.sourceEventKey && !anchorDate) {
+        // Özel güne bağlı şablon, ama gelecekte/sürmekte olan bir kaydı yok.
+        continue;
+      }
+      const effective = { ...template, anchorDate };
+      if (this.isPastAnchor(effective, todayKey)) {
+        continue;
+      }
+      visible.push(this.toSummary(effective));
+    }
+    return visible;
   }
 
   /**
@@ -157,14 +186,12 @@ export class VirdTemplatesService {
   async resolveForProgram(
     key: string,
   ): Promise<ResolvedTemplateForProgram | null> {
-    const template = await this.virdTemplateModel
-      .findOne({ key, isActive: true })
-      .lean()
-      .exec();
-    // Süresi geçmiş (anchorDate + dayCount bugünden önce) bir şablon listeden
+    // Süresi geçmiş (anchorDate + dayCount bugünden önce) ya da özel güne
+    // bağlı olup gelecekte bir kaydı bulunamayan bir şablon listeden
     // gizlendiği gibi, ondan yeni bir program oluşturmak da engellenir — bkz.
-    // isPastAnchor / findAllActive.
-    if (!template || this.isPastAnchor(template, istanbulDateKey(new Date()))) {
+    // resolveActiveTemplateDoc / findAllActive.
+    const template = await this.resolveActiveTemplateDoc(key);
+    if (!template) {
       return null;
     }
 
@@ -202,14 +229,44 @@ export class VirdTemplatesService {
   // --- helpers ---
 
   private async findActiveTemplateDocByKey(key: string): Promise<VirdTemplate> {
+    const template = await this.resolveActiveTemplateDoc(key);
+    if (!template) {
+      throw new NotFoundException('Vird şablonu bulunamadı.');
+    }
+    return template;
+  }
+
+  /**
+   * `key` + isActive:true şablonunu bulur ve dinamik anchorDate'i çözer
+   * (bkz. resolveAnchorDate) — dönen doküman, `sourceEventKey`'i varsa
+   * `anchorDate` alanı ÇÖZÜLMÜŞ değerle değiştirilmiş bir kopyadır. Şablon
+   * yoksa, özel güne bağlı olup gelecekte/sürmekte olan bir kaydı
+   * bulunamıyorsa, ya da (statik anchorDate'li klasik durumda) süresi
+   * geçmişse null döner — ASLA fırlatmaz; 404'e çevirmek/null olarak kabul
+   * etmek çağıranın işidir (bkz. findActiveTemplateDocByKey / resolveForProgram).
+   */
+  private async resolveActiveTemplateDoc(
+    key: string,
+  ): Promise<VirdTemplate | null> {
     const template = await this.virdTemplateModel
       .findOne({ key, isActive: true })
       .lean()
       .exec();
-    if (!template || this.isPastAnchor(template, istanbulDateKey(new Date()))) {
-      throw new NotFoundException('Vird şablonu bulunamadı.');
+    if (!template) {
+      return null;
     }
-    return template;
+
+    const todayKey = istanbulDateKey(new Date());
+    const anchorDate = await this.resolveAnchorDate(template, todayKey);
+    if (template.sourceEventKey && !anchorDate) {
+      return null;
+    }
+
+    const effective = { ...template, anchorDate };
+    if (this.isPastAnchor(effective, todayKey)) {
+      return null;
+    }
+    return effective;
   }
 
   private toSummary(template: {
@@ -251,6 +308,92 @@ export class VirdTemplatesService {
     }
     const endKey = shiftDateKey(template.anchorDate, dayCount);
     return endKey < todayKey;
+  }
+
+  /** `sourceEventKey`'i olmayan şablonlarda `anchorDate` aynen döner
+   * (geriye uyumluluk: statik anchorDate'li ya da hiç anchorDate'siz klasik
+   * şablonlar eskisi gibi davranır). `sourceEventKey`'i olan şablonlarda
+   * anchor special_days'ten DİNAMİK çözülür (bkz. findUpcomingAnchorDate) ve
+   * 10 dk bellek cache'te tutulur (dhikrCache ile aynı desen — bkz. dosya
+   * başı yorumu); cache anahtarı `sourceEventKey`'in kendisidir, bulunamayan
+   * bir aile de `null` olarak cache'lenir (her istekte tekrar sorgulanmaz). */
+  private async resolveAnchorDate(
+    template: { anchorDate?: string; sourceEventKey?: string },
+    todayKey: string,
+  ): Promise<string | undefined> {
+    if (!template.sourceEventKey) {
+      return template.anchorDate;
+    }
+
+    const cache = this.freshSpecialDayAnchorCache();
+    if (cache.has(template.sourceEventKey)) {
+      return cache.get(template.sourceEventKey) ?? undefined;
+    }
+
+    const anchorDate = await this.findUpcomingAnchorDate(
+      template.sourceEventKey,
+      todayKey,
+    );
+    cache.set(template.sourceEventKey, anchorDate ?? null);
+    this.specialDayAnchorCache = {
+      expiresAt: Date.now() + SPECIAL_DAY_ANCHOR_CACHE_TTL_MS,
+      byFamily: cache,
+    };
+    return anchorDate;
+  }
+
+  private freshSpecialDayAnchorCache(): Map<string, string | null> {
+    if (
+      this.specialDayAnchorCache &&
+      this.specialDayAnchorCache.expiresAt > Date.now()
+    ) {
+      return this.specialDayAnchorCache.byFamily;
+    }
+    return new Map();
+  }
+
+  /** `familyKey` (ör. 'ramazan-gunleri', yıl eki YOK) ile başlayıp bir yıl
+   * sonekiyle biten (`^familyKey-\d{4}$`) special_days kayıtları arasından,
+   * HENÜZ bitmemiş en erken "1. gün" kaydının tarihini bulur. Çok günlü
+   * ailelerde (Ramazan) her günün kendi satırı vardır — bu yüzden yalnız
+   * `dayIndex:1` (ya da dayIndex'i hiç olmayan/`null` olan, kandil gecesi
+   * gibi tek günlük aileler — `$in:[1,null]` her ikisini de yakalar) adaydır;
+   * aksi halde bir yolculuğun ORTASINDA (dayIndex:1 tarihi geçmiş ama bitişi
+   * henüz gelmemiş) anchor yanlışlıkla bir sonraki yıla kayardı. "Henüz
+   * bitmemiş" kaydın kendi `dayCount`'una göre hesaplanan bitiş günü
+   * (`date + dayCount - 1`) >= bugün demektir — dayCount yoksa (tek günlük
+   * kandil) bitiş = kaydın kendi tarihidir. Uygun kayıt yoksa (aile hiç
+   * seed'lenmemiş ya da tüm tekrarları bitmiş) undefined döner — şablon
+   * çağıran tarafından (findAllActive/resolveActiveTemplateDoc) gizlenir. */
+  private async findUpcomingAnchorDate(
+    familyKey: string,
+    todayKey: string,
+  ): Promise<string | undefined> {
+    const pattern = new RegExp(`^${escapeRegExp(familyKey)}-\\d{4}$`);
+    const candidates = await this.specialDayModel
+      .find({
+        eventKey: pattern,
+        isActive: true,
+        // $in:[1,null] hem alanı hiç yazılmamış (undefined/yok) hem de
+        // özel gün seed'inin bilerek `dayIndex: null` yazdığı tek günlük
+        // (kandil) kayıtları yakalar.
+        dayIndex: { $in: [1, null] },
+      })
+      .select({ date: 1, dayCount: 1 })
+      .sort({ date: 1 })
+      .lean()
+      .exec();
+
+    for (const candidate of candidates) {
+      const endKey =
+        typeof candidate.dayCount === 'number'
+          ? shiftDateKey(candidate.date, candidate.dayCount - 1)
+          : candidate.date;
+      if (endKey >= todayKey) {
+        return candidate.date;
+      }
+    }
+    return undefined;
   }
 
   /** journey şablonlarında `dayCount` alanı DB'de eksikse fazlardan
@@ -430,4 +573,8 @@ export class VirdTemplatesService {
     }
     return new Map();
   }
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

@@ -109,13 +109,13 @@ export const regaibKandili = {
         en: "Laylat al-Ragha'ib",
       },
       type: 'kandil',
-      date: '2025-12-25',
-      hijriDate: '5 Recep 1447',
+      hijriRule: { type: 'first-weekday-on-or-after', month: 'recep', weekday: 'thursday' },
       description: {
         tr: "Recep ayının ilk Cuma gecesi: ilahi rahmetin sağanak gibi indiği, meleklerin çokça rağbet ettiği mübarek gece. 12 rekatlık Regâib namazı, secdede özel tesbihat ve Seyyidü'l-İstiğfar ile ihya edilir.",
         en: "The first Friday night of the month of Rajab: the blessed night on which divine mercy pours down in abundance and the angels are abundantly present. It is kept alive with the twelve-rak'ah Ragha'ib prayer, special glorifications in prostration, and Sayyid al-Istighfar.",
       },
-      eventKey: 'regaib-kandili-2025',
+      eventFamily: 'regaib-kandili',
+      onlyHijriYears: [1447],
       priority: 160,
       dhikrKeys: [
         keyMap.RECEP_DUASI,
@@ -133,8 +133,7 @@ export const regaibKandili = {
       type: 'kandil',
       // Diyanet 2026 Dini Günler Listesi: 10 Aralık 2026 Perşembe
       // (1 Receb 1448) — perşembeyi cumaya bağlayan gece.
-      date: '2026-12-10',
-      hijriDate: '1 Recep 1448',
+      hijriRule: { type: 'first-weekday-on-or-after', month: 'recep', weekday: 'thursday' },
       description: {
         tr: "Recep ayının ilk cuma gecesi. Halk arasında kandil olarak idrak edilir; geceye mahsus sahih bir ibadet şekli nakledilmemiştir, nafile ibadet ve dua ile değerlendirilir.",
         en: 'The first Friday night of Rajab, observed as a kandil night. No form of worship specific to it is soundly transmitted; it is spent in voluntary devotion and supplication.',
@@ -203,7 +202,8 @@ Ragha'ib also falls in the opening days of Rajab — that is, right at the start
           },
         },
       ],
-      eventKey: 'regaib-kandili-2026',
+      eventFamily: 'regaib-kandili',
+      excludeHijriYears: [1447],
       priority: 160,
       dhikrKeys: [
         keyMap.RECEP_DUASI,

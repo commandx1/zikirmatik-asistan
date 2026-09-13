@@ -34,8 +34,7 @@ export const hicriAyBaslangiclari = {
         en: 'Beginning of Rabi al-Awwal',
       },
       type: 'özel gün',
-      date: '2026-08-14',
-      hijriDate: '1 Rebiülevvel 1448',
+      hijri: { month: 'rebiulevvel', day: 1 },
       description: {
         tr: "Peygamber Efendimiz'in doğduğu, hicretle Medine'ye ulaştığı ve vefat ettiği ay başlıyor. Salavat ve siyerle karşılanan bir ay.",
         en: "The month in which the Prophet was born, reached Medina in the hijra, and passed away. A month met with salawat and the reading of his life.",
@@ -86,7 +85,7 @@ The most fitting intention on entering this month, then, is to make salawat a da
           },
         },
       ],
-      eventKey: 'hicri-ay-baslangici-rebiulevvel-1448',
+      eventFamily: 'hicri-ay-baslangici-rebiulevvel',
       priority: 130,
       dhikrKeys: [
         keyMap.HILAL_DUASI,
@@ -102,8 +101,7 @@ The most fitting intention on entering this month, then, is to make salawat a da
         en: 'Beginning of Rabi al-Akhir',
       },
       type: 'özel gün',
-      date: '2026-09-12',
-      hijriDate: '1 Rebiülahir 1448',
+      hijri: { month: 'rebiulahir', day: 1 },
       description: {
         tr: 'Hicri yılın dördüncü ayı başlıyor. Aya mahsus özel bir ibadeti yoktur; her ay geçerli olan sünnetlerle karşılanır.',
         en: 'The fourth month of the Hijri year begins. It has no worship specific to it; it is met with the sunnas that apply to every month.',
@@ -154,7 +152,7 @@ The start of a month is also a natural point for a brief self-reckoning. Which i
           },
         },
       ],
-      eventKey: 'hicri-ay-baslangici-rebiulahir-1448',
+      eventFamily: 'hicri-ay-baslangici-rebiulahir',
       priority: 130,
       dhikrKeys: [
         keyMap.HILAL_DUASI,
@@ -170,8 +168,7 @@ The start of a month is also a natural point for a brief self-reckoning. Which i
         en: 'Beginning of Jumada al-Ula',
       },
       type: 'özel gün',
-      date: '2026-10-12',
-      hijriDate: '1 Cemaziyelevvel 1448',
+      hijri: { month: 'cemaziyelevvel', day: 1 },
       description: {
         tr: 'Hicri yılın beşinci ayı başlıyor. Aya mahsus özel bir ibadeti yoktur; her ay geçerli olan sünnetlerle karşılanır.',
         en: 'The fifth month of the Hijri year begins. It has no worship specific to it; it is met with the sunnas that apply to every month.',
@@ -222,7 +219,7 @@ The turn of a Hijri month is also a natural point at which to review one's devot
           },
         },
       ],
-      eventKey: 'hicri-ay-baslangici-cemaziyelevvel-1448',
+      eventFamily: 'hicri-ay-baslangici-cemaziyelevvel',
       priority: 130,
       dhikrKeys: [
         keyMap.HILAL_DUASI,
@@ -238,8 +235,7 @@ The turn of a Hijri month is also a natural point at which to review one's devot
         en: 'Beginning of Jumada al-Akhira',
       },
       type: 'özel gün',
-      date: '2026-11-10',
-      hijriDate: '1 Cemaziyelahir 1448',
+      hijri: { month: 'cemaziyelahir', day: 1 },
       description: {
         tr: 'Hicri yılın altıncı ayı başlıyor. Üç Aylar\'dan önceki son ay; hazırlık ve muhasebe için uygun bir dönem.',
         en: 'The sixth month of the Hijri year begins — the last before the Three Holy Months, a fitting period for preparation and self-reckoning.',
@@ -290,7 +286,7 @@ Alongside this, the sunnas that hold for every month continue: supplicating upon
           },
         },
       ],
-      eventKey: 'hicri-ay-baslangici-cemaziyelahir-1448',
+      eventFamily: 'hicri-ay-baslangici-cemaziyelahir',
       priority: 130,
       dhikrKeys: [
         keyMap.HILAL_DUASI,

@@ -189,12 +189,22 @@ async function main() {
     for (const template of templates) {
       try {
         const now = new Date();
+        const update = {
+          $set: { ...template, updatedAt: now },
+          $setOnInsert: { createdAt: now },
+        };
+        // template.anchorDate === undefined ise ({...template} bu alanı
+        // hiç içermez) — sourceEventKey'li (Ramazan/kandil) şablonlarda artık
+        // hep bu durumdayız. $set aynı alanı taşımadığı için $unset ile
+        // çakışma yok; bu, önceden statik anchorDate ile seed'lenmiş eski
+        // DB kayıtlarındaki artık kalıntı olan değeri temizler (bkz.
+        // docs/vird-programi.md "anchorDate artık dinamik" notu).
+        if (template.anchorDate === undefined) {
+          update.$unset = { anchorDate: '' };
+        }
         const result = await templatesCol.updateOne(
           { key: template.key },
-          {
-            $set: { ...template, updatedAt: now },
-            $setOnInsert: { createdAt: now },
-          },
+          update,
           { upsert: true },
         );
         if (result.upsertedCount > 0) {

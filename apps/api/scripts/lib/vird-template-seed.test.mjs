@@ -220,8 +220,11 @@ test('buildRamazanJourneyTemplate: 29 faz, fromDay/toDay 1..29 boslulsuz, her fa
   assert.equal(template.isPremium, true);
   assert.equal(template.isActive, true);
   assert.equal(template.dayCount, ramazanGunleri.specialDays.length);
-  assert.equal(template.anchorDate, RAMAZAN_JOURNEY_SPEC.anchorDate);
-  assert.equal(template.sourceEventKey, 'ramazan-gunleri-1448');
+  // anchorDate artik seed'de sabitlenmez — VirdTemplatesService okuma
+  // aninda special_days'ten dinamik cozer (bkz. sourceEventKey).
+  assert.equal(template.anchorDate, undefined);
+  assert.equal(template.sourceEventKey, 'ramazan-gunleri');
+  assert.equal(template.sourceEventKey, RAMAZAN_JOURNEY_SPEC.sourceEventKey);
   // Dini metin YAZILMADI: title/description dogrudan mevcut dataset'ten.
   assert.deepEqual(template.title, ramazanGunleri.label);
   assert.deepEqual(template.description, ramazanGunleri.description);
@@ -255,7 +258,6 @@ test('buildRamazanJourneyTemplate: bilinmeyen dhikrKey unresolvedKeys listesine 
   const { template, unresolvedKeys } = buildRamazanJourneyTemplate([sahteDataset], {
     templateKey: 'sahte-ramazan-sablon',
     datasetKey: 'sahte-ramazan',
-    anchorDate: '2099-01-01',
     sourceEventKey: 'sahte',
   });
 
@@ -315,12 +317,24 @@ test('buildKandilJourneyTemplates: 5 sablon, her biri tek faz x night dilimi, ca
   ].sort();
   assert.deepEqual(templates.map((t) => t.key).sort(), expectedKeys);
 
+  // sourceEventKey artik yil eki TASIMAYAN bir "aile" anahtaridir; anchorDate
+  // seed'de hic yazilmaz — VirdTemplatesService okuma aninda special_days'ten
+  // dinamik cozer (bkz. resolveAnchorDate).
+  const expectedFamilyByKey = {
+    'kandil-regaib': 'regaib-kandili',
+    'kandil-mirac': 'mirac-kandili',
+    'kandil-berat': 'berat-kandili',
+    'kandil-kadir': 'kadir-gecesi',
+    'kandil-mevlid': 'mevlid-kandili',
+  };
+
   for (const template of templates) {
     assert.equal(template.kind, 'journey');
     assert.equal(template.isPremium, true);
     assert.equal(template.dayCount, 1);
     assert.equal(template.isActive, true);
-    assert.ok(typeof template.anchorDate === 'string' && template.anchorDate.length > 0);
+    assert.equal(template.anchorDate, undefined);
+    assert.equal(template.sourceEventKey, expectedFamilyByKey[template.key]);
     assert.equal(template.phases.length, 1);
     assert.equal(template.phases[0].fromDay, 1);
     assert.equal(template.phases[0].toDay, 1);

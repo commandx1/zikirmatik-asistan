@@ -19,13 +19,12 @@ export const zilkadeAyi = {
         en: "Beginning of the Month of Dhu al-Qi'dah",
       },
       type: 'özel gün',
-      date: '2026-04-18',
-      hijriDate: '1 Zilkade 1447',
+      hijri: { month: 'zilkade', day: 1 },
       description: {
         tr: "Dört haram aydan biri olan Zilkade'nin ilk günü. Hac öncesi manevi hazırlık, tevbe ve istiğfarla girilmesi tavsiye edilen mübarek ay.",
         en: "The first day of Dhu al-Qi'dah, one of the four sacred months. A blessed month recommended to be entered with spiritual preparation before Hajj, repentance, and seeking forgiveness (istighfar).",
       },
-      eventKey: 'zilkade-ayi-2026',
+      eventFamily: 'zilkade-ayi',
       priority: 145,
       dhikrKeys: [
         keyMap.ISTIGFAR,

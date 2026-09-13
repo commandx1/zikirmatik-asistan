@@ -16,14 +16,6 @@
  */
 
 import { normalizeTimeOfDay } from './time-of-day.mjs';
-import {
-  REGAIB_KANDILI_ANCHOR,
-  MIRAC_KANDILI_ANCHOR,
-  BERAT_KANDILI_ANCHOR,
-  RAMAZAN_1448_START,
-  KADIR_GECESI_ANCHOR,
-  MEVLID_KANDILI_ANCHOR,
-} from '../data/special-days-1448.mjs';
 
 /**
  * Bir dataset'ten (bkz. scripts/data/sourceDataset.mjs) tek fazlı/tek
@@ -236,14 +228,16 @@ function resolveDhikrKeysToItems(dhikrKeys, dhikrIndex, defaultTarget = 33) {
 }
 
 // datasetKey: apps/api/scripts/data/ramazanGunleri.mjs → ramazanGunleri.key.
-// anchorDate/sourceEventKey 1448 (bir sonraki Ramazan) içindir — dataset
-// içeriği (dhikirler) hicri yıldan bağımsız, genel bir Ramazan vird'idir;
-// bkz. apps/api/scripts/data/special-days-1448.mjs (DOĞRULA notları).
+// anchorDate ARTIK BURADA SABİTLENMEZ: sourceEventKey bir yıl eki olmayan
+// "olay ailesi" anahtarıdır — VirdTemplatesService okuma anında special_days
+// içinde bu aileyle eşleşen (`^ramazan-gunleri-\d{4}$`) ve tarihi henüz
+// bitmemiş en erken kaydın 1. gününden anchor'ı dinamik çözer (bkz.
+// vird-templates.service.ts resolveAnchorDate). Dataset içeriği (dhikirler)
+// hicri yıldan bağımsız, genel bir Ramazan vird'idir.
 export const RAMAZAN_JOURNEY_SPEC = {
   templateKey: 'ramazan-1448',
   datasetKey: 'ramazan-gunleri-2026',
-  anchorDate: RAMAZAN_1448_START,
-  sourceEventKey: 'ramazan-gunleri-1448',
+  sourceEventKey: 'ramazan-gunleri',
 };
 
 /**
@@ -303,7 +297,6 @@ export function buildRamazanJourneyTemplate(datasets, spec = RAMAZAN_JOURNEY_SPE
     description: dataset.description,
     isPremium: true,
     dayCount: spec.dayCount ?? sortedDays.length,
-    anchorDate: spec.anchorDate,
     phases,
     sourceEventKey: spec.sourceEventKey,
     isActive: true,
@@ -381,41 +374,36 @@ function chunkArray(items, size) {
 
 // Kandil gecesi programları: dataset'in TEK specialDay'i (`specialDays[0]`)
 // tek fazlı/tek gecelik (dayCount:1, slot:'night') bir journey'e dönüşür.
-// anchorDate'ler bugünden (2026-09-12) sonraki en yakın tekrara aittir — bkz.
-// apps/api/scripts/data/special-days-1448.mjs (kaynak: repo verisi ya da
-// DOĞRULA gerektiren tahmin).
+// anchorDate ARTIK BURADA SABİTLENMEZ (bkz. RAMAZAN_JOURNEY_SPEC üstündeki
+// yorum): sourceEventKey yıl eki olmayan bir aile anahtarıdır, anchor
+// VirdTemplatesService tarafında special_days'ten okuma anında dinamik
+// çözülür — özel gün verisi yıllık güncellendiğinde şablon kendiliğinden bir
+// sonraki tekrara kayar.
 export const KANDIL_JOURNEY_SPECS = [
   {
     templateKey: 'kandil-regaib',
     datasetKey: 'regaib-kandili-2025',
-    anchorDate: REGAIB_KANDILI_ANCHOR,
-    sourceEventKey: 'regaib-kandili-1448',
+    sourceEventKey: 'regaib-kandili',
   },
   {
     templateKey: 'kandil-mirac',
     datasetKey: 'mirac-kandili-2026',
-    anchorDate: MIRAC_KANDILI_ANCHOR,
-    sourceEventKey: 'mirac-kandili-1448',
+    sourceEventKey: 'mirac-kandili',
   },
   {
     templateKey: 'kandil-berat',
     datasetKey: 'berat-kandili-2026',
-    anchorDate: BERAT_KANDILI_ANCHOR,
-    sourceEventKey: 'berat-kandili-1448',
+    sourceEventKey: 'berat-kandili',
   },
   {
     templateKey: 'kandil-kadir',
     datasetKey: 'kadir-gecesi-2026',
-    anchorDate: KADIR_GECESI_ANCHOR,
-    sourceEventKey: 'kadir-gecesi-1448',
+    sourceEventKey: 'kadir-gecesi',
   },
   {
     templateKey: 'kandil-mevlid',
     datasetKey: 'mevlid-kandili-2026',
-    anchorDate: MEVLID_KANDILI_ANCHOR,
-    // 1448'in Mevlid'i (2026-08-23/24) zaten geçti; bir sonraki tekrar 1449'a
-    // aittir (bkz. special-days-1448.mjs).
-    sourceEventKey: 'mevlid-kandili-1449',
+    sourceEventKey: 'mevlid-kandili',
   },
 ];
 
@@ -462,7 +450,6 @@ export function buildKandilJourneyTemplates(datasets, specs = KANDIL_JOURNEY_SPE
       description: specialDay.description,
       isPremium: true,
       dayCount: 1,
-      anchorDate: spec.anchorDate,
       phases: [{ fromDay: 1, toDay: 1, slots: { night: items } }],
       sourceEventKey: spec.sourceEventKey,
       isActive: true,

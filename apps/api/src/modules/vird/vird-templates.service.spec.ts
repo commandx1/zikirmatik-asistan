@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
+import { istanbulDateKey, shiftDateKey } from '../../common/utils/date-keys';
 import { VirdTemplatesService } from './vird-templates.service';
 
 describe('VirdTemplatesService', () => {
@@ -9,6 +10,10 @@ describe('VirdTemplatesService', () => {
   };
 
   const dhikrModel = {
+    find: jest.fn(),
+  };
+
+  const specialDayModel = {
     find: jest.fn(),
   };
 
@@ -38,6 +43,18 @@ describe('VirdTemplatesService', () => {
     });
   }
 
+  /** special_days'ten dönen "1. gün" adaylarını simüle eder — bkz.
+   * VirdTemplatesService.findUpcomingAnchorDate (find→select→sort→lean→exec). */
+  function mockSpecialDayCandidates(docs: Record<string, unknown>[]) {
+    specialDayModel.find.mockReturnValue({
+      select: () => ({
+        sort: () => ({
+          lean: () => ({ exec: jest.fn().mockResolvedValue(docs) }),
+        }),
+      }),
+    });
+  }
+
   function dhikrDoc(overrides: { _id: Types.ObjectId; key: string }) {
     return {
       _id: overrides._id,
@@ -53,9 +70,11 @@ describe('VirdTemplatesService', () => {
     virdTemplateModel.find.mockReset();
     virdTemplateModel.findOne.mockReset();
     dhikrModel.find.mockReset();
+    specialDayModel.find.mockReset();
     service = new VirdTemplatesService(
       virdTemplateModel as never,
       dhikrModel as never,
+      specialDayModel as never,
     );
   });
 
@@ -372,6 +391,203 @@ describe('VirdTemplatesService', () => {
       nowSpy.mockReturnValue(1_000_000 + 10 * 60 * 1000 + 1);
       await service.findByKey('klasik-sabah');
       expect(dhikrModel.find).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('sourceEventKey → anchorDate çözümü (special_days)', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    const kandilTemplate = {
+      key: 'kandil-kadir',
+      kind: 'journey',
+      isPremium: true,
+      dayCount: 1,
+      sourceEventKey: 'kadir-gecesi',
+    };
+
+    it('findAllActive: gelecekte bir özel gün kaydı varsa anchorDate o kaydın tarihine çözülür', async () => {
+      mockFindAllTemplates([kandilTemplate]);
+      mockSpecialDayCandidates([{ date: '2099-05-01' }]);
+
+      const result = await service.findAllActive();
+
+      expect(result).toEqual([
+        expect.objectContaining({
+          key: 'kandil-kadir',
+          anchorDate: '2099-05-01',
+        }),
+      ]);
+    });
+
+    it('findAllActive: özel günden gelecekte/sürmekte olan bir kayıt bulunamazsa şablon gizlenir', async () => {
+      mockFindAllTemplates([kandilTemplate]);
+      mockSpecialDayCandidates([]);
+
+      await expect(service.findAllActive()).resolves.toEqual([]);
+    });
+
+    it('findAllActive: sourceEventKey YOK ise (klasik/statik anchorDate) special_days hiç sorgulanmaz', async () => {
+      mockFindAllTemplates([
+        { key: 'klasik-sabah', kind: 'routine', isPremium: false },
+      ]);
+
+      const result = await service.findAllActive();
+
+      expect(result).toHaveLength(1);
+      expect(specialDayModel.find).not.toHaveBeenCalled();
+    });
+
+    it("special_days sorgusu family+yıl regex'i, isActive:true ve dayIndex:{$in:[1,null]} filtresini birlikte kullanır", async () => {
+      mockFindAllTemplates([
+        {
+          ...kandilTemplate,
+          key: 'ramazan-1448',
+          sourceEventKey: 'ramazan-gunleri',
+        },
+      ]);
+      mockSpecialDayCandidates([{ date: '2099-01-01', dayCount: 29 }]);
+
+      await service.findAllActive();
+
+      expect(specialDayModel.find).toHaveBeenCalledTimes(1);
+      const firstCallArgs = specialDayModel.find.mock.calls[0] as unknown[];
+      const filter = firstCallArgs[0] as {
+        eventKey: RegExp;
+        isActive: boolean;
+        dayIndex: { $in: unknown[] };
+      };
+      expect(filter.isActive).toBe(true);
+      // $in:[1,null] hem dayIndex'i hiç olmayan (undefined) hem de bilerek
+      // null yazılmış (tek günlük kandil) kayıtları yakalar.
+      expect(filter.dayIndex).toEqual({ $in: [1, null] });
+      expect(filter.eventKey).toBeInstanceOf(RegExp);
+      // Aile önekiyle başlayıp TAM 4 haneli bir yıl soneki ile bitmeli.
+      expect(filter.eventKey.test('ramazan-gunleri-2026')).toBe(true);
+      expect(filter.eventKey.test('ramazan-gunleri-2026-ekstra')).toBe(false);
+      expect(filter.eventKey.test('kadir-gecesi-2026')).toBe(false);
+    });
+
+    it('Ramazan senaryosu (dayIndex:1): bitmiş bir tekrarı atlar, bitişi henüz gelmemiş EN ERKEN kaydı anchor yapar', async () => {
+      const todayKey = istanbulDateKey(new Date());
+      const bittiTekrar = shiftDateKey(todayKey, -400); // 400 gün önce başlamış, 29 günlük — çok önce bitti
+      const gelecekTekrar = shiftDateKey(todayKey, 10); // henüz başlamamış
+
+      mockFindAllTemplates([
+        {
+          ...kandilTemplate,
+          key: 'ramazan-1448',
+          dayCount: 29,
+          sourceEventKey: 'ramazan-gunleri',
+        },
+      ]);
+      // special_days'ten dönen adaylar HER ZAMAN dayIndex:1 (ya da dayIndex'siz)
+      // satırlardır — servis kendi tarafında tekrar dayIndex filtrelemez, bkz.
+      // yukarıdaki sorgu testi.
+      mockSpecialDayCandidates([
+        { date: bittiTekrar, dayCount: 29 },
+        { date: gelecekTekrar, dayCount: 29 },
+      ]);
+
+      const result = await service.findAllActive();
+
+      expect(result[0].anchorDate).toBe(gelecekTekrar);
+    });
+
+    it('Ramazan senaryosu: yolculuğun ORTASINDAYSA (1. gün tarihi geçmiş ama bitiş günü gelecekte) anchor bir sonraki yıla KAYMAZ', async () => {
+      const todayKey = istanbulDateKey(new Date());
+      const dayOne = shiftDateKey(todayKey, -5); // 5 gün önce başladı, 29 gün sürüyor — bitişi hâlâ ileride
+
+      mockFindAllTemplates([
+        {
+          ...kandilTemplate,
+          key: 'ramazan-1448',
+          dayCount: 29,
+          sourceEventKey: 'ramazan-gunleri',
+        },
+      ]);
+      mockSpecialDayCandidates([{ date: dayOne, dayCount: 29 }]);
+
+      const result = await service.findAllActive();
+
+      expect(result[0].anchorDate).toBe(dayOne);
+    });
+
+    it('resolveForProgram: özel günden çözülen anchorDate template.anchorDate olarak döner', async () => {
+      mockFindOneTemplate({
+        ...kandilTemplate,
+        phases: [
+          {
+            fromDay: 1,
+            toDay: 1,
+            slots: { night: [{ dhikrKey: 'k1', target: 10 }] },
+          },
+        ],
+      });
+      mockSpecialDayCandidates([{ date: '2099-05-01' }]);
+      mockDhikrDocs([dhikrDoc({ _id: new Types.ObjectId(), key: 'k1' })]);
+
+      const resolved = await service.resolveForProgram('kandil-kadir');
+
+      expect(resolved?.template.anchorDate).toBe('2099-05-01');
+    });
+
+    it("resolveForProgram: özel günden kayıt bulunamazsa null döner (404'e çevirmek çağıranın işi)", async () => {
+      mockFindOneTemplate({ ...kandilTemplate, phases: [] });
+      mockSpecialDayCandidates([]);
+
+      await expect(
+        service.resolveForProgram('kandil-kadir'),
+      ).resolves.toBeNull();
+    });
+
+    it('findByKey: özel günden kayıt bulunamazsa NotFoundException fırlatır', async () => {
+      mockFindOneTemplate({ ...kandilTemplate, phases: [] });
+      mockSpecialDayCandidates([]);
+
+      await expect(service.findByKey('kandil-kadir')).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+
+    it('cache: aynı sourceEventKey için 10 dk TTL penceresinde special_days tekrar sorgulanmaz', async () => {
+      mockFindAllTemplates([kandilTemplate]);
+      mockSpecialDayCandidates([{ date: '2099-05-01' }]);
+
+      await service.findAllActive();
+      await service.findAllActive();
+
+      expect(specialDayModel.find).toHaveBeenCalledTimes(1);
+    });
+
+    it('cache: 10 dakikalık pencere geçince special_days tekrar sorgulanır', async () => {
+      mockFindAllTemplates([kandilTemplate]);
+      mockSpecialDayCandidates([{ date: '2099-05-01' }]);
+      const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1_000_000);
+
+      await service.findAllActive();
+      expect(specialDayModel.find).toHaveBeenCalledTimes(1);
+
+      nowSpy.mockReturnValue(1_000_000 + 10 * 60 * 1000 + 1);
+      await service.findAllActive();
+      expect(specialDayModel.find).toHaveBeenCalledTimes(2);
+    });
+
+    it('cache: farklı sourceEventKey ailesi için ayrıca sorgular (aile başına bağımsız cache girdisi)', async () => {
+      mockFindAllTemplates([
+        kandilTemplate,
+        {
+          ...kandilTemplate,
+          key: 'kandil-berat',
+          sourceEventKey: 'berat-kandili',
+        },
+      ]);
+      mockSpecialDayCandidates([{ date: '2099-05-01' }]);
+
+      await service.findAllActive();
+
+      expect(specialDayModel.find).toHaveBeenCalledTimes(2);
     });
   });
 });

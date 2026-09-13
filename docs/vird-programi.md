@@ -196,3 +196,18 @@ yazdırır); gerçek çalıştırma `AI_EVAL_USER_ID` ortam değişkeni ve geçe
 - DURUM (2026-09-13): `test` veritabaninda yapildi; uretim veritabani farkliysa orada tekrarlanmali.
 - Yapılacak (bir kez, Atlas mongosh): `db.vird_programs.dropIndex('userId_1_clientId_1')` → API yeniden başlayınca
   `autoIndex` yeni index'i oluşturur. Doğrulama: `db.vird_programs.getIndexes()` içinde `uniq_user_clientId`.
+
+## Operasyon notu: Şablon `anchorDate` artık dinamik (2026-09-13)
+
+- Ramazan/kandil (`vird_templates`, `kind:'journey'`) şablonları artık seed'de sabit bir `anchorDate` TAŞIMAZ.
+  Bunun yerine yıl eki OLMAYAN bir "olay ailesi" anahtarı taşırlar (`sourceEventKey`, ör. `ramazan-gunleri`,
+  `kadir-gecesi`, `regaib-kandili`, `mirac-kandili`, `berat-kandili`, `mevlid-kandili`).
+- `VirdTemplatesService` (`findAllActive`/`findByKey`/`resolveForProgram`) `anchorDate`'i OKUMA ANINDA çözer:
+  `special_days` içinde bu aileyle eşleşen (`^<aile>-\d{4}$`), henüz bitmemiş (kaydın kendi `dayCount`'una göre
+  bitiş günü ≥ bugün/İstanbul) EN ERKEN kaydı bulur; Ramazan gibi çok günlü ailelerde bu her zaman `dayIndex:1`
+  kaydıdır. Uygun kayıt yoksa şablon listede/detayda GİZLENİR. Çözüm 10 dk bellek cache'lidir (dhikr cache ile
+  aynı desen, bkz. `vird-templates.service.ts` `resolveAnchorDate`).
+- Sonuç: özel gün verisi (`special_days`) yıllık güncellendiğinde bu şablonlar kendiliğinden bir sonraki yıla/
+  tekrara kayar — seed'in tekrar çalıştırılması gerekmez.
+- `anchorDate` alanı şemada GERİYE UYUMLULUK için durur: `sourceEventKey`'i olmayan (statik anchorDate'li ya da
+  hiç anchorDate'siz klasik) şablonlarda eski davranış birebir korunur.

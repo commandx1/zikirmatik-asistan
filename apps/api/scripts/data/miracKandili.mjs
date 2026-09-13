@@ -104,13 +104,12 @@ export const miracKandili = {
         en: "Laylat al-Mi'raj",
       },
       type: 'kandil',
-      date: '2026-01-15',
-      hijriDate: '27 Recep 1447',
+      hijri: { month: 'recep', day: 27, night: true },
       description: {
         tr: "Peygamber Efendimiz'in Allah'ın huzuruna çıktığı, beş vakit namazın farz kılındığı mübarek gece.",
         en: "The blessed night on which the Prophet ascended into the presence of Allah and the five daily prayers were made obligatory.",
       },
-      eventKey: 'mirac-kandili-2026',
+      eventFamily: 'mirac-kandili',
       priority: 170,
       dhikrKeys: [
         keyMap.AMENERRASULU,

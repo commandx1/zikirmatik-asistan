@@ -75,12 +75,22 @@ for (const dataset of SOURCE_DATASETS) {
       (item.dhikrKeys ?? []).map((key) => keyRemap.get(key) ?? key),
     );
     const specialDay = { ...item, dhikrKeys: remappedDhikrKeys };
+    // NOT: specialDays artık ÇÖZÜLMEMİŞ ŞABLONLAR (date/eventKey yok; hijri
+    // veya hijriRule + eventFamily var) — bkz. scripts/lib/special-day-seed.mjs
+    // expandSpecialDays. Bileşik anahtar bu yüzden eventFamily + dayIndex +
+    // ad kullanır (date değil). hijri/hijriRule/onlyHijriYears/excludeHijriYears
+    // da imzaya dahildir — aksi halde AYNI aile+ad'a sahip ama farklı yıl
+    // aralığını hedefleyen iki şablon (örn. regaib-kandili'nin 2025 "sade" ve
+    // 2026 "zengin" sürümleri) burada birbirini sessizce ezer.
     const compositeKey = [
-      item.eventKey,
-      item.date,
+      item.eventFamily,
       item.dayIndex ?? '',
       // name artık { tr, en } nesnesi olabilir; Türkçe metni imzada kullan.
       (typeof item.name === 'object' ? item.name?.tr : item.name) ?? '',
+      JSON.stringify(item.hijri ?? null),
+      JSON.stringify(item.hijriRule ?? null),
+      JSON.stringify(item.onlyHijriYears ?? null),
+      JSON.stringify(item.excludeHijriYears ?? null),
     ].join('|');
     const existing = specialDayByComposite.get(compositeKey);
 
@@ -111,11 +121,13 @@ for (const dataset of SOURCE_DATASETS) {
   }
 }
 
+// Şablonlarda `date` yok; belirleyici sıralama için eventFamily + dayIndex
+// kullanılır (miladi tarih sıralaması artık seed açılımı sırasında olur).
 const specialDays = Array.from(specialDayByComposite.values()).sort((a, b) => {
-  if (a.date === b.date) {
+  if (a.eventFamily === b.eventFamily) {
     return (a.dayIndex ?? 0) - (b.dayIndex ?? 0);
   }
-  return a.date.localeCompare(b.date);
+  return a.eventFamily.localeCompare(b.eventFamily);
 });
 
 export const SPECIAL_DAY_DATASET = {
@@ -125,12 +137,22 @@ export const SPECIAL_DAY_DATASET = {
   specialDays,
 };
 
-export function getAvailableEventKeys() {
-  return uniq(specialDays.map((item) => item.eventKey));
+export function getAvailableEventFamilies() {
+  return uniq(specialDays.map((item) => item.eventFamily));
 }
 
-export function buildEventDataset(eventKey) {
-  const filtered = specialDays.filter((item) => item.eventKey === eventKey);
+/**
+ * `identifier`, bir eventFamily (örn. 'mirac-kandili') İLE eşleşir. Geriye
+ * dönük uyum için, doğrudan bir çözülmüş eventKey (örn. 'mirac-kandili-2026')
+ * verilirse de family kısmı ayrıştırılıp aynı şekilde eşleştirilir.
+ */
+export function buildEventDataset(identifier) {
+  const families = new Set(specialDays.map((item) => item.eventFamily));
+  const family = families.has(identifier)
+    ? identifier
+    : [...families].find((f) => identifier.startsWith(`${f}-`));
+
+  const filtered = specialDays.filter((item) => item.eventFamily === family);
   if (filtered.length === 0) {
     return null;
   }
@@ -143,8 +165,8 @@ export function buildEventDataset(eventKey) {
   );
 
   return {
-    key: eventKey,
-    label: 'Special Days ' + eventKey,
+    key: family,
+    label: 'Special Days ' + family,
     dhikrItems: filteredDhikrs,
     specialDays: filtered,
   };

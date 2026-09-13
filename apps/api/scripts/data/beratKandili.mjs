@@ -110,13 +110,12 @@ export const beratKandili = {
         en: "Laylat al-Bara'ah",
       },
       type: 'kandil',
-      date: '2026-02-02',
-      hijriDate: '15 Şaban 1447',
+      hijri: { month: 'saban', day: 15, night: true },
       description: {
         tr: "Şaban'ın 15. gecesi: Allah'ın kimi bağışlayacağını, kimin rızkını, ömrünü ve kaderini belirleyeceğini açıkladığı mübarek gece. Üç Yasin, secde duası, istiğfar ve Salât-ı Münciye ile ihya edilir.",
         en: "The 15th night of Sha'ban: the blessed night on which Allah reveals whom He will forgive and decrees the provision, lifespan, and destiny of His servants. It is kept alive with three recitations of Surah Ya-Sin, the prostration supplication, istighfar, and Salat al-Munjiya.",
       },
-      eventKey: 'berat-kandili-2026',
+      eventFamily: 'berat-kandili',
       priority: 170,
       dhikrKeys: [
         keyMap.BERAT_DUASI,

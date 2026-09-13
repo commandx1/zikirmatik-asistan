@@ -5,6 +5,10 @@ import {
   DhikrLogSchema,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Dhikr, DhikrSchema } from '../dhikrs/schemas/dhikr.schema';
+import {
+  SpecialDay,
+  SpecialDaySchema,
+} from '../special-days/schemas/special-day.schema';
 import { StreaksModule } from '../streaks/streaks.module';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import {
@@ -28,12 +32,16 @@ import { VirdTemplatesService } from './vird-templates.service';
       { name: VirdProgram.name, schema: VirdProgramSchema },
       { name: VirdDayProgress.name, schema: VirdDayProgressSchema },
       { name: VirdTemplate.name, schema: VirdTemplateSchema },
-      // DhikrLogsModule'ü/DhikrsModule'ü import ETMEZ (döngü olurdu) — log ve
-      // zikir modellerini burada doğrudan forFeature ile alır, tıpkı
-      // StreaksModule/StatsModule/AiModule gibi. Dhikr modeli
-      // VirdTemplatesService'in dhikrKey -> katalog çözümlemesi içindir.
+      // DhikrLogsModule'ü/DhikrsModule'ü/SpecialDaysModule'ü import ETMEZ
+      // (döngü olurdu) — log, zikir ve özel gün modellerini burada doğrudan
+      // forFeature ile alır, tıpkı StreaksModule/StatsModule/AiModule gibi.
+      // Dhikr modeli VirdTemplatesService'in dhikrKey -> katalog çözümlemesi
+      // içindir; SpecialDay modeli aynı servisin sourceEventKey'li şablonlar
+      // için anchorDate'i special_days'ten dinamik çözmesi içindir (bkz.
+      // resolveAnchorDate).
       { name: DhikrLog.name, schema: DhikrLogSchema },
       { name: Dhikr.name, schema: DhikrSchema },
+      { name: SpecialDay.name, schema: SpecialDaySchema },
       { name: User.name, schema: UserSchema },
     ]),
     StreaksModule,

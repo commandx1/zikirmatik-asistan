@@ -79,13 +79,12 @@ export const ramazanGirisi = {
         en: 'Beginning of the Month of Ramadan',
       },
       type: 'özel gün',
-      date: '2026-02-19',
-      hijriDate: '1 Ramazan 1447',
+      hijri: { month: 'ramazan', day: 1 },
       description: {
         tr: "Mübarek Ramazan'ın ilk günü. Hilali görünce dua et, oruç niyetini tazele; ilk sahur ve iftarın coşkusuyla tevhid, salavat ve istiğfar.",
         en: "The first day of blessed Ramadan. When you see the crescent moon, make supplication and renew your intention to fast; with the joy of the first suhoor and iftar, perform tawhid, salawat and istighfar.",
       },
-      eventKey: 'ramazan-girisi-2026',
+      eventFamily: 'ramazan-girisi',
       priority: 175,
       dhikrKeys: [
         keyMap.HILAL_DUASI,
