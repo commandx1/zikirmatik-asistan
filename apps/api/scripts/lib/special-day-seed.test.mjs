@@ -12,12 +12,20 @@ import {
   getDatasetFamilies,
   findOrphanCandidates,
   filterByMinDate,
+  buildSpecialDayDhikrDoc,
   EVENT_FAMILY_KEY_OVERRIDES,
   LEGACY_EVENT_KEYS,
   SPECIAL_DAYS_SEED_MIN_DATE,
 } from './special-day-seed.mjs';
+import { SOURCE_DATASETS } from '../data/sourceDataset.mjs';
+
+const TIME_OF_DAY_ENUM = new Set(['morning', 'afternoon', 'evening', 'night', 'any']);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+// Yer tutucular ({hijriYear}) eklenmeden önceki son commit. Round-trip testleri
+// içeriği HEAD ile değil bu sabit commit ile karşılaştırır; aksi halde yer
+// tutuculu hal commit'lenince HEAD da yer tutucu taşır ve test anlamsızlaşır.
+const CONTENT_BASELINE_COMMIT = '930af45';
 const REPO_ROOT = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: __dirname })
   .toString()
   .trim();
@@ -232,7 +240,7 @@ test('eyyamibiyd.mjs: 1448 için açılınca git HEAD\'deki orijinal name/descri
   const { eyyamibiyd } = await import('../data/eyyamibiyd.mjs');
   const { expanded } = expandSpecialDays(eyyamibiyd.specialDays, [1448]);
 
-  const oldSource = execFileSync('git', ['show', 'HEAD:apps/api/scripts/data/eyyamibiyd.mjs'], { cwd: REPO_ROOT }).toString();
+  const oldSource = execFileSync('git', ['show', `${CONTENT_BASELINE_COMMIT}:apps/api/scripts/data/eyyamibiyd.mjs`], { cwd: REPO_ROOT }).toString();
   const oldPath = resolve(REPO_ROOT, 'apps/api/scripts/data/.eyyamibiyd.head-snapshot.mjs');
   writeFileSync(oldPath, oldSource);
   try {
@@ -247,13 +255,13 @@ test('eyyamibiyd.mjs: 1448 için açılınca git HEAD\'deki orijinal name/descri
   }
 });
 
-test('saferAyi.mjs: 1448 için açılınca "Safer İlk Çarşamba" description git HEAD ile birebir aynı (round-trip)', async () => {
+test('saferAyi.mjs: 1448 için açılınca "Safer İlk Çarşamba" description yer tutucu öncesi commit ile birebir aynı (round-trip)', async () => {
   const { saferAyi } = await import('../data/saferAyi.mjs');
   const { expanded } = expandSpecialDays(saferAyi.specialDays, [1448]);
   const ilkCarsamba = expanded.find((d) => d.name.tr === 'Safer İlk Çarşamba Gecesi');
   assert.ok(ilkCarsamba, 'Safer İlk Çarşamba Gecesi 1448 için üretilmeli');
 
-  const oldSource = execFileSync('git', ['show', 'HEAD:apps/api/scripts/data/saferAyi.mjs'], { cwd: REPO_ROOT }).toString();
+  const oldSource = execFileSync('git', ['show', `${CONTENT_BASELINE_COMMIT}:apps/api/scripts/data/saferAyi.mjs`], { cwd: REPO_ROOT }).toString();
   const oldPath = resolve(REPO_ROOT, 'apps/api/scripts/data/.saferAyi.head-snapshot.mjs');
   writeFileSync(oldPath, oldSource);
   try {
@@ -357,4 +365,98 @@ test('runSpecialDaySeed (dryRun): gerçek MASTER dataset min tarih altındaki ka
   for (const doc of result.belowMinDate) {
     assert.ok(doc.date < SPECIAL_DAYS_SEED_MIN_DATE);
   }
+});
+
+// ---- buildSpecialDayDhikrDoc (timeOfDay normalizasyonu) ----
+// Regresyon: node scripts/seed-special-days.mjs --all çalıştırıldığında
+// ham `payload.timeOfDay` ('any', 'morning', ['sabah','aksam'] gibi)
+// normalize edilmeden $set ediliyordu; şema enum dizisi beklediği için
+// AI tarafında formatCandidateLine `candidate.timeOfDay.join is not a
+// function` hatasıyla 503'e düşüyordu. buildSpecialDayDhikrDoc HER ZAMAN
+// normalize enum dizisi döndürmeli.
+
+function dhikrItem(overrides) {
+  return {
+    key: 'test-zikir',
+    name: { tr: 'Test Zikri', en: 'Test Dhikr' },
+    nameArabic: 'اختبار',
+    transliteration: { tr: 'test', en: 'test' },
+    meaning: { tr: 'Anlam', en: 'Meaning' },
+    virtue: { tr: 'Fazilet', en: 'Virtue' },
+    source: { tr: 'Kaynak', en: 'Source' },
+    recommendedCount: 33,
+    ...overrides,
+  };
+}
+
+test("buildSpecialDayDhikrDoc: timeOfDay 'any' (string) → ['any']", () => {
+  const doc = buildSpecialDayDhikrDoc(dhikrItem({ timeOfDay: 'any' }));
+  assert.deepEqual(doc.timeOfDay, ['any']);
+});
+
+test("buildSpecialDayDhikrDoc: timeOfDay ['sabah','aksam'] → ['morning','evening']", () => {
+  const doc = buildSpecialDayDhikrDoc(dhikrItem({ timeOfDay: ['sabah', 'aksam'] }));
+  assert.deepEqual(doc.timeOfDay, ['morning', 'evening']);
+});
+
+test('buildSpecialDayDhikrDoc: ham payload string timeOfDay olsa bile doc.timeOfDay her zaman dizi', () => {
+  const doc = buildSpecialDayDhikrDoc(dhikrItem({ timeOfDay: 'morning' }));
+  assert.ok(Array.isArray(doc.timeOfDay));
+  assert.deepEqual(doc.timeOfDay, ['morning']);
+});
+
+test('buildSpecialDayDhikrDoc: ham payload payload.timeOfDay doc.timeOfDay değerini asla ezmez (spread sırası)', () => {
+  // Kritik regresyon: {...payload, ...normalize} yerine yanlışlıkla
+  // {...normalize, ...payload} yazılırsa ham string/dizi geri sızar.
+  const doc = buildSpecialDayDhikrDoc(dhikrItem({ timeOfDay: ['gece', 'yatsi'] }));
+  assert.notEqual(doc.timeOfDay, 'gece');
+  assert.deepEqual(doc.timeOfDay, ['night']);
+});
+
+test('buildSpecialDayDhikrDoc: geçersiz timeOfDay token → hata mesajı zikir key\'ini içerir', () => {
+  assert.throws(
+    () => buildSpecialDayDhikrDoc(dhikrItem({ key: 'bozuk-zikir', timeOfDay: 'ogleden-sonra' })),
+    (error) => {
+      assert.ok(error instanceof Error);
+      assert.ok(error.message.includes('bozuk-zikir'), `hata mesajı key içermeli: ${error.message}`);
+      return true;
+    },
+  );
+});
+
+test('buildSpecialDayDhikrDoc: key eksikse hata fırlatır', () => {
+  const item = dhikrItem({ timeOfDay: 'any' });
+  delete item.key;
+  assert.throws(() => buildSpecialDayDhikrDoc(item));
+});
+
+test('buildSpecialDayDhikrDoc: embeddingFields verilirse doc üzerine merge edilir', () => {
+  const doc = buildSpecialDayDhikrDoc(dhikrItem({ timeOfDay: 'any' }), {
+    embeddingFields: { embedding: 'x', embeddingSourceHash: 'h' },
+  });
+  assert.equal(doc.embedding, 'x');
+  assert.equal(doc.embeddingSourceHash, 'h');
+});
+
+test('buildSpecialDayDhikrDoc: gerçek SOURCE_DATASETS içindeki TÜM dhikrItems için timeOfDay normalize enum dizisidir', () => {
+  let total = 0;
+  for (const dataset of SOURCE_DATASETS) {
+    if (!Array.isArray(dataset.dhikrItems)) continue;
+    for (const item of dataset.dhikrItems) {
+      total += 1;
+      const doc = buildSpecialDayDhikrDoc(item);
+      assert.ok(
+        Array.isArray(doc.timeOfDay),
+        `[${dataset.key}] key=${item.key}: timeOfDay dizi olmalı, geldi: ${JSON.stringify(doc.timeOfDay)}`,
+      );
+      assert.ok(doc.timeOfDay.length > 0, `[${dataset.key}] key=${item.key}: timeOfDay boş olamaz`);
+      for (const slot of doc.timeOfDay) {
+        assert.ok(
+          TIME_OF_DAY_ENUM.has(slot),
+          `[${dataset.key}] key=${item.key}: geçersiz timeOfDay değeri "${slot}"`,
+        );
+      }
+    }
+  }
+  assert.ok(total > 0, 'SOURCE_DATASETS içinde en az bir dhikrItem bulunmalı');
 });

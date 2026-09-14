@@ -33,3 +33,5 @@ store-assets
 # AI eval harness raporları (üretilen çıktı — bkz. apps/api/scripts/eval/README.md)
 apps/api/scripts/eval/reports/*
 !apps/api/scripts/eval/reports/.gitkeep
+# DB onarım betiklerinin yerel yedekleri (veri içerir)
+apps/api/scripts/.backups/

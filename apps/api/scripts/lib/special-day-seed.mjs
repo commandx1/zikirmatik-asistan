@@ -2,6 +2,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { buildEmbeddingFields } from './embedding.mjs';
+import { normalizeTimeOfDay } from './time-of-day.mjs';
 import {
   HIJRI_MONTH_STARTS,
   monthStart,
@@ -300,6 +301,65 @@ export function filterByMinDate(expanded, { minDate = SPECIAL_DAYS_SEED_MIN_DATE
   return { kept, belowMinDate };
 }
 
+/**
+ * Bir özel gün dataset'i zikir öğesindeki (`item`) tags/categories/
+ * suitableFor/timeOfDay alanlarını normalize eder. `buildEmbeddingFields`
+ * girdisi ile nihai `dhikrs` dokümanı BU fonksiyonun ürettiği aynı normalize
+ * değerleri kullanmalı — aksi halde ham `timeOfDay` (ör. 'any', ['sabah',
+ * 'aksam']) şemanın beklediği enum dizisi yerine doc'a sızar (bkz. üretim
+ * olayı: candidate.timeOfDay.join is not a function). timeOfDay geçersizse
+ * hata mesajı zikir key'ini içerir ki seed hangi kayıttan durduğu belli olsun.
+ */
+function normalizeSpecialDayDhikrFields(item) {
+  const { key, ...payload } = item;
+
+  if (!key) {
+    throw new Error(
+      `Dhikr key tanımsız: ${payload.name?.tr}. Upsert için key zorunlu.`,
+    );
+  }
+
+  const tags = uniq(payload.tags ?? []);
+  const categories = uniq(payload.categories ?? []);
+  const suitableFor = uniq(payload.suitableFor ?? []);
+
+  let timeOfDay;
+  try {
+    timeOfDay = normalizeTimeOfDay(payload.timeOfDay);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Dhikr key=${key}: timeOfDay normalize edilemedi — ${message}`);
+  }
+
+  return { key, payload, tags, categories, suitableFor, timeOfDay };
+}
+
+/**
+ * Bir özel gün dataset'i zikir öğesinden (`item`) `dhikrs` koleksiyonuna
+ * yazılacak dokümanı üretir. Saf fonksiyondur (DB/embedding çağrısı yapmaz) —
+ * `embeddingFields` zaten hesaplanmış olarak dışarıdan verilir (bkz.
+ * runSpecialDaySeed döngüsü). tags/categories/suitableFor/timeOfDay her
+ * zaman normalize edilmiş haliyle yazılır; ham `payload` önce, normalize
+ * alanlar SONRA spread edilir ki ham değerler doc'u asla ezmesin.
+ */
+export function buildSpecialDayDhikrDoc(item, { now = new Date(), embeddingFields } = {}) {
+  const { key, payload, tags, categories, suitableFor, timeOfDay } =
+    normalizeSpecialDayDhikrFields(item);
+
+  return {
+    ...payload,
+    key,
+    tags,
+    categories,
+    suitableFor,
+    timeOfDay,
+    isVerified: true,
+    isActive: true,
+    updatedAt: now,
+    ...(embeddingFields ?? {}),
+  };
+}
+
 export async function runSpecialDaySeed(
   dataset,
   { dryRun = false, years, deactivateOrphans = false, includeHistory = false, minDate = SPECIAL_DAYS_SEED_MIN_DATE } = {},
@@ -353,20 +413,15 @@ export async function runSpecialDaySeed(
     const dhikrIdMap = new Map();
 
     for (const item of dataset.dhikrItems) {
-      const { key, ...payload } = item;
       const now = new Date();
 
-      if (!key) {
-        throw new Error(
-          `Dhikr key tanımsız: ${payload.name?.tr}. Upsert için key zorunlu.`,
-        );
-      }
-
       // Etiketler artık dataset içindeki dhikrItem tanımından (payload)
-      // doğrudan gelir; özel günlerden türetme adımı kaldırıldı.
-      const tags = uniq(payload.tags ?? []);
-      const categories = uniq(payload.categories ?? []);
-      const suitableFor = uniq(payload.suitableFor ?? []);
+      // doğrudan gelir; özel günlerden türetme adımı kaldırıldı. timeOfDay
+      // ham veride string ya da TR/EN karışık dizi olabilir — normalize
+      // edilmeden yazılırsa şema (enum dizisi) bozulur (bkz. fonksiyon
+      // dokümantasyonu).
+      const { key, payload, tags, categories, suitableFor, timeOfDay } =
+        normalizeSpecialDayDhikrFields(item);
 
       // Mevcut kaydı yalnızca stabil `key` ile bul; legacy isim/transliterasyon
       // eşleşmesine gerek yok (DB tamamen key bazlı seed'lenir).
@@ -375,23 +430,19 @@ export async function runSpecialDaySeed(
         { projection: { _id: 1, embeddingSourceHash: 1 } },
       );
 
-      // Kaynak metin değişmediyse buildEmbeddingFields null döner (yeniden embed yok).
+      // Kaynak metin değişmediyse buildEmbeddingFields null döner (yeniden
+      // embed yok). NOT: buildSourceText (embedding.mjs) timeOfDay'i kaynak
+      // metne katmıyor (yalnız name/suitableFor/tags+categories/meaning/
+      // virtue) — normalize edilmiş timeOfDay'i buraya eklemek mevcut
+      // embeddingSourceHash'i DEĞİŞTİRMEZ, gereksiz yeniden embed tetiklemez.
+      // Yine de gelecekte şablon timeOfDay'i içerirse tutarlı kalsın diye
+      // normalize değer girdiye dahil edilir.
       const embeddingFields = await buildEmbeddingFields(
-        { ...payload, tags, categories, suitableFor },
+        { ...payload, tags, categories, suitableFor, timeOfDay },
         existing?.embeddingSourceHash,
       );
 
-      const doc = {
-        ...payload,
-        key,
-        tags,
-        categories,
-        suitableFor,
-        isVerified: true,
-        isActive: true,
-        updatedAt: now,
-        ...(embeddingFields ?? {}),
-      };
+      const doc = buildSpecialDayDhikrDoc(item, { now, embeddingFields });
 
       let storedId;
       if (existing) {

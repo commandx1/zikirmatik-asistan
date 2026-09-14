@@ -85,6 +85,27 @@ function trimTo(value: string, max: number): string {
 }
 
 /**
+ * `timeOfDay`/`tags`/`suitableFor` gibi alanlar DB şemasında dizi olarak
+ * tanımlı olsa da (bkz. DhikrCandidate tipleri) bozuk/normalize edilmemiş
+ * seed verisi bu tipi ihlal edip ham string olarak DB'ye sızabilir (bkz.
+ * özel gün seed'indeki timeOfDay regresyonu). Bu durumda `.join`/`.map` gibi
+ * dizi metodları "X.join is not a function" ile patlar ve AI Rehber/AI Vird
+ * akışları 503'e düşer. `asList` bu veriyi savunmacı biçimde normalize eder:
+ * dizi ise aynen, string ise tek elemanlı dizi, başka her şey (null/
+ * undefined/obje/sayı) boş dizi döner. Aday TİPLERİNİ değiştirmez — yalnız
+ * bu fonksiyonun içinde, render anında uygulanır.
+ */
+function asList(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value as string[];
+  }
+  if (typeof value === 'string') {
+    return [value];
+  }
+  return [];
+}
+
+/**
  * Aday zikri LLM'e tek satırda özetler. Kısıtlı alan uzunlukları (virtue
  * ~300, meaning ~200 karakter) token bütçesini korur — model kararı için
  * gereken sinyali (fazilet, anlam) tam metin olmadan da verir.
@@ -95,9 +116,9 @@ export function formatCandidateLine(
   const base = [
     candidate.ref,
     candidate.name,
-    candidate.timeOfDay.join('/'),
-    candidate.tags.join(', '),
-    candidate.suitableFor.join(', '),
+    asList(candidate.timeOfDay).join('/'),
+    asList(candidate.tags).join(', '),
+    asList(candidate.suitableFor).join(', '),
     trimTo(candidate.virtue, 300),
     trimTo(candidate.meaning, 200),
   ].join(' | ');
