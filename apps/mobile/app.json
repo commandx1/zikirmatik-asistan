@@ -38,7 +38,10 @@
         "backgroundColor": "#0B1423"
       },
       "package": "com.zikirmatik_asistan.app",
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "blockedPermissions": [
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "bundler": "metro"
