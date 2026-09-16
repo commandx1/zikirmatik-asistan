@@ -1,10 +1,12 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
+import { istanbulDateKey } from '../../common/utils/date-keys';
 import { VirdProgramsService } from './vird-programs.service';
 import { VIRD_ERROR_CODE } from './vird.constants';
 
@@ -35,6 +37,7 @@ describe('VirdProgramsService', () => {
     deleteOne: jest.fn(),
     deleteMany: jest.fn(),
     countDocuments: jest.fn(),
+    updateMany: jest.fn(),
   };
 
   const userModel = {
@@ -114,6 +117,9 @@ describe('VirdProgramsService', () => {
 
   beforeEach(() => {
     Object.values(virdProgramModel).forEach((fn) => fn.mockReset());
+    virdProgramModel.updateMany.mockReturnValue({
+      exec: jest.fn().mockResolvedValue({}),
+    });
     userModel.findById.mockReset();
     templatesService.resolveForProgram.mockReset();
     service = new VirdProgramsService(
@@ -140,6 +146,70 @@ describe('VirdProgramsService', () => {
         code: VIRD_ERROR_CODE.FREE_LIMIT_DHIKRS,
       });
       expect(virdProgramModel.create).not.toHaveBeenCalled();
+    });
+
+    it('allows a free user with exactly 3 distinct dhikrs', async () => {
+      mockPremium(false);
+      virdProgramModel.create.mockResolvedValue({
+        toObject: () => ({ _id: 'created' }),
+      });
+
+      await expect(
+        service.create(userId, {
+          title: { tr: 't', en: 't' },
+          kind: 'routine',
+          startDate: '2026-01-01',
+          phases: phasesWithDhikrs(dhikrIds.slice(0, 3)),
+        } as never),
+      ).resolves.toEqual({ _id: 'created' });
+    });
+
+    it('rejects a free user with exactly 4 distinct dhikrs', async () => {
+      mockPremium(false);
+
+      const payload = captureForbidden(
+        service.create(userId, {
+          title: { tr: 't', en: 't' },
+          kind: 'routine',
+          startDate: '2026-01-01',
+          phases: phasesWithDhikrs(dhikrIds.slice(0, 4)),
+        } as never),
+      );
+
+      await expect(payload).resolves.toMatchObject({
+        code: VIRD_ERROR_CODE.FREE_LIMIT_DHIKRS,
+      });
+    });
+
+    it('counts the same dhikr appearing in two different slots only once', async () => {
+      mockPremium(false);
+      virdProgramModel.create.mockResolvedValue({
+        toObject: () => ({ _id: 'created' }),
+      });
+      const [d1, d2, d3] = dhikrIds;
+
+      await expect(
+        service.create(userId, {
+          title: { tr: 't', en: 't' },
+          kind: 'routine',
+          startDate: '2026-01-01',
+          phases: [
+            {
+              fromDay: 1,
+              toDay: null,
+              slots: {
+                morning: [{ dhikrId: d1, target: 33 }],
+                // d1 repeated in a second slot + two more distinct refs = 3 distinct total, not 4.
+                evening: [
+                  { dhikrId: d1, target: 33 },
+                  { dhikrId: d2, target: 33 },
+                  { dhikrId: d3, target: 33 },
+                ],
+              },
+            },
+          ],
+        } as never),
+      ).resolves.toEqual({ _id: 'created' });
     });
 
     it('allows a premium user above the free distinct-dhikr limit', async () => {
@@ -353,6 +423,38 @@ describe('VirdProgramsService', () => {
         } as never),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
+
+    it('throws ConflictException on a duplicate clientId (manual path)', async () => {
+      mockPremium(true);
+      virdProgramModel.create.mockRejectedValue({ code: 11000 });
+
+      await expect(
+        service.create(userId, {
+          title: { tr: 't', en: 't' },
+          kind: 'routine',
+          startDate: '2026-01-01',
+          phases: phasesWithDhikrs([dhikrIds[0]]),
+        } as never),
+      ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('throws ConflictException on a duplicate clientId (template path)', async () => {
+      mockPremium(true);
+      templatesService.resolveForProgram.mockResolvedValue(
+        resolvedTemplate({ key: 'klasik-sabah' }),
+      );
+      virdProgramModel.create.mockRejectedValue({ code: 11000 });
+
+      await expect(
+        service.create(userId, {
+          title: { tr: 't', en: 't' },
+          kind: 'routine',
+          startDate: '2026-01-01',
+          source: 'template',
+          templateKey: 'klasik-sabah',
+        } as never),
+      ).rejects.toBeInstanceOf(ConflictException);
+    });
   });
 
   describe('activate', () => {
@@ -417,6 +519,48 @@ describe('VirdProgramsService', () => {
       await expect(service.activate(userId, userId)).rejects.toBeInstanceOf(
         BadRequestException,
       );
+    });
+
+    it('rejects re-activating an already-active program (not a no-op)', async () => {
+      // Documents actual behavior: `activate` only accepts status 'draft' or
+      // 'paused' (see `program.status !== 'draft' && program.status !== 'paused'`
+      // in vird-programs.service.ts) — an already-'active' program hits the
+      // same BadRequestException path as 'completed', it is NOT a silent no-op.
+      mockPremium(false);
+      mockProgram('active');
+
+      await expect(service.activate(userId, userId)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
+    });
+
+    it('completes expired journeys before counting active programs', async () => {
+      mockPremium(false);
+      mockProgram('draft');
+      let updateManyCalledBeforeCount = false;
+      virdProgramModel.countDocuments.mockImplementation(() => {
+        updateManyCalledBeforeCount =
+          virdProgramModel.updateMany.mock.calls.length > 0;
+        return Promise.resolve(0);
+      });
+      virdProgramModel.findOneAndUpdate.mockReturnValue({
+        lean: () => ({
+          exec: jest.fn().mockResolvedValue({ status: 'active' }),
+        }),
+      });
+
+      await service.activate(userId, userId);
+
+      expect(virdProgramModel.updateMany).toHaveBeenCalledWith(
+        {
+          userId: new Types.ObjectId(userId),
+          status: 'active',
+          kind: 'journey',
+          endDate: { $lt: istanbulDateKey(new Date()) },
+        },
+        { $set: { status: 'completed' } },
+      );
+      expect(updateManyCalledBeforeCount).toBe(true);
     });
   });
 
@@ -485,6 +629,89 @@ describe('VirdProgramsService', () => {
       await expect(payload).resolves.toMatchObject({
         code: VIRD_ERROR_CODE.PREMIUM_REQUIRED,
       });
+    });
+
+    it('allows enabling reminders for a premium user via PATCH', async () => {
+      mockPremium(true);
+      mockExisting({
+        source: 'manual',
+        kind: 'routine',
+        startDate: '2026-01-01',
+        reminders: { enabled: false },
+      });
+      virdProgramModel.findOneAndUpdate.mockReturnValue({
+        lean: () => ({
+          exec: jest.fn().mockResolvedValue({
+            reminders: { enabled: true },
+          }),
+        }),
+      });
+
+      await expect(
+        service.update(userId, userId, {
+          reminders: {
+            enabled: true,
+            slots: {
+              morning: true,
+              prayer: false,
+              evening: false,
+              night: false,
+            },
+          },
+        }),
+      ).resolves.toEqual({ reminders: { enabled: true } });
+    });
+
+    it('allows a free user to PATCH reminders.enabled: false', async () => {
+      mockPremium(false);
+      mockExisting({
+        source: 'manual',
+        kind: 'routine',
+        startDate: '2026-01-01',
+        reminders: { enabled: true },
+      });
+      virdProgramModel.findOneAndUpdate.mockReturnValue({
+        lean: () => ({
+          exec: jest.fn().mockResolvedValue({
+            reminders: { enabled: false },
+          }),
+        }),
+      });
+
+      await expect(
+        service.update(userId, userId, {
+          reminders: {
+            enabled: false,
+            slots: {
+              morning: false,
+              prayer: false,
+              evening: false,
+              night: false,
+            },
+          },
+        }),
+      ).resolves.toEqual({ reminders: { enabled: false } });
+    });
+
+    it('allows a free user to PATCH a program whose stored reminders.enabled is true, as long as the payload does not set reminders', async () => {
+      mockPremium(false);
+      mockExisting({
+        source: 'manual',
+        kind: 'routine',
+        startDate: '2026-01-01',
+        reminders: { enabled: true },
+      });
+      virdProgramModel.findOneAndUpdate.mockReturnValue({
+        lean: () => ({
+          exec: jest.fn().mockResolvedValue({ title: { tr: 'x', en: 'x' } }),
+        }),
+      });
+
+      await expect(
+        service.update(userId, userId, {
+          title: { tr: 'x', en: 'x' },
+        }),
+      ).resolves.toEqual({ title: { tr: 'x', en: 'x' } });
     });
 
     it('archives a program and evicts the oldest archived ones beyond the cap of 20', async () => {

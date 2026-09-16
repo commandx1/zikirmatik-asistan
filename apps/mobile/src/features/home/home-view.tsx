@@ -2,8 +2,10 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
-import { Animated, InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
+import { ToastBanner } from '../../components/ui/toast-banner'
 import { useOnboardingStore } from '../../store/onboarding-store'
 import { useTour } from '../../features/tour/use-tour'
 import {
@@ -61,62 +63,6 @@ function TapAnywhereToggle({ onPress, spotlightRef }: { onPress: () => void; spo
         color={active ? tokens.accent : tokens.textMuted}
       />
     </Pressable>
-  )
-}
-
-function TapAnywhereToast({ message }: { message: string | null }) {
-  const { tokens } = useThemeTokens()
-  const opacity = useRef(new Animated.Value(0)).current
-  const translateY = useRef(new Animated.Value(12)).current
-  const runningAnim = useRef<Animated.CompositeAnimation | null>(null)
-  const [displayMessage, setDisplayMessage] = useState('')
-
-  useEffect(() => {
-    runningAnim.current?.stop()
-
-    if (message) {
-      setDisplayMessage(message)
-      opacity.setValue(0)
-      translateY.setValue(12)
-      runningAnim.current = Animated.parallel([
-        Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
-        Animated.timing(translateY, { toValue: 0, duration: 200, useNativeDriver: true })
-      ])
-      runningAnim.current.start()
-    } else {
-      runningAnim.current = Animated.parallel([
-        Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: true }),
-        Animated.timing(translateY, { toValue: 8, duration: 180, useNativeDriver: true })
-      ])
-      runningAnim.current.start()
-    }
-  }, [message, opacity, translateY])
-
-  return (
-    <Animated.View
-      pointerEvents='none'
-      style={{
-        position: 'absolute',
-        top: 128,
-        alignSelf: 'center',
-        opacity,
-        transform: [{ translateY }],
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        borderRadius: 24,
-        borderWidth: 1,
-        borderColor: withAlpha(tokens.textPrimary, 0.12),
-        backgroundColor: tokens.card
-      }}
-    >
-      <FontAwesome6 name='hand-pointer' size={12} color={tokens.accent} />
-      <Text className="text-sm" style={{ color: tokens.textPrimary, fontWeight: '500' }}>
-        {displayMessage}
-      </Text>
-    </Animated.View>
   )
 }
 
@@ -521,6 +467,7 @@ function TesbihPremiumStrip({ message, onPress }: { message: string; onPress: ()
 export function HomeView() {
   const home = useHomeContext()
   const { t } = useTranslation('home')
+  const router = useRouter()
   const scrollRef = useRef<ScrollView>(null)
   const esmaSectionYRef = useRef(0)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
@@ -652,7 +599,10 @@ export function HomeView() {
             onUnlockPremium={premiumSheet.open}
           />
           <SelectedDhikrMeaning />
-          <TodaysVirdCard />
+          <TodaysVirdCard
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onPressCard={() => router.push('/vird' as any)}
+          />
           <View onLayout={event => {
             esmaSectionYRef.current = event.nativeEvent.layout.y
           }}>
@@ -696,7 +646,7 @@ export function HomeView() {
         onContinueWithoutSaving={home.onUnsavedTransitionContinueWithoutSaving}
         onCancel={home.onUnsavedTransitionCancel}
       />
-      <TapAnywhereToast message={toastMessage} />
+      <ToastBanner message={toastMessage} />
       <ProfilePremiumSheet
         visible={premiumSheet.isOpen}
         selectedPlan={premiumSheet.plan}

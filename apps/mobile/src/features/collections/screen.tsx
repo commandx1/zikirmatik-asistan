@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, Platform, Text, View } from "react-native"
 import { useTranslation } from "react-i18next";
 import PagerView from "react-native-pager-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { PageHeader } from "../../components/ui/page-header";
 import { PageLayout } from "../../components/ui/page-layout";
@@ -21,8 +22,9 @@ export function CollectionsScreen() {
   const { t } = useTranslation("collections");
   const { tokens } = useThemeTokens();
   const insets = useSafeAreaInsets();
+  const tabBarHeight = useBottomTabBarHeight();
   const bottomPadding =
-    32 + (Platform.OS === "android" ? Math.max(insets.bottom, 0) : insets.bottom);
+    32 + (Platform.OS === "android" ? Math.max(insets.bottom, 0) : insets.bottom) + tabBarHeight;
 
   const pagerRef = useRef<PagerView>(null);
 

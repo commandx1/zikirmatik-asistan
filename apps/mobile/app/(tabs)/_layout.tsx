@@ -1,46 +1,15 @@
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Redirect, Tabs, usePathname } from "expo-router";
 import { useState } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { useThemePreferences } from "../../src/hooks/use-theme-preferences";
 import { useAuthStore } from "../../src/store/auth-store";
 import { MoreMenu } from "../../src/components/ui/more-menu";
-
-const TAB_FONT_FAMILY_MAP: Record<string, string | undefined> = {
-  merriweather: "Merriweather_400Regular",
-  "intel-one-mono": "IntelOneMono_400Regular",
-  "finlandica-headline": "Finlandica_400Regular",
-  "indie-flower": "IndieFlower_400Regular",
-};
-
-type TabIconProps = {
-  focused: boolean;
-  name: "house" | "list-ul" | "sparkles" | "moon" | "user";
-  activeColor: string;
-  inactiveColor: string;
-  regular?: boolean;
-};
-
-function TabIcon({ focused, name, activeColor, inactiveColor, regular = false }: TabIconProps) {
-  return (
-    <FontAwesome6
-      name={name}
-      size={19}
-      color={focused ? activeColor : inactiveColor}
-      iconStyle={regular ? "regular" : "solid"}
-      style={{ opacity: focused ? 1 : 0.6, marginBottom: 2 }}
-    />
-  );
-}
+import { GlassTabBar, useGlassTabBarInset } from "../../src/components/ui/glass-tab-bar";
 
 export default function TabsLayout() {
   const { tokens } = useThemeTokens();
   const { t } = useTranslation("common");
-  const insets = useSafeAreaInsets();
-  const { fontFamily } = useThemePreferences();
   const authStatus = useAuthStore((s) => s.status);
   const guestMode = useAuthStore((s) => s.guestMode);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
@@ -48,19 +17,11 @@ export default function TabsLayout() {
   const isMoreMenuRoute = !["/home", "/focus", "/ai-guide", "/special-days"].some(
     (p) => pathname === p || pathname.startsWith(p + "/")
   );
+  const tabBarHeight = useGlassTabBarInset();
 
   if (authStatus !== "authenticated" && !guestMode) {
     return <Redirect href="/auth" />;
   }
-
-  const androidTabBarExtraBottom = Platform.OS === "android" ? Math.max(insets.bottom, 8) : 0;
-  const tabBarHeight = 74 + (Platform.OS === "android" ? androidTabBarExtraBottom : insets.bottom);
-  const tabLabelFontFamily = TAB_FONT_FAMILY_MAP[fontFamily];
-  const tabLabelStyle = tabLabelFontFamily
-    ? { fontSize: 12, fontFamily: tabLabelFontFamily, fontWeight: "normal" as const }
-    : { fontSize: 12, fontWeight: "500" as const };
-
-  const dahaFazlaColor = (moreMenuOpen || isMoreMenuRoute) ? tokens.accent : tokens.textPrimary;
 
   return (
     <View className="flex-1">
@@ -68,74 +29,20 @@ export default function TabsLayout() {
         screenOptions={{
           headerShown: false,
           sceneStyle: { backgroundColor: tokens.bg },
-          tabBarActiveTintColor: tokens.accent,
-          tabBarInactiveTintColor: tokens.textPrimary,
-          tabBarStyle: {
-            backgroundColor: tokens.bg,
-            borderTopColor: "rgba(255,255,255,0.07)",
-            height: tabBarHeight,
-            paddingTop: 8,
-            paddingBottom: Platform.OS === "android" ? androidTabBarExtraBottom : 8
-          },
-          tabBarLabelStyle: {
-            ...tabLabelStyle
-          },
         }}
+        tabBar={(props) => (
+          <GlassTabBar
+            {...props}
+            onMorePress={() => setMoreMenuOpen((v) => !v)}
+            moreActive={moreMenuOpen || isMoreMenuRoute}
+          />
+        )}
       >
-        <Tabs.Screen
-          name="home"
-          options={{
-            title: t("common:nav.home"),
-            tabBarIcon: ({ focused }) => <TabIcon focused={focused} name="house" activeColor={tokens.accent} inactiveColor={tokens.textPrimary} />
-          }}
-        />
-        <Tabs.Screen
-          name="focus"
-          options={{
-            title: t("common:nav.focus"),
-            tabBarIcon: ({ focused }) => <TabIcon focused={focused} name="list-ul" activeColor={tokens.accent} inactiveColor={tokens.textPrimary} />
-          }}
-        />
-        <Tabs.Screen
-          name="ai-guide"
-          options={{
-            title: t("common:nav.aiGuide"),
-            tabBarIcon: ({ focused }) => <TabIcon focused={focused} name="sparkles" activeColor={tokens.accent} inactiveColor={tokens.textPrimary} />
-          }}
-        />
-        <Tabs.Screen
-          name="special-days"
-          options={{
-            title: t("common:nav.specialDays"),
-            tabBarIcon: ({ focused }) => <TabIcon focused={focused} name="moon" activeColor={tokens.accent} inactiveColor={tokens.textPrimary} />
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: t("common:nav.more"),
-            tabBarButton: ({ style, accessibilityState }) => (
-              <Pressable
-                style={[style, { alignItems: "center", justifyContent: "center" }]}
-                onPress={() => setMoreMenuOpen((v) => !v)}
-                accessibilityRole="button"
-                accessibilityLabel={t("common:nav.more")}
-                accessibilityState={accessibilityState}
-              >
-                <FontAwesome6
-                  name="ellipsis"
-                  size={19}
-                  color={dahaFazlaColor}
-                  iconStyle="solid"
-                  style={{ opacity: (moreMenuOpen || isMoreMenuRoute) ? 1 : 0.6, marginBottom: 2 }}
-                />
-                <Text style={{ ...tabLabelStyle, color: dahaFazlaColor }}>
-                  {t("common:nav.more")}
-                </Text>
-              </Pressable>
-            ),
-          }}
-        />
+        <Tabs.Screen name="home" options={{ title: t("common:nav.home") }} />
+        <Tabs.Screen name="focus" options={{ title: t("common:nav.focus") }} />
+        <Tabs.Screen name="ai-guide" options={{ title: t("common:nav.aiGuide") }} />
+        <Tabs.Screen name="special-days" options={{ title: t("common:nav.specialDays") }} />
+        <Tabs.Screen name="profile" options={{ title: t("common:nav.more") }} />
         <Tabs.Screen
           name="collections"
           options={{

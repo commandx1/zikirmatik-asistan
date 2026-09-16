@@ -94,6 +94,10 @@
     "title": "Go Premium",
     "subtitle": "Deepen your spiritual journey with AI-powered guidance, detailed statistics, and personalization.",
     "benefits": {
+      "vird": {
+        "title": "Vird Program",
+        "description": "Unlimited programs, ready-made templates and prayer-time reminders."
+      },
       "aiCredits": {
         "title": "AI Guide Credits",
         "description": "50 monthly credits for intention-based dhikr recommendations and source-cited chat."

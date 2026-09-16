@@ -45,11 +45,11 @@ const DEFAULTS = {
   programs: [],
   activeProgramId: null,
   dayProgress: {},
-  reminderPrefs: { enabled: false, slots: { morning: false, prayer: false, evening: false, night: false }, provinceKey: null },
-  focusSegment: "vird" as const,
+  reminderPrefs: { enabled: false, slots: { morning: false, prayer: false, evening: false, night: false }, coords: null },
   lastServerSyncAt: null,
   virdStreak: null,
-  syncError: undefined
+  syncError: undefined,
+  notice: null
 };
 
 describe("vird-store", () => {
@@ -65,11 +65,11 @@ describe("vird-store", () => {
     expect(state.reminderPrefs).toEqual({
       enabled: false,
       slots: { morning: false, prayer: false, evening: false, night: false },
-      provinceKey: null
+      coords: null
     });
-    expect(state.focusSegment).toBe("vird");
     expect(state.lastServerSyncAt).toBeNull();
     expect(state.virdStreak).toBeNull();
+    expect(state.notice).toBeNull();
   });
 
   describe("setVirdStreak", () => {
@@ -148,7 +148,7 @@ describe("vird-store", () => {
   it("persists under the expected storage key and version", () => {
     const options = useVirdStore.persist.getOptions();
     expect(options.name).toBe("vird-store-v1");
-    expect(options.version).toBe(1);
+    expect(options.version).toBe(2);
   });
 
   describe("upsertProgram", () => {
@@ -260,6 +260,33 @@ describe("vird-store", () => {
     });
   });
 
+  describe("setProgress", () => {
+    const dateKey = toDateKey(new Date());
+
+    it("overwrites absolutely, allowing a lower count than a previous write (unlike recordProgress's mergeMax)", () => {
+      useVirdStore.getState().recordProgress(dateKey, "morning:0:x", 20, 33);
+      useVirdStore.getState().setProgress(dateKey, "morning:0:x", 5, 33);
+
+      expect(useVirdStore.getState().dayProgress[dateKey]["morning:0:x"]).toEqual({
+        count: 5,
+        target: 33,
+        completed: false
+      });
+    });
+
+    it("resetting to 0 sets completed back to false, even after it was previously true", () => {
+      useVirdStore.getState().setProgress(dateKey, "morning:0:x", 33, 33);
+      expect(useVirdStore.getState().dayProgress[dateKey]["morning:0:x"].completed).toBe(true);
+
+      useVirdStore.getState().setProgress(dateKey, "morning:0:x", 0, 33);
+      expect(useVirdStore.getState().dayProgress[dateKey]["morning:0:x"]).toEqual({
+        count: 0,
+        target: 33,
+        completed: false
+      });
+    });
+  });
+
   describe("replaceFromServer", () => {
     it("replaces a matching (by clientId) local program and keeps unrelated local-only programs", () => {
       useVirdStore.getState().upsertProgram(makeProgram({ id: "local-only", clientId: "c1", origin: "local" }));
@@ -291,6 +318,45 @@ describe("vird-store", () => {
       expect(day.b).toEqual({ count: 1, target: 1, completed: true });
     });
 
+    it("keeps the existing activeProgramId when it still exists in the merged list (server copy)", () => {
+      useVirdStore.getState().upsertProgram(makeProgram({ id: "srv-1", clientId: "c1", origin: "server", status: "active" }));
+      useVirdStore.getState().setActiveProgram("srv-1");
+
+      useVirdStore.getState().replaceFromServer([makeProgram({ id: "srv-1", clientId: "c1", origin: "server", status: "active" })]);
+
+      expect(useVirdStore.getState().activeProgramId).toBe("srv-1");
+    });
+
+    it("keeps the existing activeProgramId when it still exists as a surviving local-only program", () => {
+      useVirdStore.getState().upsertProgram(makeProgram({ id: "local-1", clientId: "c-local", origin: "local" }));
+      useVirdStore.getState().setActiveProgram("local-1");
+
+      useVirdStore.getState().replaceFromServer([makeProgram({ id: "srv-2", clientId: "c2", origin: "server", status: "active" })]);
+
+      expect(useVirdStore.getState().activeProgramId).toBe("local-1");
+    });
+
+    it("picks the first server program with status 'active' when the previous active program disappears", () => {
+      useVirdStore.getState().upsertProgram(makeProgram({ id: "gone", clientId: "c-gone", origin: "server" }));
+      useVirdStore.getState().setActiveProgram("gone");
+
+      useVirdStore.getState().replaceFromServer([
+        makeProgram({ id: "srv-draft", clientId: "c1", origin: "server", status: "draft" }),
+        makeProgram({ id: "srv-active", clientId: "c2", origin: "server", status: "active" })
+      ]);
+
+      expect(useVirdStore.getState().activeProgramId).toBe("srv-active");
+    });
+
+    it("sets activeProgramId to null when the previous active program disappears and no server program is active", () => {
+      useVirdStore.getState().upsertProgram(makeProgram({ id: "gone", clientId: "c-gone", origin: "server" }));
+      useVirdStore.getState().setActiveProgram("gone");
+
+      useVirdStore.getState().replaceFromServer([makeProgram({ id: "srv-draft", clientId: "c1", origin: "server", status: "draft" })]);
+
+      expect(useVirdStore.getState().activeProgramId).toBeNull();
+    });
+
     it("records lastServerSyncAt as a valid ISO timestamp", () => {
       useVirdStore.getState().replaceFromServer([]);
       const value = useVirdStore.getState().lastServerSyncAt;
@@ -301,8 +367,8 @@ describe("vird-store", () => {
 
   describe("setReminderPrefs", () => {
     it("merges a partial patch without clobbering untouched top-level fields", () => {
-      useVirdStore.getState().setReminderPrefs({ provinceKey: "istanbul" });
-      expect(useVirdStore.getState().reminderPrefs.provinceKey).toBe("istanbul");
+      useVirdStore.getState().setReminderPrefs({ coords: { lat: 41.008, lng: 28.978 } });
+      expect(useVirdStore.getState().reminderPrefs.coords).toEqual({ lat: 41.008, lng: 28.978 });
       expect(useVirdStore.getState().reminderPrefs.enabled).toBe(false);
     });
 
@@ -320,17 +386,24 @@ describe("vird-store", () => {
     });
   });
 
-  it("setFocusSegment updates the segment", () => {
-    useVirdStore.getState().setFocusSegment("list");
-    expect(useVirdStore.getState().focusSegment).toBe("list");
+  it("setNotice updates its field", () => {
+    useVirdStore.getState().setNotice("started");
+    expect(useVirdStore.getState().notice).toBe("started");
+  });
+
+  it("notice is not part of the persisted (partialized) state", () => {
+    useVirdStore.getState().setNotice("draft");
+    const options = useVirdStore.persist.getOptions();
+    const persisted = options.partialize?.(useVirdStore.getState()) as Record<string, unknown>;
+    expect(persisted).not.toHaveProperty("notice");
   });
 
   it("resetVird restores every data field to its default", () => {
     useVirdStore.getState().upsertProgram(makeProgram());
     useVirdStore.getState().setActiveProgram("local-1");
     useVirdStore.getState().recordProgress("2026-02-01", "x", 1, 1);
-    useVirdStore.getState().setReminderPrefs({ enabled: true, provinceKey: "izmir" });
-    useVirdStore.getState().setFocusSegment("list");
+    useVirdStore.getState().setReminderPrefs({ enabled: true, coords: { lat: 38.42, lng: 27.14 } });
+    useVirdStore.getState().setNotice("started");
 
     useVirdStore.getState().resetVird();
 
@@ -341,9 +414,9 @@ describe("vird-store", () => {
     expect(state.reminderPrefs).toEqual({
       enabled: false,
       slots: { morning: false, prayer: false, evening: false, night: false },
-      provinceKey: null
+      coords: null
     });
-    expect(state.focusSegment).toBe("vird");
+    expect(state.notice).toBeNull();
   });
 
   describe("persisted state migration", () => {
@@ -359,7 +432,7 @@ describe("vird-store", () => {
 
     it("passes the persisted state through untouched once already at the current version", () => {
       const persisted = { programs: [makeProgram()], activeProgramId: "local-1" };
-      expect(migrate(persisted, 1)).toBe(persisted);
+      expect(migrate(persisted, 2)).toBe(persisted);
     });
 
     it("does not crash on undefined/null/corrupted persisted state and returns safe defaults", () => {
@@ -371,9 +444,8 @@ describe("vird-store", () => {
         expect(result.reminderPrefs).toEqual({
           enabled: false,
           slots: { morning: false, prayer: false, evening: false, night: false },
-          provinceKey: null
+          coords: null
         });
-        expect(result.focusSegment).toBe("vird");
       }
     });
 
@@ -384,7 +456,6 @@ describe("vird-store", () => {
           activeProgramId: "kept-id",
           dayProgress: { "2026-01-01": { x: { count: 1, target: 1, completed: true } } },
           reminderPrefs: { enabled: true, slots: { morning: true, prayer: "nope" }, provinceKey: "bursa" },
-          focusSegment: "list",
           lastServerSyncAt: "2026-01-01T00:00:00.000Z"
         },
         0
@@ -396,10 +467,31 @@ describe("vird-store", () => {
       expect(result.reminderPrefs).toEqual({
         enabled: true,
         slots: { morning: true, prayer: false, evening: false, night: false }, // "nope" -> default false
-        provinceKey: "bursa"
+        coords: null
       });
-      expect(result.focusSegment).toBe("list");
       expect(result.lastServerSyncAt).toBe("2026-01-01T00:00:00.000Z");
+    });
+
+    it("v1 -> v2: drops provinceKey and starts coords at null", () => {
+      const result = migrate(
+        {
+          programs: [],
+          activeProgramId: null,
+          dayProgress: {},
+          reminderPrefs: {
+            enabled: true,
+            slots: { morning: true, prayer: false, evening: false, night: false },
+            provinceKey: "istanbul"
+          },
+          lastServerSyncAt: null
+        },
+        1
+      ) as VirdStore;
+
+      expect(result.reminderPrefs).not.toHaveProperty("provinceKey");
+      expect(result.reminderPrefs.coords).toBeNull();
+      expect(result.reminderPrefs.enabled).toBe(true);
+      expect(result.reminderPrefs.slots).toEqual({ morning: true, prayer: false, evening: false, night: false });
     });
   });
 });

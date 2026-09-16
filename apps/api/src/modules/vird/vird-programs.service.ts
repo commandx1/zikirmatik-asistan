@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -19,6 +20,7 @@ import {
   type VirdProgramDocument,
   type VirdProgramPhase,
 } from './schemas/vird-program.schema';
+import { completeExpiredJourneys } from './utils/complete-expired-journeys';
 import { VirdTemplatesService } from './vird-templates.service';
 import {
   PREMIUM_MAX_ACTIVE_PROGRAMS,
@@ -135,7 +137,7 @@ export class VirdProgramsService {
       return created.toObject();
     } catch (error) {
       if (this.isDuplicateKeyError(error)) {
-        throw new BadRequestException(
+        throw new ConflictException(
           'Bu clientId ile bir vird programı zaten var.',
         );
       }
@@ -212,7 +214,7 @@ export class VirdProgramsService {
       return created.toObject();
     } catch (error) {
       if (this.isDuplicateKeyError(error)) {
-        throw new BadRequestException(
+        throw new ConflictException(
           'Bu clientId ile bir vird programı zaten var.',
         );
       }
@@ -362,10 +364,7 @@ export class VirdProgramsService {
       );
     }
 
-    this.assertRemindersAllowed(
-      isPremium,
-      payload.reminders?.enabled ?? existing.reminders?.enabled,
-    );
+    this.assertRemindersAllowed(isPremium, payload.reminders?.enabled);
 
     const nextPhases = payload.phases
       ? this.normalizePhases(existing.source, payload.phases)
@@ -436,6 +435,12 @@ export class VirdProgramsService {
     const objectId = this.asObjectId(userId);
     const programObjectId = this.asObjectId(id);
     const isPremium = await this.isPremiumUser(objectId);
+
+    await completeExpiredJourneys(
+      this.virdProgramModel,
+      objectId,
+      istanbulDateKey(new Date()),
+    );
 
     const program = await this.virdProgramModel
       .findOne({ _id: programObjectId, userId: objectId })
@@ -566,11 +571,24 @@ export class VirdProgramsService {
     if (!items || items.length === 0) {
       return undefined;
     }
-    return items.map((item) => ({
-      dhikrId: item.dhikrId ? new Types.ObjectId(item.dhikrId) : undefined,
-      customDhikrId: item.customDhikrId,
-      target: item.target,
-    }));
+    // Aynı dilimde aynı zikir iki kez gelirse (AI/şablon/istemci hatası)
+    // itemKey (`slot:prayerIndex:ref`) çakışır ve ilerleme birbirini gölgeler;
+    // ilk kayıt tutulur, tekrarlar atılır.
+    const seen = new Set<string>();
+    return items
+      .filter((item) => {
+        const ref = item.dhikrId ?? item.customDhikrId ?? '';
+        if (seen.has(ref)) {
+          return false;
+        }
+        seen.add(ref);
+        return true;
+      })
+      .map((item) => ({
+        dhikrId: item.dhikrId ? new Types.ObjectId(item.dhikrId) : undefined,
+        customDhikrId: item.customDhikrId,
+        target: item.target,
+      }));
   }
 
   private deriveDayCountAndEndDate(

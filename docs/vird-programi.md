@@ -211,3 +211,34 @@ yazdırır); gerçek çalıştırma `AI_EVAL_USER_ID` ortam değişkeni ve geçe
   tekrara kayar — seed'in tekrar çalıştırılması gerekmez.
 - `anchorDate` alanı şemada GERİYE UYUMLULUK için durur: `sourceEventKey`'i olmayan (statik anchorDate'li ya da
   hiç anchorDate'siz klasik) şablonlarda eski davranış birebir korunur.
+
+## Seri ve /today program seçimi (Faz A, 2026-09-16)
+
+- **Seri (vird streak):** `vird_day_progress` içindeki distinct `date` değerleri,
+  `isDayComplete:true` olmak kaydıyla, kullanıcının TÜM programları genelinde
+  sayılır — günün herhangi bir aktif programı tamamlandıysa o gün seri için
+  sayılır (programa özel değil, kullanıcıya özeldir; bkz. `StreaksService.
+  recalculateVirdForUser`).
+- **`GET /v1/vird/today` program seçimi:** `programId` query parametresi
+  verilirse (Mongo ObjectId, `@IsMongoId()`), yalnız o program `status:'active'`
+  ise döner. Verilmezse eskisi gibi kullanıcının en son güncellenen (`updatedAt`
+  azalan) aktif programı döner. Mobil istemci `programId`'yi yalnızca aktif
+  program sunucuda zaten var olduğunda (`origin:'server'`) gönderir — yerel
+  (henüz senkronize edilmemiş) `clientId`'ler Mongo ObjectId formatında
+  olmadığından sunucu bunları 400 ile reddeder.
+- **Journey otomatik tamamlama:** `endDate` bugünden (İstanbul takvim günü)
+  ÖNCE olan aktif journey programları `status:'completed'`e çevrilir. Bir cron
+  YOKTUR — bu kontrol `POST /v1/vird/programs/:id/activate` ve
+  `GET /v1/vird/today` çağrılarının başında lazy olarak çalışır (bkz.
+  `utils/complete-expired-journeys.ts`). `endDate`'i olmayan journey'ler
+  (ve routine'ler, ki onların zaten `endDate`'i yoktur) hiçbir zaman bu yolla
+  otomatik tamamlanmaz.
+- **`clientId` çakışması:** `POST /v1/vird/programs` (manuel ve şablon
+  yollarının ikisinde de) aynı `{userId, clientId}` ile ikinci bir yazım
+  denemesi artık `409 Conflict` döner (öncesinde `400 Bad Request`'ti).
+- **Hatırlatıcı (reminders) kapısı:** `PATCH /v1/vird/programs/:id` yalnızca
+  payload AÇIKÇA `reminders.enabled === true` gönderdiğinde premium kapısına
+  takılır — var olan (kayıtlı) `reminders.enabled` değeri artık bu kontrole
+  dahil edilmez. Bu, premium'dan düşürülmüş bir kullanıcının hatırlatıcıları
+  zaten açık bir programda başlık/durum gibi ilgisiz alanları PATCH
+  edebilmesini sağlar.

@@ -6,7 +6,7 @@
 import { useRef } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useRouter } from "expo-router";
+import { useRouter, type Href } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { VirdSlotKey } from "@zikirmatik/shared";
@@ -18,37 +18,54 @@ import { ThemedInput } from "../../../components/ui/themed-input";
 import { ThemedTag } from "../../../components/ui/themed-tag";
 import { TogglePill } from "../../../components/ui/toggle-pill";
 import { usePremiumSheet } from "../../../hooks/use-premium-sheet";
+import { useVirdStore } from "../../../store/vird-store";
 import { ProfilePremiumSheet } from "../../profile/components/profile-premium-sheet";
 import type { AiVirdProgramPreview, AiVirdProgramPreviewPhase } from "../../ai-guide/services/ai-api-client";
+import { VirdSwapActiveModal } from "../components/vird-swap-active-modal";
 import { useVirdAiCreate } from "../hooks/use-vird-ai-create";
 import { VIRD_SLOT_KEYS } from "../services/vird-day";
-import { resolveVirdErrorMessage, VIRD_ERROR_CODE } from "../services/vird-error-codes";
+import { resolveLocalizedText } from "../../../store/dhikr-store";
 
 const DURATION_OPTIONS = [7, 14, 30] as const;
 const PRAYER_INDEXES = [1, 2, 3, 4, 5] as const;
 
 export function AiCreateScreen() {
-  const { t } = useTranslation("ai-guide");
+  const { t, i18n } = useTranslation("ai-guide");
+  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const router = useRouter();
   const resumeAfterPremiumPurchaseRef = useRef<() => void>(() => {});
   const premiumSheet = usePremiumSheet({
     onPremiumActivated: () => resumeAfterPremiumPurchaseRef.current()
   });
   const guide = useVirdAiCreate(premiumSheet.open);
+  const setNotice = useVirdStore((state) => state.setNotice);
+  const programs = useVirdStore((state) => state.programs);
+  const activeProgramId = useVirdStore((state) => state.activeProgramId);
+  const currentActiveProgram = programs.find((program) => program.id === activeProgramId) ?? null;
   resumeAfterPremiumPurchaseRef.current = () => {
     void guide.resumeAfterPremiumPurchase();
   };
 
+  const goToHub = (notice: "started" | "draft") => {
+    setNotice(notice);
+    router.dismissTo("/vird" as Href);
+  };
+
   const handleActivate = async () => {
     if (await guide.activateProgram()) {
-      router.replace("/(tabs)/home");
+      goToHub("started");
     }
   };
 
   const handlePauseAndActivate = async () => {
     if (await guide.resolveActivationConflictByPausingExisting()) {
-      router.replace("/(tabs)/home");
+      goToHub("started");
     }
+  };
+
+  const handleKeepDraft = () => {
+    guide.dismissActivationConflict();
+    goToHub("draft");
   };
 
   const handleDiscard = () => {
@@ -74,8 +91,6 @@ export function AiCreateScreen() {
               activationError={guide.activationError}
               activationConflict={guide.activationConflict}
               onActivate={() => void handleActivate()}
-              onPauseAndActivate={() => void handlePauseAndActivate()}
-              onGoPremium={guide.openPremiumSheetForActivationConflict}
               onDiscard={handleDiscard}
             />
           ) : (
@@ -100,6 +115,16 @@ export function AiCreateScreen() {
             />
           )}
         </PageScrollView>
+
+        <VirdSwapActiveModal
+          visible={guide.activationConflict}
+          currentProgramTitle={currentActiveProgram ? resolveLocalizedText(currentActiveProgram.title, locale) : ""}
+          nextProgramTitle={guide.programPreview?.title ?? ""}
+          isSubmitting={guide.isActivating}
+          onPauseAndStart={() => void handlePauseAndActivate()}
+          onUpgrade={guide.openPremiumSheetForActivationConflict}
+          onKeepDraft={handleKeepDraft}
+        />
 
         <ProfilePremiumSheet
           visible={premiumSheet.isOpen}
@@ -325,8 +350,6 @@ type VirdAiPreviewViewProps = {
   activationError?: string;
   activationConflict: boolean;
   onActivate: () => void;
-  onPauseAndActivate: () => void;
-  onGoPremium: () => void;
   onDiscard: () => void;
 };
 
@@ -336,8 +359,6 @@ function VirdAiPreviewView({
   activationError,
   activationConflict,
   onActivate,
-  onPauseAndActivate,
-  onGoPremium,
   onDiscard
 }: VirdAiPreviewViewProps) {
   const { t } = useTranslation("ai-guide");
@@ -360,44 +381,6 @@ function VirdAiPreviewView({
           <PhaseCard key={`${phase.fromDay}-${phase.toDay ?? "end"}-${index}`} phase={phase} />
         ))}
       </View>
-
-      {activationConflict ? (
-        <ThemedCard className="mb-4 rounded-2xl px-4 py-4" accent="accentSoft">
-          <View className="mb-2 flex-row items-center gap-2">
-            <FontAwesome6 name="triangle-exclamation" size={14} color="#fbbf24" />
-            <Text className="text-sm font-semibold text-amber-400">
-              {t("ai-guide:virdProgram.activationConflict.title")}
-            </Text>
-          </View>
-          <Text className="mb-4 text-sm leading-5 text-[--text-muted]">
-            {resolveVirdErrorMessage(
-              VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE,
-              t("ai-guide:virdProgram.activationConflict.title")
-            )}
-          </Text>
-          <View className="gap-2">
-            <Pressable
-              onPress={onPauseAndActivate}
-              disabled={isActivating}
-              className="items-center rounded-full bg-[--bg] px-4 py-3"
-              accessibilityRole="button"
-            >
-              <Text className="text-sm font-semibold text-[--text-primary]">
-                {t("ai-guide:virdProgram.actions.pauseAndStart")}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={onGoPremium}
-              disabled={isActivating}
-              className="items-center rounded-full px-4 py-3"
-              style={{ backgroundColor: tokens.accent }}
-              accessibilityRole="button"
-            >
-              <Text className="text-sm font-semibold text-[--bg]">{t("ai-guide:virdProgram.actions.goPremium")}</Text>
-            </Pressable>
-          </View>
-        </ThemedCard>
-      ) : null}
 
       {activationError ? (
         <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3">

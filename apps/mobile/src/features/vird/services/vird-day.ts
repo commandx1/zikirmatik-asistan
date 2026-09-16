@@ -25,6 +25,11 @@ export type VirdDayProgramLike = {
   prayerSelection?: number[];
 };
 
+/** isJourneyFinished'ın ihtiyaç duyduğu minimal ek alanlar. */
+export type VirdJourneyProgramLike = VirdDayProgramLike & {
+  kind: string;
+};
+
 export type ExpectedVirdItem = {
   itemKey: string;
   slot: VirdSlotKey;
@@ -185,4 +190,46 @@ export function slotProgress(
   }
 
   return result;
+}
+
+export type VirdDhikrCount = { ref: string; count: number; target: number; completed: boolean };
+
+/**
+ * Bir dilim ilerleme görünümünü (slotProgress'in tek bir dilim değeri) ref
+ * (dhikrId|customDhikrId) bazında toplar — `prayer` dilimindeki bir zikrin
+ * birden fazla vakite (prayerSelection) genişlemesi durumunda (bkz.
+ * expectedItemsForDay) her vaktin sayısını AYNI ref altında birleştirip tek
+ * bir "bu zikirden toplam kaç kez yapıldı" satırı üretmek için kullanılır.
+ */
+export function dhikrCounts(view: VirdSlotProgressView): VirdDhikrCount[] {
+  const map = new Map<string, { count: number; target: number }>();
+  for (const item of view.items) {
+    const entry = map.get(item.ref) ?? { count: 0, target: 0 };
+    entry.count += item.count;
+    entry.target += item.target;
+    map.set(item.ref, entry);
+  }
+  return Array.from(map.entries()).map(([ref, entry]) => ({
+    ref,
+    count: entry.count,
+    target: entry.target,
+    completed: entry.count >= entry.target
+  }));
+}
+
+/**
+ * Bir "journey" (çok fazlı, gün-sınırlı) programın son fazının bittiği tarihi
+ * geçip geçmediğini saf olarak hesaplar — `kind !=='journey'` ya da son faz
+ * açık uçluysa (toDay:null, rutin gibi davranan bir journey) her zaman false.
+ */
+export function isJourneyFinished(program: VirdJourneyProgramLike, todayKey: string): boolean {
+  if (program.kind !== "journey" || program.phases.length === 0) {
+    return false;
+  }
+  const lastPhase = program.phases[program.phases.length - 1];
+  if (lastPhase.toDay == null) {
+    return false;
+  }
+  const dayIndex = dayIndexFor(program, todayKey);
+  return dayIndex > lastPhase.toDay;
 }

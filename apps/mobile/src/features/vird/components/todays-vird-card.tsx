@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useRef } from 'react'
-import { useRouter } from 'expo-router'
+import { useEffect, useMemo } from 'react'
 import { Pressable, Text, View } from 'react-native'
-import Svg, { Circle } from 'react-native-svg'
+import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { toDateKey, type VirdSlotKey } from '@zikirmatik/shared'
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 import { trackEvent } from '../../../lib/analytics'
+import { useAuthStore } from '../../../store/auth-store'
 import { useVirdStore } from '../../../store/vird-store'
-import { useHomeContext } from '../../home/home-context'
 import { useHydrateVirdSnapshots } from '../hooks/use-hydrate-vird-snapshots'
 import {
   dayIndexFor,
@@ -16,74 +16,43 @@ import {
   isDayComplete,
   slotProgress,
   VIRD_SLOT_KEYS,
-  type ExpectedVirdItem,
   type VirdSlotProgressView
 } from '../services/vird-day'
+import { getPrayerTimes } from '../services/prayer-times'
+import { resolveNowSlot } from '../services/vird-now'
 import { calculateVirdStreak } from '../services/vird-streak'
 import type { VirdProgramLocal } from '../types'
 
-// Ana ekranda (SelectedDhikrMeaning sonrası, Esma bölümünden önce) aktif vird
-// programının bugünkü ilerlemesini gösteren kart. Salt veri katmanı (vird-day.ts,
-// vird-streak.ts) üzerine ince bir görünüm — ilerleme kaydı/hesap mantığı
-// burada YOK, tamamı zaten test edilmiş saf fonksiyonlardan gelir.
-// Ekranlar (segment/editör/şablon rafı) bu görevde YOK; boş durumun CTA'sı
-// yalnızca focus sekmesine yönlendirip focusSegment'i 'vird' yapar.
+// Ana ekranda VE hub'da (vird-hub-screen.tsx) ortak kullanılan Bugünkü Vird
+// kartı. Salt veri katmanı (vird-day.ts, vird-now.ts, vird-streak.ts)
+// üzerine ince bir görünüm — kart artık home-context'e bağımlı DEĞİL,
+// satıra dokunma davranışını çağıran belirler (bkz. props).
+// İki ayrı ekranda (ana ekran + hub) mount olabildiğinden, "gün tamamlandı"
+// analitik olayının BİR KEZ (program+gün başına) atılmasını sağlamak için
+// modül düzeyinde (bileşen örneğine değil) bir guard kullanılır.
+const dayCompletedFired = new Set<string>()
 
-const RING_SIZE = 40
-const RING_STROKE = 4
-const MINI_RING_SIZE = 28
-const MINI_RING_STROKE = 3
-
-function ringProgress(done: number, total: number): number {
-  return total > 0 ? done / total : 0
+export type TodaysVirdCardProps = {
+  /** Kartın kendisine (başlık alanına) dokunma — hub'a/karta gitmek için. */
+  onPressCard?: () => void
+  /** Search param'dan (slot/prayerIndex) gelen, "Şimdi" hesabını override eden dilim. */
+  highlightSlot?: VirdSlotKey | null
 }
 
-function ProgressRing({
-  size,
-  strokeWidth,
-  progress,
-  color,
-  trackColor
-}: {
-  size: number
-  strokeWidth: number
-  progress: number
-  color: string
-  trackColor: string
-}) {
-  const radius = (size - strokeWidth) / 2
-  const center = size / 2
-  const circumference = 2 * Math.PI * radius
-  const clamped = Math.max(0, Math.min(1, progress))
-  const dashOffset = circumference * (1 - clamped)
-
-  return (
-    <Svg width={size} height={size}>
-      <Circle cx={center} cy={center} r={radius} stroke={trackColor} strokeWidth={strokeWidth} fill='none' />
-      {clamped > 0 ? (
-        <Circle
-          cx={center}
-          cy={center}
-          r={radius}
-          stroke={color}
-          strokeWidth={strokeWidth}
-          fill='none'
-          strokeDasharray={`${circumference} ${circumference}`}
-          strokeDashoffset={dashOffset}
-          strokeLinecap='round'
-          transform={`rotate(-90 ${center} ${center})`}
-        />
-      ) : null}
-    </Svg>
-  )
-}
-
-function EmptyVirdCard() {
+function EmptyVirdCard({ onPressCard }: { onPressCard?: () => void }) {
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('vird')
   const upper = useLocaleUpper()
   const router = useRouter()
-  const setFocusSegment = useVirdStore((state) => state.setFocusSegment)
+
+  const handlePress = () => {
+    if (onPressCard) {
+      onPressCard()
+      return
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    router.push('/vird' as any)
+  }
 
   return (
     <View className='mb-5 px-5'>
@@ -104,14 +73,7 @@ function EmptyVirdCard() {
         <Text className='mb-3 text-xs leading-4' style={{ color: tokens.textMuted }}>
           {t('home.emptySubtitle')}
         </Text>
-        <Pressable
-          onPress={() => {
-            setFocusSegment('vird')
-            router.push('/(tabs)/focus')
-          }}
-          className='self-start rounded-full px-4 py-2'
-          style={{ backgroundColor: tokens.accent }}
-        >
+        <Pressable onPress={handlePress} className='self-start rounded-full px-4 py-2' style={{ backgroundColor: tokens.accent }}>
           <Text className='text-xs font-semibold' style={{ color: tokens.bg }}>
             {t('home.emptyCta')}
           </Text>
@@ -124,19 +86,18 @@ function EmptyVirdCard() {
 function SlotRow({
   slot,
   view,
-  accent,
-  trackColor,
+  isNow,
   onStart
 }: {
   slot: VirdSlotKey
   view: VirdSlotProgressView
-  accent: string
-  trackColor: string
-  onStart: (item: ExpectedVirdItem) => void
+  isNow: boolean
+  onStart: (prayerIndex?: number) => void
 }) {
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('vird')
   const isComplete = view.done >= view.total
+  const rowStyle = isNow ? { backgroundColor: withAlpha(tokens.accent, 0.08), borderRadius: 12 } : undefined
 
   if (slot === 'prayer') {
     const byPrayerIndex = new Map<number, typeof view.items>()
@@ -147,40 +108,41 @@ function SlotRow({
       byPrayerIndex.set(item.prayerIndex, list)
     }
     const prayerIndexes = Array.from(byPrayerIndex.keys()).sort((a, b) => a - b)
+    const donePrayers = prayerIndexes.filter((prayerIndex) => {
+      const items = byPrayerIndex.get(prayerIndex) ?? []
+      return items.length > 0 && items.every((item) => item.completed)
+    }).length
 
     return (
-      <View className='flex-row items-center justify-between py-2'>
+      <View className='flex-row items-center justify-between px-2 py-2' style={rowStyle}>
         <View className='flex-1 pr-3'>
           <Text className='text-sm font-medium' style={{ color: tokens.textPrimary }}>
             {t('slots.prayer')}
           </Text>
           <Text className='text-xs' style={{ color: tokens.textMuted }}>
-            {view.done}/{view.total}
+            {t('home.prayerCount', { done: donePrayers, total: prayerIndexes.length })}
           </Text>
         </View>
-        <View className='flex-row gap-2'>
+        <View className='flex-row gap-2.5'>
           {prayerIndexes.map((prayerIndex) => {
             const items = byPrayerIndex.get(prayerIndex) ?? []
             const complete = items.length > 0 && items.every((item) => item.completed)
             return (
               <Pressable
                 key={prayerIndex}
-                accessibilityLabel={`${t('slots.prayer')} ${t(`prayerIndex.${prayerIndex}`)}`}
-                disabled={complete}
-                onPress={() => {
-                  const target = items.find((item) => !item.completed)
-                  if (target) onStart(target)
-                }}
-                className='items-center justify-center'
-                style={{ width: MINI_RING_SIZE, height: MINI_RING_SIZE }}
+                accessibilityLabel={`${t('slots.prayer')} ${t(`prayerIndexShort.${prayerIndex}`)}`}
+                onPress={() => onStart(prayerIndex)}
+                className='items-center justify-center gap-0.5'
               >
-                <ProgressRing
-                  size={MINI_RING_SIZE}
-                  strokeWidth={MINI_RING_STROKE}
-                  progress={complete ? 1 : 0}
-                  color={accent}
-                  trackColor={trackColor}
+                <FontAwesome6
+                  name={complete ? 'circle-check' : 'circle'}
+                  iconStyle={complete ? 'solid' : 'regular'}
+                  size={20}
+                  color={complete ? tokens.success : withAlpha(tokens.textPrimary, 0.3)}
                 />
+                <Text className='text-[10px] font-medium' style={{ color: tokens.textMuted }}>
+                  {t(`prayerIndexShort.${prayerIndex}`)}
+                </Text>
               </Pressable>
             )
           })}
@@ -191,42 +153,44 @@ function SlotRow({
 
   return (
     <Pressable
-      disabled={isComplete}
-      onPress={() => {
-        const target = view.items.find((item) => !item.completed)
-        if (target) onStart(target)
-      }}
-      className='flex-row items-center justify-between py-2'
+      onPress={() => onStart()}
+      className='flex-row items-center justify-between px-2 py-2'
+      style={rowStyle}
     >
       <View className='flex-1 pr-3'>
         <Text className='text-sm font-medium' style={{ color: tokens.textPrimary }}>
           {t(`slots.${slot}`)}
         </Text>
         <Text className='text-xs' style={{ color: tokens.textMuted }}>
-          {view.done}/{view.total}
+          {t('home.dhikrCount', { done: view.done, total: view.total })}
         </Text>
       </View>
-      <ProgressRing
-        size={RING_SIZE}
-        strokeWidth={RING_STROKE}
-        progress={ringProgress(view.done, view.total)}
-        color={accent}
-        trackColor={trackColor}
-      />
+      {isComplete ? (
+        <View className='flex-row items-center gap-1.5'>
+          <FontAwesome6 name='circle-check' iconStyle='solid' size={16} color={tokens.success} />
+          <Text className='text-xs font-semibold' style={{ color: tokens.success }}>
+            {t('home.rowCompleted')}
+          </Text>
+        </View>
+      ) : (
+        <FontAwesome6 name='circle' iconStyle='regular' size={18} color={withAlpha(tokens.textPrimary, 0.3)} />
+      )}
     </Pressable>
   )
 }
 
-export function TodaysVirdCard() {
+export function TodaysVirdCard({ onPressCard, highlightSlot }: TodaysVirdCardProps) {
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('vird')
   const upper = useLocaleUpper()
-  const home = useHomeContext()
-  const dayCompletedFiredRef = useRef<string | null>(null)
+  const router = useRouter()
 
+  const authStatus = useAuthStore((state) => state.status)
+  const virdStreak = useVirdStore((state) => state.virdStreak)
   const programs = useVirdStore((state) => state.programs)
   const activeProgramId = useVirdStore((state) => state.activeProgramId)
   const dayProgress = useVirdStore((state) => state.dayProgress)
+  const reminderCoords = useVirdStore((state) => state.reminderPrefs.coords)
 
   const activeProgram = useMemo<VirdProgramLocal | null>(
     () => programs.find((program) => program.id === activeProgramId) ?? null,
@@ -235,8 +199,8 @@ export function TodaysVirdCard() {
 
   // Sunucudan taze gelmiş bir programda `dhikrs` boş olabilir (bkz.
   // features/vird/README.md) — bu tembel hidrasyon, kart açıldığında eksik
-  // ref'leri doldurur ki startVirdItem (aşağıda handleStart) genel
-  // vird:home.itemFallbackName yer tutucusuna DÜŞMESİN.
+  // ref'leri doldurur ki oturum ekranı genel vird:home.itemFallbackName yer
+  // tutucusuna DÜŞMESİN.
   useHydrateVirdSnapshots(activeProgram?.id ?? null)
 
   const todayKey = toDateKey(new Date())
@@ -249,33 +213,52 @@ export function TodaysVirdCard() {
   const todayProgress = activeProgram ? dayProgress[todayKey] : undefined
   const progress = useMemo(() => slotProgress(expected, todayProgress), [expected, todayProgress])
   const dayComplete = useMemo(() => isDayComplete(expected, todayProgress), [expected, todayProgress])
-  const streak = useMemo(
-    () => (activeProgram ? calculateVirdStreak(activeProgram, dayProgress) : { currentStreak: 0, longestStreak: 0 }),
-    [activeProgram, dayProgress]
+
+  // reminderCoords varsa (GPS izni verilip konum alınmışsa) "şimdi" hesabı
+  // gerçek namaz vakitlerine göre yapılır (bkz. services/vird-now.ts) —
+  // yoksa resolveNowSlot kendi saat aralığı sezgisine düşer.
+  const prayerTimes = useMemo(() => (reminderCoords ? getPrayerTimes(reminderCoords, new Date()) : undefined), [reminderCoords])
+
+  const nowSlot = useMemo(
+    () => highlightSlot ?? resolveNowSlot(progress, new Date(), prayerTimes),
+    [highlightSlot, progress, prayerTimes]
   )
+
+  const streak = useMemo(() => {
+    if (authStatus === 'authenticated' && virdStreak) {
+      return virdStreak
+    }
+    return activeProgram ? calculateVirdStreak(activeProgram, dayProgress) : { currentStreak: 0, longestStreak: 0 }
+  }, [authStatus, virdStreak, activeProgram, dayProgress])
 
   useEffect(() => {
     if (!activeProgram || !dayComplete) {
       return
     }
     const fireKey = `${activeProgram.id}:${todayKey}`
-    if (dayCompletedFiredRef.current === fireKey) {
+    if (dayCompletedFired.has(fireKey)) {
       return
     }
-    dayCompletedFiredRef.current = fireKey
+    dayCompletedFired.add(fireKey)
     void trackEvent('vird_day_completed')
   }, [activeProgram, dayComplete, todayKey])
 
   if (!activeProgram) {
-    return <EmptyVirdCard />
+    return <EmptyVirdCard onPressCard={onPressCard} />
   }
 
-  const handleStart = (slot: VirdSlotKey) => (item: ExpectedVirdItem) => {
-    home.startVirdItem(activeProgram, item)
+  const handleStart = (slot: VirdSlotKey) => (prayerIndex?: number) => {
     void trackEvent('vird_slot_started', { slot })
+    router.push({
+      pathname: '/vird/session',
+      params: {
+        programId: activeProgram.id,
+        slot,
+        ...(prayerIndex != null ? { prayerIndex: String(prayerIndex) } : {})
+      }
+    })
   }
 
-  const trackColor = withAlpha(tokens.textPrimary, 0.12)
   const totals = Object.values(progress).reduce(
     (acc, view) => ({ done: acc.done + (view?.done ?? 0), total: acc.total + (view?.total ?? 0) }),
     { done: 0, total: 0 }
@@ -284,7 +267,9 @@ export function TodaysVirdCard() {
 
   return (
     <View className='mb-5 px-5'>
-      <View
+      <Pressable
+        onPress={onPressCard}
+        disabled={!onPressCard}
         className='rounded-2xl px-4 py-3'
         style={{
           borderWidth: 1,
@@ -308,6 +293,7 @@ export function TodaysVirdCard() {
         ) : totals.total > 0 ? (
           <Text className='mb-2 text-xs' style={{ color: tokens.textMuted }}>
             {t('home.completionPercent', { percent: completionPercent })}
+            {nowSlot ? ` · ${t('home.nowLabel', { slot: t(`slots.${nowSlot}`) })}` : ''}
           </Text>
         ) : null}
 
@@ -319,19 +305,10 @@ export function TodaysVirdCard() {
           VIRD_SLOT_KEYS.map((slot) => {
             const view = progress[slot]
             if (!view) return null
-            return (
-              <SlotRow
-                key={slot}
-                slot={slot}
-                view={view}
-                accent={tokens.accent}
-                trackColor={trackColor}
-                onStart={handleStart(slot)}
-              />
-            )
+            return <SlotRow key={slot} slot={slot} view={view} isNow={slot === nowSlot} onStart={handleStart(slot)} />
           })
         )}
-      </View>
+      </Pressable>
     </View>
   )
 }

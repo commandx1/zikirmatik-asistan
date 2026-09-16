@@ -159,6 +159,52 @@ describe('expectedItemsForDay', () => {
     ]);
   });
 
+  it('documents actual behavior: an empty prayerSelection array falls back to the default 1..5, NOT to zero prayer items', () => {
+    // `program.prayerSelection && program.prayerSelection.length > 0 ? ... : [1,2,3,4,5]`
+    // in vird-day.ts treats `[]` the same as "unset" (falls back to the
+    // default 5 vakits) rather than "user selected zero prayer times".
+    const program: VirdDayProgramLike = {
+      startDate: '2026-01-01',
+      phases: [
+        {
+          fromDay: 1,
+          toDay: null,
+          slots: { prayer: [{ dhikrId, target: 10 }] },
+        },
+      ],
+      prayerSelection: [],
+    };
+    const expected = expectedItemsForDay(program, 1);
+    expect(expected).toHaveLength(5);
+    expect(expected.map((item) => item.prayerIndex)).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('documents actual behavior: a duplicated dhikr ref within the same slot produces two entries sharing the same (colliding) itemKey', () => {
+    const program: VirdDayProgramLike = {
+      startDate: '2026-01-01',
+      phases: [
+        {
+          fromDay: 1,
+          toDay: null,
+          slots: {
+            morning: [
+              { dhikrId, target: 33 },
+              { dhikrId, target: 10 },
+            ],
+          },
+        },
+      ],
+    };
+    const expected = expectedItemsForDay(program, 1);
+    expect(expected).toHaveLength(2);
+    // Both items resolve to the same itemKey (`${slot}:${prayerIndex ?? 0}:${ref}`)
+    // since the key does not incorporate array position — callers that index
+    // by itemKey (e.g. countByItemKey maps) will see the SECOND item's target
+    // shadow the first's under that shared key.
+    expect(expected[0].itemKey).toBe(expected[1].itemKey);
+    expect(expected[0].itemKey).toBe(`morning:0:${dhikrId.toString()}`);
+  });
+
   it('returns an empty list when no phase covers the requested day', () => {
     const program: VirdDayProgramLike = {
       startDate: '2026-01-01',

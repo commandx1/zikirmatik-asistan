@@ -41,6 +41,24 @@ export type AppleWatchProps = {
   saveBtnRef?: RefObject<View | null>;
 }
 
+export type CounterVisualModel = {
+  count: number
+  target: number
+  progress: number
+  isTargetMode: boolean
+  onCountPress: () => void
+  onTargetPress: () => void
+  onResetPress: () => void
+  onSavePress: () => void
+  isSavingLog: boolean
+  mainDhikr: { displayName: string }
+  activeQuickDhikr: string
+  currentLap: number
+  lapSize: number
+}
+
+export type CounterVisualViewProps = AppleWatchProps & { model: CounterVisualModel; controls?: 'full' | 'reset-only' }
+
 function ProgressRing({ progress, accent, trackColor }: { progress: number; accent: string; trackColor: string }) {
   const clamped = Math.max(0, Math.min(1, progress))
   const radius = (RING_SIZE - RING_STROKE * 2) / 2
@@ -79,14 +97,23 @@ function ProgressRing({ progress, accent, trackColor }: { progress: number; acce
   )
 }
 
-export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnRef, resetBtnRef, saveBtnRef }: AppleWatchProps = {}) {
+export function AppleWatchView({
+  model,
+  controls = 'full',
+  previewTokens,
+  spotlightRef,
+  listBtnRef,
+  targetBtnRef,
+  resetBtnRef,
+  saveBtnRef
+}: CounterVisualViewProps) {
   const { t } = useTranslation('home')
   const router = useRouter()
   const [isResetConfirmVisible, setIsResetConfirmVisible] = useState(false)
   const { tokens: activeTokens, themeName } = useThemeTokens()
   const { fontFamily } = useThemePreferences()
   const tokens = previewTokens ?? activeTokens
-  const home = useHomeContext()
+  const home = model
   const isComplete = home.isTargetMode && home.count >= home.target && home.target > 0
   const prevCountRef = useRef(home.count)
   const prevCompleteRef = useRef(isComplete)
@@ -264,6 +291,7 @@ export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnR
                 onResetPress={onResetConfirmPress}
                 onSavePress={home.onSavePress}
                 isSaving={home.isSavingLog}
+                variant={controls}
               />
             </ScrollView>
           </Animated.View>
@@ -296,6 +324,11 @@ export function AppleWatch({ previewTokens, spotlightRef, listBtnRef, targetBtnR
       />
     </View>
   )
+}
+
+export function AppleWatch(props: AppleWatchProps = {}) {
+  const home = useHomeContext()
+  return <AppleWatchView {...props} model={home} />
 }
 
 function withAlpha(hex: string, alpha: number) {

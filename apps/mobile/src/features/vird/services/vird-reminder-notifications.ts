@@ -15,15 +15,16 @@
 //
 // Geçmişte kalan saatler ve BUGÜN için zaten tamamlanmış dilim/vakit
 // örnekleri atlanır (slotProgress ile). reminderPrefs.enabled=false ya da
-// provinceKey yoksa (ya da aktif program yoksa) tüm vird hatırlatmaları
-// iptal edilir, hiçbir planlama denenmez.
+// aktif program yoksa tüm vird hatırlatmaları iptal edilir, hiçbir planlama
+// denenmez. Konum (`reminderPrefs.coords`) YOKSA planlama yine de yapılır —
+// resolvePrayerTimes sabit saat tablosuna düşer (bkz. prayer-times.ts).
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { toDateKey } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
 import type { VirdDayProgressByDate, VirdReminderPrefs, VirdSlotKey } from "../types";
 import { dayIndexFor, expectedItemsForDay, slotProgress, type VirdDayProgramLike } from "./vird-day";
-import { getPrayerTimes, type PrayerTimesResult } from "./prayer-times";
+import { resolvePrayerTimes, type PrayerTimesResult } from "./prayer-times";
 
 export const VIRD_SLOT_REMINDER_KIND = "vird-slot-reminder";
 const ANDROID_CHANNEL_ID = "vird-reminders";
@@ -69,7 +70,7 @@ export function syncVirdReminders(input: SyncVirdRemindersInput): Promise<SyncVi
 async function runSync(input: SyncVirdRemindersInput): Promise<SyncVirdRemindersResult> {
   const now = input.now ?? new Date();
 
-  if (!input.reminderPrefs.enabled || !input.reminderPrefs.provinceKey || !input.program) {
+  if (!input.reminderPrefs.enabled || !input.program) {
     await cancelVirdReminders();
     return { scheduled: 0 };
   }
@@ -84,7 +85,6 @@ async function runSync(input: SyncVirdRemindersInput): Promise<SyncVirdReminders
   await cancelVirdReminders();
 
   const program = input.program;
-  const provinceKey = input.reminderPrefs.provinceKey;
   let scheduled = 0;
 
   for (const dayOffset of DAYS_AHEAD) {
@@ -92,7 +92,6 @@ async function runSync(input: SyncVirdRemindersInput): Promise<SyncVirdReminders
       program,
       reminderPrefs: input.reminderPrefs,
       dayProgress: input.dayProgress,
-      provinceKey,
       now,
       dayOffset
     });
@@ -105,11 +104,10 @@ async function scheduleForDay(args: {
   program: VirdDayProgramLike;
   reminderPrefs: VirdReminderPrefs;
   dayProgress: VirdDayProgressByDate;
-  provinceKey: string;
   now: Date;
   dayOffset: number;
 }): Promise<number> {
-  const { program, reminderPrefs, dayProgress, provinceKey, now, dayOffset } = args;
+  const { program, reminderPrefs, dayProgress, now, dayOffset } = args;
   const targetDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset);
   const dateKey = toDateKey(targetDate);
   const dayIndex = dayIndexFor(program, dateKey);
@@ -119,7 +117,7 @@ async function scheduleForDay(args: {
   }
 
   const progress = slotProgress(expected, dayProgress[dateKey]);
-  const prayerTimes = getPrayerTimes(provinceKey, targetDate);
+  const prayerTimes = resolvePrayerTimes(reminderPrefs.coords, targetDate);
   let scheduled = 0;
 
   const nonPrayerSlots = ["morning", "evening", "night"] as const;
@@ -173,6 +171,10 @@ async function scheduleForDay(args: {
 
 async function scheduleOne(args: { dateKey: string; slot: VirdSlotKey; prayerIndex: number | null; trigger: Date }): Promise<void> {
   const { dateKey, slot, prayerIndex, trigger } = args;
+  // Hub'a (`/vird`) dilim vurgulanmış olarak deep-link eder — bkz.
+  // screens/vird-hub-screen.tsx (search param `slot` -> highlightSlot) ve
+  // notifications/services/notification-tap-routing.ts allowlist'i.
+  const route = prayerIndex != null ? `/vird?slot=${slot}&prayerIndex=${prayerIndex}` : `/vird?slot=${slot}`;
 
   await Notifications.scheduleNotificationAsync({
     identifier: buildIdentifier(dateKey, slot, prayerIndex),
@@ -182,7 +184,7 @@ async function scheduleOne(args: { dateKey: string; slot: VirdSlotKey; prayerInd
       sound: Platform.OS === "ios" ? "default" : undefined,
       data: {
         kind: VIRD_SLOT_REMINDER_KIND,
-        route: "/(tabs)/home",
+        route,
         virdSlot: slot,
         ...(prayerIndex != null ? { virdPrayerIndex: prayerIndex } : {})
       }

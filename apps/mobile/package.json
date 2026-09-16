@@ -14,6 +14,7 @@
     "postinstall": "install-skia"
   },
   "dependencies": {
+    "@callstack/liquid-glass": "^0.8.2",
     "@expo-google-fonts/finlandica": "^0.4.0",
     "@expo-google-fonts/indie-flower": "^0.2.3",
     "@expo-google-fonts/intel-one-mono": "^0.4.0",
@@ -21,6 +22,7 @@
     "@expo/metro-runtime": "~6.1.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-google-signin/google-signin": "^16.1.2",
+    "@react-navigation/bottom-tabs": "7.15.10",
     "@shopify/react-native-skia": "^2.6.4",
     "@tanstack/react-query": "^5.75.7",
     "@zikirmatik/shared": "workspace:*",
@@ -38,6 +40,7 @@
     "expo-linear-gradient": "~15.0.7",
     "expo-linking": "~8.0.12",
     "expo-localization": "~17.0.9",
+    "expo-location": "~19.0.8",
     "expo-notifications": "~0.32.11",
     "expo-router": "~6.0.24",
     "i18next": "^26.3.6",

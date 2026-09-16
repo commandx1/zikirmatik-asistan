@@ -1,8 +1,9 @@
 import { Types } from 'mongoose';
+import { istanbulDateKey } from '../../common/utils/date-keys';
 import { VirdProgressService } from './vird-progress.service';
 
 describe('VirdProgressService', () => {
-  const virdProgramModel = { findOne: jest.fn() };
+  const virdProgramModel = { findOne: jest.fn(), updateMany: jest.fn() };
   const virdDayProgressModel = { findOneAndUpdate: jest.fn(), find: jest.fn() };
   const dhikrLogModel = { find: jest.fn() };
   const streaksService = {
@@ -35,6 +36,10 @@ describe('VirdProgressService', () => {
 
   beforeEach(() => {
     virdProgramModel.findOne.mockReset();
+    virdProgramModel.updateMany.mockReset();
+    virdProgramModel.updateMany.mockReturnValue({
+      exec: jest.fn().mockResolvedValue({}),
+    });
     virdDayProgressModel.findOneAndUpdate.mockReset();
     virdDayProgressModel.find.mockReset();
     dhikrLogModel.find.mockReset();
@@ -186,6 +191,78 @@ describe('VirdProgressService', () => {
       });
       expect(result.slots.prayer?.done).toBe(false);
       expect(result.isDayComplete).toBe(false);
+    });
+
+    it('completes expired journeys before looking up the active program', async () => {
+      mockProgramLookup(null);
+
+      await service.getToday(userId, '2026-01-01');
+
+      expect(virdProgramModel.updateMany).toHaveBeenCalledWith(
+        {
+          userId: new Types.ObjectId(userId),
+          status: 'active',
+          kind: 'journey',
+          endDate: { $lt: istanbulDateKey(new Date()) },
+        },
+        { $set: { status: 'completed' } },
+      );
+    });
+
+    it('returns program: null when the given programId exists but is paused (filter requires status active)', async () => {
+      // The lookup filter always ANDs in `status: 'active'`; a real DB would
+      // simply not match a paused document for that filter, so the mock
+      // mirrors that by resolving null even though a programId was passed.
+      mockProgramLookup(null);
+
+      const result = await service.getToday(userId, '2026-01-01', programId);
+
+      expect(result.program).toBeNull();
+      const [filter] = virdProgramModel.findOne.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
+      expect(filter).toMatchObject({ status: 'active' });
+    });
+
+    it('never touches a routine program (no endDate) via the journey completion sweep', async () => {
+      mockProgramLookup(routineProgram);
+      mockLogs([]);
+
+      await service.getToday(userId, '2026-01-01');
+
+      // The sweep's filter always scopes to kind: 'journey' — a routine
+      // program (kind: 'routine', no endDate) can never match it.
+      const [filter] = virdProgramModel.updateMany.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
+      expect(filter).toMatchObject({ kind: 'journey' });
+    });
+
+    it('returns an empty-slots response when the date precedes the program startDate (dayIndex <= 0)', async () => {
+      mockProgramLookup(routineProgram); // startDate: '2026-01-01'
+      mockLogs([]);
+
+      const result = await service.getToday(userId, '2025-12-30');
+
+      expect(result.dayIndex).toBeLessThanOrEqual(0);
+      expect(result.slots).toEqual({});
+      expect(result.isDayComplete).toBe(false);
+    });
+
+    it('filters the active-program lookup by _id when programId is given', async () => {
+      mockProgramLookup(routineProgram);
+      mockLogs([]);
+
+      await service.getToday(userId, '2026-01-01', programId);
+
+      const [filter] = virdProgramModel.findOne.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
+      expect(filter).toMatchObject({
+        userId: new Types.ObjectId(userId),
+        status: 'active',
+        _id: new Types.ObjectId(programId),
+      });
     });
   });
 

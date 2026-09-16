@@ -1,5 +1,9 @@
 import { AuthService } from './auth.service';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 describe('AuthService', () => {
   const usersService = {
@@ -214,6 +218,46 @@ describe('AuthService', () => {
     const refreshed = await authService.refresh(session.refreshToken);
     expect(refreshed.userId).toBe('507f1f77bcf86cd799439022');
     expect(refreshed.displayName).toBe('Persisted User');
+  });
+
+  it('verifies google provider on ios', async () => {
+    usersService.findOrCreateFromAuth.mockResolvedValue({
+      _id: '507f1f77bcf86cd799439077',
+      displayName: 'Ios Google User',
+      email: 'ios-google@example.com',
+    });
+
+    const response = await authService.verifyProvider({
+      provider: 'google',
+      platform: 'ios',
+      deviceId: 'ios-device-local',
+      idToken: JSON.stringify({
+        sub: 'u-ios-google',
+        name: 'Ios Google User',
+        email: 'ios-google@example.com',
+        picture: 'https://example.com/ios-google-user.jpg',
+      }),
+    });
+
+    expect(response.userId).toBe('507f1f77bcf86cd799439077');
+    expect(response.displayName).toBe('Ios Google User');
+    expect(usersService.findOrCreateFromAuth).toHaveBeenCalledWith(
+      expect.objectContaining({
+        provider: 'google',
+        profileImageUrl: 'https://example.com/ios-google-user.jpg',
+      }),
+    );
+  });
+
+  it('rejects apple provider on android', async () => {
+    await expect(
+      authService.verifyProvider({
+        provider: 'apple',
+        platform: 'android',
+        deviceId: 'android-device-local',
+        idToken: JSON.stringify({ sub: 'u-apple-android', name: 'Nope' }),
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('rejects forged refresh tokens', async () => {

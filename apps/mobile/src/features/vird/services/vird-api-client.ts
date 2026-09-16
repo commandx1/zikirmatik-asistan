@@ -98,9 +98,19 @@ export async function activateVirdProgram(id: string, accessToken: string): Prom
 
 // --- İlerleme (v1/vird/today, v1/vird/history) — accessToken zorunlu. ---
 
-export async function fetchVirdToday(accessToken: string, date?: string): Promise<VirdTodayResponse> {
-  const query = date ? `?date=${encodeURIComponent(date)}` : "";
-  const raw = await requestJson<RawVirdTodayResponse>(`/v1/vird/today${query}`, { method: "GET", accessToken });
+export async function fetchVirdToday(
+  accessToken: string,
+  date?: string,
+  programId?: string
+): Promise<VirdTodayResponse> {
+  const params = new URLSearchParams();
+  if (date) params.set("date", date);
+  if (programId) params.set("programId", programId);
+  const query = params.toString();
+  const raw = await requestJson<RawVirdTodayResponse>(`/v1/vird/today${query ? `?${query}` : ""}`, {
+    method: "GET",
+    accessToken
+  });
   return mapTodayResponse(raw);
 }
 

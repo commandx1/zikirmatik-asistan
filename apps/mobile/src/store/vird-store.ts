@@ -5,7 +5,6 @@ import { toDateKey, type VirdStreakSnapshot } from "@zikirmatik/shared";
 import type {
   VirdDayItemProgress,
   VirdDayProgressByDate,
-  VirdFocusSegment,
   VirdProgramLocal,
   VirdReminderPrefs
 } from "../features/vird/types";
@@ -33,9 +32,13 @@ type VirdStoreData = {
   /** dateKey (YYYY-MM-DD) -> itemKey -> ilerleme. 120 günden eski anahtarlar budanır. */
   dayProgress: VirdDayProgressByDate;
   reminderPrefs: VirdReminderPrefs;
-  focusSegment: VirdFocusSegment;
   lastServerSyncAt: string | null;
 };
+
+/** Bir kaydet/başlat/şablon/AI akışı hub'a (`/vird`) dönünce gösterilecek
+ * toast türü — PERSIST EDİLMEZ (yalnız bir sonraki hub mount'unda tüketilen
+ * geçici sinyal, bkz. features/vird/screens/vird-hub-screen.tsx). */
+export type VirdNotice = "started" | "saved" | "draft" | null;
 
 export type VirdStore = VirdStoreData & {
   hasHydrated: boolean;
@@ -68,6 +71,15 @@ export type VirdStore = VirdStoreData & {
    */
   recordProgress: (dateKey: string, itemKey: string, count: number, target: number) => void;
   /**
+   * itemKey için count/target'ı MUTLAK olarak yazar (recordProgress'in
+   * mergeMax'ının aksine önceki değeri hiç dikkate almaz) — rehberli vird
+   * oturumunda kullanıcı bir sayacı geri alabildiği/sıfırlayabildiği için
+   * gerekli (mergeMax burada geriye düşüşü engelleyip yanlış davranırdı).
+   * recordProgress, sunucu senkronu (replaceFromServer) gibi "asla geriye
+   * düşme" gereken yollar için AYNEN kalır.
+   */
+  setProgress: (dateKey: string, itemKey: string, count: number, target: number) => void;
+  /**
    * GET /v1/vird/programs (+ opsiyonel GET /v1/vird/today) yanıtıyla yerel
    * durumu uzlaştırır: gelen listedeki HER program `origin:'server'` olarak
    * yazılır; henüz sunucuya senkronize OLMAMIŞ (`origin:'local'`, clientId'si
@@ -79,7 +91,10 @@ export type VirdStore = VirdStoreData & {
   setReminderPrefs: (
     patch: Partial<Omit<VirdReminderPrefs, "slots">> & { slots?: Partial<VirdReminderPrefs["slots"]> }
   ) => void;
-  setFocusSegment: (segment: VirdFocusSegment) => void;
+  /** Hub ekranının (vird-hub-screen.tsx) gösterip 2.5s sonra kendini
+   * temizlediği bir kerelik toast sinyali. PERSIST EDİLMEZ. */
+  notice: VirdNotice;
+  setNotice: (notice: VirdNotice) => void;
   /** Oturum kapanışı vb. için tüm vird state'ini varsayılana döndürür. Bu
    * görev kapsamında session-boundary.ts'e KAYDEDİLMEDİ (bkz. README). */
   resetVird: () => void;
@@ -118,9 +133,8 @@ function defaultData(): VirdStoreData {
     reminderPrefs: {
       enabled: false,
       slots: { morning: false, prayer: false, evening: false, night: false },
-      provinceKey: null
+      coords: null
     },
-    focusSegment: "vird",
     lastServerSyncAt: null
   };
 }
@@ -176,9 +190,11 @@ export const useVirdStore = create<VirdStore>()(
       hasHydrated: false,
       virdStreak: null,
       syncError: undefined,
+      notice: null,
 
       setVirdStreak: (streak) => set({ virdStreak: streak }),
       setSyncError: (message) => set({ syncError: message }),
+      setNotice: (notice) => set({ notice }),
 
       upsertProgram: (program) =>
         set((state) => {
@@ -212,6 +228,18 @@ export const useVirdStore = create<VirdStore>()(
           };
         }),
 
+      setProgress: (dateKey, itemKey, count, target) =>
+        set((state) => {
+          const day = state.dayProgress[dateKey] ?? {};
+          const nextDay: Record<string, VirdDayItemProgress> = {
+            ...day,
+            [itemKey]: { count, target, completed: count >= target }
+          };
+          return {
+            dayProgress: pruneDayProgress({ ...state.dayProgress, [dateKey]: nextDay }, toDateKey(new Date()))
+          };
+        }),
+
       replaceFromServer: (programsFromServer, todayProgress) =>
         set((state) => {
           const incoming = programsFromServer.map((program) => ({ ...program, origin: "server" as const }));
@@ -230,8 +258,19 @@ export const useVirdStore = create<VirdStore>()(
             dayProgress = pruneDayProgress({ ...dayProgress, [todayProgress.dateKey]: nextDay }, toDateKey(new Date()));
           }
 
+          const programs = [...incoming, ...survivingLocalOnly];
+          // Cihazdaki "kartın izlediği program" seçimi sunucuda yoksa (giriş
+          // sonrası sıfırlanmış store, başka cihazda kurulmuş program vb.)
+          // sunucunun en son güncellenen AKTİF programını seç; aksi hâlde
+          // hub/kart "program yok" gösterirken listede aktif program durur.
+          const activeStillExists = programs.some((program) => program.id === state.activeProgramId);
+          const activeProgramId = activeStillExists
+            ? state.activeProgramId
+            : (incoming.find((program) => program.status === "active")?.id ?? null);
+
           return {
-            programs: [...incoming, ...survivingLocalOnly],
+            programs,
+            activeProgramId,
             dayProgress,
             lastServerSyncAt: new Date().toISOString()
           };
@@ -246,24 +285,22 @@ export const useVirdStore = create<VirdStore>()(
           }
         })),
 
-      setFocusSegment: (segment) => set({ focusSegment: segment }),
-
-      resetVird: () => set({ ...defaultData(), virdStreak: null, syncError: undefined }),
+      resetVird: () => set({ ...defaultData(), virdStreak: null, syncError: undefined, notice: null }),
 
       markHydrated: () => set({ hasHydrated: true })
     }),
     {
       name: "vird-store-v1",
       storage: createJSONStorage(() => safeAsyncStorage),
-      version: 1,
-      // v1 bu store'un İLK sürümü — bugün için gerçek bir "eski veri" göçü
-      // yok, ama dhikr-store.ts'teki savunmacı desenle aynı gerekçeyle
-      // (bozuk/eksik/beklenmeyen şekilde persist edilmiş state ASLA crash
-      // etmemeli) yine de defensive bir migrate tanımlanır: version >= 1 ise
-      // persisted veriye güvenilir, aksi halde (0/undefined ya da bozuk
-      // veri) alan alan güvenli varsayılanlara düşülür.
+      version: 2,
+      // v2 (FAZ C): reminderPrefs.provinceKey (il seçimi) kaldırıldı, yerini
+      // coords (GPS) aldı — bkz. ../features/vird/types.ts VirdReminderPrefs.
+      // version < 2 için (v1 ya da hiç version taşımayan bozuk/eski veri)
+      // dhikr-store.ts'teki savunmacı desenle aynı gerekçeyle (persist
+      // edilmiş state ASLA crash'e sebep olmamalı) alan alan güvenli
+      // varsayılanlara düşülür; provinceKey bilerek OKUNMAZ/DÜŞÜRÜLÜR.
       migrate: (persistedState, version) => {
-        if (version >= 1) {
+        if (version >= 2) {
           return persistedState as VirdStore;
         }
 
@@ -285,9 +322,10 @@ export const useVirdStore = create<VirdStore>()(
                 evening: typeof rawSlots?.evening === "boolean" ? rawSlots.evening : defaults.reminderPrefs.slots.evening,
                 night: typeof rawSlots?.night === "boolean" ? rawSlots.night : defaults.reminderPrefs.slots.night
               },
-              provinceKey: typeof rawPrefs?.provinceKey === "string" ? rawPrefs.provinceKey : defaults.reminderPrefs.provinceKey
+              // v1'deki provinceKey kasıtlı olarak düşürülür (bkz. yukarı);
+              // v2 formatında zaten coords yoktu, her ihtimalde null'a düşülür.
+              coords: defaults.reminderPrefs.coords
             },
-            focusSegment: state.focusSegment === "list" ? "list" : defaults.focusSegment,
             lastServerSyncAt: typeof state.lastServerSyncAt === "string" ? state.lastServerSyncAt : defaults.lastServerSyncAt
           } as VirdStore;
         } catch {
@@ -301,7 +339,6 @@ export const useVirdStore = create<VirdStore>()(
         activeProgramId: state.activeProgramId,
         dayProgress: state.dayProgress,
         reminderPrefs: state.reminderPrefs,
-        focusSegment: state.focusSegment,
         lastServerSyncAt: state.lastServerSyncAt
       }),
       onRehydrateStorage: () => (state) => {

@@ -9,11 +9,12 @@ import { useAuthStore } from "../../../store/auth-store";
 import { fetchVirdTemplates } from "../services/vird-api-client";
 
 // collections/screen.tsx'in "all" sayfasının üstünde (ListHeaderComponent
-// olarak) gösterilen yatay vird programı şablonları rafı. Şablonlar misafir
-// dahil herkese görünür (GET v1/vird/templates OptionalJwtAuthGuard) —
-// premium şablonlar rozetle işaretlenir, gerçek erişim kontrolü şablon
+// olarak) yatay bir raf olarak; app/vird/templates.tsx'te (B1) `vertical`
+// ile TÜM listeyi gösteren dikey bir sayfa olarak kullanılır. Şablonlar
+// misafir dahil herkese görünür (GET v1/vird/templates OptionalJwtAuthGuard)
+// — premium şablonlar rozetle işaretlenir, gerçek erişim kontrolü şablon
 // detay ekranında ("Programı başlat" basılınca) yapılır.
-export function TemplateShelf() {
+export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
   const { t, i18n } = useTranslation("vird");
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const { tokens } = useThemeTokens();
@@ -57,9 +58,11 @@ export function TemplateShelf() {
 
   return (
     <View className="mb-3 mt-2">
-      <Text className="mb-2 px-4 text-xs font-semibold tracking-[0.8px] text-[--text-muted]">
-        {t("vird:templates.shelfTitle")}
-      </Text>
+      {vertical ? null : (
+        <Text className="mb-2 px-4 text-xs font-semibold tracking-[0.8px] text-[--text-muted]">
+          {t("vird:templates.shelfTitle")}
+        </Text>
+      )}
 
       {isLoading ? (
         <View className="h-28 items-center justify-center">
@@ -71,14 +74,17 @@ export function TemplateShelf() {
         <FlatList
           data={templates}
           keyExtractor={(item) => item.key}
-          horizontal
+          horizontal={!vertical}
           showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}
+          columnWrapperStyle={vertical ? { gap: 10 } : undefined}
+          numColumns={vertical ? 2 : 1}
+          key={vertical ? "vertical" : "horizontal"}
           renderItem={({ item }) => (
             <Pressable
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onPress={() => router.push(`/vird/template/${item.key}` as any)}
-              className="w-40 rounded-2xl border border-white/8 bg-[--card] p-3"
+              onPress={() => router.push({ pathname: "/vird/template/[key]", params: { key: item.key } })}
+              className={vertical ? "mb-3 flex-1 rounded-2xl border border-white/8 bg-[--card] p-3" : "w-40 rounded-2xl border border-white/8 bg-[--card] p-3"}
               style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
             >
               {item.isPremium ? (

@@ -28,7 +28,6 @@ describe("dhikr-store", () => {
       items: [],
       selectedDhikrId: "",
       activeAiContext: undefined,
-      activeVirdContext: null,
       freeModeCount: 0,
       freeModeTarget: 0,
       freeModeLapSize: 33,
@@ -184,106 +183,6 @@ describe("dhikr-store", () => {
     useDhikrStore.getState().clearSelectedDhikr();
 
     expect(useDhikrStore.getState().activeAiContext).toBeUndefined();
-  });
-
-  describe("activeVirdContext", () => {
-    const virdContext = {
-      programId: "program-a",
-      itemKey: "morning:0:ready-a",
-      slot: "morning" as const,
-      dayIndex: 3,
-      target: 33
-    };
-
-    beforeEach(() => {
-      useDhikrStore.setState({
-        items: [
-          {
-            id: "ready-a",
-            source: "ready",
-            name: { tr: "Dua A", en: "Dua A" },
-            transliteration: { tr: "Dua A", en: "Dua A" },
-            current: 0,
-            target: 33,
-            lastActivityLabel: "Henüz başlanmadı",
-            streakDays: 0,
-            isFavorite: false
-          },
-          {
-            id: "personal-a",
-            source: "personal",
-            name: "Kendi zikrim",
-            transliteration: "Kendi zikrim",
-            current: 0,
-            target: 33,
-            lastActivityLabel: "Henüz başlanmadı",
-            streakDays: 0,
-            isFavorite: false
-          }
-        ]
-      });
-    });
-
-    it("is set by setActiveVirdContext and cleared when the selection changes", () => {
-      useDhikrStore.getState().selectDhikr("ready-a");
-      useDhikrStore.getState().setActiveVirdContext(virdContext);
-      expect(useDhikrStore.getState().activeVirdContext).toEqual(virdContext);
-
-      useDhikrStore.getState().selectDhikr("personal-a");
-      expect(useDhikrStore.getState().activeVirdContext).toBeNull();
-    });
-
-    it("is cleared by clearSelectedDhikr", () => {
-      useDhikrStore.getState().selectDhikr("ready-a");
-      useDhikrStore.getState().setActiveVirdContext(virdContext);
-
-      useDhikrStore.getState().clearSelectedDhikr();
-
-      expect(useDhikrStore.getState().activeVirdContext).toBeNull();
-    });
-
-    it("is cleared by removePersonalDhikr when the removed dhikr is the current selection", () => {
-      useDhikrStore.getState().selectDhikr("personal-a");
-      useDhikrStore.getState().setActiveVirdContext({ ...virdContext, itemKey: "morning:0:personal-a" });
-
-      useDhikrStore.getState().removePersonalDhikr("personal-a");
-
-      expect(useDhikrStore.getState().activeVirdContext).toBeNull();
-    });
-
-    it("is left untouched by removePersonalDhikr when a different (unselected) dhikr is removed", () => {
-      useDhikrStore.getState().upsertPersonalDhikr({
-        id: "personal-b",
-        name: "Diğer zikrim",
-        transliteration: "Diğer zikrim",
-        current: 0,
-        target: 33
-      });
-      useDhikrStore.getState().selectDhikr("ready-a");
-      useDhikrStore.getState().setActiveVirdContext(virdContext);
-
-      useDhikrStore.getState().removePersonalDhikr("personal-b");
-
-      expect(useDhikrStore.getState().activeVirdContext).toEqual(virdContext);
-    });
-
-    it("is cleared by resetSessionScoped (logout)", () => {
-      useDhikrStore.getState().selectDhikr("ready-a");
-      useDhikrStore.getState().setActiveVirdContext(virdContext);
-
-      useDhikrStore.getState().resetSessionScoped();
-
-      expect(useDhikrStore.getState().activeVirdContext).toBeNull();
-    });
-
-    it("is included in the persisted (partialized) state, same as activeAiContext", () => {
-      useDhikrStore.getState().selectDhikr("ready-a");
-      useDhikrStore.getState().setActiveVirdContext(virdContext);
-
-      const options = useDhikrStore.persist.getOptions();
-      const persisted = options.partialize?.(useDhikrStore.getState()) as Record<string, unknown>;
-      expect(persisted).toHaveProperty("activeVirdContext", virdContext);
-    });
   });
 
   describe("persisted state migration (v0 -> v1, nameTurkish -> LocalizedText)", () => {

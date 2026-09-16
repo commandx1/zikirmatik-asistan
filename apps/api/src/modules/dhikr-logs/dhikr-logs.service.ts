@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -25,6 +26,8 @@ type VirdLogRef = {
 
 @Injectable()
 export class DhikrLogsService {
+  private readonly logger = new Logger(DhikrLogsService.name);
+
   constructor(
     @InjectModel(DhikrLog.name)
     private readonly dhikrLogModel: Model<DhikrLogDocument>,
@@ -44,8 +47,10 @@ export class DhikrLogsService {
     }
     try {
       await this.streaksService.recalculateForUser(userId);
-    } catch {
-      // intentionally swallowed
+    } catch (error) {
+      this.logger.warn(
+        `safeRecalcStreak failed: ${error instanceof Error ? error.message : error}`,
+      );
     }
   }
 
@@ -64,8 +69,10 @@ export class DhikrLogsService {
     }
     try {
       await this.virdProgressService.applyLogWrite(input);
-    } catch {
-      // intentionally swallowed
+    } catch (error) {
+      this.logger.warn(
+        `safeApplyVirdProgress failed: ${error instanceof Error ? error.message : error}`,
+      );
     }
   }
 

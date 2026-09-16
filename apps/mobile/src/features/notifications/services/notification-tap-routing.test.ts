@@ -37,6 +37,24 @@ describe("extractNotificationRoute", () => {
     expect(extractNotificationRoute(response)).toBe("/(tabs)/stats");
   });
 
+  it("returns the vird hub route with a highlighted slot from a local vird reminder", () => {
+    const response = responseWithData({
+      kind: "vird-slot-reminder",
+      route: "/vird?slot=morning"
+    });
+
+    expect(extractNotificationRoute(response)).toBe("/vird?slot=morning");
+  });
+
+  it("returns the vird hub route with a highlighted prayer slot + prayerIndex", () => {
+    const response = responseWithData({
+      kind: "vird-slot-reminder",
+      route: "/vird?slot=prayer&prayerIndex=3"
+    });
+
+    expect(extractNotificationRoute(response)).toBe("/vird?slot=prayer&prayerIndex=3");
+  });
+
   it("rejects routes outside the allowlist", () => {
     expect(
       extractNotificationRoute(responseWithData({ route: "/settings" }))

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPrayerTimes, PrayerTimesError } from "./prayer-times";
+import { getPrayerTimes, resolvePrayerTimes } from "./prayer-times";
 
 // Sabit tarih, yerel bileşenlerle kurulur (bkz. prayer-times.ts dosya başı
 // notu) — böylece `new Date(2026, 0, 15)`'in getFullYear/getMonth/getDate
@@ -11,10 +11,11 @@ import { getPrayerTimes, PrayerTimesError } from "./prayer-times";
 // testin herhangi bir CI makinesinde (hangi saat diliminde olursa olsun)
 // aynı sonucu vermesi için UTC okuması şarttır.
 const fixedDate = new Date(2026, 0, 15);
+const istanbulCoords = { lat: 41.0082, lng: 28.9784 };
 
 describe("getPrayerTimes", () => {
-  it("returns strictly increasing prayer times for Istanbul on a fixed date", () => {
-    const times = getPrayerTimes("istanbul", fixedDate);
+  it("returns strictly increasing prayer times for a coordinate on a fixed date", () => {
+    const times = getPrayerTimes(istanbulCoords, fixedDate);
 
     expect(times.fajr.getTime()).toBeLessThan(times.sunrise.getTime());
     expect(times.sunrise.getTime()).toBeLessThan(times.dhuhr.getTime());
@@ -24,7 +25,7 @@ describe("getPrayerTimes", () => {
   });
 
   it("computes reasonable (UTC, machine-timezone-independent) hour ranges for Istanbul in winter", () => {
-    const times = getPrayerTimes("istanbul", fixedDate);
+    const times = getPrayerTimes(istanbulCoords, fixedDate);
 
     expect(times.fajr.getUTCHours()).toBeGreaterThanOrEqual(2);
     expect(times.fajr.getUTCHours()).toBeLessThanOrEqual(5);
@@ -44,22 +45,38 @@ describe("getPrayerTimes", () => {
     expect(times.isha.getUTCHours()).toBeGreaterThanOrEqual(15);
     expect(times.isha.getUTCHours()).toBeLessThanOrEqual(18);
   });
+});
 
-  it("accepts an explicit {lat, lng} coordinate and matches the province lookup", () => {
-    const byProvince = getPrayerTimes("istanbul", fixedDate);
-    const byCoordinates = getPrayerTimes({ lat: 41.0082, lng: 28.9784 }, fixedDate);
+describe("resolvePrayerTimes", () => {
+  it("delegates to getPrayerTimes when coords are given", () => {
+    const viaResolve = resolvePrayerTimes(istanbulCoords, fixedDate);
+    const direct = getPrayerTimes(istanbulCoords, fixedDate);
 
-    expect(byCoordinates.fajr.getTime()).toBe(byProvince.fajr.getTime());
-    expect(byCoordinates.isha.getTime()).toBe(byProvince.isha.getTime());
+    expect(viaResolve.fajr.getTime()).toBe(direct.fajr.getTime());
+    expect(viaResolve.isha.getTime()).toBe(direct.isha.getTime());
   });
 
-  it("is case-insensitive on the province key", () => {
-    const lower = getPrayerTimes("istanbul", fixedDate);
-    const upper = getPrayerTimes("ISTANBUL", fixedDate);
-    expect(upper.fajr.getTime()).toBe(lower.fajr.getTime());
+  it("falls back to a fixed local-time table when coords are null", () => {
+    const times = resolvePrayerTimes(null, fixedDate);
+
+    expect(times.fajr.getHours()).toBe(6);
+    expect(times.fajr.getMinutes()).toBe(30);
+    expect(times.sunrise.getHours()).toBe(8);
+    expect(times.sunrise.getMinutes()).toBe(0);
+    expect(times.dhuhr.getHours()).toBe(12);
+    expect(times.dhuhr.getMinutes()).toBe(45);
+    expect(times.asr.getHours()).toBe(16);
+    expect(times.asr.getMinutes()).toBe(15);
+    expect(times.maghrib.getHours()).toBe(18);
+    expect(times.maghrib.getMinutes()).toBe(30);
+    expect(times.isha.getHours()).toBe(21);
+    expect(times.isha.getMinutes()).toBe(0);
   });
 
-  it("throws PrayerTimesError for an unknown province key", () => {
-    expect(() => getPrayerTimes("not-a-real-province", fixedDate)).toThrow(PrayerTimesError);
+  it("builds the fixed table from the given date's local calendar day", () => {
+    const times = resolvePrayerTimes(null, fixedDate);
+    expect(times.fajr.getFullYear()).toBe(2026);
+    expect(times.fajr.getMonth()).toBe(0);
+    expect(times.fajr.getDate()).toBe(15);
   });
 });

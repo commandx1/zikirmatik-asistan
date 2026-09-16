@@ -7,7 +7,7 @@ import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 import { useCounterStyleStore } from '../../../store/counter-style-store'
 import { useHomeContext } from '../home-context'
-import { AppleWatch, type AppleWatchProps } from './apple-watch'
+import { AppleWatchView, type AppleWatchProps, type CounterVisualViewProps } from './apple-watch'
 import { TesbihStrand } from './tesbih-strand'
 import { WatchControlButtons } from './watch-control-buttons'
 
@@ -22,15 +22,15 @@ const MEDALLION_PADDING = 22
  * active lap size isn't 33 or 99 (a custom lap size has no physical-bead
  * strand to represent it).
  */
-export function TesbihCounter(props: AppleWatchProps = {}) {
-  const { previewTokens, spotlightRef, listBtnRef, targetBtnRef, resetBtnRef, saveBtnRef } = props
+export function TesbihCounterView({ model, controls = 'full', ...rest }: CounterVisualViewProps) {
+  const { previewTokens, spotlightRef, listBtnRef, targetBtnRef, resetBtnRef, saveBtnRef } = rest
   const { t } = useTranslation('home')
   const router = useRouter()
   const [isResetConfirmVisible, setIsResetConfirmVisible] = useState(false)
   const { tokens: activeTokens } = useThemeTokens()
   const { fontFamily } = useThemePreferences()
   const tokens = previewTokens ?? activeTokens
-  const home = useHomeContext()
+  const home = model
   const material = useCounterStyleStore(s => s.material)
 
   const strongTextStyle = useMemo(() => resolveStrongTextStyle(fontFamily), [fontFamily])
@@ -40,7 +40,7 @@ export function TesbihCounter(props: AppleWatchProps = {}) {
   )
 
   if (home.lapSize !== 33 && home.lapSize !== 99) {
-    return <AppleWatch {...props} />
+    return <AppleWatchView {...rest} model={model} controls={controls} />
   }
 
   const compactCount = home.count > 0 ? String(home.count) : '0'
@@ -102,6 +102,7 @@ export function TesbihCounter(props: AppleWatchProps = {}) {
           onResetPress={() => setIsResetConfirmVisible(true)}
           onSavePress={home.onSavePress}
           isSaving={home.isSavingLog}
+          variant={controls}
         />
       </View>
 
@@ -120,6 +121,11 @@ export function TesbihCounter(props: AppleWatchProps = {}) {
       />
     </View>
   )
+}
+
+export function TesbihCounter(props: AppleWatchProps = {}) {
+  const home = useHomeContext()
+  return <TesbihCounterView {...props} model={home} />
 }
 
 function withAlpha(hex: string, alpha: number) {

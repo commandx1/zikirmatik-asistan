@@ -126,6 +126,13 @@
       "free": "Serbest"
     },
     "prayerIndex": {
+      "1": "Sabah namazı",
+      "2": "Öğle",
+      "3": "İkindi",
+      "4": "Akşam",
+      "5": "Yatsı"
+    },
+    "prayerIndexShort": {
       "1": "Sabah",
       "2": "Öğle",
       "3": "İkindi",
@@ -155,9 +162,6 @@
       "phaseDayRange": "{{from}}-{{to}}. gün",
       "phaseDayRangeOpen": "{{from}}. günden itibaren",
       "targetSuffix": "x{{count}}"
-    },
-    "activationConflict": {
-      "title": "Zaten aktif bir programın var"
     }
   },
   "verificationFooter": {

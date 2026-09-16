@@ -15,6 +15,7 @@ import {
   VirdProgram,
   type VirdProgramDocument,
 } from './schemas/vird-program.schema';
+import { completeExpiredJourneys } from './utils/complete-expired-journeys';
 import {
   dayIndexFor,
   daysBetween,
@@ -140,13 +141,26 @@ export class VirdProgressService {
    * TEK programı döner (bkz. worker raporu — çok programlı "today" görünümü
    * sonraki bir iterasyonun kapsamı).
    */
-  async getToday(userId: string, date?: string) {
+  async getToday(userId: string, date?: string, programId?: string) {
     const objectId = this.asObjectId(userId);
     const dateKey = date ?? istanbulDateKey(new Date());
     const virdStreak = await this.getVirdStreakSnapshot(userId);
 
+    await completeExpiredJourneys(
+      this.virdProgramModel,
+      objectId,
+      istanbulDateKey(new Date()),
+    );
+
+    const filter: Record<string, unknown> = {
+      userId: objectId,
+      status: 'active',
+    };
+    if (programId) {
+      filter._id = this.asObjectId(programId);
+    }
     const program = await this.virdProgramModel
-      .findOne({ userId: objectId, status: 'active' })
+      .findOne(filter)
       .sort({ updatedAt: -1 })
       .lean()
       .exec();

@@ -10,8 +10,12 @@
 // negatif (UTC'nin batısı) olduğunda bir gün kayması olabilir. Bu, Türkiye'de
 // (tek dilim, UTC+3, DST yok) çalışan bir cihaz için sorun değildir; pratikte
 // bu uygulamanın hedef kullanıcı kitlesi budur (bkz. README).
+//
+// FAZ C: il seçimi (data/tr-provinces.ts) kaldırıldı — vakitler artık
+// yalnızca GPS koordinatından (`reminderPrefs.coords`, bkz. ../types.ts)
+// hesaplanır. Konum yoksa/izin reddedildiyse `resolvePrayerTimes` sabit bir
+// saat tablosuna düşer (bkz. aşağı).
 import { CalculationMethod, Coordinates, PrayerTimes } from "adhan";
-import { findProvinceByKey } from "../data/tr-provinces";
 
 export type PrayerTimesResult = {
   fajr: Date;
@@ -23,22 +27,10 @@ export type PrayerTimesResult = {
 };
 
 export type PrayerTimesCoordinates = { lat: number; lng: number };
-export type PrayerTimesLocation = string | PrayerTimesCoordinates;
 
-export class PrayerTimesError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "PrayerTimesError";
-  }
-}
-
-/**
- * `location` bir il anahtarı (bkz. data/tr-provinces.ts TrProvince.key,
- * ör. "istanbul") ya da doğrudan `{lat, lng}` koordinatı olabilir.
- * Bilinmeyen bir il anahtarı verilirse PrayerTimesError fırlatılır.
- */
-export function getPrayerTimes(location: PrayerTimesLocation, date: Date): PrayerTimesResult {
-  const coordinates = resolveCoordinates(location);
+/** `coords` doğrudan `{lat, lng}` koordinatıdır (GPS). */
+export function getPrayerTimes(coords: PrayerTimesCoordinates, date: Date): PrayerTimesResult {
+  const coordinates = new Coordinates(coords.lat, coords.lng);
   const params = CalculationMethod.Turkey();
   const times = new PrayerTimes(coordinates, date, params);
 
@@ -52,14 +44,29 @@ export function getPrayerTimes(location: PrayerTimesLocation, date: Date): Praye
   };
 }
 
-function resolveCoordinates(location: PrayerTimesLocation): Coordinates {
-  if (typeof location === "string") {
-    const province = findProvinceByKey(location);
-    if (!province) {
-      throw new PrayerTimesError(`Bilinmeyen il anahtarı: ${location}`);
-    }
-    return new Coordinates(province.lat, province.lng);
-  }
+/** Sabit saat tablosu — konum yokken (izin reddedildi/henüz alınmadı)
+ * kullanılan yaklaşık vakitler. `date`'in yerel takvim gününe göre kurulur
+ * (bkz. dosya başı notu). Zamanlama ofsetleri (morning=fajr+30 vb., bkz.
+ * vird-reminder-notifications.ts) DEĞİŞMEZ — bu tablo yalnızca fajr/dhuhr/
+ * maghrib/isha'ya makul sabit değerler verir (07:00/13:00/19:00/22:00 tetik
+ * saatleriyle sonuçlanır). */
+function fixedPrayerTimes(date: Date): PrayerTimesResult {
+  const at = (hours: number, minutes: number) => new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes, 0, 0);
 
-  return new Coordinates(location.lat, location.lng);
+  return {
+    fajr: at(6, 30),
+    sunrise: at(8, 0),
+    dhuhr: at(12, 45),
+    asr: at(16, 15),
+    maghrib: at(18, 30),
+    isha: at(21, 0)
+  };
+}
+
+/** Koordinat varsa gerçek adhan vakitlerini, yoksa sabit tabloyu döner. */
+export function resolvePrayerTimes(coords: PrayerTimesCoordinates | null, date: Date): PrayerTimesResult {
+  if (!coords) {
+    return fixedPrayerTimes(date);
+  }
+  return getPrayerTimes(coords, date);
 }

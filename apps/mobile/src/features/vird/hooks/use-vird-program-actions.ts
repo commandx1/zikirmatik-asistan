@@ -129,5 +129,28 @@ export function useVirdProgramActions() {
     [isServerBacked, accessToken, isPremium, upsertProgram, setActiveProgram]
   );
 
-  return { pauseProgram, deleteProgram, activateProgram };
+  /**
+   * Ortak "aktif programı değiştir" akışı (bkz. components/vird-swap-active-modal.tsx):
+   * mevcut aktif programı (varsa) duraklatır, ardından `next`'i aktive eder.
+   * Duraklatma başarısız olursa aktivasyon hiç denenmez, duraklatmanın hatası döner.
+   */
+  const swapActive = useCallback(
+    async (next: VirdProgramLocal): Promise<VirdActionResult> => {
+      const currentActive = useVirdStore
+        .getState()
+        .programs.find((candidate) => candidate.id === useVirdStore.getState().activeProgramId);
+
+      if (currentActive && currentActive.id !== next.id) {
+        const paused = await pauseProgram(currentActive);
+        if (!paused.ok) {
+          return paused;
+        }
+      }
+
+      return activateProgram(next);
+    },
+    [pauseProgram, activateProgram]
+  );
+
+  return { pauseProgram, deleteProgram, activateProgram, swapActive };
 }

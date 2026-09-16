@@ -59,11 +59,17 @@ export function useVirdBackendSync(): void {
         }
       }
 
-      // (b) Programlar + bugünün ilerlemesi.
+      // (b) Programlar + bugünün ilerlemesi. programId yalnızca aktif program
+      // zaten sunucuda varsa (origin:'server') gönderilir — yerel clientId'ler
+      // Mongo ObjectId değildir ve sunucu tarafında @IsMongoId ile reddedilir.
       const todayKey = toDateKey(new Date());
+      const activeProgram = useVirdStore
+        .getState()
+        .programs.find((program) => program.id === useVirdStore.getState().activeProgramId);
+      const activeProgramId = activeProgram?.origin === "server" ? activeProgram.id : undefined;
       const [serverPrograms, today] = await Promise.all([
         fetchVirdPrograms(accessToken),
-        fetchVirdToday(accessToken, todayKey)
+        fetchVirdToday(accessToken, todayKey, activeProgramId)
       ]);
 
       const localById = new Map(useVirdStore.getState().programs.map((program) => [program.id, program]));

@@ -400,6 +400,18 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
     onOpenPremiumSheet?.();
   }, [onOpenPremiumSheet]);
 
+  /**
+   * Aktivasyon çakışmasından (403 VIRD_FREE_LIMIT_ACTIVE) vazgeçip yeni
+   * (AI) programı taslak olarak bırakır — bkz. components/vird-swap-active-modal.tsx
+   * "taslak olarak bırak" seçeneği. Program zaten sunucuda oluşturulmuş
+   * (createAiVirdProgram) ama hiç aktifleştirilmediğinden ek bir yazıma
+   * gerek yok; bir sonraki `use-vird-backend-sync.ts` senkronunda hub'ın
+   * program listesinde belirir.
+   */
+  const dismissActivationConflict = useCallback(() => {
+    setActivationConflict(false);
+  }, []);
+
   const retryActivationAfterPremium = useCallback(async (): Promise<boolean> => {
     setActivationConflict(false);
     if (!programId) {
@@ -456,6 +468,7 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
     activateProgram,
     resolveActivationConflictByPausingExisting,
     openPremiumSheetForActivationConflict,
+    dismissActivationConflict,
     // premium sheet purchase resume (hem üretim hem aktivasyon için ortak)
     resumeAfterPremiumPurchase
   };

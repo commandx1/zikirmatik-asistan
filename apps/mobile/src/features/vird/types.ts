@@ -84,8 +84,10 @@ export type VirdReminderSlotPrefs = {
 export type VirdReminderPrefs = {
   enabled: boolean;
   slots: VirdReminderSlotPrefs;
-  /** data/tr-provinces.ts TrProvince.key — vakit hesabı için gerekli. */
-  provinceKey: string | null;
+  /** GPS'ten alınmış son bilinen konum (3 ondalığa yuvarlı) — bkz.
+   * services/prayer-times.ts resolvePrayerTimes. null ise sabit saat
+   * tablosuna düşülür (konum izni yok/reddedildi). */
+  coords: { lat: number; lng: number } | null;
 };
 
 export type VirdDayItemProgress = {
@@ -99,5 +101,3 @@ export type VirdDayProgressMap = Record<string, VirdDayItemProgress>;
 
 /** dateKey (YYYY-MM-DD) -> VirdDayProgressMap. store'un dayProgress alanı. */
 export type VirdDayProgressByDate = Record<string, VirdDayProgressMap>;
-
-export type VirdFocusSegment = "vird" | "list";

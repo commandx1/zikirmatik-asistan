@@ -32,6 +32,8 @@ type VirdDhikrPickerModalProps = {
   isPremium: boolean;
   onRequirePremium: () => void;
   onAdd: (selection: VirdDhikrPickerSelection) => void;
+  /** "Eklendi" satırına dokunma: zikri bulunulan dilimden geri çıkarır. */
+  onRemove: (ref: string) => void;
 };
 
 // Vird editörünün "zikir ekle" arama modalı: katalog (listVerifiedActiveDhikrs)
@@ -47,7 +49,8 @@ export function VirdDhikrPickerModal({
   slotRefs,
   isPremium,
   onRequirePremium,
-  onAdd
+  onAdd,
+  onRemove
 }: VirdDhikrPickerModalProps) {
   const { t, i18n } = useTranslation("vird");
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
@@ -136,6 +139,7 @@ export function VirdDhikrPickerModal({
 
   const handlePick = (row: PickerRow) => {
     if (slotRefs.includes(row.ref)) {
+      onRemove(row.ref);
       return;
     }
     if (wouldExceedFreeDhikrLimit(existingRefs, row.ref, isPremium)) {
@@ -155,7 +159,14 @@ export function VirdDhikrPickerModal({
       sheetClassName="rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-8"
       sheetStyle={{ maxHeight: "82%" }}
     >
-      <Text className="mb-3 text-base font-semibold text-[--text-primary]">{t("vird:editor.pickerTitle")}</Text>
+      <View className="mb-3 flex-row items-center justify-between">
+        <Text className="text-base font-semibold text-[--text-primary]">{t("vird:editor.pickerTitle")}</Text>
+        <Pressable onPress={onRequestClose} hitSlop={8} accessibilityRole="button">
+          <Text className="text-sm font-semibold" style={{ color: tokens.accent }}>
+            {t("vird:editor.pickerDone")}
+          </Text>
+        </Pressable>
+      </View>
       <ThemedInput
         value={query}
         onChangeText={setQuery}
@@ -180,12 +191,11 @@ export function VirdDhikrPickerModal({
             return (
               <Pressable
                 onPress={() => handlePick(item)}
-                disabled={alreadyInSlot}
                 className="mb-2 flex-row items-center justify-between rounded-xl border px-3.5 py-3"
                 style={{
                   borderColor: alreadyInSlot ? withAlpha(tokens.textPrimary, 0.06) : withAlpha(tokens.textPrimary, 0.12),
                   backgroundColor: tokens.bg,
-                  opacity: alreadyInSlot ? 0.5 : 1
+                  opacity: alreadyInSlot ? 0.7 : 1
                 }}
               >
                 <View className="flex-1 pr-3">

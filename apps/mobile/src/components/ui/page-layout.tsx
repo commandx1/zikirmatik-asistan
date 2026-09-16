@@ -1,4 +1,5 @@
 import type { PropsWithChildren, ReactNode, Ref } from "react";
+import { useContext } from "react";
 import {
   ImageBackground,
   Platform,
@@ -12,6 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { resolveThemeBackgroundImage } from "../../theme/background-image";
 import { GalaksiGirdabiBg } from "../../theme/galaksi-girdabi-bg";
@@ -84,6 +86,7 @@ export function PageScrollView({
 }: PageScrollViewProps) {
   const insets = useSafeAreaInsets();
   const androidBottomInset = Platform.OS === "android" ? Math.max(insets.bottom, 0) : 0;
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
 
   return (
     <ScrollView
@@ -91,7 +94,7 @@ export function PageScrollView({
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       className="flex-1 w-full"
-      contentContainerStyle={[{ paddingBottom: bottomPadding + androidBottomInset }, contentContainerStyle]}
+      contentContainerStyle={[{ paddingBottom: bottomPadding + androidBottomInset + tabBarHeight }, contentContainerStyle]}
       refreshControl={
         onRefresh ? (
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

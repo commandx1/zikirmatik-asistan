@@ -126,6 +126,13 @@
       "free": "Free"
     },
     "prayerIndex": {
+      "1": "Fajr prayer",
+      "2": "Dhuhr",
+      "3": "Asr",
+      "4": "Maghrib",
+      "5": "Isha"
+    },
+    "prayerIndexShort": {
       "1": "Fajr",
       "2": "Dhuhr",
       "3": "Asr",
@@ -155,9 +162,6 @@
       "phaseDayRange": "Day {{from}}-{{to}}",
       "phaseDayRangeOpen": "From day {{from}}",
       "targetSuffix": "x{{count}}"
-    },
-    "activationConflict": {
-      "title": "You already have an active program"
     }
   },
   "verificationFooter": {

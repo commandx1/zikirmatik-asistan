@@ -94,6 +94,10 @@
     "title": "Premium'a Geç",
     "subtitle": "Manevi yolculuğunu Asistan destekli rehberlik, detaylı istatistik ve kişiselleştirme ile derinleştir.",
     "benefits": {
+      "vird": {
+        "title": "Vird Programı",
+        "description": "Sınırsız program, hazır şablonlar ve namaz vaktine bağlı hatırlatmalar."
+      },
       "aiCredits": {
         "title": "AI Rehber Kredileri",
         "description": "Aylık 50 kredi; niyetine göre zikir önerisi ve kaynaklı sohbet."

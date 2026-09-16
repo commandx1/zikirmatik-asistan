@@ -363,6 +363,17 @@ describe("planVirdMigration", () => {
     expect(plan.createVirdPrograms[0]).toMatchObject({ shouldActivate: false });
   });
 
+  it("activates none of two programs when neither matches activeProgramId", () => {
+    const programA = makeLocalVirdProgram({ id: "prog-a", clientId: "client-a" });
+    const programB = makeLocalVirdProgram({ id: "prog-b", clientId: "client-b" });
+    const vird: GuestVirdSnapshot = { programs: [programA, programB], activeProgramId: null, dayProgress: {} };
+
+    const plan = planVirdMigration(vird, []);
+
+    expect(plan.createVirdPrograms).toHaveLength(2);
+    expect(plan.createVirdPrograms.every((item) => item.shouldActivate === false)).toBe(true);
+  });
+
   it("skips creating a program whose clientId already exists on the server (idempotent retry)", () => {
     const vird = makeVirdSnapshot();
 

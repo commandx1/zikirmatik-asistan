@@ -29,13 +29,20 @@ export async function requestProviderIdToken(provider: AuthProvider) {
 }
 
 export async function clearProviderSession(provider: AuthProvider) {
-  if (provider !== 'google' || Platform.OS !== 'android') {
+  if (provider !== 'google') {
     return;
   }
 
   const webClientId = resolveGoogleWebClientId();
-  const androidClientId = resolveGoogleAndroidClientId();
   if (!webClientId) {
+    return;
+  }
+
+  // iOS'ta iosClientId (ya da GoogleService-Info.plist) yoksa native
+  // `configure` asenkron olarak reddeder ve bu JS'ten yakalanamaz (RedBox /
+  // unhandled promise). Çıkış best-effort olduğundan Google oturumu
+  // temizliğini tamamen atla; yerel oturum yine kapanır.
+  if (Platform.OS === 'ios' && !resolveGoogleIosClientId()) {
     return;
   }
 
@@ -46,11 +53,7 @@ export async function clearProviderSession(provider: AuthProvider) {
 
   const { GoogleSignin } = google;
 
-  GoogleSignin.configure({
-    webClientId,
-    ...(androidClientId ? { androidClientId } : {}),
-    offlineAccess: false,
-  });
+  configureGoogleSignIn(GoogleSignin);
 
   try {
     const hasPreviousSignIn = GoogleSignin.hasPreviousSignIn();
@@ -124,19 +127,20 @@ async function requestGoogleIdentityToken() {
     return buildDevGoogleIdentityToken();
   }
 
-  if (Platform.OS !== 'android') {
-    throw new ProviderAuthError(
-      'terminal',
-      i18n.t('auth:errors.googlePlatformDisabled'),
-    );
-  }
-
   const webClientId = resolveGoogleWebClientId();
-  const androidClientId = resolveGoogleAndroidClientId();
   if (!webClientId) {
     throw new ProviderAuthError(
       'terminal',
       i18n.t('auth:errors.googleWebClientIdMissing'),
+    );
+  }
+
+  const androidClientId = resolveGoogleAndroidClientId();
+  const iosClientId = resolveGoogleIosClientId();
+  if (Platform.OS === 'ios' && !iosClientId) {
+    throw new ProviderAuthError(
+      'terminal',
+      i18n.t('auth:errors.googleIosClientIdMissing'),
     );
   }
 
@@ -150,16 +154,14 @@ async function requestGoogleIdentityToken() {
 
   const { GoogleSignin, isErrorWithCode, isSuccessResponse, statusCodes } = google;
 
-  GoogleSignin.configure({
-    webClientId,
-    ...(androidClientId ? { androidClientId } : {}),
-    offlineAccess: false,
-  });
+  configureGoogleSignIn(GoogleSignin);
 
   try {
-    await GoogleSignin.hasPlayServices({
-      showPlayServicesUpdateDialog: true,
-    });
+    if (Platform.OS === 'android') {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+    }
 
     const response = await GoogleSignin.signIn();
     if (!isSuccessResponse(response)) {
@@ -204,6 +206,7 @@ async function requestGoogleIdentityToken() {
     const configSummary = formatGoogleClientConfigSummary({
       webClientId,
       androidClientId,
+      iosClientId,
     });
     if (diagnostic) {
       throw new ProviderAuthError(
@@ -227,12 +230,33 @@ function resolveGoogleAndroidClientId() {
   return process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID?.trim();
 }
 
+function resolveGoogleIosClientId() {
+  return process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim();
+}
+
 async function loadGoogleSignInModule() {
   try {
     return await import('@react-native-google-signin/google-signin');
   } catch {
     return null;
   }
+}
+
+function configureGoogleSignIn(
+  GoogleSignin: NonNullable<
+    Awaited<ReturnType<typeof loadGoogleSignInModule>>
+  >['GoogleSignin'],
+) {
+  const webClientId = resolveGoogleWebClientId();
+  const androidClientId = resolveGoogleAndroidClientId();
+  const iosClientId = resolveGoogleIosClientId();
+
+  GoogleSignin.configure({
+    webClientId,
+    ...(androidClientId ? { androidClientId } : {}),
+    ...(iosClientId ? { iosClientId } : {}),
+    offlineAccess: false,
+  });
 }
 
 function isCancelError(error: unknown) {
@@ -273,13 +297,16 @@ function formatGoogleAuthDiagnostic(error: unknown) {
 function formatGoogleClientConfigSummary({
   webClientId,
   androidClientId,
+  iosClientId,
 }: {
   webClientId: string;
   androidClientId?: string;
+  iosClientId?: string;
 }) {
   return [
     `webClientId=${maskGoogleClientId(webClientId)}`,
     `androidClientId=${maskGoogleClientId(androidClientId)}`,
+    `iosClientId=${maskGoogleClientId(iosClientId)}`,
   ].join(', ');
 }
 

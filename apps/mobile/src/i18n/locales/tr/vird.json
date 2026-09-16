@@ -9,16 +9,40 @@
     "dayCompleteBadge": "Bugünkü vird tamamlandı",
     "completionPercent": "{{percent}}% tamamlandı",
     "noItemsToday": "Bugün için planlanmış bir vird yok.",
-    "itemFallbackName": "Zikir"
+    "itemFallbackName": "Zikir",
+    "dhikrCount": "{{done}}/{{total}} zikir",
+    "prayerCount": "{{done}}/{{total}} vakit",
+    "rowCompleted": "Tamamlandı",
+    "nowLabel": "Şimdi: {{slot}}"
+  },
+  "session": {
+    "title": "{{slot}} virdi",
+    "prayerTitle": "Namaz sonrası · {{prayer}}",
+    "position": "{{index}}/{{total}}",
+    "remaining": "{{count}} tekrar kaldı",
+    "skip": "Atla",
+    "next": "Sonraki",
+    "nextName": "Sıradaki: {{name}}",
+    "completedTitle": "{{slot}} virdi tamamlandı ✓",
+    "nextSlotCta": "Sıradaki: {{slot}}",
+    "dayCompletedTitle": "Bugünkü vird tamamlandı 🎉",
+    "close": "Kapat"
   },
   "slots": {
     "morning": "Sabah",
-    "prayer": "Vakit",
+    "prayer": "Namaz sonrası",
     "evening": "Akşam",
     "night": "Gece",
     "free": "Serbest"
   },
   "prayerIndex": {
+    "1": "Sabah namazı",
+    "2": "Öğle",
+    "3": "İkindi",
+    "4": "Akşam",
+    "5": "Yatsı"
+  },
+  "prayerIndexShort": {
     "1": "Sabah",
     "2": "Öğle",
     "3": "İkindi",
@@ -41,13 +65,22 @@
     "template": "Şablondan",
     "ai": "AI ile oluşturuldu"
   },
-  "segment": {
-    "vird": "Vird",
-    "list": "Zikirlerim"
+  "hub": {
+    "title": "Vird",
+    "entryRow": "Vird programım",
+    "guestHint": "Misafir modundasın — vird programın bu cihazda saklanır, giriş yaparsan hesabınla senkronlanır.",
+    "syncError": "Vird programların şu anda senkronlanamadı. Bağlantını kontrol edip tekrar dene.",
+    "completedTitle": "Program tamamlandı",
+    "completedHint": "Bu vird programını başarıyla tamamladın.",
+    "newVirdHeading": "Yeni vird",
+    "newManual": "Kendim kurayım",
+    "newTemplate": "Hazır şablon",
+    "newAi": "AI ile oluştur",
+    "toastStarted": "Vird başlatıldı",
+    "toastSaved": "Vird kaydedildi",
+    "toastDraft": "Taslak olarak kaydedildi"
   },
   "setup": {
-    "title": "Vird",
-    "newProgramButton": "Yeni program",
     "editButton": "Düzenle",
     "noActiveProgram": "Aktif bir vird programın yok.",
     "activateHint": "Aşağıdaki programlardan birini aktifleştirebilirsin.",
@@ -59,39 +92,48 @@
     "resumeAction": "Aktifleştir",
     "deleteAction": "Sil",
     "deleteConfirmTitle": "Programı sil",
-    "deleteConfirmMessage": "\"{{title}}\" programını silmek istediğine emin misin?",
-    "swapActiveTitle": "Aktif programı değiştir",
-    "swapActiveMessage": "Ücretsiz planda en fazla 1 aktif vird programın olabilir. \"{{current}}\" duraklatılıp \"{{next}}\" aktifleştirilsin mi?",
-    "swapActiveConfirm": "Değiştir ve başlat",
-    "swapActiveSubmitting": "Değiştiriliyor...",
-    "swapActiveUpgrade": "Premium'a geç"
+    "deleteConfirmMessage": "\"{{title}}\" programını silmek istediğine emin misin?"
+  },
+  "conflict": {
+    "title": "Aktif programı değiştir",
+    "message": "Ücretsiz planda en fazla 1 aktif vird programın olabilir. \"{{current}}\" duraklatılıp \"{{next}}\" aktifleştirilsin mi?",
+    "pauseAndStart": "Değiştir ve başlat",
+    "submitting": "Değiştiriliyor...",
+    "upgrade": "Premium'a geç",
+    "keepDraft": "Taslak olarak bırak"
   },
   "editor": {
     "titleNew": "Yeni Vird Programı",
     "titleEdit": "Virdi Düzenle",
-    "titleLabel": "Başlık",
+    "titleLabel": "Ad (isteğe bağlı)",
     "titlePlaceholder": "ör. Sabah Virdim",
-    "kindNote": "Tür: {{kind}}",
     "addDhikrButton": "Zikir ekle",
     "slotEmpty": "Bu dilimde henüz zikir yok.",
     "prayerSelectionHeading": "Hangi vakitlerden sonra?",
+    "whenHeading": "Hangi vakitlerde?",
+    "journeyReadOnlyNote": "Fazlar bu programın parçasıdır ve buradan değiştirilemez.",
+    "cloneAndAdapt": "Kopyala ve uyarla",
+    "autoTitleSuffix": "(kopya)",
     "pickerTitle": "Zikir seç",
     "searchPlaceholder": "Zikir ara",
     "searchLoading": "Yükleniyor...",
     "searchLoadError": "Zikirler yüklenemedi.",
     "searchEmpty": "Sonuç bulunamadı.",
-    "alreadyAdded": "Eklendi",
+    "alreadyAdded": "Eklendi · çıkar",
+    "pickerDone": "Bitti",
     "addAction": "Ekle",
+    "saveAndStart": "Kaydet ve başlat",
     "saveButton": "Kaydet",
+    "prayerHeading": "Namaz sonrası vakitleri",
     "savingButton": "Kaydediliyor...",
     "errors": {
-      "titleRequired": "Bir başlık girmelisin.",
       "atLeastOneDhikr": "En az bir dilime bir zikir eklemelisin.",
       "activateFailed": "Program kaydedildi ama aktifleştirilemedi.",
       "saveFailed": "Program kaydedilemedi. Lütfen tekrar dene."
     }
   },
   "templates": {
+    "listTitle": "Vird Programları",
     "shelfTitle": "Vird Programları",
     "loadError": "Şablonlar yüklenemedi.",
     "premiumBadge": "Premium",
@@ -112,12 +154,11 @@
     "settingsSubtitle": "Dilim başladığında bildirim al.",
     "requestingPermission": "Bildirim izni isteniyor...",
     "premiumRequiredNote": "Hatırlatmalar premium özelliğidir.",
+    "unlockCta": "Premium ile aç",
     "slotsHeading": "Hangi dilimlerde hatırlatılsın?",
-    "provinceLabel": "İl",
-    "provincePlaceholder": "İl seç",
-    "provinceModalTitle": "İl seç",
-    "provinceSearchPlaceholder": "İl ara",
-    "provinceSearchEmpty": "İl bulunamadı.",
+    "locationGps": "Konum: GPS · yaklaşık vakitler",
+    "locationFixed": "Konum yok · sabit saatler 07:00 · 13:00 · 19:00 · 22:00",
+    "useLocation": "Konumu kullan",
     "previewHeading": "Bugünkü yaklaşık vakitler",
     "approxNote": "Vakitler yaklaşıktır.",
     "morning": {

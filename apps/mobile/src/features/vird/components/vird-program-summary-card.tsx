@@ -74,8 +74,7 @@ export function VirdProgramSummaryCard({ program }: Props) {
       )}
 
       <Pressable
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onPress={() => router.push(`/vird/editor?programId=${encodeURIComponent(program.id)}` as any)}
+        onPress={() => router.push({ pathname: "/vird/editor", params: { programId: program.id } })}
         className="mt-4 self-start rounded-full border px-4 py-2"
         style={{ borderColor: tokens.accent }}
       >

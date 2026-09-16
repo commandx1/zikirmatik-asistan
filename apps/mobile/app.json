@@ -13,6 +13,12 @@
       "expo-notifications",
       "@react-native-google-signin/google-signin",
       [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Namaz vakitlerine göre vird hatırlatmaları için konumun yalnızca uygulama açıkken kullanılır."
+        }
+      ],
+      [
         "expo-audio",
         {
           "microphonePermission": false,

@@ -11,6 +11,6 @@ export function resetSessionScopedStores() {
   // fonksiyon O YOLDA ÇAĞRILMAZ) korunur, ama gerçek signOut()'ta (ya da
   // farklı bir kullanıcıya geçişte) dhikr-store'un items'ı gibi vird
   // programları/ilerlemesi de sıfırlanır — bkz. auth-store.ts signOut /
-  // signInWithRequiredProvider (previousUserId !== session.userId dalı).
+  // signInWithProvider (previousUserId !== session.userId dalı).
   useVirdStore.getState().resetVird();
 }

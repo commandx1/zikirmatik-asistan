@@ -7,7 +7,7 @@ import { toIntlLocale } from "../lib/locale-format";
 import { ZIKIR_ITEMS } from "../features/focus/data";
 import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api-client";
 import type { AiDhikrContext, ZikirItem } from "../features/focus/types";
-import type { LocalizedText, VirdSlotKey } from "@zikirmatik/shared";
+import type { LocalizedText } from "@zikirmatik/shared";
 
 /**
  * Resolves a (possibly not-yet-localized) text field to a plain string for
@@ -44,32 +44,10 @@ type UnsavedProgressSnapshot = {
   lastActivityAt?: string;
 };
 
-/**
- * activeAiContext'in vird ikizi: seçili zikrin sayacı şu an bir vird
- * programının bir item'ı için ilerliyorsa dolu. features/vird/hooks/
- * use-vird-counter-bridge.ts bunu okuyup her sayaç artışında
- * useVirdStore.recordProgress'i tetikler ve saveSelectedDhikrLog
- * payload'ına virdProgramId/virdSlot/virdDayIndex/virdPrayerIndex ekler.
- * activeAiContext ile aynı yaşam döngüsü kuralına tabidir: selectDhikr,
- * clearSelectedDhikr ve removePersonalDhikr (seçili zikir kaldırılıyorsa)
- * bunu da temizler — bkz. o fonksiyonlardaki yorumlar.
- */
-export type ActiveVirdContext = {
-  programId: string;
-  /** bkz. features/vird/services/vird-day.ts buildVirdItemKey. */
-  itemKey: string;
-  slot: VirdSlotKey;
-  /** Yalnız slot:'prayer' için dolu (1..5). */
-  prayerIndex?: number;
-  dayIndex: number;
-  target: number;
-};
-
 type DhikrStore = {
   items: ZikirItem[];
   selectedDhikrId: string;
   activeAiContext?: AiDhikrContext;
-  activeVirdContext: ActiveVirdContext | null;
   selectedSource?: 'special-day';
   freeModeCount: number;
   freeModeTarget: number;
@@ -81,13 +59,8 @@ type DhikrStore = {
   isHydratedFromBackend: boolean;
   lastSavedBackendLog?: BackendDhikrLog;
   syncError?: string;
-  selectDhikr: (
-    id: string,
-    aiContext?: Omit<AiDhikrContext, "dhikrId">,
-    virdContext?: ActiveVirdContext
-  ) => void;
+  selectDhikr: (id: string, aiContext?: Omit<AiDhikrContext, "dhikrId">) => void;
   clearSelectedDhikr: () => void;
-  setActiveVirdContext: (context: ActiveVirdContext | null) => void;
   upsertPersonalDhikr: (item: {
     id: string;
     name: string;
@@ -286,7 +259,6 @@ export const useDhikrStore = create<DhikrStore>()(
     items: INITIAL_ITEMS,
     selectedDhikrId: "",
     activeAiContext: undefined,
-    activeVirdContext: null,
     selectedSource: undefined,
     freeModeCount: 0,
     freeModeTarget: 0,
@@ -295,7 +267,7 @@ export const useDhikrStore = create<DhikrStore>()(
     unsavedProgressSnapshots: {},
     isHydratedFromBackend: false,
     lastSavedBackendLog: undefined,
-    selectDhikr: (id, aiContext, virdContext) => {
+    selectDhikr: (id, aiContext) => {
     if (!get().items.some((item) => item.id === id)) {
       return;
     }
@@ -308,20 +280,11 @@ export const useDhikrStore = create<DhikrStore>()(
             ...aiContext
           }
         : undefined,
-      // virdContext verilmemişse (AI/katalog/serbest -> zikir seçimi gibi
-      // vird'le ilgisiz her geçiş) temizlenir — aynen activeAiContext gibi.
-      // Verilmişse (features/vird/hooks/use-vird-counter-bridge.ts üzerinden,
-      // home-context.tsx'in startVirdItem'ı) seçimle ATOMIK olarak kurulur;
-      // burada koşulsuz null yazmak, seçim + bağlam kurulumunu iki ayrı
-      // set() çağrısına bölüp aradaki anda (ve unsaved-guard geçişi
-      // ertelerse KALICI olarak) bağlamı kaybettirirdi.
-      activeVirdContext: virdContext ?? null,
       selectedSource: undefined,
     });
   },
   clearSelectedDhikr: () =>
-    set({ selectedDhikrId: "", activeAiContext: undefined, activeVirdContext: null, selectedSource: undefined }),
-  setActiveVirdContext: (context) => set({ activeVirdContext: context }),
+    set({ selectedDhikrId: "", activeAiContext: undefined, selectedSource: undefined }),
   setSelectedSource: (source) => set({ selectedSource: source }),
   upsertPersonalDhikr: (item) =>
     set((state) => {
@@ -462,14 +425,7 @@ export const useDhikrStore = create<DhikrStore>()(
       return {
         items: state.items.filter((value) => value.id !== id),
         selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId,
-        activeAiContext: state.activeAiContext?.dhikrId === id ? undefined : state.activeAiContext,
-        // ActiveVirdContext taşımadığı bir dhikrId alanı yok (bkz. tip
-        // tanımı) — ama selectDhikr/clearSelectedDhikr her zaman selection
-        // değiştiğinde onu temizlediğinden, dolu bir activeVirdContext HER
-        // ZAMAN o anki selectedDhikrId'ye karşılık gelir. Bu yüzden burada
-        // eşdeğer koşul activeAiContext?.dhikrId === id DEĞİL,
-        // selectedDhikrId === id'dir.
-        activeVirdContext: state.selectedDhikrId === id ? null : state.activeVirdContext
+        activeAiContext: state.activeAiContext?.dhikrId === id ? undefined : state.activeAiContext
       };
     }),
   clearDhikrProgress: (id) =>
@@ -764,7 +720,6 @@ export const useDhikrStore = create<DhikrStore>()(
         items: INITIAL_ITEMS,
         selectedDhikrId: "",
         activeAiContext: undefined,
-        activeVirdContext: null,
         freeModeCount: 0,
         freeModeTarget: 0,
         freeModeLapSize: 33,
@@ -846,7 +801,6 @@ export const useDhikrStore = create<DhikrStore>()(
       items: state.items,
       selectedDhikrId: state.selectedDhikrId,
       activeAiContext: state.activeAiContext,
-      activeVirdContext: state.activeVirdContext,
       freeModeCount: state.freeModeCount,
       freeModeTarget: state.freeModeTarget,
       freeModeLapSize: state.freeModeLapSize,

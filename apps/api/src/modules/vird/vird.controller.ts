@@ -70,7 +70,7 @@ export class VirdController {
 
   @Get('today')
   getToday(@Query() query: VirdTodayQueryDto, @CurrentUserId() userId: string) {
-    return this.progressService.getToday(userId, query.date);
+    return this.progressService.getToday(userId, query.date, query.programId);
   }
 
   @Get('history')

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, type Href } from "expo-router";
 import * as Crypto from "expo-crypto";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
@@ -46,7 +46,8 @@ export function TemplateDetailScreen({ templateKey }: Props) {
   const programs = useVirdStore((state) => state.programs);
   const activeProgramId = useVirdStore((state) => state.activeProgramId);
   const upsertProgram = useVirdStore((state) => state.upsertProgram);
-  const { pauseProgram, activateProgram } = useVirdProgramActions();
+  const setNotice = useVirdStore((state) => state.setNotice);
+  const { activateProgram, swapActive } = useVirdProgramActions();
 
   const currentActiveProgram = useMemo(
     () => programs.find((program) => program.id === activeProgramId) ?? null,
@@ -169,7 +170,8 @@ export function TemplateDetailScreen({ templateKey }: Props) {
       }
 
       void trackEvent("template_started", { key: template.key });
-      router.back();
+      setNotice("started");
+      router.dismissTo("/vird" as Href);
     } catch (error) {
       const message =
         error instanceof VirdApiError ? resolveVirdErrorMessage(error.code, error.message) : t("vird:templates.detail.startFailed");
@@ -179,26 +181,30 @@ export function TemplateDetailScreen({ templateKey }: Props) {
     }
   };
 
-  const handleConfirmSwap = async () => {
+  const handlePauseAndStart = async () => {
     if (!pendingSwap) {
       return;
     }
     setIsSwapSubmitting(true);
     try {
-      if (currentActiveProgram) {
-        await pauseProgram(currentActiveProgram);
-      }
-      const retry = await activateProgram(pendingSwap.localProgram);
+      const retry = await swapActive(pendingSwap.localProgram);
       setPendingSwap(null);
       if (retry.ok) {
         void trackEvent("template_started", { key: templateKey });
-        router.back();
+        setNotice("started");
+        router.dismissTo("/vird" as Href);
       } else {
         setStartError(retry.message || t("vird:templates.detail.startFailed"));
       }
     } finally {
       setIsSwapSubmitting(false);
     }
+  };
+
+  const handleKeepDraft = () => {
+    setPendingSwap(null);
+    setNotice("draft");
+    router.dismissTo("/vird" as Href);
   };
 
   const title = template?.title ? resolveLocalizedText(template.title, locale) : t("vird:templates.untitledFallback");
@@ -280,12 +286,12 @@ export function TemplateDetailScreen({ templateKey }: Props) {
         currentProgramTitle={currentActiveProgram ? resolveLocalizedText(currentActiveProgram.title, locale) : ""}
         nextProgramTitle={title}
         isSubmitting={isSwapSubmitting}
-        onConfirmSwap={() => void handleConfirmSwap()}
+        onPauseAndStart={() => void handlePauseAndStart()}
         onUpgrade={() => {
           setPendingSwap(null);
           premiumSheet.open();
         }}
-        onCancel={() => setPendingSwap(null)}
+        onKeepDraft={handleKeepDraft}
       />
 
       <ProfilePremiumSheet

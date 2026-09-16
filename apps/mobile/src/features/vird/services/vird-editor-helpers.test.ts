@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type { VirdPhaseSlots, VirdTemplateDetail } from "@zikirmatik/shared";
+import type { VirdPhase, VirdPhaseSlots, VirdTemplateDetail } from "@zikirmatik/shared";
 import {
+  buildAutoVirdTitle,
+  buildEditorSlotsFromPhase,
   buildLocalProgramFromTemplate,
   countDistinctDhikrRefs,
   toLocalizedText,
@@ -48,6 +50,48 @@ describe("wouldExceedFreeDhikrLimit", () => {
 
   it("accepts a Set as well as an array", () => {
     expect(wouldExceedFreeDhikrLimit(new Set(["d1", "d2", "d3"]), "d4", false)).toBe(true);
+  });
+});
+
+describe("buildAutoVirdTitle", () => {
+  it("joins selected slots in VIRD_SLOT_KEYS order with a 'virdi'/'vird' suffix", () => {
+    expect(buildAutoVirdTitle(["evening", "morning"])).toEqual({ tr: "Sabah-Akşam virdi", en: "Morning-Evening vird" });
+  });
+
+  it("handles a single selected slot", () => {
+    expect(buildAutoVirdTitle(["night"])).toEqual({ tr: "Gece virdi", en: "Night vird" });
+  });
+
+  it("falls back to a generic placeholder when no slots are selected", () => {
+    expect(buildAutoVirdTitle([])).toEqual({ tr: "Vird Programım", en: "My Vird Program" });
+  });
+
+  it("orders all five slots by VIRD_SLOT_KEYS regardless of input order", () => {
+    expect(buildAutoVirdTitle(["free", "night", "evening", "prayer", "morning"])).toEqual({
+      tr: "Sabah-Namaz sonrası-Akşam-Gece-Serbest virdi",
+      en: "Morning-After prayer-Evening-Night-Free vird"
+    });
+  });
+});
+
+describe("buildEditorSlotsFromPhase", () => {
+  it("maps a phase's slots to the flat editor {ref,isCustom,target} shape", () => {
+    const phase: VirdPhase = {
+      fromDay: 1,
+      toDay: null,
+      slots: {
+        morning: [{ dhikrId: "d1", target: 33 }],
+        free: [{ customDhikrId: "c1", target: 10 }]
+      }
+    };
+    expect(buildEditorSlotsFromPhase(phase)).toEqual({
+      morning: [{ ref: "d1", isCustom: false, target: 33 }],
+      free: [{ ref: "c1", isCustom: true, target: 10 }]
+    });
+  });
+
+  it("returns an empty object for an undefined phase", () => {
+    expect(buildEditorSlotsFromPhase(undefined)).toEqual({});
   });
 });
 

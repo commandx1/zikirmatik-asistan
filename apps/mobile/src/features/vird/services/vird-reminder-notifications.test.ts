@@ -65,7 +65,7 @@ const program: VirdDayProgramLike = {
 const enabledPrefs: VirdReminderPrefs = {
   enabled: true,
   slots: { morning: true, prayer: true, evening: true, night: true },
-  provinceKey: "istanbul"
+  coords: { lat: 41.0082, lng: 28.9784 }
 };
 
 // İstanbul, 2026-01-15: fajr ~06:50, dolayısıyla bugünün en erken tetiği
@@ -110,17 +110,28 @@ describe("syncVirdReminders", () => {
     expect(scheduleNotificationAsync).not.toHaveBeenCalled();
   });
 
-  it("cancels everything and schedules nothing when provinceKey is null", async () => {
+  it("null coords schedules fixed default times", async () => {
     const { syncVirdReminders } = await import("./vird-reminder-notifications");
     const result = await syncVirdReminders({
       program,
-      reminderPrefs: { ...enabledPrefs, provinceKey: null },
+      reminderPrefs: { ...enabledPrefs, coords: null },
       dayProgress: {},
       now: wellBeforeAnyTrigger
     });
 
-    expect(result).toEqual({ scheduled: 0 });
-    expect(scheduleNotificationAsync).not.toHaveBeenCalled();
+    expect(result).toEqual({ scheduled: 16 });
+
+    // fixed table: fajr 06:30, dhuhr 12:45, maghrib 18:30, isha 21:00 ->
+    // morning=+30 (07:00), prayer:2(dhuhr)=+15 (13:00), evening=+30 (19:00), night=+60 (22:00).
+    const triggerFor = (identifier: string) =>
+      scheduleNotificationAsync.mock.calls.find((call) => call[0].identifier === identifier)?.[0].trigger.date as Date;
+
+    expect(triggerFor(`${VIRD_SLOT_REMINDER_KIND}:2026-01-15:morning`).getHours()).toBe(7);
+    expect(triggerFor(`${VIRD_SLOT_REMINDER_KIND}:2026-01-15:morning`).getMinutes()).toBe(0);
+    expect(triggerFor(`${VIRD_SLOT_REMINDER_KIND}:2026-01-15:prayer:2`).getHours()).toBe(13);
+    expect(triggerFor(`${VIRD_SLOT_REMINDER_KIND}:2026-01-15:prayer:2`).getMinutes()).toBe(0);
+    expect(triggerFor(`${VIRD_SLOT_REMINDER_KIND}:2026-01-15:evening`).getHours()).toBe(19);
+    expect(triggerFor(`${VIRD_SLOT_REMINDER_KIND}:2026-01-15:night`).getHours()).toBe(22);
   });
 
   it("cancels everything and schedules nothing when there is no active program", async () => {
@@ -187,7 +198,7 @@ describe("syncVirdReminders", () => {
     expect(morningCall).toBeDefined();
     expect(morningCall![0].content.data).toEqual({
       kind: VIRD_SLOT_REMINDER_KIND,
-      route: "/(tabs)/home",
+      route: "/vird?slot=morning",
       virdSlot: "morning"
     });
     expect(morningCall![0].trigger.type).toBe("date");
@@ -197,7 +208,7 @@ describe("syncVirdReminders", () => {
     );
     expect(prayerCall![0].content.data).toEqual({
       kind: VIRD_SLOT_REMINDER_KIND,
-      route: "/(tabs)/home",
+      route: "/vird?slot=prayer&prayerIndex=3",
       virdSlot: "prayer",
       virdPrayerIndex: 3
     });

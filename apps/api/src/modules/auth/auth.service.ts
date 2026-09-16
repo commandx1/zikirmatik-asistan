@@ -439,7 +439,7 @@ export class AuthService {
     provider: 'apple' | 'google',
   ) {
     if (
-      (platform === 'ios' && provider !== 'apple') ||
+      (platform === 'ios' && provider !== 'apple' && provider !== 'google') ||
       (platform === 'android' && provider !== 'google')
     ) {
       throw new BadRequestException('Platform/provider eşleşmesi geçersiz.');

@@ -14,7 +14,10 @@ const ALLOWED_ROUTE_PATTERNS: RegExp[] = [
   /^\/\(tabs\)\/home$/,
   // Weekly summary campaign (weekly-summary.campaign.ts) deep-links to the
   // stats tab.
-  /^\/\(tabs\)\/stats$/
+  /^\/\(tabs\)\/stats$/,
+  // Local vird slot reminder (vird-reminder-notifications.ts) deep-links to
+  // the vird hub with the triggering slot highlighted.
+  /^\/vird\?slot=(morning|prayer|evening|night)(&prayerIndex=[1-5])?$/
 ];
 
 type NotificationResponseLike = {

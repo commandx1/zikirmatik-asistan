@@ -6,33 +6,41 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import { ConfirmModal } from "../../../components/ui/confirm-modal";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { useVirdStore } from "../../../store/vird-store";
 import { trackEvent } from "../../../lib/analytics";
 import { useVirdProgramActions } from "../hooks/use-vird-program-actions";
 import { VIRD_ERROR_CODE } from "../services/vird-error-codes";
 import type { VirdProgramLocal } from "../types";
+import { VirdSwapActiveModal } from "./vird-swap-active-modal";
 
 type Props = {
   program: VirdProgramLocal;
-  /** VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE ile karşılaşıldığında çağrılır (paywall açar). */
-  onFreeLimitActive: () => void;
+  /** Premium gerektiren bir sonuca (aktif program limiti) ulaşıldığında çağrılır (paywall açar). */
+  onRequirePremium: () => void;
 };
 
-// "Diğer programlar" listesindeki tek bir satır (vird-setup-panel.tsx).
-// Aktivasyon hatası basitçe paywall açar (kullanıcı önce mevcut aktif
-// programı BURADAN duraklatıp sonra istediğini aktifleştirerek de aynı
-// sonuca ulaşabilir — bkz. vird-swap-active-modal.tsx dosya başı notu).
-export function VirdProgramListItem({ program, onFreeLimitActive }: Props) {
+// "Diğer programlar" listesindeki tek bir satır (vird-hub-screen.tsx).
+// Aktivasyon VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE ile çakışırsa (ücretsiz plan,
+// zaten başka bir aktif program var) KENDİ VirdSwapActiveModal'ını açar —
+// diğer akışlarla (editör, şablon, AI) AYNI 3 seçim (bkz. dosya başı notu,
+// use-vird-program-actions.ts swapActive).
+export function VirdProgramListItem({ program, onRequirePremium }: Props) {
   const { t, i18n } = useTranslation("vird");
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const { tokens } = useThemeTokens();
-  const { pauseProgram, deleteProgram, activateProgram } = useVirdProgramActions();
+  const { pauseProgram, deleteProgram, activateProgram, swapActive } = useVirdProgramActions();
+  const setNotice = useVirdStore((state) => state.setNotice);
+  const programs = useVirdStore((state) => state.programs);
+  const activeProgramId = useVirdStore((state) => state.activeProgramId);
 
   const [isBusy, setIsBusy] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const [isSwapPending, setIsSwapPending] = useState(false);
   const [error, setError] = useState<string | undefined>();
 
   const isActive = program.status === "active";
   const title = resolveLocalizedText(program.title, locale);
+  const currentActiveProgram = programs.find((candidate) => candidate.id === activeProgramId) ?? null;
 
   const handleToggleActive = async () => {
     if (isBusy) {
@@ -52,13 +60,30 @@ export function VirdProgramListItem({ program, onFreeLimitActive }: Props) {
       const result = await activateProgram(program);
       if (!result.ok) {
         if (result.code === VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE) {
-          onFreeLimitActive();
+          setIsSwapPending(true);
         } else {
           setError(result.message);
         }
         return;
       }
       void trackEvent("vird_activated");
+      setNotice("started");
+    } finally {
+      setIsBusy(false);
+    }
+  };
+
+  const handlePauseAndStart = async () => {
+    setIsBusy(true);
+    try {
+      const result = await swapActive(program);
+      setIsSwapPending(false);
+      if (result.ok) {
+        void trackEvent("vird_activated");
+        setNotice("started");
+      } else {
+        setError(result.message);
+      }
     } finally {
       setIsBusy(false);
     }
@@ -124,6 +149,19 @@ export function VirdProgramListItem({ program, onFreeLimitActive }: Props) {
         destructive
         onConfirm={() => void handleDelete()}
         onCancel={() => setIsConfirmingDelete(false)}
+      />
+
+      <VirdSwapActiveModal
+        visible={isSwapPending}
+        currentProgramTitle={currentActiveProgram ? resolveLocalizedText(currentActiveProgram.title, locale) : ""}
+        nextProgramTitle={title}
+        isSubmitting={isBusy}
+        onPauseAndStart={() => void handlePauseAndStart()}
+        onUpgrade={() => {
+          setIsSwapPending(false);
+          onRequirePremium();
+        }}
+        onKeepDraft={() => setIsSwapPending(false)}
       />
     </ThemedCard>
   );

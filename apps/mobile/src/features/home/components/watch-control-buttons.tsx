@@ -14,6 +14,7 @@ type WatchControlButtonsProps = {
   targetBtnRef?: RefObject<View | null>
   resetBtnRef?: RefObject<View | null>
   saveBtnRef?: RefObject<View | null>
+  variant?: 'full' | 'reset-only'
 }
 
 /**
@@ -32,10 +33,26 @@ export function WatchControlButtons({
   listBtnRef,
   targetBtnRef,
   resetBtnRef,
-  saveBtnRef
+  saveBtnRef,
+  variant = 'full'
 }: WatchControlButtonsProps) {
   const controlButtonBorder = withAlpha(tokens.textPrimary, 0.12)
   const controlButtonBg = withAlpha(tokens.textPrimary, 0.06)
+
+  if (variant === 'reset-only') {
+    return (
+      <View className='mt-3 flex-row gap-3'>
+        <Pressable
+          ref={resetBtnRef}
+          onPress={onResetPress}
+          className='h-9 w-9 items-center justify-center rounded-full border'
+          style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
+        >
+          <FontAwesome6 name='arrow-rotate-left' size={12} color={tokens.textPrimary} />
+        </Pressable>
+      </View>
+    )
+  }
 
   return (
     <View className='mt-3 flex-row gap-3'>

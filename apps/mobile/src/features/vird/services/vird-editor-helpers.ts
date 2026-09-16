@@ -7,10 +7,14 @@ import {
   type LocalizedText,
   type VirdPhase,
   type VirdPhaseSlots,
+  type VirdSlotKey,
   type VirdTemplateDetail
 } from "@zikirmatik/shared";
+import type { VirdEditorSlotItem } from "../components/vird-editor-slot-card";
 import type { DhikrSnapshot, VirdProgramLocal } from "../types";
 import { resolveDhikrRef, VIRD_SLOT_KEYS } from "./vird-day";
+
+export type EditorSlots = Partial<Record<VirdSlotKey, VirdEditorSlotItem[]>>;
 
 /** Kullanıcının girdiği tek bir başlık metnini {tr,en} çiftine aynalar —
  * dhikr-store.ts'teki (dışa açık olmayan) toLocalizedText ile aynı kural:
@@ -136,4 +140,56 @@ export function buildLocalProgramFromTemplate(
     createdAt: options.nowIso,
     updatedAt: options.nowIso
   };
+}
+
+/**
+ * Bir fazın (journey/şablon fazı ya da bir rutin programın tek fazı)
+ * slots'unu editörün düz {ref,isCustom,target} liste şekline çevirir —
+ * hem `vird-editor-screen.tsx`'in kendi programını yüklerken (tek fazlı
+ * rutinler) hem de "Kopyala ve uyarla" akışında (bir journey fazından yeni
+ * bir taslak rutin tohumlarken) kullanılan TEK ortak dönüşüm.
+ */
+export function buildEditorSlotsFromPhase(phase: VirdPhase | undefined): EditorSlots {
+  const sourceSlots = phase?.slots ?? {};
+  const next: EditorSlots = {};
+
+  for (const slot of VIRD_SLOT_KEYS) {
+    const items = sourceSlots[slot];
+    if (!items || items.length === 0) {
+      continue;
+    }
+    const mapped = items
+      .map((item) => ({ ref: resolveDhikrRef(item) ?? "", isCustom: Boolean(item.customDhikrId), target: item.target }))
+      .filter((item) => item.ref.length > 0);
+    if (mapped.length > 0) {
+      next[slot] = mapped;
+    }
+  }
+
+  return next;
+}
+
+const AUTO_TITLE_SLOT_LABEL: Record<VirdSlotKey, LocalizedText> = {
+  morning: { tr: "Sabah", en: "Morning" },
+  prayer: { tr: "Namaz sonrası", en: "After prayer" },
+  evening: { tr: "Akşam", en: "Evening" },
+  night: { tr: "Gece", en: "Night" },
+  free: { tr: "Serbest", en: "Free" }
+};
+
+/**
+ * Kullanıcı bir başlık girmediyse editörün önerdiği otomatik başlık: seçili
+ * dilimlerin (enabledSlots, VIRD_SLOT_KEYS sırasıyla) kısa adlarını "-" ile
+ * birleştirip sonuna "virdi"/"Vird" ekler (ör. "Sabah-Akşam virdi"). Hiç
+ * dilim seçili değilse genel bir yer tutucuya düşer.
+ */
+export function buildAutoVirdTitle(enabledSlots: readonly VirdSlotKey[]): LocalizedText {
+  const ordered = VIRD_SLOT_KEYS.filter((slot) => enabledSlots.includes(slot));
+  if (ordered.length === 0) {
+    return { tr: "Vird Programım", en: "My Vird Program" };
+  }
+
+  const tr = ordered.map((slot) => AUTO_TITLE_SLOT_LABEL[slot].tr).join("-");
+  const en = ordered.map((slot) => AUTO_TITLE_SLOT_LABEL[slot].en).join("-");
+  return { tr: `${tr} virdi`, en: `${en} vird` };
 }

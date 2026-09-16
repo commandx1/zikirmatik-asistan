@@ -26,7 +26,7 @@ type AuthStore = {
   isSessionRefreshing: boolean;
   lastSessionRefreshAt?: string;
   lastAuthenticatedUserId?: string;
-  signInWithRequiredProvider: () => Promise<void>;
+  signInWithProvider: (provider: AuthProvider) => Promise<void>;
   refreshAuthenticatedSession: () => Promise<void>;
   signOut: () => Promise<void>;
   continueAsGuest: () => void;
@@ -66,13 +66,12 @@ export const useAuthStore = create<AuthStore>()(
       hasHydrated: false,
       isSessionRefreshing: false,
       lastAuthenticatedUserId: undefined,
-      signInWithRequiredProvider: async () => {
+      signInWithProvider: async (provider) => {
         const currentStatus = get().status;
         if (currentStatus === "authenticating") {
           return;
         }
 
-        const provider = resolveRequiredProvider();
         const platform = resolveClientPlatform();
         const previousUserId = get().lastAuthenticatedUserId;
         // Capture guest-local progress BEFORE any session-scoped reset can wipe
@@ -165,7 +164,6 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
       signOut: async () => {
-        const provider = resolveRequiredProvider();
         resetSessionScopedStores();
         set({
           status: "signed_out",
@@ -176,7 +174,7 @@ export const useAuthStore = create<AuthStore>()(
           lastSessionRefreshAt: undefined
         });
 
-        await clearProviderSession(provider);
+        await clearProviderSession("google");
         // Best effort: the device must keep receiving guest-relevant pushes
         // even if this call fails (e.g. offline logout).
         await unlinkPushDevice().catch(() => {});
@@ -212,10 +210,6 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
-
-function resolveRequiredProvider(): AuthProvider {
-  return Platform.OS === "ios" ? "apple" : "google";
-}
 
 function resolveClientPlatform(): ClientPlatform {
   return Platform.OS === "ios" ? "ios" : "android";

@@ -3,12 +3,15 @@ import {
   buildVirdItemKey,
   daysBetween,
   dayIndexFor,
+  dhikrCounts,
   expectedItemsForDay,
   isDayComplete,
+  isJourneyFinished,
   phaseForDay,
   resolveDhikrRef,
   slotProgress,
-  type VirdDayProgramLike
+  type VirdDayProgramLike,
+  type VirdJourneyProgramLike
 } from "./vird-day";
 import type { VirdPhase } from "../types";
 
@@ -210,6 +213,73 @@ describe("slotProgress", () => {
     };
     const expected = expectedItemsForDay(program, 10);
     expect(slotProgress(expected, {})).toEqual({});
+  });
+});
+
+describe("dhikrCounts", () => {
+  it("sums count/target for the same ref across multiple prayer indexes", () => {
+    const program: VirdDayProgramLike = {
+      startDate: "2026-01-01",
+      phases: [{ fromDay: 1, toDay: null, slots: { prayer: [{ dhikrId, target: 10 }] } }],
+      prayerSelection: [1, 4]
+    };
+    const expected = expectedItemsForDay(program, 1);
+    const progress = slotProgress(expected, {
+      "prayer:1:507f1f77bcf86cd799439011": { count: 10, target: 10, completed: true },
+      "prayer:4:507f1f77bcf86cd799439011": { count: 3, target: 10, completed: false }
+    });
+
+    expect(dhikrCounts(progress.prayer!)).toEqual([{ ref: dhikrId, count: 13, target: 20, completed: false }]);
+  });
+
+  it("returns an empty array for an empty view (no expected items for that slot)", () => {
+    expect(dhikrCounts({ done: 0, total: 0, items: [] })).toEqual([]);
+  });
+
+  it("keeps distinct refs as separate entries", () => {
+    const program: VirdDayProgramLike = {
+      startDate: "2026-01-01",
+      phases: [{ fromDay: 1, toDay: null, slots: { morning: [{ dhikrId, target: 33 }, { customDhikrId: "c1", target: 10 }] } }]
+    };
+    const expected = expectedItemsForDay(program, 1);
+    const progress = slotProgress(expected, {});
+
+    expect(dhikrCounts(progress.morning!).map((entry) => entry.ref).sort()).toEqual(["c1", dhikrId].sort());
+  });
+});
+
+describe("isJourneyFinished", () => {
+  it("is false for routine (non-journey) programs", () => {
+    const program: VirdJourneyProgramLike = { kind: "routine", startDate: "2026-01-01", phases: [{ fromDay: 1, toDay: null, slots: {} }] };
+    expect(isJourneyFinished(program, "2099-01-01")).toBe(false);
+  });
+
+  it("is false for a date before startDate (dayIndex <= 0)", () => {
+    const program: VirdJourneyProgramLike = {
+      kind: "journey",
+      startDate: "2026-06-10",
+      phases: [{ fromDay: 1, toDay: 3, slots: {} }]
+    };
+    // 2026-06-08 -> dayIndex -1, well below the last phase's toDay: never "finished" early.
+    expect(isJourneyFinished(program, "2026-06-08")).toBe(false);
+  });
+
+  it("is false while the journey's last phase is still open (open-ended toDay)", () => {
+    const program: VirdJourneyProgramLike = { kind: "journey", startDate: "2026-01-01", phases: [{ fromDay: 1, toDay: null, slots: {} }] };
+    expect(isJourneyFinished(program, "2099-01-01")).toBe(false);
+  });
+
+  it("is true once today's day index passes the last phase's toDay", () => {
+    const program: VirdJourneyProgramLike = {
+      kind: "journey",
+      startDate: "2026-01-01",
+      phases: [
+        { fromDay: 1, toDay: 3, slots: {} },
+        { fromDay: 4, toDay: 7, slots: {} }
+      ]
+    };
+    expect(isJourneyFinished(program, "2026-01-07")).toBe(false); // day 7, still within last phase
+    expect(isJourneyFinished(program, "2026-01-08")).toBe(true); // day 8, past last phase
   });
 });
 

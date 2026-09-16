@@ -193,6 +193,14 @@ describe("pushLocalVirdProgram", () => {
     expect(activateVirdProgram).not.toHaveBeenCalled();
   });
 
+  it("re-throws a 400 without falling back to fetchVirdPrograms", async () => {
+    createVirdProgram.mockReset().mockRejectedValue(new VirdApiError("terminal", "bad request", 400));
+    fetchVirdPrograms.mockReset();
+
+    await expect(pushLocalVirdProgram(makeLocalProgram(), "token-1")).rejects.toThrow("bad request");
+    expect(fetchVirdPrograms).not.toHaveBeenCalled();
+  });
+
   it("re-throws a non-409 error without falling back", async () => {
     createVirdProgram.mockReset().mockRejectedValue(new VirdApiError("transient", "network down"));
     fetchVirdPrograms.mockReset();
