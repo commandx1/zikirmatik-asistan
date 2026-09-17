@@ -98,6 +98,10 @@
         "title": "Vird Programı",
         "description": "Sınırsız program, hazır şablonlar ve namaz vaktine bağlı hatırlatmalar."
       },
+      "circle": {
+        "title": "Zikir Halkası kur",
+        "description": "Sevdiklerinle ortak hedefe zikirle ulaş."
+      },
       "aiCredits": {
         "title": "AI Rehber Kredileri",
         "description": "Aylık 50 kredi; niyetine göre zikir önerisi ve kaynaklı sohbet."

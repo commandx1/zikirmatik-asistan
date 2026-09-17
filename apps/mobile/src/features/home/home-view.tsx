@@ -17,6 +17,7 @@ import {
   TOUR_REF_WATCH_SAVE,
 } from '../../features/tour/tour-steps'
 import { TodaysVirdCard } from '../vird/components/todays-vird-card'
+import { CircleCard } from '../circle/components/circle-card'
 import { EsmaulHusnaSectionSkeleton } from './components/esmaul-husna-section-skeleton'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { DhikrResumeModal } from '../../components/ui/dhikr-resume-modal'
@@ -603,6 +604,7 @@ export function HomeView() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onPressCard={() => router.push('/vird' as any)}
           />
+          <CircleCard />
           <View onLayout={event => {
             esmaSectionYRef.current = event.nativeEvent.layout.y
           }}>

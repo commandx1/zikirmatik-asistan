@@ -1,0 +1,86 @@
+{
+  "home": {
+    "title": "Dhikr Circle",
+    "emptyTitle": "Dhikr together",
+    "emptySubtitle": "Start a circle or join with a code, and reach the goal together.",
+    "emptyCta": "Start / Join with code",
+    "continueCta": "Continue",
+    "progress": "{{total}} / {{goal}}"
+  },
+  "hub": {
+    "title": "Dhikr Circle",
+    "guestHint": "Sign in to start or join a circle.",
+    "empty": "You don't have a circle yet.",
+    "newCircle": "New circle",
+    "joinWithCode": "Join with code",
+    "codePlaceholder": "Enter invite code",
+    "join": "Join",
+    "invalidCode": "Invalid invite code.",
+    "membersCount": "{{count}} members"
+  },
+  "create": {
+    "title": "New circle",
+    "nameLabel": "Circle name (optional)",
+    "namePlaceholder": "Defaults to the dhikr's name if left blank",
+    "dhikrLabel": "Dhikr",
+    "pickDhikr": "Pick a dhikr",
+    "goalLabel": "Goal count",
+    "durationLabel": "Duration",
+    "duration7": "7 days",
+    "duration30": "30 days",
+    "duration40": "40 days",
+    "durationUnlimited": "Unlimited",
+    "submit": "Create circle",
+    "dhikrRequired": "Please pick a dhikr.",
+    "goalInvalid": "Goal must be a number between 1 and 10,000,000."
+  },
+  "detail": {
+    "share": "Share",
+    "start": "Start dhikr",
+    "leave": "Leave",
+    "leaveConfirmTitle": "Leave circle",
+    "leaveConfirmMessage": "Are you sure you want to leave this circle?",
+    "close": "Close",
+    "closeConfirmTitle": "Close circle",
+    "closeConfirmMessage": "Are you sure you want to close this circle? Members won't be able to add dhikr anymore.",
+    "members": "Members",
+    "code": "Code",
+    "completedTitle": "Goal reached! 🎉",
+    "completedHint": "This circle has reached its goal, congratulations.",
+    "closedTitle": "Circle closed",
+    "myTotal": "My contribution: {{count}}",
+    "endDate": "Ends: {{date}}",
+    "cancel": "Cancel"
+  },
+  "session": {
+    "caption": "{{total}} / {{goal}} · today you: {{mine}}",
+    "completedNotice": "This circle has reached its goal, the counter has stopped.",
+    "closedNotice": "This circle has been closed, the counter has stopped.",
+    "close": "Close"
+  },
+  "join": {
+    "title": "Join circle",
+    "invalidCode": "Invalid invite code.",
+    "joinCta": "Join",
+    "notActive": "This circle is no longer active.",
+    "loadError": "Couldn't load circle info."
+  },
+  "status": {
+    "active": "Active",
+    "completed": "Completed",
+    "closed": "Closed"
+  },
+  "errors": {
+    "premiumRequired": "Starting a new circle requires premium membership.",
+    "notFound": "Circle not found.",
+    "notActive": "This circle is no longer active.",
+    "full": "This circle is full.",
+    "maxActive": "You can have at most 10 active circles.",
+    "notMember": "You are not a member of this circle.",
+    "dhikrMismatch": "This dhikr doesn't match this circle.",
+    "creatorOnly": "Only the circle's creator can do this.",
+    "serviceUnavailable": "The circle service is unreachable right now. Please try again later.",
+    "serviceUnreachable": "Check your internet connection and try again.",
+    "invalidCode": "Invalid invite code."
+  }
+}

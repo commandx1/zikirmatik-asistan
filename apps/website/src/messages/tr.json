@@ -5,7 +5,9 @@
     "description": "Zikirmatik Asistan AI; sakin, dikkat dağıtmayan bir sayaç ve akıllı hatırlatıcılarla zikirlerinizi takip etmenize ve kalıcı alışkanlıklar oluşturmanıza yardımcı olur.",
     "titlePrivacy": "Gizlilik Politikası — Zikirmatik Asistan AI",
     "titleTerms": "Kullanım Şartları — Zikirmatik Asistan AI",
-    "titleRefund": "İade Politikası — Zikirmatik Asistan AI"
+    "titleRefund": "İade Politikası — Zikirmatik Asistan AI",
+    "halkaTitle": "Zikir Halkasına Katıl — Zikirmatik Asistan AI",
+    "halkaDescription": "Bu davet koduyla Zikirmatik Asistan AI uygulamasında bir zikir halkasına katılın."
   },
   "nav": {
     "features": "Özellikler",
@@ -358,5 +360,13 @@
         "body": "Bu İade Politikası hakkında sorularınız varsa veya bir iade talebi başlatmak istiyorsanız lütfen serhatbelen7.developer@gmail.com adresinden bize ulaşın."
       }
     ]
+  },
+  "halka": {
+    "title": "Zikir Halkasına Katıl",
+    "subtitle": "Bu davet koduyla arkadaşlarınızla birlikte zikir çekmeye başlayın.",
+    "codeLabel": "Halka Kodu",
+    "openApp": "Uygulamada aç",
+    "getOnPlay": "Google Play'den İndirin",
+    "hint": "Uygulamada \"Kodla katıl\" bölümüne kodu yapıştır."
   }
 }

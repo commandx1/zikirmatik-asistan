@@ -1,3 +1,4 @@
+import { useCircleStore } from "./circle-store";
 import { useDhikrStore } from "./dhikr-store";
 import { useOnboardingStore } from "./onboarding-store";
 import { useProfileStore } from "./profile-store";
@@ -13,4 +14,7 @@ export function resetSessionScopedStores() {
   // programları/ilerlemesi de sıfırlanır — bkz. auth-store.ts signOut /
   // signInWithProvider (previousUserId !== session.userId dalı).
   useVirdStore.getState().resetVird();
+  // vird-store ile aynı gerekçe: halka üyeliği kullanıcıya özel, signOut'ta
+  // (ya da farklı kullanıcıya geçişte) sıfırlanmalı.
+  useCircleStore.getState().resetCircles();
 }

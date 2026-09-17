@@ -34,6 +34,10 @@ type VirdDhikrPickerModalProps = {
   onAdd: (selection: VirdDhikrPickerSelection) => void;
   /** "Eklendi" satırına dokunma: zikri bulunulan dilimden geri çıkarır. */
   onRemove: (ref: string) => void;
+  /** true ise kişisel/özel zikirler (personalRows) listelenmez — yalnız
+   * doğrulanmış katalog gösterilir (bkz. circle-create-screen.tsx: halka
+   * zikri katalogdan seçilir, kişisel zikirler paylaşılamaz). */
+  catalogOnly?: boolean;
 };
 
 // Vird editörünün "zikir ekle" arama modalı: katalog (listVerifiedActiveDhikrs)
@@ -50,7 +54,8 @@ export function VirdDhikrPickerModal({
   isPremium,
   onRequirePremium,
   onAdd,
-  onRemove
+  onRemove,
+  catalogOnly = false
 }: VirdDhikrPickerModalProps) {
   const { t, i18n } = useTranslation("vird");
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
@@ -98,7 +103,7 @@ export function VirdDhikrPickerModal({
   }, [visible, t]);
 
   const rows = useMemo<PickerRow[]>(() => {
-    const personalRows: PickerRow[] = personalItems.map((item) => ({
+    const personalRows: PickerRow[] = catalogOnly ? [] : personalItems.map((item) => ({
       ref: item.id,
       isCustom: true,
       label: resolveLocalizedText(item.transliteration, locale) || resolveLocalizedText(item.name, locale),
@@ -135,7 +140,7 @@ export function VirdDhikrPickerModal({
       return all;
     }
     return all.filter((row) => row.label.toLocaleLowerCase(locale).includes(normalizedQuery));
-  }, [personalItems, catalog, query, locale]);
+  }, [personalItems, catalog, query, locale, catalogOnly]);
 
   const handlePick = (row: PickerRow) => {
     if (slotRefs.includes(row.ref)) {

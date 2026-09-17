@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CirclesModule } from '../circles/circles.module';
 import { Dhikr, DhikrSchema } from '../dhikrs/schemas/dhikr.schema';
 import { StreaksModule } from '../streaks/streaks.module';
 import { User, UserSchema } from '../users/schemas/user.schema';
@@ -20,6 +21,10 @@ import { DhikrLog, DhikrLogSchema } from './schemas/dhikr-log.schema';
     // modelini doğrudan forFeature ile alır. Bu import yalnız
     // VirdProgressService.applyLogWrite'ı kullanmak için.
     VirdModule,
+    // CirclesModule bu modülü import ETMEZ (döngü olurdu) — kendi DhikrLog
+    // modelini doğrudan forFeature ile alır. Bu import yalnız
+    // CirclesService.assertCanContribute/applyProgress içindir.
+    CirclesModule,
   ],
   controllers: [DhikrLogsController],
   providers: [DhikrLogsService],

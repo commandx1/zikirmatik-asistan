@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { AiModule } from './modules/ai/ai.module';
 import { AiChatModule } from './modules/ai-chat/ai-chat.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CirclesModule } from './modules/circles/circles.module';
 import { DevicesModule } from './modules/devices/devices.module';
 import { DhikrLogsModule } from './modules/dhikr-logs/dhikr-logs.module';
 import { DhikrsModule } from './modules/dhikrs/dhikrs.module';
@@ -57,6 +58,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     EventsModule,
     PushCampaignsModule,
     VirdModule,
+    CirclesModule,
   ],
   controllers: [AppController],
   providers: [JwtAuthGuard],

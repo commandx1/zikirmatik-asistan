@@ -14,7 +14,7 @@ type WatchControlButtonsProps = {
   targetBtnRef?: RefObject<View | null>
   resetBtnRef?: RefObject<View | null>
   saveBtnRef?: RefObject<View | null>
-  variant?: 'full' | 'reset-only'
+  variant?: 'full' | 'reset-only' | 'none'
 }
 
 /**
@@ -38,6 +38,12 @@ export function WatchControlButtons({
 }: WatchControlButtonsProps) {
   const controlButtonBorder = withAlpha(tokens.textPrimary, 0.12)
   const controlButtonBg = withAlpha(tokens.textPrimary, 0.06)
+
+  // 'none': halka oturumu gibi ortak bir toplamı besleyen sayaçlarda reset
+  // anlamsızdır; buton hiç çizilmez (boş satır düzeni korur).
+  if (variant === 'none') {
+    return <View className='mt-3 h-9' />
+  }
 
   if (variant === 'reset-only') {
     return (

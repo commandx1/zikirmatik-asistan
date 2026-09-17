@@ -5,7 +5,9 @@
     "description": "Zikirmatik Asistan AI helps you track dhikr, build lasting habits, and stay connected to your daily worship with a calm, distraction-free counter and smart reminders.",
     "titlePrivacy": "Privacy Policy — Zikirmatik Asistan AI",
     "titleTerms": "Terms of Service — Zikirmatik Asistan AI",
-    "titleRefund": "Refund Policy — Zikirmatik Asistan AI"
+    "titleRefund": "Refund Policy — Zikirmatik Asistan AI",
+    "halkaTitle": "Join a Dhikr Circle — Zikirmatik Asistan AI",
+    "halkaDescription": "Join a dhikr circle in Zikirmatik Asistan AI with this invite code."
   },
   "nav": {
     "features": "Features",
@@ -115,20 +117,52 @@
     "subtitle": "Unlock 50 monthly AI Rehber credits, detailed statistics and all themes. See the Google Play listing for current pricing.",
     "note": "For up-to-date pricing, please check the app's Google Play listing.",
     "table": {
-      "headers": ["Feature", "Free", "Premium"],
+      "headers": [
+        "Feature",
+        "Free",
+        "Premium"
+      ],
       "rows": [
-        ["Dhikr counter & collections", "Included", "Included"],
-        ["Daily & special-day reminders", "Included", "Included"],
-        ["Streaks & statistics", "Basic", "Detailed"],
-        ["Google Sign-In cloud sync", "Included", "Included"],
-        ["AI Rehber credits", "1 credit/day (+3 on day 1)", "50 credits/month + 10, 30 or 75-credit packs"],
-        ["Themes", "Limited", "All themes"]
+        [
+          "Dhikr counter & collections",
+          "Included",
+          "Included"
+        ],
+        [
+          "Daily & special-day reminders",
+          "Included",
+          "Included"
+        ],
+        [
+          "Streaks & statistics",
+          "Basic",
+          "Detailed"
+        ],
+        [
+          "Google Sign-In cloud sync",
+          "Included",
+          "Included"
+        ],
+        [
+          "AI Rehber credits",
+          "1 credit/day (+3 on day 1)",
+          "50 credits/month + 10, 30 or 75-credit packs"
+        ],
+        [
+          "Themes",
+          "Limited",
+          "All themes"
+        ]
       ]
     },
     "credits": {
       "title": "AI Rehber credit packages",
       "description": "Purchase the credit package that fits your needs directly from within the app.",
-      "items": ["10 credits", "30 credits", "75 credits"]
+      "items": [
+        "10 credits",
+        "30 credits",
+        "75 credits"
+      ]
     },
     "cta": "View plans on Google Play"
   },
@@ -326,5 +360,13 @@
         "body": "For any questions about this Refund Policy or to start a refund request, please contact us at serhatbelen7.developer@gmail.com."
       }
     ]
+  },
+  "halka": {
+    "title": "Join a Dhikr Circle",
+    "subtitle": "Use this invite code to start doing dhikr together with friends.",
+    "codeLabel": "Circle Code",
+    "openApp": "Open in app",
+    "getOnPlay": "Get it on Google Play",
+    "hint": "In the app, paste the code under \"Join with code\"."
   }
 }

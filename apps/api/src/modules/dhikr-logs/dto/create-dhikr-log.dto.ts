@@ -17,6 +17,7 @@ const LOG_SOURCE = {
   ai: 'ai',
   specialDay: 'special-day',
   notification: 'notification',
+  circle: 'circle',
 } as const;
 
 export class CreateDhikrLogDto {
@@ -66,7 +67,7 @@ export class CreateDhikrLogDto {
 
   @IsOptional()
   @IsEnum(LOG_SOURCE)
-  source?: 'manual' | 'ai' | 'special-day' | 'notification';
+  source?: 'manual' | 'ai' | 'special-day' | 'notification' | 'circle';
 
   @IsOptional()
   @IsBoolean()
@@ -99,4 +100,11 @@ export class CreateDhikrLogDto {
   @Min(1)
   @Max(5)
   virdPrayerIndex?: number;
+
+  // --- Zikir Halkası (opsiyonel) ---
+  // Verilirse log halkaya sayılır; halka ile vird alanları birlikte
+  // gönderilemez (bkz. DhikrLogsService.create).
+  @IsOptional()
+  @IsMongoId()
+  circleId?: string;
 }

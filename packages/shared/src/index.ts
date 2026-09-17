@@ -2,6 +2,7 @@ export * from "./types/theme";
 export * from "./types/domain";
 export * from "./types/stats";
 export * from "./types/vird";
+export * from "./types/circle";
 export * from "./utils/theme";
 export * from "./utils/format";
 export * from "./utils/date";

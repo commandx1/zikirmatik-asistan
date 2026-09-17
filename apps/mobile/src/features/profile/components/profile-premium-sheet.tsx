@@ -125,6 +125,7 @@ export function ProfilePremiumSheet({
 
           <View className='mb-8 gap-4'>
             <BenefitItem title={t('profile:premiumSheet.benefits.vird.title')} description={t('profile:premiumSheet.benefits.vird.description')} />
+            <BenefitItem title={t('profile:premiumSheet.benefits.circle.title')} description={t('profile:premiumSheet.benefits.circle.description')} />
             <BenefitItem title={t('profile:premiumSheet.benefits.aiCredits.title')} description={t('profile:premiumSheet.benefits.aiCredits.description')} />
             <BenefitItem title={t('profile:premiumSheet.benefits.stats.title')} description={t('profile:premiumSheet.benefits.stats.description')} />
             <BenefitItem title={t('profile:premiumSheet.benefits.themes.title')} description={t('profile:premiumSheet.benefits.themes.description')} />

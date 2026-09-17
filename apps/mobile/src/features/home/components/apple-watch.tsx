@@ -57,7 +57,7 @@ export type CounterVisualModel = {
   lapSize: number
 }
 
-export type CounterVisualViewProps = AppleWatchProps & { model: CounterVisualModel; controls?: 'full' | 'reset-only' }
+export type CounterVisualViewProps = AppleWatchProps & { model: CounterVisualModel; controls?: 'full' | 'reset-only' | 'none' }
 
 function ProgressRing({ progress, accent, trackColor }: { progress: number; accent: string; trackColor: string }) {
   const clamped = Math.max(0, Math.min(1, progress))

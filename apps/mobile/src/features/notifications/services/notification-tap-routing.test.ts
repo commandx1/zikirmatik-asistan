@@ -71,6 +71,43 @@ describe("extractNotificationRoute", () => {
     ).toBeNull();
   });
 
+  it("returns the circle detail route for a 24-hex-char id", () => {
+    const response = responseWithData({ route: "/circle/507f1f77bcf86cd799439011" });
+    expect(extractNotificationRoute(response)).toBe("/circle/507f1f77bcf86cd799439011");
+  });
+
+  it("rejects a circle id with 23 hex chars", () => {
+    expect(
+      extractNotificationRoute(responseWithData({ route: "/circle/507f1f77bcf86cd79943901" }))
+    ).toBeNull();
+  });
+
+  it("rejects an uppercase hex circle id (real behavior: pattern only allows a-f0-9)", () => {
+    expect(
+      extractNotificationRoute(responseWithData({ route: "/circle/507F1F77BCF86CD799439011" }))
+    ).toBeNull();
+  });
+
+  it("rejects a circle route with a trailing path segment", () => {
+    expect(
+      extractNotificationRoute(responseWithData({ route: "/circle/507f1f77bcf86cd799439011/extra" }))
+    ).toBeNull();
+  });
+
+  it("rejects the bare /circle route", () => {
+    expect(extractNotificationRoute(responseWithData({ route: "/circle" }))).toBeNull();
+  });
+
+  it("rejects a double-slash-prefixed circle route", () => {
+    expect(
+      extractNotificationRoute(responseWithData({ route: "//circle/507f1f77bcf86cd799439011" }))
+    ).toBeNull();
+  });
+
+  it("still allows an existing route (sanity check)", () => {
+    expect(extractNotificationRoute(responseWithData({ route: "/(tabs)/home" }))).toBe("/(tabs)/home");
+  });
+
   it("returns null for missing or malformed payloads", () => {
     expect(extractNotificationRoute(null)).toBeNull();
     expect(extractNotificationRoute(undefined)).toBeNull();

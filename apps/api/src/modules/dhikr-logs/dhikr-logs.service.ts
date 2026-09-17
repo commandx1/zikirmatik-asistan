@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
+import { CirclesService } from '../circles/circles.service';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
 import { StreaksService } from '../streaks/streaks.service';
 import { User, type UserDocument } from '../users/schemas/user.schema';
@@ -17,6 +18,11 @@ import { DeleteDhikrLogsByDhikrDto } from './dto/delete-dhikr-logs-by-dhikr.dto'
 import { QueryDhikrLogsDto } from './dto/query-dhikr-logs.dto';
 import { SetDhikrFavoriteDto } from './dto/set-dhikr-favorite.dto';
 import { DhikrLog, type DhikrLogDocument } from './schemas/dhikr-log.schema';
+
+/** createBulk'un ürettiği updateOne op'u — bulkWrite'ın beklediği tipin aynısı. */
+type BulkLogOperation = Parameters<
+  Model<DhikrLogDocument>['bulkWrite']
+>[0][number];
 
 type VirdLogRef = {
   virdProgramId: Types.ObjectId;
@@ -35,6 +41,7 @@ export class DhikrLogsService {
     @InjectModel(Dhikr.name) private readonly dhikrModel: Model<DhikrDocument>,
     private readonly streaksService: StreaksService,
     private readonly virdProgressService: VirdProgressService,
+    private readonly circlesService: CirclesService,
   ) {}
 
   /**
@@ -77,6 +84,24 @@ export class DhikrLogsService {
   }
 
   /**
+   * Best-effort halka ilerlemesi. safeApplyVirdProgress ile aynı desen:
+   * asla throw etmez — halka toplamının tazelenmesindeki bir hata dhikr log
+   * yazımını etkilememelidir (toplam bir sonraki yazımda yine türetilir).
+   */
+  private async safeApplyCircleProgress(circleId?: string) {
+    if (!circleId) {
+      return;
+    }
+    try {
+      await this.circlesService.applyProgress(circleId);
+    } catch (error) {
+      this.logger.warn(
+        `safeApplyCircleProgress failed: ${error instanceof Error ? error.message : error}`,
+      );
+    }
+  }
+
+  /**
    * dhikr_logs upsert anahtarını kurar. `vird` verilmişse (virdProgramId +
    * virdSlot) filtreye virdProgramId/virdSlot/virdPrayerIndex eklenir — aynı
    * zikrin farklı vird dilimlerinde (veya prayer diliminde farklı vakitlerde)
@@ -85,12 +110,17 @@ export class DhikrLogsService {
    * etiketsiz) bir yazımın, aynı gün aynı zikir için önceden yazılmış vird
    * etiketli bir belgeyle eşleşip onun üzerine yazmasını engeller (iki akış
    * her zaman ayrı belge kalır).
+   *
+   * `circleId` aynı mantığın halka karşılığıdır: verilmişse filtreye eklenir,
+   * verilmemişse `circleId: {$exists:false}` eklenir — sade/vird belgeleri
+   * halka belgelerinden her zaman ayrık kalır.
    */
   private buildLogFilter(
     userId: Types.ObjectId,
     date: string,
     dhikrRef: { dhikrObjectId?: Types.ObjectId; customDhikrId?: string },
     vird?: VirdLogRef,
+    circleId?: Types.ObjectId,
   ): Record<string, unknown> {
     const filter: Record<string, unknown> = { userId, date };
     if (dhikrRef.dhikrObjectId) {
@@ -104,6 +134,11 @@ export class DhikrLogsService {
       filter.virdPrayerIndex = vird.virdPrayerIndex ?? null;
     } else {
       filter.virdProgramId = { $exists: false };
+    }
+    if (circleId) {
+      filter.circleId = circleId;
+    } else {
+      filter.circleId = { $exists: false };
     }
     return filter;
   }
@@ -139,6 +174,9 @@ export class DhikrLogsService {
     )
       ? payload.customDhikrId.trim()
       : undefined;
+    const circleObjectId = hasNonEmptyString(payload.circleId)
+      ? this.asObjectId(payload.circleId)
+      : undefined;
 
     if (!dhikrObjectId && !customDhikrId) {
       throw new BadRequestException(
@@ -152,11 +190,28 @@ export class DhikrLogsService {
     );
 
     const vird = this.resolveVirdRef(payload);
+    if (vird && circleObjectId) {
+      throw new BadRequestException(
+        'Bir kayıt aynı anda hem vird hem halka kaydı olamaz.',
+      );
+    }
+
+    // Halka yetkisi YAZIMDAN ÖNCE doğrulanır: üye mi, halka aktif mi ve zikir
+    // halkanın zikriyle eşleşiyor mu (bkz. CirclesService.assertCanContribute).
+    if (circleObjectId) {
+      await this.circlesService.assertCanContribute(
+        payload.userId,
+        circleObjectId.toHexString(),
+        dhikrId,
+      );
+    }
+
     const filter = this.buildLogFilter(
       userObjectId,
       payload.date,
       { dhikrObjectId, customDhikrId },
       vird,
+      circleObjectId,
     );
 
     // A day holds at most one log per (user, dhikr), so a later write for the
@@ -208,21 +263,22 @@ export class DhikrLogsService {
       }
     }
 
-    const created = await this.dhikrLogModel
-      .findOneAndUpdate(
-        filter,
-        {
-          $set: updateSet,
-          $setOnInsert: setOnInsert,
-        },
-        {
-          upsert: true,
-          returnDocument: 'after',
-          setDefaultsOnInsert: true,
-        },
-      )
-      .lean()
-      .exec();
+    const update: Record<string, unknown> = {
+      $set: updateSet,
+      $setOnInsert: setOnInsert,
+    };
+    if (circleObjectId) {
+      // circleId YALNIZ $set'te (filtre zaten insert'te tohumlar; aynı yolun
+      // $setOnInsert'te de geçmesi MongoDB'de çakışma hatası verirdi).
+      updateSet.circleId = circleObjectId;
+      // Halka logunda count $set ile DÜŞÜRÜLEMEZ: sayı ortak bir toplamı
+      // besliyor, geciken/eski bir istemci yazımı toplamı geri çekmemeli.
+      // $max tek atomik adımda "yalnız büyükse yaz" anlamına gelir.
+      delete updateSet.count;
+      update.$max = { count: payload.count };
+    }
+
+    const created = await this.upsertLogOnce(filter, update);
 
     await this.safeRecalcStreak(payload.userId);
     await this.safeApplyVirdProgress(
@@ -234,11 +290,52 @@ export class DhikrLogsService {
           }
         : undefined,
     );
+    await this.safeApplyCircleProgress(circleObjectId?.toHexString());
 
     return created;
   }
 
+  /**
+   * dhikr_logs upsert'i. `upsert` yalnız unique index ile (uniq_log_key, bkz.
+   * dhikr-log.schema.ts) atomiktir: aynı anahtara giden iki eşzamanlı yazımda
+   * yarışı kaybeden insert E11000 alır. Belge o an artık VAR olduğu için aynı
+   * filtre/update ile ikinci deneme insert'e düşmez, mevcut belgeyi günceller
+   * ($max dahil). İkinci denemede de E11000 gelirse bu gerçek bir hatadır
+   * (anahtar dışı bir unique kısıt) ve yukarı fırlatılır.
+   */
+  private async upsertLogOnce(
+    filter: Record<string, unknown>,
+    update: Record<string, unknown>,
+  ) {
+    const run = () =>
+      this.dhikrLogModel
+        .findOneAndUpdate(filter, update, {
+          upsert: true,
+          returnDocument: 'after',
+          setDefaultsOnInsert: true,
+        })
+        .lean()
+        .exec();
+
+    try {
+      return await run();
+    } catch (error) {
+      if (!isDuplicateKeyError(error)) {
+        throw error;
+      }
+      this.logger.debug(
+        'dhikr log upsert yarışı (E11000) — aynı filtreyle tekrar deneniyor.',
+      );
+      return run();
+    }
+  }
+
   async createBulk(payload: CreateDhikrLogBulkDto) {
+    // Halka logları tek tek yazılır: her yazım kendi yetki kontrolünü ve
+    // ilerleme türetimini gerektirir (bkz. create).
+    if (payload.items.some((item) => hasNonEmptyString(item.circleId))) {
+      throw new BadRequestException('circleId bulk ile gönderilemez.');
+    }
     if (payload.items.some((item) => !hasNonEmptyString(item.dhikrId))) {
       throw new BadRequestException(
         'Bulk dhikr log kaydı için tüm itemlarda dhikrId zorunludur.',
@@ -298,9 +395,7 @@ export class DhikrLogsService {
       };
     });
 
-    const result = await this.dhikrLogModel.bulkWrite(operations, {
-      ordered: false,
-    });
+    const upsertedCount = await this.bulkWriteWithRetry(operations);
 
     const items = await this.dhikrLogModel.find({ $or: filters }).lean().exec();
 
@@ -308,9 +403,65 @@ export class DhikrLogsService {
     await this.applyVirdProgressForBulk(payload.items, virdRefs);
 
     return {
-      insertedCount: result.upsertedCount,
+      insertedCount: upsertedCount,
       items,
     };
+  }
+
+  /**
+   * createBulk'un upsertLogOnce karşılığı. `ordered:false` olduğu için
+   * yarışı kaybeden op'lar diğerlerini durdurmaz; sürücü hepsini
+   * MongoBulkWriteError.writeErrors içinde toplar. Yalnız E11000 alan op'lar
+   * bir kez daha gönderilir (belge artık var → update'e düşerler). Kalan
+   * herhangi bir hata yukarı fırlatılır.
+   */
+  private async bulkWriteWithRetry(
+    operations: BulkLogOperation[],
+  ): Promise<number> {
+    const first = await this.runBulk(operations);
+    if (first.duplicateIndexes.length === 0) {
+      return first.upsertedCount;
+    }
+
+    this.logger.debug(
+      `bulk dhikr log upsert yarışı (E11000): ${first.duplicateIndexes.length} op tekrar deneniyor.`,
+    );
+    const retry = await this.runBulk(
+      first.duplicateIndexes.map((index) => operations[index]),
+    );
+    if (retry.duplicateIndexes.length > 0) {
+      throw retry.error;
+    }
+    return first.upsertedCount + retry.upsertedCount;
+  }
+
+  private async runBulk(operations: BulkLogOperation[]): Promise<{
+    upsertedCount: number;
+    duplicateIndexes: number[];
+    error?: unknown;
+  }> {
+    try {
+      const result = await this.dhikrLogModel.bulkWrite(operations, {
+        ordered: false,
+      });
+      return { upsertedCount: result.upsertedCount ?? 0, duplicateIndexes: [] };
+    } catch (error) {
+      const writeErrors = bulkWriteErrors(error);
+      // Tek bir op bile E11000 dışı bir sebeple düştüyse yarış değil, gerçek
+      // hata: olduğu gibi fırlat.
+      if (
+        writeErrors.length === 0 ||
+        !writeErrors.every((writeError) => writeError.code === 11000)
+      ) {
+        throw error;
+      }
+      const partial = (error as { result?: { upsertedCount?: number } }).result;
+      return {
+        upsertedCount: partial?.upsertedCount ?? 0,
+        duplicateIndexes: writeErrors.map((writeError) => writeError.index),
+        error,
+      };
+    }
   }
 
   /** Bulk yazımdaki distinct (userId, virdProgramId, date) üçlüleri için
@@ -467,6 +618,40 @@ export class DhikrLogsService {
       }
     }
   }
+}
+
+/** E11000 (duplicate key). Sürücü sürümüne göre code ya da codeName gelir. */
+function isDuplicateKeyError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) {
+    return false;
+  }
+  const candidate = error as { code?: unknown; codeName?: unknown };
+  return candidate.code === 11000 || candidate.codeName === 'DuplicateKey';
+}
+
+/**
+ * MongoBulkWriteError.writeErrors normalizasyonu. Sürücü tek hatada dizi
+ * yerine tek nesne verebilir; index/code kimi sürümlerde getter, kimilerinde
+ * iç `err` nesnesindedir.
+ */
+function bulkWriteErrors(error: unknown): { index: number; code: number }[] {
+  const raw = (error as { writeErrors?: unknown }).writeErrors;
+  if (raw === undefined) {
+    return [];
+  }
+  const list = Array.isArray(raw) ? raw : [raw];
+  return list.flatMap((item) => {
+    const source = item as {
+      index?: unknown;
+      code?: unknown;
+      err?: { index?: unknown; code?: unknown };
+    };
+    const index = source.index ?? source.err?.index;
+    const code = source.code ?? source.err?.code;
+    return typeof index === 'number' && typeof code === 'number'
+      ? [{ index, code }]
+      : [];
+  });
 }
 
 function uniqueObjectIds(values: Types.ObjectId[]) {

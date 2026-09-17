@@ -25,6 +25,7 @@ import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-
 import { useGuestMigration } from "../src/features/auth/hooks/use-guest-migration";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
 import { useVirdBackendSync } from "../src/features/vird/hooks/use-vird-backend-sync";
+import { useCircleSync } from "../src/features/circle/hooks/use-circle-sync";
 import { useNotificationTapRouting } from "../src/features/notifications/hooks/use-notification-tap-routing";
 import { usePushDeviceRegistration } from "../src/features/notifications/hooks/use-push-device-registration";
 import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
@@ -75,6 +76,7 @@ function RootProviders({ children }: { children: ReactNode }) {
   useGuestMigration();
   useDhikrBackendSync();
   useVirdBackendSync();
+  useCircleSync();
   useUserPreferencesSync();
   usePushDeviceRegistration();
   initAnalytics();

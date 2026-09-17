@@ -29,13 +29,16 @@ export type BackendDhikrLog = {
   count: number;
   targetCount: number;
   date: string;
-  source?: "manual" | "ai" | "special-day" | "notification";
+  source?: "manual" | "ai" | "special-day" | "notification" | "circle";
   aiRecommendationId?: string;
   aiPrompt?: string;
   aiAssistantNote?: string;
   isCompleted: boolean;
   isFavorite?: boolean;
   createdAt?: string;
+  /** Bir log bir Zikir Halkası'na bağlıysa doldurulur (bkz.
+   * features/circle/services/circle-share.ts buildCircleLogPayload). */
+  circleId?: string;
 } & VirdLogFields;
 
 export type CreateDhikrLogPayload = {
@@ -50,9 +53,10 @@ export type CreateDhikrLogPayload = {
   count: number;
   targetCount: number;
   date: string;
-  source?: "manual" | "ai" | "special-day" | "notification";
+  source?: "manual" | "ai" | "special-day" | "notification" | "circle";
   isCompleted?: boolean;
   isFavorite?: boolean;
+  circleId?: string;
 } & VirdLogFields;
 
 export class DhikrLogsApiError extends Error {

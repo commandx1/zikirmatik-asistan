@@ -21,6 +21,7 @@ import trTour from "./locales/tr/tour.json";
 import trDhikrs from "./locales/tr/dhikrs.json";
 import trUsers from "./locales/tr/users.json";
 import trVird from "./locales/tr/vird.json";
+import trCircle from "./locales/tr/circle.json";
 import enCommon from "./locales/en/common.json";
 import enProfile from "./locales/en/profile.json";
 import enHome from "./locales/en/home.json";
@@ -41,6 +42,7 @@ import enTour from "./locales/en/tour.json";
 import enDhikrs from "./locales/en/dhikrs.json";
 import enUsers from "./locales/en/users.json";
 import enVird from "./locales/en/vird.json";
+import enCircle from "./locales/en/circle.json";
 
 export type SupportedLocale = "tr" | "en";
 
@@ -68,7 +70,8 @@ const resources = {
     tour: trTour,
     dhikrs: trDhikrs,
     users: trUsers,
-    vird: trVird
+    vird: trVird,
+    circle: trCircle
   },
   en: {
     common: enCommon,
@@ -90,7 +93,8 @@ const resources = {
     tour: enTour,
     dhikrs: enDhikrs,
     users: enUsers,
-    vird: enVird
+    vird: enVird,
+    circle: enCircle
   }
 } as const;
 
@@ -124,7 +128,8 @@ void i18n.use(initReactI18next).init({
     "tour",
     "dhikrs",
     "users",
-    "vird"
+    "vird",
+    "circle"
   ],
   defaultNS: "common",
   interpolation: { escapeValue: false },

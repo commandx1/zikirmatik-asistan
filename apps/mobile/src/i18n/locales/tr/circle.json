@@ -1,0 +1,86 @@
+{
+  "home": {
+    "title": "Zikir Halkası",
+    "emptyTitle": "Birlikte zikret",
+    "emptySubtitle": "Bir halka kur ya da kodla katıl, hedefe birlikte ulaşın.",
+    "emptyCta": "Halka kur / Kodla katıl",
+    "continueCta": "Devam et",
+    "progress": "{{total}} / {{goal}}"
+  },
+  "hub": {
+    "title": "Zikir Halkası",
+    "guestHint": "Halka kurmak ya da katılmak için giriş yapmalısın.",
+    "empty": "Henüz bir halkan yok.",
+    "newCircle": "Yeni halka",
+    "joinWithCode": "Kodla katıl",
+    "codePlaceholder": "Davet kodunu gir",
+    "join": "Katıl",
+    "invalidCode": "Geçersiz davet kodu.",
+    "membersCount": "{{count}} üye"
+  },
+  "create": {
+    "title": "Yeni halka",
+    "nameLabel": "Halka adı (opsiyonel)",
+    "namePlaceholder": "Boş bırakılırsa zikrin adı kullanılır",
+    "dhikrLabel": "Zikir",
+    "pickDhikr": "Zikir seç",
+    "goalLabel": "Hedef sayı",
+    "durationLabel": "Süre",
+    "duration7": "7 gün",
+    "duration30": "30 gün",
+    "duration40": "40 gün",
+    "durationUnlimited": "Süresiz",
+    "submit": "Halkayı oluştur",
+    "dhikrRequired": "Lütfen bir zikir seç.",
+    "goalInvalid": "Hedef 1 ile 10.000.000 arasında bir sayı olmalı."
+  },
+  "detail": {
+    "share": "Paylaş",
+    "start": "Zikre başla",
+    "leave": "Ayrıl",
+    "leaveConfirmTitle": "Halkadan ayrıl",
+    "leaveConfirmMessage": "Bu halkadan ayrılmak istediğine emin misin?",
+    "close": "Kapat",
+    "closeConfirmTitle": "Halkayı kapat",
+    "closeConfirmMessage": "Bu halkayı kapatmak istediğine emin misin? Üyeler artık zikir ekleyemeyecek.",
+    "members": "Üyeler",
+    "code": "Kod",
+    "completedTitle": "Hedefe ulaşıldı! 🎉",
+    "completedHint": "Bu halka hedefine ulaştı, tebrikler.",
+    "closedTitle": "Halka kapatıldı",
+    "myTotal": "Benim katkım: {{count}}",
+    "endDate": "Bitiş: {{date}}",
+    "cancel": "Vazgeç"
+  },
+  "session": {
+    "caption": "{{total}} / {{goal}} · bugün sen: {{mine}}",
+    "completedNotice": "Bu halka hedefine ulaştı, sayaç durduruldu.",
+    "closedNotice": "Bu halka kapatıldı, sayaç durduruldu.",
+    "close": "Kapat"
+  },
+  "join": {
+    "title": "Halkaya katıl",
+    "invalidCode": "Geçersiz davet kodu.",
+    "joinCta": "Katıl",
+    "notActive": "Bu halka artık aktif değil.",
+    "loadError": "Halka bilgisi alınamadı."
+  },
+  "status": {
+    "active": "Aktif",
+    "completed": "Tamamlandı",
+    "closed": "Kapalı"
+  },
+  "errors": {
+    "premiumRequired": "Yeni bir halka kurmak premium üyelik gerektirir.",
+    "notFound": "Halka bulunamadı.",
+    "notActive": "Bu halka artık aktif değil.",
+    "full": "Bu halka dolu.",
+    "maxActive": "En fazla 10 aktif halkan olabilir.",
+    "notMember": "Bu halkanın üyesi değilsin.",
+    "dhikrMismatch": "Bu zikir bu halkayla uyuşmuyor.",
+    "creatorOnly": "Bu işlemi yalnızca halkayı kuran yapabilir.",
+    "serviceUnavailable": "Halka servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar dene.",
+    "serviceUnreachable": "İnternet bağlantını kontrol edip tekrar dene.",
+    "invalidCode": "Geçersiz davet kodu."
+  }
+}

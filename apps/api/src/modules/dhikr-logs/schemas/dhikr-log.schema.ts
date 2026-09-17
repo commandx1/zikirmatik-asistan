@@ -48,10 +48,10 @@ export class DhikrLog {
 
   @Prop({
     type: String,
-    enum: ['manual', 'ai', 'special-day', 'notification'],
+    enum: ['manual', 'ai', 'special-day', 'notification', 'circle'],
     default: 'manual',
   })
-  source!: 'manual' | 'ai' | 'special-day' | 'notification';
+  source!: 'manual' | 'ai' | 'special-day' | 'notification' | 'circle';
 
   @Prop({ type: Boolean, default: false })
   isCompleted!: boolean;
@@ -83,6 +83,13 @@ export class DhikrLog {
   @Prop({ type: Number, min: 1, max: 5 })
   virdPrayerIndex?: number;
 
+  // --- Zikir Halkası alanı (opsiyonel) ---
+  // Bir log bir halkaya sayılıyorsa doldurulur. Halka logları sade/vird
+  // loglarından AYRI belgelerdir (bkz. buildLogFilter). ref string olarak
+  // verilir: schema dosyaları arasında döngü oluşmasın.
+  @Prop({ type: Types.ObjectId, ref: 'Circle' })
+  circleId?: Types.ObjectId;
+
   readonly createdAt!: Date;
 }
 
@@ -97,4 +104,44 @@ DhikrLogSchema.index({ userId: 1, customDhikrId: 1, date: 1 });
 DhikrLogSchema.index(
   { userId: 1, virdProgramId: 1, date: 1 },
   { partialFilterExpression: { virdProgramId: { $exists: true } } },
+);
+
+// Halka toplamları ve "bugünkü katkım" sorguları için — partial: yalnız
+// circleId taşıyan belgeleri kapsar (vird index'iyle aynı desen).
+DhikrLogSchema.index(
+  { circleId: 1, userId: 1, date: 1 },
+  { partialFilterExpression: { circleId: { $exists: true } } },
+);
+
+/**
+ * LOG ANAHTARI — TEKİLLİK. Alan kümesi DhikrLogsService.buildLogFilter ile
+ * BİREBİR aynıdır; ikisi birlikte güncellenmelidir.
+ *
+ * Neden zorunlu: MongoDB'de `upsert` yalnız sorgu yüklemini karşılayan bir
+ * UNIQUE index varsa atomiktir. Index yokken aynı anahtara giden iki
+ * eşzamanlı upsert de "bulamadım" deyip İKİSİ DE insert eder — aynı gün aynı
+ * zikir için iki belge oluşur, halka toplamı (CirclesService.applyProgress
+ * tüm belgeleri toplar) şişer ve $max'ın "sayı düşmez" garantisi belge
+ * sınırında delinir. Bu index'le yarışı kaybeden insert E11000 alır ve
+ * servis aynı filtreyle bir kez daha deneyip mevcut belgeyi günceller.
+ *
+ * Neden partial/sparse DEĞİL: Mongo unique index'te EKSİK alan `null`
+ * sayılır. buildLogFilter'ın `$exists:false` kullandığı alanlar (sade logda
+ * virdProgramId/circleId) belgede hiç yoktur, vird logunda virdPrayerIndex
+ * açıkça null'dır — hepsi index'te null'a düşer. Böylece sade / vird / halka
+ * anahtarları tek bir index içinde birbirinden ayrık kalır ve tek index
+ * üçünü birden korur.
+ */
+DhikrLogSchema.index(
+  {
+    userId: 1,
+    date: 1,
+    dhikrId: 1,
+    customDhikrId: 1,
+    virdProgramId: 1,
+    virdSlot: 1,
+    virdPrayerIndex: 1,
+    circleId: 1,
+  },
+  { unique: true, name: 'uniq_log_key' },
 );

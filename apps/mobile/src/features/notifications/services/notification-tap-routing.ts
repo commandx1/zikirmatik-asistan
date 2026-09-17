@@ -17,7 +17,10 @@ const ALLOWED_ROUTE_PATTERNS: RegExp[] = [
   /^\/\(tabs\)\/stats$/,
   // Local vird slot reminder (vird-reminder-notifications.ts) deep-links to
   // the vird hub with the triggering slot highlighted.
-  /^\/vird\?slot=(morning|prayer|evening|night)(&prayerIndex=[1-5])?$/
+  /^\/vird\?slot=(morning|prayer|evening|night)(&prayerIndex=[1-5])?$/,
+  // Zikir Halkası bildirimleri (hedefe ulaşıldı, üye katıldı vb.) halka
+  // detay ekranına deep-link eder — id Mongo ObjectId (24 hex).
+  /^\/circle\/[a-f0-9]{24}$/
 ];
 
 type NotificationResponseLike = {
