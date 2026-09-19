@@ -48,12 +48,12 @@
     "completedTitle": "Goal reached! 🎉",
     "completedHint": "This circle has reached its goal, congratulations.",
     "closedTitle": "Circle closed",
-    "myTotal": "My contribution: {{count}}",
+    "myContribution": "My total: {{total}} · Today: {{today}}",
     "endDate": "Ends: {{date}}",
     "cancel": "Cancel"
   },
   "session": {
-    "caption": "{{total}} / {{goal}} · today you: {{mine}}",
+    "mine": "You today: {{count}}",
     "completedNotice": "This circle has reached its goal, the counter has stopped.",
     "closedNotice": "This circle has been closed, the counter has stopped.",
     "close": "Close"

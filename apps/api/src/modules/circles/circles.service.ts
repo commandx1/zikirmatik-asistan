@@ -91,6 +91,7 @@ type DhikrSnapshotLean = {
 
 const DHIKR_SNAPSHOT_FIELDS = 'name nameArabic transliteration meaning';
 const CODE_ATTEMPTS = 3;
+const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 @Injectable()
 export class CirclesService {
@@ -216,7 +217,14 @@ export class CirclesService {
     );
   }
 
-  async findOne(userId: string, id: string): Promise<CircleDetail> {
+  async findOne(
+    userId: string,
+    id: string,
+    date?: string,
+  ): Promise<CircleDetail> {
+    if (date !== undefined && !DATE_KEY_PATTERN.test(date)) {
+      throw new BadRequestException('date YYYY-MM-DD biçiminde olmalı.');
+    }
     const userObjectId = this.asObjectId(userId);
     const circle = (await this.circleModel
       .findOne({ _id: this.asObjectId(id), memberIds: userObjectId })
@@ -237,7 +245,7 @@ export class CirclesService {
         .findOne({
           userId: userObjectId,
           circleId: circle._id,
-          date: istanbulDateKey(new Date()),
+          date: date ?? istanbulDateKey(new Date()),
         })
         .select('count')
         .lean()
@@ -430,7 +438,10 @@ export class CirclesService {
    * Log yazımından sonra (best-effort, çağıran yutar) ortak toplamı tazeler
    * ve hedef dolduysa halkayı tamamlar.
    */
-  async applyProgress(circleId: string) {
+  // ponytail: her flush O(halka log sayısı) aggregate; istemci 3 sn'de bir
+  // flush ediyor. Tavan ~200 eşzamanlı üye × Atlas M0. Yükseltme yolu: halka
+  // başına throttle.
+  async applyProgress(circleId: string): Promise<number | undefined> {
     const circleObjectId = this.asObjectId(circleId);
     const rows = await this.dhikrLogModel
       .aggregate<{
@@ -460,7 +471,7 @@ export class CirclesService {
       .lean()
       .exec();
     if (!circle || total < circle.goalCount) {
-      return;
+      return total;
     }
 
     // Tamamlanma da tek atomik adım: {status:'active', completedAt:null}
@@ -474,7 +485,7 @@ export class CirclesService {
       .lean()
       .exec();
     if (!completed) {
-      return;
+      return total;
     }
 
     await this.notify(
@@ -482,6 +493,7 @@ export class CirclesService {
       circleCompletedPush(circle.name),
       String(circleObjectId),
     );
+    return total;
   }
 
   // --- helpers ---

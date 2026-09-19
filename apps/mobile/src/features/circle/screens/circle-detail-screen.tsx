@@ -3,6 +3,7 @@ import { Share, Text, View } from "react-native";
 import { useFocusEffect, useRouter, type Href } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { toDateKey } from "@zikirmatik/shared";
 import type { CircleDetail } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
@@ -28,6 +29,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
   const circles = useCircleStore((state) => state.circles);
   const upsertCircle = useCircleStore((state) => state.upsertCircle);
   const removeCircle = useCircleStore((state) => state.removeCircle);
+  const todayCount = useCircleStore((state) => state.todayCounts[id]);
 
   const storedCircle = useMemo(() => circles.find((circle) => circle.id === id), [circles, id]);
   const detail = storedCircle as CircleDetail | undefined;
@@ -41,7 +43,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
       return;
     }
     try {
-      const fresh = await fetchCircle(id, sessionAccessToken);
+      const fresh = await fetchCircle(id, sessionAccessToken, toDateKey(new Date()));
       upsertCircle(fresh);
     } catch (error) {
       console.warn("[circle-detail] fetch başarısız", error);
@@ -131,7 +133,12 @@ export function CircleDetailScreen({ id }: { id: string }) {
             {t("circle:home.progress", { total: storedCircle.totalCount, goal: storedCircle.goalCount })}
           </Text>
 
-          <Text className="text-xs text-[--text-muted]">{t("circle:detail.myTotal", { count: storedCircle.myTotal })}</Text>
+          <Text className="text-xs text-[--text-muted]">
+            {t("circle:detail.myContribution", {
+              total: storedCircle.myTotal,
+              today: Math.max(detail?.myTodayCount ?? 0, todayCount?.dateKey === toDateKey(new Date()) ? todayCount.count : 0)
+            })}
+          </Text>
           {storedCircle.endDate ? (
             <Text className="mt-0.5 text-xs text-[--text-muted]">{t("circle:detail.endDate", { date: storedCircle.endDate })}</Text>
           ) : null}

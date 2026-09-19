@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CurrentUserId } from '../../common/auth/current-user-id.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CirclesService } from './circles.service';
@@ -43,8 +51,12 @@ export class CirclesController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string, @CurrentUserId() userId: string) {
-    return this.circlesService.findOne(userId, id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentUserId() userId: string,
+    @Query('date') date?: string,
+  ) {
+    return this.circlesService.findOne(userId, id, date);
   }
 
   @Post(':id/leave')

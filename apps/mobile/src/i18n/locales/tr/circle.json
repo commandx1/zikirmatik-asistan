@@ -48,12 +48,12 @@
     "completedTitle": "Hedefe ulaşıldı! 🎉",
     "completedHint": "Bu halka hedefine ulaştı, tebrikler.",
     "closedTitle": "Halka kapatıldı",
-    "myTotal": "Benim katkım: {{count}}",
+    "myContribution": "Toplam katkım: {{total}} · Bugün: {{today}}",
     "endDate": "Bitiş: {{date}}",
     "cancel": "Vazgeç"
   },
   "session": {
-    "caption": "{{total}} / {{goal}} · bugün sen: {{mine}}",
+    "mine": "Sen bugün: {{count}}",
     "completedNotice": "Bu halka hedefine ulaştı, sayaç durduruldu.",
     "closedNotice": "Bu halka kapatıldı, sayaç durduruldu.",
     "close": "Kapat"

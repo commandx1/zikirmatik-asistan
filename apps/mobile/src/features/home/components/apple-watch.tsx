@@ -275,7 +275,14 @@ export function AppleWatchView({
               </Pressable>
 
               <View className='mt-2 mb-0.5 items-center'>
-                <Animated.Text style={[counterAnimatedStyle, strongTextStyle]} className='text-3xl font-bold leading-[30px]'>
+                {/* Halka oturumunda count/target 7+ haneye çıkabilir; satır kırılmasın, sığmazsa küçülsün. */}
+                <Animated.Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.4}
+                  style={[counterAnimatedStyle, strongTextStyle]}
+                  className='text-3xl font-bold leading-[30px]'
+                >
                   {home.isTargetMode ? `${compactCount}/${compactTarget}` : compactCount}
                 </Animated.Text>
               </View>

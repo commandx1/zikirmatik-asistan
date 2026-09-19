@@ -39,6 +39,9 @@ export type BackendDhikrLog = {
   /** Bir log bir Zikir Halkası'na bağlıysa doldurulur (bkz.
    * features/circle/services/circle-share.ts buildCircleLogPayload). */
   circleId?: string;
+  /** Halka logunda sunucunun aynı yanıtta döndürdüğü güncel halka toplamı
+   * (bkz. circle-session-screen.tsx flush) — yoksa toplam tazelemesi atlanır. */
+  circleTotalCount?: number;
 } & VirdLogFields;
 
 export type CreateDhikrLogPayload = {

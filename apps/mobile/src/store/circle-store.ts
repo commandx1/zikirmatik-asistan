@@ -29,6 +29,9 @@ export type CircleStore = CircleStoreData & {
   upsertCircle: (circle: CircleSummary | CircleDetail) => void;
   removeCircle: (id: string) => void;
   setTodayCount: (circleId: string, dateKey: string, count: number) => void;
+  /** Sunucu toplamı zaten monoton artar; ekranlar arası geri sıçramayı
+   * önlemek için mevcut değerden düşükse no-op, yüksekse günceller. */
+  bumpTotal: (id: string, total: number) => void;
   resetCircles: () => void;
   markHydrated: () => void;
 };
@@ -78,7 +81,10 @@ export const useCircleStore = create<CircleStore>()(
         set((state) => ({
           circles: circles.map((incoming) => {
             const existing = state.circles.find((circle) => circle.id === incoming.id);
-            return existing ? { ...existing, ...incoming } : incoming;
+            if (!existing) {
+              return incoming;
+            }
+            return { ...existing, ...incoming, totalCount: Math.max(existing.totalCount, incoming.totalCount) };
           })
         })),
 
@@ -87,7 +93,8 @@ export const useCircleStore = create<CircleStore>()(
           const index = state.circles.findIndex((existing) => existing.id === circle.id);
           const circles = [...state.circles];
           if (index >= 0) {
-            circles[index] = circle;
+            const existing = circles[index];
+            circles[index] = { ...circle, totalCount: Math.max(existing.totalCount, circle.totalCount) };
           } else {
             circles.push(circle);
           }
@@ -103,6 +110,17 @@ export const useCircleStore = create<CircleStore>()(
         set((state) => ({
           todayCounts: { ...state.todayCounts, [circleId]: { dateKey, count } }
         })),
+
+      bumpTotal: (id, total) =>
+        set((state) => {
+          const index = state.circles.findIndex((circle) => circle.id === id);
+          if (index < 0 || total <= state.circles[index].totalCount) {
+            return {};
+          }
+          const circles = [...state.circles];
+          circles[index] = { ...circles[index], totalCount: total };
+          return { circles };
+        }),
 
       resetCircles: () => set({ ...defaultData() }),
 

@@ -475,6 +475,43 @@ describe('CirclesService', () => {
       expect(detail.myTodayCount).toBe(17);
     });
 
+    it('reads the log with the given date when provided', async () => {
+      circleModel.findOne.mockReturnValue(activeCircleFindOneChain());
+      dhikrLogModel.findOne.mockReturnValue(chain({ count: 7 }));
+
+      await service.findOne(
+        userId,
+        circleObjectId.toHexString(),
+        '2026-09-10',
+      );
+
+      expect(dhikrLogModel.findOne).toHaveBeenCalledWith(
+        expect.objectContaining({ date: '2026-09-10' }),
+      );
+    });
+
+    it('falls back to the Istanbul day when no date is given', async () => {
+      circleModel.findOne.mockReturnValue(activeCircleFindOneChain());
+      dhikrLogModel.findOne.mockReturnValue(chain(null));
+
+      await service.findOne(userId, circleObjectId.toHexString());
+
+      expect(dhikrLogModel.findOne).toHaveBeenCalledWith(
+        expect.objectContaining({ date: istanbulDateKey(new Date()) }),
+      );
+    });
+
+    it('rejects a malformed date with BadRequestException', async () => {
+      await expect(
+        service.findOne(
+          userId,
+          circleObjectId.toHexString(),
+          '10-09-2026',
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(circleModel.findOne).not.toHaveBeenCalled();
+    });
+
     function activeCircleFindOneChain() {
       return chain(activeCircle({ memberIds: [creatorObjectId] }));
     }
@@ -887,17 +924,17 @@ describe('CirclesService', () => {
       expect(circleModel.findOneAndUpdate).not.toHaveBeenCalled();
     });
 
-    it('returns quietly when the circle is gone after the aggregate/update', async () => {
+    it('returns the computed total quietly when the circle is gone after the aggregate/update', async () => {
       circleModel.findById.mockReturnValue(chain(null));
 
       await expect(
         service.applyProgress(circleObjectId.toHexString()),
-      ).resolves.toBeUndefined();
+      ).resolves.toBe(120);
       expect(circleModel.findOneAndUpdate).not.toHaveBeenCalled();
       expect(pushSender.sendToDevices).not.toHaveBeenCalled();
     });
 
-    it('does not throw when the push send rejects', async () => {
+    it('does not throw when the push send rejects, and still returns the total', async () => {
       circleModel.findOneAndUpdate.mockReturnValue(
         chain({ _id: circleObjectId }),
       );
@@ -905,7 +942,17 @@ describe('CirclesService', () => {
 
       await expect(
         service.applyProgress(circleObjectId.toHexString()),
-      ).resolves.toBeUndefined();
+      ).resolves.toBe(120);
+    });
+
+    it('returns the computed total', async () => {
+      circleModel.findOneAndUpdate.mockReturnValue(
+        chain({ _id: circleObjectId }),
+      );
+
+      await expect(
+        service.applyProgress(circleObjectId.toHexString()),
+      ).resolves.toBe(120);
     });
 
     it('notifies every memberId as a string with data.route pointing at the circle', async () => {

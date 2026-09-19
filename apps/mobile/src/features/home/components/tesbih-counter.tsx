@@ -76,8 +76,16 @@ export function TesbihCounterView({ model, controls = 'full', ...rest }: Counter
               size={STRAND_SIZE}
             />
           </View>
-          <View pointerEvents='none' className='items-center'>
-            <Text style={[strongTextStyle, { color: tokens.textPrimary }]} className='text-3xl font-bold leading-[30px]'>
+          {/* Genişlik boncuk halkasının iç boşluğuyla sınırlı: adjustsFontSizeToFit ancak böyle devreye girer. */}
+          <View pointerEvents='none' className='items-center' style={{ width: STRAND_SIZE * 0.58 }}>
+            {/* Halka oturumunda count/target 7+ haneye çıkabilir; satır kırılmasın, sığmazsa küçülsün. */}
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.4}
+              style={[strongTextStyle, { color: tokens.textPrimary }]}
+              className='text-3xl font-bold leading-[30px]'
+            >
               {home.isTargetMode ? `${compactCount}/${compactTarget}` : compactCount}
             </Text>
           </View>

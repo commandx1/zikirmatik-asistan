@@ -32,8 +32,9 @@ export async function fetchCircles(accessToken: string): Promise<CircleSummary[]
   return requestJson<CircleSummary[]>("/v1/circles", { method: "GET", accessToken });
 }
 
-export async function fetchCircle(id: string, accessToken: string): Promise<CircleDetail> {
-  return requestJson<CircleDetail>(`/v1/circles/${encodeURIComponent(id)}`, { method: "GET", accessToken });
+export async function fetchCircle(id: string, accessToken: string, date?: string): Promise<CircleDetail> {
+  const query = date ? `?date=${encodeURIComponent(date)}` : "";
+  return requestJson<CircleDetail>(`/v1/circles/${encodeURIComponent(id)}${query}`, { method: "GET", accessToken });
 }
 
 export async function fetchCirclePreview(code: string): Promise<CirclePreview> {

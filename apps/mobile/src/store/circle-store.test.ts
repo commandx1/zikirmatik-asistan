@@ -149,6 +149,41 @@ describe("circle-store", () => {
       useCircleStore.getState().replaceFromServer([makeCircle({ id: "fresh" })]);
       expect(useCircleStore.getState().todayCounts.c1).toEqual({ dateKey: "2026-09-17", count: 45 });
     });
+
+    it("does not let a lower incoming totalCount drop the existing value", () => {
+      useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 100 }));
+      useCircleStore.getState().replaceFromServer([makeCircle({ id: "c1", totalCount: 40 })]);
+      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+    });
+
+    it("raises totalCount when the incoming value is higher", () => {
+      useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 40 }));
+      useCircleStore.getState().replaceFromServer([makeCircle({ id: "c1", totalCount: 100 })]);
+      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+    });
+  });
+
+  describe("bumpTotal", () => {
+    it("raises totalCount when the given value is higher", () => {
+      useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 40 }));
+      useCircleStore.getState().bumpTotal("c1", 100);
+      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+    });
+
+    it("is a no-op when the given value is lower or equal", () => {
+      useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 100 }));
+      useCircleStore.getState().bumpTotal("c1", 40);
+      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+      useCircleStore.getState().bumpTotal("c1", 100);
+      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+    });
+
+    it("is a no-op for an unknown id", () => {
+      useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 40 }));
+      useCircleStore.getState().bumpTotal("does-not-exist", 999);
+      expect(useCircleStore.getState().circles).toHaveLength(1);
+      expect(useCircleStore.getState().circles[0].totalCount).toBe(40);
+    });
   });
 
   describe("resetCircles", () => {

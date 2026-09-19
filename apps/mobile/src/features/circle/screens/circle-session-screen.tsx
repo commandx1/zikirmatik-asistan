@@ -22,7 +22,8 @@ import { TesbihCounterView } from "../../home/components/tesbih-counter";
 import { fetchCircle } from "../services/circle-api-client";
 import { buildCircleLogPayload, computeDisplayTotal } from "../services/circle-share";
 
-const POLL_INTERVAL_MS = 15_000;
+const POLL_INTERVAL_MS = 5_000;
+const FLUSH_INTERVAL_MS = 3_000;
 const LAP_SIZE = 33;
 
 // Bir halkanın hedefine ulaştığı analitik olayının BİR KEZ (halka başına)
@@ -47,6 +48,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
   const storedCircle = useCircleStore((state) => state.circles.find((circle) => circle.id === id));
   const setTodayCount = useCircleStore((state) => state.setTodayCount);
   const upsertCircle = useCircleStore((state) => state.upsertCircle);
+  const bumpTotal = useCircleStore((state) => state.bumpTotal);
 
   const storedHapticsPattern = useProfileStore((state) => state.hapticsPattern);
   const storedHapticsEnabled = useProfileStore((state) => state.hapticsEnabled);
@@ -65,6 +67,12 @@ export function CircleSessionScreen({ id }: { id: string }) {
   const seededRef = useRef(false);
   const lastFlushedRef = useRef(0);
   const prevDisplayRef = useRef(0);
+  const prevDisplaySeededRef = useRef(false);
+  // Sunucudan gelen "çift" (toplam, benim payım) HER ZAMAN birlikte set
+  // edilir — ikisi ayrı ayrı güncellenirse (ör. yalnız toplam tazelenirse)
+  // computeDisplayTotal formülü anlık olarak yanlış bir "başkalarının payı"
+  // hesaplardı. Poll'da fresh'ten, flush yanıtında circleTotalCount'tan gelir.
+  const serverPairRef = useRef<{ total: number; mine: number } | null>(null);
   const [, forceRender] = useReducer((x: number) => x + 1, 0);
 
   const loadDetail = useCallback(async () => {
@@ -72,11 +80,12 @@ export function CircleSessionScreen({ id }: { id: string }) {
       return;
     }
     try {
-      const fresh = await fetchCircle(id, sessionAccessToken);
+      const fresh = await fetchCircle(id, sessionAccessToken, todayKey);
       setDetail(fresh);
-      // Canlı toplam store'dan okunur (ring bu değerle dolar); polling sonucu
-      // store'a yazılmazsa oturum boyunca yalnız kendi dokunuşlarımız görünürdü.
+      // Store artık monoton (upsertCircle geri düşürmez) — halka ekranları
+      // arası tutarlılık için burada da yazılır.
       upsertCircle(fresh);
+      serverPairRef.current = { total: fresh.totalCount, mine: fresh.myTodayCount ?? 0 };
       if (fresh.status !== "active") {
         setLocked(true);
         if (fresh.status === "completed" && !goalReachedFired.has(id)) {
@@ -90,8 +99,8 @@ export function CircleSessionScreen({ id }: { id: string }) {
         const seed = Math.max(localToday && localToday.dateKey === todayKey ? localToday.count : 0, fresh.myTodayCount ?? 0);
         liveCountRef.current = seed;
         setTodayCount(id, todayKey, seed);
-        forceRender();
       }
+      forceRender();
     } catch (error) {
       console.warn("[circle-session] fetch başarısız", error);
     }
@@ -100,15 +109,6 @@ export function CircleSessionScreen({ id }: { id: string }) {
   useEffect(() => {
     void loadDetail();
   }, [id]);
-
-  useFocusEffect(
-    useCallback(() => {
-      const timer = setInterval(() => {
-        void loadDetail();
-      }, POLL_INTERVAL_MS);
-      return () => clearInterval(timer);
-    }, [loadDetail])
-  );
 
   const flush = useCallback(async () => {
     if (!sessionUserId || !sessionAccessToken || !detail) {
@@ -121,26 +121,49 @@ export function CircleSessionScreen({ id }: { id: string }) {
     const previousFlushed = lastFlushedRef.current;
     lastFlushedRef.current = count;
     try {
-      await createDhikrLog(
+      const response = await createDhikrLog(
         buildCircleLogPayload({ userId: sessionUserId, circle: { id: detail.id, dhikrId: detail.dhikrId, goalCount: detail.goalCount }, count, date: todayKey }),
         sessionAccessToken
       );
+      if (typeof response.circleTotalCount === "number") {
+        // mine = sunucunun $max sonrası GERÇEK log sayısı (başka cihaz daha
+        // yüksek yazdıysa gönderdiğimizden büyük olabilir), gönderilen değil.
+        serverPairRef.current = { total: response.circleTotalCount, mine: response.count ?? count };
+        forceRender();
+      }
+      bumpTotal(id, prevDisplayRef.current);
     } catch (error) {
-      // Başarısız flush geri alınır ki bir sonraki tetikte (33. dokunuş /
+      // Başarısız flush geri alınır ki bir sonraki tetikte (periyodik flush /
       // kapanış / arka plan) aynı sayı yeniden denensin.
       lastFlushedRef.current = previousFlushed;
       console.warn("[circle-session] log kaydı başarısız", error);
     }
-  }, [sessionUserId, sessionAccessToken, detail, todayKey]);
+  }, [sessionUserId, sessionAccessToken, detail, todayKey, bumpTotal, id]);
 
   const flushRef = useRef(flush);
   flushRef.current = flush;
 
+  useFocusEffect(
+    useCallback(() => {
+      const pollTimer = setInterval(() => {
+        void loadDetail();
+      }, POLL_INTERVAL_MS);
+      const flushTimer = setInterval(() => {
+        void flushRef.current();
+      }, FLUSH_INTERVAL_MS);
+      return () => {
+        clearInterval(pollTimer);
+        clearInterval(flushTimer);
+      };
+    }, [loadDetail])
+  );
+
   useEffect(() => {
     return () => {
       void flushRef.current();
+      bumpTotal(id, prevDisplayRef.current);
     };
-  }, []);
+  }, [bumpTotal, id]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextState) => {
@@ -167,6 +190,14 @@ export function CircleSessionScreen({ id }: { id: string }) {
     );
   }
 
+  // prevDisplayRef'i ilk render'da (storedCircle mevcutken) bir kez store'daki
+  // totalCount ile tohumla — aksi hâlde varsayılan 0'dan başlayıp yeniden
+  // girişte gösterilen toplam geriye sıçrardı.
+  if (!prevDisplaySeededRef.current) {
+    prevDisplaySeededRef.current = true;
+    prevDisplayRef.current = storedCircle.totalCount;
+  }
+
   const circleName = storedCircle.name || resolveLocalizedText(storedCircle.dhikr.name, locale);
   const goal = storedCircle.goalCount;
 
@@ -182,7 +213,6 @@ export function CircleSessionScreen({ id }: { id: string }) {
     playClickSound(effectiveSoundPack);
     if (next % LAP_SIZE === 0) {
       fireLapHaptic(hapticsPattern);
-      void flush();
     }
   };
 
@@ -191,15 +221,19 @@ export function CircleSessionScreen({ id }: { id: string }) {
     router.back();
   };
 
-  const displayTotal = computeDisplayTotal(prevDisplayRef.current, storedCircle.totalCount, detail?.myTodayCount ?? 0, liveCountRef.current);
+  // İlk fetch gelmeden (serverPair yokken) yerel sayımı toplama katmadan,
+  // yalnızca store'daki (zaten monoton) değeri güvenli biçimde gösteririz.
+  const displayTotal = serverPairRef.current
+    ? computeDisplayTotal(prevDisplayRef.current, serverPairRef.current.total, serverPairRef.current.mine, liveCountRef.current)
+    : Math.max(prevDisplayRef.current, storedCircle.totalCount);
   prevDisplayRef.current = displayTotal;
   const progress = goal > 0 ? Math.min(1, displayTotal / goal) : 0;
 
   const model: CounterVisualModel = {
-    count: liveCountRef.current,
-    target: 0,
+    count: displayTotal,
+    target: goal,
     progress,
-    isTargetMode: false,
+    isTargetMode: true,
     onCountPress,
     onResetPress: () => {},
     onTargetPress: () => {},
@@ -231,7 +265,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
               <AppleWatchView model={model} controls="none" />
             )}
             <Text className="-mt-4 mb-3 text-center text-xs text-[--text-muted]">
-              {t("circle:session.caption", { total: displayTotal, goal, mine: liveCountRef.current })}
+              {t("circle:session.mine", { count: liveCountRef.current })}
             </Text>
           </>
         )}

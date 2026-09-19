@@ -88,16 +88,19 @@ export class DhikrLogsService {
    * asla throw etmez — halka toplamının tazelenmesindeki bir hata dhikr log
    * yazımını etkilememelidir (toplam bir sonraki yazımda yine türetilir).
    */
-  private async safeApplyCircleProgress(circleId?: string) {
+  private async safeApplyCircleProgress(
+    circleId?: string,
+  ): Promise<number | undefined> {
     if (!circleId) {
-      return;
+      return undefined;
     }
     try {
-      await this.circlesService.applyProgress(circleId);
+      return await this.circlesService.applyProgress(circleId);
     } catch (error) {
       this.logger.warn(
         `safeApplyCircleProgress failed: ${error instanceof Error ? error.message : error}`,
       );
+      return undefined;
     }
   }
 
@@ -290,9 +293,13 @@ export class DhikrLogsService {
           }
         : undefined,
     );
-    await this.safeApplyCircleProgress(circleObjectId?.toHexString());
+    const circleTotalCount = await this.safeApplyCircleProgress(
+      circleObjectId?.toHexString(),
+    );
 
-    return created;
+    return circleObjectId && circleTotalCount !== undefined
+      ? { ...created, circleTotalCount }
+      : created;
   }
 
   /**

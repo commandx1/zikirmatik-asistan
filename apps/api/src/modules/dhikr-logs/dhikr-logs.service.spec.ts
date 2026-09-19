@@ -514,6 +514,52 @@ describe('DhikrLogsService.create', () => {
         }),
       ).rejects.toBeInstanceOf(BadRequestException);
     });
+
+    it('includes circleTotalCount at the top level of the response for a circle log', async () => {
+      mockExistingLog(null);
+      circlesService.applyProgress.mockResolvedValue(133);
+
+      const result = await service.create({
+        userId,
+        dhikrId,
+        count: 33,
+        targetCount: 33,
+        date: '2026-09-17',
+        circleId,
+      });
+
+      expect(result).toMatchObject({ circleTotalCount: 133 });
+    });
+
+    it('omits circleTotalCount when applyProgress rejects, and still returns the log', async () => {
+      mockExistingLog(null);
+      circlesService.applyProgress.mockRejectedValue(new Error('boom'));
+
+      const result = await service.create({
+        userId,
+        dhikrId,
+        count: 33,
+        targetCount: 33,
+        date: '2026-09-17',
+        circleId,
+      });
+
+      expect(result).not.toHaveProperty('circleTotalCount');
+    });
+
+    it('never includes circleTotalCount for a non-circle log', async () => {
+      mockExistingLog(null);
+
+      const result = await service.create({
+        userId,
+        dhikrId,
+        count: 5,
+        targetCount: 33,
+        date: '2026-09-17',
+      });
+
+      expect(result).not.toHaveProperty('circleTotalCount');
+    });
   });
 });
 
