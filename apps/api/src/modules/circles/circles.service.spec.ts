@@ -479,11 +479,7 @@ describe('CirclesService', () => {
       circleModel.findOne.mockReturnValue(activeCircleFindOneChain());
       dhikrLogModel.findOne.mockReturnValue(chain({ count: 7 }));
 
-      await service.findOne(
-        userId,
-        circleObjectId.toHexString(),
-        '2026-09-10',
-      );
+      await service.findOne(userId, circleObjectId.toHexString(), '2026-09-10');
 
       expect(dhikrLogModel.findOne).toHaveBeenCalledWith(
         expect.objectContaining({ date: '2026-09-10' }),
@@ -503,11 +499,7 @@ describe('CirclesService', () => {
 
     it('rejects a malformed date with BadRequestException', async () => {
       await expect(
-        service.findOne(
-          userId,
-          circleObjectId.toHexString(),
-          '10-09-2026',
-        ),
+        service.findOne(userId, circleObjectId.toHexString(), '10-09-2026'),
       ).rejects.toBeInstanceOf(BadRequestException);
       expect(circleModel.findOne).not.toHaveBeenCalled();
     });
