@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Share, Text, View } from "react-native";
 import { useFocusEffect, useRouter, type Href } from "expo-router";
 import { useTranslation } from "react-i18next";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { toDateKey } from "@zikirmatik/shared";
 import type { CircleDetail } from "@zikirmatik/shared";
@@ -159,11 +160,26 @@ export function CircleDetailScreen({ id }: { id: string }) {
 
         {detail?.members && detail.members.length > 0 ? (
           <View className="mb-4">
-            <Text className="mb-2 text-xs font-semibold text-[--text-muted]">{t("circle:detail.members")}</Text>
+            <View className="mb-2 flex-row items-center justify-between">
+              <Text className="text-xs font-semibold text-[--text-muted]">{t("circle:detail.members")}</Text>
+              {typeof detail.activeTodayCount === "number" ? (
+                <Text className="text-xs text-[--text-muted]">
+                  {t("circle:detail.activeToday", { active: detail.activeTodayCount, total: detail.members.length })}
+                </Text>
+              ) : null}
+            </View>
             {detail.members.map((member, index) => (
-              <Text key={`${member.displayName}-${index}`} className="mb-1 text-sm text-[--text-primary]">
-                {member.displayName}
-              </Text>
+              <View key={`${member.displayName}-${index}`} className="mb-1 flex-row items-center justify-between">
+                <Text className="text-sm text-[--text-primary]">{member.displayName}</Text>
+                {member.activeToday === true ? (
+                  <FontAwesome6
+                    name="check"
+                    size={12}
+                    color={tokens.success}
+                    accessibilityLabel={t("circle:detail.activeTodayA11y")}
+                  />
+                ) : null}
+              </View>
             ))}
           </View>
         ) : null}

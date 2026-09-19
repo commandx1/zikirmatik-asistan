@@ -44,6 +44,8 @@
     "closeConfirmTitle": "Close circle",
     "closeConfirmMessage": "Are you sure you want to close this circle? Members won't be able to add dhikr anymore.",
     "members": "Members",
+    "activeToday": "{{active}}/{{total}} members joined today",
+    "activeTodayA11y": "Joined today",
     "code": "Code",
     "completedTitle": "Goal reached! 🎉",
     "completedHint": "This circle has reached its goal, congratulations.",

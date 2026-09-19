@@ -44,6 +44,8 @@
     "closeConfirmTitle": "Halkayı kapat",
     "closeConfirmMessage": "Bu halkayı kapatmak istediğine emin misin? Üyeler artık zikir ekleyemeyecek.",
     "members": "Üyeler",
+    "activeToday": "Bugün {{active}}/{{total}} üye katıldı",
+    "activeTodayA11y": "Bugün katıldı",
     "code": "Kod",
     "completedTitle": "Hedefe ulaşıldı! 🎉",
     "completedHint": "Bu halka hedefine ulaştı, tebrikler.",

@@ -64,7 +64,8 @@ export type CircleSummary = CirclePreview & {
 };
 
 export type CircleDetail = CircleSummary & {
-  members: { displayName: string }[];
+  members: { displayName: string; activeToday: boolean }[];
+  activeTodayCount: number;
   myTodayCount: number;
 };
 
@@ -234,7 +235,8 @@ export class CirclesService {
       throw this.notFound();
     }
 
-    const [summary, members, todayLog] = await Promise.all([
+    const dayKey = date ?? istanbulDateKey(new Date());
+    const [summary, members, todayLog, activeTodayIds] = await Promise.all([
       this.buildSummary(userObjectId, circle),
       this.userModel
         .find({ _id: { $in: circle.memberIds } })
@@ -245,16 +247,32 @@ export class CirclesService {
         .findOne({
           userId: userObjectId,
           circleId: circle._id,
-          date: date ?? istanbulDateKey(new Date()),
+          date: dayKey,
         })
         .select('count')
         .lean()
         .exec(),
+      this.dhikrLogModel.distinct('userId', {
+        circleId: circle._id,
+        date: dayKey,
+        count: { $gt: 0 },
+      }),
     ]);
+
+    // Yalnız bayrak + toplu sayı — üye başına sayı ASLA dönmez (bireysel
+    // sayılar gizli kalır). Ayrılmış üyelerin logları memberIds'te olmadığı
+    // için sayıma girmez.
+    const activeTodaySet = new Set(activeTodayIds.map(String));
+    const memberFlags = members.map((member) => ({
+      displayName: member.displayName,
+      activeToday: activeTodaySet.has(String(member._id)),
+    }));
 
     return {
       ...summary,
-      members: members.map((member) => ({ displayName: member.displayName })),
+      members: memberFlags,
+      activeTodayCount: memberFlags.filter((member) => member.activeToday)
+        .length,
       myTodayCount: todayLog?.count ?? 0,
     };
   }

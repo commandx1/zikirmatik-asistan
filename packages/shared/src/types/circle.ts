@@ -35,7 +35,8 @@ export type CircleSummary = CirclePreview & {
 };
 
 export type CircleDetail = CircleSummary & {
-  members: { displayName: string }[];
+  members: { displayName: string; activeToday?: boolean }[];
+  activeTodayCount?: number;
   myTodayCount: number;
 };
 

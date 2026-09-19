@@ -79,7 +79,11 @@ describe('CirclesService', () => {
     updateMany: jest.fn(),
     countDocuments: jest.fn(),
   };
-  const dhikrLogModel = { aggregate: jest.fn(), findOne: jest.fn() };
+  const dhikrLogModel = {
+    aggregate: jest.fn(),
+    findOne: jest.fn(),
+    distinct: jest.fn(),
+  };
   const userModel = { find: jest.fn(), findById: jest.fn() };
   const dhikrModel = { find: jest.fn(), findById: jest.fn() };
   const devicesService = { findActiveByUserIds: jest.fn() };
@@ -116,6 +120,7 @@ describe('CirclesService', () => {
     Object.values(circleModel).forEach((fn) => fn.mockReset());
     dhikrLogModel.aggregate.mockReset().mockReturnValue(chain([]));
     dhikrLogModel.findOne.mockReset().mockReturnValue(chain(null));
+    dhikrLogModel.distinct.mockReset().mockResolvedValue([]);
     userModel.find.mockReset().mockReturnValue(chain([]));
     userModel.findById.mockReset().mockReturnValue(chain(null));
     dhikrModel.find.mockReset().mockReturnValue(chain([]));
@@ -446,9 +451,48 @@ describe('CirclesService', () => {
         _id: { $in: [creatorObjectId] },
       });
       expect(detail.members).toEqual([
-        { displayName: 'Ahmet' },
-        { displayName: 'Mehmet' },
+        { displayName: 'Ahmet', activeToday: false },
+        { displayName: 'Mehmet', activeToday: false },
       ]);
+    });
+
+    it('flags members with a today log (count>0) as activeToday and counts only current members', async () => {
+      const leftMemberObjectId = new Types.ObjectId();
+      circleModel.findOne.mockReturnValue(
+        chain(
+          activeCircle({
+            memberIds: [creatorObjectId, userObjectId, leftMemberObjectId],
+          }),
+        ),
+      );
+      userModel.find.mockReturnValue(
+        chain([
+          { _id: creatorObjectId, displayName: 'Ahmet' },
+          { _id: userObjectId, displayName: 'Mehmet' },
+          { _id: leftMemberObjectId, displayName: 'Ayrılan' },
+        ]),
+      );
+      // Ayrılmış bir üyenin (memberIds dışında) o günkü logu da distinct'e
+      // dahil olabilir; sayım yalnız mevcut memberIds üzerinden yapılmalı.
+      const departedNonMemberObjectId = new Types.ObjectId();
+      dhikrLogModel.distinct.mockResolvedValue([
+        creatorObjectId,
+        userObjectId,
+        departedNonMemberObjectId,
+      ]);
+
+      const detail = await service.findOne(
+        userId,
+        circleObjectId.toHexString(),
+      );
+
+      expect(detail.members).toEqual([
+        { displayName: 'Ahmet', activeToday: true },
+        { displayName: 'Mehmet', activeToday: true },
+        { displayName: 'Ayrılan', activeToday: false },
+      ]);
+      expect(detail.activeTodayCount).toBe(2);
+      expect(JSON.stringify(detail.members)).not.toMatch(/count/i);
     });
 
     it('reports myTodayCount 0 when there is no log for today', async () => {
