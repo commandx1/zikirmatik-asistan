@@ -5,7 +5,7 @@ describe('AppController', () => {
   const originalServerPushEnabled = process.env.SERVER_PUSH_ENABLED;
 
   beforeEach(() => {
-    appController = new AppController();
+    appController = new AppController({ readyState: 1 } as never);
   });
 
   afterEach(() => {
@@ -22,6 +22,12 @@ describe('AppController', () => {
       expect(result.status).toBe('ok');
       expect(result.service).toBe('api');
       expect(typeof result.timestamp).toBe('string');
+      expect(result.mongo).toBe('up');
+    });
+
+    it('returns mongo=down when the connection is not ready', () => {
+      const controller = new AppController({ readyState: 0 } as never);
+      expect(controller.getHealth().mongo).toBe('down');
     });
   });
 

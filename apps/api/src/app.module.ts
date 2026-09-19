@@ -1,7 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ConnectionStates, type Connection } from 'mongoose';
+import { flushDrain } from './common/logging/app-logger';
 import { validateEnv } from './config/env.validation';
 import { AppController } from './app.controller';
 import { AiModule } from './modules/ai/ai.module';
@@ -37,6 +39,40 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
       useFactory: (configService: ConfigService) => ({
         uri: configService.getOrThrow<string>('MONGODB_URI'),
         autoIndex: true,
+        onConnectionCreate: (c: Connection) => {
+          const logger = new Logger('Mongo');
+          let downAlerted = false;
+
+          c.on('disconnected', () => {
+            logger.warn({ event: 'mongo.disconnected' });
+            const timer = setTimeout(() => {
+              if (c.readyState !== ConnectionStates.connected) {
+                downAlerted = true;
+                logger.error({
+                  event: 'mongo.down',
+                  message: "Mongo 30 sn'den uzun süredir bağlı değil",
+                  alert: 'mongo.down',
+                });
+              }
+            }, 30_000);
+            timer.unref();
+          });
+
+          c.on('connected', () => {
+            logger.log({
+              event: 'mongo.connected',
+              ...(downAlerted && {
+                alert: 'mongo.recovered',
+                message: 'Mongo bağlantısı geri geldi',
+              }),
+            });
+            downAlerted = false;
+          });
+
+          c.on('error', (e: Error) => {
+            logger.error({ event: 'mongo.error', message: e.message });
+          });
+        },
       }),
     }),
     ScheduleModule.forRoot(),
@@ -63,4 +99,8 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
   controllers: [AppController],
   providers: [JwtAuthGuard],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationShutdown {
+  onApplicationShutdown() {
+    return flushDrain();
+  }
+}

@@ -37,5 +37,37 @@ export function validateEnv(config: Record<string, unknown>) {
     throw new Error("SERVER_PUSH_ENABLED tanımlıysa '0' veya '1' olmalıdır.");
   }
 
+  // Opsiyonel: gözlemlenebilirlik (bkz. apps/api/src/common/logging/).
+  // Tanımsızsa varsayılanlar kullanılır — hiçbiri zorunlu değil.
+  if (
+    config.LOG_LEVEL !== undefined &&
+    !['error', 'warn', 'info', 'debug', 'verbose'].includes(
+      config.LOG_LEVEL as string,
+    )
+  ) {
+    throw new Error(
+      "LOG_LEVEL tanımlıysa 'error' | 'warn' | 'info' | 'debug' | 'verbose' olmalıdır.",
+    );
+  }
+
+  for (const key of ['LOG_DRAIN_URL', 'SLACK_ALERT_WEBHOOK_URL']) {
+    const value = config[key];
+    if (
+      value !== undefined &&
+      value !== '' &&
+      !/^https?:\/\//.test(value as string)
+    ) {
+      throw new Error(`${key} tanımlıysa http(s):// ile başlamalıdır.`);
+    }
+  }
+
+  if (
+    config.LOG_DRAIN_URL &&
+    (typeof config.LOG_DRAIN_TOKEN !== 'string' ||
+      config.LOG_DRAIN_TOKEN.trim().length === 0)
+  ) {
+    throw new Error('LOG_DRAIN_URL tanımlıysa LOG_DRAIN_TOKEN da zorunludur.');
+  }
+
   return config;
 }
