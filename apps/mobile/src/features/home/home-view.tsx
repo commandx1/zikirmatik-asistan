@@ -35,6 +35,7 @@ import { usePremiumSheet } from '../../hooks/use-premium-sheet'
 import { useCounterStyleStore } from '../../store/counter-style-store'
 import { useProfileStore } from '../../store/profile-store'
 import { ProfilePremiumSheet } from '../profile/components/profile-premium-sheet'
+import { WidgetDiscoveryCard } from '../widget/widget-discovery'
 
 const EsmaulHusnaSection = lazy(() =>
   import('./components/esmaul-husna-section').then((m) => ({ default: m.EsmaulHusnaSection }))
@@ -483,6 +484,22 @@ export function HomeView() {
   const { startTour, registerRef } = useTour()
   const isTourCompleted = useOnboardingStore((s) => s.isTourCompleted)
   const premiumSheet = usePremiumSheet()
+  const isPremium = useProfileStore((s) => s.isPremium)
+  // Widget'ın "Premium ›" daveti: niyet URL dinleyicisinde yakalanıp store'a
+  // yazılır (bkz. use-widget-analytics.ts). Rota paramı KULLANILMAZ: soğuk
+  // açılışta auth kapısı paramları düşürüyor, effect içinde router çağrısı da
+  // kök navigasyon kurulmadan uygulamayı çökertiyordu (release QA bulguları).
+  const pendingPaywallSource = useHomeNavigationIntentStore((s) => s.pendingPaywallSource)
+  const consumePaywall = useHomeNavigationIntentStore((s) => s.consumePaywall)
+  const [paywallSource, setPaywallSource] = useState<'tesbih_mode' | 'widget'>('tesbih_mode')
+  useEffect(() => {
+    if (!pendingPaywallSource) return
+    consumePaywall()
+    if (!isPremium) {
+      setPaywallSource(pendingPaywallSource)
+      premiumSheet.open()
+    }
+  }, [pendingPaywallSource])
 
   useEffect(() => {
     registerRef(TOUR_REF_WATCH, appleWatchRef)
@@ -604,6 +621,7 @@ export function HomeView() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onPressCard={() => router.push('/vird' as any)}
           />
+          <WidgetDiscoveryCard streakDays={home.streakDays} />
           <CircleCard />
           <View onLayout={event => {
             esmaSectionYRef.current = event.nativeEvent.layout.y
@@ -656,7 +674,10 @@ export function HomeView() {
         error={premiumSheet.error}
         onSelectPlan={premiumSheet.setPlan}
         onStartPremium={premiumSheet.activate}
-        onClose={premiumSheet.close}
+        onClose={() => {
+          premiumSheet.close()
+          setPaywallSource('tesbih_mode')
+        }}
         topupProducts={premiumSheet.topupProducts}
         purchasingTopupId={premiumSheet.purchasingTopupId}
         topupError={premiumSheet.topupError}
@@ -666,7 +687,7 @@ export function HomeView() {
           })
         }}
         subscriptionPrices={premiumSheet.subscriptionPrices}
-        source='tesbih_mode'
+        source={paywallSource}
       />
     </PageLayout>
   )

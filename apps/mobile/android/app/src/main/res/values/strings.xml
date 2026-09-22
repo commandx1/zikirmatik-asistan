@@ -1,3 +1,7 @@
 <resources>
   <string name="app_name">Zikirmatik Asistan</string>
+  <string name="widget_streak_label">Zikir Serisi</string>
+  <string name="widget_streak_description">Serin ve bugünkü zikir toplamın</string>
+  <string name="widget_vird_label">Vird Programı</string>
+  <string name="widget_vird_description">Bugünkü virdin ve sıradaki zikrin</string>
 </resources>

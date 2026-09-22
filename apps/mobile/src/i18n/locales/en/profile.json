@@ -18,7 +18,8 @@
         "orta": "Medium",
         "tesbih": "Tasbih"
       },
-      "language": "Language"
+      "language": "Language",
+      "widget": "Home screen widget"
     },
     "notifications": {
       "title": "Notifications",
@@ -111,8 +112,12 @@
         "description": "Track your progress in depth with heat maps, period comparisons, and more."
       },
       "themes": {
-        "title": "All Themes",
-        "description": "Use every theme with no restrictions."
+        "title": "Themes & Tasbih Mode",
+        "description": "All themes, the tasbih counter view and click sounds."
+      },
+      "widget": {
+        "title": "Home Screen Vird Widget",
+        "description": "Track today's vird and your next dhikr right from your home screen."
       }
     },
     "monthlyPlan": "Monthly ({{price}})",

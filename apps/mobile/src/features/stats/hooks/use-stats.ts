@@ -35,6 +35,7 @@ export function useStats(): UseStatsResult {
   const isPremium = useProfileStore((s) => s.isPremium);
   const dhikrItems = useDhikrStore((s) => s.items);
   const freeModeCount = useDhikrStore((s) => s.freeModeCount);
+  const freeModeActivityAt = useDhikrStore((s) => s.freeModeActivityAt);
 
   const [data, setData] = useState<StatsSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,10 +48,10 @@ export function useStats(): UseStatsResult {
       return;
     }
 
-    setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium));
+    setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt));
     setError(undefined);
     setIsLoading(false);
-  }, [dhikrItems, freeModeCount, isGuest, isPremium]);
+  }, [dhikrItems, freeModeCount, freeModeActivityAt, isGuest, isPremium]);
 
   useEffect(() => {
     if (isGuest) {
@@ -94,7 +95,7 @@ export function useStats(): UseStatsResult {
 
   const refresh = useCallback(async () => {
     if (isGuest) {
-      setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium));
+      setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt));
       return;
     }
 
@@ -111,7 +112,7 @@ export function useStats(): UseStatsResult {
     } finally {
       setIsRefreshing(false);
     }
-  }, [accessToken, authStatus, dhikrItems, freeModeCount, isGuest, isPremium]);
+  }, [accessToken, authStatus, dhikrItems, freeModeCount, freeModeActivityAt, isGuest, isPremium]);
 
   const locked = data?.locked ?? !isPremium;
 
@@ -121,7 +122,8 @@ export function useStats(): UseStatsResult {
 function buildLocalStatsSummary(
   items: ZikirItem[],
   freeModeCount: number,
-  isPremium: boolean
+  isPremium: boolean,
+  freeModeActivityAt?: string
 ): StatsSummary {
   const today = new Date();
   const todayKey = toDateKey(today);
@@ -158,8 +160,11 @@ function buildLocalStatsSummary(
   }
 
   if (freeModeCount > 0) {
-    const prev = activityByDay.get(todayKey) ?? { count: 0, completed: 0 };
-    activityByDay.set(todayKey, { count: prev.count + freeModeCount, completed: prev.completed });
+    // Damga yoksa (eski persist) mevcut davranış: bugüne say. Damga varsa o
+    // günün anahtarına say, günlük seri/heatmap doğru kalsın (K3).
+    const freeModeDayKey = freeModeActivityAt ? resolveActivityDateKey({ lastActivityAt: freeModeActivityAt }, today) ?? todayKey : todayKey;
+    const prev = activityByDay.get(freeModeDayKey) ?? { count: 0, completed: 0 };
+    activityByDay.set(freeModeDayKey, { count: prev.count + freeModeCount, completed: prev.completed });
   }
 
   const activeDays = Array.from(activityByDay.keys()).sort();

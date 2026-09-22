@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import type { SupportedLocale } from "../../../i18n";
 import type { HapticsPattern } from "../../../services/haptics-pattern";
@@ -24,6 +24,7 @@ type ProfileSettingsSectionsProps = {
   onPressRateApp: () => void;
   onPressSendFeedback: () => void;
   onPressTourReplay: () => void;
+  onPressWidgetGuide: () => void;
   onPressLogout: () => void;
   onPressDeleteAccount: () => void;
   onToggleNotifications: (value: boolean) => void;
@@ -44,6 +45,7 @@ export function ProfileSettingsSections({
   onPressRateApp,
   onPressSendFeedback,
   onPressTourReplay,
+  onPressWidgetGuide,
   onPressLogout,
   onPressDeleteAccount,
   onToggleNotifications,
@@ -73,6 +75,13 @@ export function ProfileSettingsSections({
             value={hapticsPattern}
             onChange={onChangeHapticsPattern}
           />
+          {Platform.OS === "android" ? (
+            <ProfileLinkRow
+              label={t("profile:sections.personalization.widget")}
+              iconName="table-cells"
+              onPress={onPressWidgetGuide}
+            />
+          ) : null}
         </ProfileSettingsCard>
       </View>
 

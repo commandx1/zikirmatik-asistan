@@ -50,6 +50,9 @@ type DhikrStore = {
   activeAiContext?: AiDhikrContext;
   selectedSource?: 'special-day';
   freeModeCount: number;
+  /** freeModeCount'un son artırıldığı an (ISO) — gün dönüşünde widget/istatistik
+   * bugüne mi dünkü serbest sayıma mı sayacağını bununla ayırt eder (K3). */
+  freeModeActivityAt?: string;
   freeModeTarget: number;
   // Serbest mod için tur ("lap") boyu — 33/99/özel. Seçili zikirlerde
   // eşdeğeri ZikirItem.lapSize'dır (bkz. setSelectedLapSize).
@@ -103,6 +106,7 @@ type DhikrStore = {
       target: number;
       current?: number;
       lastActivityLabel?: string;
+      lastActivityAt?: string;
       isFavorite?: boolean;
     }>
   ) => void;
@@ -116,6 +120,7 @@ type DhikrStore = {
       target: number;
       current?: number;
       lastActivityLabel?: string;
+      lastActivityAt?: string;
       isFavorite?: boolean;
     }>
   ) => void;
@@ -580,11 +585,12 @@ export const useDhikrStore = create<DhikrStore>()(
       }
 
       return {
-        freeModeCount: nextCount
+        freeModeCount: nextCount,
+        freeModeActivityAt: new Date().toISOString()
       };
     }),
-  resetFreeMode: () => set({ freeModeCount: 0 }),
-  clearFreeModeSession: () => set({ freeModeCount: 0, freeModeTarget: 0 }),
+  resetFreeMode: () => set({ freeModeCount: 0, freeModeActivityAt: undefined }),
+  clearFreeModeSession: () => set({ freeModeCount: 0, freeModeTarget: 0, freeModeActivityAt: undefined }),
   setFreeModeTarget: (target) =>
     set((state) => {
       const safeTarget = resolveCustomTarget(target);
@@ -630,6 +636,7 @@ export const useDhikrStore = create<DhikrStore>()(
           current: normalizedCurrent,
           target: effectiveTarget,
           lastActivityLabel: item.lastActivityLabel ?? existing?.lastActivityLabel ?? i18n.t("focus:relativeDate.notStarted"),
+          lastActivityAt: hasUnsavedProgress ? existing?.lastActivityAt : (item.lastActivityAt ?? existing?.lastActivityAt),
           streakDays: 0,
           isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)
         };
@@ -674,6 +681,7 @@ export const useDhikrStore = create<DhikrStore>()(
           current: normalizedCurrent,
           target: effectiveTarget,
           lastActivityLabel: item.lastActivityLabel?.trim() || existing?.lastActivityLabel || i18n.t("focus:relativeDate.notStarted"),
+          lastActivityAt: hasUnsavedProgress ? existing?.lastActivityAt : (item.lastActivityAt ?? existing?.lastActivityAt),
           streakDays: 0,
           isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)
         };
@@ -721,6 +729,7 @@ export const useDhikrStore = create<DhikrStore>()(
         selectedDhikrId: "",
         activeAiContext: undefined,
         freeModeCount: 0,
+        freeModeActivityAt: undefined,
         freeModeTarget: 0,
         freeModeLapSize: 33,
         unsavedProgressDhikrIds: [],
@@ -802,6 +811,7 @@ export const useDhikrStore = create<DhikrStore>()(
       selectedDhikrId: state.selectedDhikrId,
       activeAiContext: state.activeAiContext,
       freeModeCount: state.freeModeCount,
+      freeModeActivityAt: state.freeModeActivityAt,
       freeModeTarget: state.freeModeTarget,
       freeModeLapSize: state.freeModeLapSize,
       unsavedProgressDhikrIds: state.unsavedProgressDhikrIds,

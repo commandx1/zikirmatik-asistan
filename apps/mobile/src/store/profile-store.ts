@@ -150,7 +150,11 @@ export const useProfileStore = create<ProfileState>()(
         // Misafir kullanıcıda da haptik tercihi yeniden açılışta korunsun;
         // giriş yapan kullanıcıda hydrateFromBackend sunucu değerini üstüne yazar.
         hapticsEnabled: state.hapticsEnabled,
-        hapticsPattern: state.hapticsPattern
+        hapticsPattern: state.hapticsPattern,
+        // Widget'ın headless handler'ı isPremium'u AsyncStorage'dan okur;
+        // girişte hydrateFromBackend sunucu değerini üstüne yazar, çıkışta
+        // resetSessionScoped false yapar.
+        isPremium: state.isPremium
       }),
       onRehydrateStorage: () => (state) => {
         if (state?.locale) {

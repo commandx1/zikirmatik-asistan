@@ -95,5 +95,18 @@
   "streaksApi": {
     "fetchFailed": "Couldn't fetch streak data.",
     "unreachable": "Can't reach the server. Please try again."
+  },
+  "widgetCard": {
+    "title": "See your streak on your home screen",
+    "body": "Add the Zikirmatik widget and keep today's progress in sight.",
+    "cta": "How to add",
+    "dismissLabel": "Dismiss"
+  },
+  "widgetGuide": {
+    "title": "How to add the widget",
+    "step1": "Touch and hold an empty spot on your home screen.",
+    "step2": "Tap “Widgets” and search for “Zikirmatik”.",
+    "step3": "Touch and hold the widget, then drag it to your home screen.",
+    "done": "Got it"
   }
 }

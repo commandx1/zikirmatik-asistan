@@ -43,5 +43,21 @@
         android:resizeableActivity="true"
         tools:replace="android:screenOrientation,android:resizeableActivity"
         tools:node="merge" />
+
+    <service android:name="com.reactnativeandroidwidget.RNWidgetCollectionService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+    <receiver android:name=".widget.Streak" android:exported="false" android:label="@string/widget_streak_label">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+        <action android:name="com.zikirmatik_asistan.app.WIDGET_CLICK"/>
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widgetprovider_streak"/>
+    </receiver>
+    <receiver android:name=".widget.Vird" android:exported="false" android:label="@string/widget_vird_label">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+        <action android:name="com.zikirmatik_asistan.app.WIDGET_CLICK"/>
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widgetprovider_vird"/>
+    </receiver>
   </application>
 </manifest>

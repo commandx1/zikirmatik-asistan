@@ -9,6 +9,69 @@ import { listAiRecommendations } from "../../ai-guide/services/ai-api-client";
 import { listDhikrLogsByUser } from "../services/dhikr-logs-api-client";
 import { DhikrsApiError, listVerifiedActiveDhikrs } from "../services/dhikrs-api-client";
 import { listUserDhikrs } from "../services/user-dhikrs-api-client";
+import type { BackendDhikrLog } from "../services/dhikr-logs-api-client";
+
+type LatestLog = {
+  count: number;
+  targetCount: number;
+  createdAt?: string;
+  isFavorite: boolean;
+  aiPrompt?: string;
+  aiAssistantNote?: string;
+  aiRecommendationId?: string;
+};
+
+type LatestCustomLog = {
+  count: number;
+  targetCount: number;
+  createdAt?: string;
+  isFavorite: boolean;
+};
+
+// Saf fonksiyon: sunucudan gelen logları dhikrId/customDhikrId'ye göre "ilk
+// gelen kazanır" kuralıyla indeksler. vird/halka logları (virdProgramId /
+// circleId) atlanır — bu loglar kendi store'larında yaşar (vird-store
+// dayProgress / circle-store todayCounts); ana sayaca karışırsa sade log
+// şişer (K2: gerçek çift sayım).
+export function indexLatestDhikrLogs(logs: BackendDhikrLog[]): {
+  latestByDhikr: Map<string, LatestLog>;
+  latestByCustomDhikr: Map<string, LatestCustomLog>;
+} {
+  const latestByDhikr = new Map<string, LatestLog>();
+  const latestByCustomDhikr = new Map<string, LatestCustomLog>();
+
+  for (const log of logs) {
+    if (log.virdProgramId || log.circleId) {
+      continue;
+    }
+    if (log.dhikrId && !latestByDhikr.has(log.dhikrId)) {
+      latestByDhikr.set(log.dhikrId, {
+        count: log.count,
+        targetCount: log.targetCount,
+        createdAt: log.createdAt,
+        isFavorite: Boolean(log.isFavorite),
+        aiPrompt: log.aiPrompt,
+        aiAssistantNote: log.aiAssistantNote,
+        aiRecommendationId: log.aiRecommendationId
+      });
+    } else if (log.dhikrId && log.aiPrompt) {
+      const existing = latestByDhikr.get(log.dhikrId);
+      if (existing && !existing.aiPrompt) {
+        latestByDhikr.set(log.dhikrId, { ...existing, aiPrompt: log.aiPrompt, aiAssistantNote: log.aiAssistantNote, aiRecommendationId: log.aiRecommendationId });
+      }
+    }
+    if (log.customDhikrId && !latestByCustomDhikr.has(log.customDhikrId)) {
+      latestByCustomDhikr.set(log.customDhikrId, {
+        count: log.count,
+        targetCount: log.targetCount,
+        createdAt: log.createdAt,
+        isFavorite: Boolean(log.isFavorite)
+      });
+    }
+  }
+
+  return { latestByDhikr, latestByCustomDhikr };
+}
 
 export function useDhikrBackendSync() {
   const authStatus = useAuthStore((s) => s.status);
@@ -58,54 +121,7 @@ export function useDhikrBackendSync() {
           return;
         }
 
-        const latestByDhikr = new Map<
-          string,
-          {
-            count: number;
-            targetCount: number;
-            createdAt?: string;
-            isFavorite: boolean;
-            aiPrompt?: string;
-            aiAssistantNote?: string;
-            aiRecommendationId?: string;
-          }
-        >();
-        const latestByCustomDhikr = new Map<
-          string,
-          {
-            count: number;
-            targetCount: number;
-            createdAt?: string;
-            isFavorite: boolean;
-          }
-        >();
-
-        for (const log of logs) {
-          if (log.dhikrId && !latestByDhikr.has(log.dhikrId)) {
-            latestByDhikr.set(log.dhikrId, {
-              count: log.count,
-              targetCount: log.targetCount,
-              createdAt: log.createdAt,
-              isFavorite: Boolean(log.isFavorite),
-              aiPrompt: log.aiPrompt,
-              aiAssistantNote: log.aiAssistantNote,
-              aiRecommendationId: log.aiRecommendationId
-            });
-          } else if (log.dhikrId && log.aiPrompt) {
-            const existing = latestByDhikr.get(log.dhikrId);
-            if (existing && !existing.aiPrompt) {
-              latestByDhikr.set(log.dhikrId, { ...existing, aiPrompt: log.aiPrompt, aiAssistantNote: log.aiAssistantNote, aiRecommendationId: log.aiRecommendationId });
-            }
-          }
-          if (log.customDhikrId && !latestByCustomDhikr.has(log.customDhikrId)) {
-            latestByCustomDhikr.set(log.customDhikrId, {
-              count: log.count,
-              targetCount: log.targetCount,
-              createdAt: log.createdAt,
-              isFavorite: Boolean(log.isFavorite)
-            });
-          }
-        }
+        const { latestByDhikr, latestByCustomDhikr } = indexLatestDhikrLogs(logs);
 
         hydratePersonalItems(
           personalDhikrs.map((item) => {
@@ -119,6 +135,7 @@ export function useDhikrBackendSync() {
               target: customLog?.targetCount ?? item.target,
               current: customLog?.count,
               lastActivityLabel: customLog?.createdAt ? toLastActivityLabel(customLog.createdAt) : undefined,
+              lastActivityAt: customLog?.createdAt,
               isFavorite: customLog?.isFavorite ?? item.isFavorite
             };
           })
@@ -140,6 +157,7 @@ export function useDhikrBackendSync() {
             target: log?.targetCount ?? item.recommendedCount,
             current: log?.count,
             lastActivityLabel: log?.createdAt ? toLastActivityLabel(log.createdAt) : undefined,
+            lastActivityAt: log?.createdAt,
             isFavorite: log?.isFavorite
           };
         });

@@ -95,5 +95,18 @@
   "streaksApi": {
     "fetchFailed": "Seri verisi alınamadı.",
     "unreachable": "Sunucuya ulaşılamıyor. Lütfen tekrar deneyin."
+  },
+  "widgetCard": {
+    "title": "Serini ana ekranında gör",
+    "body": "Zikirmatik widget'ını ekle, bugünkü ilerlemen hep gözünün önünde olsun.",
+    "cta": "Nasıl eklenir?",
+    "dismissLabel": "Kartı kapat"
+  },
+  "widgetGuide": {
+    "title": "Widget nasıl eklenir?",
+    "step1": "Ana ekranında boş bir yere uzun bas.",
+    "step2": "“Widget'lar”a dokun ve “Zikirmatik” diye ara.",
+    "step3": "Widget'ı basılı tutup ana ekranına sürükle.",
+    "done": "Tamam"
   }
 }

@@ -472,4 +472,85 @@ describe("dhikr-store", () => {
       expect(useDhikrStore.getState().freeModeLapSize).toBe(9999);
     });
   });
+
+  describe("freeModeActivityAt", () => {
+    it("incrementFreeMode writes a fresh timestamp", () => {
+      useDhikrStore.getState().incrementFreeMode();
+      const activityAt = useDhikrStore.getState().freeModeActivityAt;
+      expect(activityAt).toBeDefined();
+      expect(Number.isNaN(new Date(activityAt!).getTime())).toBe(false);
+    });
+
+    it("resetFreeMode clears the timestamp", () => {
+      useDhikrStore.getState().incrementFreeMode();
+      useDhikrStore.getState().resetFreeMode();
+      expect(useDhikrStore.getState().freeModeActivityAt).toBeUndefined();
+    });
+
+    it("clearFreeModeSession clears the timestamp", () => {
+      useDhikrStore.getState().incrementFreeMode();
+      useDhikrStore.getState().clearFreeModeSession();
+      expect(useDhikrStore.getState().freeModeActivityAt).toBeUndefined();
+    });
+  });
+
+  describe("hydration lastActivityAt", () => {
+    it("keeps local current and lastActivityAt when the item has unsaved progress", () => {
+      const existingActivityAt = "2026-09-15T08:00:00.000Z";
+      useDhikrStore.setState({
+        items: [
+          {
+            id: "personal-a",
+            source: "personal",
+            name: "Test zikri",
+            transliteration: "Test zikri",
+            current: 5,
+            target: 33,
+            lastActivityLabel: "Kayıtlı",
+            lastActivityAt: existingActivityAt,
+            streakDays: 0,
+            isFavorite: false
+          }
+        ],
+        selectedDhikrId: "personal-a",
+        unsavedProgressDhikrIds: ["personal-a"]
+      });
+
+      useDhikrStore.getState().hydratePersonalItems([
+        {
+          id: "personal-a",
+          name: "Test zikri",
+          transliteration: "Test zikri",
+          current: 40,
+          target: 33,
+          lastActivityAt: "2026-09-21T09:00:00.000Z"
+        }
+      ]);
+
+      const item = useDhikrStore.getState().items.find((value) => value.id === "personal-a");
+      expect(item?.current).toBe(5);
+      expect(item?.lastActivityAt).toBe(existingActivityAt);
+    });
+
+    it("adopts the server lastActivityAt when there is no unsaved progress", () => {
+      useDhikrStore.setState({
+        items: [],
+        unsavedProgressDhikrIds: []
+      });
+
+      useDhikrStore.getState().hydratePersonalItems([
+        {
+          id: "personal-a",
+          name: "Test zikri",
+          transliteration: "Test zikri",
+          current: 10,
+          target: 33,
+          lastActivityAt: "2026-09-21T09:00:00.000Z"
+        }
+      ]);
+
+      const item = useDhikrStore.getState().items.find((value) => value.id === "personal-a");
+      expect(item?.lastActivityAt).toBe("2026-09-21T09:00:00.000Z");
+    });
+  });
 });

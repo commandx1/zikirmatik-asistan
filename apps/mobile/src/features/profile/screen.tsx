@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { ConfirmModal } from "../../components/ui/confirm-modal";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
+import { WidgetGuideModal } from "../widget/widget-discovery";
+import { trackEvent } from "../../lib/analytics";
 import { ProfileHeader } from "./components/profile-header";
 import { ProfileDeleteAccountModal } from "./components/profile-delete-account-modal";
 import { ProfilePremiumSheet } from "./components/profile-premium-sheet";
@@ -15,6 +18,7 @@ export function ProfileScreen() {
   const profile = useProfile();
   const notificationSettings = useNotificationSettings();
   const { t } = useTranslation(["profile", "common"]);
+  const [isWidgetGuideOpen, setIsWidgetGuideOpen] = useState(false);
 
   return (
     <PageLayout>
@@ -47,6 +51,10 @@ export function ProfileScreen() {
               onPressRateApp={profile.rateApp}
               onPressSendFeedback={profile.sendFeedback}
               onPressTourReplay={profile.tourReplay}
+              onPressWidgetGuide={() => {
+                setIsWidgetGuideOpen(true);
+                void trackEvent("widget_guide_opened", { from: "profile" });
+              }}
               onPressLogout={profile.onLogout}
               onPressDeleteAccount={profile.openDeleteAccountModal}
               onChangeHapticsPattern={profile.onChangeHapticsPattern}
@@ -109,6 +117,7 @@ export function ProfileScreen() {
           onConfirm={profile.deleteAccount}
           onCancel={profile.closeDeleteAccountModal}
         />
+        <WidgetGuideModal visible={isWidgetGuideOpen} onClose={() => setIsWidgetGuideOpen(false)} />
       </View>
     </PageLayout>
   );

@@ -34,6 +34,8 @@ import { useVirdReminderSync } from "../src/features/vird/hooks/use-vird-reminde
 import { useDailyReminderSync } from "../src/features/notifications/hooks/use-daily-reminder-sync";
 import { useTourNotificationOptIn } from "../src/features/tour/hooks/use-tour-notification-opt-in";
 import { useStreakReminderSync } from "../src/features/home/hooks/use-streak-reminder-sync";
+import { useWidgetSync } from "../src/features/widget/widget-sync";
+import { useWidgetAnalytics } from "../src/features/widget/use-widget-analytics";
 import { BadgeCelebrationHost } from "../src/features/stats/components/badge-celebration-host";
 import { useThemePreferences } from "../src/hooks/use-theme-preferences";
 import type { AppFontFamily } from "../src/store/theme-store";
@@ -82,6 +84,8 @@ function RootProviders({ children }: { children: ReactNode }) {
   initAnalytics();
   useNotificationTapRouting();
   useStreakReminderSync();
+  useWidgetSync();
+  useWidgetAnalytics();
   useEventNotificationSync();
   useVirdReminderSync();
   useDailyReminderSync();

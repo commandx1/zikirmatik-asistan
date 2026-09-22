@@ -1,8 +1,10 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
+import { useSegments } from 'expo-router'
 import { useEffect, useRef } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
+import { useGlassTabBarInset } from '../../../components/ui/glass-tab-bar'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 import { trackEvent } from '../../../lib/analytics'
@@ -67,6 +69,8 @@ export function ProfilePremiumSheet({
   const { t } = useTranslation('profile')
   const upper = useLocaleUpper()
   const insets = useSafeAreaInsets()
+  const segments = useSegments()
+  const glassTabBarInset = useGlassTabBarInset()
   const wasVisibleRef = useRef(false)
 
   useEffect(() => {
@@ -101,13 +105,16 @@ export function ProfilePremiumSheet({
             ? { fontFamily: 'IndieFlower_400Regular', fontWeight: 'normal' as const }
         : undefined
 
+  const isTabScreen = segments[0] === '(tabs)'
+  const sheetBottomInset = isTabScreen ? glassTabBarInset : insets.bottom
+
   return (
     <View className='absolute inset-0 z-50 justify-end'>
       <Pressable className='absolute inset-0 bg-black/60' onPress={onClose} />
       <View className='rounded-t-[32px] border-t border-[--accent]/30 bg-[--card]' style={{ maxHeight: '90%' }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 24, paddingBottom: 24 + insets.bottom }}
+          contentContainerStyle={{ padding: 24, paddingBottom: 24 + sheetBottomInset }}
         >
           <View className='mb-6 h-1.5 w-12 self-center rounded-full bg-white/20' />
 
@@ -129,6 +136,7 @@ export function ProfilePremiumSheet({
             <BenefitItem title={t('profile:premiumSheet.benefits.aiCredits.title')} description={t('profile:premiumSheet.benefits.aiCredits.description')} />
             <BenefitItem title={t('profile:premiumSheet.benefits.stats.title')} description={t('profile:premiumSheet.benefits.stats.description')} />
             <BenefitItem title={t('profile:premiumSheet.benefits.themes.title')} description={t('profile:premiumSheet.benefits.themes.description')} />
+            <BenefitItem title={t('profile:premiumSheet.benefits.widget.title')} description={t('profile:premiumSheet.benefits.widget.description')} />
           </View>
 
           <View className='mb-6 flex-row rounded-xl border border-white/5 bg-[--bg] p-1'>

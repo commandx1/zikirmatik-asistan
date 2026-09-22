@@ -18,7 +18,8 @@
         "orta": "Orta",
         "tesbih": "Tesbih"
       },
-      "language": "Dil"
+      "language": "Dil",
+      "widget": "Ana ekran widget'ı"
     },
     "notifications": {
       "title": "Bildirimler",
@@ -111,8 +112,12 @@
         "description": "Isı haritası, dönem karşılaştırması ve daha fazlasıyla ilerlemeni derinlemesine takip et."
       },
       "themes": {
-        "title": "Tüm Temalar",
-        "description": "Bütün temaları hiçbir kısıtlama olmadan kullan."
+        "title": "Temalar ve Tesbih Modu",
+        "description": "Tüm temalar, tesbih sayaç görünümü ve tık sesleri."
+      },
+      "widget": {
+        "title": "Ana Ekran Vird Widget'ı",
+        "description": "Bugünkü virdini ve sıradaki zikrini ana ekranından takip et."
       }
     },
     "monthlyPlan": "Aylık ({{price}})",

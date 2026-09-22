@@ -11,6 +11,7 @@ import { ESMAUL_HUSNA } from '../focus/data'
 import type { EsmaulHusnaItem, ZikirSource } from '../focus/types'
 import { createDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
 import { getUserStreak } from './services/streaks-api-client'
+import { cacheServerStreak } from '../widget/widget-sync'
 import { findVerifiedActiveDhikrByTransliteration } from '../dhikrs/services/dhikrs-api-client'
 import { createUserDhikr } from '../dhikrs/services/user-dhikrs-api-client'
 import {
@@ -65,6 +66,7 @@ type EsmaResumePending = {
 type HomeContextValue = {
   greeting: string
   streakLabel: string
+  streakDays: number
   isSavingLog: boolean
   isRefreshing: boolean
   syncError?: string
@@ -313,6 +315,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     try {
       const streak = await getUserStreak(sessionUserId, sessionAccessToken)
       setStreakDays(streak.currentStreak)
+      void cacheServerStreak(streak.currentStreak, streak.lastActiveDate)
     } catch {
       // Keep the existing streak value when network is unavailable.
     }
@@ -791,6 +794,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     return {
       greeting: t('home:greeting', { name: authDisplayName?.trim() || t('home:defaultName') }),
       streakLabel: t('home:streakLabel', { count: streakDays }),
+      streakDays,
       isSavingLog,
       isRefreshing,
       syncError,

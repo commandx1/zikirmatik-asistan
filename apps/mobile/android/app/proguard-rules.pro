@@ -48,3 +48,8 @@
 -keep class expo.modules.** { *; }
 
 # Add any project specific keep options here:
+
+# react-native-android-widget: widget name is read via getClass().getSimpleName() at
+# runtime to match the JS-side widget name, so R8 (fullMode) must not rename these classes.
+-keep class com.reactnativeandroidwidget.** { *; }
+-keep class com.zikirmatik_asistan.app.widget.** { *; }

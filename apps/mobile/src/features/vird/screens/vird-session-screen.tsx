@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppState, Pressable, Text } from 'react-native'
-import { useRouter } from 'expo-router'
+import { Redirect, useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { toDateKey, type VirdSlotKey } from '@zikirmatik/shared'
 import { i18n } from '../../../i18n'
@@ -51,20 +51,34 @@ function isVirdSlotKey(value: string | undefined): value is VirdSlotKey {
   return typeof value === 'string' && (VIRD_SLOT_KEYS as readonly string[]).includes(value)
 }
 
+// Derin bağlantıyla soğuk açılışta geçmiş yığını boş olabilir; router.back()
+// bu durumda hiçbir şey yapmaz. Geçmiş varsa geri dön, yoksa ana ekrana git.
+function closeSession(router: ReturnType<typeof useRouter>) {
+  if (router.canGoBack()) {
+    router.back()
+  } else {
+    router.replace('/(tabs)/home')
+  }
+}
+
 export function VirdSessionScreen({ programId, slot, prayerIndex }: VirdSessionScreenProps) {
-  const router = useRouter()
   const programs = useVirdStore((state) => state.programs)
+  const hasHydrated = useVirdStore((state) => state.hasHydrated)
   const program = useMemo(() => programs.find((candidate) => candidate.id === programId) ?? null, [programs, programId])
   const isValid = Boolean(program) && isVirdSlotKey(slot)
 
-  useEffect(() => {
-    if (!isValid) {
-      router.back()
-    }
-  }, [isValid, router])
-
-  if (!program || !isValid) {
+  // Soğuk açılış derin bağlantısında vird-store henüz hydrate olmadan programs
+  // boş gelir; hydrate tamamlanmadan geçersiz sayma.
+  if (!hasHydrated) {
     return null
+  }
+
+  // Geçersiz/silinmiş program ya da dilim (ör. bayat widget bağlantısı).
+  // Effect içinde router.back()/replace() soğuk açılışta "Attempted to
+  // navigate before mounting the Root Layout" ile uygulamayı ÇÖKERTİYORDU
+  // (release QA); bildirimsel Redirect bunu güvenle işler.
+  if (!program || !isValid) {
+    return <Redirect href='/(tabs)/home' />
   }
 
   return (
@@ -254,7 +268,7 @@ function SessionBody({
 
   const close = () => {
     flushAll()
-    router.back()
+    closeSession(router)
   }
 
   const goNextSession = () => {
