@@ -29,6 +29,16 @@ type UpdateManyFn = (
   update: ExpireSubscriptionsUpdate,
 ) => UpdateManyResult;
 
+type FindOneAndUpdateResult = {
+  lean: () => { exec: () => Promise<{ _id: string } | null> };
+};
+
+type FindOneAndUpdateFn = (
+  filter: { providerEventId: string },
+  update: { $setOnInsert: Record<string, unknown> },
+  options: { upsert: true; returnDocument: 'after' },
+) => FindOneAndUpdateResult;
+
 describe('SubscriptionsService', () => {
   const subscriptionModel = {
     updateMany: jest.fn(() => ({
@@ -36,7 +46,8 @@ describe('SubscriptionsService', () => {
     })) as unknown as jest.MockedFunction<UpdateManyFn>,
     exists: jest.fn(),
     create: jest.fn(),
-    findOneAndUpdate: jest.fn(),
+    findOneAndUpdate:
+      jest.fn() as unknown as jest.MockedFunction<FindOneAndUpdateFn>,
   };
   const verifier = { verifyPremium: jest.fn() };
   let env: Record<string, string | undefined> = {};
@@ -218,10 +229,12 @@ describe('SubscriptionsService', () => {
 
   it('create(providerEventId) → upsert ile idempotent yazar', async () => {
     await service.create(clientDto(), 'evt-1');
+    const expectedSetOnInsert = expect.objectContaining({
+      providerEventId: 'evt-1',
+    }) as Record<string, unknown>;
     expect(subscriptionModel.findOneAndUpdate).toHaveBeenCalledWith(
       { providerEventId: 'evt-1' },
-       
-      { $setOnInsert: expect.objectContaining({ providerEventId: 'evt-1' }) },
+      { $setOnInsert: expectedSetOnInsert },
       { upsert: true, returnDocument: 'after' },
     );
     expect(subscriptionModel.create).not.toHaveBeenCalled();
