@@ -276,9 +276,6 @@ importers:
       react:
         specifier: 19.1.0
         version: 19.1.0
-      react-dom:
-        specifier: 19.1.0
-        version: 19.1.0(react@19.1.0)
       react-i18next:
         specifier: ^17.0.9
         version: 17.0.9(i18next@26.3.6(typescript@5.9.3))(react-dom@19.1.0(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)(typescript@5.9.3)

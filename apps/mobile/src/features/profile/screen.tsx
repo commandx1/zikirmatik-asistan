@@ -61,7 +61,6 @@ export function ProfileScreen() {
               notificationsEnabled={notificationSettings.notificationsEnabled}
               onToggleNotifications={notificationSettings.onToggleNotifications}
             />
-            {/* <ProfileAppVersion /> */}
           </View>
         </PageScrollView>
         <ProfilePremiumSheet
