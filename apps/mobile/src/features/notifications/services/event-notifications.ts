@@ -179,9 +179,10 @@ function buildSpecialDayTriggerDate(isoDate: string): Date | null {
     return null;
   }
 
-  const year = Number.parseInt(match[1], 10);
-  const month = Number.parseInt(match[2], 10);
-  const day = Number.parseInt(match[3], 10);
+  // regex capture groups always match when exec succeeds
+  const year = Number.parseInt(match[1]!, 10);
+  const month = Number.parseInt(match[2]!, 10);
+  const day = Number.parseInt(match[3]!, 10);
 
   const date = new Date(year, month - 1, day, SPECIAL_DAY_HOUR, SPECIAL_DAY_MINUTE, 0, 0);
   if (Number.isNaN(date.getTime())) {

@@ -107,7 +107,7 @@ describe("expectedItemsForDay", () => {
     const expected = expectedItemsForDay(program, 1);
     expect(expected).toHaveLength(5);
     expect(expected.map((item) => item.prayerIndex)).toEqual([1, 2, 3, 4, 5]);
-    expect(expected[0].itemKey).toBe(`prayer:1:${dhikrId}`);
+    expect(expected[0]!.itemKey).toBe(`prayer:1:${dhikrId}`);
   });
 
   it("expands a prayer-slot item only across the configured prayerSelection", () => {

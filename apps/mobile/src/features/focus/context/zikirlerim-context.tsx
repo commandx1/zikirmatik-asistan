@@ -220,7 +220,8 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     for (const [dhikrId, dhikrLogs] of groupedByDhikr.entries()) {
       const matched = itemById.get(dhikrId);
       const sorted = [...dhikrLogs].sort((a, b) => toLogTimestamp(b) - toLogTimestamp(a));
-      const latestLog = sorted[0];
+      // dhikrLogs is always non-empty: groupedByDhikr only ever stores at least one log per key.
+      const latestLog = sorted[0]!;
       const hasUnsavedProgress = unsavedProgressDhikrIds.includes(dhikrId);
       const streakInfo = calculateStreakInfo(sorted);
       const lastActivityLabel =
@@ -724,9 +725,10 @@ function parseDateKey(dateKey: string) {
     return null;
   }
 
-  const year = Number.parseInt(match[1], 10);
-  const month = Number.parseInt(match[2], 10);
-  const day = Number.parseInt(match[3], 10);
+  // regex capture groups always match when exec succeeds
+  const year = Number.parseInt(match[1]!, 10);
+  const month = Number.parseInt(match[2]!, 10);
+  const day = Number.parseInt(match[3]!, 10);
   return new Date(year, month - 1, day);
 }
 

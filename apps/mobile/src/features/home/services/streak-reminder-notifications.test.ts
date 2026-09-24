@@ -138,7 +138,7 @@ describe("syncStreakReminderNotification", () => {
 
     expect(result).toEqual({ permissionGranted: true, scheduled: true });
     expect(scheduleNotificationAsync).toHaveBeenCalledTimes(1);
-    const input = scheduleNotificationAsync.mock.calls[0][0];
+    const input = scheduleNotificationAsync.mock.calls[0]![0];
     expect(input.content.data).toEqual({
       kind: STREAK_REMINDER_KIND,
       route: STREAK_REMINDER_ROUTE
@@ -157,7 +157,7 @@ describe("syncStreakReminderNotification", () => {
       now: morning
     });
 
-    const input = scheduleNotificationAsync.mock.calls[0][0];
+    const input = scheduleNotificationAsync.mock.calls[0]![0];
     expect(input.trigger.date).toEqual(new Date(2026, 0, 16, 21, 0, 0, 0));
   });
 

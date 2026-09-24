@@ -115,7 +115,8 @@ export function playClickSound(pack: CounterSoundPack): void {
     void ensureAudioModeConfigured();
 
     const pool = getPool(pack);
-    const player = pool.players[pool.nextIndex];
+    // pool.players always has POOL_SIZE entries; nextIndex is kept in range by the modulo below.
+    const player = pool.players[pool.nextIndex]!;
     pool.nextIndex = (pool.nextIndex + 1) % pool.players.length;
 
     void player.seekTo(0).catch(() => {

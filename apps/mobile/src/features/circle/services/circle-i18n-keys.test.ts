@@ -20,7 +20,7 @@ describe("circle error code i18n key coverage", () => {
   it.each(Object.values(CIRCLE_ERROR_CODE))("has a tr and en errors.* key for %s", (code) => {
     const key = CIRCLE_ERROR_MESSAGE_KEY[code];
     expect(key).toBeDefined();
-    expect((trCircle.errors as Record<string, string>)[key]).toBeTypeOf("string");
-    expect((enCircle.errors as Record<string, string>)[key]).toBeTypeOf("string");
+    expect((trCircle.errors as Record<string, string>)[key!]).toBeTypeOf("string");
+    expect((enCircle.errors as Record<string, string>)[key!]).toBeTypeOf("string");
   });
 });

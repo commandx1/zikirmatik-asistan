@@ -7,7 +7,8 @@ export function toDateKey(date: Date): string {
 
 export function getStreakDays(lastActiveDateKey: string, today = new Date()): number {
   const [y, m, d] = lastActiveDateKey.split("-").map(Number);
-  const last = new Date(y, (m ?? 1) - 1, d ?? 1);
+  // String.split always returns a non-empty array, so the first element exists.
+  const last = new Date(y!, (m ?? 1) - 1, d ?? 1);
   const diffMs = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() -
     new Date(last.getFullYear(), last.getMonth(), last.getDate()).getTime();
   return Math.floor(diffMs / 86400000);

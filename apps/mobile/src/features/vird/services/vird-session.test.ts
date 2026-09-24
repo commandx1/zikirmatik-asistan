@@ -39,7 +39,7 @@ describe("buildSessionItems", () => {
   it("filters a prayer slot down to the requested prayerIndex", () => {
     const items = buildSessionItems(program, "2026-01-01", { slot: "prayer", prayerIndex: 2 }, {});
     expect(items).toHaveLength(1);
-    expect(items[0].prayerIndex).toBe(2);
+    expect(items[0]!.prayerIndex).toBe(2);
   });
 
   it("returns [] when today is before the program's startDate", () => {

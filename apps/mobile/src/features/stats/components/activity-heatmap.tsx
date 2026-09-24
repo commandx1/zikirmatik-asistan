@@ -12,7 +12,8 @@ const ROWS = 7;
 
 function weekdayIndex(key: string): number {
   const [year, month, day] = key.split("-").map(Number);
-  return new Date(Date.UTC(year, month - 1, day)).getUTCDay(); // 0=Sun..6=Sat
+  // key is always "YYYY-MM-DD", so all three parts exist.
+  return new Date(Date.UTC(year!, month! - 1, day!)).getUTCDay(); // 0=Sun..6=Sat
 }
 
 export function ActivityHeatmap({ heatmap }: { heatmap: StatsHeatmapPoint[] }) {
@@ -21,7 +22,8 @@ export function ActivityHeatmap({ heatmap }: { heatmap: StatsHeatmapPoint[] }) {
   const emptyColor = withAlpha(tokens.textPrimary, 0.08);
   const max = maxOf(heatmap.map((point) => point.count));
 
-  const firstWeekday = heatmap.length > 0 ? weekdayIndex(heatmap[0].date) : 0;
+  // guarded by heatmap.length > 0
+  const firstWeekday = heatmap.length > 0 ? weekdayIndex(heatmap[0]!.date) : 0;
   const columns = Math.ceil((heatmap.length + firstWeekday) / ROWS);
   const svgWidth = columns * STEP;
   const svgHeight = ROWS * STEP;

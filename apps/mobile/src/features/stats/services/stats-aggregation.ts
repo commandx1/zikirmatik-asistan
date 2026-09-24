@@ -208,10 +208,11 @@ function parseDateKey(key: string) {
   if (!match) {
     return null;
   }
+  // regex capture groups always match when exec succeeds
   return new Date(
-    Number.parseInt(match[1], 10),
-    Number.parseInt(match[2], 10) - 1,
-    Number.parseInt(match[3], 10)
+    Number.parseInt(match[1]!, 10),
+    Number.parseInt(match[2]!, 10) - 1,
+    Number.parseInt(match[3]!, 10)
   );
 }
 

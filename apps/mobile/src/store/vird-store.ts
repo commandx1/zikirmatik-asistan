@@ -119,7 +119,8 @@ function defaultData(): VirdStoreData {
  * aynı yaklaşım (Date.UTC), makineden bağımsız. */
 function shiftDateKey(key: string, days: number): string {
   const [y, m, d] = key.split("-").map(Number);
-  const dt = new Date(Date.UTC(y, (m ?? 1) - 1, d ?? 1));
+  // String.split always returns a non-empty array, so the first element exists.
+  const dt = new Date(Date.UTC(y!, (m ?? 1) - 1, d ?? 1));
   dt.setUTCDate(dt.getUTCDate() + days);
   return dt.toISOString().slice(0, 10);
 }

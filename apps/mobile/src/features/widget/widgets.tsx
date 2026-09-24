@@ -104,7 +104,8 @@ function withAlpha(hex: string, alpha: number): Hex | Rgba {
   if (!match) {
     return hex as Hex;
   }
-  const value = Number.parseInt(match[1], 16);
+  // regex capture group always matches when exec succeeds
+  const value = Number.parseInt(match[1]!, 16);
   return `rgba(${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}, ${alpha})`;
 }
 

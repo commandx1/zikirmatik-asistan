@@ -27,7 +27,8 @@ function makeProgram(overrides: Partial<VirdProgramLocal> = {}): VirdProgramLoca
 // — "120 günden eski" testinin gerçek çalışma tarihinden BAĞIMSIZ olması için.
 function shiftKey(key: string, days: number): string {
   const [y, m, d] = key.split("-").map(Number);
-  const dt = new Date(Date.UTC(y, m - 1, d));
+  // key is always "YYYY-MM-DD", so all three parts exist.
+  const dt = new Date(Date.UTC(y!, m! - 1, d!));
   dt.setUTCDate(dt.getUTCDate() + days);
   return dt.toISOString().slice(0, 10);
 }
@@ -155,7 +156,7 @@ describe("vird-store", () => {
 
       const programs = useVirdStore.getState().programs;
       expect(programs).toHaveLength(1);
-      expect(programs[0].status).toBe("active");
+      expect(programs[0]!.status).toBe("active");
     });
 
     it("replaces an existing local program matched by clientId even when the id changes (local -> server sync)", () => {
@@ -164,8 +165,8 @@ describe("vird-store", () => {
 
       const programs = useVirdStore.getState().programs;
       expect(programs).toHaveLength(1);
-      expect(programs[0].id).toBe("server-99");
-      expect(programs[0].origin).toBe("server");
+      expect(programs[0]!.id).toBe("server-99");
+      expect(programs[0]!.origin).toBe("server");
     });
   });
 
@@ -199,7 +200,7 @@ describe("vird-store", () => {
 
     it("creates a new date/item bucket on first write", () => {
       useVirdStore.getState().recordProgress(dateKey, "morning:0:x", 5, 33);
-      expect(useVirdStore.getState().dayProgress[dateKey]["morning:0:x"]).toEqual({
+      expect(useVirdStore.getState().dayProgress[dateKey]!["morning:0:x"]).toEqual({
         count: 5,
         target: 33,
         completed: false
@@ -210,25 +211,25 @@ describe("vird-store", () => {
       useVirdStore.getState().recordProgress(dateKey, "morning:0:x", 20, 33);
       useVirdStore.getState().recordProgress(dateKey, "morning:0:x", 10, 33);
 
-      expect(useVirdStore.getState().dayProgress[dateKey]["morning:0:x"].count).toBe(20);
+      expect(useVirdStore.getState().dayProgress[dateKey]!["morning:0:x"]!.count).toBe(20);
     });
 
     it("takes the higher count when a later write increases it", () => {
       useVirdStore.getState().recordProgress(dateKey, "morning:0:x", 10, 33);
       useVirdStore.getState().recordProgress(dateKey, "morning:0:x", 33, 33);
 
-      const entry = useVirdStore.getState().dayProgress[dateKey]["morning:0:x"];
-      expect(entry.count).toBe(33);
-      expect(entry.completed).toBe(true);
+      const entry = useVirdStore.getState().dayProgress[dateKey]!["morning:0:x"];
+      expect(entry!.count).toBe(33);
+      expect(entry!.completed).toBe(true);
     });
 
     it("keeps completed true forever once reached, even if a later write reports a lower count", () => {
       useVirdStore.getState().recordProgress(dateKey, "morning:0:x", 33, 33);
       useVirdStore.getState().recordProgress(dateKey, "morning:0:x", 0, 33);
 
-      const entry = useVirdStore.getState().dayProgress[dateKey]["morning:0:x"];
-      expect(entry.completed).toBe(true);
-      expect(entry.count).toBe(33); // max(33, 0)
+      const entry = useVirdStore.getState().dayProgress[dateKey]!["morning:0:x"];
+      expect(entry!.completed).toBe(true);
+      expect(entry!.count).toBe(33); // max(33, 0)
     });
 
     it("prunes date keys older than 120 days while keeping recent ones", () => {
@@ -259,7 +260,7 @@ describe("vird-store", () => {
       useVirdStore.getState().recordProgress(dateKey, "morning:0:x", 20, 33);
       useVirdStore.getState().setProgress(dateKey, "morning:0:x", 5, 33);
 
-      expect(useVirdStore.getState().dayProgress[dateKey]["morning:0:x"]).toEqual({
+      expect(useVirdStore.getState().dayProgress[dateKey]!["morning:0:x"]).toEqual({
         count: 5,
         target: 33,
         completed: false
@@ -268,10 +269,10 @@ describe("vird-store", () => {
 
     it("resetting to 0 sets completed back to false, even after it was previously true", () => {
       useVirdStore.getState().setProgress(dateKey, "morning:0:x", 33, 33);
-      expect(useVirdStore.getState().dayProgress[dateKey]["morning:0:x"].completed).toBe(true);
+      expect(useVirdStore.getState().dayProgress[dateKey]!["morning:0:x"]!.completed).toBe(true);
 
       useVirdStore.getState().setProgress(dateKey, "morning:0:x", 0, 33);
-      expect(useVirdStore.getState().dayProgress[dateKey]["morning:0:x"]).toEqual({
+      expect(useVirdStore.getState().dayProgress[dateKey]!["morning:0:x"]).toEqual({
         count: 0,
         target: 33,
         completed: false
@@ -306,8 +307,8 @@ describe("vird-store", () => {
       });
 
       const day = useVirdStore.getState().dayProgress[todayKey];
-      expect(day.a).toEqual({ count: 5, target: 5, completed: true });
-      expect(day.b).toEqual({ count: 1, target: 1, completed: true });
+      expect(day!.a).toEqual({ count: 5, target: 5, completed: true });
+      expect(day!.b).toEqual({ count: 1, target: 1, completed: true });
     });
 
     it("keeps the existing activeProgramId when it still exists in the merged list (server copy)", () => {

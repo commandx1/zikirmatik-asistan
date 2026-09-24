@@ -125,7 +125,7 @@ describe("syncEventNotifications", () => {
     await syncEventNotifications({ requestPermission: false, now, serverPushActive: true });
 
     expect(scheduleNotificationAsync).toHaveBeenCalledTimes(1);
-    expect(scheduleNotificationAsync.mock.calls[0][0].content.data).toEqual({ kind: FRIDAY_KIND });
+    expect(scheduleNotificationAsync.mock.calls[0]![0].content.data).toEqual({ kind: FRIDAY_KIND });
   });
 });
 

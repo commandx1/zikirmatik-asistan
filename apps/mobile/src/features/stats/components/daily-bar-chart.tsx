@@ -66,9 +66,9 @@ export function DailyBarChart({ series }: { series: StatsDailyPoint[] }) {
       </View>
 
       <View className="mt-2 flex-row justify-between">
-        <Text className="text-[10px] text-text-muted">{points.length ? shortDate(points[0].date) : ""}</Text>
+        <Text className="text-[10px] text-text-muted">{points.length ? shortDate(points[0]!.date) : ""}</Text>
         <Text className="text-[10px] text-text-muted">
-          {points.length ? shortDate(points[points.length - 1].date) : ""}
+          {points.length ? shortDate(points[points.length - 1]!.date) : ""}
         </Text>
       </View>
     </View>

@@ -49,7 +49,7 @@ describe("circle-store", () => {
 
       const circles = useCircleStore.getState().circles;
       expect(circles).toHaveLength(1);
-      expect(circles[0].totalCount).toBe(50);
+      expect(circles[0]!.totalCount).toBe(50);
     });
 
     it("stores a CircleDetail (superset of CircleSummary) as-is", () => {
@@ -90,7 +90,7 @@ describe("circle-store", () => {
 
       const circles = useCircleStore.getState().circles;
       expect(circles).toHaveLength(1);
-      expect(circles[0].id).toBe("b");
+      expect(circles[0]!.id).toBe("b");
     });
 
     it("is a no-op for an unknown id", () => {
@@ -109,7 +109,7 @@ describe("circle-store", () => {
     it("overwrites the previous value for the same circle", () => {
       useCircleStore.getState().setTodayCount("c1", "2026-09-17", 45);
       useCircleStore.getState().setTodayCount("c1", "2026-09-17", 78);
-      expect(useCircleStore.getState().todayCounts.c1.count).toBe(78);
+      expect(useCircleStore.getState().todayCounts.c1!.count).toBe(78);
     });
 
     it("for a new day replaces dateKey and count instead of accumulating", () => {
@@ -133,7 +133,7 @@ describe("circle-store", () => {
 
       const circles = useCircleStore.getState().circles;
       expect(circles).toHaveLength(1);
-      expect(circles[0].id).toBe("fresh");
+      expect(circles[0]!.id).toBe("fresh");
     });
 
     it("preserves todayCounts", () => {
@@ -145,13 +145,13 @@ describe("circle-store", () => {
     it("does not let a lower incoming totalCount drop the existing value", () => {
       useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 100 }));
       useCircleStore.getState().replaceFromServer([makeCircle({ id: "c1", totalCount: 40 })]);
-      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+      expect(useCircleStore.getState().circles[0]!.totalCount).toBe(100);
     });
 
     it("raises totalCount when the incoming value is higher", () => {
       useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 40 }));
       useCircleStore.getState().replaceFromServer([makeCircle({ id: "c1", totalCount: 100 })]);
-      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+      expect(useCircleStore.getState().circles[0]!.totalCount).toBe(100);
     });
   });
 
@@ -159,22 +159,22 @@ describe("circle-store", () => {
     it("raises totalCount when the given value is higher", () => {
       useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 40 }));
       useCircleStore.getState().bumpTotal("c1", 100);
-      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+      expect(useCircleStore.getState().circles[0]!.totalCount).toBe(100);
     });
 
     it("is a no-op when the given value is lower or equal", () => {
       useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 100 }));
       useCircleStore.getState().bumpTotal("c1", 40);
-      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+      expect(useCircleStore.getState().circles[0]!.totalCount).toBe(100);
       useCircleStore.getState().bumpTotal("c1", 100);
-      expect(useCircleStore.getState().circles[0].totalCount).toBe(100);
+      expect(useCircleStore.getState().circles[0]!.totalCount).toBe(100);
     });
 
     it("is a no-op for an unknown id", () => {
       useCircleStore.getState().upsertCircle(makeCircle({ id: "c1", totalCount: 40 }));
       useCircleStore.getState().bumpTotal("does-not-exist", 999);
       expect(useCircleStore.getState().circles).toHaveLength(1);
-      expect(useCircleStore.getState().circles[0].totalCount).toBe(40);
+      expect(useCircleStore.getState().circles[0]!.totalCount).toBe(40);
     });
   });
 

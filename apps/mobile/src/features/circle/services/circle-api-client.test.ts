@@ -20,7 +20,7 @@ describe("fetchCircle", () => {
     await fetchCircle("c1");
 
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/v1/circles/c1"), expect.anything());
-    expect(fetchMock.mock.calls[0][0]).not.toContain("?date=");
+    expect(fetchMock.mock.calls[0]![0]).not.toContain("?date=");
     vi.unstubAllGlobals();
   });
 });

@@ -14,7 +14,7 @@ function reply(status: number, body: unknown) {
 }
 
 function authHeader(call: number) {
-  return (fetchMock.mock.calls[call][1] as RequestInit & { headers: Record<string, string> }).headers.authorization;
+  return (fetchMock.mock.calls[call]![1] as RequestInit & { headers: Record<string, string> }).headers.authorization;
 }
 
 async function rejection(promise: Promise<unknown>) {
@@ -48,7 +48,7 @@ describe("request", () => {
     fetchMock.mockResolvedValueOnce(reply(200, "plain text"));
     await expect(request("/x", { errors })).resolves.toBe("plain text");
 
-    expect(fetchMock.mock.calls[0][0]).toBe("http://api.test/x");
+    expect(fetchMock.mock.calls[0]![0]).toBe("http://api.test/x");
   });
 
   it("returns {} for an empty body by default, emptyValue when given", async () => {
@@ -110,7 +110,7 @@ describe("request", () => {
   it("sends JSON body and method", async () => {
     fetchMock.mockResolvedValueOnce(reply(200, {}));
     await request("/x", { errors, method: "PATCH", body: { a: 1 } });
-    expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: "PATCH", body: '{"a":1}' });
+    expect(fetchMock.mock.calls[0]![1]).toMatchObject({ method: "PATCH", body: '{"a":1}' });
   });
 
   it("aborts after timeoutMs and reports unreachable", async () => {
@@ -129,7 +129,7 @@ describe("request", () => {
   it("does not attach a signal without timeoutMs", async () => {
     fetchMock.mockResolvedValueOnce(reply(200, {}));
     await request("/x", { errors });
-    expect(fetchMock.mock.calls[0][1]).not.toHaveProperty("signal");
+    expect(fetchMock.mock.calls[0]![1]).not.toHaveProperty("signal");
   });
 
   it("on 401 with auth: true refreshes once and retries once with the new token", async () => {

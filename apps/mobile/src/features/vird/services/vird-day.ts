@@ -76,8 +76,9 @@ export function buildVirdItemKey(slot: VirdSlotKey, prayerIndex: number | null |
 export function daysBetween(fromKey: string, toKey: string): number {
   const [fy, fm, fd] = fromKey.split("-").map(Number);
   const [ty, tm, td] = toKey.split("-").map(Number);
-  const fromUtc = Date.UTC(fy, fm - 1, fd);
-  const toUtc = Date.UTC(ty, tm - 1, td);
+  // fromKey/toKey are always "YYYY-MM-DD", so all three parts exist.
+  const fromUtc = Date.UTC(fy!, fm! - 1, fd!);
+  const toUtc = Date.UTC(ty!, tm! - 1, td!);
   return Math.round((toUtc - fromUtc) / 86_400_000);
 }
 
@@ -226,7 +227,8 @@ export function isJourneyFinished(program: VirdJourneyProgramLike, todayKey: str
   if (program.kind !== "journey" || program.phases.length === 0) {
     return false;
   }
-  const lastPhase = program.phases[program.phases.length - 1];
+  // guarded by the phases.length === 0 check above
+  const lastPhase = program.phases[program.phases.length - 1]!;
   if (lastPhase.toDay == null) {
     return false;
   }

@@ -195,7 +195,11 @@ export function isRevenueCatConfigured() {
   return Boolean(key);
 }
 
-function pickPackage(availablePackages: PurchasesPackage[], preferredPackage: PreferredPackage) {
+// Callers only invoke this after confirming availablePackages is non-empty.
+function pickPackage(
+  availablePackages: PurchasesPackage[],
+  preferredPackage: PreferredPackage
+): PurchasesPackage {
   const normalizedPreferred = preferredPackage === "annual" ? "annual" : "monthly";
   const preferred = availablePackages.find((item) => {
     const identifier = item.identifier.toLocaleLowerCase("en-US");
@@ -206,7 +210,7 @@ function pickPackage(availablePackages: PurchasesPackage[], preferredPackage: Pr
     return identifier.includes("month") || packageType === "monthly";
   });
 
-  return preferred ?? availablePackages[0];
+  return preferred ?? availablePackages[0]!;
 }
 
 async function syncBackendFromCustomerInfo(

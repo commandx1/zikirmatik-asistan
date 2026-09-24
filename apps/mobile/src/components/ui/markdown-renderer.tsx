@@ -23,7 +23,8 @@ export function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
             <View key={`${line}-${index}`} className="flex-row items-start gap-2">
               <Text className="pt-[1px] text-xs text-text-muted">•</Text>
               <Text className="flex-1 text-xs leading-5 text-text-muted" style={{ textAlign: "justify" }}>
-                {renderInline(bulletMatch[1])}
+                {/* capture group 1 always matches when bulletMatch matches */}
+                {renderInline(bulletMatch[1]!)}
               </Text>
             </View>
           );
@@ -35,7 +36,8 @@ export function MarkdownRenderer({ markdown }: MarkdownRendererProps) {
             <View key={`${line}-${index}`} className="flex-row items-start gap-2">
               <Text className="text-xs text-text-muted">{`${index + 1}.`}</Text>
               <Text className="flex-1 text-xs leading-5 text-text-muted" style={{ textAlign: "justify" }}>
-                {renderInline(orderedMatch[1])}
+                {/* capture group 1 always matches when orderedMatch matches */}
+                {renderInline(orderedMatch[1]!)}
               </Text>
             </View>
           );

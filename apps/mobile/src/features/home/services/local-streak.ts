@@ -36,9 +36,10 @@ export function resolveActivityDateKey(
   if (!match) {
     return null;
   }
-  const day = Number.parseInt(match[1], 10);
-  const month = Number.parseInt(match[2], 10);
-  const year = Number.parseInt(match[3], 10);
+  // regex capture groups always match when exec succeeds
+  const day = Number.parseInt(match[1]!, 10);
+  const month = Number.parseInt(match[2]!, 10);
+  const year = Number.parseInt(match[3]!, 10);
   return toDateKey(new Date(year, month - 1, day));
 }
 
@@ -62,7 +63,8 @@ export function calculateLocalCompletionStreak(
   let rolling = 1;
 
   for (let i = 1; i < sorted.length; i += 1) {
-    if (shiftDateKey(sorted[i - 1], 1) === sorted[i]) {
+    // i starts at 1, so i - 1 and i are always valid indices into sorted
+    if (shiftDateKey(sorted[i - 1]!, 1) === sorted[i]) {
       rolling += 1;
     } else {
       rolling = 1;
@@ -108,8 +110,9 @@ function parseDateKey(key: string) {
     return null;
   }
 
-  const year = Number.parseInt(match[1], 10);
-  const month = Number.parseInt(match[2], 10);
-  const day = Number.parseInt(match[3], 10);
+  // regex capture groups always match when exec succeeds
+  const year = Number.parseInt(match[1]!, 10);
+  const month = Number.parseInt(match[2]!, 10);
+  const day = Number.parseInt(match[3]!, 10);
   return new Date(year, month - 1, day);
 }

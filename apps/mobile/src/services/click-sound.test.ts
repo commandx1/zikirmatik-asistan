@@ -83,8 +83,8 @@ describe("playClickSound", () => {
   it("seeks to 0 before playing, so a restarted click plays from the start", () => {
     playClickSound("tik");
 
-    expect(createdPlayers[0].seekTo).toHaveBeenCalledWith(0);
-    expect(createdPlayers[0].play).toHaveBeenCalledTimes(1);
+    expect(createdPlayers[0]!.seekTo).toHaveBeenCalledWith(0);
+    expect(createdPlayers[0]!.play).toHaveBeenCalledTimes(1);
   });
 
   it("rotates round-robin across the pool on rapid repeated taps", () => {
@@ -94,9 +94,9 @@ describe("playClickSound", () => {
     playClickSound("tik"); // 4th tap wraps back to the first player
 
     expect(createdPlayers).toHaveLength(3);
-    expect(createdPlayers[0].play).toHaveBeenCalledTimes(2);
-    expect(createdPlayers[1].play).toHaveBeenCalledTimes(1);
-    expect(createdPlayers[2].play).toHaveBeenCalledTimes(1);
+    expect(createdPlayers[0]!.play).toHaveBeenCalledTimes(2);
+    expect(createdPlayers[1]!.play).toHaveBeenCalledTimes(1);
+    expect(createdPlayers[2]!.play).toHaveBeenCalledTimes(1);
   });
 
   it("configures the audio mode exactly once, regardless of how many taps follow", () => {
@@ -122,7 +122,7 @@ describe("playClickSound", () => {
 
   it("never throws when seekTo rejects", async () => {
     playClickSound("tik");
-    createdPlayers[0].seekTo.mockRejectedValueOnce(new Error("player not loaded"));
+    createdPlayers[0]!.seekTo.mockRejectedValueOnce(new Error("player not loaded"));
 
     expect(() => playClickSound("tik")).not.toThrow();
     // Let the rejected seekTo promise settle so it doesn't surface as an
@@ -132,7 +132,7 @@ describe("playClickSound", () => {
 
   it("never throws when play throws synchronously", () => {
     playClickSound("tik");
-    createdPlayers[0].play.mockImplementationOnce(() => {
+    createdPlayers[0]!.play.mockImplementationOnce(() => {
       throw new Error("player was removed");
     });
 

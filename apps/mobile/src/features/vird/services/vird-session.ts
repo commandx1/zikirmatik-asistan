@@ -41,7 +41,8 @@ export function buildSessionItems(
 export function pickNextIndex(items: VirdSessionItem[], currentIndex: number): number | null {
   for (let i = 1; i < items.length; i++) {
     const idx = (currentIndex + i) % items.length;
-    if (!items[idx].completed) {
+    // idx is always < items.length by construction
+    if (!items[idx]!.completed) {
       return idx;
     }
   }
@@ -83,7 +84,8 @@ export function nextIncompleteSession(
   const startIdx = currentIdx >= 0 ? currentIdx + 1 : 0;
 
   for (let i = 0; i < keys.length; i++) {
-    const candidate = keys[(startIdx + i) % keys.length];
+    // index is always < keys.length by construction
+    const candidate = keys[(startIdx + i) % keys.length]!;
     if (sessionKeyString(candidate) === currentStr) {
       continue;
     }

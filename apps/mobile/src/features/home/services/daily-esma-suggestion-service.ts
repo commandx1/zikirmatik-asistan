@@ -28,6 +28,7 @@ export function resolveDailyEsmaSuggestions(
 
   return Array.from({ length: safeCount }, (_, offset) => {
     const index = (startIndex + offset * 17) % items.length;
-    return items[index];
+    // items.length > 0 is guaranteed by the early return above, so index is always in range.
+    return items[index]!;
   });
 }

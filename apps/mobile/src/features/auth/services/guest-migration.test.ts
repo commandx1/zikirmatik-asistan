@@ -363,7 +363,7 @@ describe("planVirdMigration", () => {
     const vird = makeVirdSnapshot();
 
     const plan = planVirdMigration(vird, [
-      makeServerVirdProgram({ id: "server-1", clientId: vird.programs[0].clientId })
+      makeServerVirdProgram({ id: "server-1", clientId: vird.programs[0]!.clientId })
     ]);
 
     expect(plan.createVirdPrograms).toEqual([]);
@@ -382,7 +382,7 @@ describe("planVirdMigration", () => {
 
     expect(plan.createVirdProgressLogs).toHaveLength(1);
     expect(plan.createVirdProgressLogs[0]).toMatchObject({
-      clientProgramId: vird.programs[0].clientId,
+      clientProgramId: vird.programs[0]!.clientId,
       payload: {
         customDhikrId: "custom-1",
         customDhikrName: "Kendi zikrim",
@@ -395,7 +395,7 @@ describe("planVirdMigration", () => {
         virdDayIndex: 1
       }
     });
-    expect(plan.createVirdProgressLogs[0].payload).not.toHaveProperty("virdPrayerIndex");
+    expect(plan.createVirdProgressLogs[0]!.payload).not.toHaveProperty("virdPrayerIndex");
   });
 
   it("resolves a dhikrId key (not customDhikrId) for a non-custom ref, and includes virdPrayerIndex for the prayer slot", () => {
@@ -410,13 +410,13 @@ describe("planVirdMigration", () => {
     const plan = planVirdMigration(vird, []);
 
     expect(plan.createVirdProgressLogs).toHaveLength(1);
-    expect(plan.createVirdProgressLogs[0].payload).toMatchObject({
+    expect(plan.createVirdProgressLogs[0]!.payload).toMatchObject({
       dhikrId: VERIFIED_ID,
       virdSlot: "prayer",
       virdPrayerIndex: 2,
       isCompleted: true
     });
-    expect(plan.createVirdProgressLogs[0].payload).not.toHaveProperty("customDhikrId");
+    expect(plan.createVirdProgressLogs[0]!.payload).not.toHaveProperty("customDhikrId");
   });
 
   it("drops a dayProgress entry whose itemKey matches no program's expected items, without throwing", () => {

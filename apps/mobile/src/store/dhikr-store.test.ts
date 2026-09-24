@@ -208,7 +208,7 @@ describe("dhikr-store", () => {
         0
       ) as { items: Array<Record<string, unknown>> };
 
-      const item = result.items[0];
+      const item = result.items[0]!;
       expect(item.nameTurkish).toBeUndefined();
       expect(item.name).toEqual({ tr: "Estağfirullah", en: "Estağfirullah" });
       expect(item.transliteration).toEqual({ tr: "Estağfirullah", en: "Estağfirullah" });
@@ -236,7 +236,7 @@ describe("dhikr-store", () => {
         0
       ) as { items: Array<Record<string, unknown>> };
 
-      const item = result.items[0];
+      const item = result.items[0]!;
       expect(item.nameTurkish).toBeUndefined();
       expect(item.name).toBe("Kendi zikrim");
     });
@@ -272,7 +272,7 @@ describe("dhikr-store", () => {
       ) as { items: Array<Record<string, unknown>> };
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].id).toBe("ready-a");
+      expect(result.items[0]!.id).toBe("ready-a");
     });
 
     it("falls back to a safe empty name when a ready item has neither nameTurkish nor name", () => {
@@ -283,7 +283,7 @@ describe("dhikr-store", () => {
         0
       ) as { items: Array<Record<string, unknown>> };
 
-      expect(result.items[0].name).toEqual({ tr: "", en: "" });
+      expect(result.items[0]!.name).toEqual({ tr: "", en: "" });
     });
 
     it("falls back to an empty string name for a personal item missing both nameTurkish and name", () => {
@@ -294,7 +294,7 @@ describe("dhikr-store", () => {
         0
       ) as { items: Array<Record<string, unknown>> };
 
-      expect(result.items[0].name).toBe("");
+      expect(result.items[0]!.name).toBe("");
     });
 
     it("leaves an already-migrated LocalizedText name untouched", () => {
@@ -313,7 +313,7 @@ describe("dhikr-store", () => {
         0
       ) as { items: Array<Record<string, unknown>> };
 
-      expect(result.items[0].name).toEqual({ tr: "Zaten migrate edilmiş", en: "Already migrated" });
+      expect(result.items[0]!.name).toEqual({ tr: "Zaten migrate edilmiş", en: "Already migrated" });
     });
   });
 
@@ -348,9 +348,9 @@ describe("dhikr-store", () => {
       ) as { items: Array<Record<string, unknown>> };
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].lapSize).toBeUndefined();
-      expect(result.items[0].name).toEqual({ tr: "Estağfirullah", en: "Estağfirullah" });
-      expect(result.items[0].current).toBe(5);
+      expect(result.items[0]!.lapSize).toBeUndefined();
+      expect(result.items[0]!.name).toEqual({ tr: "Estağfirullah", en: "Estağfirullah" });
+      expect(result.items[0]!.current).toBe(5);
     });
 
     it("keeps an already-set lapSize on a v1 item untouched", () => {
@@ -370,7 +370,7 @@ describe("dhikr-store", () => {
         1
       ) as { items: Array<Record<string, unknown>> };
 
-      expect(result.items[0].lapSize).toBe(99);
+      expect(result.items[0]!.lapSize).toBe(99);
     });
 
     it("does not crash migrating v1 -> v2 on corrupted/missing state", () => {
@@ -401,19 +401,19 @@ describe("dhikr-store", () => {
       });
 
       useDhikrStore.getState().setSelectedLapSize(99);
-      expect(useDhikrStore.getState().items[0].lapSize).toBe(99);
+      expect(useDhikrStore.getState().items[0]!.lapSize).toBe(99);
 
       useDhikrStore.getState().setSelectedLapSize(50000);
-      expect(useDhikrStore.getState().items[0].lapSize).toBe(9999);
+      expect(useDhikrStore.getState().items[0]!.lapSize).toBe(9999);
 
       useDhikrStore.getState().setSelectedLapSize(-5);
-      expect(useDhikrStore.getState().items[0].lapSize).toBe(1);
+      expect(useDhikrStore.getState().items[0]!.lapSize).toBe(1);
 
       useDhikrStore.getState().setSelectedLapSize(0);
-      expect(useDhikrStore.getState().items[0].lapSize).toBe(1);
+      expect(useDhikrStore.getState().items[0]!.lapSize).toBe(1);
 
       useDhikrStore.getState().setSelectedLapSize(Number.NaN);
-      expect(useDhikrStore.getState().items[0].lapSize).toBe(33);
+      expect(useDhikrStore.getState().items[0]!.lapSize).toBe(33);
     });
 
     it("leaves other items' lapSize untouched", () => {

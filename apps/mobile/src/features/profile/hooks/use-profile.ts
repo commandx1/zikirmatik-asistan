@@ -490,8 +490,9 @@ function parseReminderTime(value: string) {
     return { hour: 8, minute: 0, isValid: false };
   }
 
-  const hour = Number.parseInt(match[1], 10);
-  const minute = Number.parseInt(match[2], 10);
+  // regex capture groups always match when exec succeeds
+  const hour = Number.parseInt(match[1]!, 10);
+  const minute = Number.parseInt(match[2]!, 10);
   if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
     return { hour: 8, minute: 0, isValid: false };
   }

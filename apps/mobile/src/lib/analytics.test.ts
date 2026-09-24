@@ -84,7 +84,7 @@ describe("analytics", () => {
     const queue = parseQueue();
     expect(queue).toHaveLength(1);
     expect(queue[0]).toMatchObject({ name: "dhikr_completed", props: { count: 33 } });
-    expect(typeof queue[0].ts).toBe("string");
+    expect(typeof queue[0]!.ts).toBe("string");
   });
 
   it("drops the oldest events once the queue exceeds 200 entries", async () => {
@@ -99,8 +99,8 @@ describe("analytics", () => {
 
     const queue = parseQueue();
     expect(queue).toHaveLength(200);
-    expect(queue[0].props?.i).toBe(5);
-    expect(queue[queue.length - 1].props?.i).toBe(204);
+    expect(queue[0]!.props?.i).toBe(5);
+    expect(queue[queue.length - 1]!.props?.i).toBe(204);
   });
 
   it("sends the queue and empties it on a successful flush", async () => {
@@ -113,7 +113,7 @@ describe("analytics", () => {
     await flushEvents();
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [url, init] = fetchMock.mock.calls[0];
+    const [url, init] = fetchMock.mock.calls[0]!;
     expect(String(url)).toContain("/v1/events");
     const body = JSON.parse(init.body);
     expect(body.deviceId).toBe("device-abc");
@@ -171,8 +171,8 @@ describe("analytics", () => {
     await flushEvents();
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    const firstBody = JSON.parse(fetchMock.mock.calls[0][1].body);
-    const secondBody = JSON.parse(fetchMock.mock.calls[1][1].body);
+    const firstBody = JSON.parse(fetchMock.mock.calls[0]![1].body);
+    const secondBody = JSON.parse(fetchMock.mock.calls[1]![1].body);
     expect(firstBody.events).toHaveLength(50);
     expect(secondBody.events).toHaveLength(10);
     expect(parseQueue()).toHaveLength(0);
@@ -186,7 +186,7 @@ describe("analytics", () => {
     await trackEvent("app_opened");
     await flushEvents();
 
-    const [, init] = fetchMock.mock.calls[0];
+    const [, init] = fetchMock.mock.calls[0]!;
     expect(init.headers.authorization).toBe("Bearer token-123");
   });
 
@@ -197,7 +197,7 @@ describe("analytics", () => {
     await trackEvent("app_opened");
     await flushEvents();
 
-    const [, init] = fetchMock.mock.calls[0];
+    const [, init] = fetchMock.mock.calls[0]!;
     expect(init.headers.authorization).toBeUndefined();
   });
 
@@ -223,7 +223,7 @@ describe("analytics", () => {
     await trackEvent("app_opened");
 
     expect(appStateListeners).toHaveLength(1);
-    appStateListeners[0]("background");
+    appStateListeners[0]!("background");
     await waitForMicrotasks();
 
     expect(fetchMock).toHaveBeenCalledTimes(1);

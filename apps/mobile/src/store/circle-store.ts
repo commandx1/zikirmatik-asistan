@@ -69,7 +69,8 @@ export const useCircleStore = create<CircleStore>()(
           const index = state.circles.findIndex((existing) => existing.id === circle.id);
           const circles = [...state.circles];
           if (index >= 0) {
-            const existing = circles[index];
+            // guarded by index >= 0
+            const existing = circles[index]!;
             circles[index] = { ...circle, totalCount: Math.max(existing.totalCount, circle.totalCount) };
           } else {
             circles.push(circle);
@@ -90,11 +91,13 @@ export const useCircleStore = create<CircleStore>()(
       bumpTotal: (id, total) =>
         set((state) => {
           const index = state.circles.findIndex((circle) => circle.id === id);
-          if (index < 0 || total <= state.circles[index].totalCount) {
+          // state.circles[index] is safe once index >= 0 short-circuits the OR
+          if (index < 0 || total <= state.circles[index]!.totalCount) {
             return {};
           }
           const circles = [...state.circles];
-          circles[index] = { ...circles[index], totalCount: total };
+          // guarded by index >= 0 above
+          circles[index] = { ...circles[index]!, totalCount: total };
           return { circles };
         }),
 
