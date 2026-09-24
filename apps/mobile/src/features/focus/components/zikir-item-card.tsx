@@ -275,6 +275,8 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
         </View>
         <Pressable
           onPress={toggleMenu}
+          accessibilityRole='button'
+          accessibilityLabel={t('focus:card.menu')}
           className='h-8 w-8 items-center justify-center rounded-full bg-[--bg]'
           style={isMenuOpen ? { backgroundColor: withAlpha(tokens.textPrimary, 0.1) } : undefined}
         >

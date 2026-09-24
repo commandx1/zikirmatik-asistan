@@ -110,7 +110,6 @@ export function useWidgetSync(): void {
   const virdActiveProgramId = useVirdStore((state) => state.activeProgramId);
   const circleTodayCounts = useCircleStore((state) => state.todayCounts);
   const profileLocale = useProfileStore((state) => state.locale);
-  const profileStreakDays = useProfileStore((state) => state.streakDays);
   const themeName = useThemeStore((state) => state.themeName);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
   const sessionUserIdRef = useRef<string | undefined>(sessionUserId);
@@ -159,7 +158,6 @@ export function useWidgetSync(): void {
     virdActiveProgramId,
     circleTodayCounts,
     profileLocale,
-    profileStreakDays,
     themeName
   ]);
 

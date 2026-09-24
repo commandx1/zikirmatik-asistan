@@ -51,6 +51,8 @@ export function ConfirmModal({
           <View className='mt-5 gap-2'>
             <Pressable
               onPress={onConfirm}
+              accessibilityRole='button'
+              accessibilityLabel={confirmLabel}
               className='h-11 items-center justify-center rounded-full border px-4'
               style={{ borderColor: confirmBorder, backgroundColor: confirmBg }}
             >
@@ -61,6 +63,8 @@ export function ConfirmModal({
             {cancelLabel ? (
               <Pressable
                 onPress={onCancel}
+                accessibilityRole='button'
+                accessibilityLabel={cancelLabel}
                 className='h-10 items-center justify-center rounded-full px-4'
               >
                 <Text className='text-sm font-medium' style={{ color: tokens.textMuted }}>

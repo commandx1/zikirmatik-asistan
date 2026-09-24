@@ -3,6 +3,9 @@
     "title": "Zikirmatik Guide",
     "subtitle": "{{greeting}} • Streak {{streak}}"
   },
+  "a11y": {
+    "tapAnywhereToggle": "Tap anywhere"
+  },
   "greeting": "Hi, {{name}}",
   "defaultName": "friend",
   "streakLabel": "{{count}} days",

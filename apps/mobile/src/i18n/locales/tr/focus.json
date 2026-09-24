@@ -57,7 +57,8 @@
       "message": "Bu zikri Zikirlerim listesinden kaldırmak istediğine emin misin?",
       "confirmLabel": "Sil",
       "cancelLabel": "Vazgeç"
-    }
+    },
+    "menu": "Daha fazla seçenek"
   },
   "relativeDate": {
     "saved": "Kayıtlı",

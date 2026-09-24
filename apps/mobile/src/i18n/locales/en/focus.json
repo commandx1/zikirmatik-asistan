@@ -57,7 +57,8 @@
       "message": "Are you sure you want to remove this dhikr from your list?",
       "confirmLabel": "Delete",
       "cancelLabel": "Cancel"
-    }
+    },
+    "menu": "More options"
   },
   "relativeDate": {
     "saved": "Saved",

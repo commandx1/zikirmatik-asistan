@@ -79,7 +79,7 @@ export const useAuthStore = create<AuthStore>()(
           }
 
           if (previousUserId && previousUserId !== session.userId) {
-            resetSessionScopedStores();
+            resetSessionScopedStores(previousUserId);
           }
 
           set({
@@ -120,7 +120,7 @@ export const useAuthStore = create<AuthStore>()(
         return refreshPromise;
       },
       signOut: async () => {
-        resetSessionScopedStores();
+        resetSessionScopedStores(get().session?.userId);
         set({
           status: "signed_out",
           guestMode: false,

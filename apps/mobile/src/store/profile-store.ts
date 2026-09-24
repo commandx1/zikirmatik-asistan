@@ -7,9 +7,6 @@ import { resolveHapticsPattern, type HapticsPattern } from "../services/haptics-
 type ProfileState = {
   displayName: string;
   memberSinceLabel: string;
-  totalDhikr: number;
-  streakDays: number;
-  activeDays: number;
   isPremium: boolean;
   locale: SupportedLocale;
   reminderTime: string;
@@ -43,9 +40,6 @@ export const useProfileStore = create<ProfileState>()(
     (set) => ({
       displayName: "Misafir",
       memberSinceLabel: "",
-      totalDhikr: 0,
-      streakDays: 0,
-      activeDays: 0,
       isPremium: false,
       locale: detectDeviceLocale(),
       reminderTime: "08:00",
@@ -83,9 +77,6 @@ export const useProfileStore = create<ProfileState>()(
         set({
           displayName: "Misafir",
           memberSinceLabel: "",
-          totalDhikr: 0,
-          streakDays: 0,
-          activeDays: 0,
           isPremium: false,
           reminderTime: "08:00",
           dailyReminderEnabled: false,

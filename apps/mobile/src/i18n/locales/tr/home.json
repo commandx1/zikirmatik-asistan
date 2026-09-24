@@ -3,6 +3,9 @@
     "title": "Zikirmatik Asistan",
     "subtitle": "{{greeting}} • Seri {{streak}}"
   },
+  "a11y": {
+    "tapAnywhereToggle": "Herhangi bir yere dokun"
+  },
   "greeting": "Selam, {{name}}",
   "defaultName": "Dostum",
   "streakLabel": "{{count}} gün",

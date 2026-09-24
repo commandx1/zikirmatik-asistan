@@ -2,6 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { ComponentProps, ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type IconName = ComponentProps<typeof FontAwesome6>["name"];
 
@@ -13,6 +14,7 @@ type PageHeaderProps = {
   leftIconName?: IconName;
   leftIconStyle?: "solid" | "regular";
   onPressLeft?: () => void;
+  leftAccessibilityLabel?: string;
   leftAccessory?: ReactNode;
   rightIconName?: IconName;
   rightIconStyle?: "solid" | "regular";
@@ -28,6 +30,7 @@ export function PageHeader({
   leftIconName,
   leftIconStyle = "regular",
   onPressLeft,
+  leftAccessibilityLabel,
   leftAccessory,
   rightIconName,
   rightIconStyle = "regular",
@@ -35,6 +38,7 @@ export function PageHeader({
   rightAccessory,
 }: PageHeaderProps) {
   const { tokens } = useThemeTokens();
+  const { t } = useTranslation("components");
 
   return (
     <View className="px-5 pb-4 pt-12">
@@ -46,6 +50,8 @@ export function PageHeader({
             <Pressable
               onPress={onPressLeft}
               testID={leftTestID}
+              accessibilityRole="button"
+              accessibilityLabel={leftAccessibilityLabel ?? t("components:a11y.pageHeaderBack")}
               className="h-9 w-9 items-center justify-center rounded-full border border-white/10"
             >
               <FontAwesome6 name={leftIconName} iconStyle={leftIconStyle} size={14} color={tokens.textMuted} />

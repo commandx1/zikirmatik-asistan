@@ -17,6 +17,8 @@ export function PrimaryCtaButton({
 }: PrimaryCtaButtonProps) {
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
       {...props}
       className={cx("relative items-center rounded-full bg-[#C8972A] py-4", className)}
       style={[{ boxShadow: "0 0 20px rgba(200,151,42,0.35)" }, style]}

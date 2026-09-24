@@ -1,4 +1,7 @@
 {
+  "a11y": {
+    "pageHeaderBack": "Geri"
+  },
   "appSelectbox": {
     "placeholder": "Seçiniz",
     "title": "Seçenekler"

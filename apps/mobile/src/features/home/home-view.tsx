@@ -49,11 +49,14 @@ const DailyEsmaWelcomeModal = lazy(() =>
 const TapAnywhereToggle = memo(function TapAnywhereToggle({ onPress, spotlightRef }: { onPress: () => void; spotlightRef?: React.RefObject<View | null> }) {
   const { tapAnywhereEnabled: active } = useHomeUi()
   const { tokens } = useThemeTokens()
+  const { t } = useTranslation('home')
 
   return (
     <Pressable
       ref={spotlightRef}
       onPress={onPress}
+      accessibilityRole='button'
+      accessibilityLabel={t('home:a11y.tapAnywhereToggle')}
       className='h-9 w-9 items-center justify-center rounded-full border'
       style={{
         borderColor: active ? tokens.accent : withAlpha(tokens.textPrimary, 0.12),

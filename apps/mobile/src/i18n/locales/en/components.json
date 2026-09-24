@@ -1,4 +1,7 @@
 {
+  "a11y": {
+    "pageHeaderBack": "Back"
+  },
   "appSelectbox": {
     "placeholder": "Select",
     "title": "Options"
