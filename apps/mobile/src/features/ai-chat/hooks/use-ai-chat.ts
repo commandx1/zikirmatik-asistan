@@ -15,7 +15,7 @@ import {
   type ChatStreamHandlers
 } from "../services/ai-chat-api-client";
 import type { AiSourceCitation, ChatConversationSummary, ChatCoverage, ChatMessageRaw, ChatMode } from "../types";
-import { fetchAiCredits, fetchAiQuota } from "../../ai-shared/services/ai-queries";
+import { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
 
 export type ChatMessage = {
   id: string;
@@ -35,13 +35,11 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
   const { t } = useTranslation("ai-chat");
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
-  const isPremium = useProfileStore((s) => s.isPremium);
   const locale = useProfileStore((s) => s.locale) as "tr" | "en";
 
   const [conversationId, setConversationId] = useState<string>();
   const [messages, setMessages] = useState<ChatMessageRaw[]>([]);
   const [conversations, setConversations] = useState<ChatConversationSummary[]>([]);
-  const [isConversationsLoading, setIsConversationsLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isSending, setIsSending] = useState(false);
   // Token akışı başlayana kadar true — TypingIndicator bu süre boyunca
@@ -51,8 +49,14 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
   const [loadingStep, setLoadingStep] = useState("");
   const [error, setError] = useState<string>();
   const [aiUnavailable, setAiUnavailable] = useState<AiUnavailableState | null>(null);
-  const [creditBalance, setCreditBalance] = useState(0);
-  const [creditsConfirmed, setCreditsConfirmed] = useState(false);
+  const {
+    creditBalance,
+    refreshCredits,
+    ensureCreditsAvailable,
+    applyRemainingCredits,
+    markInsufficient,
+    waitForCredits
+  } = useAiCredits({ onOpenPremiumSheet });
   const pendingMessageRef = useRef<string>("");
   // AI_UNAVAILABLE alındığında son gönderilen metni burada saklarız —
   // kredi düşülmediği/hiçbir şey kalıcılaştırılmadığı için pendingMessageRef'ten
@@ -66,76 +70,26 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
     };
   }, []);
 
-  const refreshCredits = useCallback(async () => {
-    if (authStatus !== "authenticated") {
-      setCreditBalance(0);
-      setCreditsConfirmed(false);
-      return { balance: 0, isPremium: false };
-    }
-
-    try {
-      const credits = await fetchAiCredits();
-      setCreditBalance(Math.max(0, Math.floor(credits.balance)));
-      setCreditsConfirmed(true);
-      return { balance: credits.balance, isPremium: credits.isPremium };
-    } catch {
-      try {
-        const quota = await fetchAiQuota();
-        const fallbackBalance = quota.isPremium
-          ? Number.MAX_SAFE_INTEGER
-          : Math.max(0, (quota.limit ?? 1) - quota.used);
-        setCreditBalance(fallbackBalance);
-        setCreditsConfirmed(true);
-        return { balance: fallbackBalance, isPremium: quota.isPremium };
-      } catch {
-        return { balance: creditBalance, isPremium };
-      }
-    }
-  }, [authStatus, creditBalance, isPremium]);
-
-  const ensureCreditsAvailable = useCallback(async () => {
-    if (authStatus !== "authenticated" || !userId) {
-      return false;
-    }
-
-    const shouldRefresh = !creditsConfirmed || creditBalance <= 0;
-    const state = shouldRefresh
-      ? await refreshCredits()
-      : { balance: creditBalance, isPremium };
-
-    if (state.balance > 0 || state.isPremium) {
-      return true;
-    }
-
-    onOpenPremiumSheet?.();
-    return false;
-  }, [authStatus, creditBalance, creditsConfirmed, isPremium, onOpenPremiumSheet, refreshCredits, userId]);
-
   const loadConversations = useCallback(async () => {
     if (authStatus !== "authenticated") {
       setConversations([]);
       return;
     }
 
-    setIsConversationsLoading(true);
     try {
       const response = await listChatConversations(1, 20);
       setConversations(response.items);
     } catch {
       // sessizce yok say — sohbet ekranı geçmiş olmadan da çalışır
-    } finally {
-      setIsConversationsLoading(false);
     }
   }, [authStatus]);
 
   useEffect(() => {
     void loadConversations();
     void refreshCredits();
-    // Yalnızca authStatus değiştiğinde tetiklenir; loadConversations/
-    // refreshCredits'i deps'e eklemek kredi durumu değiştikçe (kendi
-    // bağımlılıkları) gereksiz yeniden tetiklemeye yol açardı.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authStatus]);
+    // Yalnızca authStatus değiştiğinde tetiklenir: loadConversations yalnızca
+    // authStatus'a bağlı, refreshCredits kimliği sabit (useStableCallback).
+  }, [authStatus, loadConversations, refreshCredits]);
 
   const openConversation = useCallback(
     async (id: string) => {
@@ -256,10 +210,7 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
             })
           );
 
-          if (typeof payload.remainingCredits === "number") {
-            setCreditBalance(Math.max(0, Math.floor(payload.remainingCredits)));
-            setCreditsConfirmed(true);
-          }
+          applyRemainingCredits(payload.remainingCredits);
         },
         onError: (payload) => {
           // Akış zaten başlamıştı (bkz. ChatStreamMidwayError backend'de) —
@@ -286,8 +237,8 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
         );
 
         if (err instanceof AiChatApiError && err.code === AI_CREDIT_INSUFFICIENT_CODE) {
-          setCreditBalance(0);
-          setCreditsConfirmed(true);
+          // Not: 503 dalının aksine metin girdiye geri konmaz (mevcut davranış).
+          markInsufficient();
           pendingMessageRef.current = text;
           onOpenPremiumSheet?.();
         } else if (err instanceof AiChatApiError && err.code === AI_UNAVAILABLE_CODE) {
@@ -311,7 +262,7 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
         setLoadingStep("");
       }
     },
-    [authStatus, conversationId, locale, onOpenPremiumSheet, t, userId]
+    [applyRemainingCredits, authStatus, conversationId, locale, markInsufficient, onOpenPremiumSheet, t, userId]
   );
 
   const sendMessage = useCallback(async () => {
@@ -363,37 +314,21 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
     setIsSending(true);
     setLoadingStep(t("ai-chat:loading.creditsLoading"));
 
-    const MAX_ATTEMPTS = 8;
-    const POLL_INTERVAL_MS = 2000;
-
-    try {
-      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
-        if (attempt > 0) {
-          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-        }
-
-        const state = await refreshCredits();
-        if (state.balance > 0 || state.isPremium) {
-          const pending = pendingMessageRef.current || inputValue.trim();
-          pendingMessageRef.current = "";
-          setIsSending(false);
-          setLoadingStep("");
-          if (pending) {
-            await runSend(pending);
-          }
-          return;
-        }
-      }
-
+    if (!(await waitForCredits())) {
       setIsSending(false);
       setLoadingStep("");
       setError(t("ai-chat:loading.creditsLoadingRetry"));
-    } catch {
-      setIsSending(false);
-      setLoadingStep("");
-      setError(t("ai-chat:loading.creditsLoadingRetry"));
+      return;
     }
-  }, [inputValue, isSending, refreshCredits, runSend, t]);
+
+    const pending = pendingMessageRef.current || inputValue.trim();
+    pendingMessageRef.current = "";
+    setIsSending(false);
+    setLoadingStep("");
+    if (pending) {
+      await runSend(pending);
+    }
+  }, [inputValue, isSending, runSend, t, waitForCredits]);
 
   const resolvedMessages = useMemo<ChatMessage[]>(
     () =>
@@ -413,7 +348,6 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
     conversationId,
     messages: resolvedMessages,
     conversations,
-    isConversationsLoading,
     inputValue,
     setInputValue,
     isSending,
@@ -426,7 +360,6 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
     sendMessage,
     resumeAfterCreditPurchase,
     openConversation,
-    startNewConversation,
-    refreshConversations: loadConversations
+    startNewConversation
   };
 }

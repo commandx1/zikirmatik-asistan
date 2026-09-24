@@ -18,7 +18,7 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useVirdStore } from "../../../store/vird-store";
 import { trackEvent } from "../../../lib/analytics";
 import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
-import { fetchAiCredits } from "../../ai-shared/services/ai-queries";
+import { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
 import {
   AiApiError,
   createAiVirdProgram,
@@ -44,8 +44,6 @@ const VIRD_AI_PROGRAM_CREDIT_COST = 3;
 
 type AiUnavailableState = { message: string };
 
-type CreditState = { balance: number; isPremium: boolean };
-
 export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
   const { t } = useTranslation("ai-guide");
   const locale = useAppLocale();
@@ -59,10 +57,15 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
   const [slots, setSlots] = useState<VirdSlotKey[]>(["morning"]);
   const [prayerSelection, setPrayerSelection] = useState<number[]>([1, 2, 3, 4, 5]);
 
-  // --- credits ---
-  const [creditBalance, setCreditBalance] = useState(0);
-  const [isPremiumUser, setIsPremiumUser] = useState(false);
-  const [creditsConfirmed, setCreditsConfirmed] = useState(false);
+  // --- credits --- (ön kontrol her seferinde tazeler; eşik 3 kredi)
+  const {
+    creditBalance,
+    refreshCredits,
+    ensureCreditsAvailable,
+    applyRemainingCredits,
+    markInsufficient,
+    waitForCredits
+  } = useAiCredits({ requiredCredits: VIRD_AI_PROGRAM_CREDIT_COST, alwaysRefresh: true, onOpenPremiumSheet });
 
   // --- generation ---
   const [isGenerating, setIsGenerating] = useState(false);
@@ -90,53 +93,9 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
     );
   }, []);
 
-  const refreshCredits = useCallback(async (): Promise<CreditState> => {
-    if (authStatus !== "authenticated") {
-      setCreditBalance(0);
-      setIsPremiumUser(false);
-      setCreditsConfirmed(false);
-      return { balance: 0, isPremium: false };
-    }
-
-    try {
-      const credits = await fetchAiCredits();
-      const balance = Math.max(0, Math.floor(credits.balance));
-      const isPremium = Boolean(credits.isPremium);
-      setCreditBalance(balance);
-      setIsPremiumUser(isPremium);
-      setCreditsConfirmed(true);
-      return { balance, isPremium };
-    } catch {
-      // Kredi bilgisi alınamazsa (ağ hatası) mevcut yerel state korunur —
-      // aşağıdaki ensureCreditsAvailable bu durumda 0/false ile "yetersiz"
-      // sayıp premium sheet'i açar; kullanıcı tekrar deneyebilir.
-      return { balance: creditsConfirmed ? creditBalance : 0, isPremium: isPremiumUser };
-    }
-  }, [authStatus, creditBalance, creditsConfirmed, isPremiumUser]);
-
-  // Yalnızca authStatus değiştiğinde tetiklenir — refreshCredits'i deps'e
-  // eklemek her render'da yeniden çalışmasına yol açardı (kendisi de
-  // creditBalance/isPremiumUser'a bağlı, bu yüzden her kredi güncellemesinde
-  // kimliği değişir); use-ai-guide.ts'teki eşdeğer efekt de aynı nedenle
-  // yalnızca [authStatus, cacheKey]'e bağlıdır.
   useEffect(() => {
     void refreshCredits();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authStatus]);
-
-  const ensureCreditsAvailable = useCallback(async (): Promise<boolean> => {
-    if (authStatus !== "authenticated" || !userId) {
-      return false;
-    }
-
-    const state = await refreshCredits();
-    if (state.isPremium || state.balance >= VIRD_AI_PROGRAM_CREDIT_COST) {
-      return true;
-    }
-
-    onOpenPremiumSheet?.();
-    return false;
-  }, [authStatus, onOpenPremiumSheet, refreshCredits, userId]);
+  }, [authStatus, refreshCredits]);
 
   const executeGenerate = useCallback(
     async (payload: CreateAiVirdProgramPayload) => {
@@ -163,18 +122,14 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
 
         setProgramId(response.programId);
         setProgramPreview(response.program);
-        if (typeof response.remainingCredits === "number") {
-          setCreditBalance(Math.max(0, Math.floor(response.remainingCredits)));
-          setCreditsConfirmed(true);
-        }
+        applyRemainingCredits(response.remainingCredits);
         void trackEvent("program_generated", { durationDays: payload.durationDays });
       } catch (error) {
         const fallbackMessage = t("ai-guide:virdProgram.errors.generationFailed");
         const classification = mapAiVirdCreateError(error, fallbackMessage);
 
         if (classification.kind === "creditInsufficient") {
-          setCreditBalance(0);
-          setCreditsConfirmed(true);
+          markInsufficient();
           pendingGenerateRequestRef.current = payload;
           onOpenPremiumSheet?.();
         } else if (classification.kind === "unavailable") {
@@ -191,7 +146,7 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
         setIsGenerating(false);
       }
     },
-    [authStatus, onOpenPremiumSheet, t, userId]
+    [applyRemainingCredits, authStatus, markInsufficient, onOpenPremiumSheet, t, userId]
   );
 
   const submitGenerate = useCallback(async () => {
@@ -243,35 +198,19 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
     setPostPurchaseNotice(undefined);
     setIsGenerating(true);
 
-    const MAX_ATTEMPTS = 8;
-    const POLL_INTERVAL_MS = 2000;
-
-    try {
-      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
-        if (attempt > 0) {
-          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-        }
-
-        const state = await refreshCredits();
-        if (state.isPremium || state.balance >= VIRD_AI_PROGRAM_CREDIT_COST) {
-          const payload = pendingGenerateRequestRef.current;
-          pendingGenerateRequestRef.current = null;
-          setIsGenerating(false);
-          if (!payload) {
-            return;
-          }
-          await executeGenerate(payload);
-          return;
-        }
-      }
-
+    if (!(await waitForCredits())) {
       setIsGenerating(false);
       setPostPurchaseNotice(t("ai-guide:virdProgram.loading.creditsLoadingRetry"));
-    } catch {
-      setIsGenerating(false);
-      setPostPurchaseNotice(t("ai-guide:virdProgram.loading.creditsLoadingRetry"));
+      return;
     }
-  }, [executeGenerate, isGenerating, refreshCredits, t]);
+
+    const payload = pendingGenerateRequestRef.current;
+    pendingGenerateRequestRef.current = null;
+    setIsGenerating(false);
+    if (payload) {
+      await executeGenerate(payload);
+    }
+  }, [executeGenerate, isGenerating, t, waitForCredits]);
 
   const discardDraft = useCallback(() => {
     setProgramId(undefined);
@@ -406,15 +345,12 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
     togglePrayerIndex,
     // credits
     creditBalance,
-    isPremiumUser,
-    requiredCredits: VIRD_AI_PROGRAM_CREDIT_COST,
     // generation
     isGenerating,
     generationError,
     offTopicMessage,
     aiUnavailable,
     postPurchaseNotice,
-    programId,
     programPreview,
     submitGenerate,
     retryGenerateAfterUnavailable,

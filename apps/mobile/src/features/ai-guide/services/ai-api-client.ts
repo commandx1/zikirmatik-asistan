@@ -1,6 +1,10 @@
 import { i18n } from "../../../i18n";
 import type { LocalizedText, VirdSlotKey } from "@zikirmatik/shared";
-import { AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
+import {
+  AI_CREDIT_INSUFFICIENT_CODE,
+  AI_UNAVAILABLE_CODE,
+  DAILY_LIMIT_REACHED_CODE
+} from "../../ai-shared/ai-error-codes";
 import { ApiError, request } from "../../../lib/http/client";
 
 export type CreateAiRecommendationPayload = {
@@ -101,15 +105,13 @@ export function isAiClarificationResponse(
   return response.kind ? response.kind === "clarification" : Boolean(response.needsClarification);
 }
 
-export const DAILY_LIMIT_REACHED_CODE = "DAILY_LIMIT_REACHED";
-export const AI_CREDIT_INSUFFICIENT_CODE = "AI_CREDIT_INSUFFICIENT";
 /**
  * Sunucu tarafında geçici bir kesinti/hata durumunda (503) dönen kod.
  * Bu hata alındığında kredi düşülmemiştir — istemci aynı flowId ile
  * "Tekrar dene" seçeneği sunmalı (bkz. use-ai-guide.ts retryLastRequest).
  * Ortak tanım: ../../ai-shared/ai-error-codes (ai-chat ile paylaşılır).
  */
-export { AI_UNAVAILABLE_CODE };
+export { AI_CREDIT_INSUFFICIENT_CODE, AI_UNAVAILABLE_CODE, DAILY_LIMIT_REACHED_CODE };
 
 export type BackendAiRecommendation = {
   _id: string;

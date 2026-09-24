@@ -4,13 +4,12 @@
 // için (native EventSource POST body desteklemediğinden) elle kullanılıyor.
 import { fetch as streamFetch } from "expo/fetch";
 import { i18n } from "../../../i18n";
-import { AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
+import { AI_CREDIT_INSUFFICIENT_CODE, AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
 import type { AiSourceCitation, ChatConversationSummary, ChatMessageRaw, ChatMode, ChatCoverage } from "../types";
 import { API_BASE_URL } from "../../../lib/env";
 import { ApiError, errorFromBody, request, safeParseJson } from "../../../lib/http/client";
 
-export const AI_CREDIT_INSUFFICIENT_CODE = "AI_CREDIT_INSUFFICIENT";
-export { AI_UNAVAILABLE_CODE };
+export { AI_CREDIT_INSUFFICIENT_CODE, AI_UNAVAILABLE_CODE };
 
 export const AiChatApiError = ApiError;
 export type AiChatApiError = ApiError;

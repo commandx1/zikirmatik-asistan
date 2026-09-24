@@ -14,7 +14,8 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import { resolveLocalizedText } from "@zikirmatik/shared";
 import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
-import { fetchAiCredits, fetchAiQuota, fetchAiRecommendations } from "../../ai-shared/services/ai-queries";
+import { fetchAiRecommendations } from "../../ai-shared/services/ai-queries";
+import { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
 import {
   AiApiError,
   AI_CREDIT_INSUFFICIENT_CODE,
@@ -28,8 +29,6 @@ import {
 import { createAiProgressSocket } from "../services/ai-progress-socket";
 import { buildAiGuideHistoryItems, resolveVisibleAiGuideHistory } from "../services/ai-guide-history-service";
 import { useProfileStore } from "../../../store/profile-store";
-import { i18n } from "../../../i18n";
-import { toIntlLocale } from "../../../lib/locale-format";
 
 /**
  * AsyncStorage cache payload şekli. `version: 2` ile dil-bağımlı alanların
@@ -82,11 +81,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [historyItems, setHistoryItems] = useState<AiGuideHistoryItemRaw[]>([]);
   const [isHistoryExpanded, setHistoryExpanded] = useState(false);
   const [lastPrompt, setLastPrompt] = useState("");
-  const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
-  const [creditBalance, setCreditBalance] = useState(0);
-  const [dailyGrant, setDailyGrant] = useState(1);
-  const [monthlyGrant, setMonthlyGrant] = useState(0);
-  const [creditsConfirmed, setCreditsConfirmed] = useState(false);
   const [activeFlowId, setActiveFlowId] = useState<string>();
   const [loadingStep, setLoadingStep] = useState("");
   const [postPurchaseNotice, setPostPurchaseNotice] = useState<string>();
@@ -98,7 +92,15 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
-  const isPremium = useProfileStore((s) => s.isPremium);
+  const {
+    creditBalance,
+    refreshCredits,
+    resetCredits,
+    ensureCreditsAvailable,
+    applyRemainingCredits,
+    markInsufficient,
+    waitForCredits
+  } = useAiCredits({ onOpenPremiumSheet });
   // Canonical locale kaynağı: useProfileStore.locale (reactive selector).
   // setLocale() hem bu store'u hem i18n.changeLanguage()'i günceller, ama
   // burada zustand selector kullanmak dil değişince re-render'ı garanti eder
@@ -111,35 +113,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
   const cacheKey = userId ? aiGuideLastKey(userId) : "";
 
-  const refreshCredits = useCallback(async () => {
-    if (authStatus !== "authenticated") {
-      setCreditBalance(0);
-      setDailyGrant(1);
-      setMonthlyGrant(0);
-      setCreditsConfirmed(false);
-      return { balance: 0, isPremium: false };
-    }
-
-    try {
-      const credits = await fetchAiCredits();
-      setCreditBalance(Math.max(0, Math.floor(credits.balance)));
-      setDailyGrant(Math.max(0, Math.floor(credits.dailyGrant)));
-      setMonthlyGrant(Math.max(0, Math.floor(credits.monthlyGrant)));
-      setCreditsConfirmed(true);
-      return { balance: credits.balance, isPremium: credits.isPremium };
-    } catch {
-      const quota = await fetchAiQuota();
-      const fallbackBalance = quota.isPremium
-        ? Number.MAX_SAFE_INTEGER
-        : Math.max(0, (quota.limit ?? 1) - quota.used);
-      setCreditBalance(fallbackBalance);
-      setDailyGrant(quota.isPremium ? 0 : quota.limit ?? 1);
-      setMonthlyGrant(0);
-      setCreditsConfirmed(true);
-      return { balance: fallbackBalance, isPremium: quota.isPremium };
-    }
-  }, [authStatus]);
-
   useEffect(() => {
     setError(undefined);
     setRecommendationId(undefined);
@@ -149,12 +122,9 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     setHistoryExpanded(false);
     setLastPrompt("");
     setIntentInput("");
-    setCreditBalance(0);
-    setDailyGrant(1);
-    setMonthlyGrant(0);
-    setCreditsConfirmed(false);
+    resetCredits();
     setActiveFlowId(undefined);
-  }, [authStatus, cacheKey]);
+  }, [authStatus, cacheKey, resetCredits]);
 
   const hydrateLastResultFromCache = useCallback(async () => {
     if (!cacheKey) {
@@ -268,43 +238,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       isCancelled = true;
     };
   }, [authStatus, cacheKey, hydrateLastResultFromBackend, hydrateLastResultFromCache]);
-
-  // Eski isPremiumVerified (getUserById) kaldırıldı: yalnızca
-  // ensureCreditsAvailable'ın balance > 0 dalında okunuyordu, orada karar
-  // zaten balance ile veriliyor — gözlemlenebilir etkisi yoktu.
-  const loadCurrentState = useCallback(() => {
-    setWeekdayLabel(formatWeekdayLabel());
-  }, []);
-
-  useEffect(() => {
-    loadCurrentState();
-  }, [loadCurrentState]);
-
-  const ensureCreditsAvailable = useCallback(async () => {
-    if (authStatus !== "authenticated" || !userId) {
-      return false;
-    }
-
-    const shouldRefresh = !creditsConfirmed || creditBalance <= 0;
-    const state = shouldRefresh
-      ? await refreshCredits()
-      : { balance: creditBalance, isPremium };
-
-    if (state.balance > 0 || state.isPremium) {
-      return true;
-    }
-
-    onOpenPremiumSheet?.();
-    return false;
-  }, [
-    authStatus,
-    creditBalance,
-    creditsConfirmed,
-    isPremium,
-    onOpenPremiumSheet,
-    refreshCredits,
-    userId
-  ]);
 
   const applyPrompt = (value: string) => {
     setIntentInput(value);
@@ -440,10 +373,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           });
         }
 
-        if (typeof response.remainingCredits === "number") {
-          setCreditBalance(Math.max(0, Math.floor(response.remainingCredits)));
-          setCreditsConfirmed(true);
-        }
+        applyRemainingCredits(response.remainingCredits);
 
         setActiveFlowId(undefined);
         setIntentInput("");
@@ -453,8 +383,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           (error.code === AI_CREDIT_INSUFFICIENT_CODE ||
             error.code === DAILY_LIMIT_REACHED_CODE)
         ) {
-          setCreditBalance(0);
-          setCreditsConfirmed(true);
+          markInsufficient();
           pendingRequestRef.current = request;
           onOpenPremiumSheet?.();
         } else if (error instanceof AiApiError && error.code === AI_UNAVAILABLE_CODE) {
@@ -473,7 +402,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         setLoadingStep("");
       }
     },
-    [authStatus, cacheKey, onOpenPremiumSheet, userId, t]
+    [applyRemainingCredits, authStatus, cacheKey, markInsufficient, onOpenPremiumSheet, userId, t]
   );
 
   const submitIntent = async () => {
@@ -531,44 +460,21 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     setIsLoading(true);
     setLoadingStep(t("ai-guide:loading.creditsLoading"));
 
-    const MAX_ATTEMPTS = 8;
-    const POLL_INTERVAL_MS = 2000;
-
-    try {
-      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
-        if (attempt > 0) {
-          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-        }
-
-        const state = await refreshCredits();
-        if (state.balance > 0 || state.isPremium) {
-          const request =
-            pendingRequestRef.current ??
-            (intentInput.trim()
-              ? { freeText: intentInput.trim(), flowId: activeFlowId || createFlowId() }
-              : null);
-          pendingRequestRef.current = null;
-
-          if (!request) {
-            setIsLoading(false);
-            setLoadingStep("");
-            return;
-          }
-
-          setIsLoading(false);
-          setLoadingStep("");
-          await executeRecommendationRequest(request);
-          return;
-        }
-      }
-
+    if (!(await waitForCredits())) {
       setIsLoading(false);
       setLoadingStep("");
       setPostPurchaseNotice(t("ai-guide:loading.creditsLoadingRetry"));
-    } catch {
-      setIsLoading(false);
-      setLoadingStep("");
-      setPostPurchaseNotice(t("ai-guide:loading.creditsLoadingRetry"));
+      return;
+    }
+
+    const request =
+      pendingRequestRef.current ??
+      (intentInput.trim() ? { freeText: intentInput.trim(), flowId: activeFlowId || createFlowId() } : null);
+    pendingRequestRef.current = null;
+    setIsLoading(false);
+    setLoadingStep("");
+    if (request) {
+      await executeRecommendationRequest(request);
     }
   };
 
@@ -662,7 +568,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     closeInfo();
     setIsRefreshing(true);
     try {
-      loadCurrentState();
       await refreshCredits();
     } finally {
       setIsRefreshing(false);
@@ -670,7 +575,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   };
 
   return {
-    weekdayLabel,
     intentInput,
     showInfo,
     isLoading,
@@ -684,16 +588,12 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     aiUnavailable,
     retryLastRequest,
     recommendationId,
-    lastPrompt,
     assistantNote,
     recommendations: resolvedRecommendations,
     historyItems: resolvedHistoryItems,
     visibleHistoryItems,
     isHistoryExpanded,
-    canExpandHistory: historyItems.length > 2,
     creditBalance,
-    dailyGrant,
-    monthlyGrant,
     closeInfo,
     toggleInfo,
     applyPrompt,
@@ -706,21 +606,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     toggleHistoryExpanded: () => setHistoryExpanded((value) => !value)
   };
 }
-
-function formatWeekdayLabel(date: Date = new Date()) {
-  const locale = toIntlLocale(useProfileStore.getState().locale);
-  const day = new Intl.DateTimeFormat(locale, { weekday: "long" }).format(date);
-  return i18n.t("ai-guide:weekday.label", { day: capitalize(day, locale) });
-}
-
-function capitalize(value: string, locale: string) {
-  if (!value) {
-    return value;
-  }
-
-  return `${value.charAt(0).toLocaleUpperCase(locale)}${value.slice(1)}`;
-}
-
 
 function resolveSpecialDayContext(specialDayName?: string, freeText?: string) {
   const name = specialDayName?.trim();
