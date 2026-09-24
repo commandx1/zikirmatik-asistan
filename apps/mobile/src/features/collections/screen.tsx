@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { ActivityIndicator, FlatList, Platform, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import PagerView from "react-native-pager-view";
@@ -35,6 +35,20 @@ export function CollectionsScreen() {
     const idx = COLLECTION_CATEGORIES.findIndex((c) => c.key === cat);
     pagerRef.current?.setPage(idx);
   }
+
+  const renderCollectionItem = useCallback(
+    ({ item }: { item: BackendCollection }) => (
+      <CollectionCard
+        item={item}
+        onPress={() => {
+          void trackEvent("collection_opened", { key: item.key });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          router.push(`/collections/${item.key}` as any);
+        }}
+      />
+    ),
+    [router]
+  );
 
   function renderPage(catKey: string) {
     const data =
@@ -75,16 +89,7 @@ export function CollectionsScreen() {
           onRefresh={refresh}
           refreshing={isLoading}
           ListHeaderComponent={showTemplateShelf ? <TemplateShelf /> : undefined}
-          renderItem={({ item }) => (
-            <CollectionCard
-              item={item}
-              onPress={() => {
-                void trackEvent("collection_opened", { key: item.key });
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                router.push(`/collections/${item.key}` as any);
-              }}
-            />
-          )}
+          renderItem={renderCollectionItem}
           ListEmptyComponent={
             <View className="mt-16 items-center">
               <Text className="text-[--text-muted]">{t("collections:screen.emptyList")}</Text>

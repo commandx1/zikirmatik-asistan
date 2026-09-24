@@ -3,10 +3,9 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
+import { PageLayout } from "../../components/ui/page-layout";
 import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
 import { resolveLocalizedText } from "@zikirmatik/shared";
-import { ZikirFilterTabs } from "./components/zikir-filter-tabs";
 import { ZikirFormModal } from "./components/zikir-form-modal";
 import { ZikirListSection } from "./components/zikir-list-section";
 import { ZikirlerimHeader } from "./components/zikirlerim-header";
@@ -25,7 +24,6 @@ function FocusContent() {
   const { t } = useTranslation("focus");
   const locale = useAppLocale();
   const {
-    isRefreshing,
     editingDhikr,
     isUpdateOpen,
     isUpdatingDhikr,
@@ -37,7 +35,6 @@ function FocusContent() {
     unsavedTransitionError
   } = useZikirlerimState();
   const {
-    refresh,
     closeUpdateModal,
     clearUpdateError,
     saveDhikrUpdate,
@@ -73,10 +70,7 @@ function FocusContent() {
           </View>
           <FontAwesome6 name="chevron-right" size={12} color={tokens.textMuted} />
         </Pressable>
-        <PageScrollView contentInnerClassName="w-full" bottomPadding={32} onRefresh={refresh} refreshing={isRefreshing}>
-          <ZikirFilterTabs />
-          <ZikirListSection />
-        </PageScrollView>
+        <ZikirListSection />
         <ZikirFormModal
           visible={isUpdateOpen}
           title={t("focus:editModal.title")}

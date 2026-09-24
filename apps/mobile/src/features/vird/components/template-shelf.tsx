@@ -1,12 +1,45 @@
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, type Router } from "expo-router";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { VirdTemplateSummary } from "@zikirmatik/shared";
 import { resolveLocalizedText } from "@zikirmatik/shared";
 import { fetchVirdTemplates } from "../services/vird-api-client";
 import { useAppLocale } from "../../../i18n";
+
+type TemplateRowProps = {
+  item: VirdTemplateSummary;
+  vertical: boolean;
+  locale: ReturnType<typeof useAppLocale>;
+  t: TFunction;
+  router: Router;
+};
+
+const TemplateRow = memo(function TemplateRow({ item, vertical, locale, t, router }: TemplateRowProps) {
+  return (
+    <Pressable
+      onPress={() => router.push({ pathname: "/vird/template/[key]", params: { key: item.key } })}
+      className={vertical ? "mb-3 flex-1 rounded-2xl border border-white/8 bg-[--card] p-3" : "w-40 rounded-2xl border border-white/8 bg-[--card] p-3"}
+      style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+    >
+      {item.isPremium ? (
+        <View className="mb-2 self-start rounded-full bg-[--accent]/15 px-2 py-0.5">
+          <Text className="text-[10px] font-semibold text-[--accent]">{t("vird:templates.premiumBadge")}</Text>
+        </View>
+      ) : null}
+      <Text className="mb-1 text-sm font-semibold leading-5 text-[--text-primary]" numberOfLines={2}>
+        {item.title ? resolveLocalizedText(item.title, locale) : t("vird:templates.untitledFallback")}
+      </Text>
+      {typeof item.dayCount === "number" ? (
+        <Text className="text-xs text-[--text-muted]">
+          {t("vird:templates.dayCountLabel", { count: item.dayCount })}
+        </Text>
+      ) : null}
+    </Pressable>
+  );
+});
 
 // collections/screen.tsx'in "all" sayfasının üstünde (ListHeaderComponent
 // olarak) yatay bir raf olarak; app/vird/templates.tsx'te (B1) `vertical`
@@ -51,6 +84,13 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
     };
   }, [t]);
 
+  const renderItem = useCallback(
+    ({ item }: { item: VirdTemplateSummary }) => (
+      <TemplateRow item={item} vertical={vertical} locale={locale} t={t} router={router} />
+    ),
+    [vertical, locale, t, router]
+  );
+
   if (!isLoading && !error && templates.length === 0) {
     return null;
   }
@@ -80,27 +120,7 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
           columnWrapperStyle={vertical ? { gap: 10 } : undefined}
           numColumns={vertical ? 2 : 1}
           key={vertical ? "vertical" : "horizontal"}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => router.push({ pathname: "/vird/template/[key]", params: { key: item.key } })}
-              className={vertical ? "mb-3 flex-1 rounded-2xl border border-white/8 bg-[--card] p-3" : "w-40 rounded-2xl border border-white/8 bg-[--card] p-3"}
-              style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
-            >
-              {item.isPremium ? (
-                <View className="mb-2 self-start rounded-full bg-[--accent]/15 px-2 py-0.5">
-                  <Text className="text-[10px] font-semibold text-[--accent]">{t("vird:templates.premiumBadge")}</Text>
-                </View>
-              ) : null}
-              <Text className="mb-1 text-sm font-semibold leading-5 text-[--text-primary]" numberOfLines={2}>
-                {item.title ? resolveLocalizedText(item.title, locale) : t("vird:templates.untitledFallback")}
-              </Text>
-              {typeof item.dayCount === "number" ? (
-                <Text className="text-xs text-[--text-muted]">
-                  {t("vird:templates.dayCountLabel", { count: item.dayCount })}
-                </Text>
-              ) : null}
-            </Pressable>
-          )}
+          renderItem={renderItem}
         />
       )}
     </View>

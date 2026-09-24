@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { FlatList, Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs";
+import { PageLayout } from "../../components/ui/page-layout";
 import { usePremiumSheet } from "../../hooks/use-premium-sheet";
 import { useRequireAuth } from "../auth/hooks/use-require-auth";
 import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
@@ -12,7 +14,7 @@ import { ChatTopBar } from "./components/chat-top-bar";
 import { ConversationListSection } from "./components/conversation-list-section";
 import { MessageBubble } from "./components/message-bubble";
 import { TypingIndicator } from "./components/typing-indicator";
-import { useAiChat } from "./hooks/use-ai-chat";
+import { useAiChat, type ChatMessage } from "./hooks/use-ai-chat";
 
 export function AiChatScreen() {
   const { t } = useTranslation("ai-chat");
@@ -27,7 +29,10 @@ export function AiChatScreen() {
     void chat.resumeAfterCreditPurchase();
   };
 
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<FlatList<ChatMessage>>(null);
+  const insets = useSafeAreaInsets();
+  const androidBottomInset = Platform.OS === "android" ? Math.max(insets.bottom, 0) : 0;
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
   // Android'de KeyboardAvoidingView "padding" davranışı edge-to-edge ile
   // güvenilir değil (kapanışta bazen stale offset bırakıyor). Bu yüzden
   // Android'de klavye yüksekliğini event'ten okuyup ChatInput'un altına
@@ -56,6 +61,8 @@ export function AiChatScreen() {
     };
   }, []);
 
+  const renderMessage = useCallback(({ item }: { item: ChatMessage }) => <MessageBubble message={item} />, []);
+
   return (
     <PageLayout>
       {/* Klavye açılınca ChatInput'un görünür kalması için. iOS'ta KAV'ın
@@ -73,54 +80,59 @@ export function AiChatScreen() {
           showNewChat={Boolean(chat.conversationId)}
         />
 
-        <PageScrollView
-          scrollRef={scrollRef}
-          contentInnerClassName="w-full px-5"
+        <FlatList
+          ref={scrollRef}
+          data={chat.messages}
+          keyExtractor={(item) => item.id}
+          renderItem={renderMessage}
           keyboardShouldPersistTaps="handled"
-          bottomPadding={16}
-        >
-          {!chat.conversationId ? (
-            <ConversationListSection
-              items={chat.conversations}
-              activeConversationId={chat.conversationId}
-              onOpenConversation={chat.openConversation}
-            />
-          ) : null}
+          contentInsetAdjustmentBehavior="automatic"
+          showsVerticalScrollIndicator={false}
+          className="flex-1 w-full"
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingBottom: 16 + androidBottomInset + tabBarHeight
+          }}
+          ListHeaderComponent={
+            <>
+              {!chat.conversationId ? (
+                <ConversationListSection
+                  items={chat.conversations}
+                  activeConversationId={chat.conversationId}
+                  onOpenConversation={chat.openConversation}
+                />
+              ) : null}
 
-          {chat.error ? (
-            <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3">
-              <Text className="text-sm text-[#fecaca]">{chat.error}</Text>
-            </View>
-          ) : null}
+              {chat.error ? (
+                <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3">
+                  <Text className="text-sm text-[#fecaca]">{chat.error}</Text>
+                </View>
+              ) : null}
 
-          {chat.aiUnavailable ? (
-            <View className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-4">
-              <Text className="mb-3 text-sm leading-5 text-amber-100/80">
-                {chat.aiUnavailable.message || t("ai-chat:errors.aiUnavailable")}
-              </Text>
-              <Pressable
-                onPress={() => void chat.retryLastMessage()}
-                className="self-start rounded-full bg-amber-500/15 px-4 py-2"
-                accessibilityRole="button"
-                accessibilityLabel={t("ai-chat:actions.retry")}
-              >
-                <Text className="text-xs font-semibold text-amber-200">
-                  {t("ai-chat:actions.retry")}
-                </Text>
-              </Pressable>
-            </View>
-          ) : null}
-
-          {chat.messages.length === 0 ? (
-            <ChatEmptyState />
-          ) : (
-            chat.messages.map((message) => <MessageBubble key={message.id} message={message} />)
-          )}
-
-          {chat.isSending && chat.isAwaitingFirstToken ? (
-            <TypingIndicator stepMessage={chat.loadingStep} />
-          ) : null}
-        </PageScrollView>
+              {chat.aiUnavailable ? (
+                <View className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-4">
+                  <Text className="mb-3 text-sm leading-5 text-amber-100/80">
+                    {chat.aiUnavailable.message || t("ai-chat:errors.aiUnavailable")}
+                  </Text>
+                  <Pressable
+                    onPress={() => void chat.retryLastMessage()}
+                    className="self-start rounded-full bg-amber-500/15 px-4 py-2"
+                    accessibilityRole="button"
+                    accessibilityLabel={t("ai-chat:actions.retry")}
+                  >
+                    <Text className="text-xs font-semibold text-amber-200">
+                      {t("ai-chat:actions.retry")}
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : null}
+            </>
+          }
+          ListEmptyComponent={<ChatEmptyState />}
+          ListFooterComponent={
+            chat.isSending && chat.isAwaitingFirstToken ? <TypingIndicator stepMessage={chat.loadingStep} /> : null
+          }
+        />
 
         <View style={Platform.OS === "android" ? { paddingBottom: androidKeyboardHeight } : undefined}>
           <ChatInput

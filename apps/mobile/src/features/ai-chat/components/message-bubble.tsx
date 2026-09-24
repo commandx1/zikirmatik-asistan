@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Text, View } from "react-native";
 import { i18n } from "../../../i18n";
 import type { ChatMessage } from "../hooks/use-ai-chat";
@@ -7,7 +8,7 @@ type MessageBubbleProps = {
   message: ChatMessage;
 };
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export const MessageBubble = memo(function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.role === "user";
 
   return (
@@ -48,4 +49,4 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       </View>
     </View>
   );
-}
+});

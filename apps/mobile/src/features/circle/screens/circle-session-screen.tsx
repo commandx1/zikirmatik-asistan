@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState, Text } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -69,14 +69,26 @@ export function CircleSessionScreen({ id }: { id: string }) {
   const liveCountRef = useRef(0);
   const seededRef = useRef(false);
   const lastFlushedRef = useRef(0);
-  const prevDisplayRef = useRef(0);
-  const prevDisplaySeededRef = useRef(false);
   // Sunucudan gelen "çift" (toplam, benim payım) HER ZAMAN birlikte set
   // edilir — ikisi ayrı ayrı güncellenirse (ör. yalnız toplam tazelenirse)
   // computeDisplayTotal formülü anlık olarak yanlış bir "başkalarının payı"
   // hesaplardı. Poll'da fresh'ten, flush yanıtında circleTotalCount'tan gelir.
   const serverPairRef = useRef<{ total: number; mine: number } | null>(null);
-  const [, forceRender] = useReducer((x: number) => x + 1, 0);
+
+  // Ekranda gösterilen (asla geriye düşmeyen) toplam — artık ref yerine
+  // state: her artış onCountPress/flush/poll içinde (render GÖVDESİNDE
+  // DEĞİL) hesaplanıp setDisplayTotal ile yazılır. Lazy initializer, aynı
+  // halkaya önceden girilmişse (store'da zaten varsa) ilk render'da doğru
+  // sayıyı göstermek için — sonraki render'larda bir daha okunmaz.
+  const [displayTotal, setDisplayTotal] = useState(
+    () => useCircleStore.getState().circles.find((circle) => circle.id === id)?.totalCount ?? 0
+  );
+  // displayTotal'ın en güncel committed değeri — flush/unmount gibi render
+  // dışı yerlerde okunur (yalnızca effect içinde yazılır, render'da DEĞİL).
+  const displayTotalRef = useRef(displayTotal);
+  useEffect(() => {
+    displayTotalRef.current = displayTotal;
+  }, [displayTotal]);
 
   const detailQuery = useQuery(
     {
@@ -112,7 +124,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
       liveCountRef.current = seed;
       setTodayCount(id, todayKey, seed);
     }
-    forceRender();
+    setDisplayTotal((prev) => computeDisplayTotal(prev, fresh.totalCount, fresh.myTodayCount ?? 0, liveCountRef.current));
   }, [detailQuery.data, id, setTodayCount, todayKey, upsertCircle]);
 
   useEffect(() => {
@@ -135,13 +147,16 @@ export function CircleSessionScreen({ id }: { id: string }) {
       const response = await createDhikrLog(
         buildCircleLogPayload({ userId: sessionUserId, circle: { id: detail.id, dhikrId: detail.dhikrId, goalCount: detail.goalCount }, count, date: todayKey })
       );
+      let nextDisplay = displayTotalRef.current;
       if (typeof response.circleTotalCount === "number") {
         // mine = sunucunun $max sonrası GERÇEK log sayısı (başka cihaz daha
         // yüksek yazdıysa gönderdiğimizden büyük olabilir), gönderilen değil.
-        serverPairRef.current = { total: response.circleTotalCount, mine: response.count ?? count };
-        forceRender();
+        const mine = response.count ?? count;
+        serverPairRef.current = { total: response.circleTotalCount, mine };
+        nextDisplay = computeDisplayTotal(displayTotalRef.current, response.circleTotalCount, mine, liveCountRef.current);
+        setDisplayTotal(nextDisplay);
       }
-      bumpTotal(id, prevDisplayRef.current);
+      bumpTotal(id, nextDisplay);
     } catch (error) {
       // Başarısız flush geri alınır ki bir sonraki tetikte (periyodik flush /
       // kapanış / arka plan) aynı sayı yeniden denensin.
@@ -167,7 +182,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
   useEffect(() => {
     return () => {
       void flushRef.current();
-      bumpTotal(id, prevDisplayRef.current);
+      bumpTotal(id, displayTotalRef.current);
     };
   }, [bumpTotal, id]);
 
@@ -196,14 +211,6 @@ export function CircleSessionScreen({ id }: { id: string }) {
     );
   }
 
-  // prevDisplayRef'i ilk render'da (storedCircle mevcutken) bir kez store'daki
-  // totalCount ile tohumla — aksi hâlde varsayılan 0'dan başlayıp yeniden
-  // girişte gösterilen toplam geriye sıçrardı.
-  if (!prevDisplaySeededRef.current) {
-    prevDisplaySeededRef.current = true;
-    prevDisplayRef.current = storedCircle.totalCount;
-  }
-
   const circleName = storedCircle.name || resolveLocalizedText(storedCircle.dhikr.name, locale);
   const goal = storedCircle.goalCount;
 
@@ -215,7 +222,11 @@ export function CircleSessionScreen({ id }: { id: string }) {
     const next = prev + 1;
     liveCountRef.current = next;
     setTodayCount(id, todayKey, next);
-    forceRender();
+    const pair = serverPairRef.current;
+    const nextDisplay = pair
+      ? computeDisplayTotal(displayTotalRef.current, pair.total, pair.mine, next)
+      : Math.max(displayTotalRef.current, storedCircle.totalCount);
+    setDisplayTotal(nextDisplay);
     fireCounterFeedback({ prev, next, lapSize: LAP_SIZE, pattern: hapticsPattern, soundPack: effectiveSoundPack });
   };
 
@@ -224,12 +235,6 @@ export function CircleSessionScreen({ id }: { id: string }) {
     router.back();
   };
 
-  // İlk fetch gelmeden (serverPair yokken) yerel sayımı toplama katmadan,
-  // yalnızca store'daki (zaten monoton) değeri güvenli biçimde gösteririz.
-  const displayTotal = serverPairRef.current
-    ? computeDisplayTotal(prevDisplayRef.current, serverPairRef.current.total, serverPairRef.current.mine, liveCountRef.current)
-    : Math.max(prevDisplayRef.current, storedCircle.totalCount);
-  prevDisplayRef.current = displayTotal;
   const progress = goal > 0 ? Math.min(1, displayTotal / goal) : 0;
 
   const model: CounterVisualModel = {

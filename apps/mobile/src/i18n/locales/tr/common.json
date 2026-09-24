@@ -11,5 +11,15 @@
     "aiGuide": "Asistan Rehber",
     "specialDays": "Özel Günler",
     "more": "Daha Fazla"
+  },
+  "errorBoundary": {
+    "title": "Bir şeyler ters gitti",
+    "message": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
+    "retry": "Tekrar dene"
+  },
+  "notFound": {
+    "title": "Sayfa bulunamadı",
+    "message": "Aradığınız sayfa mevcut değil ya da taşınmış olabilir.",
+    "goHome": "Ana sayfaya dön"
   }
 }

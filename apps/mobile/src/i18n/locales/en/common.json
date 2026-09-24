@@ -11,5 +11,15 @@
     "aiGuide": "AI Guide",
     "specialDays": "Special Days",
     "more": "More"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred. Please try again.",
+    "retry": "Retry"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "message": "The page you're looking for doesn't exist or may have moved.",
+    "goHome": "Go home"
   }
 }

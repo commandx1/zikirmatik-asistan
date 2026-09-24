@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { KeyboardAwareBottomSheetModal } from "../../../components/ui/keyboard-aware-bottom-sheet-modal";
 import { ThemedInput } from "../../../components/ui/themed-input";
 import { useDhikrStore } from "../../../store/dhikr-store";
-import { resolveLocalizedText, withAlpha } from "@zikirmatik/shared";
+import { resolveLocalizedText, withAlpha, type ThemeTokens } from "@zikirmatik/shared";
 import { trackEvent } from "../../../lib/analytics";
 import type { BackendDhikr } from "../../dhikrs/services/dhikrs-api-client";
 import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
@@ -25,6 +25,43 @@ type PickerRow = {
 };
 
 export type VirdDhikrPickerSelection = { ref: string; isCustom: boolean; target: number; snapshot: DhikrSnapshot };
+
+type PickerRowViewProps = {
+  item: PickerRow;
+  alreadyInSlot: boolean;
+  tokens: ThemeTokens;
+  t: (key: string) => string;
+  onPress: (item: PickerRow) => void;
+};
+
+const PickerRowView = memo(function PickerRowView({ item, alreadyInSlot, tokens, t, onPress }: PickerRowViewProps) {
+  return (
+    <Pressable
+      onPress={() => onPress(item)}
+      testID={TEST_IDS.vird.pickerRow}
+      className="mb-2 flex-row items-center justify-between rounded-xl border px-3.5 py-3"
+      style={{
+        borderColor: alreadyInSlot ? withAlpha(tokens.textPrimary, 0.06) : withAlpha(tokens.textPrimary, 0.12),
+        backgroundColor: tokens.bg,
+        opacity: alreadyInSlot ? 0.7 : 1
+      }}
+    >
+      <View className="flex-1 pr-3">
+        <Text className="text-sm font-medium text-[--text-primary]" numberOfLines={1}>
+          {item.label}
+        </Text>
+        {item.secondary ? (
+          <Text className="mt-0.5 text-xs text-[--text-muted]" numberOfLines={1}>
+            {item.secondary}
+          </Text>
+        ) : null}
+      </View>
+      <Text className="text-xs font-semibold" style={{ color: tokens.accent }}>
+        {alreadyInSlot ? t("vird:editor.alreadyAdded") : t("vird:editor.addAction")}
+      </Text>
+    </Pressable>
+  );
+});
 
 type VirdDhikrPickerModalProps = {
   visible: boolean;
@@ -159,6 +196,19 @@ export function VirdDhikrPickerModal({
     onAdd({ ref: row.ref, isCustom: row.isCustom, target: row.defaultTarget, snapshot: row.snapshot });
   };
 
+  const renderItem = useCallback(
+    ({ item }: { item: PickerRow }) => (
+      <PickerRowView
+        item={item}
+        alreadyInSlot={slotRefs.includes(item.ref)}
+        tokens={tokens}
+        t={t}
+        onPress={handlePick}
+      />
+    ),
+    [slotRefs, tokens, t, handlePick]
+  );
+
   return (
     <KeyboardAwareBottomSheetModal
       visible={visible}
@@ -195,35 +245,7 @@ export function VirdDhikrPickerModal({
           data={rows}
           keyExtractor={(item) => item.ref}
           scrollEnabled={false}
-          renderItem={({ item }) => {
-            const alreadyInSlot = slotRefs.includes(item.ref);
-            return (
-              <Pressable
-                onPress={() => handlePick(item)}
-                testID={TEST_IDS.vird.pickerRow}
-                className="mb-2 flex-row items-center justify-between rounded-xl border px-3.5 py-3"
-                style={{
-                  borderColor: alreadyInSlot ? withAlpha(tokens.textPrimary, 0.06) : withAlpha(tokens.textPrimary, 0.12),
-                  backgroundColor: tokens.bg,
-                  opacity: alreadyInSlot ? 0.7 : 1
-                }}
-              >
-                <View className="flex-1 pr-3">
-                  <Text className="text-sm font-medium text-[--text-primary]" numberOfLines={1}>
-                    {item.label}
-                  </Text>
-                  {item.secondary ? (
-                    <Text className="mt-0.5 text-xs text-[--text-muted]" numberOfLines={1}>
-                      {item.secondary}
-                    </Text>
-                  ) : null}
-                </View>
-                <Text className="text-xs font-semibold" style={{ color: tokens.accent }}>
-                  {alreadyInSlot ? t("vird:editor.alreadyAdded") : t("vird:editor.addAction")}
-                </Text>
-              </Pressable>
-            );
-          }}
+          renderItem={renderItem}
         />
       )}
     </KeyboardAwareBottomSheetModal>

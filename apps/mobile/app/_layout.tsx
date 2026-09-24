@@ -1,8 +1,8 @@
 import "../global.css";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Stack } from "expo-router";
-import { Text, TextInput, View } from "react-native";
+import { Stack, type ErrorBoundaryProps } from "expo-router";
+import { Pressable, Text, TextInput, View } from "react-native";
 import * as Notifications from "expo-notifications";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../src/lib/query-client";
@@ -76,7 +76,9 @@ function RootProviders({ children }: { children: ReactNode }) {
   useCircleSync();
   useBackendUserSync();
   usePushDeviceRegistration();
-  initAnalytics();
+  useEffect(() => {
+    initAnalytics();
+  }, []);
   useNotificationTapRouting();
   useStreakReminderSync();
   useWidgetSync();
@@ -91,7 +93,6 @@ function RootProviders({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchAppConfigOrNull().then((config) => {
-      console.log(config?.minVersion, 'MIN VERSION')
       if (config?.minVersion && isUpdateRequired(config.minVersion)) {
         setForceUpdate(true);
       }
@@ -159,6 +160,31 @@ export default function RootLayout() {
         <Stack.Screen name="font-selector" />
       </Stack>
     </RootProviders>
+  );
+}
+
+// expo-router yakalar: RootLayout (dolayısıyla RootProviders içindeki
+// ThemeProvider/I18nextProvider) render sırasında patlarsa bu bileşen
+// devreye girer. O anda hiçbir provider garanti değildir — bu yüzden tema
+// token'ı yerine DEFAULT_BG_FALLBACK + sabit renkler, react-i18next hook'u
+// yerine ham `i18n.t` (senkron init edilmiş singleton, bkz. message-bubble.tsx
+// ile aynı desen) kullanılır.
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return (
+    <View style={{ flex: 1, backgroundColor: DEFAULT_BG_FALLBACK, alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <Text style={{ color: "#F5F5F5", fontSize: 18, fontWeight: "600", marginBottom: 8, textAlign: "center" }}>
+        {i18n.t("common:errorBoundary.title")}
+      </Text>
+      <Text style={{ color: "#9CA3AF", fontSize: 13, marginBottom: 20, textAlign: "center" }}>
+        {error.message || i18n.t("common:errorBoundary.message")}
+      </Text>
+      <Pressable
+        onPress={() => void retry()}
+        style={{ borderRadius: 999, paddingHorizontal: 20, paddingVertical: 12, backgroundColor: "#F5F5F5" }}
+      >
+        <Text style={{ color: "#0B1423", fontSize: 14, fontWeight: "600" }}>{i18n.t("common:errorBoundary.retry")}</Text>
+      </Pressable>
+    </View>
   );
 }
 
