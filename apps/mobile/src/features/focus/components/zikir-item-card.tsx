@@ -11,10 +11,9 @@ import Animated, {
   withTiming
 } from 'react-native-reanimated'
 import { withAlpha } from "@zikirmatik/shared";
-import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { MarkdownRenderer } from '../../../components/ui/markdown-renderer'
 import { ThemedCard } from '../../../components/ui/themed-card'
-import { useZikirlerim } from '../context/zikirlerim-context'
+import { useZikirlerimActions } from '../context/zikirlerim-context'
 import { resolveLocalizedText } from "@zikirmatik/shared";
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 import type { ZikirItem } from '../types'
@@ -25,6 +24,8 @@ type ZikirItemCardProps = {
   isSelected: boolean
   isDeleting: boolean
   isUpdatingThisItem: boolean
+  /** Opens the list's shared delete confirmation for this item. */
+  onDeletePress: (item: ZikirItem) => void
 }
 
 function resolveAccent(item: ZikirItem) {
@@ -202,20 +203,19 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
   )
 })
 
-export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isDeleting, isUpdatingThisItem }: ZikirItemCardProps) {
+export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isDeleting, isUpdatingThisItem, onDeletePress }: ZikirItemCardProps) {
   const { t } = useTranslation('focus')
   const locale = useAppLocale();
   const { tokens } = useThemeTokens()
   const [isExpanded, setIsExpanded] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
   const animMaxHeight = useSharedValue(0)
   const animOpacity = useSharedValue(0)
   const animChevron = useSharedValue(0)
   const animMenuHeight = useSharedValue(0)
   const animMenuOpacity = useSharedValue(0)
 
-  const { toggleFavorite, startDhikrOnHome, deleteDhikr, openUpdateModal } = useZikirlerim()
+  const { toggleFavorite, startDhikrOnHome, openUpdateModal } = useZikirlerimActions()
 
   const progressPct = item.target === 0 ? 0 : Math.min(100, Math.round((item.current / item.target) * 100))
   const accent = resolveAccent(item)
@@ -316,7 +316,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
           ) : null}
           <Pressable
             disabled={isDeleting}
-            onPress={() => { toggleMenu(); setIsDeleteConfirmVisible(true) }}
+            onPress={() => { toggleMenu(); onDeletePress(item) }}
             className={`flex-row items-center gap-1.5 rounded-full border px-3 py-1.5 ${isDeleting ? 'opacity-60' : ''}`}
             style={{ borderColor: withAlpha(dangerBase, 0.5), backgroundColor: withAlpha(dangerBase, 0.12) }}
           >
@@ -399,20 +399,6 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
           <FontAwesome6 name='arrow-right' size={9} color='#111827' />
         </Pressable>
       </View>
-
-      <ConfirmModal
-        visible={isDeleteConfirmVisible}
-        title={t('focus:card.deleteModal.title')}
-        message={t('focus:card.deleteModal.message')}
-        confirmLabel={t('focus:card.deleteModal.confirmLabel')}
-        cancelLabel={t('focus:card.deleteModal.cancelLabel')}
-        destructive
-        onConfirm={() => {
-          setIsDeleteConfirmVisible(false)
-          void deleteDhikr(item)
-        }}
-        onCancel={() => setIsDeleteConfirmVisible(false)}
-      />
     </ThemedCard>
   )
 })

@@ -1,13 +1,12 @@
 import { useRouter } from 'expo-router'
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 import { useCounterStyleStore } from '../../../store/counter-style-store'
-import { useHomeContext } from '../home-context'
-import { AppleWatchView, type AppleWatchProps, type CounterVisualViewProps } from './apple-watch'
+import { AppleWatchView, useHomeCounterModel, type AppleWatchProps, type CounterVisualViewProps } from './apple-watch'
 import { TesbihStrand } from './tesbih-strand'
 import { WatchControlButtons } from './watch-control-buttons'
 import { withAlpha } from "@zikirmatik/shared";
@@ -132,10 +131,10 @@ export function TesbihCounterView({ model, controls = 'full', ...rest }: Counter
   )
 }
 
-export function TesbihCounter(props: AppleWatchProps = {}) {
-  const home = useHomeContext()
-  return <TesbihCounterView {...props} model={home} />
-}
+export const TesbihCounter = memo(function TesbihCounter(props: AppleWatchProps) {
+  const model = useHomeCounterModel()
+  return <TesbihCounterView {...props} model={model} />
+})
 
 
 function resolveStrongTextStyle(fontFamily: string) {

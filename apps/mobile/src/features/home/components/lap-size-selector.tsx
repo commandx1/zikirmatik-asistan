@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useThemeTokens } from '@zikirmatik/ui'
-import { useHomeContext } from '../home-context'
+import { useHomeCounter, useHomeUi } from '../home-context'
 import { MAX_DHIKR_TARGET } from '../../../store/dhikr-store'
 import { withAlpha } from "@zikirmatik/shared";
 
@@ -14,32 +14,32 @@ const QUICK_LAP_SIZES = [33, 99] as const
  *
  * Meant to be dropped into the home target-edit modal (see home-view.tsx's
  * `TargetModal`) — kept as its own standalone component here rather than
- * edited directly into home-view.tsx, which is out of scope for this task
- * (owned by another concurrent worker). Reads/writes home-context's
- * `lapSize`/`setLapSize`, so it can be rendered by any screen inside
- * `HomeProvider` once wired in.
+ * edited directly into home-view.tsx. Reads `lapSize` from HomeCounterContext
+ * and writes through HomeUiContext's `setLapSize`, so it can be rendered by
+ * any screen inside `HomeProvider`.
  *
  * Unlike the target field, changing the lap size has no destructive
  * side-effect (it never truncates progress), so selections apply
  * immediately instead of going through a draft/submit flow.
  */
-export function LapSizeSelector() {
-  const home = useHomeContext()
+export const LapSizeSelector = memo(function LapSizeSelector() {
+  const { lapSize } = useHomeCounter()
+  const { setLapSize } = useHomeUi()
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('home')
-  const isQuickValue = (QUICK_LAP_SIZES as readonly number[]).includes(home.lapSize)
-  const [customDraft, setCustomDraft] = useState(isQuickValue ? '' : String(home.lapSize))
+  const isQuickValue = (QUICK_LAP_SIZES as readonly number[]).includes(lapSize)
+  const [customDraft, setCustomDraft] = useState(isQuickValue ? '' : String(lapSize))
   const [isCustomActive, setIsCustomActive] = useState(!isQuickValue)
 
   useEffect(() => {
-    if ((QUICK_LAP_SIZES as readonly number[]).includes(home.lapSize)) {
+    if ((QUICK_LAP_SIZES as readonly number[]).includes(lapSize)) {
       setIsCustomActive(false)
       return
     }
 
     setIsCustomActive(true)
-    setCustomDraft(String(home.lapSize))
-  }, [home.lapSize])
+    setCustomDraft(String(lapSize))
+  }, [lapSize])
 
   return (
     <View className='mb-4'>
@@ -48,13 +48,13 @@ export function LapSizeSelector() {
       </Text>
       <View className='flex-row gap-2'>
         {QUICK_LAP_SIZES.map(size => {
-          const active = !isCustomActive && home.lapSize === size
+          const active = !isCustomActive && lapSize === size
           return (
             <Pressable
               key={size}
               onPress={() => {
                 setIsCustomActive(false)
-                home.setLapSize(size)
+                setLapSize(size)
               }}
               className='flex-1 items-center justify-center rounded-xl py-2'
               style={{
@@ -91,7 +91,7 @@ export function LapSizeSelector() {
             setCustomDraft(digits)
             const parsed = Number.parseInt(digits, 10)
             if (!Number.isNaN(parsed) && parsed > 0) {
-              home.setLapSize(parsed)
+              setLapSize(parsed)
             }
           }}
           keyboardType='number-pad'
@@ -108,4 +108,4 @@ export function LapSizeSelector() {
       ) : null}
     </View>
   )
-}
+})

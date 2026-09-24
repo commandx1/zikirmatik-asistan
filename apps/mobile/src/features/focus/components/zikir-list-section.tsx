@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useZikirlerim } from "../context/zikirlerim-context";
+import { ConfirmModal } from "../../../components/ui/confirm-modal";
+import { useZikirlerimActions, useZikirlerimState } from "../context/zikirlerim-context";
+import type { ZikirItem } from "../types";
 import { ZikirItemCard } from "./zikir-item-card";
 
 export function ZikirListSection() {
   const { t } = useTranslation("focus");
-  const { items, selectedDhikrId, deletingDhikrId, editingDhikr, isUpdatingDhikr } = useZikirlerim();
+  const { items, selectedDhikrId, deletingDhikrId, editingDhikr, isUpdatingDhikr } = useZikirlerimState();
+  const { deleteDhikr } = useZikirlerimActions();
+  // One delete confirmation for the whole list (was one ConfirmModal per card).
+  const [pendingDelete, setPendingDelete] = useState<ZikirItem | null>(null);
 
   if (items.length === 0) {
     return (
@@ -26,8 +32,25 @@ export function ZikirListSection() {
           isSelected={selectedDhikrId === item.id}
           isDeleting={deletingDhikrId === item.id}
           isUpdatingThisItem={isUpdatingDhikr && editingDhikr?.id === item.id}
+          onDeletePress={setPendingDelete}
         />
       ))}
+      <ConfirmModal
+        visible={pendingDelete !== null}
+        title={t("focus:card.deleteModal.title")}
+        message={t("focus:card.deleteModal.message")}
+        confirmLabel={t("focus:card.deleteModal.confirmLabel")}
+        cancelLabel={t("focus:card.deleteModal.cancelLabel")}
+        destructive
+        onConfirm={() => {
+          const item = pendingDelete;
+          setPendingDelete(null);
+          if (item) {
+            void deleteDhikr(item);
+          }
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
     </View>
   );
 }

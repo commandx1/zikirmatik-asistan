@@ -1,34 +1,19 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { TAP_ANYWHERE_ENABLED_KEY } from '../../lib/storage/keys'
-import { getAppLocale, i18n, useAppLocale } from '../../i18n'
+import { resolveLocalizedText, type LocalizedText } from '@zikirmatik/shared'
+import { useAppLocale } from '../../i18n'
 import { useAuthStore } from '../../store/auth-store'
-import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
-import { isObjectId } from '../dhikrs/services/dhikr-ids'
+import { useDhikrStore } from '../../store/dhikr-store'
 import { dhikrDisplayName as dhikrDisplayNamePure } from '../dhikrs/services/dhikr-display'
-import { resolveLocalizedText, toDateKey } from "@zikirmatik/shared";
-import { useProfileStore } from '../../store/profile-store'
-import { useOnboardingStore } from '../../store/onboarding-store'
-import { useNotificationPromptStore } from '../../store/notification-prompt-store'
-import { ESMAUL_HUSNA } from '../focus/data'
-import type { EsmaulHusnaItem, ZikirSource } from '../focus/types'
-import { createDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
-import { fetchUserStreak } from '../stats/services/streak-queries'
-import { cacheServerStreak } from '../widget/widget-sync'
-import { findVerifiedActiveDhikrByTransliteration } from '../dhikrs/services/dhikrs-api-client'
-import { createUserDhikr } from '../dhikrs/services/user-dhikrs-api-client'
-import {
-  buildDailyEsmaWelcomeStorageKey,
-  resolveDailyEsmaSuggestions
-} from './services/daily-esma-suggestion-service'
-import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
-import { shouldConfirmUnsavedDhikrTransition } from './services/unsaved-transition-guard'
-import { computeCurrentLap, computeLapProgress, lapNumberCompletedAt, resolveLapSize } from './services/lap-counter'
-import { resolveHapticsPattern } from '../../services/haptics'
-import { fireCounterFeedback } from '../../services/counter-feedback'
-import { useCounterStyleStore } from '../../store/counter-style-store'
-import type { LocalizedText } from '@zikirmatik/shared'
+import type { ZikirSource } from '../focus/types'
+import { useStreak } from '../stats/hooks/use-streak'
+import { useCounterEngine } from './hooks/use-counter-engine'
+import { useDailyEsmaWelcome } from './hooks/use-daily-esma-welcome'
+import { useDhikrLogSave } from './hooks/use-dhikr-log-save'
+import { useDhikrTransition } from './hooks/use-dhikr-transition'
+import { useFreeSaveForm } from './hooks/use-free-save-form'
+import { useHomeEditors } from './hooks/use-home-editors'
+import { useTapAnywherePref } from './hooks/use-tap-anywhere-pref'
 
 type HomeDhikr = {
   id: string
@@ -39,137 +24,18 @@ type HomeDhikr = {
   meaning?: string
 }
 
-type HomeDhikrOption = {
-  id: string
-  source: ZikirSource
-  label: string
-  secondary?: string
-  target: number
-}
+/**
+ * Home state is split by update frequency: HomeCounterContext changes on every
+ * tap (count, progress, lap), HomeUiContext only when a modal, draft, list or
+ * notice changes. Subscribe to the narrowest one you need.
+ */
+export type HomeCounterValue = ReturnType<typeof useHomeValues>['counter']
+export type HomeUiValue = ReturnType<typeof useHomeValues>['ui']
 
-type PendingDhikrTransition =
-  | { kind: 'free' }
-  | { kind: 'select'; id: string }
-  | { kind: 'quick'; label: string }
-  | { kind: 'esma'; item: EsmaulHusnaItem }
+const HomeCounterContext = createContext<HomeCounterValue | null>(null)
+const HomeUiContext = createContext<HomeUiValue | null>(null)
 
-type EsmaResumePendingDhikr = {
-  _id: string
-  name: LocalizedText
-  nameArabic: string
-  transliteration: LocalizedText
-  meaning: LocalizedText
-  recommendedCount: number
-}
-
-type EsmaResumePending = {
-  dhikr: EsmaResumePendingDhikr
-  currentCount: number
-}
-
-type HomeContextValue = {
-  greeting: string
-  streakLabel: string
-  streakDays: number
-  isSavingLog: boolean
-  isRefreshing: boolean
-  syncError?: string
-  isTargetMode: boolean
-  count: number
-  target: number
-  progress: number
-  // Tur ("lap") sayacı — hedeften bağımsız, mevcut sayının kaç adette bir tur
-  // saydığını belirler (seçili zikirde ZikirItem.lapSize, serbest modda
-  // freeModeLapSize; ikisi de eksikse 33).
-  lapSize: number
-  currentLap: number
-  lapProgress: number
-  setLapSize: (size: number) => void
-  // Bir tur tamamlandığında artan sayaç + hangi turun tamamlandığı — toast
-  // göstermek isteyen UI, autoSaveNoticeId ile aynı desende bunu izleyebilir.
-  lapCompletedNoticeId: number
-  lastCompletedLap: number
-  mainDhikr: HomeDhikr
-  quickDhikrs: string[]
-  activeQuickDhikr: string
-  selectedSourceLabel: string
-  demoCompleted: boolean
-  isEditingTarget: boolean
-  targetDraft: string
-  isSelectingDhikr: boolean
-  readyDhikrs: HomeDhikrOption[]
-  personalDhikrs: HomeDhikrOption[]
-  selectedDhikrId: string
-  isCreatingDhikr: boolean
-  createNameDraft: string
-  createArabicDraft: string
-  createTargetDraft: string
-  createError: string | null
-  isFreeSaveNameModalOpen: boolean
-  isUnsavedTransitionModalOpen: boolean
-  unsavedTransitionDhikrName: string
-  unsavedTransitionCount: number
-  unsavedTransitionError: string | null
-  isSelectingEsmaDhikr: boolean
-  isDailyEsmaWelcomeOpen: boolean
-  dailyEsmaSuggestions: EsmaulHusnaItem[]
-  freeSaveNameDraft: string
-  freeSaveTransliterationDraft: string
-  freeSaveMeaningDraft: string
-  freeSaveNameError: string | null
-  freeSaveTargetDraft: string
-  autoSaveNoticeId: number
-  refresh: () => Promise<void>
-  onCountPress: () => void
-  onResetPress: () => void
-  onTargetPress: () => void
-  onTargetDraftChange: (value: string) => void
-  onTargetCancel: () => void
-  onTargetSubmit: () => void
-  isTargetDowngradeWarningOpen: boolean
-  targetDowngradePendingTarget: number
-  targetDowngradeCurrentCount: number
-  onTargetDowngradeConfirm: () => void
-  onTargetDowngradeCancel: () => void
-  onChangeDhikrPress: () => void
-  onCloseDhikrPicker: () => void
-  onSelectDhikr: (id: string) => void
-  onToggleDemoComplete: () => void
-  onQuickDhikrSelect: (label: string) => void
-  onSavePress: () => void
-  onOpenCreateDhikr: () => void
-  onCloseCreateDhikr: () => void
-  onCreateNameChange: (value: string) => void
-  onCreateArabicChange: (value: string) => void
-  onCreateTargetChange: (value: string) => void
-  onCreateSubmit: () => void
-  onFreeSaveNameChange: (value: string) => void
-  onFreeSaveTransliterationChange: (value: string) => void
-  onFreeSaveMeaningChange: (value: string) => void
-  onFreeSaveNameCancel: () => void
-  onFreeSaveNameSubmit: () => void
-  onFreeSaveTargetChange: (value: string) => void
-  onUnsavedTransitionCancel: () => void
-  onUnsavedTransitionSaveAndContinue: () => void
-  onUnsavedTransitionContinueWithoutSaving: () => void
-  onStartFreeMode: () => void
-  onEsmaPress: (item: EsmaulHusnaItem) => void
-  isEsmaResumeGuardOpen: boolean
-  esmaResumeGuardDhikrName: string
-  esmaResumeGuardCurrentCount: number
-  onEsmaResumeGuardContinue: () => void
-  onEsmaResumeGuardFresh: () => void
-  onEsmaResumeGuardCancel: () => void
-  onDailyEsmaDismiss: () => void
-  onDailyEsmaShowAll: () => void
-  onDailyEsmaStart: (item: EsmaulHusnaItem) => void
-  tapAnywhereEnabled: boolean
-  toggleTapAnywhere: () => void
-}
-
-const HomeContext = createContext<HomeContextValue | null>(null)
-
-export function HomeProvider({ children }: { children: ReactNode }) {
+function useHomeValues() {
   const { t } = useTranslation('home')
   const locale = useAppLocale()
   const dhikrDisplayName = useCallback(
@@ -180,1093 +46,125 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const freeModeLabel = t('home:freeMode.label')
   const items = useDhikrStore(state => state.items)
   const selectedDhikrId = useDhikrStore(state => state.selectedDhikrId)
-  const selectDhikr = useDhikrStore(state => state.selectDhikr)
-  const clearSelectedDhikr = useDhikrStore(state => state.clearSelectedDhikr)
-  const incrementSelected = useDhikrStore(state => state.incrementSelected)
-  const resetSelected = useDhikrStore(state => state.resetSelected)
-  const setSelectedCount = useDhikrStore(state => state.setSelectedCount)
-  const setSelectedTarget = useDhikrStore(state => state.setSelectedTarget)
-  const freeCount = useDhikrStore(state => state.freeModeCount)
-  const freeTarget = useDhikrStore(state => state.freeModeTarget)
-  const freeModeLapSize = useDhikrStore(state => state.freeModeLapSize)
-  const incrementFreeMode = useDhikrStore(state => state.incrementFreeMode)
-  const resetFreeMode = useDhikrStore(state => state.resetFreeMode)
-  const clearFreeModeSession = useDhikrStore(state => state.clearFreeModeSession)
-  const setFreeModeTarget = useDhikrStore(state => state.setFreeModeTarget)
-  const setFreeModeLapSize = useDhikrStore(state => state.setFreeModeLapSize)
-  const setSelectedLapSize = useDhikrStore(state => state.setSelectedLapSize)
-  const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
-  const upsertDhikrSnapshot = useDhikrStore(state => state.upsertDhikrSnapshot)
-  const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
-  const lastSavedBackendLog = useDhikrStore(state => state.lastSavedBackendLog)
-  const syncError = useDhikrStore(state => state.syncError)
-  const setSyncError = useDhikrStore(state => state.setSyncError)
-  const unsavedProgressDhikrIds = useDhikrStore(state => state.unsavedProgressDhikrIds)
-  const discardUnsavedProgress = useDhikrStore(state => state.discardUnsavedProgress)
-  const activeAiContext = useDhikrStore(state => state.activeAiContext)
-  const selectedSource = useDhikrStore(state => state.selectedSource)
-  const setSelectedSource = useDhikrStore(state => state.setSelectedSource)
   const authDisplayName = useAuthStore(state => state.session?.displayName)
-  const authStatus = useAuthStore(state => state.status)
-  const sessionUserId = useAuthStore(state => state.session?.userId)
-  const storedHapticsPattern = useProfileStore(state => state.hapticsPattern)
-  const storedHapticsEnabled = useProfileStore(state => state.hapticsEnabled)
-  const hapticsPattern = resolveHapticsPattern(storedHapticsPattern, storedHapticsEnabled)
-  // Tık sesi de haptikler gibi her dokunuşta çalınır; premium olmayan
-  // kullanıcı bir ses paketi seçmiş olsa bile (ayar ekranında paywall
-  // arkasında kalır) burada sessize düşürülür.
-  const isPremium = useProfileStore(state => state.isPremium)
-  const soundPack = useCounterStyleStore(state => state.soundPack)
-  const effectiveSoundPack = isPremium ? soundPack : 'off'
-  const isTourCompleted = useOnboardingStore(s => s.isTourCompleted)
-  const isNotificationPromptBlocking = useNotificationPromptStore(s => s.isPending || s.visible || s.deniedVisible)
-  const pendingNavigationDailyEsmaStart = useHomeNavigationIntentStore(state => state.pendingDailyEsmaStart)
-  const esmaListFocusRequestId = useHomeNavigationIntentStore(state => state.esmaListFocusRequestId)
-
-  const selectedDhikr = useMemo(() => {
-    return items.find(item => item.id === selectedDhikrId)
-  }, [items, selectedDhikrId])
-
-  const [activeQuickDhikr, setActiveQuickDhikr] = useState(selectedDhikr ? dhikrDisplayName(selectedDhikr) : '')
-  const [demoCompleted, setDemoCompleted] = useState(false)
-  const [isEditingTarget, setIsEditingTarget] = useState(false)
-  const [targetDraft, setTargetDraft] = useState(selectedDhikr ? String(selectedDhikr.target) : '100')
-  const [isSelectingDhikr, setIsSelectingDhikr] = useState(false)
-
-  const [isCreatingDhikr, setIsCreatingDhikr] = useState(false)
-  const [createNameDraft, setCreateNameDraft] = useState('')
-  const [createArabicDraft, setCreateArabicDraft] = useState('')
-  const [createTargetDraft, setCreateTargetDraft] = useState('33')
-  const [createError, setCreateError] = useState<string | null>(null)
-  const [isFreeSaveNameModalOpen, setFreeSaveNameModalOpen] = useState(false)
-  const [pendingDhikrTransition, setPendingDhikrTransition] = useState<PendingDhikrTransition | null>(null)
-  const [unsavedTransitionError, setUnsavedTransitionError] = useState<string | null>(null)
-  const [freeSaveNameDraft, setFreeSaveNameDraft] = useState('')
-  const [freeSaveTransliterationDraft, setFreeSaveTransliterationDraft] = useState('')
-  const [freeSaveMeaningDraft, setFreeSaveMeaningDraft] = useState('')
-  const [freeSaveNameError, setFreeSaveNameError] = useState<string | null>(null)
-  const [freeSaveTargetDraft, setFreeSaveTargetDraft] = useState('')
-  const [pendingFreeSaveTransition, setPendingFreeSaveTransition] = useState<PendingDhikrTransition | null>(null)
-  const [isSelectingEsmaDhikr, setIsSelectingEsmaDhikr] = useState(false)
-  const [esmaResumePending, setEsmaResumePending] = useState<EsmaResumePending | null>(null)
-  const [dailyEsmaSuggestions, setDailyEsmaSuggestions] = useState<EsmaulHusnaItem[]>([])
-  const [isDailyEsmaWelcomeOpen, setDailyEsmaWelcomeOpen] = useState(false)
-  const [checkedDailyEsmaWelcomeKey, setCheckedDailyEsmaWelcomeKey] = useState('')
-  const [pendingDowngradeTarget, setPendingDowngradeTarget] = useState<number | null>(null)
-  const [isSavingLog, setIsSavingLog] = useState(false)
-  const [isRefreshing, setIsRefreshing] = useState(false)
-  const [streakDays, setStreakDays] = useState(0)
-  const [autoSaveNoticeId, setAutoSaveNoticeId] = useState(0)
-  const [lapCompletedNoticeId, setLapCompletedNoticeId] = useState(0)
-  const [lastCompletedLap, setLastCompletedLap] = useState(0)
-  const [tapAnywhereEnabled, setTapAnywhereEnabled] = useState(false)
-  const toggleTapAnywhere = useCallback(() => {
-    setTapAnywhereEnabled(prev => {
-      const next = !prev
-      void AsyncStorage.setItem(TAP_ANYWHERE_ENABLED_KEY, next ? '1' : '0')
-      return next
-    })
-  }, [])
-
-  useEffect(() => {
-    void AsyncStorage.getItem(TAP_ANYWHERE_ENABLED_KEY).then(val => {
-      if (val === '1') setTapAnywhereEnabled(true)
-    })
-  }, [])
-
-  const liveSelectedCountRef = useRef(0)
-  const liveFreeCountRef = useRef(0)
-  // Guards the auto-save that fires when a target is reached: keyed by
-  // dhikr + day + target so resetting and re-reaching the same target on the
-  // same day does not overwrite the already stored log a second time. The
-  // manual save button is never gated by this.
-  const autoSavedKeyRef = useRef<string | null>(null)
-  const freeAutoDhikrIdRef = useRef<string | undefined>(undefined)
-  const freeAutoDhikrNameRef = useRef<string | undefined>(undefined)
-
-  useEffect(() => {
-    liveSelectedCountRef.current = selectedDhikr?.current ?? 0
-  }, [selectedDhikr?.current, selectedDhikr?.id])
-
-  useEffect(() => {
-    liveFreeCountRef.current = freeCount
-  }, [freeCount])
-
-  useEffect(() => {
-    if (!freeAutoDhikrIdRef.current) {
-      return
-    }
-
-    const stillExists = items.some(
-      item => item.id === freeAutoDhikrIdRef.current && item.source === 'personal'
-    )
-    if (stillExists) {
-      return
-    }
-
-    freeAutoDhikrIdRef.current = undefined
-    freeAutoDhikrNameRef.current = undefined
-    setActiveQuickDhikr(freeModeLabel)
-  }, [items, freeModeLabel])
-
-  const fetchStreakDays = useCallback(async () => {
-    if (authStatus !== 'authenticated' || !sessionUserId) {
-      setStreakDays(0)
-      return
-    }
-
-    try {
-      const streak = await fetchUserStreak(sessionUserId)
-      setStreakDays(streak.currentStreak)
-      void cacheServerStreak(streak.currentStreak, streak.lastActiveDate)
-    } catch {
-      // Keep the existing streak value when network is unavailable.
-    }
-  }, [authStatus, sessionUserId])
-
-  useEffect(() => {
-    if (!selectedDhikr) {
-      setActiveQuickDhikr(freeModeLabel)
-      setIsEditingTarget(false)
-      return
-    }
-
-    setActiveQuickDhikr(dhikrDisplayName(selectedDhikr))
-    setTargetDraft(String(selectedDhikr.target > 0 ? selectedDhikr.target : 100))
-  }, [selectedDhikr, dhikrDisplayName, freeModeLabel])
-
-  useEffect(() => {
-    void fetchStreakDays()
-  }, [fetchStreakDays])
-
-  useEffect(() => {
-    if (authStatus !== 'authenticated' || !sessionUserId || !lastSavedBackendLog) {
-      return
-    }
-
-    if (lastSavedBackendLog.userId !== sessionUserId) {
-      return
-    }
-
-    void fetchStreakDays()
-  }, [authStatus, fetchStreakDays, lastSavedBackendLog, sessionUserId])
-
-  const readyDhikrs = useMemo<HomeDhikrOption[]>(
-    () =>
-      items
-        .filter(item => item.source === 'ready')
-        .map(item => ({
-          id: item.id,
-          source: item.source,
-          label: dhikrDisplayName(item),
-          secondary: item.arabic,
-          target: item.target
-        })),
-    [items, dhikrDisplayName]
-  )
-
-  const personalDhikrs = useMemo<HomeDhikrOption[]>(
-    () =>
-      items
-        .filter(item => item.source === 'personal')
-        .map(item => ({
-          id: item.id,
-          source: item.source,
-          label: dhikrDisplayName(item),
-          secondary: item.arabic,
-          target: item.target
-        })),
-    [items, dhikrDisplayName]
-  )
-
-  const quickDhikrs = useMemo(() => {
-    const primaryReady = readyDhikrs.slice(0, 4).map(item => item.label)
-    const personal = personalDhikrs.map(item => item.label)
-    return Array.from(new Set([freeModeLabel, ...primaryReady, ...personal]))
-  }, [personalDhikrs, readyDhikrs])
-
-  const refresh = useCallback(async () => {
-    setIsRefreshing(true)
-    try {
-      await fetchStreakDays()
-    } finally {
-      setIsRefreshing(false)
-    }
-  }, [fetchStreakDays])
-
-  const hasUnsavedActiveDhikr = selectedDhikrId
-    ? unsavedProgressDhikrIds.includes(selectedDhikrId)
-    : freeCount > 0
-  const shouldDeferDailyEsmaWelcome =
-    !isTourCompleted ||
-    isNotificationPromptBlocking ||
-    hasUnsavedActiveDhikr ||
-    isEditingTarget ||
-    isSelectingDhikr ||
-    isCreatingDhikr ||
-    isFreeSaveNameModalOpen ||
-    Boolean(pendingDhikrTransition) ||
-    isSelectingEsmaDhikr ||
-    Boolean(pendingNavigationDailyEsmaStart) ||
-    esmaListFocusRequestId > 0
-
-  useEffect(() => {
-    const today = new Date()
-    const storageKey = buildDailyEsmaWelcomeStorageKey(today)
-
-    if (shouldDeferDailyEsmaWelcome) {
-      if (pendingNavigationDailyEsmaStart || esmaListFocusRequestId > 0) {
-        setCheckedDailyEsmaWelcomeKey(storageKey)
-      }
-      return
-    }
-
-    if (checkedDailyEsmaWelcomeKey === storageKey) {
-      return
-    }
-
-    let isCancelled = false
-    void AsyncStorage.getItem(storageKey)
-      .then(value => {
-        if (isCancelled) {
-          return
-        }
-
-        setCheckedDailyEsmaWelcomeKey(storageKey)
-        if (value) {
-          return
-        }
-
-        const suggestions = resolveDailyEsmaSuggestions(ESMAUL_HUSNA, today)
-        if (suggestions.length === 0) {
-          return
-        }
-
-        setDailyEsmaSuggestions(suggestions)
-        setDailyEsmaWelcomeOpen(true)
-      })
-      .catch(() => {
-        setCheckedDailyEsmaWelcomeKey(storageKey)
-      })
-
-    return () => {
-      isCancelled = true
-    }
-  }, [
-    checkedDailyEsmaWelcomeKey,
-    esmaListFocusRequestId,
-    isNotificationPromptBlocking,
-    isTourCompleted,
-    pendingNavigationDailyEsmaStart,
-    shouldDeferDailyEsmaWelcome
-  ])
-
-  const markDailyEsmaWelcomeSeen = useCallback(() => {
-    const storageKey = buildDailyEsmaWelcomeStorageKey(new Date())
-    setCheckedDailyEsmaWelcomeKey(storageKey)
-    setDailyEsmaWelcomeOpen(false)
-    void AsyncStorage.setItem(storageKey, 'seen').catch(() => {
-      // Ignore local marker write errors; the popup remains dismissed for this session.
-    })
-  }, [])
-
-  const value = useMemo<HomeContextValue>(() => {
-    const isTargetMode = selectedDhikr ? selectedDhikr.target > 0 : freeTarget > 0
-    const effectiveLapSize = resolveLapSize(selectedDhikr ? selectedDhikr.lapSize : freeModeLapSize)
-    const currentLapCount = selectedDhikr?.current ?? freeCount
-    const activeFreeModeTitle =
-      freeAutoDhikrNameRef.current?.trim() ||
-      (freeCount > 0 ? buildNextAutoFreeTitle(items) : '')
-
-    const submitTarget = () => {
-      const parsed = Number.parseInt(targetDraft, 10)
-      const nextTarget = !Number.isNaN(parsed) && parsed > 0 ? Math.min(parsed, MAX_DHIKR_TARGET) : 0
-
-      if (selectedDhikr) {
-        if (nextTarget > 0 && nextTarget < selectedDhikr.current) {
-          setPendingDowngradeTarget(nextTarget)
-          setIsEditingTarget(false)
-          return
-        }
-        if (nextTarget > 0) {
-          setSelectedTarget(nextTarget)
-        }
-        setTargetDraft(String(nextTarget > 0 ? nextTarget : (selectedDhikr?.target ?? 33)))
-        setIsEditingTarget(false)
-        return
-      }
-
-      if (nextTarget > 0 && nextTarget < freeCount) {
-        setPendingDowngradeTarget(nextTarget)
-        setIsEditingTarget(false)
-        return
-      }
-      setFreeModeTarget(nextTarget)
-      setTargetDraft(String(nextTarget > 0 ? nextTarget : 100))
-      setIsEditingTarget(false)
-    }
-
-    const applyLapSize = (size: number) => {
-      if (selectedDhikr) {
-        setSelectedLapSize(size)
-        return
-      }
-
-      setFreeModeLapSize(size)
-    }
-
-    const closeCreate = () => {
-      setIsCreatingDhikr(false)
-      setCreateNameDraft('')
-      setCreateArabicDraft('')
-      setCreateTargetDraft('33')
-      setCreateError(null)
-    }
-
-    const closeFreeSaveName = () => {
-      setFreeSaveNameModalOpen(false)
-      setFreeSaveNameDraft('')
-      setFreeSaveTransliterationDraft('')
-      setFreeSaveMeaningDraft('')
-      setFreeSaveNameError(null)
-      setFreeSaveTargetDraft('')
-      setPendingFreeSaveTransition(null)
-    }
-
-    const saveSelectedDhikrLog = async ({
-      countOverride,
-      silent = false
-    }: {
-      countOverride?: number
-      // Auto-save (target reached) is not a user-initiated action, so a missing
-      // session must not surface an unsolicited error. Network failures are
-      // still reported so the user knows to press save manually.
-      silent?: boolean
-    } = {}) => {
-      if (!selectedDhikr) {
-        return true
-      }
-
-      const rawCount = Math.max(0, Math.floor(countOverride ?? selectedDhikr.current))
-      const safeCount = selectedDhikr.target > 0 ? Math.min(selectedDhikr.target, rawCount) : rawCount
-      const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target
-
-      if (authStatus !== 'authenticated' || !sessionUserId) {
-        if (silent) {
-          return false
-        }
-
-        const message = t('home:errors.loginRequiredToSave')
-        setSyncError(message)
-        setUnsavedTransitionError(message)
-        return false
-      }
-
-      setIsSavingLog(true)
-      setSyncError(undefined)
-      setUnsavedTransitionError(null)
-      const aiLogContext =
-        activeAiContext?.dhikrId === selectedDhikr.id
-          ? {
-              source: 'ai' as const,
-              aiRecommendationId: activeAiContext.recommendationId,
-              aiPrompt: activeAiContext.prompt,
-              aiAssistantNote: activeAiContext.assistantNote
-            }
-          : selectedSource === 'special-day'
-            ? { source: 'special-day' as const }
-            : { source: 'manual' as const }
-      const payload = isObjectId(selectedDhikr.id)
-        ? {
-            userId: sessionUserId,
-            dhikrId: selectedDhikr.id,
-            count: safeCount,
-            targetCount: selectedDhikr.target,
-            date: toDateKey(new Date()),
-            ...aiLogContext,
-            isCompleted,
-            isFavorite: selectedDhikr.isFavorite
-          }
-        : {
-            userId: sessionUserId,
-            customDhikrId: selectedDhikr.id,
-            customDhikrName: dhikrDisplayName(selectedDhikr),
-            customDhikrArabic: selectedDhikr.arabic,
-            count: safeCount,
-            targetCount: selectedDhikr.target,
-            date: toDateKey(new Date()),
-            ...aiLogContext,
-            isCompleted,
-            isFavorite: selectedDhikr.isFavorite
-          }
-      try {
-        const savedLog = await createDhikrLog({
-          ...payload
-        })
-        applySavedBackendLog(savedLog)
-        setSelectedSource(undefined)
-        return true
-      } catch (error: unknown) {
-        console.warn('[dhikr-log] kayıt başarısız', error)
-        const message = error instanceof Error ? error.message : t('home:errors.dhikrLogSaveFailed')
-        setSyncError(message)
-        setUnsavedTransitionError(message)
-        return false
-      } finally {
-        setIsSavingLog(false)
-      }
-    }
-
-    const clearFreeAutoDhikrRefs = () => {
-      freeAutoDhikrIdRef.current = undefined
-      freeAutoDhikrNameRef.current = undefined
-    }
-
-    const applyEsmaFresh = (dhikr: EsmaResumePendingDhikr) => {
-      upsertDhikrSnapshot({
-        id: dhikr._id,
-        source: 'ready',
-        name: dhikr.name,
-        arabic: dhikr.nameArabic,
-        transliteration: dhikr.transliteration,
-        meaning: dhikr.meaning,
-        current: 0,
-        target: dhikr.recommendedCount,
-        lastActivityLabel: t('home:lastActivity.notStarted'),
-        streakDays: 0,
-        isFavorite: false
-      })
-      selectDhikr(dhikr._id)
-      setActiveQuickDhikr(dhikrDisplayName(dhikr))
-      clearFreeAutoDhikrRefs()
-      liveFreeCountRef.current = 0
-      clearFreeModeSession()
-      setDemoCompleted(false)
-      setEsmaResumePending(null)
-    }
-
-    const applyEsmaContinue = (dhikr: EsmaResumePendingDhikr) => {
-      selectDhikr(dhikr._id)
-      setActiveQuickDhikr(dhikrDisplayName(dhikr))
-      clearFreeAutoDhikrRefs()
-      liveFreeCountRef.current = 0
-      clearFreeModeSession()
-      setDemoCompleted(false)
-      setEsmaResumePending(null)
-    }
-
-    const startEsmaDhikr = (item: EsmaulHusnaItem) => {
-      if (isSelectingEsmaDhikr) return
-      setIsSelectingEsmaDhikr(true)
-      setSyncError(undefined)
-      void findVerifiedActiveDhikrByTransliteration(item.transliteration)
-        .then(dhikr => {
-          if (dhikr._id === selectedDhikrId) {
-            applyEsmaContinue(dhikr)
-            return
-          }
-
-          const storeItem = items.find(i => i.id === dhikr._id)
-          const hasProgress = Boolean(storeItem && storeItem.current > 0)
-
-          if (hasProgress) {
-            setEsmaResumePending({ dhikr, currentCount: storeItem?.current ?? 0 })
-            return
-          }
-
-          applyEsmaFresh(dhikr)
-        })
-        .catch((error: unknown) => {
-          const message = error instanceof Error ? error.message : t('home:errors.esmaDhikrNotFound')
-          setSyncError(message)
-        })
-        .finally(() => {
-          setIsSelectingEsmaDhikr(false)
-        })
-    }
-
-    const runDhikrTransition = (transition: PendingDhikrTransition) => {
-      if (transition.kind === 'free') {
-        clearSelectedDhikr()
-        setActiveQuickDhikr(freeModeLabel)
-        clearFreeAutoDhikrRefs()
-        liveFreeCountRef.current = 0
-        clearFreeModeSession()
-        setSyncError(undefined)
-        return
-      }
-
-      if (transition.kind === 'select') {
-        selectDhikr(transition.id)
-        setIsSelectingDhikr(false)
-        return
-      }
-
-      if (transition.kind === 'esma') {
-        startEsmaDhikr(transition.item)
-        return
-      }
-
-      if (transition.label === freeModeLabel) {
-        runDhikrTransition({ kind: 'free' })
-        return
-      }
-
-      setActiveQuickDhikr(transition.label)
-      const matched = items.find(item => dhikrDisplayName(item) === transition.label)
-      if (matched) {
-        selectDhikr(matched.id)
-      }
-    }
-
-    const requestDhikrTransition = (transition: PendingDhikrTransition, targetDhikrId?: string) => {
-      const isLeavingFreeMode =
-        transition.kind !== 'free' && !(transition.kind === 'quick' && transition.label === freeModeLabel)
-      if (
-        shouldConfirmUnsavedDhikrTransition({
-          selectedDhikrId,
-          targetDhikrId,
-          unsavedProgressDhikrIds,
-          hasUnsavedFreeMode: !selectedDhikrId && freeCount > 0,
-          isLeavingFreeMode
-        })
-      ) {
-        setPendingDhikrTransition(transition)
-        setUnsavedTransitionError(null)
-        return
-      }
-
-      runDhikrTransition(transition)
-    }
-
-    const closeUnsavedTransition = () => {
-      if (isSavingLog) {
-        return
-      }
-
-      setPendingDhikrTransition(null)
-      setUnsavedTransitionError(null)
-    }
-
-    const continueUnsavedTransition = () => {
-      if (!pendingDhikrTransition || isSavingLog) {
-        return
-      }
-
-      const transition = pendingDhikrTransition
-      if (selectedDhikrId) {
-        discardUnsavedProgress(selectedDhikrId)
-      } else {
-        liveFreeCountRef.current = 0
-        clearFreeModeSession()
-      }
-      setPendingDhikrTransition(null)
-      setUnsavedTransitionError(null)
-      runDhikrTransition(transition)
-    }
-
-    const saveAndContinueUnsavedTransition = () => {
-      if (!pendingDhikrTransition || isSavingLog) {
-        return
-      }
-
-      const transition = pendingDhikrTransition
-      if (!selectedDhikr && freeCount > 0) {
-        setPendingFreeSaveTransition(transition)
-        setPendingDhikrTransition(null)
-        setUnsavedTransitionError(null)
-        setFreeSaveTargetDraft(freeTarget > 0 ? String(freeTarget) : '')
-        setFreeSaveNameModalOpen(true)
-        return
-      }
-
-      void saveSelectedDhikrLog().then(didSave => {
-        if (!didSave) {
-          return
-        }
-
-        setPendingDhikrTransition(null)
-        setUnsavedTransitionError(null)
-        runDhikrTransition(transition)
-      })
-    }
-
-    return {
-      greeting: t('home:greeting', { name: authDisplayName?.trim() || t('home:defaultName') }),
-      streakLabel: t('home:streakLabel', { count: streakDays }),
-      streakDays,
-      isSavingLog,
-      isRefreshing,
-      syncError,
-      isTargetMode,
-      count: selectedDhikr?.current ?? freeCount,
-      target: selectedDhikr?.target ?? freeTarget,
-      progress: selectedDhikr
-        ? selectedDhikr.target > 0
-          ? selectedDhikr.current / selectedDhikr.target
-          : 0
-        : freeTarget > 0
-          ? freeCount / freeTarget
-          : 0,
-      lapSize: effectiveLapSize,
-      currentLap: computeCurrentLap(currentLapCount, effectiveLapSize),
-      lapProgress: computeLapProgress(currentLapCount, effectiveLapSize),
-      setLapSize: applyLapSize,
-      lapCompletedNoticeId,
-      lastCompletedLap,
-      mainDhikr: {
-        id: selectedDhikr?.id ?? '',
-        source: selectedDhikr?.source ?? 'personal',
-        displayName: (selectedDhikr ? dhikrDisplayName(selectedDhikr) : '') || activeFreeModeTitle,
-        transliteration:
-          (selectedDhikr ? resolveLocalizedText(selectedDhikr.transliteration, locale) : '') ||
-          (selectedDhikr ? '' : activeFreeModeTitle),
-        arabic: selectedDhikr?.arabic,
-        meaning: selectedDhikr?.meaning ? resolveLocalizedText(selectedDhikr.meaning, locale) : undefined
-      },
-      quickDhikrs,
-      activeQuickDhikr,
-      selectedSourceLabel: selectedDhikr
-        ? selectedDhikr.source === 'personal'
-          ? t('home:selectedSource.myDhikrs')
-          : t('home:selectedSource.ready')
-        : t('home:selectedSource.free'),
-      demoCompleted,
-      isEditingTarget,
-      targetDraft,
-      isSelectingDhikr,
-      readyDhikrs,
-      personalDhikrs,
-      selectedDhikrId: selectedDhikrId,
-      isCreatingDhikr,
-      createNameDraft,
-      createArabicDraft,
-      createTargetDraft,
-      createError,
-      isFreeSaveNameModalOpen,
-      isUnsavedTransitionModalOpen: Boolean(pendingDhikrTransition),
-      unsavedTransitionDhikrName:
-        (selectedDhikr ? dhikrDisplayName(selectedDhikr) : '') || activeFreeModeTitle || freeModeLabel,
-      unsavedTransitionCount: selectedDhikr?.current ?? freeCount,
-      unsavedTransitionError,
-      isSelectingEsmaDhikr,
-      isDailyEsmaWelcomeOpen,
-      dailyEsmaSuggestions,
-      freeSaveNameDraft,
-      freeSaveTransliterationDraft,
-      freeSaveMeaningDraft,
-      freeSaveNameError,
-      freeSaveTargetDraft,
-      autoSaveNoticeId,
-      refresh,
-      onCountPress: () => {
-        if (demoCompleted) {
-          return
-        }
-
-        if (!selectedDhikr) {
-          const prevCount = liveFreeCountRef.current
-          const nextRawCount = prevCount + 1
-          const nextCount = freeTarget > 0 ? Math.min(freeTarget, nextRawCount) : nextRawCount
-          liveFreeCountRef.current = nextCount
-          incrementFreeMode()
-          if (fireCounterFeedback({ prev: prevCount, next: nextCount, lapSize: effectiveLapSize, pattern: hapticsPattern, soundPack: effectiveSoundPack })) {
-            setLastCompletedLap(lapNumberCompletedAt(nextCount, effectiveLapSize))
-            setLapCompletedNoticeId(prev => prev + 1)
-          }
-
-          // Free mode has no dhikr identity yet, so it cannot be logged
-          // silently — reaching the target opens the naming modal instead.
-          if (freeTarget > 0 && prevCount < freeTarget && nextCount >= freeTarget) {
-            const autoSaveKey = `free:${toDateKey(new Date())}:${freeTarget}`
-            if (autoSavedKeyRef.current !== autoSaveKey) {
-              autoSavedKeyRef.current = autoSaveKey
-              setSyncError(undefined)
-              setFreeSaveTargetDraft(String(freeTarget))
-              setFreeSaveNameModalOpen(true)
-            }
-          }
-
-          return
-        }
-
-        const baseCount = liveSelectedCountRef.current
-        const nextRawCount = baseCount + 1
-        const nextCount =
-          selectedDhikr.target > 0 ? Math.min(selectedDhikr.target, Math.max(0, nextRawCount)) : Math.max(0, nextRawCount)
-        liveSelectedCountRef.current = nextCount
-
-        incrementSelected()
-        if (fireCounterFeedback({ prev: baseCount, next: nextCount, lapSize: effectiveLapSize, pattern: hapticsPattern, soundPack: effectiveSoundPack })) {
-          setLastCompletedLap(lapNumberCompletedAt(nextCount, effectiveLapSize))
-          setLapCompletedNoticeId(prev => prev + 1)
-        }
-
-        // Reaching the target used to require pressing save for the day to
-        // count toward the streak; persist it here so the progress is never
-        // silently lost. Bound to the tap path on purpose: an effect would also
-        // fire on mount for a persisted at-target dhikr and for the tour's
-        // demo toggle, which must not write logs.
-        if (
-          selectedDhikr.target > 0 &&
-          baseCount < selectedDhikr.target &&
-          nextCount >= selectedDhikr.target
-        ) {
-          const autoSaveKey = `${selectedDhikr.id}:${toDateKey(new Date())}:${selectedDhikr.target}`
-          if (autoSavedKeyRef.current !== autoSaveKey) {
-            autoSavedKeyRef.current = autoSaveKey
-            void saveSelectedDhikrLog({ countOverride: nextCount, silent: true }).then(didSave => {
-              if (didSave) {
-                setAutoSaveNoticeId(prev => prev + 1)
-                return
-              }
-
-              // Allow another attempt once the user resets and re-reaches it.
-              autoSavedKeyRef.current = null
-            })
-          }
-        }
-      },
-      onResetPress: () => {
-        if (selectedDhikr) {
-          resetSelected()
-          liveSelectedCountRef.current = 0
-          return
-        }
-
-        liveFreeCountRef.current = 0
-        resetFreeMode()
-      },
-      onTargetPress: () => {
-        setTargetDraft(String(selectedDhikr?.target && selectedDhikr.target > 0 ? selectedDhikr.target : (freeTarget > 0 ? freeTarget : 100)))
-        setIsEditingTarget(true)
-      },
-      onTargetDraftChange: next => {
-        const digits = next.replace(/\D+/g, '')
-        const trimmed = digits.slice(0, String(MAX_DHIKR_TARGET).length)
-        setTargetDraft(trimmed)
-      },
-      onTargetCancel: () => {
-        setTargetDraft(String(selectedDhikr && selectedDhikr.target > 0 ? selectedDhikr.target : (freeTarget > 0 ? freeTarget : 100)))
-        setIsEditingTarget(false)
-      },
-      onTargetSubmit: submitTarget,
-      onChangeDhikrPress: () => setIsSelectingDhikr(true),
-      onCloseDhikrPicker: () => setIsSelectingDhikr(false),
-      onSelectDhikr: id => {
-        requestDhikrTransition({ kind: 'select', id }, id)
-      },
-      onToggleDemoComplete: () => {
-        setDemoCompleted(prev => {
-          const next = !prev
-          setSelectedCount(next ? (selectedDhikr?.target ?? 0) : 0)
-          return next
-        })
-      },
-      onQuickDhikrSelect: label => {
-        const matched = items.find(item => dhikrDisplayName(item) === label)
-        requestDhikrTransition({ kind: 'quick', label }, matched?.id)
-      },
-      onSavePress: () => {
-        if (selectedDhikr) {
-          void saveSelectedDhikrLog()
-          return
-        }
-
-        setSyncError(undefined)
-        setFreeSaveTargetDraft(freeTarget > 0 ? String(freeTarget) : '')
-        setFreeSaveNameModalOpen(true)
-      },
-      onOpenCreateDhikr: () => {
-        setIsCreatingDhikr(true)
-        setCreateError(null)
-      },
-      onCloseCreateDhikr: closeCreate,
-      onCreateNameChange: next => {
-        setCreateNameDraft(next)
-        if (createError) {
-          setCreateError(null)
-        }
-      },
-      onCreateArabicChange: setCreateArabicDraft,
-      onCreateTargetChange: next => setCreateTargetDraft(next.replace(/\D+/g, '')),
-      onCreateSubmit: () => {
-        const trimmed = createNameDraft.trim()
-        if (!trimmed) {
-          setCreateError(t('home:errors.nameRequired'))
-          return
-        }
-
-        const parsedTarget = Number.parseInt(createTargetDraft, 10)
-        const createdId = addCustomDhikr({
-          name: trimmed,
-          arabicOrPronunciation: createArabicDraft,
-          target: Number.isNaN(parsedTarget) ? 33 : parsedTarget
-        })
-        if (authStatus === 'authenticated') {
-          void createUserDhikr({
-            clientId: createdId,
-            name: trimmed,
-            transliteration: createArabicDraft.trim() || undefined,
-            target: Number.isNaN(parsedTarget) ? 33 : parsedTarget
-          }).catch(() => {
-            setSyncError(t('home:errors.dhikrSyncFailed'))
-          })
-        }
-        closeCreate()
-        setIsSelectingDhikr(false)
-      },
-      onFreeSaveNameChange: next => {
-        setFreeSaveNameDraft(next)
-        if (freeSaveNameError) {
-          setFreeSaveNameError(null)
-        }
-      },
-      onFreeSaveTransliterationChange: next => {
-        setFreeSaveTransliterationDraft(next)
-      },
-      onFreeSaveMeaningChange: next => {
-        setFreeSaveMeaningDraft(next)
-      },
-      onFreeSaveTargetChange: next => {
-        const digits = next.replace(/\D+/g, '')
-        const trimmed = digits.slice(0, String(MAX_DHIKR_TARGET).length)
-        setFreeSaveTargetDraft(trimmed)
-        if (freeSaveNameError) {
-          setFreeSaveNameError(null)
-        }
-      },
-      onFreeSaveNameCancel: closeFreeSaveName,
-      onFreeSaveNameSubmit: () => {
-        const trimmed = freeSaveNameDraft.trim()
-        if (!trimmed) {
-          setFreeSaveNameError(t('home:errors.nameRequired'))
-          return
-        }
-        const parsedTarget =
-          freeSaveTargetDraft.trim().length > 0 ? Number.parseInt(freeSaveTargetDraft, 10) : undefined
-        if (parsedTarget !== undefined && (!Number.isFinite(parsedTarget) || parsedTarget <= 0)) {
-          setFreeSaveNameError(t('home:errors.targetInvalid'))
-          return
-        }
-        const countToSave = freeCount
-        const targetToSave = parsedTarget ?? 0
-
-        const createdId = addCustomDhikr({
-          name: trimmed,
-          transliteration: freeSaveTransliterationDraft.trim() || undefined,
-          meaning: freeSaveMeaningDraft.trim() || undefined,
-          target: targetToSave,
-          initialCount: countToSave
-        })
-        const transitionAfterSave = pendingFreeSaveTransition
-        closeFreeSaveName()
-        clearFreeModeSession()
-        if (transitionAfterSave) {
-          runDhikrTransition(transitionAfterSave)
-        }
-        if (authStatus !== 'authenticated' || !sessionUserId) {
-          setSyncError(t('home:errors.loginRequiredToSavePermanently'))
-          return
-        }
-
-        setIsSavingLog(true)
-        setSyncError(undefined)
-        void createUserDhikr({
-          clientId: createdId,
-          name: trimmed,
-          transliteration: freeSaveTransliterationDraft.trim() || undefined,
-          meaning: freeSaveMeaningDraft.trim() || undefined,
-          target: targetToSave
-        })
-          .then(() =>
-            createDhikrLog({
-              userId: sessionUserId,
-              customDhikrId: createdId,
-              customDhikrName: trimmed,
-              count: countToSave,
-              targetCount: targetToSave,
-              date: toDateKey(new Date()),
-              source: 'manual',
-              isCompleted: targetToSave > 0 && countToSave >= targetToSave
-            })
-          )
-          .then(savedLog => {
-            applySavedBackendLog(savedLog)
-          })
-          .catch((error: unknown) => {
-            const message = error instanceof Error ? error.message : t('home:errors.dhikrLogSaveFailed')
-            setSyncError(message)
-          })
-          .finally(() => {
-            setIsSavingLog(false)
-          })
-      },
-      onStartFreeMode: () => {
-        requestDhikrTransition({ kind: 'free' })
-      },
-      onEsmaPress: item => {
-        requestDhikrTransition({ kind: 'esma', item })
-      },
-      isEsmaResumeGuardOpen: Boolean(esmaResumePending),
-      esmaResumeGuardDhikrName: esmaResumePending ? dhikrDisplayName(esmaResumePending.dhikr) : '',
-      esmaResumeGuardCurrentCount: esmaResumePending?.currentCount ?? 0,
-      onEsmaResumeGuardFresh: () => {
-        if (!esmaResumePending) return
-        applyEsmaFresh(esmaResumePending.dhikr)
-      },
-      onEsmaResumeGuardContinue: () => {
-        if (!esmaResumePending) return
-        applyEsmaContinue(esmaResumePending.dhikr)
-      },
-      onEsmaResumeGuardCancel: () => setEsmaResumePending(null),
-      onDailyEsmaDismiss: markDailyEsmaWelcomeSeen,
-      onDailyEsmaShowAll: markDailyEsmaWelcomeSeen,
-      onDailyEsmaStart: item => {
-        markDailyEsmaWelcomeSeen()
-        requestDhikrTransition({ kind: 'esma', item })
-      },
-      onUnsavedTransitionCancel: closeUnsavedTransition,
-      onUnsavedTransitionSaveAndContinue: saveAndContinueUnsavedTransition,
-      onUnsavedTransitionContinueWithoutSaving: continueUnsavedTransition,
-      isTargetDowngradeWarningOpen: pendingDowngradeTarget !== null,
-      targetDowngradePendingTarget: pendingDowngradeTarget ?? 0,
-      targetDowngradeCurrentCount: selectedDhikr ? selectedDhikr.current : freeCount,
-      onTargetDowngradeConfirm: () => {
-        if (pendingDowngradeTarget === null) return
-        if (selectedDhikr) {
-          setSelectedTarget(pendingDowngradeTarget)
-          setTargetDraft(String(pendingDowngradeTarget))
-        } else {
-          setFreeModeTarget(pendingDowngradeTarget)
-          setTargetDraft(String(pendingDowngradeTarget))
-        }
-        setPendingDowngradeTarget(null)
-      },
-      onTargetDowngradeCancel: () => {
-        setPendingDowngradeTarget(null)
-        setTargetDraft(String(
-          selectedDhikr
-            ? (selectedDhikr.target > 0 ? selectedDhikr.target : 33)
-            : (freeTarget > 0 ? freeTarget : 100)
-        ))
-      },
-      tapAnywhereEnabled,
-      toggleTapAnywhere
-    }
-  }, [
-    activeQuickDhikr,
-    addCustomDhikr,
-    applySavedBackendLog,
-    autoSaveNoticeId,
-    clearSelectedDhikr,
-    clearFreeModeSession,
-    createArabicDraft,
-    createError,
-    createNameDraft,
-    createTargetDraft,
-    demoCompleted,
-    dailyEsmaSuggestions,
-    discardUnsavedProgress,
-    freeCount,
-    freeTarget,
-    freeModeLapSize,
-    freeSaveNameDraft,
-    freeSaveTransliterationDraft,
-    freeSaveMeaningDraft,
-    freeSaveNameError,
-    freeSaveTargetDraft,
-    isSelectingEsmaDhikr,
-    esmaResumePending,
-    incrementFreeMode,
-    incrementSelected,
-    isSavingLog,
-    isRefreshing,
-    isCreatingDhikr,
-    isDailyEsmaWelcomeOpen,
-    isEditingTarget,
-    isSelectingDhikr,
-    isFreeSaveNameModalOpen,
-    lapCompletedNoticeId,
-    lastCompletedLap,
-    pendingFreeSaveTransition,
-    markDailyEsmaWelcomeSeen,
-    pendingDhikrTransition,
-    pendingDowngradeTarget,
-    upsertDhikrSnapshot,
-    items,
-    personalDhikrs,
-    quickDhikrs,
-    readyDhikrs,
-    refresh,
-    resetFreeMode,
-    resetSelected,
-    syncError,
-    selectDhikr,
-    selectedDhikrId,
+  const selectedDhikr = useMemo(() => items.find(item => item.id === selectedDhikrId), [items, selectedDhikrId])
+
+  const { tapAnywhereEnabled, toggleTapAnywhere } = useTapAnywherePref()
+  const { streakDays, isRefreshing, refresh } = useStreak()
+  const freeSave = useFreeSaveForm()
+  const save = useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave: freeSave.open })
+  const engine = useCounterEngine({ selectedDhikr, onAutoSave: save.autoSaveSelected, openFreeSave: freeSave.open })
+  const editors = useHomeEditors({ selectedDhikr, dhikrDisplayName, freeModeLabel })
+  const transition = useDhikrTransition({
     selectedDhikr,
-    sessionUserId,
-    setSyncError,
-    streakDays,
-    authDisplayName,
-    authStatus,
-    hapticsPattern,
-    effectiveSoundPack,
-    setSelectedCount,
-    setSelectedTarget,
-    setSelectedLapSize,
-    setFreeModeTarget,
-    setFreeModeLapSize,
-    targetDraft,
-    unsavedProgressDhikrIds,
-    unsavedTransitionError,
-    tapAnywhereEnabled,
-    toggleTapAnywhere,
-    t,
-    freeModeLabel
-  ])
+    dhikrDisplayName,
+    freeModeLabel,
+    save,
+    freeSave,
+    resetFreeSession: engine.resetFreeSession,
+    setDemoCompleted: engine.setDemoCompleted,
+    closeDhikrPicker: editors.closeDhikrPicker
+  })
+  const esma = useDailyEsmaWelcome({
+    isHomeBusy:
+      transition.hasUnsavedActiveDhikr ||
+      editors.isEditingTarget ||
+      editors.isSelectingDhikr ||
+      editors.isCreatingDhikr ||
+      freeSave.isOpen ||
+      Boolean(transition.pendingDhikrTransition) ||
+      transition.isSelectingEsmaDhikr,
+    onStart: transition.onEsmaPress
+  })
 
-  return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>
+  // Derived as primitives so the memo below survives taps (which replace `selectedDhikr`).
+  const mainDhikrId = selectedDhikr?.id ?? ''
+  const mainDhikrSource = selectedDhikr?.source ?? 'personal'
+  const mainDhikrName = (selectedDhikr ? dhikrDisplayName(selectedDhikr) : '') || transition.activeFreeModeTitle
+  const mainDhikrTransliteration =
+    (selectedDhikr ? resolveLocalizedText(selectedDhikr.transliteration, locale) : '') ||
+    (selectedDhikr ? '' : transition.activeFreeModeTitle)
+  const mainDhikrArabic = selectedDhikr?.arabic
+  const mainDhikrMeaning = selectedDhikr?.meaning ? resolveLocalizedText(selectedDhikr.meaning, locale) : undefined
+  const mainDhikr = useMemo<HomeDhikr>(
+    () => ({
+      id: mainDhikrId,
+      source: mainDhikrSource,
+      displayName: mainDhikrName,
+      transliteration: mainDhikrTransliteration,
+      arabic: mainDhikrArabic,
+      meaning: mainDhikrMeaning
+    }),
+    [mainDhikrId, mainDhikrSource, mainDhikrName, mainDhikrTransliteration, mainDhikrArabic, mainDhikrMeaning]
+  )
+  const selectedSourceLabel = selectedDhikr
+    ? selectedDhikr.source === 'personal'
+      ? t('home:selectedSource.myDhikrs')
+      : t('home:selectedSource.ready')
+    : t('home:selectedSource.free')
+  const greeting = t('home:greeting', { name: authDisplayName?.trim() || t('home:defaultName') })
+  const streakLabel = t('home:streakLabel', { count: streakDays })
+
+  const counter = useMemo(
+    () => ({
+      ...engine.counter,
+      // Both modals show the live count, so they follow the per-tap context.
+      unsavedTransitionCount: engine.counter.count,
+      targetDowngradeCurrentCount: engine.counter.count
+    }),
+    [engine.counter]
+  )
+
+  const ui = useMemo(
+    () => ({
+      greeting,
+      streakLabel,
+      streakDays,
+      isRefreshing,
+      refresh,
+      tapAnywhereEnabled,
+      toggleTapAnywhere,
+      mainDhikr,
+      selectedDhikrId,
+      selectedSourceLabel,
+      ...save.ui,
+      ...engine.ui,
+      ...editors.ui,
+      ...transition.ui,
+      ...esma
+    }),
+    [
+      greeting, streakLabel, streakDays, isRefreshing, refresh, tapAnywhereEnabled, toggleTapAnywhere, mainDhikr,
+      selectedDhikrId, selectedSourceLabel, save.ui, engine.ui, editors.ui, transition.ui, esma
+    ]
+  )
+
+  return { counter, ui }
 }
 
-export function useHomeContext() {
-  const ctx = useContext(HomeContext)
+export function HomeProvider({ children }: { children: ReactNode }) {
+  const { counter, ui } = useHomeValues()
+  return (
+    <HomeUiContext.Provider value={ui}>
+      <HomeCounterContext.Provider value={counter}>{children}</HomeCounterContext.Provider>
+    </HomeUiContext.Provider>
+  )
+}
+
+/** Per-tap state: count, target, progress, lap + the count/reset handlers. */
+export function useHomeCounter() {
+  const ctx = useContext(HomeCounterContext)
   if (!ctx) {
-    throw new Error('useHomeContext must be used within HomeProvider')
+    throw new Error('useHomeCounter must be used within HomeProvider')
   }
   return ctx
 }
 
-function buildNextAutoFreeTitle(
-  items: Array<{
-    source: ZikirSource
-    name: LocalizedText | string
-    transliteration?: LocalizedText | string
-  }>
-) {
-  const locale = getAppLocale()
-  let maxIndex = 0
-
-  for (const item of items) {
-    if (item.source !== 'personal') {
-      continue
-    }
-
-    const title = (
-      resolveLocalizedText(item.name, locale) ||
-      (item.transliteration ? resolveLocalizedText(item.transliteration, locale) : '')
-    ).trim()
-    const prefix = i18n.t('home:selectedDhikrMeaning.titleLabel')
-    const match = new RegExp(`^${prefix}\\s+(\\d+)$`, 'i').exec(title)
-    if (!match) {
-      continue
-    }
-
-    const parsed = Number.parseInt(match[1] ?? '', 10)
-    if (Number.isFinite(parsed) && parsed > maxIndex) {
-      maxIndex = parsed
-    }
+/** Everything else on home (modals, drafts, lists, notices); stable across taps. */
+export function useHomeUi() {
+  const ctx = useContext(HomeUiContext)
+  if (!ctx) {
+    throw new Error('useHomeUi must be used within HomeProvider')
   }
-
-  return `${i18n.t('home:selectedDhikrMeaning.titleLabel')} ${maxIndex + 1}`
+  return ctx
 }

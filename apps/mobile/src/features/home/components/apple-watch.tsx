@@ -1,6 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useRouter } from 'expo-router'
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { memo, useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ConfirmModal } from '../../../components/ui/confirm-modal'
@@ -21,7 +21,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { withAlpha } from "@zikirmatik/shared";
 import Svg, { Circle } from 'react-native-svg'
-import { useHomeContext } from '../home-context'
+import { useHomeCounter, useHomeUi } from '../home-context'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 import { TEST_IDS } from '../../../test-ids'
 
@@ -349,10 +349,17 @@ export function AppleWatchView({
   )
 }
 
-export function AppleWatch(props: AppleWatchProps = {}) {
-  const home = useHomeContext()
-  return <AppleWatchView testIDs={HOME_COUNTER_TEST_IDS} {...props} model={home} />
+/** Home's counter model: per-tap values from HomeCounterContext + the few UI bits the controls need. */
+export function useHomeCounterModel(): CounterVisualModel {
+  const counter = useHomeCounter()
+  const { onTargetPress, onSavePress, isSavingLog, mainDhikr, activeQuickDhikr } = useHomeUi()
+  return { ...counter, onTargetPress, onSavePress, isSavingLog, mainDhikr, activeQuickDhikr }
 }
+
+export const AppleWatch = memo(function AppleWatch(props: AppleWatchProps) {
+  const model = useHomeCounterModel()
+  return <AppleWatchView testIDs={HOME_COUNTER_TEST_IDS} {...props} model={model} />
+})
 
 
 function resolveStrongTextStyle(fontFamily: string) {

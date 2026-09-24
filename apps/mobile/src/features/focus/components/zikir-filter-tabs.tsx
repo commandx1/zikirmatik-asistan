@@ -1,8 +1,9 @@
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { useZikirlerim } from "../context/zikirlerim-context";
+import { useZikirlerimActions, useZikirlerimState } from "../context/zikirlerim-context";
 
 export function ZikirFilterTabs() {
-  const { filters, activeFilter, setActiveFilter } = useZikirlerim();
+  const { filters, activeFilter } = useZikirlerimState();
+  const { setActiveFilter } = useZikirlerimActions();
 
   return (
     <View className="my-4 px-5">

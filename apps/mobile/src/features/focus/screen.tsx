@@ -10,7 +10,7 @@ import { ZikirFilterTabs } from "./components/zikir-filter-tabs";
 import { ZikirFormModal } from "./components/zikir-form-modal";
 import { ZikirListSection } from "./components/zikir-list-section";
 import { ZikirlerimHeader } from "./components/zikirlerim-header";
-import { useZikirlerim, ZikirlerimProvider } from "./context/zikirlerim-context";
+import { useZikirlerimActions, useZikirlerimState, ZikirlerimProvider } from "./context/zikirlerim-context";
 import { useAppLocale } from "../../i18n";
 
 export function FocusScreen() {
@@ -25,7 +25,6 @@ function FocusContent() {
   const { t } = useTranslation("focus");
   const locale = useAppLocale();
   const {
-    refresh,
     isRefreshing,
     editingDhikr,
     isUpdateOpen,
@@ -35,14 +34,17 @@ function FocusContent() {
     isSavingUnsavedTransition,
     unsavedTransitionDhikrName,
     unsavedTransitionCount,
-    unsavedTransitionError,
+    unsavedTransitionError
+  } = useZikirlerimState();
+  const {
+    refresh,
     closeUpdateModal,
     clearUpdateError,
     saveDhikrUpdate,
     cancelUnsavedTransition,
     saveAndContinueUnsavedTransition,
     continueWithoutSavingUnsavedTransition
-  } = useZikirlerim();
+  } = useZikirlerimActions();
   const router = useRouter();
   const { tokens } = useThemeTokens();
   const { t: tVird } = useTranslation("vird");

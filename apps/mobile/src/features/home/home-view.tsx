@@ -1,6 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useThemeTokens } from '@zikirmatik/ui'
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, memo, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import { InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -26,7 +26,7 @@ import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-awar
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
 import { UnsavedDhikrTransitionModal } from '../../components/ui/unsaved-dhikr-transition-modal'
-import { useHomeContext } from './home-context'
+import { useHomeCounter, useHomeUi } from './home-context'
 import { AppleWatch } from './components/apple-watch'
 import { LapSizeSelector } from './components/lap-size-selector'
 import { TesbihCounter } from './components/tesbih-counter'
@@ -46,10 +46,9 @@ const DailyEsmaWelcomeModal = lazy(() =>
   import('./components/daily-esma-welcome-modal').then((m) => ({ default: m.DailyEsmaWelcomeModal }))
 )
 
-function TapAnywhereToggle({ onPress, spotlightRef }: { onPress: () => void; spotlightRef?: React.RefObject<View | null> }) {
-  const home = useHomeContext()
+const TapAnywhereToggle = memo(function TapAnywhereToggle({ onPress, spotlightRef }: { onPress: () => void; spotlightRef?: React.RefObject<View | null> }) {
+  const { tapAnywhereEnabled: active } = useHomeUi()
   const { tokens } = useThemeTokens()
-  const active = home.tapAnywhereEnabled
 
   return (
     <Pressable
@@ -68,16 +67,16 @@ function TapAnywhereToggle({ onPress, spotlightRef }: { onPress: () => void; spo
       />
     </Pressable>
   )
-}
+})
 
-function TopBar({
+const TopBar = memo(function TopBar({
   onToggleTapAnywhere,
   tapAnywhereRef,
 }: {
   onToggleTapAnywhere: () => void;
   tapAnywhereRef?: React.RefObject<View | null>;
 }) {
-  const home = useHomeContext()
+  const home = useHomeUi()
   const { t } = useTranslation('home')
 
   return (
@@ -88,10 +87,10 @@ function TopBar({
       rightAccessory={<TapAnywhereToggle onPress={onToggleTapAnywhere} spotlightRef={tapAnywhereRef} />}
     />
   )
-}
+})
 
-function SelectedDhikrMeaning() {
-  const home = useHomeContext()
+const SelectedDhikrMeaning = memo(function SelectedDhikrMeaning() {
+  const home = useHomeUi()
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('home')
   const upper = useLocaleUpper()
@@ -136,10 +135,10 @@ function SelectedDhikrMeaning() {
       </View>
     </View>
   )
-}
+})
 
-function FreeModeButton() {
-  const home = useHomeContext()
+const FreeModeButton = memo(function FreeModeButton() {
+  const home = useHomeUi()
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('home')
 
@@ -161,10 +160,10 @@ function FreeModeButton() {
       </Pressable>
     </View>
   )
-}
+})
 
-function TargetModal() {
-  const home = useHomeContext()
+const TargetModal = memo(function TargetModal() {
+  const home = useHomeUi()
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('home')
 
@@ -220,10 +219,11 @@ function TargetModal() {
       </View>
     </Modal>
   )
-}
+})
 
-function TargetDowngradeWarningModal() {
-  const home = useHomeContext()
+const TargetDowngradeWarningModal = memo(function TargetDowngradeWarningModal() {
+  const home = useHomeUi()
+  const { targetDowngradeCurrentCount } = useHomeCounter()
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('home')
 
@@ -245,7 +245,7 @@ function TargetDowngradeWarningModal() {
           <Text className='text-sm leading-5' style={{ color: tokens.textMuted }}>
             {t('home:targetDowngradeModal.bodyPart1')}{' '}
             <Text className='font-semibold' style={{ color: tokens.textPrimary }}>
-              {home.targetDowngradeCurrentCount}
+              {targetDowngradeCurrentCount}
             </Text>{' '}
             {t('home:targetDowngradeModal.bodyPart2')}{' '}
             <Text className='font-semibold' style={{ color: tokens.textPrimary }}>
@@ -280,10 +280,10 @@ function TargetDowngradeWarningModal() {
       </View>
     </Modal>
   )
-}
+})
 
-function FreeSaveNameModal() {
-  const home = useHomeContext()
+const FreeSaveNameModal = memo(function FreeSaveNameModal() {
+  const home = useHomeUi()
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('home')
 
@@ -394,27 +394,27 @@ function FreeSaveNameModal() {
       </View>
     </KeyboardAwareBottomSheetModal>
   )
-}
+})
 
-function CurrentLapBadge() {
-  const home = useHomeContext()
+const CurrentLapBadge = memo(function CurrentLapBadge() {
+  const { currentLap } = useHomeCounter()
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('home')
 
-  if (home.currentLap <= 0) {
+  if (currentLap <= 0) {
     return null
   }
 
   return (
     <View className='-mt-6 mb-4 items-center'>
       <Text className='text-xs font-semibold' style={{ color: tokens.textMuted }}>
-        {t('home:lapIndicator.label', { lap: home.currentLap })}
+        {t('home:lapIndicator.label', { lap: currentLap })}
       </Text>
     </View>
   )
-}
+})
 
-function HomeCounterVisual({
+const HomeCounterVisual = memo(function HomeCounterVisual({
   spotlightRef,
   listBtnRef,
   targetBtnRef,
@@ -451,6 +451,36 @@ function HomeCounterVisual({
       <CurrentLapBadge />
     </>
   )
+})
+
+/** The tap-anywhere surface is the only per-tap subscriber around the page body; its children come from HomeView and are not re-rendered on taps. */
+function TapAnywhereArea({ children }: { children: ReactNode }) {
+  const { onCountPress } = useHomeCounter()
+  const { tapAnywhereEnabled } = useHomeUi()
+
+  return (
+    <Pressable onPress={tapAnywhereEnabled ? onCountPress : undefined} style={{ flex: 1 }}>
+      {children}
+    </Pressable>
+  )
+}
+
+function UnsavedTransitionModal() {
+  const home = useHomeUi()
+  const { unsavedTransitionCount } = useHomeCounter()
+
+  return (
+    <UnsavedDhikrTransitionModal
+      visible={home.isUnsavedTransitionModalOpen}
+      dhikrName={home.unsavedTransitionDhikrName}
+      count={unsavedTransitionCount}
+      isSaving={home.isSavingLog}
+      error={home.unsavedTransitionError}
+      onSaveAndContinue={home.onUnsavedTransitionSaveAndContinue}
+      onContinueWithoutSaving={home.onUnsavedTransitionContinueWithoutSaving}
+      onCancel={home.onUnsavedTransitionCancel}
+    />
+  )
 }
 
 function TesbihPremiumStrip({ message, onPress }: { message: string; onPress: () => void }) {
@@ -473,7 +503,7 @@ function TesbihPremiumStrip({ message, onPress }: { message: string; onPress: ()
 }
 
 export function HomeView() {
-  const home = useHomeContext()
+  const home = useHomeUi()
   const { t } = useTranslation('home')
   const router = useRouter()
   const scrollRef = useRef<ScrollView>(null)
@@ -613,7 +643,7 @@ export function HomeView() {
         onRefresh={home.refresh}
         refreshing={home.isRefreshing}
       >
-        <Pressable onPress={home.tapAnywhereEnabled ? home.onCountPress : undefined} style={{ flex: 1 }}>
+        <TapAnywhereArea>
           <FreeModeButton />
           <HomeCounterVisual
             spotlightRef={appleWatchRef}
@@ -641,7 +671,7 @@ export function HomeView() {
               />
             </Suspense>
           </View>
-        </Pressable>
+        </TapAnywhereArea>
       </PageScrollView>
       <DhikrResumeModal
         visible={home.isEsmaResumeGuardOpen}
@@ -663,16 +693,7 @@ export function HomeView() {
       <TargetModal />
       <TargetDowngradeWarningModal />
       <FreeSaveNameModal />
-      <UnsavedDhikrTransitionModal
-        visible={home.isUnsavedTransitionModalOpen}
-        dhikrName={home.unsavedTransitionDhikrName}
-        count={home.unsavedTransitionCount}
-        isSaving={home.isSavingLog}
-        error={home.unsavedTransitionError}
-        onSaveAndContinue={home.onUnsavedTransitionSaveAndContinue}
-        onContinueWithoutSaving={home.onUnsavedTransitionContinueWithoutSaving}
-        onCancel={home.onUnsavedTransitionCancel}
-      />
+      <UnsavedTransitionModal />
       <ToastBanner message={toastMessage} />
       <ProfilePremiumSheet
         visible={premiumSheet.isOpen}
