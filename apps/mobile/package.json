@@ -48,6 +48,7 @@
     "expo-location": "~19.0.8",
     "expo-notifications": "~0.32.11",
     "expo-router": "~6.0.24",
+    "expo-secure-store": "~15.0.8",
     "i18next": "^26.3.6",
     "nativewind": "4.2.3",
     "react": "19.1.0",

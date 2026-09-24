@@ -21,3 +21,7 @@ export const WIDGET_STORAGE_KEYS = {
   themeStore: "theme-store-v1",
   widgetState: "widget-state-v1"
 } as const;
+
+// zustand persist name of the auth store; lives in SecureStore (see
+// secure-session-storage.ts), migrated once from AsyncStorage.
+export const AUTH_STORE_KEY = "auth-store-v2";

@@ -321,13 +321,10 @@ function formatGoogleClientConfigSummary({
 }
 
 function buildDevGoogleIdentityToken() {
-  const email =
-    //process.env.EXPO_PUBLIC_DEV_GOOGLE_EMAIL?.trim() || 's10155641@gmail.com';
-    DEV_GOOGLE_EMAIL || 'serhatbelen7@gmail.com';
-  const displayName =
-    DEV_GOOGLE_NAME || 'Serhat Belen';
-  const stableSub =
-    DEV_GOOGLE_SUB || `dev-google-${email}`;
+  // Neutral defaults; set EXPO_PUBLIC_DEV_GOOGLE_* to sign in as a specific user.
+  const email = DEV_GOOGLE_EMAIL || 'dev@example.com';
+  const displayName = DEV_GOOGLE_NAME || 'Dev User';
+  const stableSub = DEV_GOOGLE_SUB || `dev-google-${email}`;
 
   return JSON.stringify({
     sub: stableSub,

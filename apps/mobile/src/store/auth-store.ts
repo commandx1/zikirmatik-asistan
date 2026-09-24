@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { safeAsyncStorage } from "../lib/storage/zustand-storage";
+import { secureSessionStorage } from "../lib/storage/secure-session-storage";
+import { AUTH_STORE_KEY } from "../lib/storage/keys";
 import { Platform } from "react-native";
 import { i18n } from "../i18n";
 import type {
@@ -151,8 +152,8 @@ export const useAuthStore = create<AuthStore>()(
       markHydrated: () => set({ hasHydrated: true })
     }),
     {
-      name: "auth-store-v2",
-      storage: createJSONStorage(() => safeAsyncStorage),
+      name: AUTH_STORE_KEY,
+      storage: createJSONStorage(() => secureSessionStorage),
       partialize: (state) => ({
         status: state.status,
         guestMode: state.guestMode,

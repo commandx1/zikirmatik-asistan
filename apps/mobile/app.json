@@ -24,6 +24,12 @@
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": false
+        }
       ]
     ],
     "experiments": {

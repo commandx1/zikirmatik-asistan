@@ -7,6 +7,7 @@ vi.mock("../i18n", () => ({ i18n: { t: (key: string) => key } }));
 vi.mock("@react-native-async-storage/async-storage", () => ({
   default: { getItem: vi.fn(async () => null), setItem: vi.fn(), removeItem: vi.fn() }
 }));
+vi.mock("expo-secure-store", () => ({ AFTER_FIRST_UNLOCK: 0, getItemAsync: vi.fn(async () => null), setItemAsync: vi.fn(), deleteItemAsync: vi.fn() }));
 vi.mock("../features/auth/services/auth-api-client", () => ({
   AuthApiError: class AuthApiError extends Error {
     constructor(
