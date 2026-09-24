@@ -1,10 +1,8 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { safeAsyncStorage } from "../lib/storage/zustand-storage";
-import { i18n } from "../i18n";
-import { useProfileStore } from "./profile-store";
-import { toIntlLocale } from "../lib/locale-format";
-import { ZIKIR_ITEMS } from "../features/focus/data";
+import { getDhikrStoreText } from "./dhikr-store-text";
+import { ZIKIR_ITEMS } from "./dhikr-catalog-seed";
 import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api-client";
 import type { AiDhikrContext, ZikirItem } from "../features/focus/types";
 import type { LocalizedText } from "@zikirmatik/shared";
@@ -119,17 +117,12 @@ type DhikrStore = {
 export const MAX_DHIKR_TARGET = 9999;
 
 function formatLastActivityLabel(now: Date = new Date()) {
-  const time = now.toLocaleTimeString(toIntlLocale(useProfileStore.getState().locale), {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-
-  return i18n.t("focus:relativeDate.todayAt", { time });
+  return getDhikrStoreText().todayAt(now);
 }
 
 function slugify(value: string) {
-  const normalized = value
-    .toLocaleLowerCase(toIntlLocale(useProfileStore.getState().locale))
+  const normalized = getDhikrStoreText()
+    .lowercase(value)
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
@@ -290,7 +283,7 @@ export const useDhikrStore = create<DhikrStore>()(
         meaning: item.meaning,
         current: normalizedTarget > 0 ? Math.min(normalizedCurrent, normalizedTarget) : normalizedCurrent,
         target: normalizedTarget,
-        lastActivityLabel: item.lastActivityLabel ?? i18n.t("focus:relativeDate.saved"),
+        lastActivityLabel: item.lastActivityLabel ?? getDhikrStoreText().saved(),
         streakDays: 0,
         isFavorite: Boolean(item.isFavorite)
       };
@@ -369,7 +362,7 @@ export const useDhikrStore = create<DhikrStore>()(
       meaning,
       current: Math.max(0, Math.floor(input.initialCount ?? 0)),
       target: resolveCustomTarget(input.target),
-      lastActivityLabel: hasInitialCount ? formatLastActivityLabel(now) : i18n.t("focus:relativeDate.notStarted"),
+      lastActivityLabel: hasInitialCount ? formatLastActivityLabel(now) : getDhikrStoreText().notStarted(),
       lastActivityAt: hasInitialCount ? now.toISOString() : undefined,
       streakDays: 0,
       isFavorite: false
@@ -402,7 +395,7 @@ export const useDhikrStore = create<DhikrStore>()(
           ? {
               ...item,
               current: 0,
-              lastActivityLabel: i18n.t("focus:relativeDate.notStarted"),
+              lastActivityLabel: getDhikrStoreText().notStarted(),
               lastActivityAt: undefined
             }
           : item
@@ -597,7 +590,7 @@ export const useDhikrStore = create<DhikrStore>()(
           aiRecommendationId: item.aiRecommendationId ?? (state.activeAiContext?.dhikrId === item.id ? state.activeAiContext.recommendationId : undefined),
           current: normalizedCurrent,
           target: effectiveTarget,
-          lastActivityLabel: item.lastActivityLabel ?? existing?.lastActivityLabel ?? i18n.t("focus:relativeDate.notStarted"),
+          lastActivityLabel: item.lastActivityLabel ?? existing?.lastActivityLabel ?? getDhikrStoreText().notStarted(),
           lastActivityAt: hasUnsavedProgress ? existing?.lastActivityAt : (item.lastActivityAt ?? existing?.lastActivityAt),
           streakDays: 0,
           isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)
@@ -642,7 +635,7 @@ export const useDhikrStore = create<DhikrStore>()(
           meaning: item.meaning?.trim() || undefined,
           current: normalizedCurrent,
           target: effectiveTarget,
-          lastActivityLabel: item.lastActivityLabel?.trim() || existing?.lastActivityLabel || i18n.t("focus:relativeDate.notStarted"),
+          lastActivityLabel: item.lastActivityLabel?.trim() || existing?.lastActivityLabel || getDhikrStoreText().notStarted(),
           lastActivityAt: hasUnsavedProgress ? existing?.lastActivityAt : (item.lastActivityAt ?? existing?.lastActivityAt),
           streakDays: 0,
           isFavorite: typeof item.isFavorite === "boolean" ? item.isFavorite : (existing?.isFavorite ?? false)

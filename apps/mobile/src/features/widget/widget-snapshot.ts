@@ -15,7 +15,7 @@ import type { VirdDayProgressByDate, VirdProgramLocal, VirdSlotKey } from "../vi
 
 // Headless widget task ne zaman çalışır bilinmez (uygulama kapalıyken de
 // çalışabilir) ve zustand store modüllerini import edemez: auth-store ->
-// api istemcisi/push/RevenueCat zincirini, dhikr-store -> i18n'i çeker. Bu
+// api istemcisi/push/RevenueCat zincirini çeker. Bu
 // yüzden handler AsyncStorage'daki ham JSON string'lerini okuyup burada
 // tanımlı saf fonksiyona verir.
 

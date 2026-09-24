@@ -1,18 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useDhikrStore } from "./dhikr-store";
+import { registerDhikrStoreText } from "./dhikr-store-text";
 
-vi.mock("../i18n", () => ({
-  i18n: {
-    t: (key: string, opts?: Record<string, unknown>) => {
-      if (key === "focus:relativeDate.saved") return "Kayıtlı";
-      if (key === "focus:relativeDate.notStarted") return "Henüz başlanmadı";
-      if (key === "focus:relativeDate.todayAt") return `Bugün ${opts?.time ?? ""}`;
-      return key;
-    },
-    changeLanguage: vi.fn()
-  },
-  detectDeviceLocale: () => "tr"
-}));
+registerDhikrStoreText({
+  saved: () => "Kayıtlı",
+  notStarted: () => "Henüz başlanmadı",
+  todayAt: (now) => `Bugün ${now.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`,
+  lowercase: (value) => value.toLocaleLowerCase("tr-TR")
+});
 
 describe("dhikr-store", () => {
   beforeEach(() => {

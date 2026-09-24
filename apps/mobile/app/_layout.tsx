@@ -10,6 +10,7 @@ import { I18nextProvider } from "react-i18next";
 import { ThemeProvider } from "@zikirmatik/ui";
 import { DEFAULT_BG_FALLBACK } from "@zikirmatik/shared";
 import { i18n } from "../src/i18n";
+import "../src/store/register-dhikr-store-text";
 import { Merriweather_400Regular, Merriweather_700Bold, useFonts } from "@expo-google-fonts/merriweather";
 import { IntelOneMono_400Regular, IntelOneMono_700Bold } from "@expo-google-fonts/intel-one-mono";
 import { Finlandica_400Regular, Finlandica_700Bold } from "@expo-google-fonts/finlandica";
