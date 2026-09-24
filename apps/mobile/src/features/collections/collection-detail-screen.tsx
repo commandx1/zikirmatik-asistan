@@ -178,7 +178,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
                   <Text className="text-xs font-semibold tracking-[0.8px] text-text-muted">
                     {`${index + 1}/${detail.dhikrs.length}`}
                   </Text>
-                  <View className="rounded-full px-2.5 py-0.5">
+                  <View className="rounded-full bg-accent-10 px-2.5 py-0.5">
                     <Text className="text-xs font-medium text-accent">
                       {dhikr.recommendedCount}×
                     </Text>

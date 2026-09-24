@@ -17,7 +17,7 @@ export function InfoTooltip({ visible }: InfoTooltipProps) {
   return (
     <ThemedCard
       className="absolute left-5 right-5 top-24 z-50 rounded-xl p-4"
-      borderClassName=""
+      borderClassName="border-accent-20"
       elevated
     >
       <View className="flex-row items-start gap-3">

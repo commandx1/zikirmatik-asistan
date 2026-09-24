@@ -18,7 +18,7 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
   if (item.isPrimary) {
     return (
       <ThemedCard testID={TEST_IDS.aiGuide.recommendation} className="relative rounded-[20px] p-5" accent="accent" elevated>
-        <View className="absolute -right-10 -top-10 h-32 w-32 rounded-full" />
+        <View className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-accent-5" />
 
         <View className="relative z-10 mb-3 flex-row items-start justify-between">
           <ThemedTag
@@ -74,7 +74,7 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
         <RecommendationEvidence item={item} />
       </View>
 
-      <Pressable onPress={() => onSelect(item)} className="w-full rounded-full border py-2.5">
+      <Pressable onPress={() => onSelect(item)} className="w-full rounded-full border border-accent-40 py-2.5">
         <Text className="text-center text-sm font-medium text-accent">{t("ai-guide:recommendation.start")}</Text>
       </Pressable>
     </ThemedCard>

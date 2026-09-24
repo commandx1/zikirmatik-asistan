@@ -20,7 +20,7 @@ export function TodayActionsCard({ action, onPressDetail }: TodayActionsCardProp
 
         <Pressable
           onPress={() => onPressDetail(action.specialDayId)}
-          className="mt-4 h-11 flex-row items-center justify-center gap-2 rounded-full border"
+          className="mt-4 h-11 flex-row items-center justify-center gap-2 rounded-full border border-accent-40"
         >
           <FontAwesome6
             name="compass"

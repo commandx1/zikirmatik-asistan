@@ -37,7 +37,7 @@ export function ProfileUserCard({
   return (
     <View className="mt-2 items-center">
       <View className="relative mb-4">
-        <View className="h-24 w-24 items-center justify-center rounded-full border-2 bg-card">
+        <View className="h-24 w-24 items-center justify-center rounded-full border-2 border-accent-30 bg-card">
           {normalizedProfileImageUrl ? (
             <Image
               source={{ uri: normalizedProfileImageUrl }}
@@ -67,7 +67,7 @@ export function ProfileUserCard({
           <Text className="text-sm font-bold text-[#0F1B2D]" style={strongTextStyle}>{t("profile:userCard.premiumBadge")}</Text>
         </View>
       ) : (
-        <Pressable onPress={onPressUpgrade} className="rounded-full border px-5 py-2">
+        <Pressable onPress={onPressUpgrade} className="rounded-full border border-accent-20 bg-accent-10 px-5 py-2">
           <Text className="text-sm font-semibold text-accent">{t("profile:userCard.upgradeButton")}</Text>
         </Pressable>
       )}

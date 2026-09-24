@@ -3,7 +3,7 @@ import { vars } from "nativewind";
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import type { FontSize, FontTokens, ThemeName, ThemeTokens } from "@zikirmatik/shared";
-import { resolveFontTokens, resolveThemeName, resolveThemeTokens } from "@zikirmatik/shared";
+import { resolveFontTokens, resolveThemeName, resolveThemeTokens, withAlpha } from "@zikirmatik/shared";
 
 type ThemeContextValue = {
   themeName: ThemeName;
@@ -69,7 +69,20 @@ export function ThemeProvider({ themeName, fontSize, textFontFamily, textFontFam
         "--accent": value.tokens.accent,
         "--success": value.tokens.success,
         "--border": value.tokens.border,
+        "--accent-5": withAlpha(value.tokens.accent, 0.05),
+        "--accent-10": withAlpha(value.tokens.accent, 0.1),
+        "--accent-14": withAlpha(value.tokens.accent, 0.14),
+        "--accent-15": withAlpha(value.tokens.accent, 0.15),
+        "--accent-20": withAlpha(value.tokens.accent, 0.2),
+        "--accent-28": withAlpha(value.tokens.accent, 0.28),
+        "--accent-30": withAlpha(value.tokens.accent, 0.3),
+        "--accent-40": withAlpha(value.tokens.accent, 0.4),
+        "--bg-60": withAlpha(value.tokens.bg, 0.6),
+        "--bg-70": withAlpha(value.tokens.bg, 0.7),
+        "--text-muted-70": withAlpha(value.tokens.textMuted, 0.7),
         "--gold": "#C8972A",
+        "--gold-10": withAlpha("#C8972A", 0.1),
+        "--gold-30": withAlpha("#C8972A", 0.3),
         "--on-gold": "#0F1B2D",
         "--toggle-on": "#2E7D5E",
         "--toggle-on-muted": "#1A2E24",

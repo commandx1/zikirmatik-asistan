@@ -104,7 +104,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                   <View className='mt-3 gap-4'>
                     {practices.map((item, index) => (
                       <View key={`${index}-${resolveLocalizedText(item.title, locale)}`} className='flex-row gap-3'>
-                        <View className='mt-1 h-6 w-6 items-center justify-center rounded-full border bg-bg'>
+                        <View className='mt-1 h-6 w-6 items-center justify-center rounded-full border border-accent-20 bg-bg'>
                           <FontAwesome6 name='hands-praying' size={11} color={tokens.accent} />
                         </View>
                         <View className='flex-1'>
@@ -117,7 +117,7 @@ export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
                 </ThemedCard>
               ) : null}
 
-              <ThemedCard className='mt-6 rounded-2xl p-5' borderClassName='' elevated>
+              <ThemedCard className='mt-6 rounded-2xl p-5' borderClassName='border-accent-30' elevated>
                 <View className='flex-row items-center gap-2'>
                   <FontAwesome6 name='wand-magic-sparkles' size={13} color={tokens.accent} />
                   <Text className='text-sm font-semibold text-text-primary'>{t('special-days:detail.aiCta.title')}</Text>

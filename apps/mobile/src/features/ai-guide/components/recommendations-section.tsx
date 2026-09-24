@@ -38,7 +38,7 @@ export function RecommendationsSection({ items, assistantNote, onSelectRecommend
       </View>
 
       {assistantNote ? (
-        <View className="mb-4 rounded-2xl border px-4 py-3">
+        <View className="mb-4 rounded-2xl border border-accent-20 bg-accent-5 px-4 py-3">
           <Text className="mb-1 text-xs font-semibold tracking-[0.9px] text-accent">{upper(t("ai-guide:recommendationsSection.assistantNote"))}</Text>
           <MarkdownRenderer markdown={assistantNote} />
         </View>

@@ -15,7 +15,7 @@ type ThemedCardProps = PropsWithChildren<
 const ACCENT_CLASS: Record<CardAccent, string> = {
   none: "",
   accent: "border-l-4 border-l-accent",
-  accentSoft: "border-l-4",
+  accentSoft: "border-l-4 border-l-accent-30",
   success: "border-l-4 border-l-success",
   muted: "border-l-4 border-l-white/20"
 };

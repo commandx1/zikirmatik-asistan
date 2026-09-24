@@ -48,7 +48,7 @@ export function ThemeSelectorScreen() {
           <View className="gap-8">
             <CounterStyleSection onRequestPremium={premiumSheet.open} />
             {selector.isPremium ? (
-              <View className="rounded-xl border border-[#C8972A]/30 bg-[#C8972A]/10 px-4 py-3">
+              <View className="rounded-xl border border-gold-30 bg-gold-10 px-4 py-3">
                 <Text className="text-sm font-semibold text-[#EAC46B]">{t("theme-selector:screen.premiumActiveBanner")}</Text>
               </View>
             ) : (

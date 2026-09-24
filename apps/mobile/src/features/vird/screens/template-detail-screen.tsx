@@ -208,7 +208,7 @@ export function TemplateDetailScreen({ templateKey }: Props) {
       ) : (
         <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
           {template.isPremium ? (
-            <View className="mb-4 self-start rounded-full px-3 py-1">
+            <View className="mb-4 self-start rounded-full bg-accent-15 px-3 py-1">
               <Text className="text-xs font-semibold text-accent">{t("vird:templates.premiumBadge")}</Text>
             </View>
           ) : null}

@@ -104,7 +104,7 @@ export function ProfileSettingsSections({
       <View>
         <ProfileSectionTitle label={t("profile:sections.premium.title")} accent />
         <ProfileSettingsCard premium>
-          <View className="absolute -right-8 -top-8 h-28 w-28 rounded-full" />
+          <View className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-accent-5" />
           <ProfileLinkRow
             label={t("profile:sections.premium.features")}
             iconName="star"

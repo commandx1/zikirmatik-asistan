@@ -40,7 +40,7 @@ type ProfilePremiumSheetProps = {
 function BenefitItem({ title, description }: { title: string; description: string }) {
   return (
     <View className='flex-row items-start gap-3'>
-      <View className='mt-0.5 h-6 w-6 items-center justify-center rounded-full'>
+      <View className='mt-0.5 h-6 w-6 items-center justify-center rounded-full bg-accent-20'>
         <FontAwesome6 name='check' size={12} color='#C8972A' />
       </View>
       <View className='flex-1'>
@@ -112,7 +112,7 @@ export function ProfilePremiumSheet({
   return (
     <View className='absolute inset-0 z-50 justify-end'>
       <Pressable className='absolute inset-0 bg-black/60' onPress={onClose} />
-      <View testID={TEST_IDS.premium.sheet} className='rounded-t-[32px] border-t bg-card' style={{ maxHeight: '90%' }}>
+      <View testID={TEST_IDS.premium.sheet} className='rounded-t-[32px] border-t border-accent-30 bg-card' style={{ maxHeight: '90%' }}>
         <ScrollView
           testID={TEST_IDS.premium.scroll}
           showsVerticalScrollIndicator={false}
@@ -219,7 +219,7 @@ export function ProfilePremiumSheet({
                       }`}
                     >
                       <View className='flex-row items-center gap-3'>
-                        <View className='h-9 w-9 items-center justify-center rounded-full'>
+                        <View className='h-9 w-9 items-center justify-center rounded-full bg-accent-20'>
                           <FontAwesome6 name='bolt' size={14} color='#C8972A' />
                         </View>
                         <Text className='text-base font-semibold text-text-primary' style={strongTextStyle}>
@@ -242,7 +242,7 @@ export function ProfilePremiumSheet({
             </View>
           ) : null}
 
-          <Text className='mb-2 text-center text-xs' style={regularTextStyle}>
+          <Text className='mb-2 text-center text-xs text-text-muted-70' style={regularTextStyle}>
             {t('profile:premiumSheet.dailyFreeCreditNote')}
           </Text>
 

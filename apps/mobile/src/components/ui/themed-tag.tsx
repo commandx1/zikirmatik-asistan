@@ -14,7 +14,7 @@ type ThemedTagProps = {
 
 const CONTAINER_CLASSNAMES: Record<ThemedTagVariant, string> = {
   soft: "border-white/10 bg-card",
-  accent: "bg-bg",
+  accent: "border-accent-20 bg-bg",
   primary: "border-white/10 bg-bg"
 };
 
