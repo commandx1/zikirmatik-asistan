@@ -5,10 +5,9 @@ import { useDhikrStore } from "../../../store/dhikr-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { toIntlLocale } from "../../../lib/locale-format";
 import { useGuestMigrationStore } from "../../../store/guest-migration-store";
-import { listAiRecommendations } from "../../ai-guide/services/ai-api-client";
-import { listDhikrLogsByUser } from "../services/dhikr-logs-api-client";
-import { DhikrsApiError, listVerifiedActiveDhikrs } from "../services/dhikrs-api-client";
-import { listUserDhikrs } from "../services/user-dhikrs-api-client";
+import { fetchAiRecommendations } from "../../ai-shared/services/ai-queries";
+import { DhikrsApiError } from "../services/dhikrs-api-client";
+import { fetchDhikrCatalog, fetchDhikrLogs, fetchUserDhikrs } from "../services/dhikr-queries";
 import type { BackendDhikrLog } from "../services/dhikr-logs-api-client";
 
 type LatestLog = {
@@ -97,13 +96,11 @@ export function useDhikrBackendSync() {
         setSyncError(undefined);
 
         const [dhikrs, personalDhikrs, aiRecommendations] = await Promise.all([
-          listVerifiedActiveDhikrs(),
-          listUserDhikrs(),
-          sessionUserId ? listAiRecommendations().catch(() => []) : Promise.resolve([])
+          fetchDhikrCatalog(),
+          fetchUserDhikrs(sessionUserId),
+          sessionUserId ? fetchAiRecommendations(sessionUserId).catch(() => []) : Promise.resolve([])
         ]);
-        const logs = sessionUserId
-          ? await listDhikrLogsByUser(sessionUserId, undefined, undefined)
-          : [];
+        const logs = sessionUserId ? await fetchDhikrLogs(sessionUserId) : [];
 
         const assistantNoteByRecommendationId = new Map(
           aiRecommendations

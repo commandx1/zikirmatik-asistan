@@ -14,13 +14,15 @@ vi.mock("../../../store/dhikr-store", () => ({ useDhikrStore: vi.fn() }));
 vi.mock("../../../store/profile-store", () => ({ useProfileStore: { getState: () => ({ locale: "tr" }) } }));
 vi.mock("../../../lib/locale-format", () => ({ toIntlLocale: (locale: string) => locale }));
 vi.mock("../../../store/guest-migration-store", () => ({ useGuestMigrationStore: vi.fn() }));
-vi.mock("../../ai-guide/services/ai-api-client", () => ({ listAiRecommendations: vi.fn() }));
-vi.mock("../services/dhikr-logs-api-client", () => ({ listDhikrLogsByUser: vi.fn() }));
-vi.mock("../services/dhikrs-api-client", () => ({
-  DhikrsApiError: class DhikrsApiError extends Error {},
-  listVerifiedActiveDhikrs: vi.fn()
+vi.mock("../../ai-shared/services/ai-queries", () => ({ fetchAiRecommendations: vi.fn() }));
+vi.mock("../services/dhikr-queries", () => ({
+  fetchDhikrCatalog: vi.fn(),
+  fetchDhikrLogs: vi.fn(),
+  fetchUserDhikrs: vi.fn()
 }));
-vi.mock("../services/user-dhikrs-api-client", () => ({ listUserDhikrs: vi.fn() }));
+vi.mock("../services/dhikrs-api-client", () => ({
+  DhikrsApiError: class DhikrsApiError extends Error {}
+}));
 
 const { indexLatestDhikrLogs } = await import("./use-dhikr-backend-sync");
 

@@ -11,24 +11,21 @@ import type {
 } from "../types";
 import { useAuthStore } from "../../../store/auth-store";
 import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
-import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-client";
+import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
+import { fetchAiCredits, fetchAiQuota, fetchAiRecommendations } from "../../ai-shared/services/ai-queries";
 import {
   AiApiError,
   AI_CREDIT_INSUFFICIENT_CODE,
   AI_UNAVAILABLE_CODE,
   DAILY_LIMIT_REACHED_CODE,
   createAiRecommendation,
-  getAiCredits,
-  getAiDailyQuota,
   isAiClarificationResponse,
   isAiOffTopicResponse,
-  listAiRecommendations,
   selectAiRecommendation
 } from "../services/ai-api-client";
 import { createAiProgressSocket } from "../services/ai-progress-socket";
 import { buildAiGuideHistoryItems, resolveVisibleAiGuideHistory } from "../services/ai-guide-history-service";
 import { useProfileStore } from "../../../store/profile-store";
-import { getUserById } from "../../users/services/users-api-client";
 import { i18n } from "../../../i18n";
 import { toIntlLocale } from "../../../lib/locale-format";
 
@@ -84,7 +81,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const [isHistoryExpanded, setHistoryExpanded] = useState(false);
   const [lastPrompt, setLastPrompt] = useState("");
   const [weekdayLabel, setWeekdayLabel] = useState(formatWeekdayLabel());
-  const [isPremiumVerified, setIsPremiumVerified] = useState(false);
   const [creditBalance, setCreditBalance] = useState(0);
   const [dailyGrant, setDailyGrant] = useState(1);
   const [monthlyGrant, setMonthlyGrant] = useState(0);
@@ -123,22 +119,20 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     try {
-      const credits = await getAiCredits();
+      const credits = await fetchAiCredits();
       setCreditBalance(Math.max(0, Math.floor(credits.balance)));
       setDailyGrant(Math.max(0, Math.floor(credits.dailyGrant)));
       setMonthlyGrant(Math.max(0, Math.floor(credits.monthlyGrant)));
-      setIsPremiumVerified(Boolean(credits.isPremium));
       setCreditsConfirmed(true);
       return { balance: credits.balance, isPremium: credits.isPremium };
     } catch {
-      const quota = await getAiDailyQuota();
+      const quota = await fetchAiQuota();
       const fallbackBalance = quota.isPremium
         ? Number.MAX_SAFE_INTEGER
         : Math.max(0, (quota.limit ?? 1) - quota.used);
       setCreditBalance(fallbackBalance);
       setDailyGrant(quota.isPremium ? 0 : quota.limit ?? 1);
       setMonthlyGrant(0);
-      setIsPremiumVerified(Boolean(quota.isPremium));
       setCreditsConfirmed(true);
       return { balance: fallbackBalance, isPremium: quota.isPremium };
     }
@@ -205,8 +199,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     const [recommendationRows, catalog] = await Promise.all([
-      listAiRecommendations(),
-      listVerifiedActiveDhikrs(),
+      fetchAiRecommendations(userId),
+      fetchDhikrCatalog(),
     ]);
     await refreshCredits();
 
@@ -273,23 +267,15 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     };
   }, [authStatus, cacheKey, hydrateLastResultFromBackend, hydrateLastResultFromCache]);
 
-  const loadCurrentState = useCallback(async () => {
+  // Eski isPremiumVerified (getUserById) kaldırıldı: yalnızca
+  // ensureCreditsAvailable'ın balance > 0 dalında okunuyordu, orada karar
+  // zaten balance ile veriliyor — gözlemlenebilir etkisi yoktu.
+  const loadCurrentState = useCallback(() => {
     setWeekdayLabel(formatWeekdayLabel());
-
-    if (authStatus === "authenticated" && userId) {
-      try {
-        const user = await getUserById(userId);
-        setIsPremiumVerified(Boolean(user.isPremium));
-      } catch {
-        // Keep existing state when user document cannot be fetched.
-      }
-    } else {
-      setIsPremiumVerified(false);
-    }
-  }, [authStatus, userId]);
+  }, []);
 
   useEffect(() => {
-    void loadCurrentState();
+    loadCurrentState();
   }, [loadCurrentState]);
 
   const ensureCreditsAvailable = useCallback(async () => {
@@ -300,7 +286,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     const shouldRefresh = !creditsConfirmed || creditBalance <= 0;
     const state = shouldRefresh
       ? await refreshCredits()
-      : { balance: creditBalance, isPremium: isPremium || isPremiumVerified };
+      : { balance: creditBalance, isPremium };
 
     if (state.balance > 0 || state.isPremium) {
       return true;
@@ -313,7 +299,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     creditBalance,
     creditsConfirmed,
     isPremium,
-    isPremiumVerified,
     onOpenPremiumSheet,
     refreshCredits,
     userId
@@ -675,7 +660,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     closeInfo();
     setIsRefreshing(true);
     try {
-      await Promise.all([loadCurrentState(), refreshCredits()]);
+      loadCurrentState();
+      await refreshCredits();
     } finally {
       setIsRefreshing(false);
     }

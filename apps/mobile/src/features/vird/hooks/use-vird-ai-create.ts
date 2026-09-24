@@ -15,11 +15,11 @@ import type { VirdSlotKey } from "@zikirmatik/shared";
 import { useAuthStore } from "../../../store/auth-store";
 import { useVirdStore } from "../../../store/vird-store";
 import { trackEvent } from "../../../lib/analytics";
-import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-client";
+import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
+import { fetchAiCredits } from "../../ai-shared/services/ai-queries";
 import {
   AiApiError,
   createAiVirdProgram,
-  getAiCredits,
   isAiVirdProgramOffTopicResponse,
   type AiVirdProgramPreview,
   type CreateAiVirdProgramPayload
@@ -105,7 +105,7 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
     }
 
     try {
-      const credits = await getAiCredits();
+      const credits = await fetchAiCredits();
       const balance = Math.max(0, Math.floor(credits.balance));
       const isPremium = Boolean(credits.isPremium);
       setCreditBalance(balance);
@@ -302,7 +302,7 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
         // EDİLMEZ) — ana ekranın kartı (todays-vird-card.tsx) içerik gösterebilsin
         // diye katalogdan taze çözülüp dhikrs snapshot'ı olarak yazılır (bkz.
         // vird-ai-create-service.ts toActivatedAiVirdProgramLocal).
-        const catalog = await listVerifiedActiveDhikrs();
+        const catalog = await fetchDhikrCatalog();
         const local = toActivatedAiVirdProgramLocal(activated, catalog);
         useVirdStore.getState().upsertProgram(local);
         useVirdStore.getState().setActiveProgram(local.id);

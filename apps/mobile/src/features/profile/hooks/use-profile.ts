@@ -6,12 +6,8 @@ import type { TFunction } from "i18next";
 import type { SupportedLocale } from "../../../i18n";
 import { toIntlLocale } from "../../../lib/locale-format";
 import type { HapticsPattern } from "../../../services/haptics-pattern";
-import {
-  getUserById,
-  saveUserPreferences,
-  deleteUser,
-  type BackendUser
-} from "../../users/services/users-api-client";
+import { saveUserPreferences, deleteUser } from "../../users/services/users-api-client";
+import { useBackendUser } from "../../users/hooks/use-backend-user";
 import {
   CREDIT_TOPUP_FALLBACK,
   fetchSubscriptionPrices,
@@ -26,11 +22,9 @@ import {
 } from "../../subscriptions/services/revenuecat-client";
 import { syncDailyReminderNotification } from "../services/daily-reminder-notifications";
 import { trackEvent } from "../../../lib/analytics";
-import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useRequireAuth } from "../../auth/hooks/use-require-auth";
-import { THEME_LABELS } from "../../../theme/labels";
 import { useOnboardingStore } from "../../../store/onboarding-store";
 
 type PremiumPlan = "monthly" | "annual";
@@ -38,7 +32,6 @@ type PremiumPlan = "monthly" | "annual";
 export function useProfile() {
   const router = useRouter();
   const { requireAuth } = useRequireAuth();
-  const { hydrateAppearance } = useThemePreferences();
   const { t } = useTranslation(["profile", "common"]);
 
   const fallbackDisplayName = useProfileStore((s) => s.displayName);
@@ -61,7 +54,8 @@ export function useProfile() {
   const resetTour = useOnboardingStore((s) => s.resetTour);
 
   const [isPremiumSheetOpen, setPremiumSheetOpen] = useState(false);
-  const [backendUser, setBackendUser] = useState<BackendUser>();
+  // Sunucu kullanıcı belgesi; store hidrasyonu kökteki useBackendUserSync'te.
+  const { data: backendUser, refetch: refetchBackendUser } = useBackendUser();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isActivatingPremium, setIsActivatingPremium] = useState(false);
   const [premiumPlan, setPremiumPlan] = useState<PremiumPlan>("annual");
@@ -80,40 +74,6 @@ export function useProfile() {
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
-  const syncBackendUser = useCallback(async () => {
-    if (authStatus !== "authenticated" || !session?.userId) {
-      setBackendUser(undefined);
-      return;
-    }
-
-    const user = await getUserById(session.userId);
-
-    setBackendUser(user);
-    hydrateFromBackend({
-      displayName: user.displayName,
-      isPremium: user.isPremium,
-      reminderTime: user.notifSettings?.reminderTime,
-      dailyReminderEnabled: user.notifSettings?.dailyReminder,
-      kandilNotificationsEnabled: user.notifSettings?.kandilNotifications,
-      hapticsEnabled: user.hapticsEnabled,
-      hapticsPattern: user.hapticsPattern
-    });
-    hydrateAppearance({
-      themeName:
-        typeof user.theme === "string" && user.theme in THEME_LABELS
-          ? (user.theme as keyof typeof THEME_LABELS)
-          : undefined,
-          fontFamily:
-            user.fontFamily === "default" ||
-            user.fontFamily === "merriweather" ||
-            user.fontFamily === "intel-one-mono" ||
-            user.fontFamily === "finlandica-headline" ||
-            user.fontFamily === "indie-flower"
-              ? user.fontFamily
-              : undefined
-        });
-  }, [authStatus, hydrateAppearance, hydrateFromBackend, session?.userId]);
-
   const refresh = useCallback(async () => {
     if (authStatus !== "authenticated" || !session?.userId) {
       return;
@@ -121,37 +81,11 @@ export function useProfile() {
 
     setIsRefreshing(true);
     try {
-      await syncBackendUser();
+      await refetchBackendUser();
     } finally {
       setIsRefreshing(false);
     }
-  }, [authStatus, session?.userId, syncBackendUser]);
-
-  useEffect(() => {
-    if (authStatus !== "authenticated" || !session?.userId) {
-      setBackendUser(undefined);
-      return;
-    }
-
-    let isCancelled = false;
-    const run = async () => {
-      try {
-        await syncBackendUser();
-        if (isCancelled) {
-          return;
-        }
-      } catch {
-        if (!isCancelled) {
-          setBackendUser(undefined);
-        }
-      }
-    };
-
-    void run();
-    return () => {
-      isCancelled = true;
-    };
-  }, [authStatus, session?.userId, syncBackendUser]);
+  }, [authStatus, refetchBackendUser, session?.userId]);
 
   const loadSubscriptionPrices = async () => {
     if (!session?.userId) {
@@ -202,15 +136,12 @@ export function useProfile() {
         return;
       }
 
-      const synced = await syncPremiumStatusWithRevenueCat(
-        session.userId,
-        session.accessToken,
-        { refreshCustomerInfo }
-      );
+      const synced = await syncPremiumStatusWithRevenueCat(session.userId, undefined, {
+        refreshCustomerInfo
+      });
       hydrateFromBackend({ isPremium: synced.isPremium });
-      setBackendUser((current) => (current ? { ...current, isPremium: synced.isPremium } : current));
     },
-    [authStatus, hydrateFromBackend, session?.accessToken, session?.userId]
+    [authStatus, hydrateFromBackend, session?.userId]
   );
 
   const manageSubscription = async () => {
@@ -283,7 +214,6 @@ export function useProfile() {
     try {
       const synced = await purchasePremiumWithRevenueCat(session.userId, session.accessToken, premiumPlan);
       hydrateFromBackend({ isPremium: synced.isPremium });
-      setBackendUser((current) => (current ? { ...current, isPremium: synced.isPremium } : current));
       if (synced.isPremium) {
         void trackEvent("purchase_completed", { product: premiumPlan });
         closePremiumSheet();
@@ -326,7 +256,7 @@ export function useProfile() {
     try {
       await purchaseCreditTopup(session.userId, productId);
       void trackEvent("credit_topup", { product: productId });
-      await syncBackendUser();
+      await refetchBackendUser();
       return true;
     } catch (error) {
       const msg = toRevenueCatMessage(error);
@@ -491,7 +421,9 @@ export function useProfile() {
       backendUser?.createdAt
         ? toMemberSinceLabel(backendUser.createdAt, locale, t)
         : memberSinceLabel,
-    isPremium: backendUser?.isPremium ?? isPremium,
+    // Store, sunucu belgesinin (kök hidrasyon) ve RevenueCat senkronunun en
+    // güncelini taşır — eskiden backendUser.isPremium ile birlikte yazılırdı.
+    isPremium,
     isReminderTimeModalOpen,
     reminderHourDraft,
     reminderMinuteDraft,

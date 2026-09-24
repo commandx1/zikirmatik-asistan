@@ -9,7 +9,7 @@
 import { useEffect, useMemo } from "react";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import { useVirdStore } from "../../../store/vird-store";
-import { listVerifiedActiveDhikrs } from "../../dhikrs/services/dhikrs-api-client";
+import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
 import {
   applyHydratedSnapshots,
   buildDhikrSnapshotFromCatalog,
@@ -49,7 +49,7 @@ export function useHydrateVirdSnapshots(programId: string | null | undefined): v
 
       if (plan.missingCatalogRefs.length > 0) {
         try {
-          const catalog = await listVerifiedActiveDhikrs();
+          const catalog = await fetchDhikrCatalog();
           const byId = new Map(catalog.map((dhikr) => [dhikr._id, dhikr]));
           for (const ref of plan.missingCatalogRefs) {
             const dhikr = byId.get(ref);

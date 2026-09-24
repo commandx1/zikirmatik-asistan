@@ -6,7 +6,8 @@ import { KeyboardAwareBottomSheetModal } from "../../../components/ui/keyboard-a
 import { ThemedInput } from "../../../components/ui/themed-input";
 import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
 import { trackEvent } from "../../../lib/analytics";
-import { listVerifiedActiveDhikrs, type BackendDhikr } from "../../dhikrs/services/dhikrs-api-client";
+import type { BackendDhikr } from "../../dhikrs/services/dhikrs-api-client";
+import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
 import { VIRD_ERROR_CODE } from "../services/vird-error-codes";
 import { wouldExceedFreeDhikrLimit } from "../services/vird-editor-helpers";
 import type { DhikrSnapshot } from "../types";
@@ -80,7 +81,7 @@ export function VirdDhikrPickerModal({
     setIsLoading(true);
     setLoadError(undefined);
 
-    listVerifiedActiveDhikrs()
+    fetchDhikrCatalog()
       .then((data) => {
         if (!isCancelled) {
           setCatalog(data);

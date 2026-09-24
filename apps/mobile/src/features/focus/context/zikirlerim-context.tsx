@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { i18n } from "../../../i18n";
@@ -10,7 +11,6 @@ import { toIntlLocale } from "../../../lib/locale-format";
 import {
   createDhikrLog,
   deleteDhikrLogsByKey,
-  listDhikrLogsByUser,
   setDhikrFavoriteByKey,
   type BackendDhikrLog
 } from "../../dhikrs/services/dhikr-logs-api-client";
@@ -20,6 +20,11 @@ import {
   updateUserDhikrByClientId
 } from "../../dhikrs/services/user-dhikrs-api-client";
 import type { ZikirFilterKey, ZikirItem } from "../types";
+import { queryClient } from "../../../lib/query-client";
+import { qk } from "../../../lib/query-keys";
+import { dhikrLogsQueryFn } from "../../dhikrs/services/dhikr-queries";
+
+const NO_LOGS: BackendDhikrLog[] = [];
 
 type UpdateDhikrValues = {
   name: string;
@@ -95,7 +100,6 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const lastSavedBackendLog = useDhikrStore((state) => state.lastSavedBackendLog);
   const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
-  const [logs, setLogs] = useState<BackendDhikrLog[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [deletingDhikrId, setDeletingDhikrId] = useState("");
   const [editingDhikrId, setEditingDhikrId] = useState("");
@@ -105,23 +109,29 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const [isSavingUnsavedTransition, setIsSavingUnsavedTransition] = useState(false);
   const [unsavedTransitionError, setUnsavedTransitionError] = useState<string | null>(null);
 
-  const fetchLogs = useCallback(async () => {
-    if (authStatus !== "authenticated" || !sessionUserId) {
-      setLogs([]);
-      return;
-    }
-
-    try {
-      const nextLogs = await listDhikrLogsByUser(
-        sessionUserId,
-        undefined,
-        undefined
-      );
-      setLogs(nextLogs);
-    } catch {
-      setLogs([]);
-    }
-  }, [authStatus, sessionUserId]);
+  // Loglar React Query cache'inde (qk.dhikrLogs) — useDhikrBackendSync ile
+  // aynı anahtar. Yerel güncellemeler setQueryData ile aynı cache'e yazılır.
+  const isLogsEnabled = authStatus === "authenticated" && !!sessionUserId;
+  const logsQuery = useQuery(
+    {
+      queryKey: qk.dhikrLogs(sessionUserId),
+      queryFn: dhikrLogsQueryFn(sessionUserId as string),
+      enabled: isLogsEnabled
+    },
+    queryClient
+  );
+  // Eskiden fetch hatası listeyi boşaltırdı; aynı görünür sonuç korunur.
+  const logs = !isLogsEnabled || logsQuery.error ? NO_LOGS : logsQuery.data ?? NO_LOGS;
+  const setLogs = useCallback(
+    (updater: (prev: BackendDhikrLog[]) => BackendDhikrLog[]) => {
+      if (!sessionUserId) {
+        return;
+      }
+      queryClient.setQueryData<BackendDhikrLog[]>(qk.dhikrLogs(sessionUserId), (prev) => updater(prev ?? []));
+    },
+    [sessionUserId]
+  );
+  const refetchLogs = logsQuery.refetch;
 
   useEffect(() => {
     if (authStatus !== "authenticated" || !sessionUserId || !lastSavedBackendLog) {
@@ -153,49 +163,19 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
       return next.sort((a, b) => toLogTimestamp(b) - toLogTimestamp(a));
     });
-  }, [authStatus, lastSavedBackendLog, sessionUserId]);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    if (authStatus !== "authenticated" || !sessionUserId) {
-      setLogs([]);
-      return () => {
-        isCancelled = true;
-      };
-    }
-
-    void listDhikrLogsByUser(
-      sessionUserId,
-      undefined,
-      undefined
-    )
-      .then((nextLogs) => {
-        if (isCancelled) {
-          return;
-        }
-        setLogs(nextLogs);
-      })
-      .catch(() => {
-        if (isCancelled) {
-          return;
-        }
-        setLogs([]);
-      });
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [authStatus, sessionUserId]);
+  }, [authStatus, lastSavedBackendLog, sessionUserId, setLogs]);
 
   const refresh = useCallback(async () => {
+    if (!isLogsEnabled) {
+      return;
+    }
     setIsRefreshing(true);
     try {
-      await fetchLogs();
+      await refetchLogs();
     } finally {
       setIsRefreshing(false);
     }
-  }, [fetchLogs]);
+  }, [isLogsEnabled, refetchLogs]);
 
   const enrichedItems = useMemo(() => {
     if (authStatus !== "authenticated") {

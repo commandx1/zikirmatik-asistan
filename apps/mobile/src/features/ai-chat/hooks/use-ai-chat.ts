@@ -15,7 +15,7 @@ import {
   type ChatStreamHandlers
 } from "../services/ai-chat-api-client";
 import type { AiSourceCitation, ChatConversationSummary, ChatCoverage, ChatMessageRaw, ChatMode } from "../types";
-import { getAiCredits, getAiDailyQuota } from "../../ai-guide/services/ai-api-client";
+import { fetchAiCredits, fetchAiQuota } from "../../ai-shared/services/ai-queries";
 
 export type ChatMessage = {
   id: string;
@@ -74,13 +74,13 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
     }
 
     try {
-      const credits = await getAiCredits();
+      const credits = await fetchAiCredits();
       setCreditBalance(Math.max(0, Math.floor(credits.balance)));
       setCreditsConfirmed(true);
       return { balance: credits.balance, isPremium: credits.isPremium };
     } catch {
       try {
-        const quota = await getAiDailyQuota();
+        const quota = await fetchAiQuota();
         const fallbackBalance = quota.isPremium
           ? Number.MAX_SAFE_INTEGER
           : Math.max(0, (quota.limit ?? 1) - quota.used);

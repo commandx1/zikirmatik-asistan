@@ -4,7 +4,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Stack } from "expo-router";
 import { Text, TextInput, View } from "react-native";
 import * as Notifications from "expo-notifications";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "../src/lib/query-client";
 import { I18nextProvider } from "react-i18next";
 import { ThemeProvider } from "@zikirmatik/ui";
 import { i18n } from "../src/i18n";
@@ -28,7 +29,7 @@ import { useVirdBackendSync } from "../src/features/vird/hooks/use-vird-backend-
 import { useCircleSync } from "../src/features/circle/hooks/use-circle-sync";
 import { useNotificationTapRouting } from "../src/features/notifications/hooks/use-notification-tap-routing";
 import { usePushDeviceRegistration } from "../src/features/notifications/hooks/use-push-device-registration";
-import { useUserPreferencesSync } from "../src/features/users/hooks/use-user-preferences-sync";
+import { useBackendUserSync } from "../src/features/users/hooks/use-backend-user-sync";
 import { useEventNotificationSync } from "../src/features/notifications/hooks/use-event-notification-sync";
 import { useVirdReminderSync } from "../src/features/vird/hooks/use-vird-reminder-sync";
 import { useDailyReminderSync } from "../src/features/notifications/hooks/use-daily-reminder-sync";
@@ -41,8 +42,6 @@ import { useThemePreferences } from "../src/hooks/use-theme-preferences";
 import type { AppFontFamily } from "../src/store/theme-store";
 import { useThemeStore } from "../src/store/theme-store";
 import { useAppConfigStore } from "../src/store/app-config-store";
-
-const queryClient = new QueryClient();
 
 // Matches the default theme's bg (packages/shared/src/utils/theme.ts) and
 // android.adaptiveIcon.backgroundColor in app.json — used before ThemeProvider
@@ -79,7 +78,7 @@ function RootProviders({ children }: { children: ReactNode }) {
   useDhikrBackendSync();
   useVirdBackendSync();
   useCircleSync();
-  useUserPreferencesSync();
+  useBackendUserSync();
   usePushDeviceRegistration();
   initAnalytics();
   useNotificationTapRouting();
