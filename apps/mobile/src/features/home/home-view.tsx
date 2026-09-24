@@ -16,6 +16,7 @@ import {
   TOUR_REF_WATCH_RESET,
   TOUR_REF_WATCH_SAVE,
 } from '../../features/tour/tour-steps'
+import { withAlpha } from "@zikirmatik/shared";
 import { TodaysVirdCard } from '../vird/components/todays-vird-card'
 import { CircleCard } from '../circle/components/circle-card'
 import { EsmaulHusnaSectionSkeleton } from './components/esmaul-husna-section-skeleton'
@@ -703,15 +704,3 @@ function hasContent(value: string | undefined) {
   return Boolean(value?.trim())
 }
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace('#', '')
-  if (!(normalized.length === 6 || normalized.length === 8)) {
-    return hex
-  }
-
-  const r = Number.parseInt(normalized.slice(0, 2), 16)
-  const g = Number.parseInt(normalized.slice(2, 4), 16)
-  const b = Number.parseInt(normalized.slice(4, 6), 16)
-
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`
-}

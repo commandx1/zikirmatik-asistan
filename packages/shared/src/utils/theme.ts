@@ -1,5 +1,11 @@
 import type { FontSize, FontTokens, ThemeName, ThemeTokens } from "../types/theme";
 
+/**
+ * Matches the default theme's bg below and android.adaptiveIcon.backgroundColor
+ * in app.json — used before ThemeProvider mounts, so it can't read theme tokens yet.
+ */
+export const DEFAULT_BG_FALLBACK = "#0B1423";
+
 export const THEME_PRESETS: Record<ThemeName, ThemeTokens> = {
   "gece-koyu": {
     bg: "#0B1423",

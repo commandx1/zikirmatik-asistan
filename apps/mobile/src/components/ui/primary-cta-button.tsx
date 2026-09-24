@@ -1,4 +1,5 @@
 import { Pressable, Text, type PressableProps, type StyleProp, type ViewStyle } from "react-native";
+import { cn as cx } from "@zikirmatik/ui";
 
 type PrimaryCtaButtonProps = Omit<PressableProps, "children" | "style"> & {
   label: string;
@@ -6,10 +7,6 @@ type PrimaryCtaButtonProps = Omit<PressableProps, "children" | "style"> & {
   textClassName?: string;
   style?: StyleProp<ViewStyle>;
 };
-
-function cx(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export function PrimaryCtaButton({
   label,

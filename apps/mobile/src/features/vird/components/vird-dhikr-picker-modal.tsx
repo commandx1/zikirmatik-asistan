@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { KeyboardAwareBottomSheetModal } from "../../../components/ui/keyboard-aware-bottom-sheet-modal";
 import { ThemedInput } from "../../../components/ui/themed-input";
-import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
+import { useDhikrStore } from "../../../store/dhikr-store";
+import { resolveLocalizedText, withAlpha } from "@zikirmatik/shared";
 import { trackEvent } from "../../../lib/analytics";
 import type { BackendDhikr } from "../../dhikrs/services/dhikrs-api-client";
 import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
@@ -12,6 +13,7 @@ import { VIRD_ERROR_CODE } from "../services/vird-error-codes";
 import { wouldExceedFreeDhikrLimit } from "../services/vird-editor-helpers";
 import type { DhikrSnapshot } from "../types";
 import { TEST_IDS } from "../../../test-ids";
+import { useAppLocale } from "../../../i18n";
 
 type PickerRow = {
   ref: string;
@@ -59,8 +61,8 @@ export function VirdDhikrPickerModal({
   onRemove,
   catalogOnly = false
 }: VirdDhikrPickerModalProps) {
-  const { t, i18n } = useTranslation("vird");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("vird");
+  const locale = useAppLocale();
   const { tokens } = useThemeTokens();
   // Zustand seçicisi her render'da yeni dizi döndürmemeli (useSyncExternalStore
   // sonsuz döngüye girer); ham listeyi seç, kişisel zikirleri useMemo ile türet.
@@ -228,13 +230,3 @@ export function VirdDhikrPickerModal({
   );
 }
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace("#", "");
-  if (normalized.length !== 6) {
-    return hex;
-  }
-  const r = Number.parseInt(normalized.slice(0, 2), 16);
-  const g = Number.parseInt(normalized.slice(2, 4), 16);
-  const b = Number.parseInt(normalized.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
-}

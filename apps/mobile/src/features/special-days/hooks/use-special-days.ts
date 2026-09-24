@@ -16,14 +16,8 @@ import {
 } from "../services/special-days-api-client";
 import { useProfileStore } from "../../../store/profile-store";
 import { formatLongDate } from "../../../lib/locale-format";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { resolveLocalizedText, toDateKey } from "@zikirmatik/shared";
 
-function toDateKey(value: Date) {
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 export function useSpecialDays() {
   const notificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);

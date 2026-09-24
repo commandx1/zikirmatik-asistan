@@ -11,6 +11,7 @@ import { SuDalgasiBg } from "../../../theme/su-dalgasi-bg";
 import { HilalGecesiBg } from "../../../theme/hilal-gecesi-bg";
 import { THEME_STRAP_COLORS } from "../../../theme/strap-colors";
 import { useLocaleUpper } from "../../../hooks/use-locale-upper";
+import { withAlpha } from "@zikirmatik/shared";
 
 type SelectorPreviewCardProps = {
   themeName: ThemeName;
@@ -270,15 +271,3 @@ const styles = StyleSheet.create({
   }
 });
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace("#", "");
-  if (!(normalized.length === 6 || normalized.length === 8)) {
-    return hex;
-  }
-
-  const r = Number.parseInt(normalized.slice(0, 2), 16);
-  const g = Number.parseInt(normalized.slice(2, 4), 16);
-  const b = Number.parseInt(normalized.slice(4, 6), 16);
-
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
-}

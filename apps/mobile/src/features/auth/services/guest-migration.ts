@@ -1,5 +1,6 @@
-import { toDateKey, type VirdProgram } from "@zikirmatik/shared";
-import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
+import { toDateKey, type VirdProgram, resolveLocalizedText } from "@zikirmatik/shared";
+import { isObjectId as isObjectIdLike } from "../../dhikrs/services/dhikr-ids";
+import { useDhikrStore } from "../../../store/dhikr-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { pruneDayProgress, useVirdStore } from "../../../store/vird-store";
 import type {
@@ -419,10 +420,6 @@ function matchesKey(
 
 function normalizeName(value: string): string {
   return value.trim().toLocaleLowerCase("tr-TR");
-}
-
-function isObjectIdLike(value: string): boolean {
-  return /^[0-9a-f]{24}$/i.test(value);
 }
 
 function isTerminalConflict(error: unknown): boolean {

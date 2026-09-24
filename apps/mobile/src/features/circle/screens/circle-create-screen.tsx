@@ -3,7 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import { useRouter, type Href } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { toDateKey } from "@zikirmatik/shared";
+import { toDateKey, resolveLocalizedText } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
@@ -11,12 +11,13 @@ import { ThemedInput } from "../../../components/ui/themed-input";
 import { usePremiumSheet } from "../../../hooks/use-premium-sheet";
 import { useAuthStore } from "../../../store/auth-store";
 import { useCircleStore } from "../../../store/circle-store";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+
 import { ProfilePremiumSheet } from "../../profile/components/profile-premium-sheet";
 import { VirdDhikrPickerModal, type VirdDhikrPickerSelection } from "../../vird/components/vird-dhikr-picker-modal";
 import { trackEvent } from "../../../lib/analytics";
 import { CIRCLE_ERROR_CODE, CircleApiError, createCircle, resolveCircleErrorMessage } from "../services/circle-api-client";
 import { TEST_IDS } from "../../../test-ids";
+import { useAppLocale } from "../../../i18n";
 
 type DurationOption = "7" | "30" | "40" | "unlimited";
 
@@ -31,10 +32,10 @@ function shiftDateKey(key: string, days: number): string {
 
 export function CircleCreateScreen() {
   const router = useRouter();
-  const { t, i18n } = useTranslation("circle");
+  const { t } = useTranslation("circle");
   const { tokens } = useThemeTokens();
   const premiumSheet = usePremiumSheet();
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const locale = useAppLocale();
 
   const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);

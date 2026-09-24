@@ -3,9 +3,10 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import type { ComponentProps } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import type { BackendCollection } from "../services/collections-api-client";
 import { COLLECTION_CATEGORIES } from "../types";
+import { useAppLocale } from "../../../i18n";
 
 type IconName = ComponentProps<typeof FontAwesome6>["name"];
 
@@ -25,8 +26,8 @@ type Props = {
 
 export function CollectionCard({ item, onPress }: Props) {
   const { tokens } = useThemeTokens();
-  const { t, i18n } = useTranslation("collections");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("collections");
+  const locale = useAppLocale();
   const iconName = CATEGORY_ICONS[item.category] ?? "book";
   const categoryLabelKey = COLLECTION_CATEGORIES.find(
     (c) => c.key === item.category,

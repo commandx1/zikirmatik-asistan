@@ -2,10 +2,12 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { i18n } from "../../../i18n";
+import { i18n, useAppLocale } from "../../../i18n";
 import { useAuthStore } from "../../../store/auth-store";
-import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
-import type { LocalizedText } from "@zikirmatik/shared";
+import { useDhikrStore } from "../../../store/dhikr-store";
+import { resolveLocalizedText, toDateKey, type LocalizedText } from "@zikirmatik/shared";
+import { isObjectId as isObjectIdLike } from "../../dhikrs/services/dhikr-ids";
+import { dhikrDisplayName as dhikrDisplayNamePure } from "../../dhikrs/services/dhikr-display";
 import { useProfileStore } from "../../../store/profile-store";
 import { toIntlLocale } from "../../../lib/locale-format";
 import {
@@ -69,11 +71,11 @@ const ZikirlerimContext = createContext<ZikirlerimContextValue | null>(null);
 type PendingFocusTransition = { kind: "select"; id: string } | { kind: "startHome"; id: string };
 
 export function ZikirlerimProvider({ children }: PropsWithChildren) {
-  const { t, i18n: i18next } = useTranslation("focus");
-  const locale = (i18next.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("focus");
+  const locale = useAppLocale();
   const dhikrDisplayName = useCallback(
     (item: { name: LocalizedText | string; transliteration: LocalizedText | string }) =>
-      resolveLocalizedText(item.name, locale) || resolveLocalizedText(item.transliteration, locale),
+      dhikrDisplayNamePure(item, locale),
     [locale]
   );
   const router = useRouter();
@@ -754,12 +756,6 @@ function parseDateKey(dateKey: string) {
   return new Date(year, month - 1, day);
 }
 
-function toDateKey(value: Date) {
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 function startOfDay(value: Date) {
   return new Date(value.getFullYear(), value.getMonth(), value.getDate());
@@ -781,6 +777,3 @@ function resolveLogDhikrKey(log: BackendDhikrLog) {
   return log.dhikrId ?? log.customDhikrId;
 }
 
-function isObjectIdLike(value: string) {
-  return /^[a-fA-F0-9]{24}$/.test(value);
-}

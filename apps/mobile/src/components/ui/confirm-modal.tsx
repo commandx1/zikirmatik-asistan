@@ -1,5 +1,6 @@
 import { useThemeTokens } from '@zikirmatik/ui'
 import { Modal, Pressable, Text, View } from 'react-native'
+import { withAlpha } from "@zikirmatik/shared";
 
 const DANGER_COLOR = '#EF4444'
 
@@ -74,13 +75,3 @@ export function ConfirmModal({
   )
 }
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace('#', '')
-  if (!(normalized.length === 6 || normalized.length === 8)) {
-    return hex
-  }
-  const r = Number.parseInt(normalized.slice(0, 2), 16)
-  const g = Number.parseInt(normalized.slice(2, 4), 16)
-  const b = Number.parseInt(normalized.slice(4, 6), 16)
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`
-}

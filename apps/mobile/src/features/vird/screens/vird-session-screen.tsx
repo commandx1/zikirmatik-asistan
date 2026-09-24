@@ -2,20 +2,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppState, Pressable, Text } from 'react-native'
 import { Redirect, useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
-import { toDateKey, type VirdSlotKey } from '@zikirmatik/shared'
-import { i18n } from '../../../i18n'
+import { toDateKey, type VirdSlotKey, resolveLocalizedText } from "@zikirmatik/shared";
+import { useAppLocale } from '../../../i18n'
 import { PageHeader } from '../../../components/ui/page-header'
 import { PageLayout, PageScrollView } from '../../../components/ui/page-layout'
 import { ThemedCard } from '../../../components/ui/themed-card'
 import { PrimaryCtaButton } from '../../../components/ui/primary-cta-button'
 import { DhikrContentStack } from '../../../components/ui/dhikr-content-stack'
-import { resolveLocalizedText, useDhikrStore } from '../../../store/dhikr-store'
+import { useDhikrStore } from '../../../store/dhikr-store'
 import { useAuthStore } from '../../../store/auth-store'
 import { useCounterStyleStore } from '../../../store/counter-style-store'
 import { useProfileStore } from '../../../store/profile-store'
 import { useVirdStore } from '../../../store/vird-store'
-import { fireLapHaptic, fireTapHaptic, resolveHapticsPattern } from '../../../services/haptics'
-import { playClickSound } from '../../../services/click-sound'
+import { resolveHapticsPattern } from '../../../services/haptics'
+import { fireCounterFeedback } from '../../../services/counter-feedback'
 import { createDhikrLog } from '../../dhikrs/services/dhikr-logs-api-client'
 import { AppleWatchView, type CounterVisualModel } from '../../home/components/apple-watch'
 import { TesbihCounterView } from '../../home/components/tesbih-counter'
@@ -110,7 +110,7 @@ function SessionBody({
 }) {
   const router = useRouter()
   const { t } = useTranslation('vird')
-  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const locale = useAppLocale()
   const fallbackName = t('vird:home.itemFallbackName')
 
   useHydrateVirdSnapshots(program.id)
@@ -240,10 +240,8 @@ function SessionBody({
     const next = count + 1
     setProgress(todayKey, itemKey, next, target)
     dirtyRef.current.add(itemKey)
-    fireTapHaptic(hapticsPattern)
-    playClickSound(effectiveSoundPack)
+    fireCounterFeedback({ prev: count, next, lapSize: target, pattern: hapticsPattern, soundPack: effectiveSoundPack })
     if (next >= target) {
-      fireLapHaptic(hapticsPattern)
       void flush(itemKey)
     }
   }

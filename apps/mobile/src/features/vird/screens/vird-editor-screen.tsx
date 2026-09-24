@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { useRouter, type Href } from "expo-router";
 import * as Crypto from "expo-crypto";
 import { useTranslation } from "react-i18next";
-import { toDateKey, type VirdPhase, type VirdSlotKey } from "@zikirmatik/shared";
+import { toDateKey, type VirdPhase, type VirdSlotKey, resolveLocalizedText } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
@@ -12,7 +12,7 @@ import { ThemedTag } from "../../../components/ui/themed-tag";
 import { TogglePill } from "../../../components/ui/toggle-pill";
 import { usePremiumSheet } from "../../../hooks/use-premium-sheet";
 import { useAuthStore } from "../../../store/auth-store";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+
 import { useProfileStore } from "../../../store/profile-store";
 import { useVirdStore } from "../../../store/vird-store";
 import { trackEvent } from "../../../lib/analytics";
@@ -29,6 +29,7 @@ import { VIRD_ERROR_CODE, resolveVirdErrorMessage } from "../services/vird-error
 import { toLocalVirdProgram } from "../services/vird-sync";
 import type { DhikrSnapshot, VirdProgramLocal } from "../types";
 import { TEST_IDS } from "../../../test-ids";
+import { useAppLocale } from "../../../i18n";
 
 type PendingSwap = { localProgram: VirdProgramLocal };
 
@@ -78,8 +79,8 @@ type VirdEditorScreenProps = { programId?: string; cloneFromId?: string };
 // tohumlanabilir (fazlara dokunmadan).
 export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenProps) {
   const router = useRouter();
-  const { t, i18n } = useTranslation("vird");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("vird");
+  const locale = useAppLocale();
 
   const authStatus = useAuthStore((state) => state.status);
   const isPremium = useProfileStore((state) => state.isPremium);

@@ -4,19 +4,10 @@ import { useRouter, type Href } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useCircleStore } from "../../../store/circle-store";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { resolveLocalizedText, withAlpha} from "@zikirmatik/shared";
 import { TEST_IDS } from "../../../test-ids";
+import { useAppLocale } from "../../../i18n";
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace("#", "");
-  if (!(normalized.length === 6 || normalized.length === 8)) {
-    return hex;
-  }
-  const r = Number.parseInt(normalized.slice(0, 2), 16);
-  const g = Number.parseInt(normalized.slice(2, 4), 16);
-  const b = Number.parseInt(normalized.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
-}
 
 // Ana ekrandaki Zikir Halkası kartı — todays-vird-card.tsx ile aynı desen
 // (home-context'ten bağımsız, kendi Pressable'ı ile ana sayacın "her yere
@@ -25,8 +16,8 @@ function withAlpha(hex: string, alpha: number) {
 export function CircleCard() {
   const router = useRouter();
   const { tokens } = useThemeTokens();
-  const { t, i18n } = useTranslation("circle");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("circle");
+  const locale = useAppLocale();
 
   const circles = useCircleStore((state) => state.circles);
   const activeCircle = useMemo(() => circles.find((circle) => circle.status === "active") ?? null, [circles]);

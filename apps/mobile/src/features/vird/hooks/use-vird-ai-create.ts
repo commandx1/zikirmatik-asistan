@@ -12,6 +12,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { VirdSlotKey } from "@zikirmatik/shared";
+import { useAppLocale } from "../../../i18n";
+import { createFlowId } from "../../../lib/ids";
 import { useAuthStore } from "../../../store/auth-store";
 import { useVirdStore } from "../../../store/vird-store";
 import { trackEvent } from "../../../lib/analytics";
@@ -44,17 +46,9 @@ type AiUnavailableState = { message: string };
 
 type CreditState = { balance: number; isPremium: boolean };
 
-function createFlowId() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
-    const random = Math.floor(Math.random() * 16);
-    const value = char === "x" ? random : (random & 0x3) | 0x8;
-    return value.toString(16);
-  });
-}
-
 export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
-  const { t, i18n } = useTranslation("ai-guide");
-  const locale = i18n.language === "en" ? "en" : "tr";
+  const { t } = useTranslation("ai-guide");
+  const locale = useAppLocale();
 
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);

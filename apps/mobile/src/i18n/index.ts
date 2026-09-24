@@ -1,5 +1,5 @@
 import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import { initReactI18next, useTranslation } from "react-i18next";
 import * as Localization from "expo-localization";
 import trCommon from "./locales/tr/common.json";
 import trProfile from "./locales/tr/profile.json";
@@ -135,5 +135,16 @@ void i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
   compatibilityJSON: "v4"
 });
+
+/** Current UI locale for non-hook code (services, contexts outside render). Not reactive. */
+export function getAppLocale(): "tr" | "en" {
+  return i18n.language === "en" ? "en" : "tr";
+}
+
+/** Current UI locale, re-rendering the caller when the language changes. */
+export function useAppLocale(): "tr" | "en" {
+  const { i18n: i18next } = useTranslation();
+  return i18next.language === "en" ? "en" : "tr";
+}
 
 export { i18n };

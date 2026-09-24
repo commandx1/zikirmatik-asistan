@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { TextInput, View, type TextInputProps } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { withAlpha } from "@zikirmatik/shared";
 
 type ThemedInputShape = "pill" | "xl";
 
@@ -9,18 +10,6 @@ type ThemedInputProps = TextInputProps & {
   trailing?: ReactNode;
   className?: string;
 };
-
-function withAlpha(hex: string, alpha: number) {
-  const clean = hex.replace("#", "");
-  if (clean.length !== 6) {
-    return hex;
-  }
-
-  const r = Number.parseInt(clean.slice(0, 2), 16);
-  const g = Number.parseInt(clean.slice(2, 4), 16);
-  const b = Number.parseInt(clean.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
 
 export function ThemedInput({ shape = "xl", trailing, className, placeholderTextColor, ...props }: ThemedInputProps) {
   const { tokens } = useThemeTokens();

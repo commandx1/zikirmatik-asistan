@@ -8,6 +8,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../src/lib/query-client";
 import { I18nextProvider } from "react-i18next";
 import { ThemeProvider } from "@zikirmatik/ui";
+import { DEFAULT_BG_FALLBACK } from "@zikirmatik/shared";
 import { i18n } from "../src/i18n";
 import { Merriweather_400Regular, Merriweather_700Bold, useFonts } from "@expo-google-fonts/merriweather";
 import { IntelOneMono_400Regular, IntelOneMono_700Bold } from "@expo-google-fonts/intel-one-mono";
@@ -42,11 +43,6 @@ import { useThemePreferences } from "../src/hooks/use-theme-preferences";
 import type { AppFontFamily } from "../src/store/theme-store";
 import { useThemeStore } from "../src/store/theme-store";
 import { useAppConfigStore } from "../src/store/app-config-store";
-
-// Matches the default theme's bg (packages/shared/src/utils/theme.ts) and
-// android.adaptiveIcon.backgroundColor in app.json — used before ThemeProvider
-// mounts, so it can't read theme tokens yet.
-const FALLBACK_BACKGROUND_COLOR = "#0B1423";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -117,7 +113,7 @@ function RootProviders({ children }: { children: ReactNode }) {
   }, [resolvedFontFamily]);
 
   if (!themeStoreHydrated) {
-    return <View style={{ flex: 1, backgroundColor: FALLBACK_BACKGROUND_COLOR }} />;
+    return <View style={{ flex: 1, backgroundColor: DEFAULT_BG_FALLBACK }} />;
   }
 
   return (
@@ -154,7 +150,7 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: FALLBACK_BACKGROUND_COLOR }
+          contentStyle: { backgroundColor: DEFAULT_BG_FALLBACK }
         }}
       >
         <Stack.Screen name="auth" />

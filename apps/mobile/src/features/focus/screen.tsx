@@ -5,12 +5,13 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
-import { resolveLocalizedText } from "../../store/dhikr-store";
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import { ZikirFilterTabs } from "./components/zikir-filter-tabs";
 import { ZikirFormModal } from "./components/zikir-form-modal";
 import { ZikirListSection } from "./components/zikir-list-section";
 import { ZikirlerimHeader } from "./components/zikirlerim-header";
 import { useZikirlerim, ZikirlerimProvider } from "./context/zikirlerim-context";
+import { useAppLocale } from "../../i18n";
 
 export function FocusScreen() {
   return (
@@ -21,8 +22,8 @@ export function FocusScreen() {
 }
 
 function FocusContent() {
-  const { t, i18n } = useTranslation("focus");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("focus");
+  const locale = useAppLocale();
   const {
     refresh,
     isRefreshing,

@@ -9,20 +9,6 @@ import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api
 import type { AiDhikrContext, ZikirItem } from "../features/focus/types";
 import type { LocalizedText } from "@zikirmatik/shared";
 
-/**
- * Resolves a (possibly not-yet-localized) text field to a plain string for
- * the given locale. Backward compatible with plain strings (e.g. user-authored
- * personal dhikrs, which stay single-language by design) — those are
- * returned as-is.
- */
-export function resolveLocalizedText(text: LocalizedText | string, locale: "tr" | "en"): string {
-  if (typeof text === "string") {
-    return text;
-  }
-
-  return text[locale] ?? text.tr ?? text.en ?? "";
-}
-
 function toLocalizedText(value: string): LocalizedText {
   return { tr: value, en: value };
 }

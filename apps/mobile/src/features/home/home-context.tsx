@@ -2,9 +2,12 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useTranslation } from 'react-i18next'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { TAP_ANYWHERE_ENABLED_KEY } from '../../lib/storage/keys'
-import { i18n } from '../../i18n'
+import { getAppLocale, i18n, useAppLocale } from '../../i18n'
 import { useAuthStore } from '../../store/auth-store'
-import { MAX_DHIKR_TARGET, resolveLocalizedText, useDhikrStore } from '../../store/dhikr-store'
+import { MAX_DHIKR_TARGET, useDhikrStore } from '../../store/dhikr-store'
+import { isObjectId } from '../dhikrs/services/dhikr-ids'
+import { dhikrDisplayName as dhikrDisplayNamePure } from '../dhikrs/services/dhikr-display'
+import { resolveLocalizedText, toDateKey } from "@zikirmatik/shared";
 import { useProfileStore } from '../../store/profile-store'
 import { useOnboardingStore } from '../../store/onboarding-store'
 import { useNotificationPromptStore } from '../../store/notification-prompt-store'
@@ -21,9 +24,9 @@ import {
 } from './services/daily-esma-suggestion-service'
 import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
 import { shouldConfirmUnsavedDhikrTransition } from './services/unsaved-transition-guard'
-import { computeCurrentLap, computeLapProgress, didCompleteLap, lapNumberCompletedAt, resolveLapSize } from './services/lap-counter'
-import { fireLapHaptic, fireTapHaptic, resolveHapticsPattern } from '../../services/haptics'
-import { playClickSound } from '../../services/click-sound'
+import { computeCurrentLap, computeLapProgress, lapNumberCompletedAt, resolveLapSize } from './services/lap-counter'
+import { resolveHapticsPattern } from '../../services/haptics'
+import { fireCounterFeedback } from '../../services/counter-feedback'
 import { useCounterStyleStore } from '../../store/counter-style-store'
 import type { LocalizedText } from '@zikirmatik/shared'
 
@@ -168,10 +171,10 @@ const HomeContext = createContext<HomeContextValue | null>(null)
 
 export function HomeProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation('home')
-  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const locale = useAppLocale()
   const dhikrDisplayName = useCallback(
     (item: { name: LocalizedText | string; transliteration: LocalizedText | string }) =>
-      resolveLocalizedText(item.name, locale) || resolveLocalizedText(item.transliteration, locale),
+      dhikrDisplayNamePure(item, locale),
     [locale]
   )
   const freeModeLabel = t('home:freeMode.label')
@@ -867,14 +870,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           const nextCount = freeTarget > 0 ? Math.min(freeTarget, nextRawCount) : nextRawCount
           liveFreeCountRef.current = nextCount
           incrementFreeMode()
-          if (nextCount !== prevCount) {
-            fireTapHaptic(hapticsPattern)
-            playClickSound(effectiveSoundPack)
-            if (didCompleteLap(prevCount, nextCount, effectiveLapSize)) {
-              fireLapHaptic(hapticsPattern)
-              setLastCompletedLap(lapNumberCompletedAt(nextCount, effectiveLapSize))
-              setLapCompletedNoticeId(prev => prev + 1)
-            }
+          if (fireCounterFeedback({ prev: prevCount, next: nextCount, lapSize: effectiveLapSize, pattern: hapticsPattern, soundPack: effectiveSoundPack })) {
+            setLastCompletedLap(lapNumberCompletedAt(nextCount, effectiveLapSize))
+            setLapCompletedNoticeId(prev => prev + 1)
           }
 
           // Free mode has no dhikr identity yet, so it cannot be logged
@@ -899,14 +897,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
         liveSelectedCountRef.current = nextCount
 
         incrementSelected()
-        if (nextCount !== baseCount) {
-          fireTapHaptic(hapticsPattern)
-          playClickSound(effectiveSoundPack)
-          if (didCompleteLap(baseCount, nextCount, effectiveLapSize)) {
-            fireLapHaptic(hapticsPattern)
-            setLastCompletedLap(lapNumberCompletedAt(nextCount, effectiveLapSize))
-            setLapCompletedNoticeId(prev => prev + 1)
-          }
+        if (fireCounterFeedback({ prev: baseCount, next: nextCount, lapSize: effectiveLapSize, pattern: hapticsPattern, soundPack: effectiveSoundPack })) {
+          setLastCompletedLap(lapNumberCompletedAt(nextCount, effectiveLapSize))
+          setLapCompletedNoticeId(prev => prev + 1)
         }
 
         // Reaching the target used to require pressing save for the day to
@@ -1244,17 +1237,6 @@ export function useHomeContext() {
   return ctx
 }
 
-function isObjectId(value: string) {
-  return /^[a-f\d]{24}$/i.test(value)
-}
-
-function toDateKey(value: Date) {
-  const year = value.getFullYear()
-  const month = String(value.getMonth() + 1).padStart(2, '0')
-  const day = String(value.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
 function buildNextAutoFreeTitle(
   items: Array<{
     source: ZikirSource
@@ -1262,7 +1244,7 @@ function buildNextAutoFreeTitle(
     transliteration?: LocalizedText | string
   }>
 ) {
-  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const locale = getAppLocale()
   let maxIndex = 0
 
   for (const item of items) {

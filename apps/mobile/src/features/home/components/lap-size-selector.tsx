@@ -4,19 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { useHomeContext } from '../home-context'
 import { MAX_DHIKR_TARGET } from '../../../store/dhikr-store'
+import { withAlpha } from "@zikirmatik/shared";
 
 const QUICK_LAP_SIZES = [33, 99] as const
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace('#', '')
-  if (!(normalized.length === 6 || normalized.length === 8)) {
-    return hex
-  }
-  const r = Number.parseInt(normalized.slice(0, 2), 16)
-  const g = Number.parseInt(normalized.slice(2, 4), 16)
-  const b = Number.parseInt(normalized.slice(4, 6), 16)
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`
-}
 
 /**
  * "Tur boyu" (lap size) picker: 33 / 99 / custom.

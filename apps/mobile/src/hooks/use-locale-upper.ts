@@ -1,7 +1,6 @@
 import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 
-import type { SupportedLocale } from "../i18n";
+import { useAppLocale, type SupportedLocale } from "../i18n";
 import { toLocaleUpper } from "../lib/locale-format";
 
 /**
@@ -11,8 +10,7 @@ import { toLocaleUpper } from "../lib/locale-format";
  * yeniden render olur.
  */
 export function useLocaleUpper(): (value?: string | null) => string {
-  const { i18n } = useTranslation();
-  const locale = (i18n.language === "en" ? "en" : "tr") as SupportedLocale;
+  const locale = useAppLocale() as SupportedLocale;
 
   return useCallback(
     (value?: string | null) => {

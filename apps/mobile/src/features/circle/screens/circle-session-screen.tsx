@@ -3,7 +3,7 @@ import { AppState, Text } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { toDateKey } from "@zikirmatik/shared";
+import { toDateKey, resolveLocalizedText } from "@zikirmatik/shared";
 import type { CircleDetail } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
@@ -11,19 +11,20 @@ import { ThemedCard } from "../../../components/ui/themed-card";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
 import { queryClient } from "../../../lib/query-client";
 import { qk } from "../../../lib/query-keys";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+
 import { useAuthStore } from "../../../store/auth-store";
 import { useCounterStyleStore } from "../../../store/counter-style-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useCircleStore } from "../../../store/circle-store";
-import { fireLapHaptic, fireTapHaptic, resolveHapticsPattern } from "../../../services/haptics";
-import { playClickSound } from "../../../services/click-sound";
+import { resolveHapticsPattern } from "../../../services/haptics";
+import { fireCounterFeedback } from "../../../services/counter-feedback";
 import { createDhikrLog } from "../../dhikrs/services/dhikr-logs-api-client";
 import { trackEvent } from "../../../lib/analytics";
 import { AppleWatchView, type CounterVisualModel } from "../../home/components/apple-watch";
 import { TesbihCounterView } from "../../home/components/tesbih-counter";
 import { fetchCircle } from "../services/circle-api-client";
 import { buildCircleLogPayload, computeDisplayTotal } from "../services/circle-share";
+import { useAppLocale } from "../../../i18n";
 
 const POLL_INTERVAL_MS = 5_000;
 const FLUSH_INTERVAL_MS = 3_000;
@@ -36,8 +37,8 @@ const goalReachedFired = new Set<string>();
 
 export function CircleSessionScreen({ id }: { id: string }) {
   const router = useRouter();
-  const { t, i18n } = useTranslation("circle");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("circle");
+  const locale = useAppLocale();
   // Gün anahtarı oturum boyunca SABİT: her render'da yeniden hesaplansaydı gece
   // yarısını geçen bir oturumda canlı sayı (dünkü dokunuşlar dahil) yeni günün
   // log'una yazılır ve halka toplamı çift sayılırdı. Mount anındaki gün ile
@@ -210,15 +211,12 @@ export function CircleSessionScreen({ id }: { id: string }) {
     if (locked) {
       return;
     }
-    const next = liveCountRef.current + 1;
+    const prev = liveCountRef.current;
+    const next = prev + 1;
     liveCountRef.current = next;
     setTodayCount(id, todayKey, next);
     forceRender();
-    fireTapHaptic(hapticsPattern);
-    playClickSound(effectiveSoundPack);
-    if (next % LAP_SIZE === 0) {
-      fireLapHaptic(hapticsPattern);
-    }
+    fireCounterFeedback({ prev, next, lapSize: LAP_SIZE, pattern: hapticsPattern, soundPack: effectiveSoundPack });
   };
 
   const close = () => {

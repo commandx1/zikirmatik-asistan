@@ -24,14 +24,15 @@ import type { AiVirdProgramPreview, AiVirdProgramPreviewPhase } from "../../ai-g
 import { VirdSwapActiveModal } from "../components/vird-swap-active-modal";
 import { useVirdAiCreate } from "../hooks/use-vird-ai-create";
 import { VIRD_SLOT_KEYS } from "../services/vird-day";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { resolveLocalizedText } from "@zikirmatik/shared";
+import { useAppLocale } from "../../../i18n";
 
 const DURATION_OPTIONS = [7, 14, 30] as const;
 const PRAYER_INDEXES = [1, 2, 3, 4, 5] as const;
 
 export function AiCreateScreen() {
-  const { t, i18n } = useTranslation("ai-guide");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("ai-guide");
+  const locale = useAppLocale();
   const router = useRouter();
   const resumeAfterPremiumPurchaseRef = useRef<() => void>(() => {});
   const premiumSheet = usePremiumSheet({

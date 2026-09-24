@@ -5,9 +5,10 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import type { VirdSlotKey } from "@zikirmatik/shared";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { ThemedInput } from "../../../components/ui/themed-input";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { resolveLocalizedText, withAlpha } from "@zikirmatik/shared";
 import type { DhikrSnapshot } from "../types";
 import { TEST_IDS } from "../../../test-ids";
+import { useAppLocale } from "../../../i18n";
 
 export type VirdEditorSlotItem = {
   ref: string;
@@ -45,8 +46,8 @@ export function VirdEditorSlotCard({
   prayerSelection,
   onTogglePrayerIndex
 }: VirdEditorSlotCardProps) {
-  const { t, i18n } = useTranslation("vird");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("vird");
+  const locale = useAppLocale();
   const { tokens } = useThemeTokens();
 
   return (
@@ -126,13 +127,3 @@ export function VirdEditorSlotCard({
   );
 }
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace("#", "");
-  if (normalized.length !== 6) {
-    return hex;
-  }
-  const r = Number.parseInt(normalized.slice(0, 2), 16);
-  const g = Number.parseInt(normalized.slice(2, 4), 16);
-  const b = Number.parseInt(normalized.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
-}

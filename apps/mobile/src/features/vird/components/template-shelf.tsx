@@ -4,8 +4,9 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { VirdTemplateSummary } from "@zikirmatik/shared";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import { fetchVirdTemplates } from "../services/vird-api-client";
+import { useAppLocale } from "../../../i18n";
 
 // collections/screen.tsx'in "all" sayfasının üstünde (ListHeaderComponent
 // olarak) yatay bir raf olarak; app/vird/templates.tsx'te (B1) `vertical`
@@ -14,8 +15,8 @@ import { fetchVirdTemplates } from "../services/vird-api-client";
 // — premium şablonlar rozetle işaretlenir, gerçek erişim kontrolü şablon
 // detay ekranında ("Programı başlat" basılınca) yapılır.
 export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
-  const { t, i18n } = useTranslation("vird");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("vird");
+  const locale = useAppLocale();
   const { tokens } = useThemeTokens();
   const router = useRouter();
 

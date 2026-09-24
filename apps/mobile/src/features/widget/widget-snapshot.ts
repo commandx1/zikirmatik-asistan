@@ -1,4 +1,4 @@
-import { resolveThemeTokens, toDateKey } from "@zikirmatik/shared";
+import { resolveLocalizedText, resolveThemeTokens, toDateKey } from "@zikirmatik/shared";
 import { calculateLocalCompletionStreak, resolveActivityDateKey } from "../home/services/local-streak";
 import {
   dayIndexFor,
@@ -10,7 +10,6 @@ import {
 } from "../vird/services/vird-day";
 import { resolveNowSlot } from "../vird/services/vird-now";
 import { calculateVirdStreak } from "../vird/services/vird-streak";
-import { resolveLocalizedText } from "../vird/services/vird-session";
 import { getPrayerTimes } from "../vird/services/prayer-times";
 import type { VirdDayProgressByDate, VirdProgramLocal, VirdSlotKey } from "../vird/types";
 

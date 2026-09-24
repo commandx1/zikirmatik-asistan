@@ -13,26 +13,23 @@ import { ThemedCard } from "../../components/ui/themed-card";
 import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
 import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
 import { useAuthStore } from "../../store/auth-store";
-import { resolveLocalizedText, useDhikrStore } from "../../store/dhikr-store";
+import { useDhikrStore } from "../../store/dhikr-store";
+import { resolveLocalizedText, toDateKey } from "@zikirmatik/shared";
+import { isObjectId } from "../dhikrs/services/dhikr-ids";
 import { createDhikrLog } from "../dhikrs/services/dhikr-logs-api-client";
 import { useCollectionDetail } from "./hooks/use-collection-detail";
 import type { BackendCollectionDhikr } from "./services/collections-api-client";
+import { useAppLocale } from "../../i18n";
 
 type Props = {
   collectionKey: string;
 };
 
-function toDateKey(value: Date) {
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 export function CollectionDetailScreen({ collectionKey }: Props) {
   const router = useRouter();
-  const { t, i18n } = useTranslation("collections");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("collections");
+  const locale = useAppLocale();
   const { tokens } = useThemeTokens();
   const insets = useSafeAreaInsets();
   const bottomPadding = 40 + (Platform.OS === "android" ? Math.max(insets.bottom, 0) : insets.bottom);
@@ -122,11 +119,11 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
     const aiCtx = activeAiContext?.dhikrId === selectedDhikr.id
       ? { source: "ai" as const, aiRecommendationId: activeAiContext.recommendationId, aiPrompt: activeAiContext.prompt, aiAssistantNote: activeAiContext.assistantNote }
       : { source: "manual" as const };
-    const isObjectId = /^[a-f\d]{24}$/i.test(selectedDhikr.id);
+    const isVerifiedId = isObjectId(selectedDhikr.id);
     const dateKey = toDateKey(new Date());
     try {
       const savedLog = await createDhikrLog(
-        isObjectId
+        isVerifiedId
           ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted, isFavorite: selectedDhikr.isFavorite }
           : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: resolveLocalizedText(selectedDhikr.name, locale) || resolveLocalizedText(selectedDhikr.transliteration, locale), count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite }
       );

@@ -9,6 +9,7 @@ import { useProfileStore } from "../../../store/profile-store";
 import { useVirdStore } from "../../../store/vird-store";
 import { requestNotificationPermissionForToggle } from "../../notifications/services/request-notification-permission";
 import { resolvePrayerTimes, type PrayerTimesResult } from "../services/prayer-times";
+import { withAlpha } from "@zikirmatik/shared";
 
 type ReminderSlotKey = "morning" | "prayer" | "evening" | "night";
 
@@ -161,13 +162,3 @@ export function VirdReminderSettings({ onRequirePremium }: VirdReminderSettingsP
   );
 }
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace("#", "");
-  if (normalized.length !== 6) {
-    return hex;
-  }
-  const r = Number.parseInt(normalized.slice(0, 2), 16);
-  const g = Number.parseInt(normalized.slice(2, 4), 16);
-  const b = Number.parseInt(normalized.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
-}

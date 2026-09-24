@@ -6,4 +6,6 @@ export * from "./types/circle";
 export * from "./utils/theme";
 export * from "./utils/format";
 export * from "./utils/date";
+export * from "./utils/color";
+export * from "./utils/localized-text";
 export * from "./mocks/data";

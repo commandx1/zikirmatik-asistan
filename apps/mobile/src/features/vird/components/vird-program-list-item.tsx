@@ -5,13 +5,14 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { ConfirmModal } from "../../../components/ui/confirm-modal";
 import { ThemedCard } from "../../../components/ui/themed-card";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import { useVirdStore } from "../../../store/vird-store";
 import { trackEvent } from "../../../lib/analytics";
 import { useVirdProgramActions } from "../hooks/use-vird-program-actions";
 import { VIRD_ERROR_CODE } from "../services/vird-error-codes";
 import type { VirdProgramLocal } from "../types";
 import { VirdSwapActiveModal } from "./vird-swap-active-modal";
+import { useAppLocale } from "../../../i18n";
 
 type Props = {
   program: VirdProgramLocal;
@@ -25,8 +26,8 @@ type Props = {
 // diğer akışlarla (editör, şablon, AI) AYNI 3 seçim (bkz. dosya başı notu,
 // use-vird-program-actions.ts swapActive).
 export function VirdProgramListItem({ program, onRequirePremium }: Props) {
-  const { t, i18n } = useTranslation("vird");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("vird");
+  const locale = useAppLocale();
   const { tokens } = useThemeTokens();
   const { pauseProgram, deleteProgram, activateProgram, swapActive } = useVirdProgramActions();
   const setNotice = useVirdStore((state) => state.setNotice);

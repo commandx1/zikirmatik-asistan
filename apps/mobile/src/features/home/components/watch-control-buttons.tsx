@@ -2,6 +2,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import type { RefObject } from 'react'
 import { ActivityIndicator, Pressable, View } from 'react-native'
 import type { ThemeTokens } from '@zikirmatik/shared'
+import { withAlpha } from "@zikirmatik/shared";
 
 type WatchControlButtonsProps = {
   tokens: ThemeTokens
@@ -113,15 +114,3 @@ export function WatchControlButtons({
   )
 }
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace('#', '')
-  if (!(normalized.length === 6 || normalized.length === 8)) {
-    return hex
-  }
-
-  const r = Number.parseInt(normalized.slice(0, 2), 16)
-  const g = Number.parseInt(normalized.slice(2, 4), 16)
-  const b = Number.parseInt(normalized.slice(4, 6), 16)
-
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`
-}

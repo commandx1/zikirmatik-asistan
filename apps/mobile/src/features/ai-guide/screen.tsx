@@ -26,23 +26,20 @@ import { RecommendationsSection } from "./components/recommendations-section";
 import { TopBar } from "./components/top-bar";
 import { useAiGuide } from "./hooks/use-ai-guide";
 import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
-import { resolveLocalizedText, useDhikrStore } from "../../store/dhikr-store";
+import { useDhikrStore } from "../../store/dhikr-store";
+import { resolveLocalizedText, toDateKey } from "@zikirmatik/shared";
+import { isObjectId } from "../dhikrs/services/dhikr-ids";
 import { usePremiumSheet } from "../../hooks/use-premium-sheet";
 import { useRequireAuth } from "../auth/hooks/use-require-auth";
 import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
 import type { AiGuideRecommendation } from "./types";
 import { TEST_IDS } from "../../test-ids";
+import { useAppLocale } from "../../i18n";
 
-function toDateKey(value: Date) {
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 export function AiGuideScreen() {
-  const { t, i18n } = useTranslation("ai-guide");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("ai-guide");
+  const locale = useAppLocale();
   const router = useRouter();
   const resumeAfterCreditPurchaseRef = useRef<() => void>(() => {});
   const premiumSheet = usePremiumSheet({
@@ -124,12 +121,12 @@ export function AiGuideScreen() {
     const aiCtx = activeAiContext?.dhikrId === selectedDhikr.id
       ? { source: "ai" as const, aiRecommendationId: activeAiContext.recommendationId, aiPrompt: activeAiContext.prompt, aiAssistantNote: activeAiContext.assistantNote }
       : { source: "manual" as const };
-    const isObjectId = /^[a-f\d]{24}$/i.test(selectedDhikr.id);
+    const isVerifiedId = isObjectId(selectedDhikr.id);
     const dateKey = toDateKey(new Date());
 
     try {
       const savedLog = await createDhikrLog(
-        isObjectId
+        isVerifiedId
           ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted, isFavorite: selectedDhikr.isFavorite }
           : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: resolveLocalizedText(selectedDhikr.name, locale) || resolveLocalizedText(selectedDhikr.transliteration, locale), count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite }
       );

@@ -14,14 +14,7 @@ import { PageLayout } from "../../components/ui/page-layout";
 import { useAuthStore } from "../../store/auth-store";
 import appLogo from "../../assets/app-logo.png";
 import { TEST_IDS } from "../../test-ids";
-
-function hexWithAlpha(hex: string, alpha: number) {
-  const clean = hex.replace("#", "");
-  const r = parseInt(clean.substring(0, 2), 16);
-  const g = parseInt(clean.substring(2, 4), 16);
-  const b = parseInt(clean.substring(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
+import { withAlpha as hexWithAlpha } from "@zikirmatik/shared";
 
 function relativeLuminance(hex: string) {
   const clean = hex.replace("#", "");

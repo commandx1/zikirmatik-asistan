@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { toDateKey } from "@zikirmatik/shared";
+import { toDateKey, resolveLocalizedText } from "@zikirmatik/shared";
 import type { CircleDetail } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
@@ -16,11 +16,12 @@ import { queryClient } from "../../../lib/query-client";
 import { qk } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../store/auth-store";
 import { useCircleStore } from "../../../store/circle-store";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+
 import { trackEvent } from "../../../lib/analytics";
 import { closeCircle, fetchCircle, leaveCircle } from "../services/circle-api-client";
 import { buildCircleShareMessage } from "../services/circle-share";
 import { TEST_IDS } from "../../../test-ids";
+import { useAppLocale } from "../../../i18n";
 
 const POLL_INTERVAL_MS = 15_000;
 
@@ -28,7 +29,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
   const router = useRouter();
   const { t, i18n } = useTranslation("circle");
   const { tokens } = useThemeTokens();
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const locale = useAppLocale();
 
   const authStatus = useAuthStore((state) => state.status);
   const circles = useCircleStore((state) => state.circles);

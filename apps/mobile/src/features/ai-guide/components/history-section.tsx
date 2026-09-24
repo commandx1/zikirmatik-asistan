@@ -6,6 +6,7 @@ import { i18n } from "../../../i18n";
 import { useProfileStore } from "../../../store/profile-store";
 import { toIntlLocale } from "../../../lib/locale-format";
 import type { AiGuideHistoryItem } from "../types";
+import { withAlpha } from "@zikirmatik/shared";
 
 type HistorySectionProps = {
   items: AiGuideHistoryItem[];
@@ -117,15 +118,3 @@ function startOfDay(value: Date) {
   return new Date(value.getFullYear(), value.getMonth(), value.getDate());
 }
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace("#", "");
-  if (!(normalized.length === 6 || normalized.length === 8)) {
-    return hex;
-  }
-
-  const r = Number.parseInt(normalized.slice(0, 2), 16);
-  const g = Number.parseInt(normalized.slice(2, 4), 16);
-  const b = Number.parseInt(normalized.slice(4, 6), 16);
-
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
-}

@@ -15,10 +15,11 @@ import { useCircleStore } from "../../../store/circle-store";
 import { fetchCirclesForUser } from "../services/circle-queries";
 import { useProfileStore } from "../../../store/profile-store";
 import { useRequireAuth } from "../../auth/hooks/use-require-auth";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import { ProfilePremiumSheet } from "../../profile/components/profile-premium-sheet";
 import { parseCircleCode } from "../services/circle-share";
 import { TEST_IDS } from "../../../test-ids";
+import { useAppLocale } from "../../../i18n";
 
 // Zikir Halkası hub'ı (`/circle`): mevcut halkaları listeler, yeni halka
 // kurma / kodla katılma seçeneklerini sunar. Desen vird-hub-screen.tsx ile
@@ -138,9 +139,9 @@ export function CircleHubScreen() {
 
 function CircleRow({ circle }: { circle: CircleSummary }) {
   const router = useRouter();
-  const { t, i18n } = useTranslation("circle");
+  const { t } = useTranslation("circle");
   const { tokens } = useThemeTokens();
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const locale = useAppLocale();
   const percent = circle.goalCount > 0 ? Math.min(100, Math.round((circle.totalCount / circle.goalCount) * 100)) : 0;
 
   return (

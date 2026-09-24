@@ -6,11 +6,12 @@ import { useTranslation } from 'react-i18next'
 import { PageLayout, PageScrollView } from '../../components/ui/page-layout'
 import { PageHeader } from '../../components/ui/page-header'
 import { ThemedCard } from '../../components/ui/themed-card'
-import { resolveLocalizedText } from '../../store/dhikr-store'
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import { formatLongDate } from '../../lib/locale-format'
 import { useAiGuideNavigationIntentStore } from '../ai-guide/services/ai-guide-navigation-intent-store'
 import { useSpecialDayDetail } from './hooks/use-special-day-detail'
 import { useLocaleUpper } from '../../hooks/use-locale-upper'
+import { useAppLocale } from "../../i18n";
 
 type SpecialDayDetailScreenProps = {
   id: string
@@ -19,8 +20,8 @@ type SpecialDayDetailScreenProps = {
 export function SpecialDayDetailScreen({ id }: SpecialDayDetailScreenProps) {
   const router = useRouter()
   const { tokens } = useThemeTokens()
-  const { t, i18n } = useTranslation('special-days')
-  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const { t } = useTranslation('special-days')
+  const locale = useAppLocale();
   const upper = useLocaleUpper()
 
   const detail = useSpecialDayDetail(id)

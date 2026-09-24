@@ -10,22 +10,11 @@ import {
   type ExpectedVirdItem,
   type VirdDayProgramLike
 } from "./vird-day";
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import type { CreateDhikrLogPayload, VirdLogFields } from "../../dhikrs/services/dhikr-logs-api-client";
-import type { LocalizedText, VirdDayProgressMap, VirdProgramLocal, VirdSlotKey } from "../types";
+import type { VirdDayProgressMap, VirdProgramLocal, VirdSlotKey } from "../types";
 
 const OBJECT_ID_RE = /^[a-f\d]{24}$/i;
-
-// store/dhikr-store.ts'teki resolveLocalizedText ile AYNI mantık — buradan
-// import ETMEZ, çünkü dhikr-store.ts (AsyncStorage/i18n/profile-store
-// zinciri üzerinden) React Native'e bağımlıdır; bu servis kasıtlı olarak
-// saf/store-bağımsız kalır (bkz. görev notu). widget-snapshot.ts de (aynı
-// nedenle saf kalması gereken) bu kopyayı import eder.
-export function resolveLocalizedText(text: LocalizedText | string, locale: "tr" | "en"): string {
-  if (typeof text === "string") {
-    return text;
-  }
-  return text[locale] ?? text.tr ?? text.en ?? "";
-}
 
 export type VirdSessionKey = { slot: VirdSlotKey; prayerIndex: number | null };
 export type VirdSessionItem = ExpectedVirdItem & { count: number; completed: boolean };

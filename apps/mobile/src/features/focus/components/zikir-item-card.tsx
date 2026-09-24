@@ -10,13 +10,15 @@ import Animated, {
   useSharedValue,
   withTiming
 } from 'react-native-reanimated'
+import { withAlpha } from "@zikirmatik/shared";
 import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { MarkdownRenderer } from '../../../components/ui/markdown-renderer'
 import { ThemedCard } from '../../../components/ui/themed-card'
 import { useZikirlerim } from '../context/zikirlerim-context'
-import { resolveLocalizedText } from '../../../store/dhikr-store'
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 import type { ZikirItem } from '../types'
+import { useAppLocale } from "../../../i18n";
 
 type ZikirItemCardProps = {
   item: ZikirItem
@@ -65,8 +67,8 @@ const EXPAND_DURATION = 280
 const COLLAPSE_DURATION = 220
 
 const AccordionContent = memo(function AccordionContent({ item, tokens }: { item: ZikirItem; tokens: ThemeTokens }) {
-  const { t, i18n } = useTranslation('focus')
-  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const { t } = useTranslation('focus')
+  const locale = useAppLocale();
   const upper = useLocaleUpper()
   const meaningText = item.meaning ? resolveLocalizedText(item.meaning, locale) : ''
   const virtueText = item.virtue ? resolveLocalizedText(item.virtue, locale) : ''
@@ -201,8 +203,8 @@ const AccordionContent = memo(function AccordionContent({ item, tokens }: { item
 })
 
 export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isDeleting, isUpdatingThisItem }: ZikirItemCardProps) {
-  const { t, i18n } = useTranslation('focus')
-  const locale = (i18n.language === 'en' ? 'en' : 'tr') as 'tr' | 'en'
+  const { t } = useTranslation('focus')
+  const locale = useAppLocale();
   const { tokens } = useThemeTokens()
   const [isExpanded, setIsExpanded] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -415,15 +417,3 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
   )
 })
 
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace('#', '')
-  if (!(normalized.length === 6 || normalized.length === 8)) {
-    return hex
-  }
-
-  const r = Number.parseInt(normalized.slice(0, 2), 16)
-  const g = Number.parseInt(normalized.slice(2, 4), 16)
-  const b = Number.parseInt(normalized.slice(4, 6), 16)
-
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`
-}

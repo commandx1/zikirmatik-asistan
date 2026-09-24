@@ -2,12 +2,13 @@ import { Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { toDateKey } from "@zikirmatik/shared";
+import { toDateKey, resolveLocalizedText } from "@zikirmatik/shared";
 import { ThemedCard } from "../../../components/ui/themed-card";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+
 import { useHydrateVirdSnapshots } from "../hooks/use-hydrate-vird-snapshots";
 import { dayIndexFor, phaseForDay, resolveDhikrRef, VIRD_SLOT_KEYS } from "../services/vird-day";
 import type { VirdProgramLocal } from "../types";
+import { useAppLocale } from "../../../i18n";
 
 type Props = { program: VirdProgramLocal };
 
@@ -17,8 +18,8 @@ type Props = { program: VirdProgramLocal };
 // (bkz. features/vird/README.md) burada tembel hidrasyon tetiklenir.
 export function VirdProgramSummaryCard({ program }: Props) {
   const router = useRouter();
-  const { t, i18n } = useTranslation("vird");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("vird");
+  const locale = useAppLocale();
   const { tokens } = useThemeTokens();
 
   useHydrateVirdSnapshots(program.id);

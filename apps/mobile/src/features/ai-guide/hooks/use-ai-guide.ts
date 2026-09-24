@@ -3,6 +3,7 @@ import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { aiGuideLastKey } from "../../../lib/storage/keys";
+import { createFlowId } from "../../../lib/ids";
 import type {
   AiGuideHistoryItem,
   AiGuideHistoryItemRaw,
@@ -10,7 +11,8 @@ import type {
   AiGuideRecommendationRaw
 } from "../types";
 import { useAuthStore } from "../../../store/auth-store";
-import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
+import { useDhikrStore } from "../../../store/dhikr-store";
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
 import { fetchAiCredits, fetchAiQuota, fetchAiRecommendations } from "../../ai-shared/services/ai-queries";
 import {
@@ -719,13 +721,6 @@ function capitalize(value: string, locale: string) {
   return `${value.charAt(0).toLocaleUpperCase(locale)}${value.slice(1)}`;
 }
 
-function createFlowId() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
-    const random = Math.floor(Math.random() * 16);
-    const value = char === "x" ? random : (random & 0x3) | 0x8;
-    return value.toString(16);
-  });
-}
 
 function resolveSpecialDayContext(specialDayName?: string, freeText?: string) {
   const name = specialDayName?.trim();

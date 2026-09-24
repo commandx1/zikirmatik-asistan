@@ -5,7 +5,7 @@ import * as Crypto from "expo-crypto";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { toDateKey } from "@zikirmatik/shared";
+import { toDateKey, resolveLocalizedText } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
@@ -15,7 +15,7 @@ import { trackEvent } from "../../../lib/analytics";
 import { queryClient } from "../../../lib/query-client";
 import { qk } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../store/auth-store";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+
 import { useProfileStore } from "../../../store/profile-store";
 import { useVirdStore } from "../../../store/vird-store";
 import { ProfilePremiumSheet } from "../../profile/components/profile-premium-sheet";
@@ -26,6 +26,7 @@ import { buildLocalProgramFromTemplate, toLocalizedText } from "../services/vird
 import { VIRD_ERROR_CODE, resolveVirdErrorMessage } from "../services/vird-error-codes";
 import { toLocalVirdProgram } from "../services/vird-sync";
 import type { VirdProgramLocal } from "../types";
+import { useAppLocale } from "../../../i18n";
 
 type Props = { templateKey: string };
 
@@ -38,8 +39,8 @@ type PendingSwap = { localProgram: VirdProgramLocal };
 // programı kurar/aktifleştirir.
 export function TemplateDetailScreen({ templateKey }: Props) {
   const router = useRouter();
-  const { t, i18n } = useTranslation("vird");
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const { t } = useTranslation("vird");
+  const locale = useAppLocale();
   const { tokens } = useThemeTokens();
   const premiumSheet = usePremiumSheet();
 

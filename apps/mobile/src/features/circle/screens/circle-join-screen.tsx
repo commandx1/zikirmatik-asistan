@@ -10,17 +10,18 @@ import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { useCircleStore } from "../../../store/circle-store";
 import { useAuthStore } from "../../../store/auth-store";
-import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import { useRequireAuth } from "../../auth/hooks/use-require-auth";
 import { trackEvent } from "../../../lib/analytics";
 import { CircleApiError, fetchCirclePreview, joinCircle, resolveCircleErrorMessage } from "../services/circle-api-client";
 import { parseCircleCode } from "../services/circle-share";
+import { useAppLocale } from "../../../i18n";
 
 export function CircleJoinScreen({ code: rawCode }: { code: string }) {
   const router = useRouter();
-  const { t, i18n } = useTranslation("circle");
+  const { t } = useTranslation("circle");
   const { tokens } = useThemeTokens();
-  const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
+  const locale = useAppLocale();
   const { requireAuth } = useRequireAuth();
 
   const authStatus = useAuthStore((state) => state.status);

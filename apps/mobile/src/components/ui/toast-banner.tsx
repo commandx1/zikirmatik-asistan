@@ -2,21 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, Text } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
+import { withAlpha } from "@zikirmatik/shared";
 
 // Ortak, geçici (2.5s) üst-orta toast banner'ı — aslen home-view.tsx'teki
 // TapAnywhereToast'ın aynen taşınmış hali (bkz. FAZ B görevi B8). home-view.tsx
 // hâlâ kendi 'hand-pointer' ikonuyla kullanır; vird-hub-screen.tsx notice
 // (started/draft) toast'ı için de bunu kullanır.
-function withAlpha(hex: string, alpha: number) {
-  const normalized = hex.replace("#", "");
-  if (normalized.length !== 6 && normalized.length !== 8) {
-    return hex;
-  }
-  const r = Number.parseInt(normalized.slice(0, 2), 16);
-  const g = Number.parseInt(normalized.slice(2, 4), 16);
-  const b = Number.parseInt(normalized.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, alpha))})`;
-}
 
 type ToastBannerProps = {
   message: string | null;
