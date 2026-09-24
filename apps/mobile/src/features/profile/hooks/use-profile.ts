@@ -2,36 +2,22 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { AppState, Linking, Platform } from "react-native";
 import { useTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
-import type { SupportedLocale } from "../../../i18n";
-import { toIntlLocale } from "../../../lib/locale-format";
 import type { HapticsPattern } from "../../../services/haptics-pattern";
 import { saveUserPreferences, deleteUser } from "../../users/services/users-api-client";
 import { useBackendUser } from "../../users/hooks/use-backend-user";
 import {
-  CREDIT_TOPUP_FALLBACK,
-  fetchSubscriptionPrices,
-  getCreditTopupProducts,
   isRevenueCatConfigured,
-  purchaseCreditTopup,
-  purchasePremiumWithRevenueCat,
-  syncPremiumStatusWithRevenueCat,
-  toRevenueCatMessage,
-  type CreditTopupProduct,
-  type SubscriptionPrices
+  syncPremiumStatusWithRevenueCat
 } from "../../subscriptions/services/revenuecat-client";
-import { syncDailyReminderNotification } from "../services/daily-reminder-notifications";
-import { trackEvent } from "../../../lib/analytics";
+import { usePremiumSheet } from "../../../hooks/use-premium-sheet";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
-import { useRequireAuth } from "../../auth/hooks/use-require-auth";
 import { useOnboardingStore } from "../../../store/onboarding-store";
-
-type PremiumPlan = "monthly" | "annual";
+import { toMemberSinceLabel } from "../services/profile-format";
+import { useReminderTimeModal } from "./use-reminder-time-modal";
 
 export function useProfile() {
   const router = useRouter();
-  const { requireAuth } = useRequireAuth();
   const { t } = useTranslation(["profile", "common"]);
 
   const fallbackDisplayName = useProfileStore((s) => s.displayName);
@@ -40,11 +26,7 @@ export function useProfile() {
   const locale = useProfileStore((s) => s.locale);
   const setLocale = useProfileStore((s) => s.setLocale);
   const reminderTime = useProfileStore((s) => s.reminderTime);
-  const dailyReminderEnabled = useProfileStore((s) => s.dailyReminderEnabled);
-  const kandilNotificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
   const hapticsPattern = useProfileStore((s) => s.hapticsPattern);
-  const setReminderTime = useProfileStore((s) => s.setReminderTime);
-  const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
   const setHapticsPattern = useProfileStore((s) => s.setHapticsPattern);
   const hydrateFromBackend = useProfileStore((s) => s.hydrateFromBackend);
   const authStatus = useAuthStore((s) => s.status);
@@ -53,22 +35,15 @@ export function useProfile() {
   const signOut = useAuthStore((s) => s.signOut);
   const resetTour = useOnboardingStore((s) => s.resetTour);
 
-  const [isPremiumSheetOpen, setPremiumSheetOpen] = useState(false);
   // Sunucu kullanıcı belgesi; store hidrasyonu kökteki useBackendUserSync'te.
   const { data: backendUser, refetch: refetchBackendUser } = useBackendUser();
+  const premiumSheet = usePremiumSheet({
+    loadTopupOnMount: true,
+    onTopupPurchased: refetchBackendUser
+  });
+  const setPremiumError = premiumSheet.setError;
+  const reminderTimeModal = useReminderTimeModal();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isActivatingPremium, setIsActivatingPremium] = useState(false);
-  const [premiumPlan, setPremiumPlan] = useState<PremiumPlan>("annual");
-  const [premiumError, setPremiumError] = useState<string>();
-  const [topupProducts, setTopupProducts] = useState<CreditTopupProduct[]>(CREDIT_TOPUP_FALLBACK);
-  const [purchasingTopupId, setPurchasingTopupId] = useState<string | undefined>();
-  const [topupError, setTopupError] = useState<string | undefined>();
-  const [subscriptionPrices, setSubscriptionPrices] = useState<SubscriptionPrices>({});
-  const [isReminderTimeModalOpen, setIsReminderTimeModalOpen] = useState(false);
-  const [reminderHourDraft, setReminderHourDraft] = useState("08");
-  const [reminderMinuteDraft, setReminderMinuteDraft] = useState("00");
-  const [isSavingReminderTime, setIsSavingReminderTime] = useState(false);
-  const [reminderTimeError, setReminderTimeError] = useState<string>();
   const [shouldSyncPremiumOnForeground, setShouldSyncPremiumOnForeground] = useState(false);
   const [feedbackError, setFeedbackError] = useState<string>();
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
@@ -87,23 +62,6 @@ export function useProfile() {
     }
   }, [authStatus, refetchBackendUser, session?.userId]);
 
-  const loadSubscriptionPrices = async () => {
-    if (!session?.userId) {
-      return;
-    }
-    // fetchSubscriptionPrices hata/boş offering durumunda boş obje döner, throw etmez.
-    setSubscriptionPrices(await fetchSubscriptionPrices(session.userId));
-  };
-
-  const openPremiumSheet = () => {
-    setPremiumSheetOpen(true);
-    void loadSubscriptionPrices();
-  };
-  const closePremiumSheet = () => {
-    setPremiumError(undefined);
-    setTopupError(undefined);
-    setPremiumSheetOpen(false);
-  };
   const goThemeSelector = () => router.push("/theme-selector");
   const goFontSelector = () => router.push("/font-selector");
   const onLogout = async () => {
@@ -204,69 +162,6 @@ export function useProfile() {
     }
   };
 
-  const activatePremiumInner = async () => {
-    if (!session?.userId) {
-      return;
-    }
-
-    setIsActivatingPremium(true);
-    setPremiumError(undefined);
-    try {
-      const synced = await purchasePremiumWithRevenueCat(session.userId, premiumPlan);
-      hydrateFromBackend({ isPremium: synced.isPremium });
-      if (synced.isPremium) {
-        void trackEvent("purchase_completed", { product: premiumPlan });
-        closePremiumSheet();
-      }
-    } catch (error) {
-      const msg = toRevenueCatMessage(error);
-      if (msg) setPremiumError(msg);
-    } finally {
-      setIsActivatingPremium(false);
-    }
-  };
-
-  const activatePremium = () => {
-    requireAuth(() => {
-      void activatePremiumInner();
-    });
-  };
-
-  const loadTopupProducts = useCallback(async () => {
-    if (!session?.userId) {
-      return;
-    }
-    try {
-      setTopupProducts(await getCreditTopupProducts(session.userId));
-    } catch {
-      // Mağaza fiyatları alınamazsa fallback fiyatlar gösterilir.
-    }
-  }, [session?.userId]);
-
-  useEffect(() => {
-    void loadTopupProducts();
-  }, [loadTopupProducts]);
-
-  const purchaseTopup = async (productId: string): Promise<boolean> => {
-    if (!session?.userId || purchasingTopupId) {
-      return false;
-    }
-    setPurchasingTopupId(productId);
-    setTopupError(undefined);
-    try {
-      await purchaseCreditTopup(session.userId, productId);
-      void trackEvent("credit_topup", { product: productId });
-      await refetchBackendUser();
-      return true;
-    } catch (error) {
-      const msg = toRevenueCatMessage(error);
-      if (msg) setTopupError(msg);
-      return false;
-    } finally {
-      setPurchasingTopupId(undefined);
-    }
-  };
-
   useEffect(() => {
     if (authStatus !== "authenticated" || !session?.userId || !isRevenueCatConfigured()) {
       return;
@@ -321,78 +216,6 @@ export function useProfile() {
     syncPremiumFromRevenueCat
   ]);
 
-  const normalizedReminderDraft = `${normalizeTimeUnit(reminderHourDraft)}:${normalizeTimeUnit(reminderMinuteDraft)}`;
-  const canSaveReminderTime = normalizedReminderDraft !== reminderTime && !isSavingReminderTime;
-
-  const openReminderTimeModal = () => {
-    const parsed = parseReminderTime(reminderTime);
-    setReminderHourDraft(String(parsed.hour).padStart(2, "0"));
-    setReminderMinuteDraft(String(parsed.minute).padStart(2, "0"));
-    setReminderTimeError(undefined);
-    setIsReminderTimeModalOpen(true);
-  };
-
-  const closeReminderTimeModal = () => {
-    if (isSavingReminderTime) {
-      return;
-    }
-    setReminderTimeError(undefined);
-    setIsReminderTimeModalOpen(false);
-  };
-
-  const onReminderHourChange = (value: string) => {
-    setReminderHourDraft(value);
-    if (reminderTimeError) {
-      setReminderTimeError(undefined);
-    }
-  };
-
-  const onReminderMinuteChange = (value: string) => {
-    setReminderMinuteDraft(value);
-    if (reminderTimeError) {
-      setReminderTimeError(undefined);
-    }
-  };
-
-  const saveReminderTime = async () => {
-    const parsed = parseReminderTime(`${normalizeTimeUnit(reminderHourDraft)}:${normalizeTimeUnit(reminderMinuteDraft)}`);
-    if (!parsed.isValid) {
-      setReminderTimeError(t("profile:reminderTimeModal.invalidTime"));
-      return;
-    }
-
-    const nextReminderTime = `${String(parsed.hour).padStart(2, "0")}:${String(parsed.minute).padStart(2, "0")}`;
-    const previousReminderTime = reminderTime;
-    setReminderTime(nextReminderTime);
-    setReminderTimeError(undefined);
-    setIsSavingReminderTime(true);
-
-    try {
-      await syncDailyReminderNotification({
-        enabled: dailyReminderEnabled,
-        reminderTime: nextReminderTime,
-        requestPermission: false
-      });
-
-      if (authStatus === "authenticated" && session?.userId) {
-        await saveUserPreferences(
-          session.userId,
-          {
-            reminderTime: nextReminderTime,
-            dailyReminder: dailyReminderEnabled
-          }
-        );
-      }
-
-      setIsReminderTimeModalOpen(false);
-    } catch {
-      setReminderTime(previousReminderTime);
-      setReminderTimeError(t("profile:errors.reminderTimeUpdateFailed"));
-    } finally {
-      setIsSavingReminderTime(false);
-    }
-  };
-
   const onChangeHapticsPattern = useCallback(
     (pattern: HapticsPattern) => {
       const previousPattern = hapticsPattern;
@@ -424,47 +247,34 @@ export function useProfile() {
     // Store, sunucu belgesinin (kök hidrasyon) ve RevenueCat senkronunun en
     // güncelini taşır — eskiden backendUser.isPremium ile birlikte yazılırdı.
     isPremium,
-    isReminderTimeModalOpen,
-    reminderHourDraft,
-    reminderMinuteDraft,
-    isSavingReminderTime,
-    reminderTimeError,
-    canSaveReminderTime,
+    ...reminderTimeModal,
     locale,
     setLocale,
     reminderTime,
-    dailyReminderEnabled,
-    kandilNotificationsEnabled,
     hapticsPattern,
-    isPremiumSheetOpen,
-    isActivatingPremium,
-    premiumPlan,
+    isPremiumSheetOpen: premiumSheet.isOpen,
+    isActivatingPremium: premiumSheet.isActivating,
+    premiumPlan: premiumSheet.plan,
     isRefreshing,
-    premiumError,
-    topupProducts,
-    purchasingTopupId,
-    topupError,
-    purchaseTopup,
-    subscriptionPrices,
+    premiumError: premiumSheet.error,
+    topupProducts: premiumSheet.topupProducts,
+    purchasingTopupId: premiumSheet.purchasingTopupId,
+    topupError: premiumSheet.topupError,
+    purchaseTopup: premiumSheet.purchaseTopup,
+    subscriptionPrices: premiumSheet.subscriptionPrices,
     refresh,
-    setKandilNotificationsEnabled,
     onChangeHapticsPattern,
     goThemeSelector,
     goFontSelector,
-    openReminderTimeModal,
-    closeReminderTimeModal,
-    onReminderHourChange,
-    onReminderMinuteChange,
-    saveReminderTime,
     feedbackError,
     clearFeedbackError: () => setFeedbackError(undefined),
     manageSubscription,
     rateApp,
     sendFeedback,
-    openPremiumSheet,
-    closePremiumSheet,
-    setPremiumPlan,
-    activatePremium,
+    openPremiumSheet: premiumSheet.open,
+    closePremiumSheet: premiumSheet.close,
+    setPremiumPlan: premiumSheet.setPlan,
+    activatePremium: premiumSheet.activate,
     tourReplay,
     onLogout,
     isDeleteAccountModalOpen,
@@ -473,45 +283,4 @@ export function useProfile() {
     closeDeleteAccountModal,
     deleteAccount
   };
-}
-
-function normalizeTimeUnit(value: string) {
-  const trimmedDigits = value.replace(/\D+/g, "").slice(0, 2);
-  if (!trimmedDigits) {
-    return "00";
-  }
-
-  return trimmedDigits.padStart(2, "0");
-}
-
-function parseReminderTime(value: string) {
-  const match = value.match(/^(\d{2}):(\d{2})$/);
-  if (!match) {
-    return { hour: 8, minute: 0, isValid: false };
-  }
-
-  // regex capture groups always match when exec succeeds
-  const hour = Number.parseInt(match[1]!, 10);
-  const minute = Number.parseInt(match[2]!, 10);
-  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
-    return { hour: 8, minute: 0, isValid: false };
-  }
-
-  return { hour, minute, isValid: true };
-}
-
-function toMemberSinceLabel(isoDate: string, locale: SupportedLocale, t: TFunction) {
-  const createdAt = new Date(isoDate);
-  if (Number.isNaN(createdAt.getTime())) {
-    return t("profile:memberSince.newMember");
-  }
-
-  const formatter = new Intl.DateTimeFormat(toIntlLocale(locale), {
-    month: "long",
-    year: "numeric"
-  });
-  const formatted = formatter.format(createdAt);
-  const withCapitalizedMonth =
-    locale === "en" ? formatted : `${formatted.charAt(0).toUpperCase()}${formatted.slice(1)}`;
-  return t("profile:memberSince.since", { date: withCapitalizedMonth });
 }

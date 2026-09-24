@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "../store/auth-store";
 import { useProfileStore } from "../store/profile-store";
 import { useRequireAuth } from "../features/auth/hooks/use-require-auth";
@@ -16,7 +16,15 @@ import {
 
 type PremiumPlan = "monthly" | "annual";
 
-export function usePremiumSheet(options?: { onPremiumActivated?: () => void }) {
+type UsePremiumSheetOptions = {
+  onPremiumActivated?: () => void;
+  // true: kredi paketleri sheet açılışında değil mount'ta (ve kullanıcı değişince) yüklenir.
+  loadTopupOnMount?: boolean;
+  // Başarılı kredi alımından sonra, purchaseTopup true dönmeden önce beklenir.
+  onTopupPurchased?: () => Promise<unknown> | void;
+};
+
+export function usePremiumSheet(options?: UsePremiumSheetOptions) {
   const session = useAuthStore((s) => s.session);
   const { requireAuth } = useRequireAuth();
   const hydrateFromBackend = useProfileStore((s) => s.hydrateFromBackend);
@@ -30,16 +38,25 @@ export function usePremiumSheet(options?: { onPremiumActivated?: () => void }) {
   const [topupError, setTopupError] = useState<string | undefined>();
   const [subscriptionPrices, setSubscriptionPrices] = useState<SubscriptionPrices>({});
 
-  const loadTopupProducts = async () => {
-    if (!session?.userId) {
+  const userId = session?.userId;
+  const loadTopupOnMount = options?.loadTopupOnMount ?? false;
+
+  const loadTopupProducts = useCallback(async () => {
+    if (!userId) {
       return;
     }
     try {
-      setTopupProducts(await getCreditTopupProducts(session.userId));
+      setTopupProducts(await getCreditTopupProducts(userId));
     } catch {
       // Mağaza fiyatları alınamazsa fallback fiyatlar gösterilir.
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    if (loadTopupOnMount) {
+      void loadTopupProducts();
+    }
+  }, [loadTopupOnMount, loadTopupProducts]);
 
   const loadSubscriptionPrices = async () => {
     if (!session?.userId) {
@@ -51,7 +68,9 @@ export function usePremiumSheet(options?: { onPremiumActivated?: () => void }) {
 
   const open = () => {
     setIsOpen(true);
-    void loadTopupProducts();
+    if (!loadTopupOnMount) {
+      void loadTopupProducts();
+    }
     void loadSubscriptionPrices();
   };
   const close = () => {
@@ -69,6 +88,7 @@ export function usePremiumSheet(options?: { onPremiumActivated?: () => void }) {
     try {
       await purchaseCreditTopup(session.userId, productId);
       void trackEvent("credit_topup", { product: productId });
+      await options?.onTopupPurchased?.();
       return true;
     } catch (e) {
       const msg = toRevenueCatMessage(e);
@@ -115,6 +135,8 @@ export function usePremiumSheet(options?: { onPremiumActivated?: () => void }) {
     setPlan,
     isActivating,
     error,
+    // Sheet dışı akışların (ör. abonelik yönetimi) hatasını aynı alanda göstermek için.
+    setError,
     activate,
     topupProducts,
     purchasingTopupId,
