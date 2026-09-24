@@ -86,7 +86,7 @@ export function usePremiumSheet(options?: { onPremiumActivated?: () => void }) {
     setIsActivating(true);
     setError(undefined);
     try {
-      const synced = await purchasePremiumWithRevenueCat(session.userId, session.accessToken, plan);
+      const synced = await purchasePremiumWithRevenueCat(session.userId, plan);
       hydrateFromBackend({ isPremium: synced.isPremium });
       if (synced.isPremium) {
         void trackEvent("purchase_completed", { product: plan });

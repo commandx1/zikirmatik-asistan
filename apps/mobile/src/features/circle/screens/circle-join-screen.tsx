@@ -23,7 +23,7 @@ export function CircleJoinScreen({ code: rawCode }: { code: string }) {
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const { requireAuth } = useRequireAuth();
 
-  const sessionAccessToken = useAuthStore((state) => state.session?.accessToken);
+  const authStatus = useAuthStore((state) => state.status);
   const upsertCircle = useCircleStore((state) => state.upsertCircle);
 
   const code = parseCircleCode(rawCode ?? "");
@@ -62,7 +62,7 @@ export function CircleJoinScreen({ code: rawCode }: { code: string }) {
     if (!code) return;
     requireAuth(() => {
       void (async () => {
-        if (!sessionAccessToken) return;
+        if (authStatus !== "authenticated") return;
         setIsJoining(true);
         try {
           const circle = await joinCircle(code);

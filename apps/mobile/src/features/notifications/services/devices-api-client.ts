@@ -23,18 +23,19 @@ const errors = () => ({
   unreachable: i18n.t("notifications:errors.serverUnreachable")
 });
 
-// Public: works for guests too. When accessToken is provided the API links
-// the device to that user; omit it to register/keep a guest device.
+// Public: works for guests too. When authenticated is true the auth bridge's
+// session token links the device to that user; omit it to register/keep a
+// guest device.
 export async function registerDevice(
   payload: RegisterDevicePayload,
-  accessToken?: string
+  authenticated?: boolean
 ): Promise<void> {
   // emptyValue: undefined preserves the legacy behavior of returning the raw
   // (possibly undefined) body instead of falling back to `{}`.
   await request<unknown>("/v1/devices/register", {
     method: "POST",
     body: payload,
-    auth: accessToken ?? false,
+    auth: authenticated ? true : false,
     emptyValue: undefined,
     errors: errors()
   });

@@ -303,21 +303,20 @@ function findOwningProgramItem(
  */
 export async function runGuestMigration(
   snapshot: GuestMigrationSnapshot,
-  session: { userId: string; accessToken?: string }
+  session: { userId: string }
 ): Promise<GuestMigrationPlan> {
   const [verifiedDhikrs, userDhikrs, logs, existingVirdPrograms] = await Promise.all([
     listVerifiedActiveDhikrs(),
     listUserDhikrs(),
     listDhikrLogsByUser(session.userId),
-    // Vird programları JwtAuthGuard (zorunlu token) arkasındadır; token
-    // yoksa (olağandışı) boş listeyle devam et — bu, aşağıdaki vird
-    // adımlarının 409-fallback'i üzerinden zaten idempotent olduğundan
+    // Vird programları JwtAuthGuard (zorunlu token) arkasındadır — çağıran
+    // (useGuestMigration) yalnızca authStatus === 'authenticated' iken bu
+    // fonksiyonu çağırdığından bearer token http client'ın auth bridge'i
+    // üzerinden zaten mevcuttur. Bir servis kesintisi/beklenmedik 401, aşağıdaki
+    // vird adımlarının 409-fallback'i üzerinden zaten idempotent olduğundan
     // yalnızca gereksiz bir yeniden-oluşturma denemesine yol açar, veri
-    // kaybına değil. Bir servis kesintisi de aynı şekilde (dhikr
-    // migrasyonunu bloklamadan) boş listeye düşer.
-    session.accessToken
-      ? fetchVirdPrograms().catch(() => [] as VirdProgram[])
-      : Promise.resolve([] as VirdProgram[])
+    // kaybına değil — bu yüzden burada da boş listeye düşülür.
+    fetchVirdPrograms().catch(() => [] as VirdProgram[])
   ]);
 
   const plan = planGuestMigration(snapshot, { verifiedDhikrs, userDhikrs, logs, existingVirdPrograms });
@@ -342,8 +341,9 @@ export async function runGuestMigration(
   }
 
   // Vird programları + son 30 günlük ilerlemesi. Vird uçları accessToken
-  // ZORUNLU (JwtAuthGuard) olduğundan token yoksa bu adım tamamen atlanır.
-  if (session.accessToken) {
+  // ZORUNLU (JwtAuthGuard) — çağıran zaten authStatus === 'authenticated'
+  // iken bu fonksiyonu çağırır, bu yüzden burada koşulsuz denenir.
+  {
     // clientId -> sunucu _id eşlemesi. ÖNCE zaten var olan (bu göçten önce
     // sunucuya senkronize edilmiş — bkz. existingVirdPrograms) programlarla
     // tohumlanır: aksi halde createVirdPrograms'ta ATLANAN (zaten var

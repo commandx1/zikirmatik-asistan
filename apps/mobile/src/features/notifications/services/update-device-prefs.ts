@@ -6,7 +6,7 @@ import { getOrCreateDeviceId, resolvePlatform } from "./push-device-registration
 // /v1/devices/register upsert the app already calls on every start — the
 // backend only $sets the prefs keys that are present, so this never
 // clobbers the push token or platform already stored for this device.
-export async function updateDevicePrefs(prefs: DevicePrefs, accessToken?: string): Promise<void> {
+export async function updateDevicePrefs(prefs: DevicePrefs, authenticated?: boolean): Promise<void> {
   const deviceId = await getOrCreateDeviceId();
-  await registerDevice({ deviceId, platform: resolvePlatform(), prefs }, accessToken);
+  await registerDevice({ deviceId, platform: resolvePlatform(), prefs }, authenticated);
 }

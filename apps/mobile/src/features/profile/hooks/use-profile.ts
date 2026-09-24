@@ -136,7 +136,7 @@ export function useProfile() {
         return;
       }
 
-      const synced = await syncPremiumStatusWithRevenueCat(session.userId, undefined, {
+      const synced = await syncPremiumStatusWithRevenueCat(session.userId, {
         refreshCustomerInfo
       });
       hydrateFromBackend({ isPremium: synced.isPremium });
@@ -212,7 +212,7 @@ export function useProfile() {
     setIsActivatingPremium(true);
     setPremiumError(undefined);
     try {
-      const synced = await purchasePremiumWithRevenueCat(session.userId, session.accessToken, premiumPlan);
+      const synced = await purchasePremiumWithRevenueCat(session.userId, premiumPlan);
       hydrateFromBackend({ isPremium: synced.isPremium });
       if (synced.isPremium) {
         void trackEvent("purchase_completed", { product: premiumPlan });

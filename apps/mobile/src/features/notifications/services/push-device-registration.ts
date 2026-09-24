@@ -74,7 +74,7 @@ async function getExpoPushToken(): Promise<string | undefined> {
 }
 
 // Registers (or refreshes) this device with the backend. Works for guests:
-// pass accessToken only when authenticated so the device gets linked.
+// pass authenticated=true only when signed in so the device gets linked.
 //
 // Deliberately does NOT send `prefs`: registration runs on every app start
 // (usePushDeviceRegistration) and used to fire before the zustand persist
@@ -83,7 +83,7 @@ async function getExpoPushToken(): Promise<string | undefined> {
 // "Bildirimler" master-toggle flow (sync-notification-settings.ts →
 // updateDevicePrefs); new devices get the backend's opt-in-friendly
 // $setOnInsert defaults (`true`).
-export async function registerPushDevice(accessToken?: string): Promise<void> {
+export async function registerPushDevice(authenticated?: boolean): Promise<void> {
   const deviceId = await getOrCreateDeviceId();
   const granted = await ensurePushPermission();
   const expoPushToken = granted ? await getExpoPushToken() : undefined;
@@ -95,7 +95,7 @@ export async function registerPushDevice(accessToken?: string): Promise<void> {
         expoPushToken,
         platform: resolvePlatform()
       },
-      accessToken
+      authenticated
     );
     // Only a genuine success (server 2xx above) AND a real push token counts
     // as "reachable via server push" — see push-registration-store.ts.

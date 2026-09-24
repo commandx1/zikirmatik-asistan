@@ -81,7 +81,7 @@ describe("push-device-registration", () => {
     const { registerPushDevice } = await import("./push-device-registration");
     const { usePushRegistrationStore } = await import("../../../store/push-registration-store");
 
-    await registerPushDevice("access-token-123");
+    await registerPushDevice(true);
 
     expect(requestPermissionsAsync).not.toHaveBeenCalled();
     expect(registerDevice).toHaveBeenCalledWith(
@@ -90,7 +90,7 @@ describe("push-device-registration", () => {
         expoPushToken: "ExponentPushToken[abc]",
         platform: "ios"
       },
-      "access-token-123"
+      true
     );
     expect(usePushRegistrationStore.getState().serverPushActive).toBe(true);
   });

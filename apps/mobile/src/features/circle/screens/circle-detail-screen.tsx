@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Share, Text, View } from "react-native";
-import { useFocusEffect, useRouter, type Href } from "expo-router";
+import { useRouter, type Href } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
@@ -11,6 +12,8 @@ import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { ConfirmModal } from "../../../components/ui/confirm-modal";
+import { queryClient } from "../../../lib/query-client";
+import { qk } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../store/auth-store";
 import { useCircleStore } from "../../../store/circle-store";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
@@ -27,7 +30,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
   const { tokens } = useThemeTokens();
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
 
-  const sessionAccessToken = useAuthStore((state) => state.session?.accessToken);
+  const authStatus = useAuthStore((state) => state.status);
   const circles = useCircleStore((state) => state.circles);
   const upsertCircle = useCircleStore((state) => state.upsertCircle);
   const removeCircle = useCircleStore((state) => state.removeCircle);
@@ -40,31 +43,27 @@ export function CircleDetailScreen({ id }: { id: string }) {
   const [closeConfirmVisible, setCloseConfirmVisible] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
 
-  const loadDetail = useCallback(async () => {
-    if (!sessionAccessToken) {
-      return;
-    }
-    try {
-      const fresh = await fetchCircle(id, toDateKey(new Date()));
-      upsertCircle(fresh);
-    } catch (error) {
-      console.warn("[circle-detail] fetch başarısız", error);
-    }
-  }, [id, sessionAccessToken, upsertCircle]);
+  const detailQuery = useQuery(
+    {
+      queryKey: qk.circle(id),
+      queryFn: () => fetchCircle(id, toDateKey(new Date())),
+      enabled: authStatus === "authenticated",
+      refetchInterval: POLL_INTERVAL_MS
+    },
+    queryClient
+  );
 
   useEffect(() => {
-    void loadDetail();
-    // Yalnız mount'ta (id değişince) — polling aşağıdaki useFocusEffect'te.
-  }, [id]);
+    if (detailQuery.data) {
+      upsertCircle(detailQuery.data);
+    }
+  }, [detailQuery.data, upsertCircle]);
 
-  useFocusEffect(
-    useCallback(() => {
-      const timer = setInterval(() => {
-        void loadDetail();
-      }, POLL_INTERVAL_MS);
-      return () => clearInterval(timer);
-    }, [loadDetail])
-  );
+  useEffect(() => {
+    if (detailQuery.error) {
+      console.warn("[circle-detail] fetch başarısız", detailQuery.error);
+    }
+  }, [detailQuery.error]);
 
   if (!storedCircle) {
     return (
@@ -87,7 +86,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
   };
 
   const handleLeave = async () => {
-    if (!sessionAccessToken) return;
+    if (authStatus !== "authenticated") return;
     setIsBusy(true);
     try {
       await leaveCircle(id);
@@ -102,7 +101,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
   };
 
   const handleClose = async () => {
-    if (!sessionAccessToken) return;
+    if (authStatus !== "authenticated") return;
     setIsBusy(true);
     try {
       await closeCircle(id);

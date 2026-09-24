@@ -55,7 +55,6 @@ let configuredAppUserId: string | null = null;
 
 export async function purchasePremiumWithRevenueCat(
   userId: string,
-  accessToken: string | undefined,
   preferredPackage: PreferredPackage = "annual"
 ): Promise<PremiumSyncResult> {
   await ensureRevenueCatConfigured(userId);
@@ -68,12 +67,11 @@ export async function purchasePremiumWithRevenueCat(
 
   const selectedPackage = pickPackage(offering.availablePackages, preferredPackage);
   const { customerInfo } = await Purchases.purchasePackage(selectedPackage);
-  return syncBackendFromCustomerInfo(userId, accessToken, customerInfo);
+  return syncBackendFromCustomerInfo(userId, customerInfo);
 }
 
 export async function syncPremiumStatusWithRevenueCat(
   userId: string,
-  accessToken: string | undefined,
   options: { refreshCustomerInfo?: boolean } = {}
 ): Promise<PremiumSyncResult> {
   await ensureRevenueCatConfigured(userId);
@@ -81,7 +79,7 @@ export async function syncPremiumStatusWithRevenueCat(
     await Purchases.invalidateCustomerInfoCache();
   }
   const customerInfo = await Purchases.getCustomerInfo();
-  return syncBackendFromCustomerInfo(userId, accessToken, customerInfo);
+  return syncBackendFromCustomerInfo(userId, customerInfo);
 }
 
 export async function getCreditTopupProducts(userId: string): Promise<CreditTopupProduct[]> {
@@ -213,7 +211,6 @@ function pickPackage(availablePackages: PurchasesPackage[], preferredPackage: Pr
 
 async function syncBackendFromCustomerInfo(
   userId: string,
-  accessToken: string | undefined,
   customerInfo: CustomerInfo
 ): Promise<PremiumSyncResult> {
   const activeEntitlement = resolveActiveEntitlement(customerInfo);

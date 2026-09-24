@@ -14,7 +14,7 @@ import { runNotificationSettingsToggle } from "../../profile/services/sync-notif
 // so there is never a second native dialog.
 export function useTourNotificationOptIn() {
   const authStatus = useAuthStore((s) => s.status);
-  const session = useAuthStore((s) => s.session);
+  const sessionUserId = useAuthStore((s) => s.session?.userId);
   const dailyReminderEnabled = useProfileStore((s) => s.dailyReminderEnabled);
   const reminderTime = useProfileStore((s) => s.reminderTime);
   const setDailyReminderEnabled = useProfileStore((s) => s.setDailyReminderEnabled);
@@ -33,8 +33,7 @@ export function useTourNotificationOptIn() {
     void runNotificationSettingsToggle({
       enabled: true,
       reminderTime,
-      userId: authStatus === "authenticated" ? session?.userId : undefined,
-      accessToken: session?.accessToken,
+      userId: authStatus === "authenticated" ? sessionUserId : undefined,
       setAll: (value) => {
         setDailyReminderEnabled(value);
         setStreakReminderEnabled(value);
@@ -49,8 +48,7 @@ export function useTourNotificationOptIn() {
     authStatus,
     dailyReminderEnabled,
     reminderTime,
-    session?.accessToken,
-    session?.userId,
+    sessionUserId,
     setDailyReminderEnabled,
     setFriday,
     setSpecialDays,

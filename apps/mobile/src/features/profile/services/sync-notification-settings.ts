@@ -8,7 +8,6 @@ export type NotificationSettingsToggleInput = {
   enabled: boolean;
   reminderTime: string;
   userId?: string;
-  accessToken?: string;
   // Fans the toggle out to every local store this master switch drives
   // (weekly esma reminder, streak reminder, device push-campaign prefs).
   setAll: (enabled: boolean) => void;
@@ -31,14 +30,13 @@ export async function runNotificationSettingsToggle({
   enabled,
   reminderTime,
   userId,
-  accessToken,
   setAll,
   onError
 }: NotificationSettingsToggleInput): Promise<void> {
   if (!enabled) {
     setAll(false);
     try {
-      await applyNotificationSettings(false, { reminderTime, userId, accessToken });
+      await applyNotificationSettings(false, { reminderTime, userId });
     } catch {
       setAll(true);
       onError(i18n.t("profile:errors.pushPrefsUpdateFailed"));
@@ -55,7 +53,7 @@ export async function runNotificationSettingsToggle({
 
   setAll(true);
   try {
-    await applyNotificationSettings(true, { reminderTime, userId, accessToken });
+    await applyNotificationSettings(true, { reminderTime, userId });
   } catch {
     setAll(false);
     onError(i18n.t("profile:errors.pushPrefsUpdateFailed"));
@@ -64,14 +62,17 @@ export async function runNotificationSettingsToggle({
 
 async function applyNotificationSettings(
   enabled: boolean,
-  { reminderTime, userId, accessToken }: { reminderTime: string; userId?: string; accessToken?: string }
+  { reminderTime, userId }: { reminderTime: string; userId?: string }
 ): Promise<void> {
   await syncDailyReminderNotification({ enabled, reminderTime, requestPermission: false });
 
+  // userId is only ever passed in when authStatus === 'authenticated' (see
+  // callers) — its presence doubles as the "authenticated" signal so the
+  // device-prefs bearer token doesn't need to be threaded through here too.
   await Promise.all([
     userId
       ? saveUserPreferences(userId, { dailyReminder: enabled, reminderTime })
       : Promise.resolve(),
-    updateDevicePrefs({ specialDays: enabled, friday: enabled }, accessToken)
+    updateDevicePrefs({ specialDays: enabled, friday: enabled }, Boolean(userId))
   ]);
 }

@@ -11,7 +11,7 @@ import { useNotificationPromptStore } from '../../store/notification-prompt-stor
 import { ESMAUL_HUSNA } from '../focus/data'
 import type { EsmaulHusnaItem, ZikirSource } from '../focus/types'
 import { createDhikrLog } from '../dhikrs/services/dhikr-logs-api-client'
-import { getUserStreak } from './services/streaks-api-client'
+import { fetchUserStreak } from '../stats/services/streak-queries'
 import { cacheServerStreak } from '../widget/widget-sync'
 import { findVerifiedActiveDhikrByTransliteration } from '../dhikrs/services/dhikrs-api-client'
 import { createUserDhikr } from '../dhikrs/services/user-dhikrs-api-client'
@@ -313,7 +313,7 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const streak = await getUserStreak(sessionUserId)
+      const streak = await fetchUserStreak(sessionUserId)
       setStreakDays(streak.currentStreak)
       void cacheServerStreak(streak.currentStreak, streak.lastActiveDate)
     } catch {

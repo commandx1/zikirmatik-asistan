@@ -25,7 +25,6 @@ export function useNotificationSettings() {
 
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
-  const accessToken = useAuthStore((s) => s.session?.accessToken);
 
   const [pushPrefsError, setPushPrefsError] = useState<string>();
 
@@ -35,7 +34,6 @@ export function useNotificationSettings() {
         enabled,
         reminderTime,
         userId: authStatus === "authenticated" ? userId : undefined,
-        accessToken,
         setAll: (value) => {
           setDailyReminderEnabled(value);
           setStreakReminderEnabled(value);
@@ -46,7 +44,6 @@ export function useNotificationSettings() {
       });
     },
     [
-      accessToken,
       authStatus,
       reminderTime,
       setDailyReminderEnabled,

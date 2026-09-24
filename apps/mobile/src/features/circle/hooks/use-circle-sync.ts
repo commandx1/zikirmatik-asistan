@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import { useAuthStore } from "../../../store/auth-store";
 import { useCircleStore } from "../../../store/circle-store";
-import { fetchCircles } from "../services/circle-api-client";
+import { fetchCirclesForUser } from "../services/circle-queries";
 
 export function useCircleSync(): void {
   const authStatus = useAuthStore((state) => state.status);
@@ -26,7 +26,7 @@ export function useCircleSync(): void {
 
     isSyncingRef.current = true;
     try {
-      const circles = await fetchCircles();
+      const circles = await fetchCirclesForUser(useAuthStore.getState().session?.userId);
       useCircleStore.getState().replaceFromServer(circles);
     } catch (error) {
       // Yerel state dokunulmadan kalır — bir sonraki tetikte (foreground,

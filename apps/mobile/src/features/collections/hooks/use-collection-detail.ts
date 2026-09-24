@@ -1,45 +1,43 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "../../../lib/query-client";
+import { qk } from "../../../lib/query-keys";
 import { i18n } from "../../../i18n";
 import {
   getCollectionDetail,
   CollectionsApiError,
-  type BackendCollectionDetail,
 } from "../services/collections-api-client";
 
 export function useCollectionDetail(key: string) {
-  const [detail, setDetail] = useState<BackendCollectionDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>();
-
-  const refresh = useCallback(async () => {
-    if (!key) return;
-    setIsLoading(true);
-    setError(undefined);
-    try {
-      const data = await getCollectionDetail(key);
-      setDetail(data);
-    } catch (err) {
-      setError(
-        err instanceof CollectionsApiError
-          ? err.message
-          : i18n.t("collections:errors.detailLoadFailed"),
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [key]);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+  const query = useQuery(
+    {
+      queryKey: qk.collection(key),
+      queryFn: () => getCollectionDetail(key),
+      enabled: Boolean(key),
+      staleTime: 0,
+      retry: false
+    },
+    queryClient
+  );
 
   useFocusEffect(
     useCallback(() => {
-      void refresh();
+      if (!key) return () => {};
+      void query.refetch();
       return () => {};
-    }, [refresh]),
+    }, [key]),
   );
 
-  return { detail, isLoading, error, refresh };
+  const error = query.error
+    ? query.error instanceof CollectionsApiError
+      ? query.error.message
+      : i18n.t("collections:errors.detailLoadFailed")
+    : undefined;
+
+  const refresh = useCallback(async () => {
+    await query.refetch();
+  }, [query]);
+
+  return { detail: query.data ?? null, isLoading: query.isFetching, error, refresh };
 }

@@ -1,4 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "../../../lib/query-client";
+import { qk } from "../../../lib/query-keys";
 import { i18n, type SupportedLocale } from "../../../i18n";
 import { HERO_CARD, UPCOMING_DAYS } from "../data/special-days-content";
 import type {
@@ -15,64 +18,80 @@ import { useProfileStore } from "../../../store/profile-store";
 import { formatLongDate } from "../../../lib/locale-format";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
 
-export function useSpecialDays() {
-  const [heroCard, setHeroCard] = useState<HeroCardViewModel>(HERO_CARD);
-  const [todayAction, setTodayAction] = useState<TodayActionViewModel | null>(null);
-  const [upcomingDays, setUpcomingDays] = useState<UpcomingDayViewModel[]>(UPCOMING_DAYS);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
-  const [error, setError] = useState<string>();
+function toDateKey(value: Date) {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
+export function useSpecialDays() {
   const notificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
   const locale = useProfileStore((s) => s.locale);
 
-  const refresh = useCallback(async () => {
-    setIsLoading(true);
-    setError(undefined);
-    try {
-      const response = await getSpecialDaysHome(toDateKey(new Date()));
-      if (response.hero) {
-        const days = daysUntil(response.hero.date);
-        setHeroCard({
-          id: response.hero.id,
-          badge: i18n.t(
-            response.hero.isToday ? "special-days:hero.badgeToday" : "special-days:hero.badgeUpcoming",
-          ),
-          title: resolveLocalizedText(response.hero.name, locale),
-          dateLabel: formatLongDate(response.hero.date, locale),
-          countdown: [{ value: String(days), label: i18n.t("special-days:countdown.dayUnit") }],
-          remaining: formatDaysRemaining(days),
-          isTodaySpecial: response.hero.isToday,
-        });
-      }
+  const query = useQuery(
+    {
+      queryKey: qk.specialDays(),
+      queryFn: () => getSpecialDaysHome(toDateKey(new Date())),
+      staleTime: 0,
+      retry: false
+    },
+    queryClient
+  );
 
-      setTodayAction(
-        response.action
-          ? {
-              specialDayId: response.action.specialDayId,
-              title: resolveLocalizedText(response.action.name, locale),
-              subtitle: response.action.description
-                ? resolveLocalizedText(response.action.description, locale)
-                : i18n.t("special-days:action.defaultSubtitle"),
-              ctaLabel: i18n.t("special-days:action.cta"),
-            }
-          : null,
-      );
-      setUpcomingDays(response.upcoming.map((item) => mapUpcomingDay(item, locale)));
-    } catch (error) {
-      setError(error instanceof SpecialDaysApiError ? error.message : i18n.t("special-days:errors.homeLoadFailed"));
-    } finally {
-      setIsLoading(false);
-      setHasLoadedOnce(true);
+  const response = query.data;
+
+  const heroCard = useMemo<HeroCardViewModel>(() => {
+    if (!response?.hero) {
+      return HERO_CARD;
     }
-  }, [locale]);
+    const days = daysUntil(response.hero.date);
+    return {
+      id: response.hero.id,
+      badge: i18n.t(
+        response.hero.isToday ? "special-days:hero.badgeToday" : "special-days:hero.badgeUpcoming",
+      ),
+      title: resolveLocalizedText(response.hero.name, locale),
+      dateLabel: formatLongDate(response.hero.date, locale),
+      countdown: [{ value: String(days), label: i18n.t("special-days:countdown.dayUnit") }],
+      remaining: formatDaysRemaining(days),
+      isTodaySpecial: response.hero.isToday,
+    };
+  }, [response, locale]);
 
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+  const todayAction = useMemo<TodayActionViewModel | null>(() => {
+    if (!response?.action) {
+      return null;
+    }
+    return {
+      specialDayId: response.action.specialDayId,
+      title: resolveLocalizedText(response.action.name, locale),
+      subtitle: response.action.description
+        ? resolveLocalizedText(response.action.description, locale)
+        : i18n.t("special-days:action.defaultSubtitle"),
+      ctaLabel: i18n.t("special-days:action.cta"),
+    };
+  }, [response, locale]);
+
+  const upcomingDays = useMemo<UpcomingDayViewModel[]>(() => {
+    if (!response) {
+      return UPCOMING_DAYS;
+    }
+    return response.upcoming.map((item) => mapUpcomingDay(item, locale));
+  }, [response, locale]);
 
   const hasUpcomingItems = useMemo(() => upcomingDays.length > 0, [upcomingDays]);
+
+  const refresh = useCallback(async () => {
+    await query.refetch();
+  }, [query]);
+
+  const error = query.error
+    ? query.error instanceof SpecialDaysApiError
+      ? query.error.message
+      : i18n.t("special-days:errors.homeLoadFailed")
+    : undefined;
 
   return {
     notificationsEnabled,
@@ -81,8 +100,8 @@ export function useSpecialDays() {
     todayAction,
     upcomingDays,
     hasUpcomingItems,
-    isLoading,
-    hasLoadedOnce,
+    isLoading: query.isFetching,
+    hasLoadedOnce: !query.isLoading,
     error,
     refresh,
   };
@@ -100,13 +119,6 @@ function mapUpcomingDay(
     dateLabel: formatLongDate(item.date, locale),
     remaining: formatDaysRemaining(daysUntil(item.date)),
   };
-}
-
-function toDateKey(value: Date) {
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, "0");
-  const day = String(value.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
 }
 
 function daysUntil(isoDate: string): number {

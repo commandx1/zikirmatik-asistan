@@ -49,7 +49,6 @@ describe("runNotificationSettingsToggle", () => {
       enabled: true,
       reminderTime: "08:00",
       userId: "user-1",
-      accessToken: "token-1",
       setAll,
       onError
     });
@@ -66,7 +65,7 @@ describe("runNotificationSettingsToggle", () => {
       "user-1",
       { dailyReminder: true, reminderTime: "08:00" }
     );
-    expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: true, friday: true }, "token-1");
+    expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: true, friday: true }, true);
     expect(onError).not.toHaveBeenCalled();
   });
 
@@ -113,7 +112,7 @@ describe("runNotificationSettingsToggle", () => {
       reminderTime: "08:00",
       requestPermission: false
     });
-    expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: false, friday: false }, undefined);
+    expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: false, friday: false }, false);
     expect(onError).not.toHaveBeenCalled();
   });
 
@@ -132,7 +131,7 @@ describe("runNotificationSettingsToggle", () => {
     });
 
     expect(saveUserPreferences).not.toHaveBeenCalled();
-    expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: true, friday: true }, undefined);
+    expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: true, friday: true }, false);
   });
 
   it("backend failure while turning on reverts every surface and reports a Turkish error", async () => {
@@ -198,7 +197,6 @@ describe("runNotificationSettingsToggle", () => {
       enabled: true,
       reminderTime: "08:00",
       userId: "user-1",
-      accessToken: "token-1",
       setAll: (value) => {
         setDailyReminderEnabled(value);
         setStreakReminderEnabled(value);
@@ -212,7 +210,7 @@ describe("runNotificationSettingsToggle", () => {
     expect(setStreakReminderEnabled).toHaveBeenCalledWith(true);
     expect(setSpecialDays).toHaveBeenCalledWith(true);
     expect(setFriday).toHaveBeenCalledWith(true);
-    expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: true, friday: true }, "token-1");
+    expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: true, friday: true }, true);
     expect(saveUserPreferences).toHaveBeenCalledWith(
       "user-1",
       { dailyReminder: true, reminderTime: "08:00" }

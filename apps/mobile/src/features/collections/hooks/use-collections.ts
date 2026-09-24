@@ -1,60 +1,60 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "../../../lib/query-client";
+import { qk } from "../../../lib/query-keys";
 import { i18n } from "../../../i18n";
 import {
   listCollections,
   CollectionsApiError,
-  type BackendCollection,
 } from "../services/collections-api-client";
 import type { CollectionCategory } from "../types";
 
 export function useCollections() {
-  const [allCollections, setAllCollections] = useState<BackendCollection[]>([]);
   const [activeCategory, setActiveCategory] = useState<
     CollectionCategory | "all"
   >("all");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>();
 
-  const refresh = useCallback(async () => {
-    setIsLoading(true);
-    setError(undefined);
-    try {
-      const data = await listCollections();
-      setAllCollections(data);
-    } catch (err) {
-      setError(
-        err instanceof CollectionsApiError
-          ? err.message
-          : i18n.t("collections:errors.listLoadFailed"),
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+  const query = useQuery(
+    {
+      queryKey: qk.collections(),
+      queryFn: () => listCollections(),
+      staleTime: 0,
+      retry: false
+    },
+    queryClient
+  );
 
   useFocusEffect(
     useCallback(() => {
-      void refresh();
+      void query.refetch();
       return () => {};
-    }, [refresh]),
+    }, []),
   );
+
+  const allCollections = useMemo(() => query.data ?? [], [query.data]);
 
   const filteredCollections = useMemo(() => {
     if (activeCategory === "all") return allCollections;
     return allCollections.filter((c) => c.category === activeCategory);
   }, [allCollections, activeCategory]);
 
+  const error = query.error
+    ? query.error instanceof CollectionsApiError
+      ? query.error.message
+      : i18n.t("collections:errors.listLoadFailed")
+    : undefined;
+
+  const refresh = useCallback(async () => {
+    await query.refetch();
+  }, [query]);
+
   return {
     collections: allCollections,
     filteredCollections,
     activeCategory,
     setActiveCategory,
-    isLoading,
+    isLoading: query.isFetching,
     error,
     refresh,
   };

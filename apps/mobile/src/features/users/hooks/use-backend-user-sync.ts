@@ -80,7 +80,7 @@ export function useBackendUserSync() {
     const sync = async ({ isMount }: { isMount: boolean }) => {
       try {
         if (isRevenueCatConfigured()) {
-          await syncPremiumStatusWithRevenueCat(userId, undefined, { refreshCustomerInfo: true });
+          await syncPremiumStatusWithRevenueCat(userId, { refreshCustomerInfo: true });
         } else if (isMount) {
           return;
         }

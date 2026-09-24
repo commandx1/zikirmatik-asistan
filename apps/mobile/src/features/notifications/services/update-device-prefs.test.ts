@@ -66,15 +66,15 @@ describe("update-device-prefs", () => {
     );
   });
 
-  it("forwards the access token for authenticated users", async () => {
+  it("forwards the authenticated flag for signed-in users", async () => {
     registerDevice.mockResolvedValue(undefined);
 
     const { updateDevicePrefs } = await import("./update-device-prefs");
-    await updateDevicePrefs({ friday: true }, "access-token-123");
+    await updateDevicePrefs({ friday: true }, true);
 
     expect(registerDevice).toHaveBeenCalledWith(
       { deviceId: "generated-uuid-1234", platform: "ios", prefs: { friday: true } },
-      "access-token-123"
+      true
     );
   });
 

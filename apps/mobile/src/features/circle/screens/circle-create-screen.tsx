@@ -36,8 +36,8 @@ export function CircleCreateScreen() {
   const premiumSheet = usePremiumSheet();
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
 
+  const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
-  const sessionAccessToken = useAuthStore((state) => state.session?.accessToken);
   const upsertCircle = useCircleStore((state) => state.upsertCircle);
 
   const [name, setName] = useState("");
@@ -67,7 +67,7 @@ export function CircleCreateScreen() {
       setError(t("circle:create.goalInvalid"));
       return;
     }
-    if (!sessionAccessToken || !sessionUserId) {
+    if (authStatus !== "authenticated" || !sessionUserId) {
       return;
     }
 

@@ -82,7 +82,6 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
 
   const authStatus = useAuthStore((state) => state.status);
-  const accessToken = useAuthStore((state) => state.session?.accessToken);
   const isPremium = useProfileStore((state) => state.isPremium);
   const programs = useVirdStore((state) => state.programs);
   const activeProgramId = useVirdStore((state) => state.activeProgramId);
@@ -242,7 +241,7 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
     const trimmedTitle = titleDraft.trim();
     const title = trimmedTitle ? toLocalizedText(trimmedTitle) : buildAutoVirdTitle(enabledSlots);
 
-    const isMember = authStatus === "authenticated" && Boolean(accessToken);
+    const isMember = authStatus === "authenticated";
     const todayKey = toDateKey(new Date());
 
     const dhikrsSnapshot: Record<string, DhikrSnapshot> = {};
@@ -332,7 +331,7 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
     const title = trimmedTitle ? toLocalizedText(trimmedTitle) : existingProgram.title;
 
     let localProgram: VirdProgramLocal;
-    const isMember = authStatus === "authenticated" && Boolean(accessToken);
+    const isMember = authStatus === "authenticated";
 
     if (isMember && existingProgram.origin === "server") {
       const server = await updateVirdProgram(existingProgram.id, { title, prayerSelection });

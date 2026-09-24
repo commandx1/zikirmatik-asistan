@@ -12,7 +12,7 @@ import { ThemedInput } from "../../../components/ui/themed-input";
 import { usePremiumSheet } from "../../../hooks/use-premium-sheet";
 import { useAuthStore } from "../../../store/auth-store";
 import { useCircleStore } from "../../../store/circle-store";
-import { fetchCircles } from "../services/circle-api-client";
+import { fetchCirclesForUser } from "../services/circle-queries";
 import { useProfileStore } from "../../../store/profile-store";
 import { useRequireAuth } from "../../auth/hooks/use-require-auth";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
@@ -33,15 +33,15 @@ export function CircleHubScreen() {
   const isPremium = useProfileStore((state) => state.isPremium);
   const circles = useCircleStore((state) => state.circles);
   const replaceFromServer = useCircleStore((state) => state.replaceFromServer);
-  const sessionAccessToken = useAuthStore((state) => state.session?.accessToken);
+  const sessionUserId = useAuthStore((state) => state.session?.userId);
 
   // Odaklanınca listeyi tazele: başka üyelerin katkısı/katılımı hub'a
   // yalnız ön plan senkronuyla değil, ekrana her dönüşte yansısın.
   useFocusEffect(
     useCallback(() => {
-      if (!sessionAccessToken) return;
+      if (authStatus !== "authenticated") return;
       let cancelled = false;
-      fetchCircles()
+      fetchCirclesForUser(sessionUserId)
         .then((list) => {
           if (!cancelled) replaceFromServer(list);
         })
@@ -49,7 +49,7 @@ export function CircleHubScreen() {
       return () => {
         cancelled = true;
       };
-    }, [sessionAccessToken, replaceFromServer])
+    }, [authStatus, sessionUserId, replaceFromServer])
   );
 
   const [code, setCode] = useState("");

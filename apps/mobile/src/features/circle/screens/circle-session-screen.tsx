@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { AppState, Text } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toDateKey } from "@zikirmatik/shared";
 import type { CircleDetail } from "@zikirmatik/shared";
@@ -8,6 +9,8 @@ import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
+import { queryClient } from "../../../lib/query-client";
+import { qk } from "../../../lib/query-keys";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
 import { useAuthStore } from "../../../store/auth-store";
 import { useCounterStyleStore } from "../../../store/counter-style-store";
@@ -43,7 +46,6 @@ export function CircleSessionScreen({ id }: { id: string }) {
 
   const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
-  const sessionAccessToken = useAuthStore((state) => state.session?.accessToken);
 
   const storedCircle = useCircleStore((state) => state.circles.find((circle) => circle.id === id));
   const setTodayCount = useCircleStore((state) => state.setTodayCount);
@@ -75,43 +77,51 @@ export function CircleSessionScreen({ id }: { id: string }) {
   const serverPairRef = useRef<{ total: number; mine: number } | null>(null);
   const [, forceRender] = useReducer((x: number) => x + 1, 0);
 
-  const loadDetail = useCallback(async () => {
-    if (!sessionAccessToken) {
-      return;
-    }
-    try {
-      const fresh = await fetchCircle(id, todayKey);
-      setDetail(fresh);
-      // Store artık monoton (upsertCircle geri düşürmez) — halka ekranları
-      // arası tutarlılık için burada da yazılır.
-      upsertCircle(fresh);
-      serverPairRef.current = { total: fresh.totalCount, mine: fresh.myTodayCount ?? 0 };
-      if (fresh.status !== "active") {
-        setLocked(true);
-        if (fresh.status === "completed" && !goalReachedFired.has(id)) {
-          goalReachedFired.add(id);
-          void trackEvent("circle_goal_reached");
-        }
-      }
-      if (!seededRef.current) {
-        seededRef.current = true;
-        const localToday = useCircleStore.getState().todayCounts[id];
-        const seed = Math.max(localToday && localToday.dateKey === todayKey ? localToday.count : 0, fresh.myTodayCount ?? 0);
-        liveCountRef.current = seed;
-        setTodayCount(id, todayKey, seed);
-      }
-      forceRender();
-    } catch (error) {
-      console.warn("[circle-session] fetch başarısız", error);
-    }
-  }, [id, sessionAccessToken, setTodayCount, upsertCircle, todayKey]);
+  const detailQuery = useQuery(
+    {
+      queryKey: qk.circle(id),
+      queryFn: () => fetchCircle(id, todayKey),
+      enabled: authStatus === "authenticated" && !!sessionUserId,
+      refetchInterval: POLL_INTERVAL_MS
+    },
+    queryClient
+  );
 
   useEffect(() => {
-    void loadDetail();
-  }, [id]);
+    const fresh = detailQuery.data;
+    if (!fresh) {
+      return;
+    }
+    setDetail(fresh);
+    // Store artık monoton (upsertCircle geri düşürmez) — halka ekranları
+    // arası tutarlılık için burada da yazılır.
+    upsertCircle(fresh);
+    serverPairRef.current = { total: fresh.totalCount, mine: fresh.myTodayCount ?? 0 };
+    if (fresh.status !== "active") {
+      setLocked(true);
+      if (fresh.status === "completed" && !goalReachedFired.has(id)) {
+        goalReachedFired.add(id);
+        void trackEvent("circle_goal_reached");
+      }
+    }
+    if (!seededRef.current) {
+      seededRef.current = true;
+      const localToday = useCircleStore.getState().todayCounts[id];
+      const seed = Math.max(localToday && localToday.dateKey === todayKey ? localToday.count : 0, fresh.myTodayCount ?? 0);
+      liveCountRef.current = seed;
+      setTodayCount(id, todayKey, seed);
+    }
+    forceRender();
+  }, [detailQuery.data, id, setTodayCount, todayKey, upsertCircle]);
+
+  useEffect(() => {
+    if (detailQuery.error) {
+      console.warn("[circle-session] fetch başarısız", detailQuery.error);
+    }
+  }, [detailQuery.error]);
 
   const flush = useCallback(async () => {
-    if (!sessionUserId || !sessionAccessToken || !detail) {
+    if (!sessionUserId || !detail) {
       return;
     }
     const count = liveCountRef.current;
@@ -137,24 +147,20 @@ export function CircleSessionScreen({ id }: { id: string }) {
       lastFlushedRef.current = previousFlushed;
       console.warn("[circle-session] log kaydı başarısız", error);
     }
-  }, [sessionUserId, sessionAccessToken, detail, todayKey, bumpTotal, id]);
+  }, [sessionUserId, detail, todayKey, bumpTotal, id]);
 
   const flushRef = useRef(flush);
   flushRef.current = flush;
 
   useFocusEffect(
     useCallback(() => {
-      const pollTimer = setInterval(() => {
-        void loadDetail();
-      }, POLL_INTERVAL_MS);
       const flushTimer = setInterval(() => {
         void flushRef.current();
       }, FLUSH_INTERVAL_MS);
       return () => {
-        clearInterval(pollTimer);
         clearInterval(flushTimer);
       };
-    }, [loadDetail])
+    }, [])
   );
 
   useEffect(() => {

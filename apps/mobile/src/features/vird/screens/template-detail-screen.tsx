@@ -2,15 +2,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { useRouter, type Href } from "expo-router";
 import * as Crypto from "expo-crypto";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { toDateKey, type VirdTemplateDetail } from "@zikirmatik/shared";
+import { toDateKey } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { usePremiumSheet } from "../../../hooks/use-premium-sheet";
 import { trackEvent } from "../../../lib/analytics";
+import { queryClient } from "../../../lib/query-client";
+import { qk } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../store/auth-store";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
 import { useProfileStore } from "../../../store/profile-store";
@@ -41,7 +44,6 @@ export function TemplateDetailScreen({ templateKey }: Props) {
   const premiumSheet = usePremiumSheet();
 
   const authStatus = useAuthStore((state) => state.status);
-  const accessToken = useAuthStore((state) => state.session?.accessToken);
   const isPremium = useProfileStore((state) => state.isPremium);
   const programs = useVirdStore((state) => state.programs);
   const activeProgramId = useVirdStore((state) => state.activeProgramId);
@@ -54,44 +56,28 @@ export function TemplateDetailScreen({ templateKey }: Props) {
     [programs, activeProgramId]
   );
 
-  const [template, setTemplate] = useState<VirdTemplateDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | undefined>();
   const [isStarting, setIsStarting] = useState(false);
   const [startError, setStartError] = useState<string | undefined>();
   const [pendingSwap, setPendingSwap] = useState<PendingSwap | null>(null);
   const [isSwapSubmitting, setIsSwapSubmitting] = useState(false);
   const trackedViewRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    let isCancelled = false;
-    setIsLoading(true);
-    setLoadError(undefined);
-
-    fetchVirdTemplate(templateKey)
-      .then((detail) => {
-        if (!isCancelled) {
-          setTemplate(detail);
-        }
-      })
-      .catch((error: unknown) => {
-        if (isCancelled) {
-          return;
-        }
-        const message =
-          error instanceof VirdApiError ? resolveVirdErrorMessage(error.code, error.message) : t("vird:templates.loadError");
-        setLoadError(message);
-      })
-      .finally(() => {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [templateKey, accessToken, t]);
+  const templateQuery = useQuery(
+    {
+      queryKey: qk.virdTemplate(templateKey),
+      queryFn: () => fetchVirdTemplate(templateKey),
+      staleTime: 0,
+      retry: false
+    },
+    queryClient
+  );
+  const template = templateQuery.data ?? null;
+  const isLoading = templateQuery.isLoading;
+  const loadError = templateQuery.error
+    ? templateQuery.error instanceof VirdApiError
+      ? resolveVirdErrorMessage(templateQuery.error.code, templateQuery.error.message)
+      : t("vird:templates.loadError")
+    : undefined;
 
   useEffect(() => {
     if (trackedViewRef.current === templateKey) {
@@ -117,7 +103,7 @@ export function TemplateDetailScreen({ templateKey }: Props) {
     setStartError(undefined);
 
     try {
-      const isMember = authStatus === "authenticated" && Boolean(accessToken);
+      const isMember = authStatus === "authenticated";
       // Sunucu, şablon kaynaklı bir oluşturmada startDate verilmezse
       // template.anchorDate'i (o da yoksa bugünü) kullanır — burada da AYNI
       // önceliği (anchorDate önce) uygulayıp açıkça göndeririz (paylaşılan

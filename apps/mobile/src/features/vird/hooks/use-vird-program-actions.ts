@@ -32,7 +32,6 @@ function nowIso(): string {
 
 export function useVirdProgramActions() {
   const authStatus = useAuthStore((state) => state.status);
-  const accessToken = useAuthStore((state) => state.session?.accessToken);
   const isPremium = useProfileStore((state) => state.isPremium);
   const upsertProgram = useVirdStore((state) => state.upsertProgram);
   const removeProgram = useVirdStore((state) => state.removeProgram);
@@ -40,8 +39,8 @@ export function useVirdProgramActions() {
   const activeProgramId = useVirdStore((state) => state.activeProgramId);
 
   const isServerBacked = useCallback(
-    (program: VirdProgramLocal) => authStatus === "authenticated" && Boolean(accessToken) && program.origin === "server",
-    [authStatus, accessToken]
+    (program: VirdProgramLocal) => authStatus === "authenticated" && program.origin === "server",
+    [authStatus]
   );
 
   const pauseProgram = useCallback(
@@ -68,7 +67,7 @@ export function useVirdProgramActions() {
         return { ok: false, message: error instanceof Error ? error.message : String(error) };
       }
     },
-    [isServerBacked, accessToken, upsertProgram, activeProgramId, setActiveProgram]
+    [isServerBacked, upsertProgram, activeProgramId, setActiveProgram]
   );
 
   const deleteProgram = useCallback(
@@ -83,7 +82,7 @@ export function useVirdProgramActions() {
         return { ok: false, message: error instanceof Error ? error.message : String(error) };
       }
     },
-    [isServerBacked, accessToken, removeProgram]
+    [isServerBacked, removeProgram]
   );
 
   const activateProgram = useCallback(
@@ -126,7 +125,7 @@ export function useVirdProgramActions() {
       setActiveProgram(merged.id);
       return { ok: true, program: merged };
     },
-    [isServerBacked, accessToken, isPremium, upsertProgram, setActiveProgram]
+    [isServerBacked, isPremium, upsertProgram, setActiveProgram]
   );
 
   /**

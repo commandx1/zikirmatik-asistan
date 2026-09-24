@@ -16,7 +16,6 @@ let inFlight = false;
 export function useGuestMigration() {
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
-  const accessToken = useAuthStore((s) => s.session?.accessToken);
   const migrationStatus = useGuestMigrationStore((s) => s.status);
   const attempts = useGuestMigrationStore((s) => s.attempts);
 
@@ -38,7 +37,7 @@ export function useGuestMigration() {
     inFlight = true;
     store.beginRun();
 
-    runGuestMigration(snapshot, { userId, accessToken })
+    runGuestMigration(snapshot, { userId })
       .then(() => {
         useGuestMigrationStore.getState().completeRun();
       })
@@ -56,5 +55,5 @@ export function useGuestMigration() {
       .finally(() => {
         inFlight = false;
       });
-  }, [authStatus, userId, accessToken, migrationStatus, attempts]);
+  }, [authStatus, userId, migrationStatus, attempts]);
 }

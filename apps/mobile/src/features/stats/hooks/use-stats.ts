@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { StatsSummary, StatsTopDhikr } from "@zikirmatik/shared";
 import { toDateKey } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
+import { queryClient } from "../../../lib/query-client";
+import { qk } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { resolveLocalizedText, useDhikrStore } from "../../../store/dhikr-store";
@@ -12,6 +15,10 @@ import {
 import { computeLocalBadges } from "../services/local-badges";
 import { getStatsSummary } from "../services/stats-api-client";
 import type { ZikirItem } from "../../focus/types";
+
+// Yalnızca tek bir özet döndüğü için sabit bir "period" anahtarı yeterli —
+// qk.stats(userId, period) imzasını (diğer okuyucularla) paylaşır.
+const STATS_SUMMARY_PERIOD = "summary";
 
 export type UseStatsResult = {
   data: StatsSummary | null;
@@ -31,15 +38,15 @@ function toMessage(error: unknown): string {
 export function useStats(): UseStatsResult {
   const authStatus = useAuthStore((s) => s.status);
   const guestMode = useAuthStore((s) => s.guestMode);
+  const userId = useAuthStore((s) => s.session?.userId);
   const isPremium = useProfileStore((s) => s.isPremium);
   const dhikrItems = useDhikrStore((s) => s.items);
   const freeModeCount = useDhikrStore((s) => s.freeModeCount);
   const freeModeActivityAt = useDhikrStore((s) => s.freeModeActivityAt);
 
+  // Misafir yolu (yerel özet) değişmedi — yalnızca kimlikli yol RQ'ya taşındı.
   const [data, setData] = useState<StatsSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | undefined>();
   const isGuest = guestMode && authStatus !== "authenticated";
 
   useEffect(() => {
@@ -48,49 +55,35 @@ export function useStats(): UseStatsResult {
     }
 
     setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt));
-    setError(undefined);
     setIsLoading(false);
   }, [dhikrItems, freeModeCount, freeModeActivityAt, isGuest, isPremium]);
 
+  const isAuthedFetch = !isGuest && authStatus === "authenticated";
+  // `isPremium` sorgu anahtarında YOK ama queryFn çağrısı isPremium
+  // değişince de yeniden tetiklenmeli (server-enforced `locked` kilidi
+  // açılsın) — bu yüzden isPremium'u da bağımlı tutan bir efektle
+  // invalidate ediyoruz.
+  const statsQuery = useQuery(
+    {
+      queryKey: qk.stats(userId, STATS_SUMMARY_PERIOD),
+      queryFn: getStatsSummary,
+      enabled: isAuthedFetch,
+      staleTime: 0,
+      retry: false
+    },
+    queryClient
+  );
+
+  const isPremiumMountedRef = useRef(isPremium);
   useEffect(() => {
-    if (isGuest) {
+    if (!isAuthedFetch || isPremiumMountedRef.current === isPremium) {
       return;
     }
+    isPremiumMountedRef.current = isPremium;
+    void queryClient.invalidateQueries({ queryKey: qk.stats(userId, STATS_SUMMARY_PERIOD) });
+  }, [isPremium, isAuthedFetch, userId]);
 
-    if (authStatus !== "authenticated") {
-      setData(null);
-      setIsLoading(false);
-      return;
-    }
-
-    let isCancelled = false;
-    setIsLoading(true);
-    setError(undefined);
-
-    getStatsSummary()
-      .then((summary) => {
-        if (!isCancelled) {
-          setData(summary);
-        }
-      })
-      .catch((cause) => {
-        if (!isCancelled) {
-          setError(toMessage(cause));
-        }
-      })
-      .finally(() => {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isCancelled = true;
-    };
-    // `isPremium` is intentionally included: once the user activates premium
-    // (or it changes for any other reason), we must refetch so the
-    // server-enforced `locked` detail sections come back unlocked.
-  }, [authStatus, isGuest, isPremium]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const refresh = useCallback(async () => {
     if (isGuest) {
@@ -102,20 +95,27 @@ export function useStats(): UseStatsResult {
       return;
     }
     setIsRefreshing(true);
-    setError(undefined);
     try {
-      const summary = await getStatsSummary();
-      setData(summary);
-    } catch (cause) {
-      setError(toMessage(cause));
+      await statsQuery.refetch();
     } finally {
       setIsRefreshing(false);
     }
-  }, [authStatus, dhikrItems, freeModeCount, freeModeActivityAt, isGuest, isPremium]);
+  }, [authStatus, dhikrItems, freeModeCount, freeModeActivityAt, isGuest, isPremium, statsQuery]);
 
-  const locked = data?.locked ?? !isPremium;
+  const resolvedData = isGuest ? data : isAuthedFetch ? (statsQuery.data ?? null) : null;
+  const resolvedIsLoading = isGuest ? isLoading : isAuthedFetch ? statsQuery.isLoading : false;
+  const resolvedError = isAuthedFetch && statsQuery.error ? toMessage(statsQuery.error) : undefined;
+  const locked = resolvedData?.locked ?? !isPremium;
 
-  return { data, isLoading, isRefreshing, error, isPremium, locked, refresh };
+  return {
+    data: resolvedData,
+    isLoading: resolvedIsLoading,
+    isRefreshing,
+    error: resolvedError,
+    isPremium,
+    locked,
+    refresh
+  };
 }
 
 function buildLocalStatsSummary(

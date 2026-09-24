@@ -14,5 +14,7 @@ export const qk = {
   circle: (id: string) => ["circle", id] as const,
   stats: (userId: string | undefined, period: string) => ["stats", userId, period] as const,
   specialDays: () => ["special-days"] as const,
-  collections: () => ["collections"] as const
+  collections: () => ["collections"] as const,
+  collection: (key: string) => ["collection", key] as const,
+  virdTemplate: (key: string) => ["vird-template", key] as const
 } as const;
