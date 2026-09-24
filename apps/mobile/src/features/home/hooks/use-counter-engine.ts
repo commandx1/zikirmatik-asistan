@@ -53,6 +53,11 @@ export function useCounterEngine({ selectedDhikr, onAutoSave, openFreeSave }: Op
 
   useEffect(() => {
     liveSelectedCountRef.current = selectedDhikr?.current ?? 0
+    // selectedDhikr bir prop nesnesi (ref DEĞİL); eslint ".current" adından
+    // dolayı ref sanıp tüm nesneyi öneriyor — bunu deps'e almak nesnenin her
+    // yeniden oluşturulmasında (fazladan alan değişimlerinde de) efekti
+    // tetikler. Yalnızca izlenen iki alan (current/id) yeterli.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDhikr?.current, selectedDhikr?.id])
 
   useEffect(() => {

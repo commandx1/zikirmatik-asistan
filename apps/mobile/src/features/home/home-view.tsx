@@ -538,6 +538,12 @@ export function HomeView() {
       setPaywallSource(pendingPaywallSource)
       premiumSheet.open()
     }
+    // Yalnızca pendingPaywallSource değiştiğinde tetiklenir; isPremium her
+    // an güncel closure'dan okunur ama deps'e eklemek premium durum her
+    // değiştiğinde efekti yeniden çalıştırır (istenmeyen). premiumSheet/
+    // consumePaywall her render'da yeni referans alabilir, deps'e eklemek
+    // aynı sebeple gereksiz yeniden tetikler.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingPaywallSource])
 
   useEffect(() => {
@@ -658,8 +664,7 @@ export function HomeView() {
           />
           <SelectedDhikrMeaning />
           <TodaysVirdCard
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onPressCard={() => router.push('/vird' as any)}
+            onPressCard={() => router.push('/vird')}
           />
           <WidgetDiscoveryCard streakDays={home.streakDays} />
           <CircleCard />

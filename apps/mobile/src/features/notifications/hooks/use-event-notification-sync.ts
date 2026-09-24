@@ -43,5 +43,7 @@ export function useEventNotificationSync() {
     });
 
     return () => subscription.remove();
-  }, [registered, serverPushEnabled]);
+    // serverPushActive salt registered + serverPushEnabled'dan türetilir
+    // (resolveServerPushActive); bunlar zaten bağımlılıkta.
+  }, [registered, serverPushEnabled, serverPushActive]);
 }

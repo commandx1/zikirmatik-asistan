@@ -2,20 +2,6 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import type { VirdProgram, VirdTodayResponse } from "@zikirmatik/shared";
 import type { VirdProgramLocal } from "../types";
 
-vi.mock("react-native", () => ({
-  Platform: {
-    OS: "ios",
-    select: (options: Record<string, unknown>) => options?.ios ?? options?.default
-  }
-}));
-
-vi.mock("../../../i18n", () => ({
-  i18n: {
-    t: (key: string) => key,
-    language: "tr"
-  }
-}));
-
 const createVirdProgram = vi.fn();
 const fetchVirdPrograms = vi.fn();
 const activateVirdProgram = vi.fn();

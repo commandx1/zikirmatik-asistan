@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AppState } from "react-native";
 import * as Location from "expo-location";
 import { useVirdStore } from "../../../store/vird-store";
@@ -47,6 +47,32 @@ export function useVirdReminderSync(): void {
     };
   }, [activeProgram]);
 
+  const refreshCoords = useCallback(async (): Promise<void> => {
+    if (!reminderPrefs.enabled) {
+      return;
+    }
+    try {
+      const permission = await Location.getForegroundPermissionsAsync();
+      if (!permission.granted) {
+        return;
+      }
+
+      const position = (await Location.getLastKnownPositionAsync()) ?? (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }));
+      if (!position) {
+        return;
+      }
+
+      const next = { lat: round3(position.coords.latitude), lng: round3(position.coords.longitude) };
+      const current = useVirdStore.getState().reminderPrefs.coords;
+      if (!current || current.lat !== next.lat || current.lng !== next.lng) {
+        setReminderPrefs({ coords: next });
+      }
+    } catch {
+      // Konum alınamazsa sessizce mevcut hatırlatma tercihine dokunma
+      // (sabit saat tablosuna düşülür, bkz. prayer-times.ts).
+    }
+  }, [reminderPrefs, setReminderPrefs]);
+
   useEffect(() => {
     void syncVirdReminders({
       program: programForScheduling,
@@ -72,31 +98,5 @@ export function useVirdReminderSync(): void {
     });
 
     return () => subscription.remove();
-  }, [programForScheduling, reminderPrefs, dayProgress]);
-
-  async function refreshCoords(): Promise<void> {
-    if (!reminderPrefs.enabled) {
-      return;
-    }
-    try {
-      const permission = await Location.getForegroundPermissionsAsync();
-      if (!permission.granted) {
-        return;
-      }
-
-      const position = (await Location.getLastKnownPositionAsync()) ?? (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }));
-      if (!position) {
-        return;
-      }
-
-      const next = { lat: round3(position.coords.latitude), lng: round3(position.coords.longitude) };
-      const current = useVirdStore.getState().reminderPrefs.coords;
-      if (!current || current.lat !== next.lat || current.lng !== next.lng) {
-        setReminderPrefs({ coords: next });
-      }
-    } catch {
-      // Konum alınamazsa sessizce mevcut hatırlatma tercihine dokunma
-      // (sabit saat tablosuna düşülür, bkz. prayer-times.ts).
-    }
-  }
+  }, [programForScheduling, reminderPrefs, dayProgress, refreshCoords]);
 }

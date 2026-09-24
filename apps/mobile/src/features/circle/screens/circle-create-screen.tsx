@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { useRouter, type Href } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { toDateKey, resolveLocalizedText } from "@zikirmatik/shared";
@@ -86,7 +86,7 @@ export function CircleCreateScreen() {
 
       upsertCircle(circle);
       void trackEvent("circle_created", { goalCount: goal });
-      router.replace(`/circle/${circle.id}` as Href);
+      router.replace(`/circle/${circle.id}`);
     } catch (err) {
       if (err instanceof CircleApiError && err.code === CIRCLE_ERROR_CODE.PREMIUM_REQUIRED) {
         premiumSheet.open();

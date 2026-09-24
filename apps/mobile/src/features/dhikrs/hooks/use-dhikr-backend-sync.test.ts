@@ -8,7 +8,6 @@ import { resolveActivityDateKey } from "../../home/services/local-streak";
 // fonksiyonu hedeflediğinden, o zinciri gerçekten yüklemeden (ve
 // react-native'in Flow sözdizimini vitest/rollup'a kırdırmadan) stub'larız.
 vi.mock("react-native", () => ({ Platform: { OS: "android", select: (o: Record<string, unknown>) => o?.android ?? o?.default } }));
-vi.mock("../../../i18n", () => ({ i18n: { t: (key: string) => key } }));
 vi.mock("../../../store/auth-store", () => ({ useAuthStore: vi.fn() }));
 vi.mock("../../../store/dhikr-store", () => ({ useDhikrStore: vi.fn() }));
 vi.mock("../../../store/profile-store", () => ({ useProfileStore: { getState: () => ({ locale: "tr" }) } }));

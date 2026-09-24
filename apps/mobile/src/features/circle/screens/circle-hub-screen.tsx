@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { useFocusEffect, useRouter, type Href } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { CircleSummary } from "@zikirmatik/shared";
@@ -64,7 +64,7 @@ export function CircleHubScreen() {
   const handleCreate = () => {
     requireAuth(() => {
       if (isPremium) {
-        router.push("/circle/new" as Href);
+        router.push("/circle/new");
       } else {
         premiumSheet.open();
       }
@@ -78,8 +78,7 @@ export function CircleHubScreen() {
       return;
     }
     setCodeError(null);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    router.push({ pathname: "/circle/join", params: { code: parsed } } as any);
+    router.push({ pathname: "/circle/join", params: { code: parsed } });
   };
 
   return (
@@ -145,7 +144,7 @@ function CircleRow({ circle }: { circle: CircleSummary }) {
   const percent = circle.goalCount > 0 ? Math.min(100, Math.round((circle.totalCount / circle.goalCount) * 100)) : 0;
 
   return (
-    <Pressable onPress={() => router.push(`/circle/${circle.id}` as Href)}>
+    <Pressable onPress={() => router.push(`/circle/${circle.id}`)}>
       <ThemedCard className="mb-3 rounded-2xl p-4">
         <View className="mb-1 flex-row items-center justify-between">
           <Text className="flex-1 pr-2 text-sm font-semibold text-text-primary" numberOfLines={1}>

@@ -193,7 +193,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     );
     setHistoryExpanded(false);
     return true;
-  }, [cacheKey]);
+  }, [cacheKey, t]);
 
   const hydrateLastResultFromBackend = useCallback(async () => {
     if (authStatus !== "authenticated" || !userId) {
@@ -236,7 +236,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     return true;
-  }, [authStatus, cacheKey, refreshCredits, userId]);
+  }, [authStatus, cacheKey, refreshCredits, userId, t]);
 
   useEffect(() => {
     if (authStatus !== "authenticated" || !cacheKey) {

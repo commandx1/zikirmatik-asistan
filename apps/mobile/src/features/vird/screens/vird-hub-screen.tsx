@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { useLocalSearchParams, useRouter, type Href } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
@@ -68,8 +68,11 @@ export function VirdHubScreen() {
     }, 2500);
     return () => clearTimeout(timer);
     // `t` her render'da yeni kimlik alabildiğinden bağımlılığa alınmaz; aksi
-    // hâlde zamanlayıcı sürekli sıfırlanıp toast hiç kapanmaz.
-  }, [notice]);
+    // hâlde zamanlayıcı sürekli sıfırlanıp toast hiç kapanmaz. setNotice
+    // zustand store action'ı olduğu için sabit referanslıdır, eklemek
+    // davranışı değiştirmez.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notice, setNotice]);
 
   const highlightSlot = (typeof params.slot === "string" ? params.slot : null) as VirdSlotKey | null;
 
@@ -129,7 +132,7 @@ export function VirdHubScreen() {
           </Pressable>
           <Pressable
             // TODO(B1): typed routes yenilenince (.expo/types/router.d.ts) cast'i kaldır.
-            onPress={() => router.push("/vird/templates" as Href)}
+            onPress={() => router.push("/vird/templates")}
             className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-card px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 // vird-ai-create-service.ts -> ai-api-client.ts (AiApiError sınıfı için) ->
 // react-native (Platform) + ../../../i18n zincirini gerçek modüllerle
@@ -7,20 +7,6 @@ import { describe, expect, it, vi } from "vitest";
 // çözemeyip patlamasına yol açar. Desen vird-sync.test.ts ile AYNI: yalnızca
 // bu dosyanın kullandığı yüzeyi (Platform.OS, i18n.t/i18n.language) taklit
 // eden minimal mock'lar.
-vi.mock("react-native", () => ({
-  Platform: {
-    OS: "ios",
-    select: (options: Record<string, unknown>) => options?.ios ?? options?.default
-  }
-}));
-
-vi.mock("../../../i18n", () => ({
-  i18n: {
-    t: (key: string) => key,
-    language: "tr"
-  }
-}));
-
 import { AiApiError } from "../../ai-guide/services/ai-api-client";
 import type { BackendDhikr } from "../../dhikrs/services/dhikrs-api-client";
 import {

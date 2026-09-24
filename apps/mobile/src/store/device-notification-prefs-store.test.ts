@@ -1,13 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useDeviceNotificationPrefsStore } from "./device-notification-prefs-store";
-
-vi.mock("@react-native-async-storage/async-storage", () => ({
-  default: {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn()
-  }
-}));
 
 describe("device-notification-prefs-store", () => {
   beforeEach(() => {

@@ -81,5 +81,6 @@ export function useHydrateVirdSnapshots(programId: string | null | undefined): v
     // incrementSelected) — bunu bağımlılığa eklemek her sayaç tıklamasında
     // gereksiz bir hidrasyon denemesi tetikler. Kişisel zikir listesi
     // değişimleri bir sonraki mount/programId değişiminde zaten yeniden ele alınır.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [program, plan, upsertProgram]);
 }

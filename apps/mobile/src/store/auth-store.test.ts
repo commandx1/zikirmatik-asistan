@@ -2,8 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const refreshSession = vi.fn();
 
-vi.mock("react-native", () => ({ Platform: { OS: "ios" } }));
-vi.mock("../i18n", () => ({ i18n: { t: (key: string) => key } }));
 vi.mock("@react-native-async-storage/async-storage", () => ({
   default: { getItem: vi.fn(async () => null), setItem: vi.fn(), removeItem: vi.fn() }
 }));

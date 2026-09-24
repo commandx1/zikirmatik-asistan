@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
-import { useRouter, type Href } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { CirclePreview } from "@zikirmatik/shared";
@@ -69,7 +69,7 @@ export function CircleJoinScreen({ code: rawCode }: { code: string }) {
           const circle = await joinCircle(code);
           upsertCircle(circle);
           void trackEvent("circle_joined");
-          router.replace(`/circle/${circle.id}` as Href);
+          router.replace(`/circle/${circle.id}`);
         } catch (error) {
           const message = error instanceof CircleApiError ? resolveCircleErrorMessage(error.code, error.message) : t("circle:errors.serviceUnavailable");
           setLoadError(message);

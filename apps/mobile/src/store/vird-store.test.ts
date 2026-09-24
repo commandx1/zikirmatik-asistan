@@ -1,15 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { toDateKey } from "@zikirmatik/shared";
 import { pruneDayProgress, useVirdStore, type VirdStore } from "./vird-store";
 import type { VirdProgramLocal } from "../features/vird/types";
-
-vi.mock("@react-native-async-storage/async-storage", () => ({
-  default: {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn()
-  }
-}));
 
 function makeProgram(overrides: Partial<VirdProgramLocal> = {}): VirdProgramLocal {
   return {

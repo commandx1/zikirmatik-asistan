@@ -9,20 +9,6 @@ import type { VirdDayProgressByDate, VirdReminderPrefs } from "../types";
 // Node bu ortamda process.env.TZ değişikliklerini anlık uygular (doğrulandı).
 process.env.TZ = "Europe/Istanbul";
 
-vi.mock("react-native", () => ({
-  Platform: {
-    OS: "ios",
-    select: (options: Record<string, unknown>) => options?.ios ?? options?.default
-  }
-}));
-
-vi.mock("../../../i18n", () => ({
-  i18n: {
-    language: "tr",
-    t: (key: string) => key
-  }
-}));
-
 const getPermissionsAsync = vi.fn();
 const requestPermissionsAsync = vi.fn();
 const scheduleNotificationAsync = vi.fn();

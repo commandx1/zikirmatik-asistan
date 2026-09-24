@@ -26,7 +26,7 @@ export function useCollectionDetail(key: string) {
       if (!key) return () => {};
       void query.refetch();
       return () => {};
-    }, [key]),
+    }, [key, query]),
   );
 
   const error = query.error

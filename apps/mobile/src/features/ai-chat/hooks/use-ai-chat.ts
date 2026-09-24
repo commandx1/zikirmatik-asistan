@@ -131,6 +131,10 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
   useEffect(() => {
     void loadConversations();
     void refreshCredits();
+    // Yalnızca authStatus değiştiğinde tetiklenir; loadConversations/
+    // refreshCredits'i deps'e eklemek kredi durumu değiştikçe (kendi
+    // bağımlılıkları) gereksiz yeniden tetiklemeye yol açardı.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authStatus]);
 
   const openConversation = useCallback(

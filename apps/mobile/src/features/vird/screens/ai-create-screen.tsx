@@ -6,7 +6,7 @@
 import { useRef } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useRouter, type Href } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { VirdSlotKey } from "@zikirmatik/shared";
@@ -50,7 +50,7 @@ export function AiCreateScreen() {
 
   const goToHub = (notice: "started" | "draft") => {
     setNotice(notice);
-    router.dismissTo("/vird" as Href);
+    router.dismissTo("/vird");
   };
 
   const handleActivate = async () => {

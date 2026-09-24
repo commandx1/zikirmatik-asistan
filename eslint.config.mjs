@@ -1,6 +1,7 @@
 import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+import reactHooks from "eslint-plugin-react-hooks";
 
 export default tseslint.config(
   {
@@ -55,19 +56,40 @@ export default tseslint.config(
     rules: { "@typescript-eslint/no-explicit-any": "off" }
   },
   {
+    files: ["apps/mobile/**/*.{ts,tsx}", "packages/ui/**/*.{ts,tsx}"],
+    plugins: { "react-hooks": reactHooks },
+    rules: {
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "error"
+    }
+  },
+  {
+    // apps/mobile testleri vitest kullanır (describe/it/expect "vitest"tan
+    // import edilir) — jest globalleri burada gerekmiyor ve yanlışlıkla
+    // import'suz kullanımı maskeleyebilir; bkz. bir altındaki blok (jest
+    // globalleri yalnızca mobile DIŞI ts/tsx için, ör. apps/api lint-staged
+    // kökten koştuğunda kendi eslint.config'ini atlayabiliyor).
     files: ["**/*.{ts,tsx}"],
+    ignores: ["apps/mobile/**"],
     languageOptions: {
       globals: {
-        ...globals.es2024,
-        ...globals.node,
-        ...globals.browser,
-        ...globals.commonjs,
         ...globals.jest,
         describe: "readonly",
         it: "readonly",
         expect: "readonly",
         beforeEach: "readonly",
         afterEach: "readonly"
+      }
+    }
+  },
+  {
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      globals: {
+        ...globals.es2024,
+        ...globals.node,
+        ...globals.browser,
+        ...globals.commonjs
       }
     },
     rules: {

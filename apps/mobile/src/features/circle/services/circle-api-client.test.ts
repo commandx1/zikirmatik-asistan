@@ -1,19 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("react-native", () => ({
-  Platform: {
-    OS: "ios",
-    select: (options: Record<string, unknown>) => options?.ios ?? options?.default
-  }
-}));
-
-vi.mock("../../../i18n", () => ({
-  i18n: {
-    t: (key: string) => key,
-    language: "tr"
-  }
-}));
-
 const { resolveCircleErrorMessage, CIRCLE_ERROR_CODE, fetchCircle } = await import("./circle-api-client");
 
 describe("fetchCircle", () => {

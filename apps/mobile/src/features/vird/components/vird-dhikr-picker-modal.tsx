@@ -183,18 +183,21 @@ export function VirdDhikrPickerModal({
     return all.filter((row) => row.label.toLocaleLowerCase(locale).includes(normalizedQuery));
   }, [personalItems, catalog, query, locale, catalogOnly]);
 
-  const handlePick = (row: PickerRow) => {
-    if (slotRefs.includes(row.ref)) {
-      onRemove(row.ref);
-      return;
-    }
-    if (wouldExceedFreeDhikrLimit(existingRefs, row.ref, isPremium)) {
-      void trackEvent("vird_limit_hit", { code: VIRD_ERROR_CODE.FREE_LIMIT_DHIKRS });
-      onRequirePremium();
-      return;
-    }
-    onAdd({ ref: row.ref, isCustom: row.isCustom, target: row.defaultTarget, snapshot: row.snapshot });
-  };
+  const handlePick = useCallback(
+    (row: PickerRow) => {
+      if (slotRefs.includes(row.ref)) {
+        onRemove(row.ref);
+        return;
+      }
+      if (wouldExceedFreeDhikrLimit(existingRefs, row.ref, isPremium)) {
+        void trackEvent("vird_limit_hit", { code: VIRD_ERROR_CODE.FREE_LIMIT_DHIKRS });
+        onRequirePremium();
+        return;
+      }
+      onAdd({ ref: row.ref, isCustom: row.isCustom, target: row.defaultTarget, snapshot: row.snapshot });
+    },
+    [slotRefs, onRemove, existingRefs, isPremium, onRequirePremium, onAdd]
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: PickerRow }) => (

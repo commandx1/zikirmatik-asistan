@@ -1,12 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("react-native", () => ({
-  Platform: {
-    OS: "ios",
-    select: (options: Record<string, unknown>) => options?.ios ?? options?.default
-  }
-}));
-
 const storage = new Map<string, string>();
 
 vi.mock("@react-native-async-storage/async-storage", () => ({

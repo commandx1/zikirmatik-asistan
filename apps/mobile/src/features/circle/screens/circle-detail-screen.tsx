@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Share, Text, View } from "react-native";
-import { useRouter, type Href } from "expo-router";
+import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -154,7 +154,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
         ) : storedCircle.status === "active" ? (
           <PrimaryCtaButton
             label={t("circle:detail.start")}
-            onPress={() => router.push({ pathname: "/circle/session", params: { id } } as unknown as Href)}
+            onPress={() => router.push({ pathname: "/circle/session", params: { id } })}
             className="mb-4 w-full"
           />
         ) : null}

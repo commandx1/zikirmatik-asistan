@@ -59,9 +59,7 @@ function FocusContent() {
       <View className="relative flex-1 w-full">
         <ZikirlerimHeader />
         <Pressable
-          // TODO(B1): /vird rotası eklenince (app/vird/index.tsx) typed route olarak düzelt.
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onPress={() => router.push("/vird" as any)}
+          onPress={() => router.push("/vird")}
           className="mx-5 mb-4 flex-row items-center justify-between rounded-2xl border border-white/10 bg-card px-4 py-3.5"
         >
           <View className="flex-row items-center gap-2.5">

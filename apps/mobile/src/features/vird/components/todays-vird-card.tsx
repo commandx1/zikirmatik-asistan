@@ -51,8 +51,7 @@ function EmptyVirdCard({ onPressCard }: { onPressCard?: () => void }) {
       onPressCard()
       return
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    router.push('/vird' as any)
+    router.push('/vird')
   }
 
   return (

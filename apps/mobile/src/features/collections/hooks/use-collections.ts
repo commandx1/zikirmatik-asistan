@@ -29,7 +29,7 @@ export function useCollections() {
     useCallback(() => {
       void query.refetch();
       return () => {};
-    }, []),
+    }, [query]),
   );
 
   const allCollections = useMemo(() => query.data ?? [], [query.data]);

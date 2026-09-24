@@ -42,8 +42,7 @@ export function CollectionsScreen() {
         item={item}
         onPress={() => {
           void trackEvent("collection_opened", { key: item.key });
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          router.push(`/collections/${item.key}` as any);
+          router.push(`/collections/${item.key}`);
         }}
       />
     ),

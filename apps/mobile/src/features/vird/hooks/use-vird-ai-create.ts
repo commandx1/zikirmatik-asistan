@@ -116,12 +116,12 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
 
   // Yalnızca authStatus değiştiğinde tetiklenir — refreshCredits'i deps'e
   // eklemek her render'da yeniden çalışmasına yol açardı (kendisi de
-  // creditBalance/isPremiumUser'a bağlı); use-ai-guide.ts'teki eşdeğer efekt
-  // de aynı nedenle yalnızca [authStatus, cacheKey]'e bağlıdır. Bu projenin
-  // ESLint kurulumunda react-hooks/exhaustive-deps eklentisi YOK (bkz. lint
-  // çıktısı) — kasıtlı eksik dep için bir disable yorumu gerekmiyor.
+  // creditBalance/isPremiumUser'a bağlı, bu yüzden her kredi güncellemesinde
+  // kimliği değişir); use-ai-guide.ts'teki eşdeğer efekt de aynı nedenle
+  // yalnızca [authStatus, cacheKey]'e bağlıdır.
   useEffect(() => {
     void refreshCredits();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authStatus]);
 
   const ensureCreditsAvailable = useCallback(async (): Promise<boolean> => {

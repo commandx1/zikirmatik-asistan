@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Text, View } from "react-native";
-import { useRouter, type Href } from "expo-router";
+import { useRouter } from "expo-router";
 import * as Crypto from "expo-crypto";
 import { useTranslation } from "react-i18next";
 import { toDateKey, type VirdPhase, type VirdSlotKey, resolveLocalizedText } from "@zikirmatik/shared";
@@ -169,6 +169,7 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
     // buildAutoVirdTitle ile eşleşen "Sabah-Akşam virdi" varsayılan başlığı).
     // NOT: `locale`/`t` bilinçli olarak bağımlılık dizisinde değil — yalnızca
     // İLK yüklemede kullanılır (initializedRef guard'ı).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [existingProgram, cloneFromId, cloneSourceProgram, journeyMode]);
 
   const displaySnapshots = useMemo(
@@ -228,7 +229,7 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
 
   const goToHub = (notice: "started" | "saved" | "draft") => {
     setNotice(notice);
-    router.dismissTo("/vird" as Href);
+    router.dismissTo("/vird");
   };
 
   const handleSaveRoutine = async () => {

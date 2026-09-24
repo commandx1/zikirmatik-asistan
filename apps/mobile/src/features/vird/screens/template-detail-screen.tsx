@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
-import { useRouter, type Href } from "expo-router";
+import { useRouter } from "expo-router";
 import * as Crypto from "expo-crypto";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -155,7 +155,7 @@ export function TemplateDetailScreen({ templateKey }: Props) {
 
       void trackEvent("template_started", { key: template.key });
       setNotice("started");
-      router.dismissTo("/vird" as Href);
+      router.dismissTo("/vird");
     } catch (error) {
       const message =
         error instanceof VirdApiError ? resolveVirdErrorMessage(error.code, error.message) : t("vird:templates.detail.startFailed");
@@ -176,7 +176,7 @@ export function TemplateDetailScreen({ templateKey }: Props) {
       if (retry.ok) {
         void trackEvent("template_started", { key: templateKey });
         setNotice("started");
-        router.dismissTo("/vird" as Href);
+        router.dismissTo("/vird");
       } else {
         setStartError(retry.message || t("vird:templates.detail.startFailed"));
       }
@@ -188,7 +188,7 @@ export function TemplateDetailScreen({ templateKey }: Props) {
   const handleKeepDraft = () => {
     setPendingSwap(null);
     setNotice("draft");
-    router.dismissTo("/vird" as Href);
+    router.dismissTo("/vird");
   };
 
   const title = template?.title ? resolveLocalizedText(template.title, locale) : t("vird:templates.untitledFallback");

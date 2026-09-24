@@ -4,13 +4,6 @@ import type { GuestMigrationSnapshot, GuestVirdSnapshot } from "../../../store/g
 import type { VirdProgramLocal } from "../../vird/types";
 import { planGuestMigration, planVirdMigration, type GuestMigrationBackendState } from "./guest-migration";
 
-vi.mock("react-native", () => ({
-  Platform: {
-    OS: "ios",
-    select: (options: Record<string, unknown>) => options?.ios ?? options?.default
-  }
-}));
-
 vi.mock("../../../i18n", () => ({
   i18n: {
     t: (key: string, opts?: Record<string, unknown>) => {
@@ -22,14 +15,6 @@ vi.mock("../../../i18n", () => ({
     changeLanguage: vi.fn()
   },
   detectDeviceLocale: () => "tr"
-}));
-
-vi.mock("@react-native-async-storage/async-storage", () => ({
-  default: {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn()
-  }
 }));
 
 const DATE_KEY = "2026-02-14";

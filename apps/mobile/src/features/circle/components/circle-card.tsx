@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Pressable, Text, View } from "react-native";
-import { useRouter, type Href } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useCircleStore } from "../../../store/circle-store";
@@ -26,8 +26,7 @@ export function CircleCard() {
     return (
       <View className="mb-5 px-5">
         <Pressable
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onPress={() => router.push("/circle" as any)}
+          onPress={() => router.push("/circle")}
           testID={TEST_IDS.circle.homeCard}
           className="rounded-2xl px-4 py-4"
           style={{
@@ -53,7 +52,7 @@ export function CircleCard() {
   return (
     <View className="mb-5 px-5">
       <Pressable
-        onPress={() => router.push({ pathname: "/circle/session", params: { id: activeCircle.id } } as unknown as Href)}
+        onPress={() => router.push({ pathname: "/circle/session", params: { id: activeCircle.id } })}
         className="rounded-2xl px-4 py-4"
         style={{
           borderWidth: 1,

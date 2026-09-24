@@ -2,14 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useCircleStore } from "./circle-store";
 import type { CircleSummary } from "@zikirmatik/shared";
 
-vi.mock("@react-native-async-storage/async-storage", () => ({
-  default: {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn()
-  }
-}));
-
 function makeCircle(overrides: Partial<CircleSummary> = {}): CircleSummary {
   return {
     id: "c1",

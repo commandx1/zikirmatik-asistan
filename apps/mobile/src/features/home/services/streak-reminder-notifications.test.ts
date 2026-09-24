@@ -11,13 +11,6 @@ vi.mock("../../../i18n", () => ({
   }
 }));
 
-vi.mock("react-native", () => ({
-  Platform: {
-    OS: "ios",
-    select: (options: Record<string, unknown>) => options?.ios ?? options?.default
-  }
-}));
-
 const getPermissionsAsync = vi.fn();
 const scheduleNotificationAsync = vi.fn();
 const getAllScheduledNotificationsAsync = vi.fn();

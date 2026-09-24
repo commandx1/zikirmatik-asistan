@@ -1,19 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("react-native", () => ({
-  Platform: {
-    OS: "ios",
-    select: (options: Record<string, unknown>) => options?.ios ?? options?.default
-  }
-}));
-
-vi.mock("../../../i18n", () => ({
-  i18n: {
-    language: "tr",
-    t: (key: string) => key
-  }
-}));
-
 // Kept small and fixed so this test never drifts when the real (frequently
 // updated) dataset changes — see data/special-days-dataset.ts's own comment
 // about yearly updates.
