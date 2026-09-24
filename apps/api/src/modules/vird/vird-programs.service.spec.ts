@@ -38,6 +38,7 @@ describe('VirdProgramsService', () => {
     deleteMany: jest.fn(),
     countDocuments: jest.fn(),
     updateMany: jest.fn(),
+    updateOne: jest.fn(),
   };
 
   const userModel = {
@@ -510,6 +511,46 @@ describe('VirdProgramsService', () => {
       expect(filter).toMatchObject({ userId: new Types.ObjectId(userId) });
       expect(update.$set).toEqual({ status: 'active' });
       expect(update.$unset).toEqual({ expiresAt: 1 });
+    });
+
+    it('reverts to the exact previous status when a race exceeds the limit after the write', async () => {
+      mockPremium(false);
+      const expiresAt = new Date('2026-10-01T00:00:00Z');
+      virdProgramModel.findOne.mockReturnValue({
+        lean: () => ({
+          exec: jest
+            .fn()
+            .mockResolvedValue({ _id: userId, status: 'draft', expiresAt }),
+        }),
+      });
+      // Ön kontrol 0 görür; yazım sonrası yeniden sayım yarışan aktifi görür.
+      virdProgramModel.countDocuments
+        .mockResolvedValueOnce(0)
+        .mockResolvedValueOnce(1);
+      virdProgramModel.findOneAndUpdate.mockReturnValue({
+        lean: () => ({
+          exec: jest.fn().mockResolvedValue({ status: 'active' }),
+        }),
+      });
+      virdProgramModel.updateOne.mockReturnValue({
+        exec: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
+      });
+
+      const payload = captureForbidden(service.activate(userId, userId));
+      await expect(payload).resolves.toMatchObject({
+        code: VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE,
+      });
+
+      const [writeFilter] = virdProgramModel.findOneAndUpdate.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
+      expect(writeFilter.status).toBe('draft');
+      const [filter, update] = virdProgramModel.updateOne.mock.calls[0] as [
+        Record<string, unknown>,
+        Record<string, unknown>,
+      ];
+      expect(filter.status).toBe('active');
+      expect(update).toEqual({ $set: { status: 'draft', expiresAt } });
     });
 
     it('rejects activating a program that is not draft/paused', async () => {

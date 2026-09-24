@@ -203,6 +203,50 @@ describe('Vird Programı (e2e)', () => {
       expect(errCode(res)).toBe(VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE);
     });
 
+    it('eşzamanlı iki activate (ücretsiz) → en fazla 1 aktif, en az biri 403', async () => {
+      const ids: string[] = [];
+      for (const i of [0, 1]) {
+        const created = await request(t.http)
+          .post('/v1/vird/programs')
+          .set(bearer(user.accessToken))
+          .send(createManualPayload(dhikrIds.slice(i, i + 1)))
+          .expect(201);
+        ids.push(data<{ _id: string }>(created)._id);
+      }
+
+      for (let round = 0; round < 5; round++) {
+        await t
+          .model<VirdProgramDocument>('VirdProgram')
+          .updateMany(
+            { userId: new Types.ObjectId(user.userId) },
+            { $set: { status: 'paused' } },
+          );
+        const results = await Promise.all(
+          ids.map((id) =>
+            request(t.http)
+              .post(`/v1/vird/programs/${id}/activate`)
+              .set(bearer(user.accessToken)),
+          ),
+        );
+        const forbidden = results.filter((r) => r.status === 403);
+        expect(forbidden.length).toBeGreaterThanOrEqual(1);
+        forbidden.forEach((r) =>
+          expect(errCode(r)).toBe(VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE),
+        );
+        const programs = await t
+          .model<VirdProgramDocument>('VirdProgram')
+          .find({ _id: { $in: ids } })
+          .lean();
+        expect(
+          programs.filter((p) => p.status === 'active').length,
+        ).toBeLessThanOrEqual(1);
+        // Geri alınan program önceki durumuna (paused) döner.
+        programs
+          .filter((p) => p.status !== 'active')
+          .forEach((p) => expect(p.status).toBe('paused'));
+      }
+    });
+
     it('source:template + premium şablon → 403; ücretsiz şablon → 201', async () => {
       const premiumTpl = await seedVirdTemplate({
         key: 'e2e-premium-tpl',
@@ -304,6 +348,38 @@ describe('Vird Programı (e2e)', () => {
         .set(bearer(user.accessToken))
         .expect(403);
       expect(errCode(res)).toBe(VIRD_ERROR_CODE.PREMIUM_MAX_ACTIVE_PROGRAMS);
+    });
+
+    it('eşzamanlı iki activate (premium) → ikisi de aktif', async () => {
+      const user = await newUser();
+      await makePremium(t.model<UserDocument>(User.name), user.userId);
+      const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+      const ids: string[] = [];
+      for (const i of [0, 1]) {
+        const created = await request(t.http)
+          .post('/v1/vird/programs')
+          .set(bearer(user.accessToken))
+          .send(
+            createManualPayload([dhikrId], {
+              title: { tr: `c${i}`, en: `c${i}` },
+            }),
+          )
+          .expect(201);
+        ids.push(data<{ _id: string }>(created)._id);
+      }
+
+      const results = await Promise.all(
+        ids.map((id) =>
+          request(t.http)
+            .post(`/v1/vird/programs/${id}/activate`)
+            .set(bearer(user.accessToken)),
+        ),
+      );
+      expect(results.map((r) => r.status)).toEqual([201, 201]);
+      const active = await t
+        .model<VirdProgramDocument>('VirdProgram')
+        .countDocuments({ _id: { $in: ids }, status: 'active' });
+      expect(active).toBe(2);
     });
   });
 

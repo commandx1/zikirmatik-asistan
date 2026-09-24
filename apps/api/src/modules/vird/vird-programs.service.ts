@@ -455,31 +455,68 @@ export class VirdProgramsService {
       );
     }
 
-    const activeCount = await this.virdProgramModel.countDocuments({
-      userId: objectId,
-      status: 'active',
-      _id: { $ne: programObjectId },
-    });
     const limit = isPremium
       ? PREMIUM_MAX_ACTIVE_PROGRAMS
       : VIRD_FREE_LIMIT_ACTIVE;
-    if (activeCount >= limit) {
-      const code = isPremium
-        ? VIRD_ERROR_CODE.PREMIUM_MAX_ACTIVE_PROGRAMS
-        : VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE;
+    const code = isPremium
+      ? VIRD_ERROR_CODE.PREMIUM_MAX_ACTIVE_PROGRAMS
+      : VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE;
+    const countOtherActive = () =>
+      this.virdProgramModel.countDocuments({
+        userId: objectId,
+        status: 'active',
+        _id: { $ne: programObjectId },
+      });
+    if ((await countOtherActive()) >= limit) {
       throw new ForbiddenException({ code, message: VIRD_ERROR_MESSAGE[code] });
     }
 
+    // Eşzamanlılık: sayım ile yazım arasında başka bir activate araya
+    // girebilir. Transaction yerine iyimser yazım + telafi: önce koşullu
+    // (status hâlâ okunan değerse) aktifleştir, sonra yeniden say; limit
+    // aşıldıysa önceki durumu geri yükle. İki yarışan istek ikisi de geri
+    // alabilir (0 aktif) — güvenli; istemci çakışma modalını gösterir.
     // $unset ile temizlenir: bir hydrated doc üzerinde `expiresAt = undefined`
     // atayıp .save() çağırmak Mongoose'da alanı güvenilir şekilde silmez.
-    return this.virdProgramModel
+    const activated = await this.virdProgramModel
       .findOneAndUpdate(
-        { _id: programObjectId, userId: objectId },
+        { _id: programObjectId, userId: objectId, status: program.status },
         { $set: { status: 'active' }, $unset: { expiresAt: 1 } },
         { returnDocument: 'after' },
       )
       .lean()
       .exec();
+    if (!activated) {
+      // Okuma ile yazım arasında durum değişti. Aynı programa çift dokunuşta
+      // diğer istek onu zaten aktifleştirdiyse eski davranış gibi onu döndür.
+      const current = await this.virdProgramModel
+        .findOne({ _id: programObjectId, userId: objectId, status: 'active' })
+        .lean()
+        .exec();
+      if (current) {
+        return current;
+      }
+      throw new BadRequestException(
+        'Yalnızca taslak veya duraklatılmış bir program aktifleştirilebilir.',
+      );
+    }
+
+    if ((await countOtherActive()) >= limit) {
+      await this.virdProgramModel
+        .updateOne(
+          { _id: programObjectId, userId: objectId, status: 'active' },
+          {
+            $set: {
+              status: program.status,
+              ...(program.expiresAt ? { expiresAt: program.expiresAt } : {}),
+            },
+          },
+        )
+        .exec();
+      throw new ForbiddenException({ code, message: VIRD_ERROR_MESSAGE[code] });
+    }
+
+    return activated;
   }
 
   // --- helpers ---
