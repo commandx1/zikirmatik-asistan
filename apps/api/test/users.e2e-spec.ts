@@ -110,12 +110,7 @@ describe('Users (e2e)', () => {
     expect(await userModel.countDocuments({ _id: userObjectId })).toBe(0);
   });
 
-  // BULGU: UsersService.deleteUserAllData `devices` koleksiyonuna dokunmuyor
-  // (yalnız user_dhikrs, dhikr_logs, streaks, subscriptions,
-  // ai_recommendations, auth_identities, vird_programs, vird_day_progress
-  // siliniyor). Hesap silindikten sonra cihaz kaydı silinmiş kullanıcıya
-  // bağlı kalmaya devam eder — mevcut davranış burada belgelenir.
-  it('BULGU: DELETE sonrası Device.userId silinen kullanıcıya bağlı kalır — devices temizlenmiyor', async () => {
+  it('DELETE sonrası kullanıcıya bağlı devices kaydı da silinir', async () => {
     // AuthService.verifyProvider yalnız MEVCUT bir Device belgesini
     // günceller (DevicesService.linkUser upsert yapmaz) — önce cihazı
     // register ediyoruz.
@@ -128,18 +123,21 @@ describe('Users (e2e)', () => {
       sub: 'e2e-users-6',
       deviceId: 'e2e-users-6-device',
     });
-    const userObjectId = new Types.ObjectId(me.userId);
     const deviceModel = t.model<{ userId: Types.ObjectId | null }>('Device');
+    expect(
+      String(
+        (await deviceModel.findOne({ deviceId: 'e2e-users-6-device' }).lean())
+          ?.userId,
+      ),
+    ).toBe(me.userId);
 
     await request(t.http)
       .delete(`/v1/users/${me.userId}`)
       .set(bearer(me.accessToken))
       .expect(200);
 
-    const device = await deviceModel
-      .findOne({ deviceId: 'e2e-users-6-device' })
-      .lean()
-      .exec();
-    expect(String(device?.userId)).toBe(userObjectId.toString());
+    expect(
+      await deviceModel.countDocuments({ deviceId: 'e2e-users-6-device' }),
+    ).toBe(0);
   });
 });

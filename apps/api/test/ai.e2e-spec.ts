@@ -346,16 +346,14 @@ describe('AI (e2e)', () => {
     spy.mockRestore();
   });
 
-  it('POST /v1/ai/vird-programs: yeterli kredili istek premium gerektirmez (BULGU); gerçek davranış belgelenir', async () => {
+  it('POST /v1/ai/vird-programs: ücretsiz kullanıcı 3 kredisiyle çağırabilir (ürün kuralı: premium kapısı yok)', async () => {
     const user = await signIn(t.http, { sub: `e2e-ai-${randomUUID()}` });
     const dhikrModel = t.model<DhikrDocument>('Dhikr');
     for (let i = 0; i < 5; i++) await seedDhikr(dhikrModel);
 
-    // BULGU: ai-vird.service.ts'te (createVirdProgram) blanket bir premium
-    // kontrolü YOK — yalnızca VIRD_PROGRAM_CREDIT_COST (3) kredi düşümü var.
-    // Ücretsiz kullanıcının 3 kredilik signup bonusu bu maliyeti tam
-    // karşılıyor; görev talimatı "ücretsiz → 403" varsayıyordu, gerçek
-    // davranış farklı — burada gözlenen sonucu belgeliyoruz.
+    // ÜRÜN KURALI (2026-09-12): AI program üretimi herkese açık, maliyeti
+    // VIRD_PROGRAM_CREDIT_COST (3) kredi. Ücretsiz kullanıcının 3 kredilik
+    // signup bonusu bunu karşılar — premium kapısı bilerek yok.
     const res = await request(t.http)
       .post('/v1/ai/vird-programs')
       .set(bearer(user.accessToken))

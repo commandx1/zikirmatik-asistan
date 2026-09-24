@@ -8,7 +8,9 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { AdminSecretGuard } from '../../common/guards/admin-secret.guard';
 import { CreateDhikrDto } from './dto/create-dhikr.dto';
 import { QueryDhikrsDto } from './dto/query-dhikrs.dto';
 import { UpdateDhikrDto } from './dto/update-dhikr.dto';
@@ -19,6 +21,7 @@ export class DhikrsController {
   constructor(private readonly dhikrsService: DhikrsService) {}
 
   @Post()
+  @UseGuards(AdminSecretGuard)
   create(@Body() payload: CreateDhikrDto) {
     return this.dhikrsService.create(payload);
   }
@@ -50,11 +53,13 @@ export class DhikrsController {
   }
 
   @Patch(':id')
+  @UseGuards(AdminSecretGuard)
   update(@Param('id') id: string, @Body() payload: UpdateDhikrDto) {
     return this.dhikrsService.update(id, payload);
   }
 
   @Delete(':id')
+  @UseGuards(AdminSecretGuard)
   remove(@Param('id') id: string) {
     return this.dhikrsService.remove(id);
   }

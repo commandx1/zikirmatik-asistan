@@ -102,12 +102,8 @@ describe('Webhooks — RevenueCat (e2e)', () => {
     expect(doc?.isPremium).toBe(true);
   });
 
-  it('aynı olay tekrar: handleGrant idempotent DEĞİL — dedupe yok, her istek yeni bir abonelik kaydı yaratır (gerçek davranış)', async () => {
-    // NOT: subscriptionsService.create() event.id'ye göre bir tekillik
-    // kontrolü yapmıyor; RevenueCat aynı INITIAL_PURCHASE olayını retry
-    // ederse her seferinde ayrı bir subscriptions belgesi oluşur. isPremium
-    // sonucu yine de doğru kalıyor çünkü syncUserPremiumStatus "en az bir
-    // aktif premium abonelik var mı" sorusuna bakıyor.
+  it('aynı olay tekrar (RevenueCat retry): tek abonelik belgesi, isPremium:true', async () => {
+    // handleGrant event.id'yi providerEventId (unique sparse) olarak yazar.
     const user = await newUser('rc-repeat');
     const payload = rcEvent({
       app_user_id: user.userId,
@@ -126,7 +122,7 @@ describe('Webhooks — RevenueCat (e2e)', () => {
       .expect(200);
 
     const subModel = t.model<SubscriptionDocument>('Subscription');
-    expect(await subModel.countDocuments({})).toBe(2);
+    expect(await subModel.countDocuments({})).toBe(1);
 
     const userModel = t.model<UserDocument>('User');
     const doc = await userModel.findById(user.userId).lean().exec();

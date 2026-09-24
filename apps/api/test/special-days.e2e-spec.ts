@@ -41,6 +41,8 @@ describe('SpecialDays (e2e)', () => {
     });
   }
 
+  const ADMIN = { 'x-admin-secret': 'test-admin-secret' }; // setup-env.ts
+
   async function authHeader() {
     const user = await signIn(t.http, { sub: 'sd-user' });
     return bearer(user.accessToken);
@@ -60,14 +62,14 @@ describe('SpecialDays (e2e)', () => {
 
     const updateRes = await request(t.http)
       .patch(`/v1/special-days/${id}`)
-      .set(auth)
+      .set(ADMIN)
       .send({ priority: 90 })
       .expect(200);
     expect(data<{ priority: number }>(updateRes).priority).toBe(90);
 
     await request(t.http)
       .delete(`/v1/special-days/${id}`)
-      .set(auth)
+      .set(ADMIN)
       .expect(200);
     await request(t.http).get(`/v1/special-days/${id}`).set(auth).expect(404);
   });
@@ -122,23 +124,53 @@ describe('SpecialDays (e2e)', () => {
       .expect(400);
   });
 
-  it('BULGU: herhangi bir giriş yapmış kullanıcı POST ile katalog yazabiliyor', async () => {
-    // TODO(security): SpecialDaysController yalnız JwtAuthGuard kullanıyor;
-    // admin/premium rolü kontrolü yok. Herhangi bir oturum açmış kullanıcı
-    // özel gün kataloğuna yazabilir/silebilir.
+  it("yazma rotaları yalnız x-admin-secret ile; kullanıcı token'ı yetmez", async () => {
     const auth = await authHeader();
+    const body = {
+      name: { tr: 'Sahte Gün', en: 'Fake Day' },
+      type: 'kandil',
+      date: '2026-12-01',
+      hijriDate: '1448-06-01',
+    };
+
+    await request(t.http)
+      .post('/v1/special-days')
+      .set(auth)
+      .send(body)
+      .expect(401);
+    await request(t.http)
+      .post('/v1/special-days')
+      .set('x-admin-secret', 'wrong')
+      .send(body)
+      .expect(401);
 
     const res = await request(t.http)
       .post('/v1/special-days')
-      .set(auth)
-      .send({
-        name: { tr: 'Sahte Gün', en: 'Fake Day' },
-        type: 'kandil',
-        date: '2026-12-01',
-        hijriDate: '1448-06-01',
-      })
+      .set(ADMIN)
+      .send(body)
       .expect(201);
+    const id = data<{ _id: string }>(res)._id;
 
-    expect(data<{ _id: string }>(res)._id).toBeTruthy();
+    await request(t.http)
+      .patch(`/v1/special-days/${id}`)
+      .set(auth)
+      .send({ hijriDate: '1448-06-02' })
+      .expect(401);
+    await request(t.http)
+      .delete(`/v1/special-days/${id}`)
+      .set(auth)
+      .expect(401);
+    await request(t.http)
+      .patch(`/v1/special-days/${id}`)
+      .set(ADMIN)
+      .send({ hijriDate: '1448-06-02' })
+      .expect(200);
+    await request(t.http)
+      .delete(`/v1/special-days/${id}`)
+      .set(ADMIN)
+      .expect(200);
+
+    // GET'ler hâlâ kullanıcı oturumu ister.
+    await request(t.http).get('/v1/special-days').expect(401);
   });
 });

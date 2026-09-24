@@ -29,7 +29,7 @@ export class SubscriptionsController {
     @CurrentUserId() userId: string,
   ) {
     assertSelfUser(payload.userId, userId);
-    return this.subscriptionsService.create(payload);
+    return this.subscriptionsService.createFromClient(payload);
   }
 
   @Get()
@@ -77,7 +77,7 @@ export class SubscriptionsController {
     @CurrentUserId() currentUserId: string,
   ) {
     assertSelfUser(userId, currentUserId);
-    return this.subscriptionsService.syncPremiumForUser(userId, payload);
+    return this.subscriptionsService.syncPremiumFromClient(userId, payload);
   }
 }
 

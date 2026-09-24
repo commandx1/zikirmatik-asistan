@@ -126,7 +126,7 @@ export class WebhooksController {
         : new Date(),
       endDate: new Date(event.expiration_at_ms),
     });
-    await this.subscriptionsService.create(dto);
+    await this.subscriptionsService.create(dto, resolveProviderEventId(event));
     this.logger.log(`Premium granted for user ${userId}`);
   }
 
@@ -136,20 +136,10 @@ export class WebhooksController {
       return;
     }
 
-    const providerEventId =
-      event.id?.trim() ||
-      event.transaction_id?.trim() ||
-      [
-        event.type,
-        event.app_user_id,
-        event.product_id,
-        String(event.purchased_at_ms ?? ''),
-      ].join(':');
-
     const result = await this.aiCreditsService.applyTopupPurchase({
       userId,
       productId: event.product_id,
-      providerEventId,
+      providerEventId: resolveProviderEventId(event),
     });
 
     if (result.applied) {
@@ -211,6 +201,19 @@ export class WebhooksController {
       throw new UnauthorizedException('Geçersiz webhook secret.');
     }
   }
+}
+
+function resolveProviderEventId(event: RevenueCatEvent): string {
+  return (
+    event.id?.trim() ||
+    event.transaction_id?.trim() ||
+    [
+      event.type,
+      event.app_user_id,
+      event.product_id,
+      String(event.purchased_at_ms ?? ''),
+    ].join(':')
+  );
 }
 
 function resolveProvider(store: string): 'apple' | 'google' {

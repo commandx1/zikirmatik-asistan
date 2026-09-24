@@ -14,6 +14,7 @@ import {
 } from '../../src/modules/ai/testing/ai-mocks';
 import { EmbeddingService } from '../../src/modules/embedding/embedding.service';
 import { PushSenderService } from '../../src/modules/push/push-sender.service';
+import { RevenueCatVerifierService } from '../../src/modules/subscriptions/revenuecat-verifier.service';
 import { assertTestMongoUri, dropTestDatabase } from './db';
 
 type Override = { token: any; useValue?: any; useClass?: any };
@@ -33,6 +34,12 @@ export async function createTestApp(opts: { overrides?: Override[] } = {}) {
           deactivatedDeviceIds: [],
         }),
       },
+    },
+    // setup-env REVENUECAT_SECRET_API_KEY tanımlı → istemci abonelik yolu bunu
+    // çağırır; varsayılan "doğrulanamadı". Testte mockResolvedValue ile ayarla.
+    {
+      token: RevenueCatVerifierService,
+      useValue: { verifyPremium: jest.fn().mockResolvedValue(null) },
     },
     // AI_RUNTIME_MOCK=1 zaten bağlar; açık override env'den bağımsız garanti.
     // Testte: `t.app.get(AiRuntimeService) as MockAiRuntimeService`.

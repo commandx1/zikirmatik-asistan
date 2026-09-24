@@ -24,6 +24,19 @@ export function validateEnv(config: Record<string, unknown>) {
     );
   }
 
+  // Opsiyonel secret'lar: ADMIN_API_SECRET (katalog yazma rotaları, guard
+  // fail-closed) ve REVENUECAT_SECRET_API_KEY (istemci abonelik doğrulaması).
+  // Tanımlıysa boş olamaz — "KEY=" yanlışlıkla bırakılmasın.
+  for (const key of ['ADMIN_API_SECRET', 'REVENUECAT_SECRET_API_KEY']) {
+    const value = config[key];
+    if (
+      value !== undefined &&
+      (typeof value !== 'string' || value.trim().length === 0)
+    ) {
+      throw new Error(`${key} tanımlıysa boş olmayan bir string olmalıdır.`);
+    }
+  }
+
   // Opsiyonel: GET /app-config üzerinden mobile duyurulan sunucu-push devir
   // bayrağı (bkz. app.controller.ts, notification-campaigns-runbook.md
   // "Devreye alma sırası"). Tanımsız veya boş string bırakılabilir (varsayılan

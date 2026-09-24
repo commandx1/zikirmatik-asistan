@@ -162,14 +162,30 @@ describe('WebhooksController', () => {
     it('INITIAL_PURCHASE/RENEWAL/UNCANCELLATION → subscriptionsService.create çağırır', async () => {
       subscriptionsService.create.mockResolvedValue(undefined);
 
-      await controller.handleRevenueCat(`Bearer ${secret}`, payload());
+      await controller.handleRevenueCat(
+        `Bearer ${secret}`,
+        payload({ id: 'evt-1' }),
+      );
 
+      // event.id idempotency anahtarı olarak geçer (retry → tek belge).
       expect(subscriptionsService.create).toHaveBeenCalledWith(
         expect.objectContaining({
           userId: 'user-mongo-id',
           plan: 'premium',
           provider: 'apple',
         }),
+        'evt-1',
+      );
+    });
+
+    it('event.id yoksa grant idempotency anahtarı olaydan türetilir', async () => {
+      subscriptionsService.create.mockResolvedValue(undefined);
+
+      await controller.handleRevenueCat(`Bearer ${secret}`, payload());
+
+      expect(subscriptionsService.create).toHaveBeenCalledWith(
+        expect.anything(),
+        'INITIAL_PURCHASE:user-1:premium_monthly:1000',
       );
     });
 

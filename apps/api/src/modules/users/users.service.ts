@@ -17,6 +17,7 @@ import { UserDhikr } from '../user-dhikrs/schemas/user-dhikr.schema';
 import { AuthIdentity } from '../auth/schemas/auth-identity.schema';
 import { VirdDayProgress } from '../vird/schemas/vird-day-progress.schema';
 import { VirdProgram } from '../vird/schemas/vird-program.schema';
+import { Device } from '../devices/schemas/device.schema';
 
 @Injectable()
 export class UsersService {
@@ -37,6 +38,8 @@ export class UsersService {
     private readonly virdProgramModel: Model<VirdProgram>,
     @InjectModel(VirdDayProgress.name)
     private readonly virdDayProgressModel: Model<VirdDayProgress>,
+    @InjectModel(Device.name)
+    private readonly deviceModel: Model<Device>,
   ) {}
 
   async createUser(payload: CreateUserDto) {
@@ -231,6 +234,8 @@ export class UsersService {
       this.authIdentityModel.deleteMany({ userId: objectId }),
       this.virdProgramModel.deleteMany({ userId: objectId }),
       this.virdDayProgressModel.deleteMany({ userId: objectId }),
+      // Cihaz bir sonraki açılışta /v1/devices/register ile yeniden kaydolur.
+      this.deviceModel.deleteMany({ userId: objectId }),
     ]);
     await this.userModel.findByIdAndDelete(objectId);
   }

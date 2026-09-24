@@ -66,19 +66,29 @@ describe('Dhikrs (e2e)', () => {
     await request(t.http).get('/v1/dhikrs/not-a-valid-object-id').expect(404);
   });
 
-  // TODO(security): guard eklenince bu test 401 bekleyecek
-  it('BULGU: POST/PATCH/DELETE /v1/dhikrs tokensız çalışır (guard yok) — mevcut davranış belgelenir', async () => {
+  it('POST/PATCH/DELETE /v1/dhikrs: x-admin-secret yok/yanlış → 401, doğru → başarı', async () => {
     const localized = { tr: 'test-tr', en: 'test-en' };
+    const body = {
+      nameArabic: 'سبحان الله',
+      name: localized,
+      transliteration: localized,
+      meaning: localized,
+      virtue: localized,
+      source: localized,
+    };
+    const ADMIN = { 'x-admin-secret': 'test-admin-secret' }; // setup-env.ts
+
+    await request(t.http).post('/v1/dhikrs').send(body).expect(401);
+    await request(t.http)
+      .post('/v1/dhikrs')
+      .set('x-admin-secret', 'wrong')
+      .send(body)
+      .expect(401);
+
     const createRes = await request(t.http)
       .post('/v1/dhikrs')
-      .send({
-        nameArabic: 'سبحان الله',
-        name: localized,
-        transliteration: localized,
-        meaning: localized,
-        virtue: localized,
-        source: localized,
-      })
+      .set(ADMIN)
+      .send(body)
       .expect(201);
     const created = data<{ _id: string }>(createRes);
     expect(created._id).toBeTruthy();
@@ -86,8 +96,17 @@ describe('Dhikrs (e2e)', () => {
     await request(t.http)
       .patch(`/v1/dhikrs/${created._id}`)
       .send({ isActive: false })
-      .expect(200);
+      .expect(401);
+    await request(t.http).delete(`/v1/dhikrs/${created._id}`).expect(401);
 
-    await request(t.http).delete(`/v1/dhikrs/${created._id}`).expect(200);
+    await request(t.http)
+      .patch(`/v1/dhikrs/${created._id}`)
+      .set(ADMIN)
+      .send({ isActive: false })
+      .expect(200);
+    await request(t.http)
+      .delete(`/v1/dhikrs/${created._id}`)
+      .set(ADMIN)
+      .expect(200);
   });
 });

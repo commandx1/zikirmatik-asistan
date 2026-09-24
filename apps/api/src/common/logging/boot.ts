@@ -14,6 +14,8 @@ export function bootChecks(logger: AppLogger) {
     'AUTH_ACCESS_TOKEN_SECRET',
     'AUTH_REFRESH_TOKEN_SECRET',
     'REVENUECAT_WEBHOOK_SECRET',
+    // Yoksa istemci abonelik yazımı 503 (webhook + cron yine premium verir).
+    'REVENUECAT_SECRET_API_KEY',
     // Kampanya secret'ı yalnız sunucu push'u açıkken zorunlu (yoksa uç zaten fail-closed).
     ...(process.env.SERVER_PUSH_ENABLED === '1'
       ? ['CAMPAIGN_TRIGGER_SECRET']

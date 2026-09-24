@@ -1,4 +1,9 @@
+import {
+  ForbiddenException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { Types } from 'mongoose';
+import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { SubscriptionsService } from './subscriptions.service';
 
 type ExpireSubscriptionsFilter = {
@@ -30,7 +35,12 @@ describe('SubscriptionsService', () => {
       exec: jest.fn(),
     })) as unknown as jest.MockedFunction<UpdateManyFn>,
     exists: jest.fn(),
+    create: jest.fn(),
+    findOneAndUpdate: jest.fn(),
   };
+  const verifier = { verifyPremium: jest.fn() };
+  let env: Record<string, string | undefined> = {};
+  const configService = { get: (key: string) => env[key] };
   const userModel = {
     exists: jest.fn(),
     findById: jest.fn(),
@@ -58,9 +68,22 @@ describe('SubscriptionsService', () => {
     });
     userModel.updateOne.mockResolvedValue({ acknowledged: true });
 
+    subscriptionModel.create.mockReset();
+    subscriptionModel.create.mockImplementation((doc: unknown) =>
+      Promise.resolve({ toObject: () => doc }),
+    );
+    subscriptionModel.findOneAndUpdate.mockReset();
+    subscriptionModel.findOneAndUpdate.mockReturnValue({
+      lean: () => ({ exec: () => Promise.resolve({ _id: 'sub-1' }) }),
+    });
+    verifier.verifyPremium.mockReset();
+    env = { NODE_ENV: 'test' };
+
     service = new SubscriptionsService(
       subscriptionModel as never,
       userModel as never,
+      verifier as never,
+      configService as never,
     );
   });
 
@@ -86,5 +109,121 @@ describe('SubscriptionsService', () => {
       { $set: { isPremium: false } },
     );
     expect(result).toEqual({ userId, isPremium: false });
+  });
+
+  const USER = '507f1f77bcf86cd799439011';
+  const clientDto = () =>
+    Object.assign(new CreateSubscriptionDto(), {
+      userId: USER,
+      plan: 'premium' as const,
+      provider: 'apple' as const,
+      status: 'active' as const,
+      productId: 'client_product',
+      startDate: new Date('2026-01-01'),
+      endDate: new Date('2099-01-01'),
+    });
+
+  describe('createFromClient', () => {
+    it('dev/test + anahtar yok → istemciye güvenir, verifier çağrılmaz', async () => {
+      await service.createFromClient(clientDto());
+      expect(verifier.verifyPremium).not.toHaveBeenCalled();
+      expect(subscriptionModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({ productId: 'client_product' }),
+      );
+    });
+
+    it('production + anahtar yok → 503 SUBSCRIPTION_VERIFIER_UNCONFIGURED, yazmaz', async () => {
+      env = { NODE_ENV: 'production' };
+      const err = await service
+        .createFromClient(clientDto())
+        .catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(ServiceUnavailableException);
+      expect((err as ServiceUnavailableException).getResponse()).toMatchObject({
+        code: 'SUBSCRIPTION_VERIFIER_UNCONFIGURED',
+      });
+      expect(subscriptionModel.create).not.toHaveBeenCalled();
+    });
+
+    it('anahtar var + RC aktif değil → 403 SUBSCRIPTION_NOT_VERIFIED', async () => {
+      env = { NODE_ENV: 'production', REVENUECAT_SECRET_API_KEY: 'sk' };
+      verifier.verifyPremium.mockResolvedValueOnce({ active: false });
+      const err = await service
+        .createFromClient(clientDto())
+        .catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(ForbiddenException);
+      expect((err as ForbiddenException).getResponse()).toMatchObject({
+        code: 'SUBSCRIPTION_NOT_VERIFIED',
+      });
+      expect(subscriptionModel.create).not.toHaveBeenCalled();
+    });
+
+    it('anahtar var + RC ulaşılamaz (null) → 503 SUBSCRIPTION_VERIFIER_UNAVAILABLE (geçici)', async () => {
+      env = { NODE_ENV: 'production', REVENUECAT_SECRET_API_KEY: 'sk' };
+      verifier.verifyPremium.mockResolvedValueOnce(null);
+      const err = await service
+        .createFromClient(clientDto())
+        .catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(ServiceUnavailableException);
+      expect((err as ServiceUnavailableException).getResponse()).toMatchObject({
+        code: 'SUBSCRIPTION_VERIFIER_UNAVAILABLE',
+      });
+      expect(subscriptionModel.create).not.toHaveBeenCalled();
+    });
+
+    it('anahtar var + RC aktif → RC değerleriyle yazar', async () => {
+      env = { REVENUECAT_SECRET_API_KEY: 'sk' };
+      const expiresAt = new Date('2026-12-01');
+      verifier.verifyPremium.mockResolvedValue({
+        active: true,
+        productId: 'rc_product',
+        expiresAt,
+        provider: 'google',
+      });
+      await service.createFromClient(clientDto());
+      expect(subscriptionModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          productId: 'rc_product',
+          endDate: expiresAt,
+          provider: 'google',
+        }),
+      );
+    });
+  });
+
+  describe('syncPremiumFromClient', () => {
+    it('production + anahtar yok → istemci bayrağı yok sayılır (expire yok)', async () => {
+      env = { NODE_ENV: 'production' };
+      await service.syncPremiumFromClient(USER, {
+        hasActivePremiumEntitlement: false,
+      });
+      expect(subscriptionModel.updateMany).not.toHaveBeenCalled();
+      expect(verifier.verifyPremium).not.toHaveBeenCalled();
+    });
+
+    it('anahtar var → RC sonucu kullanılır, null ise DB durumuna dokunmaz', async () => {
+      env = { REVENUECAT_SECRET_API_KEY: 'sk' };
+      verifier.verifyPremium.mockResolvedValueOnce(null);
+      await service.syncPremiumFromClient(USER, {
+        hasActivePremiumEntitlement: false,
+      });
+      expect(subscriptionModel.updateMany).not.toHaveBeenCalled();
+
+      verifier.verifyPremium.mockResolvedValueOnce({ active: false });
+      await service.syncPremiumFromClient(USER, {
+        hasActivePremiumEntitlement: true,
+      });
+      expect(subscriptionModel.updateMany).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('create(providerEventId) → upsert ile idempotent yazar', async () => {
+    await service.create(clientDto(), 'evt-1');
+    expect(subscriptionModel.findOneAndUpdate).toHaveBeenCalledWith(
+      { providerEventId: 'evt-1' },
+       
+      { $setOnInsert: expect.objectContaining({ providerEventId: 'evt-1' }) },
+      { upsert: true, returnDocument: 'after' },
+    );
+    expect(subscriptionModel.create).not.toHaveBeenCalled();
   });
 });

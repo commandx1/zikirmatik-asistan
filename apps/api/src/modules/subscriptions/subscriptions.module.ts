@@ -5,6 +5,7 @@ import {
   Subscription,
   SubscriptionSchema,
 } from './schemas/subscription.schema';
+import { RevenueCatVerifierService } from './revenuecat-verifier.service';
 import { SubscriptionsController } from './subscriptions.controller';
 import { SubscriptionsService } from './subscriptions.service';
 
@@ -16,7 +17,7 @@ import { SubscriptionsService } from './subscriptions.service';
     ]),
   ],
   controllers: [SubscriptionsController],
-  providers: [SubscriptionsService],
+  providers: [SubscriptionsService, RevenueCatVerifierService],
   exports: [SubscriptionsService],
 })
 export class SubscriptionsModule {}

@@ -35,6 +35,7 @@ describe('UsersService', () => {
       noopModel,
       noopModel,
       noopModel,
+      noopModel,
     );
   });
 
@@ -140,7 +141,7 @@ describe('UsersService', () => {
   });
 
   describe('deleteUserAllData', () => {
-    it('also deletes vird_programs and vird_day_progress documents for the user', async () => {
+    it('also deletes vird_programs, vird_day_progress and devices for the user', async () => {
       const userIdToDelete = '507f1f77bcf86cd799439011';
       const deleteMany = () => ({
         deleteMany: jest.fn().mockResolvedValue({}),
@@ -150,6 +151,7 @@ describe('UsersService', () => {
       };
       const virdProgramModel = deleteMany();
       const virdDayProgressModel = deleteMany();
+      const deviceModel = deleteMany();
 
       const deletionService = new UsersService(
         userModelForDeletion as never,
@@ -161,6 +163,7 @@ describe('UsersService', () => {
         deleteMany() as never,
         virdProgramModel as never,
         virdDayProgressModel as never,
+        deviceModel as never,
       );
 
       await deletionService.deleteUserAllData(userIdToDelete);
@@ -169,6 +172,9 @@ describe('UsersService', () => {
         userId: new Types.ObjectId(userIdToDelete),
       });
       expect(virdDayProgressModel.deleteMany).toHaveBeenCalledWith({
+        userId: new Types.ObjectId(userIdToDelete),
+      });
+      expect(deviceModel.deleteMany).toHaveBeenCalledWith({
         userId: new Types.ObjectId(userIdToDelete),
       });
       expect(userModelForDeletion.findByIdAndDelete).toHaveBeenCalledWith(

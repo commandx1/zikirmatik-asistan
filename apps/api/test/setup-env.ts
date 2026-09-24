@@ -13,6 +13,9 @@ Object.assign(process.env, {
   AUTH_ACCESS_TOKEN_TTL_MINUTES: '60',
   REVENUECAT_WEBHOOK_SECRET: 'test-rc-secret',
   CAMPAIGN_TRIGGER_SECRET: 'test-campaign-secret',
+  ADMIN_API_SECRET: 'test-admin-secret',
+  // Tanımlı → istemci abonelik yolu RevenueCatVerifierService'ten geçer (e2e'de mock).
+  REVENUECAT_SECRET_API_KEY: 'test-rc-api-key',
   SERVER_PUSH_ENABLED: '0',
   LOG_LEVEL: 'error',
   OPENAI_API_KEY: 'test-key',

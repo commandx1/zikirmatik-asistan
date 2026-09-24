@@ -33,6 +33,8 @@ import {
   VirdProgramSchema,
 } from '../vird/schemas/vird-program.schema';
 
+import { Device, DeviceSchema } from '../devices/schemas/device.schema';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -47,6 +49,7 @@ import {
       // import edilmez, tıpkı diğer tüm bağımlılıklar gibi).
       { name: VirdProgram.name, schema: VirdProgramSchema },
       { name: VirdDayProgress.name, schema: VirdDayProgressSchema },
+      { name: Device.name, schema: DeviceSchema },
     ]),
   ],
   controllers: [UsersController],

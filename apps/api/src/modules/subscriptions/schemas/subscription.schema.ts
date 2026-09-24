@@ -31,6 +31,10 @@ export class Subscription {
   @Prop({ type: Date, required: true })
   endDate!: Date;
 
+  // Yalnız webhook grant'leri doldurur (RevenueCat event.id) — retry'da tek belge.
+  @Prop({ type: String, unique: true, sparse: true })
+  providerEventId?: string;
+
   readonly createdAt!: Date;
   readonly updatedAt!: Date;
 }
