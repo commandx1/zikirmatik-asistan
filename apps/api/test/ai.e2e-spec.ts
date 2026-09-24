@@ -17,6 +17,7 @@ import type { DhikrDocument } from '../src/modules/dhikrs/schemas/dhikr.schema';
 import {
   FREE_SIGNUP_BONUS_CREDIT_AMOUNT,
   PREMIUM_MONTHLY_CREDIT_AMOUNT,
+  VIRD_PROGRAM_CREDIT_COST,
 } from '../src/modules/ai/credits.constants';
 import {
   User,
@@ -346,10 +347,12 @@ describe('AI (e2e)', () => {
     spy.mockRestore();
   });
 
-  it('POST /v1/ai/vird-programs: ücretsiz kullanıcı 3 kredisiyle çağırabilir (ürün kuralı: premium kapısı yok)', async () => {
+  it('POST /v1/ai/vird-programs: ücretsiz kullanıcı 3 kredisiyle program üretir, 3 kredi düşer, activate çalışır (ürün kuralı: premium kapısı yok)', async () => {
     const user = await signIn(t.http, { sub: `e2e-ai-${randomUUID()}` });
     const dhikrModel = t.model<DhikrDocument>('Dhikr');
-    for (let i = 0; i < 5; i++) await seedDhikr(dhikrModel);
+    // Farklı nameArabic: aday havuzu canonicalKey ile dedupe edilir.
+    for (const nameArabic of ['سبحان الله', 'الحمد لله', 'الله أكبر'])
+      await seedDhikr(dhikrModel, { nameArabic });
 
     // ÜRÜN KURALI (2026-09-12): AI program üretimi herkese açık, maliyeti
     // VIRD_PROGRAM_CREDIT_COST (3) kredi. Ücretsiz kullanıcının 3 kredilik
@@ -361,16 +364,52 @@ describe('AI (e2e)', () => {
         flowId: randomUUID(),
         freeText: 'sabah zikirleri',
         durationDays: 7,
-        slots: ['morning'],
-      });
+        slots: ['morning', 'evening'],
+      })
+      .expect(201);
 
-    // Mock 'program' kind için düz metin döner (tool-call üretmez) — ajan
-    // buildProgram tool-çağrısı bekler, bu yüzden invalid_output (503)
-    // bekleniyor. Gerçek sonucu esnek biçimde doğrula ve belgele.
-    expect([201, 503]).toContain(res.status);
-    if (res.status === 503) {
-      expect(errCode(res)).toBe('AI_UNAVAILABLE');
-    }
+    const body = data<{
+      kind: string;
+      programId: string;
+      remainingCredits: number;
+      program: {
+        durationDays: number;
+        phases: Array<{
+          fromDay: number;
+          toDay: number;
+          slots: Record<string, Array<{ dhikrId: string; target: number }>>;
+        }>;
+      };
+    }>(res);
+    expect(body.kind).toBe('program');
+    expect(body.remainingCredits).toBe(
+      FREE_SIGNUP_BONUS_CREDIT_AMOUNT - VIRD_PROGRAM_CREDIT_COST,
+    );
+    expect(body.program.durationDays).toBe(7);
+    expect(body.program.phases).toHaveLength(1);
+    expect(body.program.phases[0]).toMatchObject({ fromDay: 1, toDay: 7 });
+    expect(Object.keys(body.program.phases[0].slots).sort()).toEqual([
+      'evening',
+      'morning',
+    ]);
+    expect(body.program.phases[0].slots.morning).toHaveLength(2);
+    expect(ai.calls).toEqual(['expand', 'program']);
+    expect(
+      await t.model('AiCreditLedger').countDocuments({
+        userId: new Types.ObjectId(user.userId),
+        reason: 'VIRD_PROGRAM_DEBIT',
+      }),
+    ).toBe(1);
+
+    await request(t.http)
+      .post(`/v1/vird/programs/${body.programId}/activate`)
+      .set(bearer(user.accessToken))
+      .expect(201);
+    const program = await request(t.http)
+      .get(`/v1/vird/programs/${body.programId}`)
+      .set(bearer(user.accessToken))
+      .expect(200);
+    expect(data<{ status: string }>(program).status).toBe('active');
   });
 
   it("mock NODE_ENV=production'da fırlatır", () => {

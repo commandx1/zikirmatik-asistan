@@ -56,6 +56,8 @@ export const MOCK_EMBEDDING_DIMENSIONS = 3072;
  * - noOutcome : select → her adımda geçersiz ref → outcome yok → invalid_output
  * - error503  : her çağrı non-retryable APICallError(400) → provider_error
  * - timeout   : her çağrı TimeoutError → timeout (withAiRetry 2 dener)
+ * program → her modda (hata modları hariç) 1. adımda buildProgram: tek faz
+ *   1..süre, istenen her dilime ilk 2 aday, target = tekrarHedefi ?? 33.
  * expand/classify/chat JSON veya düz metin üretir (responseFormat'a göre).
  */
 @Injectable()
@@ -145,6 +147,9 @@ export class MockAiRuntimeService extends AiRuntimeService {
     if (kind === 'select') {
       return toolCallResult(this.selectToolCall(options));
     }
+    if (kind === 'program') {
+      return toolCallResult(programToolCall(options));
+    }
     if (options.responseFormat?.type === 'json') {
       const json =
         kind === 'expand'
@@ -197,6 +202,42 @@ export class MockAiRuntimeService extends AiRuntimeService {
         return select;
     }
   }
+}
+
+/** Vird ajanının user prompt'undan (buildVirdProgramUserPrompt) geçerli bir buildProgram çağrısı üretir. */
+function programToolCall(options: LanguageModelV3CallOptions): {
+  toolName: string;
+  input: unknown;
+} {
+  const text = options.prompt
+    .flatMap((m) => (m.role === 'user' ? m.content : []))
+    .map((part) => (part.type === 'text' ? part.text : ''))
+    .join('\n');
+  const days = Number(/Program süresi: (\d+) gün/.exec(text)?.[1] ?? 7);
+  const slots = /İstenen dilimler: (.+)/
+    .exec(text)?.[1]
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean) ?? ['morning'];
+  const items = Array.from(text.matchAll(/^(C\d+) \|.*\| (\d+|—)$/gm), (m) => ({
+    ref: m[1],
+    target: m[2] === '—' ? 33 : Number(m[2]),
+  })).slice(0, 2);
+  return {
+    toolName: 'buildProgram',
+    input: {
+      title: 'Mock vird programı',
+      summary: 'Mock program özeti.',
+      phases: [
+        {
+          fromDay: 1,
+          toDay: days,
+          focus: 'Mock odak',
+          slots: Object.fromEntries(slots.map((slot) => [slot, items])),
+        },
+      ],
+    },
+  };
 }
 
 function textResult(text: string): LanguageModelV3GenerateResult {
