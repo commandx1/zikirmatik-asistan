@@ -9,7 +9,7 @@ type ProfileSectionTitleProps = {
 export function ProfileSectionTitle({ label, accent = false }: ProfileSectionTitleProps) {
   const upper = useLocaleUpper();
   return (
-    <Text className={`mb-2 px-1 text-sm font-semibold tracking-[1.1px] ${accent ? "text-[--accent]" : "text-[--text-muted]"}`}>
+    <Text className={`mb-2 px-1 text-sm font-semibold tracking-[1.1px] ${accent ? "text-accent" : "text-text-muted"}`}>
       {upper(label)}
     </Text>
   );

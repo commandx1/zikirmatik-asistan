@@ -66,11 +66,11 @@ export function PageHeader({
         )}
 
         <View className="flex-1 items-center px-2">
-          <Text className="text-xl leading-7 font-semibold text-center text-[--text-primary]" numberOfLines={2}>
+          <Text className="text-xl leading-7 font-semibold text-center text-text-primary" numberOfLines={2}>
             {title}
           </Text>
           {subtitle ? (
-            <Text testID={subtitleTestID} className="mt-0.5 text-sm leading-5 text-center text-[--text-muted]" numberOfLines={2}>
+            <Text testID={subtitleTestID} className="mt-0.5 text-sm leading-5 text-center text-text-muted" numberOfLines={2}>
               {subtitle}
             </Text>
           ) : null}

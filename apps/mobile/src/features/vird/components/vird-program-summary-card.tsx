@@ -37,11 +37,11 @@ export function VirdProgramSummaryCard({ program }: Props) {
   return (
     <ThemedCard className="mb-4 rounded-2xl p-4" accent="accent" elevated>
       <View className="mb-1 flex-row items-center justify-between">
-        <Text className="text-xs font-semibold text-[--accent]">{t(`vird:programKind.${program.kind}`)}</Text>
-        <Text className="text-xs text-[--text-muted]">{dayLabel}</Text>
+        <Text className="text-xs font-semibold text-accent">{t(`vird:programKind.${program.kind}`)}</Text>
+        <Text className="text-xs text-text-muted">{dayLabel}</Text>
       </View>
 
-      <Text className="mb-3 text-lg font-semibold text-[--text-primary]">{resolveLocalizedText(program.title, locale)}</Text>
+      <Text className="mb-3 text-lg font-semibold text-text-primary">{resolveLocalizedText(program.title, locale)}</Text>
 
       {phase ? (
         <View className="gap-3">
@@ -52,17 +52,17 @@ export function VirdProgramSummaryCard({ program }: Props) {
             }
             return (
               <View key={slot}>
-                <Text className="mb-1 text-xs font-semibold text-[--text-muted]">{t(`vird:slots.${slot}`)}</Text>
+                <Text className="mb-1 text-xs font-semibold text-text-muted">{t(`vird:slots.${slot}`)}</Text>
                 {items.map((item, index) => {
                   const ref = resolveDhikrRef(item);
                   const snapshot = ref ? program.dhikrs[ref] : undefined;
                   const name = snapshot ? resolveLocalizedText(snapshot.name, locale) : t("vird:home.itemFallbackName");
                   return (
                     <View key={`${slot}-${ref ?? index}`} className="flex-row items-center justify-between py-0.5">
-                      <Text className="flex-1 pr-2 text-sm text-[--text-primary]" numberOfLines={1}>
+                      <Text className="flex-1 pr-2 text-sm text-text-primary" numberOfLines={1}>
                         {name}
                       </Text>
-                      <Text className="text-xs text-[--text-muted]">{t("vird:setup.targetSuffix", { count: item.target })}</Text>
+                      <Text className="text-xs text-text-muted">{t("vird:setup.targetSuffix", { count: item.target })}</Text>
                     </View>
                   );
                 })}
@@ -71,7 +71,7 @@ export function VirdProgramSummaryCard({ program }: Props) {
           })}
         </View>
       ) : (
-        <Text className="text-xs text-[--text-muted]">{t("vird:home.noItemsToday")}</Text>
+        <Text className="text-xs text-text-muted">{t("vird:home.noItemsToday")}</Text>
       )}
 
       <Pressable

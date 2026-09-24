@@ -97,13 +97,13 @@ export function ZikirFormModal({
       animationType='fade'
       showHandle
       overlayClassName='flex-1 justify-end bg-black/55'
-      sheetClassName='rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-10'
+      sheetClassName='rounded-t-3xl border-t border-white/10 bg-card p-5 pb-10'
       scrollContentContainerStyle={{ paddingBottom: 24 }}
     >
-      <Text className='mb-1 text-lg font-semibold text-[--text-primary]'>{title}</Text>
-      <Text className='mb-4 text-xs text-[--text-muted]'>{description}</Text>
+      <Text className='mb-1 text-lg font-semibold text-text-primary'>{title}</Text>
+      <Text className='mb-4 text-xs text-text-muted'>{description}</Text>
 
-      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>{t('focus:form.nameLabel')}</Text>
+      <Text className='mb-1.5 text-xs font-medium text-text-primary'>{t('focus:form.nameLabel')}</Text>
       <ThemedInput
         value={nameDraft}
         onChangeText={text => {
@@ -111,11 +111,11 @@ export function ZikirFormModal({
           clearErrors()
         }}
         placeholder={t('focus:form.namePlaceholder')}
-        className='mb-3 rounded-xl bg-[--bg] px-3'
+        className='mb-3 rounded-xl bg-bg px-3'
         autoFocus
       />
 
-      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>{t('focus:form.transliterationLabel')}</Text>
+      <Text className='mb-1.5 text-xs font-medium text-text-primary'>{t('focus:form.transliterationLabel')}</Text>
       <ThemedInput
         value={transliterationDraft}
         onChangeText={text => {
@@ -123,10 +123,10 @@ export function ZikirFormModal({
           clearErrors()
         }}
         placeholder={t('focus:form.transliterationPlaceholder')}
-        className='mb-3 rounded-xl bg-[--bg] px-3'
+        className='mb-3 rounded-xl bg-bg px-3'
       />
 
-      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>{t('focus:form.meaningLabel')}</Text>
+      <Text className='mb-1.5 text-xs font-medium text-text-primary'>{t('focus:form.meaningLabel')}</Text>
       <ThemedInput
         value={meaningDraft}
         onChangeText={text => {
@@ -134,10 +134,10 @@ export function ZikirFormModal({
           clearErrors()
         }}
         placeholder={t('focus:form.meaningPlaceholder')}
-        className='mb-3 rounded-xl bg-[--bg] px-3'
+        className='mb-3 rounded-xl bg-bg px-3'
       />
 
-      <Text className='mb-1.5 text-xs font-medium text-[--text-primary]'>{t('focus:form.targetLabel')}</Text>
+      <Text className='mb-1.5 text-xs font-medium text-text-primary'>{t('focus:form.targetLabel')}</Text>
       <ThemedInput
         value={targetDraft}
         onChangeText={value => {
@@ -146,14 +146,14 @@ export function ZikirFormModal({
         }}
         keyboardType='number-pad'
         placeholder={t('focus:form.targetPlaceholder')}
-        className='mb-2 rounded-xl bg-[--bg] px-3'
+        className='mb-2 rounded-xl bg-bg px-3'
       />
 
       {resolvedError ? <Text className='mb-3 text-xs text-[#F97373]'>{resolvedError}</Text> : null}
 
       <View className='mt-1 mb-2 flex-row items-center justify-end gap-2'>
         <Pressable onPress={onRequestClose} disabled={isSaving} className='rounded-full border border-white/20 px-4 py-2'>
-          <Text className='text-sm font-medium text-[--text-primary]'>{t('common:actions.cancel')}</Text>
+          <Text className='text-sm font-medium text-text-primary'>{t('common:actions.cancel')}</Text>
         </Pressable>
         <PrimaryCtaButton
           label={isSaving ? savingLabel : submitLabel}

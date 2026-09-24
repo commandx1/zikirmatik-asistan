@@ -44,8 +44,8 @@ function BenefitItem({ title, description }: { title: string; description: strin
         <FontAwesome6 name='check' size={12} color='#C8972A' />
       </View>
       <View className='flex-1'>
-        <Text className='text-base font-semibold text-[--text-primary]'>{title}</Text>
-        <Text className='mt-0.5 text-sm text-[--text-muted]'>{description}</Text>
+        <Text className='text-base font-semibold text-text-primary'>{title}</Text>
+        <Text className='mt-0.5 text-sm text-text-muted'>{description}</Text>
       </View>
     </View>
   )
@@ -112,7 +112,7 @@ export function ProfilePremiumSheet({
   return (
     <View className='absolute inset-0 z-50 justify-end'>
       <Pressable className='absolute inset-0 bg-black/60' onPress={onClose} />
-      <View testID={TEST_IDS.premium.sheet} className='rounded-t-[32px] border-t border-[--accent]/30 bg-[--card]' style={{ maxHeight: '90%' }}>
+      <View testID={TEST_IDS.premium.sheet} className='rounded-t-[32px] border-t border-[--accent]/30 bg-card' style={{ maxHeight: '90%' }}>
         <ScrollView
           testID={TEST_IDS.premium.scroll}
           showsVerticalScrollIndicator={false}
@@ -121,13 +121,13 @@ export function ProfilePremiumSheet({
           <View className='mb-6 h-1.5 w-12 self-center rounded-full bg-white/20' />
 
           <View className='mb-6 items-center'>
-            <View className='mb-4 h-16 w-16 items-center justify-center rounded-full bg-[--accent]'>
+            <View className='mb-4 h-16 w-16 items-center justify-center rounded-full bg-accent'>
               <FontAwesome6 name='crown' size={24} color='#0F1B2D' />
             </View>
-            <Text className='mb-2 text-2xl font-bold text-[--text-primary]' style={strongTextStyle}>
+            <Text className='mb-2 text-2xl font-bold text-text-primary' style={strongTextStyle}>
               {t('profile:premiumSheet.title')}
             </Text>
-            <Text className='text-center text-base text-[--text-muted]' style={regularTextStyle}>
+            <Text className='text-center text-base text-text-muted' style={regularTextStyle}>
               {t('profile:premiumSheet.subtitle')}
             </Text>
           </View>
@@ -141,15 +141,15 @@ export function ProfilePremiumSheet({
             <BenefitItem title={t('profile:premiumSheet.benefits.widget.title')} description={t('profile:premiumSheet.benefits.widget.description')} />
           </View>
 
-          <View className='mb-6 flex-row rounded-xl border border-white/5 bg-[--bg] p-1'>
+          <View className='mb-6 flex-row rounded-xl border border-white/5 bg-bg p-1'>
             <Pressable
               onPress={() => onSelectPlan('monthly')}
               disabled={isActivating}
-              className={`flex-1 rounded-lg py-2.5 ${selectedPlan === 'monthly' ? 'bg-[--accent]' : ''}`}
+              className={`flex-1 rounded-lg py-2.5 ${selectedPlan === 'monthly' ? 'bg-accent' : ''}`}
             >
               <Text
                 className={`text-center text-sm font-semibold ${
-                  selectedPlan === 'monthly' ? 'text-[#0F1B2D]' : 'text-[--text-muted]'
+                  selectedPlan === 'monthly' ? 'text-on-gold' : 'text-text-muted'
                 }`}
                 style={strongTextStyle}
               >
@@ -161,11 +161,11 @@ export function ProfilePremiumSheet({
             <Pressable
               onPress={() => onSelectPlan('annual')}
               disabled={isActivating}
-              className={`flex-1 rounded-lg py-2.5 ${selectedPlan === 'annual' ? 'bg-[--accent]' : ''}`}
+              className={`flex-1 rounded-lg py-2.5 ${selectedPlan === 'annual' ? 'bg-accent' : ''}`}
             >
               <Text
                 className={`text-center text-sm font-bold ${
-                  selectedPlan === 'annual' ? 'text-[#0F1B2D]' : 'text-[--text-muted]'
+                  selectedPlan === 'annual' ? 'text-on-gold' : 'text-text-muted'
                 }`}
                 style={strongTextStyle}
               >
@@ -176,7 +176,7 @@ export function ProfilePremiumSheet({
             </Pressable>
           </View>
 
-          <Text className='mb-3 text-center text-xs text-[--text-muted]' style={regularTextStyle}>
+          <Text className='mb-3 text-center text-xs text-text-muted' style={regularTextStyle}>
             {t('profile:premiumSheet.creditsRenewNote')}
           </Text>
 
@@ -185,9 +185,9 @@ export function ProfilePremiumSheet({
           <Pressable
             onPress={onStartPremium}
             disabled={isActivating}
-            className={`mb-3 rounded-xl bg-[--accent] py-4 ${isActivating ? 'opacity-60' : ''}`}
+            className={`mb-3 rounded-xl bg-accent py-4 ${isActivating ? 'opacity-60' : ''}`}
           >
-            <Text className='text-center text-lg font-bold text-[#0F1B2D]' style={strongTextStyle}>
+            <Text className='text-center text-lg font-bold text-on-gold' style={strongTextStyle}>
               {isActivating ? t('profile:premiumSheet.activating') : t('profile:premiumSheet.startButton')}
             </Text>
           </Pressable>
@@ -196,13 +196,13 @@ export function ProfilePremiumSheet({
             <View className='mb-3'>
               <View className='mb-4 flex-row items-center gap-3'>
                 <View className='h-px flex-1 bg-white/10' />
-                <Text className='text-xs font-semibold text-[--text-muted]' style={strongTextStyle}>
+                <Text className='text-xs font-semibold text-text-muted' style={strongTextStyle}>
                   {upper(t('profile:premiumSheet.orBuyCredits'))}
                 </Text>
                 <View className='h-px flex-1 bg-white/10' />
               </View>
 
-              <Text className='mb-2 text-center text-xs text-[--text-muted]' style={regularTextStyle}>
+              <Text className='mb-2 text-center text-xs text-text-muted' style={regularTextStyle}>
                 {t('profile:premiumSheet.creditsKeptNote')}
               </Text>
 
@@ -214,7 +214,7 @@ export function ProfilePremiumSheet({
                       key={item.productId}
                       onPress={() => onPurchaseTopup(item.productId)}
                       disabled={Boolean(purchasingTopupId) || isActivating}
-                      className={`flex-row items-center justify-between rounded-xl border border-white/10 bg-[--bg] px-4 py-3 ${
+                      className={`flex-row items-center justify-between rounded-xl border border-white/10 bg-bg px-4 py-3 ${
                         isPurchasing ? 'opacity-60' : ''
                       }`}
                     >
@@ -222,11 +222,11 @@ export function ProfilePremiumSheet({
                         <View className='h-9 w-9 items-center justify-center rounded-full bg-[--accent]/20'>
                           <FontAwesome6 name='bolt' size={14} color='#C8972A' />
                         </View>
-                        <Text className='text-base font-semibold text-[--text-primary]' style={strongTextStyle}>
+                        <Text className='text-base font-semibold text-text-primary' style={strongTextStyle}>
                           {t('profile:premiumSheet.creditsLabel', { count: item.credits })}
                         </Text>
                       </View>
-                      <Text className='text-base font-bold text-[--accent]' style={strongTextStyle}>
+                      <Text className='text-base font-bold text-accent' style={strongTextStyle}>
                         {isPurchasing ? t('profile:premiumSheet.purchasing') : item.priceString}
                       </Text>
                     </Pressable>
@@ -247,7 +247,7 @@ export function ProfilePremiumSheet({
           </Text>
 
           <Pressable onPress={onClose} testID={TEST_IDS.premium.close} className='py-2'>
-            <Text className='text-center text-sm font-medium text-[--text-muted]' style={regularTextStyle}>
+            <Text className='text-center text-sm font-medium text-text-muted' style={regularTextStyle}>
               {t('profile:premiumSheet.maybeLater')}
             </Text>
           </Pressable>

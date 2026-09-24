@@ -41,7 +41,7 @@ export function SourceDonut({ breakdown }: { breakdown: StatsSourceBreakdown }) 
   });
 
   return (
-    <View className="rounded-2xl border border-[--border] bg-[--card] p-4">
+    <View className="rounded-2xl border border-border bg-card p-4">
       <View className="flex-row items-center">
         <Svg width={SIZE} height={SIZE}>
           <Circle
@@ -76,8 +76,8 @@ export function SourceDonut({ breakdown }: { breakdown: StatsSourceBreakdown }) 
           {segments.map((segment) => (
             <View key={segment.key} className="flex-row items-center">
               <View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: segment.color }} />
-              <Text className="ml-2 flex-1 text-sm text-[--text-primary]">{t(`stats:sourceLabels.${segment.key}`)}</Text>
-              <Text className="text-sm font-semibold text-[--text-muted]">
+              <Text className="ml-2 flex-1 text-sm text-text-primary">{t(`stats:sourceLabels.${segment.key}`)}</Text>
+              <Text className="text-sm font-semibold text-text-muted">
                 {formatCounter(segment.value)}
                 {total > 0 ? ` · %${Math.round(segment.fraction * 100)}` : ""}
               </Text>

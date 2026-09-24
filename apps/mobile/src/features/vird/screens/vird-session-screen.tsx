@@ -320,12 +320,12 @@ function SessionBody({
       <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
         {items.length === 0 ? (
           <ThemedCard className="items-center rounded-2xl px-4 py-6">
-            <Text className="mb-4 text-sm text-[--text-muted]">{t('vird:home.noItemsToday')}</Text>
+            <Text className="mb-4 text-sm text-text-muted">{t('vird:home.noItemsToday')}</Text>
             <PrimaryCtaButton label={t('vird:session.close')} onPress={close} className="w-full" style={SESSION_CTA_STYLE} textClassName="text-base" />
           </ThemedCard>
         ) : allDone ? (
           <ThemedCard className="items-center rounded-2xl px-4 py-6">
-            <Text className="mb-2 text-base font-semibold text-[--text-primary]">
+            <Text className="mb-2 text-base font-semibold text-text-primary">
               {t('vird:session.completedTitle', { slot: sessionLabel })}
             </Text>
             {nextSession ? (
@@ -338,10 +338,10 @@ function SessionBody({
               />
             ) : (
               <>
-                <Text className="mb-1 text-base font-semibold text-[--text-primary]">
+                <Text className="mb-1 text-base font-semibold text-text-primary">
                   {t('vird:session.dayCompletedTitle')}
                 </Text>
-                <Text className="mb-4 text-xs font-semibold text-[--success]">
+                <Text className="mb-4 text-xs font-semibold text-success">
                   {streak.currentStreak > 0
                     ? t('vird:home.streakLabel', { count: streak.currentStreak })
                     : t('vird:home.streakStart')}
@@ -350,7 +350,7 @@ function SessionBody({
             )}
             {nextSession ? (
               <Pressable onPress={close} className="items-center self-center px-4 py-2">
-                <Text className="text-sm font-semibold text-[--text-muted]">{t('vird:session.close')}</Text>
+                <Text className="text-sm font-semibold text-text-muted">{t('vird:session.close')}</Text>
               </Pressable>
             ) : (
               <PrimaryCtaButton label={t('vird:session.close')} onPress={close} testID={TEST_IDS.vird.sessionFinish} className="w-full" style={SESSION_CTA_STYLE} textClassName="text-base" />
@@ -363,7 +363,7 @@ function SessionBody({
             ) : (
               <AppleWatchView model={model} controls="reset-only" testIDs={{ counter: TEST_IDS.vird.sessionCounter }} />
             )}
-            <Text testID={TEST_IDS.vird.session} className="-mt-4 mb-3 text-center text-xs text-[--text-muted]">
+            <Text testID={TEST_IDS.vird.session} className="-mt-4 mb-3 text-center text-xs text-text-muted">
               {`${position} · ${t('vird:session.remaining', { count: remainingReps(items) })}`}
             </Text>
             {current && current.count >= current.target && nextIndex != null ? (
@@ -376,17 +376,17 @@ function SessionBody({
                   style={SESSION_CTA_STYLE}
                   textClassName="text-base"
                 />
-                <Text className="mb-4 text-center text-xs text-[--text-muted]">
+                <Text className="mb-4 text-center text-xs text-text-muted">
                   {t('vird:session.nextName', { name: nextName })}
                 </Text>
               </>
             ) : null}
             {current && current.count < current.target && nextIndex != null ? (
               <Pressable onPress={goNext} className="mb-4 items-center self-center px-4 py-1">
-                <Text className="text-sm font-semibold text-[--text-muted]">{t('vird:session.skip')}</Text>
+                <Text className="text-sm font-semibold text-text-muted">{t('vird:session.skip')}</Text>
               </Pressable>
             ) : null}
-            <Text className="mb-1 text-lg font-semibold text-[--text-primary]">{name}</Text>
+            <Text className="mb-1 text-lg font-semibold text-text-primary">{name}</Text>
             <DhikrContentStack arabic={snapshot?.nameArabic} transliteration={transliteration} meaning={meaning} />
 
           </>

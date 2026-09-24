@@ -22,7 +22,7 @@ export function InfoTooltip({ visible }: InfoTooltipProps) {
     >
       <View className="flex-row items-start gap-3">
         <FontAwesome6 name="shield-halved" size={14} color="#D6A93D" style={{ marginTop: 2 }} />
-        <Text className="flex-1 text-sm leading-5 text-[--text-primary]">
+        <Text className="flex-1 text-sm leading-5 text-text-primary">
           {t("ai-guide:infoTooltip.text")}
         </Text>
       </View>

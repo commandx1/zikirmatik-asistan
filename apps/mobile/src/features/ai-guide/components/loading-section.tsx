@@ -69,7 +69,7 @@ function FadingStepLabel({ message }: { message: string }) {
 
   return (
     <Animated.View style={style}>
-      <Text className="text-sm font-semibold text-[--text-primary]">
+      <Text className="text-sm font-semibold text-text-primary">
         {displayed}
       </Text>
     </Animated.View>
@@ -127,7 +127,7 @@ export function LoadingSection({ visible, stepMessage }: LoadingSectionProps) {
     <View className="mb-8">
       <View className="mb-4 flex-row items-center gap-2 px-1">
         <FontAwesome6 name="sparkles" iconStyle="solid" size={12} color="#D6A93D" />
-        <Text className="text-sm font-semibold text-[--text-primary]">{t("ai-guide:loadingSection.title")}</Text>
+        <Text className="text-sm font-semibold text-text-primary">{t("ai-guide:loadingSection.title")}</Text>
       </View>
 
       <ThemedCard className="mb-4 rounded-[20px] px-5 py-4" accent="accentSoft">

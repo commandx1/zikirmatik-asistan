@@ -98,8 +98,8 @@ export function VirdReminderSettings({ onRequirePremium }: VirdReminderSettingsP
   if (!isPremium) {
     return (
       <ThemedCard className="mb-4 rounded-2xl p-4">
-        <Text className="mb-1 text-sm font-semibold text-[--text-primary]">{t("vird:reminders.settingsTitle")}</Text>
-        <Text className="mb-3 text-xs leading-4 text-[--text-muted]">{t("vird:reminders.premiumRequiredNote")}</Text>
+        <Text className="mb-1 text-sm font-semibold text-text-primary">{t("vird:reminders.settingsTitle")}</Text>
+        <Text className="mb-3 text-xs leading-4 text-text-muted">{t("vird:reminders.premiumRequiredNote")}</Text>
         <Pressable onPress={onRequirePremium} className="self-start rounded-full px-4 py-2" style={{ backgroundColor: tokens.accent }}>
           <Text className="text-xs font-semibold" style={{ color: tokens.bg }}>
             {t("vird:reminders.unlockCta")}
@@ -112,24 +112,24 @@ export function VirdReminderSettings({ onRequirePremium }: VirdReminderSettingsP
   return (
     <ThemedCard className="mb-4 rounded-2xl p-4">
       <View className="mb-1 flex-row items-center justify-between">
-        <Text className="text-sm font-semibold text-[--text-primary]">{t("vird:reminders.settingsTitle")}</Text>
+        <Text className="text-sm font-semibold text-text-primary">{t("vird:reminders.settingsTitle")}</Text>
         <TogglePill checked={reminderPrefs.enabled} onToggle={(next) => void handleToggleEnabled(next)} size="compact" />
       </View>
-      <Text className="mb-3 text-xs leading-4 text-[--text-muted]">
+      <Text className="mb-3 text-xs leading-4 text-text-muted">
         {isRequestingPermission ? t("vird:reminders.requestingPermission") : t("vird:reminders.settingsSubtitle")}
       </Text>
 
-      <Text className="mb-2 text-xs font-semibold text-[--text-muted]">{t("vird:reminders.slotsHeading")}</Text>
+      <Text className="mb-2 text-xs font-semibold text-text-muted">{t("vird:reminders.slotsHeading")}</Text>
       <View className="mb-4 gap-2.5">
         {SLOT_ORDER.map((slot) => (
           <View key={slot} className="flex-row items-center justify-between">
-            <Text className="text-sm text-[--text-primary]">{t(`vird:slots.${slot}`)}</Text>
+            <Text className="text-sm text-text-primary">{t(`vird:slots.${slot}`)}</Text>
             <TogglePill checked={reminderPrefs.slots[slot]} onToggle={(next) => handleToggleSlot(slot, next)} size="compact" />
           </View>
         ))}
       </View>
 
-      <Text className="mb-1.5 text-xs text-[--text-muted]">
+      <Text className="mb-1.5 text-xs text-text-muted">
         {reminderPrefs.coords ? t("vird:reminders.locationGps") : t("vird:reminders.locationFixed")}
       </Text>
       <Pressable
@@ -147,8 +147,8 @@ export function VirdReminderSettings({ onRequirePremium }: VirdReminderSettingsP
           durum satırı zaten sabit saatleri yazıyor. */}
       {reminderPrefs.coords ? (
       <View className="mt-1">
-        <Text className="mb-1 text-xs font-semibold text-[--text-muted]">{t("vird:reminders.previewHeading")}</Text>
-        <Text className="text-xs leading-4 text-[--text-primary]">
+        <Text className="mb-1 text-xs font-semibold text-text-muted">{t("vird:reminders.previewHeading")}</Text>
+        <Text className="text-xs leading-4 text-text-primary">
           {t("vird:prayerIndex.1")} {formatClock(preview.fajr)} · {t("vird:prayerIndex.2")} {formatClock(preview.dhuhr)} ·{" "}
           {t("vird:prayerIndex.3")} {formatClock(preview.asr)} · {t("vird:prayerIndex.4")} {formatClock(preview.maghrib)} ·{" "}
           {t("vird:prayerIndex.5")} {formatClock(preview.isha)}

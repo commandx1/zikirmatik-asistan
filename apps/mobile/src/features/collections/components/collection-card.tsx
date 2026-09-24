@@ -39,7 +39,7 @@ export function CollectionCard({ item, onPress }: Props) {
   return (
     <Pressable
       onPress={onPress}
-      className="flex-1 m-1.5 rounded-2xl border border-white/8 bg-[--card] p-4"
+      className="flex-1 m-1.5 rounded-2xl border border-white/8 bg-card p-4"
       style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}
     >
       <View className="mb-3 h-10 w-10 items-center justify-center rounded-full bg-[--accent]/15">
@@ -52,15 +52,15 @@ export function CollectionCard({ item, onPress }: Props) {
       </View>
 
       <Text
-        className="mb-1 text-base font-semibold leading-5 text-[--text-primary]"
+        className="mb-1 text-base font-semibold leading-5 text-text-primary"
         numberOfLines={2}
       >
         {resolveLocalizedText(item.label, locale)}
       </Text>
 
       <View className="mt-auto flex-row items-center justify-between pt-2">
-        <Text className="text-xs text-[--text-muted]">{categoryLabel}</Text>
-        <Text className="text-xs text-[--text-muted]">
+        <Text className="text-xs text-text-muted">{categoryLabel}</Text>
+        <Text className="text-xs text-text-muted">
           {t("collections:card.dhikrCount", { count: item.dhikrCount })}
         </Text>
       </View>

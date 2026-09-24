@@ -20,10 +20,10 @@ export function PrimaryCtaButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       {...props}
-      className={cx("relative items-center rounded-full bg-[#C8972A] py-4", className)}
+      className={cx("relative items-center rounded-full bg-gold py-4", className)}
       style={[{ boxShadow: "0 0 20px rgba(200,151,42,0.35)" }, style]}
     >
-      <Text className={cx("text-lg font-bold text-[#0F1B2D]", textClassName)}>{label}</Text>
+      <Text className={cx("text-lg font-bold text-on-gold", textClassName)}>{label}</Text>
     </Pressable>
   );
 }

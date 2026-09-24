@@ -21,19 +21,19 @@ const TemplateRow = memo(function TemplateRow({ item, vertical, locale, t, route
   return (
     <Pressable
       onPress={() => router.push({ pathname: "/vird/template/[key]", params: { key: item.key } })}
-      className={vertical ? "mb-3 flex-1 rounded-2xl border border-white/8 bg-[--card] p-3" : "w-40 rounded-2xl border border-white/8 bg-[--card] p-3"}
+      className={vertical ? "mb-3 flex-1 rounded-2xl border border-white/8 bg-card p-3" : "w-40 rounded-2xl border border-white/8 bg-card p-3"}
       style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
     >
       {item.isPremium ? (
         <View className="mb-2 self-start rounded-full bg-[--accent]/15 px-2 py-0.5">
-          <Text className="text-[10px] font-semibold text-[--accent]">{t("vird:templates.premiumBadge")}</Text>
+          <Text className="text-[10px] font-semibold text-accent">{t("vird:templates.premiumBadge")}</Text>
         </View>
       ) : null}
-      <Text className="mb-1 text-sm font-semibold leading-5 text-[--text-primary]" numberOfLines={2}>
+      <Text className="mb-1 text-sm font-semibold leading-5 text-text-primary" numberOfLines={2}>
         {item.title ? resolveLocalizedText(item.title, locale) : t("vird:templates.untitledFallback")}
       </Text>
       {typeof item.dayCount === "number" ? (
-        <Text className="text-xs text-[--text-muted]">
+        <Text className="text-xs text-text-muted">
           {t("vird:templates.dayCountLabel", { count: item.dayCount })}
         </Text>
       ) : null}
@@ -98,7 +98,7 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
   return (
     <View className="mb-3 mt-2">
       {vertical ? null : (
-        <Text className="mb-2 px-4 text-xs font-semibold tracking-[0.8px] text-[--text-muted]">
+        <Text className="mb-2 px-4 text-xs font-semibold tracking-[0.8px] text-text-muted">
           {t("vird:templates.shelfTitle")}
         </Text>
       )}
@@ -108,7 +108,7 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
           <ActivityIndicator color={tokens.accent} />
         </View>
       ) : error ? (
-        <Text className="px-4 text-xs text-[--text-muted]">{error}</Text>
+        <Text className="px-4 text-xs text-text-muted">{error}</Text>
       ) : (
         <FlatList
           data={templates}

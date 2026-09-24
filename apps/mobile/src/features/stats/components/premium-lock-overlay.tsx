@@ -27,7 +27,7 @@ export function PremiumLockOverlay({ locked, onUnlock, message, children }: Prem
         <View className="h-11 w-11 items-center justify-center rounded-full" style={{ backgroundColor: tokens.accent }}>
           <FontAwesome6 name="lock" iconStyle="solid" size={16} color={tokens.bg} />
         </View>
-        <Text className="mt-3 text-center text-sm text-[--text-muted]">
+        <Text className="mt-3 text-center text-sm text-text-muted">
           {message ?? t("stats:premiumLock.message")}
         </Text>
         <Pressable

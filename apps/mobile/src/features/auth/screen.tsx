@@ -81,7 +81,7 @@ export function AuthScreen() {
           testID={TEST_IDS.auth.close}
           accessibilityRole="button"
           accessibilityLabel={t("auth:screen.close")}
-          className="absolute z-10 h-11 w-11 items-center justify-center rounded-full border border-[--border] bg-[--card]"
+          className="absolute z-10 h-11 w-11 items-center justify-center rounded-full border border-border bg-card"
           style={{ top: insets.top + 8, right: 16 }}
         >
           <FontAwesome6 name="xmark" size={18} color={tokens.textMuted} />
@@ -117,13 +117,13 @@ export function AuthScreen() {
               <Image source={appLogo} style={{ height: 108, width: 108 }} resizeMode="contain" accessibilityIgnoresInvertColors />
             </View>
             <Text
-              className="text-center text-[--text-primary]"
+              className="text-center text-text-primary"
               style={{ fontSize: 32, fontWeight: "700", letterSpacing: -0.5, marginTop: 24 }}
             >
               {t("auth:screen.appName")}
             </Text>
             <Text
-              className="text-center text-[--text-muted]"
+              className="text-center text-text-muted"
               style={{ fontSize: 16, lineHeight: 24, maxWidth: 320, marginTop: 10 }}
             >
               {t("auth:screen.subtitle")}
@@ -132,7 +132,7 @@ export function AuthScreen() {
 
           <Animated.View
             entering={FadeInDown.duration(420).delay(70).reduceMotion(ReduceMotion.System)}
-            className="rounded-3xl border border-[--border] bg-[--card]"
+            className="rounded-3xl border border-border bg-card"
             style={{ marginTop: 28, padding: 16, gap: 14 }}
           >
             <ValueRow icon="cloud-arrow-up" label={t("auth:screen.valueSync")} accent={tokens.accent} textPrimary={tokens.textPrimary} />
@@ -157,7 +157,7 @@ export function AuthScreen() {
               accessibilityLiveRegion="polite"
             >
               <FontAwesome6 name="circle-exclamation" size={16} color="#F87171" />
-              <Text className="flex-1 text-[--text-primary]" style={{ fontSize: 14, lineHeight: 20 }}>
+              <Text className="flex-1 text-text-primary" style={{ fontSize: 14, lineHeight: 20 }}>
                 {authError}
               </Text>
             </Animated.View>
@@ -217,7 +217,7 @@ export function AuthScreen() {
 
             <View className="flex-row items-center gap-3" style={{ marginVertical: 4 }}>
               <View className="h-px flex-1" style={{ backgroundColor: tokens.border }} />
-              <Text className="text-[--text-muted]" style={{ fontSize: 13 }}>
+              <Text className="text-text-muted" style={{ fontSize: 13 }}>
                 {t("auth:screen.or")}
               </Text>
               <View className="h-px flex-1" style={{ backgroundColor: tokens.border }} />

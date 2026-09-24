@@ -37,11 +37,11 @@ export function HistorySection({
       <View className="mb-3 flex-row items-center justify-between px-1">
         <View className="flex-row items-center gap-2">
           <FontAwesome6 name="clock-rotate-left" size={12} color={tokens.accent} />
-          <Text className="text-sm font-semibold text-[--text-primary]">{t("ai-guide:history.title")}</Text>
+          <Text className="text-sm font-semibold text-text-primary">{t("ai-guide:history.title")}</Text>
         </View>
         {totalCount > 2 ? (
           <Pressable onPress={onToggleExpanded} className="rounded-full px-3 py-1.5">
-            <Text className="text-xs font-semibold text-[--accent]">
+            <Text className="text-xs font-semibold text-accent">
               {isExpanded ? t("ai-guide:history.showLastTwo") : t("ai-guide:history.showAll")}
             </Text>
           </Pressable>
@@ -67,19 +67,19 @@ export function HistorySection({
               }}
             >
               <View className="mb-2 flex-row items-center justify-between gap-3">
-                <Text className="flex-1 text-sm font-semibold text-[--text-primary]" numberOfLines={1}>
+                <Text className="flex-1 text-sm font-semibold text-text-primary" numberOfLines={1}>
                   {item.prompt}
                 </Text>
-                <Text className="text-xs text-[--text-muted]">{formatHistoryDate(item.createdAt)}</Text>
+                <Text className="text-xs text-text-muted">{formatHistoryDate(item.createdAt)}</Text>
               </View>
-              <Text className="text-xs leading-5 text-[--text-muted]" numberOfLines={2}>
+              <Text className="text-xs leading-5 text-text-muted" numberOfLines={2}>
                 {names || t("ai-guide:history.noRecommendations")}
               </Text>
               <View className="mt-3 flex-row items-center justify-between">
-                <Text className="text-xs font-medium text-[--text-muted]">
+                <Text className="text-xs font-medium text-text-muted">
                   {t("ai-guide:history.recommendationCount", { count: item.recommendations.length })}
                 </Text>
-                <Text className="text-xs font-semibold text-[--accent]">
+                <Text className="text-xs font-semibold text-accent">
                   {isActive ? t("ai-guide:history.active") : t("ai-guide:history.show")}
                 </Text>
               </View>

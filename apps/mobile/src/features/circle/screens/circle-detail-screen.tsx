@@ -125,31 +125,31 @@ export function CircleDetailScreen({ id }: { id: string }) {
             <Text className="text-xs font-semibold" style={{ color: storedCircle.status === "active" ? tokens.success : tokens.textMuted }}>
               {t(`circle:status.${storedCircle.status}`)}
             </Text>
-            <Text className="text-xs text-[--text-muted]">{t("circle:hub.membersCount", { count: storedCircle.memberCount })}</Text>
+            <Text className="text-xs text-text-muted">{t("circle:hub.membersCount", { count: storedCircle.memberCount })}</Text>
           </View>
 
           <View className="mb-1.5 h-2 overflow-hidden rounded-full bg-white/10">
             <View className="h-2 rounded-full" style={{ width: `${percent}%`, backgroundColor: tokens.accent }} />
           </View>
-          <Text className="mb-3 text-sm font-semibold text-[--text-primary]">
+          <Text className="mb-3 text-sm font-semibold text-text-primary">
             {t("circle:home.progress", { total: storedCircle.totalCount, goal: storedCircle.goalCount })}
           </Text>
 
-          <Text className="text-xs text-[--text-muted]">
+          <Text className="text-xs text-text-muted">
             {t("circle:detail.myContribution", {
               total: storedCircle.myTotal,
               today: Math.max(detail?.myTodayCount ?? 0, todayCount?.dateKey === toDateKey(new Date()) ? todayCount.count : 0)
             })}
           </Text>
           {storedCircle.endDate ? (
-            <Text className="mt-0.5 text-xs text-[--text-muted]">{t("circle:detail.endDate", { date: storedCircle.endDate })}</Text>
+            <Text className="mt-0.5 text-xs text-text-muted">{t("circle:detail.endDate", { date: storedCircle.endDate })}</Text>
           ) : null}
         </ThemedCard>
 
         {storedCircle.status === "completed" ? (
           <ThemedCard className="mb-4 items-center rounded-2xl px-4 py-6">
-            <Text className="mb-1 text-base font-semibold text-[--text-primary]">{t("circle:detail.completedTitle")}</Text>
-            <Text className="text-xs text-[--text-muted]">{t("circle:detail.completedHint")}</Text>
+            <Text className="mb-1 text-base font-semibold text-text-primary">{t("circle:detail.completedTitle")}</Text>
+            <Text className="text-xs text-text-muted">{t("circle:detail.completedHint")}</Text>
           </ThemedCard>
         ) : storedCircle.status === "active" ? (
           <PrimaryCtaButton
@@ -162,16 +162,16 @@ export function CircleDetailScreen({ id }: { id: string }) {
         {detail?.members && detail.members.length > 0 ? (
           <View className="mb-4">
             <View className="mb-2 flex-row items-center justify-between">
-              <Text className="text-xs font-semibold text-[--text-muted]">{t("circle:detail.members")}</Text>
+              <Text className="text-xs font-semibold text-text-muted">{t("circle:detail.members")}</Text>
               {typeof detail.activeTodayCount === "number" ? (
-                <Text className="text-xs text-[--text-muted]">
+                <Text className="text-xs text-text-muted">
                   {t("circle:detail.activeToday", { active: detail.activeTodayCount, total: detail.members.length })}
                 </Text>
               ) : null}
             </View>
             {detail.members.map((member, index) => (
               <View key={`${member.displayName}-${index}`} className="mb-1 flex-row items-center justify-between">
-                <Text className="text-sm text-[--text-primary]">{member.displayName}</Text>
+                <Text className="text-sm text-text-primary">{member.displayName}</Text>
                 {member.activeToday === true ? (
                   <FontAwesome6
                     name="check"
@@ -187,8 +187,8 @@ export function CircleDetailScreen({ id }: { id: string }) {
 
         <ThemedCard className="mb-4 flex-row items-center justify-between rounded-2xl p-4">
           <View>
-            <Text className="text-xs text-[--text-muted]">{t("circle:detail.code")}</Text>
-            <Text testID={TEST_IDS.circle.code} className="text-base font-semibold tracking-[2px] text-[--text-primary]">{storedCircle.code}</Text>
+            <Text className="text-xs text-text-muted">{t("circle:detail.code")}</Text>
+            <Text testID={TEST_IDS.circle.code} className="text-base font-semibold tracking-[2px] text-text-primary">{storedCircle.code}</Text>
           </View>
           <PrimaryCtaButton label={t("circle:detail.share")} onPress={() => void handleShare()} style={{ paddingVertical: 10, paddingHorizontal: 18 }} textClassName="text-sm" />
         </ThemedCard>

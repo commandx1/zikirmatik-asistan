@@ -203,27 +203,27 @@ export function TemplateDetailScreen({ templateKey }: Props) {
         </View>
       ) : loadError || !template ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Text className="text-center text-[--text-muted]">{loadError ?? t("vird:templates.loadError")}</Text>
+          <Text className="text-center text-text-muted">{loadError ?? t("vird:templates.loadError")}</Text>
         </View>
       ) : (
         <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
           {template.isPremium ? (
             <View className="mb-4 self-start rounded-full bg-[--accent]/15 px-3 py-1">
-              <Text className="text-xs font-semibold text-[--accent]">{t("vird:templates.premiumBadge")}</Text>
+              <Text className="text-xs font-semibold text-accent">{t("vird:templates.premiumBadge")}</Text>
             </View>
           ) : null}
 
           {template.description ? (
             <ThemedCard className="mb-5 rounded-2xl px-4 py-3" accent="accentSoft">
-              <Text className="text-sm leading-5 text-[--text-muted]">{resolveLocalizedText(template.description, locale)}</Text>
+              <Text className="text-sm leading-5 text-text-muted">{resolveLocalizedText(template.description, locale)}</Text>
             </ThemedCard>
           ) : null}
 
-          <Text className="mb-2 text-xs font-semibold text-[--text-muted]">{t("vird:templates.detail.phasesHeading")}</Text>
+          <Text className="mb-2 text-xs font-semibold text-text-muted">{t("vird:templates.detail.phasesHeading")}</Text>
           <View className="gap-4">
             {template.phases.map((phase, phaseIndex) => (
               <ThemedCard key={`${phase.fromDay}-${phaseIndex}`} className="rounded-2xl p-4">
-                <Text className="mb-3 text-xs font-semibold text-[--accent]">
+                <Text className="mb-3 text-xs font-semibold text-accent">
                   {phase.toDay != null
                     ? t("vird:templates.detail.dayRangeLabel", { from: phase.fromDay, to: phase.toDay })
                     : t("vird:templates.detail.dayRangeOpenLabel", { from: phase.fromDay })}
@@ -237,13 +237,13 @@ export function TemplateDetailScreen({ templateKey }: Props) {
                     }
                     return (
                       <View key={String(slot)}>
-                        <Text className="mb-1 text-xs font-semibold text-[--text-muted]">{t(`vird:slots.${slot}`)}</Text>
+                        <Text className="mb-1 text-xs font-semibold text-text-muted">{t(`vird:slots.${slot}`)}</Text>
                         {items.map((item) => (
                           <View key={item.dhikrId} className="flex-row items-center justify-between py-0.5">
-                            <Text className="flex-1 pr-2 text-sm text-[--text-primary]" numberOfLines={1}>
+                            <Text className="flex-1 pr-2 text-sm text-text-primary" numberOfLines={1}>
                               {resolveLocalizedText(item.transliteration, locale) || resolveLocalizedText(item.name, locale)}
                             </Text>
-                            <Text className="text-xs text-[--text-muted]">{t("vird:setup.targetSuffix", { count: item.target })}</Text>
+                            <Text className="text-xs text-text-muted">{t("vird:setup.targetSuffix", { count: item.target })}</Text>
                           </View>
                         ))}
                       </View>

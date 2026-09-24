@@ -15,12 +15,12 @@ export const MessageBubble = memo(function MessageBubble({ message }: MessageBub
     <View className={`mb-4 w-full ${isUser ? "items-end" : "items-start"}`}>
       <View
         className={`max-w-[88%] rounded-2xl px-4 py-3 ${
-          isUser ? "rounded-br-sm bg-[--accent]" : "rounded-bl-sm border border-white/10 bg-[--card]"
+          isUser ? "rounded-br-sm bg-accent" : "rounded-bl-sm border border-white/10 bg-card"
         }`}
       >
         <Text
           testID={isUser ? undefined : TEST_IDS.aiChat.assistantMessage}
-          className={`text-sm leading-5 ${isUser ? "text-[#111827]" : "text-[--text-primary]"}`}
+          className={`text-sm leading-5 ${isUser ? "text-[#111827]" : "text-text-primary"}`}
         >
           {message.content}
         </Text>
@@ -30,7 +30,7 @@ export const MessageBubble = memo(function MessageBubble({ message }: MessageBub
             {message.sourceCitations.map((citation, index) => (
               <Text
                 key={`${citation.sourceId}-${index}`}
-                className="text-xs leading-4 text-[--text-muted]"
+                className="text-xs leading-4 text-text-muted"
               >
                 {citation.pageStart === citation.pageEnd
                   ? i18n.t("ai-chat:citation.singlePage", {

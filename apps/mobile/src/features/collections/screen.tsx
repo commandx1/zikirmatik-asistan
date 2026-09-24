@@ -73,7 +73,7 @@ export function CollectionsScreen() {
         <View key={catKey} className="flex-1">
           {showTemplateShelf ? <TemplateShelf /> : null}
           <View className="flex-1 items-center justify-center px-8">
-            <Text className="text-center text-[--text-muted]">{error}</Text>
+            <Text className="text-center text-text-muted">{error}</Text>
           </View>
         </View>
       );
@@ -92,7 +92,7 @@ export function CollectionsScreen() {
           renderItem={renderCollectionItem}
           ListEmptyComponent={
             <View className="mt-16 items-center">
-              <Text className="text-[--text-muted]">{t("collections:screen.emptyList")}</Text>
+              <Text className="text-text-muted">{t("collections:screen.emptyList")}</Text>
             </View>
           }
         />

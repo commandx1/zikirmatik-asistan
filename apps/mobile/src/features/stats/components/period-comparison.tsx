@@ -16,12 +16,12 @@ function ComparisonRow({ label, data }: { label: string; data: StatsPeriodCompar
   return (
     <View className="flex-row items-center justify-between py-2">
       <View className="flex-1">
-        <Text className="text-sm font-medium text-[--text-primary]">{label}</Text>
-        <Text className="mt-0.5 text-xs text-[--text-muted]">
+        <Text className="text-sm font-medium text-text-primary">{label}</Text>
+        <Text className="mt-0.5 text-xs text-text-muted">
           {t("stats:periodComparison.previousPeriod", { count: formatCounter(data.previous) })}
         </Text>
       </View>
-      <Text className="mr-3 text-lg font-bold text-[--text-primary]">{formatCounter(data.current)}</Text>
+      <Text className="mr-3 text-lg font-bold text-text-primary">{formatCounter(data.current)}</Text>
       <View className="w-20 flex-row items-center justify-end">
         <FontAwesome6
           name={data.changePercent === 0 ? "minus" : isUp ? "arrow-trend-up" : "arrow-trend-down"}
@@ -44,9 +44,9 @@ export function PeriodComparison({
 }) {
   const { t } = useTranslation("stats");
   return (
-    <View className="rounded-2xl border border-[--border] bg-[--card] px-4 py-2">
+    <View className="rounded-2xl border border-border bg-card px-4 py-2">
       <ComparisonRow label={t("stats:periodComparison.thisWeek")} data={comparison.week} />
-      <View className="h-px bg-[--border]" />
+      <View className="h-px bg-border" />
       <ComparisonRow label={t("stats:periodComparison.thisMonth")} data={comparison.month} />
     </View>
   );

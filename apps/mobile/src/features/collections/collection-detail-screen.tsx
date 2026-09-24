@@ -152,7 +152,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
         </View>
       ) : error ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Text className="text-center text-[--text-muted]">{error}</Text>
+          <Text className="text-center text-text-muted">{error}</Text>
         </View>
       ) : (
         <ScrollView
@@ -161,7 +161,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
         >
           {detail?.description ? (
             <ThemedCard className="mb-5 rounded-2xl px-4 py-3" accent="accentSoft">
-              <Text className="text-sm leading-5 text-[--text-muted]">
+              <Text className="text-sm leading-5 text-text-muted">
                 {resolveLocalizedText(detail.description, locale)}
               </Text>
             </ThemedCard>
@@ -175,17 +175,17 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
                 elevated
               >
                 <View className="mb-1 flex-row items-center justify-between">
-                  <Text className="text-xs font-semibold tracking-[0.8px] text-[--text-muted]">
+                  <Text className="text-xs font-semibold tracking-[0.8px] text-text-muted">
                     {`${index + 1}/${detail.dhikrs.length}`}
                   </Text>
                   <View className="rounded-full bg-[--accent]/10 px-2.5 py-0.5">
-                    <Text className="text-xs font-medium text-[--accent]">
+                    <Text className="text-xs font-medium text-accent">
                       {dhikr.recommendedCount}×
                     </Text>
                   </View>
                 </View>
 
-                <Text className="text-base font-semibold text-[--text-primary]">
+                <Text className="text-base font-semibold text-text-primary">
                   {resolveLocalizedText(dhikr.name, locale)}
                 </Text>
 
@@ -196,7 +196,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
                 />
 
                 {dhikr.source ? (
-                  <Text className="mt-3 text-xs leading-4 text-[--text-muted]">
+                  <Text className="mt-3 text-xs leading-4 text-text-muted">
                     {resolveLocalizedText(dhikr.source, locale)}
                   </Text>
                 ) : null}
@@ -204,7 +204,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
                 <View className="mt-4 flex-row items-center justify-end">
                   <Pressable
                     onPress={() => handleStartDhikr(dhikr)}
-                    className="flex-row items-center gap-1.5 rounded-full bg-[--accent] px-4 py-2"
+                    className="flex-row items-center gap-1.5 rounded-full bg-accent px-4 py-2"
                     style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
                   >
                     <FontAwesome6

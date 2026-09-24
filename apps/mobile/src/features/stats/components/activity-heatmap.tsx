@@ -27,7 +27,7 @@ export function ActivityHeatmap({ heatmap }: { heatmap: StatsHeatmapPoint[] }) {
   const svgHeight = ROWS * STEP;
 
   return (
-    <View className="rounded-2xl border border-[--border] bg-[--card] p-4">
+    <View className="rounded-2xl border border-border bg-card p-4">
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <Svg width={svgWidth} height={svgHeight}>
           {heatmap.map((point, index) => {
@@ -50,14 +50,14 @@ export function ActivityHeatmap({ heatmap }: { heatmap: StatsHeatmapPoint[] }) {
       </ScrollView>
 
       <View className="mt-3 flex-row items-center justify-end gap-1.5">
-        <Text className="text-[10px] text-[--text-muted]">{t("stats:activityHeatmap.low")}</Text>
+        <Text className="text-[10px] text-text-muted">{t("stats:activityHeatmap.low")}</Text>
         {[0.25, 0.45, 0.7, 1].map((level) => (
           <View
             key={level}
             style={{ width: CELL, height: CELL, borderRadius: 2, backgroundColor: withAlpha(tokens.accent, level) }}
           />
         ))}
-        <Text className="text-[10px] text-[--text-muted]">{t("stats:activityHeatmap.high")}</Text>
+        <Text className="text-[10px] text-text-muted">{t("stats:activityHeatmap.high")}</Text>
       </View>
     </View>
   );

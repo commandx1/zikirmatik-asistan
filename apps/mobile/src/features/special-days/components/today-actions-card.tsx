@@ -15,8 +15,8 @@ export function TodayActionsCard({ action, onPressDetail }: TodayActionsCardProp
   return (
     <Pressable onPress={() => onPressDetail(action.specialDayId)}>
       <ThemedCard className="rounded-2xl px-4 py-4" borderClassName="border-white/5">
-        <Text className="text-sm font-semibold text-[--text-primary]">{action.title}</Text>
-        <Text className="mt-1 text-xs leading-5 text-[--text-muted]">{action.subtitle}</Text>
+        <Text className="text-sm font-semibold text-text-primary">{action.title}</Text>
+        <Text className="mt-1 text-xs leading-5 text-text-muted">{action.subtitle}</Text>
 
         <Pressable
           onPress={() => onPressDetail(action.specialDayId)}
@@ -28,7 +28,7 @@ export function TodayActionsCard({ action, onPressDetail }: TodayActionsCardProp
             size={12}
             color={tokens.accent}
           />
-          <Text className="text-sm font-semibold text-[--accent]">{action.ctaLabel}</Text>
+          <Text className="text-sm font-semibold text-accent">{action.ctaLabel}</Text>
         </Pressable>
       </ThemedCard>
     </Pressable>

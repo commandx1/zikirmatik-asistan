@@ -37,7 +37,7 @@ type PageScrollViewProps = Omit<ScrollViewProps, "contentContainerStyle" | "refr
 
 export function PageLayout({
   children,
-  backgroundClassName = "bg-[--bg]",
+  backgroundClassName = "bg-bg",
   frameClassName = "relative flex-1 w-full"
 }: PageLayoutProps) {
   const { tokens, themeName } = useThemeTokens();

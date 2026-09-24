@@ -66,7 +66,7 @@ export function ZikirlerimHeader() {
               setError(null)
               setCreateOpen(true)
             }}
-            className='h-9 w-9 items-center justify-center rounded-full bg-[--accent] shadow-sm shadow-black/30'
+            className='h-9 w-9 items-center justify-center rounded-full bg-accent shadow-sm shadow-black/30'
           >
             <FontAwesome6 name='plus' size={14} color='#111827' />
           </Pressable>

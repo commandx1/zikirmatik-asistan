@@ -79,17 +79,17 @@ export function FontSelectorScreen() {
                 <Pressable
                   key={item.id}
                   onPress={() => setDraftFontFamily(item.id)}
-                  className={`relative rounded-2xl border p-4 ${isActive ? "border-[--accent]" : "border-white/10 bg-[--card]"}`}
+                  className={`relative rounded-2xl border p-4 ${isActive ? "border-accent" : "border-white/10 bg-card"}`}
                 >
                   {isActive ? (
-                    <View className="absolute right-3 top-3 h-5 w-5 items-center justify-center rounded-full bg-[--accent]">
+                    <View className="absolute right-3 top-3 h-5 w-5 items-center justify-center rounded-full bg-accent">
                       <FontAwesome6 name="check" size={10} color="#0F1B2D" />
                     </View>
                   ) : null}
 
-                  <Text className="text-base font-semibold text-[--text-primary]">{item.title}</Text>
+                  <Text className="text-base font-semibold text-text-primary">{item.title}</Text>
                   <Text
-                    className="mt-2 text-sm text-[--text-muted]"
+                    className="mt-2 text-sm text-text-muted"
                     style={
                       item.id === "merriweather"
                         ? { fontFamily: "Merriweather_400Regular" }

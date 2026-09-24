@@ -13,10 +13,10 @@ export function CountdownStrip({ segments }: CountdownStripProps) {
       {segments.map((segment, index) => (
         <View key={segment.label} className="flex-1 flex-row items-center justify-center">
           <View className="items-center px-1">
-            <Text className="text-4xl leading-[34px] font-semibold tracking-[0.6px] text-[--text-primary]">
+            <Text className="text-4xl leading-[34px] font-semibold tracking-[0.6px] text-text-primary">
               {segment.value}
             </Text>
-            <Text className="pt-1 text-xs leading-[14px] tracking-[0.8px] text-[--text-muted]">
+            <Text className="pt-1 text-xs leading-[14px] tracking-[0.8px] text-text-muted">
               {upper(segment.label)}
             </Text>
           </View>

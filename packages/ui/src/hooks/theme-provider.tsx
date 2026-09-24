@@ -69,6 +69,11 @@ export function ThemeProvider({ themeName, fontSize, textFontFamily, textFontFam
         "--accent": value.tokens.accent,
         "--success": value.tokens.success,
         "--border": value.tokens.border,
+        "--gold": "#C8972A",
+        "--on-gold": "#0F1B2D",
+        "--toggle-on": "#2E7D5E",
+        "--toggle-on-muted": "#1A2E24",
+        "--toggle-off": "#F7F7F7",
         "--app-font-family": textFontFamily ?? "System",
         "--app-font-family-strong": textFontFamilyStrong ?? textFontFamily ?? "System",
         ...fontVariables

@@ -21,7 +21,7 @@ export function ThemedInput({ shape = "xl", trailing, className, placeholderText
       <TextInput
         placeholderTextColor={placeholderTextColor ?? withAlpha(tokens.textMuted, 0.75)}
         className={[
-          "w-full border border-white/10 bg-[--card] py-3 pl-4 text-sm text-[--text-primary]",
+          "w-full border border-white/10 bg-card py-3 pl-4 text-sm text-text-primary",
           radiusClassName,
           rightPaddingClassName,
           className ?? ""

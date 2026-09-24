@@ -106,10 +106,10 @@ export function VirdProgramListItem({ program, onRequirePremium }: Props) {
 
   return (
     <ThemedCard className="mb-3 rounded-2xl p-4">
-      <Text className="mb-0.5 text-sm font-semibold text-[--text-primary]" numberOfLines={1}>
+      <Text className="mb-0.5 text-sm font-semibold text-text-primary" numberOfLines={1}>
         {title}
       </Text>
-      <Text className="mb-3 text-xs text-[--text-muted]">
+      <Text className="mb-3 text-xs text-text-muted">
         {t(`vird:programKind.${program.kind}`)} · {t(`vird:programStatus.${program.status}`)}
       </Text>
 

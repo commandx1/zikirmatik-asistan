@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { VirdSlotKey } from "@zikirmatik/shared";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
+import { ErrorBox } from "../../../components/ui/error-box";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
 import { ThemedCard } from "../../../components/ui/themed-card";
@@ -202,7 +203,7 @@ function VirdAiFormView({
 
   return (
     <View>
-      <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-[--text-muted]">
+      <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-text-muted">
         {t("ai-guide:virdProgram.form.freeTextLabel").toLocaleUpperCase()}
       </Text>
       <ThemedInput
@@ -217,7 +218,7 @@ function VirdAiFormView({
         className="mb-6 min-h-[110px] pt-4"
       />
 
-      <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-[--text-muted]">
+      <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-text-muted">
         {t("ai-guide:virdProgram.form.durationLabel").toLocaleUpperCase()}
       </Text>
       <View className="mb-6 flex-row flex-wrap gap-2">
@@ -231,7 +232,7 @@ function VirdAiFormView({
         ))}
       </View>
 
-      <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-[--text-muted]">
+      <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-text-muted">
         {t("ai-guide:virdProgram.form.slotsLabel").toLocaleUpperCase()}
       </Text>
       <View className="mb-2 flex-row flex-wrap gap-2">
@@ -252,12 +253,12 @@ function VirdAiFormView({
 
       {slots.includes("prayer") ? (
         <ThemedCard className="mb-6 rounded-2xl px-4 py-3">
-          <Text className="mb-1 text-xs font-semibold tracking-[1.1px] text-[--text-muted]">
+          <Text className="mb-1 text-xs font-semibold tracking-[1.1px] text-text-muted">
             {t("ai-guide:virdProgram.form.prayerSelectionLabel").toLocaleUpperCase()}
           </Text>
           {PRAYER_INDEXES.map((index) => (
             <View key={index} className="flex-row items-center justify-between py-2">
-              <Text className="text-sm text-[--text-primary]">
+              <Text className="text-sm text-text-primary">
                 {t(`ai-guide:virdProgram.prayerIndex.${index}`)}
               </Text>
               <TogglePill
@@ -271,10 +272,10 @@ function VirdAiFormView({
       ) : null}
 
       <View className="mb-6 flex-row items-center justify-between">
-        <Text className="text-xs text-[--text-muted]">{t("ai-guide:virdProgram.form.creditCost")}</Text>
+        <Text className="text-xs text-text-muted">{t("ai-guide:virdProgram.form.creditCost")}</Text>
         <Pressable
           onPress={onPressCredits}
-          className="flex-row items-center gap-1.5 rounded-full bg-[--bg] px-3 py-1.5"
+          className="flex-row items-center gap-1.5 rounded-full bg-bg px-3 py-1.5"
           accessibilityRole="button"
         >
           <FontAwesome6 name="coins" size={12} color={tokens.accent} />
@@ -285,9 +286,7 @@ function VirdAiFormView({
       </View>
 
       {generationError ? (
-        <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3">
-          <Text className="text-sm text-[#fecaca]">{generationError}</Text>
-        </View>
+        <ErrorBox message={generationError} />
       ) : null}
 
       {!isGenerating && postPurchaseNotice ? (
@@ -327,9 +326,9 @@ function VirdAiFormView({
       ) : null}
 
       {isGenerating ? (
-        <View className="mb-4 flex-row items-center justify-center gap-3 rounded-2xl border border-white/10 bg-[--card] px-4 py-5">
+        <View className="mb-4 flex-row items-center justify-center gap-3 rounded-2xl border border-white/10 bg-card px-4 py-5">
           <ActivityIndicator color={tokens.accent} />
-          <Text className="text-sm font-semibold text-[--text-primary]">{t("ai-guide:virdProgram.form.loading")}</Text>
+          <Text className="text-sm font-semibold text-text-primary">{t("ai-guide:virdProgram.form.loading")}</Text>
         </View>
       ) : (
         <PrimaryCtaButton
@@ -367,14 +366,14 @@ function VirdAiPreviewView({
 
   return (
     <View>
-      <Text className="mb-1 text-lg font-bold text-[--text-primary]">{preview.title}</Text>
+      <Text className="mb-1 text-lg font-bold text-text-primary">{preview.title}</Text>
       {preview.summary ? (
-        <Text className="mb-5 text-sm leading-5 text-[--text-muted]">{preview.summary}</Text>
+        <Text className="mb-5 text-sm leading-5 text-text-muted">{preview.summary}</Text>
       ) : (
         <View className="mb-5" />
       )}
 
-      <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-[--text-muted]">
+      <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-text-muted">
         {t("ai-guide:virdProgram.preview.phasesTitle").toLocaleUpperCase()}
       </Text>
       <View className="mb-6 gap-3">
@@ -384,14 +383,12 @@ function VirdAiPreviewView({
       </View>
 
       {activationError ? (
-        <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3">
-          <Text className="text-sm text-[#fecaca]">{activationError}</Text>
-        </View>
+        <ErrorBox message={activationError} />
       ) : null}
 
       {!activationConflict ? (
         isActivating ? (
-          <View className="mb-3 flex-row items-center justify-center gap-3 rounded-2xl border border-white/10 bg-[--card] px-4 py-5">
+          <View className="mb-3 flex-row items-center justify-center gap-3 rounded-2xl border border-white/10 bg-card px-4 py-5">
             <ActivityIndicator color={tokens.accent} />
           </View>
         ) : (
@@ -404,7 +401,7 @@ function VirdAiPreviewView({
       ) : null}
 
       <Pressable onPress={onDiscard} disabled={isActivating} className="items-center py-3" accessibilityRole="button">
-        <Text className="text-sm font-semibold text-[--text-muted]">{t("ai-guide:virdProgram.actions.discard")}</Text>
+        <Text className="text-sm font-semibold text-text-muted">{t("ai-guide:virdProgram.actions.discard")}</Text>
       </Pressable>
     </View>
   );
@@ -424,16 +421,16 @@ function PhaseCard({ phase }: { phase: AiVirdProgramPreviewPhase }) {
 
   return (
     <ThemedCard className="rounded-2xl px-4 py-3.5" accent="accentSoft">
-      <Text className="mb-1 text-sm font-semibold text-[--text-primary]">{dayRangeLabel}</Text>
-      {phase.note ? <Text className="mb-2 text-xs leading-4 text-[--text-muted]">{phase.note}</Text> : null}
+      <Text className="mb-1 text-sm font-semibold text-text-primary">{dayRangeLabel}</Text>
+      {phase.note ? <Text className="mb-2 text-xs leading-4 text-text-muted">{phase.note}</Text> : null}
 
       {slotEntries.map(({ slot, items }) => (
         <View key={slot} className="mt-2">
-          <Text className="mb-1 text-xs font-semibold text-[--text-muted]">{t(`ai-guide:virdProgram.slots.${slot}`)}</Text>
+          <Text className="mb-1 text-xs font-semibold text-text-muted">{t(`ai-guide:virdProgram.slots.${slot}`)}</Text>
           <View className="flex-row flex-wrap gap-1.5">
             {items.map((item, itemIndex) => (
-              <View key={`${item.dhikrId}-${itemIndex}`} className="rounded-full border border-white/10 bg-[--bg] px-3 py-1">
-                <Text className="text-xs text-[--text-primary]">
+              <View key={`${item.dhikrId}-${itemIndex}`} className="rounded-full border border-white/10 bg-bg px-3 py-1">
+                <Text className="text-xs text-text-primary">
                   {item.name} {t("ai-guide:virdProgram.preview.targetSuffix", { count: item.target })}
                 </Text>
               </View>

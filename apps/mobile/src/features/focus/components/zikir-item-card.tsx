@@ -51,7 +51,7 @@ function resolveAccent(item: ZikirItem) {
     return {
       cardAccent: 'accent' as const,
       progressColor: 'var(--accent)',
-      countClassName: 'text-[--accent]',
+      countClassName: 'text-accent',
       isCompleted: false
     }
   }
@@ -59,7 +59,7 @@ function resolveAccent(item: ZikirItem) {
   return {
     cardAccent: 'muted' as const,
     progressColor: '#8CA0C2',
-    countClassName: 'text-[--text-primary]',
+    countClassName: 'text-text-primary',
     isCompleted: false
   }
 }
@@ -268,16 +268,16 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
       {/* Header */}
       <View className='mb-3 flex-row items-start justify-between'>
         <View className='flex-1 pr-3'>
-          <Text className='text-sm font-medium text-[--text-primary]'>{title}</Text>
+          <Text className='text-sm font-medium text-text-primary'>{title}</Text>
           {showTransliteration ? (
-            <Text className='mt-1 text-xs text-[--text-muted]'>{resolvedTransliteration}</Text>
+            <Text className='mt-1 text-xs text-text-muted'>{resolvedTransliteration}</Text>
           ) : null}
         </View>
         <Pressable
           onPress={toggleMenu}
           accessibilityRole='button'
           accessibilityLabel={t('focus:card.menu')}
-          className='h-8 w-8 items-center justify-center rounded-full bg-[--bg]'
+          className='h-8 w-8 items-center justify-center rounded-full bg-bg'
           style={isMenuOpen ? { backgroundColor: withAlpha(tokens.textPrimary, 0.1) } : undefined}
         >
           <FontAwesome6 name='ellipsis' size={14} color={tokens.textMuted} />
@@ -332,7 +332,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
 
       {/* Progress */}
       <View className='mb-3 flex-row items-center gap-3'>
-        <View className='h-2 flex-1 overflow-hidden rounded-full bg-[--bg]'>
+        <View className='h-2 flex-1 overflow-hidden rounded-full bg-bg'>
           <View
             className='h-full rounded-full'
             style={{ width: `${progressPct}%`, backgroundColor: accent.progressColor }}
@@ -355,11 +355,11 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
       >
         <View className='flex-row items-center gap-1'>
           <FontAwesome6 name='clock' iconStyle='regular' size={12} color='#9AA5BD' />
-          <Text className='text-xs text-[--text-muted]'>{item.lastActivityLabel}</Text>
+          <Text className='text-xs text-text-muted'>{item.lastActivityLabel}</Text>
         </View>
         <View className='flex-row items-center gap-1'>
           <FontAwesome6 name='fire' size={12} color='#4CAF7D' />
-          <Text className='text-xs text-[--text-muted]'>{t('focus:card.streakDays', { count: item.streakDays })}</Text>
+          <Text className='text-xs text-text-muted'>{t('focus:card.streakDays', { count: item.streakDays })}</Text>
         </View>
       </View>
 
@@ -395,7 +395,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
 
         <Pressable
           onPress={() => startDhikrOnHome(item.id)}
-          className='flex-row items-center gap-1.5 rounded-full bg-[--accent] px-3 py-1.5'
+          className='flex-row items-center gap-1.5 rounded-full bg-accent px-3 py-1.5'
         >
           <Text className='text-xs font-semibold text-[#111827]'>{t('focus:card.start')}</Text>
           <FontAwesome6 name='arrow-right' size={9} color='#111827' />

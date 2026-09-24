@@ -18,7 +18,7 @@ export function ThemeGridSection({ options, selected, onSelect, selectedCardRef 
   const upper = useLocaleUpper();
   return (
     <View>
-      <Text className="mb-3 px-1 text-sm font-semibold tracking-[1.1px] text-[--text-muted]">{upper(t("theme-selector:gridSection.readyThemes"))}</Text>
+      <Text className="mb-3 px-1 text-sm font-semibold tracking-[1.1px] text-text-muted">{upper(t("theme-selector:gridSection.readyThemes"))}</Text>
       <View className="flex-row flex-wrap justify-between gap-y-3">
         {options.map((option) => {
           const isSelected = option.id === selected;
@@ -29,17 +29,17 @@ export function ThemeGridSection({ options, selected, onSelect, selectedCardRef 
               ref={isSelected ? selectedCardRef : undefined}
               collapsable={false}
               onPress={() => onSelect(option.id)}
-              className={`relative w-[48.5%] items-center rounded-2xl border bg-[--card] p-3 ${isSelected ? "border-[--accent]" : "border-white/5"} ${isLocked ? "opacity-85" : ""}`}
+              className={`relative w-[48.5%] items-center rounded-2xl border bg-card p-3 ${isSelected ? "border-accent" : "border-white/5"} ${isLocked ? "opacity-85" : ""}`}
             >
               {isSelected ? (
-                <View className="absolute right-2 top-2 z-10 h-5 w-5 items-center justify-center rounded-full bg-[--accent]">
+                <View className="absolute right-2 top-2 z-10 h-5 w-5 items-center justify-center rounded-full bg-accent">
                   <FontAwesome6 name="check" size={10} color="#0F1B2D" />
                 </View>
               ) : null}
               {isLocked ? (
                 <View className="absolute left-2 top-2 z-10 flex-row items-center gap-1 rounded-full border border-[--accent]/30 bg-[--accent]/15 px-2 py-1">
                   <FontAwesome6 name="lock" size={8} color="#C8972A" />
-                  <Text className="text-xs font-bold tracking-[0.5px] text-[--accent]">{upper(t("theme-selector:gridSection.premiumBadge"))}</Text>
+                  <Text className="text-xs font-bold tracking-[0.5px] text-accent">{upper(t("theme-selector:gridSection.premiumBadge"))}</Text>
                 </View>
               ) : null}
 

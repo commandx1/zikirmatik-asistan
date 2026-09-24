@@ -62,11 +62,11 @@ function FocusContent() {
           // TODO(B1): /vird rotası eklenince (app/vird/index.tsx) typed route olarak düzelt.
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onPress={() => router.push("/vird" as any)}
-          className="mx-5 mb-4 flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
+          className="mx-5 mb-4 flex-row items-center justify-between rounded-2xl border border-white/10 bg-card px-4 py-3.5"
         >
           <View className="flex-row items-center gap-2.5">
             <FontAwesome6 name="calendar-check" iconStyle="solid" size={14} color={tokens.accent} />
-            <Text className="text-sm font-semibold text-[--text-primary]">{tVird("vird:hub.entryRow")}</Text>
+            <Text className="text-sm font-semibold text-text-primary">{tVird("vird:hub.entryRow")}</Text>
           </View>
           <FontAwesome6 name="chevron-right" size={12} color={tokens.textMuted} />
         </Pressable>

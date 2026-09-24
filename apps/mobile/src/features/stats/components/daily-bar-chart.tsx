@@ -30,9 +30,9 @@ export function DailyBarChart({ series }: { series: StatsDailyPoint[] }) {
   const barWidth = width > 0 ? Math.max(2, (width - gap * (points.length - 1)) / points.length) : 0;
 
   return (
-    <View className="rounded-2xl border border-[--border] bg-[--card] p-4">
+    <View className="rounded-2xl border border-border bg-card p-4">
       <View className="mb-3 flex-row items-center justify-between">
-        <Text className="text-sm text-[--text-muted]">{t("stats:dailyBarChart.totalLabel", { count: formatCounter(total) })}</Text>
+        <Text className="text-sm text-text-muted">{t("stats:dailyBarChart.totalLabel", { count: formatCounter(total) })}</Text>
         <View className="flex-row gap-2">
           <AppChip label={t("stats:dailyBarChart.range7")} active={range === 7} onPress={() => setRange(7)} />
           <AppChip label={t("stats:dailyBarChart.range30")} active={range === 30} onPress={() => setRange(30)} />
@@ -66,8 +66,8 @@ export function DailyBarChart({ series }: { series: StatsDailyPoint[] }) {
       </View>
 
       <View className="mt-2 flex-row justify-between">
-        <Text className="text-[10px] text-[--text-muted]">{points.length ? shortDate(points[0].date) : ""}</Text>
-        <Text className="text-[10px] text-[--text-muted]">
+        <Text className="text-[10px] text-text-muted">{points.length ? shortDate(points[0].date) : ""}</Text>
+        <Text className="text-[10px] text-text-muted">
           {points.length ? shortDate(points[points.length - 1].date) : ""}
         </Text>
       </View>

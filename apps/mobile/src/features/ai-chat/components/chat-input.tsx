@@ -30,7 +30,7 @@ export function ChatInput({ value, isSending, creditBalance, onPressCredits, onC
           onPress={onPressCredits}
           disabled={!onPressCredits}
           testID={TEST_IDS.aiChat.credits}
-          className="mb-2 flex-row items-center gap-1.5 self-end rounded-full bg-[--card] px-3 py-1.5"
+          className="mb-2 flex-row items-center gap-1.5 self-end rounded-full bg-card px-3 py-1.5"
           accessibilityRole="button"
           accessibilityLabel={t("ai-chat:input.creditBalanceLabel", { count: creditBalance })}
         >
@@ -56,7 +56,7 @@ export function ChatInput({ value, isSending, creditBalance, onPressCredits, onC
             onPress={onSend}
             testID={TEST_IDS.aiChat.send}
             disabled={isSending || !value.trim()}
-            className={`h-10 w-10 items-center justify-center rounded-full bg-[--bg] ${
+            className={`h-10 w-10 items-center justify-center rounded-full bg-bg ${
               isSending || !value.trim() ? "opacity-50" : ""
             }`}
           >

@@ -6,6 +6,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { toDateKey, type VirdSlotKey } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
+import { ErrorBox } from "../../../components/ui/error-box";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
 import { ToastBanner } from "../../../components/ui/toast-banner";
 import { usePremiumSheet } from "../../../hooks/use-premium-sheet";
@@ -79,13 +80,15 @@ export function VirdHubScreen() {
       <PageScrollView testID={TEST_IDS.vird.hub} contentInnerClassName="w-full px-5" bottomPadding={40}>
         {authStatus === "authenticated" ? (
           syncError ? (
-            <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 px-3 py-2.5">
-              <Text className="text-xs text-[#fecaca]">{t("vird:hub.syncError")}</Text>
-            </View>
+            <ErrorBox
+              message={t("vird:hub.syncError")}
+              className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 px-3 py-2.5"
+              textClassName="text-xs text-[#fecaca]"
+            />
           ) : null
         ) : (
-          <View className="mb-4 rounded-xl border border-white/10 bg-[--card] px-3 py-2.5">
-            <Text className="text-xs text-[--text-muted]">{t("vird:hub.guestHint")}</Text>
+          <View className="mb-4 rounded-xl border border-white/10 bg-card px-3 py-2.5">
+            <Text className="text-xs text-text-muted">{t("vird:hub.guestHint")}</Text>
           </View>
         )}
 
@@ -93,9 +96,9 @@ export function VirdHubScreen() {
 
         {activeProgram ? (
           activeIsFinished ? (
-            <View className="mb-4 items-center rounded-2xl border border-white/10 bg-[--card] px-4 py-6">
-              <Text className="mb-1 text-base font-semibold text-[--text-primary]">{t("vird:hub.completedTitle")} 🎉</Text>
-              <Text className="text-xs text-[--text-muted]">{t("vird:hub.completedHint")}</Text>
+            <View className="mb-4 items-center rounded-2xl border border-white/10 bg-card px-4 py-6">
+              <Text className="mb-1 text-base font-semibold text-text-primary">{t("vird:hub.completedTitle")} 🎉</Text>
+              <Text className="text-xs text-text-muted">{t("vird:hub.completedHint")}</Text>
             </View>
           ) : (
             <VirdProgramSummaryCard program={activeProgram} />
@@ -104,44 +107,44 @@ export function VirdHubScreen() {
 
         {otherPrograms.length > 0 ? (
           <View className="mb-1">
-            <Text className="mb-2 text-xs font-semibold text-[--text-muted]">{t("vird:setup.otherProgramsHeading")}</Text>
+            <Text className="mb-2 text-xs font-semibold text-text-muted">{t("vird:setup.otherProgramsHeading")}</Text>
             {otherPrograms.map((program) => (
               <VirdProgramListItem key={program.id} program={program} onRequirePremium={premiumSheet.open} />
             ))}
           </View>
         ) : null}
 
-        <Text className="mb-2 mt-2 text-xs font-semibold text-[--text-muted]">{t("vird:hub.newVirdHeading")}</Text>
+        <Text className="mb-2 mt-2 text-xs font-semibold text-text-muted">{t("vird:hub.newVirdHeading")}</Text>
         <View className="mb-4 gap-2.5">
           <Pressable
             onPress={() => router.push("/vird/editor")}
             testID={TEST_IDS.vird.newManual}
-            className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
+            className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-card px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">
               <FontAwesome6 name="pen" iconStyle="solid" size={14} color={tokens.accent} />
-              <Text className="text-sm font-semibold text-[--text-primary]">{t("vird:hub.newManual")}</Text>
+              <Text className="text-sm font-semibold text-text-primary">{t("vird:hub.newManual")}</Text>
             </View>
             <FontAwesome6 name="chevron-right" size={12} color={tokens.textMuted} />
           </Pressable>
           <Pressable
             // TODO(B1): typed routes yenilenince (.expo/types/router.d.ts) cast'i kaldır.
             onPress={() => router.push("/vird/templates" as Href)}
-            className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
+            className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-card px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">
               <FontAwesome6 name="list" iconStyle="solid" size={14} color={tokens.accent} />
-              <Text className="text-sm font-semibold text-[--text-primary]">{t("vird:hub.newTemplate")}</Text>
+              <Text className="text-sm font-semibold text-text-primary">{t("vird:hub.newTemplate")}</Text>
             </View>
             <FontAwesome6 name="chevron-right" size={12} color={tokens.textMuted} />
           </Pressable>
           <Pressable
             onPress={() => requireAuth(() => router.push("/vird/ai-create"))}
-            className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
+            className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-card px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">
               <FontAwesome6 name="wand-magic-sparkles" iconStyle="solid" size={14} color={tokens.accent} />
-              <Text className="text-sm font-semibold text-[--text-primary]">{t("vird:hub.newAi")}</Text>
+              <Text className="text-sm font-semibold text-text-primary">{t("vird:hub.newAi")}</Text>
             </View>
             <FontAwesome6 name="chevron-right" size={12} color={tokens.textMuted} />
           </Pressable>

@@ -13,15 +13,15 @@ type ThemedTagProps = {
 };
 
 const CONTAINER_CLASSNAMES: Record<ThemedTagVariant, string> = {
-  soft: "border-white/10 bg-[--card]",
-  accent: "border-[--accent]/20 bg-[--bg]",
-  primary: "border-white/10 bg-[--bg]"
+  soft: "border-white/10 bg-card",
+  accent: "border-[--accent]/20 bg-bg",
+  primary: "border-white/10 bg-bg"
 };
 
 const TEXT_CLASSNAMES: Record<ThemedTagVariant, string> = {
-  soft: "text-[--text-muted]",
-  accent: "text-[--accent]",
-  primary: "text-[--text-primary]"
+  soft: "text-text-muted",
+  accent: "text-accent",
+  primary: "text-text-primary"
 };
 
 export function ThemedTag({ label, leading, onPress, variant = "soft", className, textClassName }: ThemedTagProps) {

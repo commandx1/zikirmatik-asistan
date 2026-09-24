@@ -4,6 +4,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { DhikrResumeModal } from "../../components/ui/dhikr-resume-modal";
+import { ErrorBox } from "../../components/ui/error-box";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { UnsavedDhikrTransitionModal } from "../../components/ui/unsaved-dhikr-transition-modal";
 import { useAuthStore } from "../../store/auth-store";
@@ -218,11 +219,11 @@ export function AiGuideScreen() {
               requireAuth(() => router.push("/ai-chat"));
             }}
             testID={TEST_IDS.aiChat.entry}
-            className="mb-3 flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
+            className="mb-3 flex-row items-center justify-between rounded-2xl border border-white/10 bg-card px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">
               <FontAwesome6 name="comments" iconStyle="solid" size={14} color="#D6A93D" />
-              <Text className="text-sm font-semibold text-[--text-primary]">
+              <Text className="text-sm font-semibold text-text-primary">
                 {t("ai-guide:chatEntry.title")}
               </Text>
             </View>
@@ -234,11 +235,11 @@ export function AiGuideScreen() {
             onPress={() => {
               requireAuth(() => router.push("/vird/ai-create"));
             }}
-            className="mb-6 flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
+            className="mb-6 flex-row items-center justify-between rounded-2xl border border-white/10 bg-card px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">
               <FontAwesome6 name="calendar" iconStyle="solid" size={14} color="#D6A93D" />
-              <Text className="text-sm font-semibold text-[--text-primary]">
+              <Text className="text-sm font-semibold text-text-primary">
                 {t("ai-guide:virdProgram.entry.title")}
               </Text>
             </View>
@@ -254,9 +255,7 @@ export function AiGuideScreen() {
             onOpenHistoryItem={guide.openHistoryItem}
           />
           {guide.error ? (
-            <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3">
-              <Text className="text-sm text-[#fecaca]">{guide.error}</Text>
-            </View>
+            <ErrorBox message={guide.error} />
           ) : null}
           {!guide.isLoading && guide.postPurchaseNotice ? (
             <View className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-3">

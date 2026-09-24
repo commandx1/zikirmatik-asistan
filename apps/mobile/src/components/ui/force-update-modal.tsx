@@ -18,10 +18,10 @@ export function ForceUpdateModal({ visible }: ForceUpdateModalProps) {
           </Text>
           <Pressable
             onPress={() => Linking.openURL(STORE_URL)}
-            className="items-center rounded-full bg-[#C8972A] py-4"
+            className="items-center rounded-full bg-gold py-4"
             style={{ boxShadow: "0 0 20px rgba(200,151,42,0.35)" }}
           >
-            <Text className="text-base font-bold text-[#0F1B2D]">{t("components:forceUpdateModal.action")}</Text>
+            <Text className="text-base font-bold text-on-gold">{t("components:forceUpdateModal.action")}</Text>
           </Pressable>
         </View>
       </View>

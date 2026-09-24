@@ -53,7 +53,7 @@ export function VirdEditorSlotCard({
   return (
     <ThemedCard className="mb-4 rounded-2xl p-4">
       <View className="mb-3 flex-row items-center justify-between">
-        <Text className="text-sm font-semibold text-[--text-primary]">{t(`vird:slots.${slot}`)}</Text>
+        <Text className="text-sm font-semibold text-text-primary">{t(`vird:slots.${slot}`)}</Text>
         <Pressable
           onPress={onAddPress}
           testID={`${TEST_IDS.vird.slotAdd}-${slot}`}
@@ -69,7 +69,7 @@ export function VirdEditorSlotCard({
 
       {slot === "prayer" && prayerSelection && onTogglePrayerIndex ? (
         <View className="mb-3">
-          <Text className="mb-1.5 text-xs font-semibold text-[--text-muted]">{t("vird:editor.prayerSelectionHeading")}</Text>
+          <Text className="mb-1.5 text-xs font-semibold text-text-muted">{t("vird:editor.prayerSelectionHeading")}</Text>
           <View className="flex-row flex-wrap gap-2">
             {PRAYER_INDEXES.map((index) => {
               const isSelected = prayerSelection.includes(index);
@@ -94,7 +94,7 @@ export function VirdEditorSlotCard({
       ) : null}
 
       {items.length === 0 ? (
-        <Text className="text-xs text-[--text-muted]">{t("vird:editor.slotEmpty")}</Text>
+        <Text className="text-xs text-text-muted">{t("vird:editor.slotEmpty")}</Text>
       ) : (
         <View className="gap-2">
           {items.map((item) => {
@@ -102,7 +102,7 @@ export function VirdEditorSlotCard({
             const name = snapshot ? resolveLocalizedText(snapshot.name, locale) : t("vird:home.itemFallbackName");
             return (
               <View key={item.ref} className="flex-row items-center gap-2">
-                <Text className="flex-1 text-sm text-[--text-primary]" numberOfLines={1}>
+                <Text className="flex-1 text-sm text-text-primary" numberOfLines={1}>
                   {name}
                 </Text>
                 <ThemedInput
@@ -110,7 +110,7 @@ export function VirdEditorSlotCard({
                   onChangeText={(value) => onTargetChange(item.ref, Number.parseInt(value.replace(/\D+/g, ""), 10) || 0)}
                   keyboardType="number-pad"
                   testID={TEST_IDS.vird.itemTarget}
-                  className="w-16 rounded-lg bg-[--bg] px-2 py-1.5 text-center"
+                  className="w-16 rounded-lg bg-bg px-2 py-1.5 text-center"
                 />
                 <Pressable
                   onPress={() => onRemove(item.ref)}

@@ -33,7 +33,7 @@ export function ProfileDeleteAccountModal({
   return (
     <View className="absolute inset-0 z-50 justify-end">
       <Pressable className="absolute inset-0 bg-black/60" onPress={isDeleting ? undefined : onCancel} />
-      <View className="rounded-t-[28px] border-t border-white/10 bg-[--card] p-5">
+      <View className="rounded-t-[28px] border-t border-white/10 bg-card p-5">
         <View className="mb-5 h-1.5 w-12 self-center rounded-full bg-white/20" />
 
         <View
@@ -45,8 +45,8 @@ export function ProfileDeleteAccountModal({
           </Text>
         </View>
 
-        <Text className="text-xl font-semibold text-[--text-primary]">{t("profile:deleteAccountModal.title")}</Text>
-        <Text className="mt-1 text-sm text-[--text-muted]">
+        <Text className="text-xl font-semibold text-text-primary">{t("profile:deleteAccountModal.title")}</Text>
+        <Text className="mt-1 text-sm text-text-muted">
           {t("profile:deleteAccountModal.description")}
         </Text>
 
@@ -54,7 +54,7 @@ export function ProfileDeleteAccountModal({
           {LOST_DATA_ITEM_KEYS.map((key) => (
             <View key={key} className="flex-row items-center gap-2">
               <View className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: DANGER_COLOR }} />
-              <Text className="text-sm text-[--text-muted]">{t(key)}</Text>
+              <Text className="text-sm text-text-muted">{t(key)}</Text>
             </View>
           ))}
         </View>
@@ -79,7 +79,7 @@ export function ProfileDeleteAccountModal({
             disabled={isDeleting}
             className={`h-11 items-center justify-center rounded-2xl ${isDeleting ? "opacity-50" : ""}`}
           >
-            <Text className="text-sm font-medium text-[--text-muted]">{t("profile:deleteAccountModal.cancelButton")}</Text>
+            <Text className="text-sm font-medium text-text-muted">{t("profile:deleteAccountModal.cancelButton")}</Text>
           </Pressable>
         </View>
       </View>

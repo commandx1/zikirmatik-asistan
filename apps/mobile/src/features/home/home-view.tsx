@@ -122,10 +122,10 @@ const SelectedDhikrMeaning = memo(function SelectedDhikrMeaning() {
         </Text>
         {shouldShowTitleOnly ? (
           <View className='mt-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2'>
-            <Text className='mb-1 text-xs font-semibold tracking-[0.9px] text-[--text-muted]'>
+            <Text className='mb-1 text-xs font-semibold tracking-[0.9px] text-text-muted'>
               {upper(t('home:selectedDhikrMeaning.titleLabel'))}
             </Text>
-            <Text className='text-sm leading-5 text-[--text-primary]'>{title}</Text>
+            <Text className='text-sm leading-5 text-text-primary'>{title}</Text>
           </View>
         ) : (
           <DhikrContentStack
@@ -297,7 +297,7 @@ const FreeSaveNameModal = memo(function FreeSaveNameModal() {
       animationType='fade'
       showHandle
       overlayClassName='flex-1 justify-end bg-black/55'
-      sheetClassName='rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-14'
+      sheetClassName='rounded-t-3xl border-t border-white/10 bg-card p-5 pb-14'
       scrollContentContainerStyle={{ paddingBottom: 24 }}
     >
       <Text className='mb-2 text-base font-semibold' style={{ color: tokens.textPrimary }}>

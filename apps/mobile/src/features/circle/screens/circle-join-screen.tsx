@@ -86,20 +86,20 @@ export function CircleJoinScreen({ code: rawCode }: { code: string }) {
 
       <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
         {!code ? (
-          <Text className="text-sm text-[--text-muted]">{t("circle:join.invalidCode")}</Text>
+          <Text className="text-sm text-text-muted">{t("circle:join.invalidCode")}</Text>
         ) : isLoading ? (
-          <Text className="text-sm text-[--text-muted]">…</Text>
+          <Text className="text-sm text-text-muted">…</Text>
         ) : loadError && !preview ? (
           <Text className="text-sm" style={{ color: "#ef4444" }}>{loadError}</Text>
         ) : preview ? (
           <>
             <ThemedCard className="mb-4 rounded-2xl p-4">
-              <Text className="mb-1 text-lg font-semibold text-[--text-primary]">{preview.name}</Text>
-              <Text className="mb-3 text-xs text-[--text-muted]">{resolveLocalizedText(preview.dhikr.name, locale)}</Text>
-              <Text className="text-xs text-[--text-muted]">
+              <Text className="mb-1 text-lg font-semibold text-text-primary">{preview.name}</Text>
+              <Text className="mb-3 text-xs text-text-muted">{resolveLocalizedText(preview.dhikr.name, locale)}</Text>
+              <Text className="text-xs text-text-muted">
                 {t("circle:home.progress", { total: preview.totalCount, goal: preview.goalCount })}
               </Text>
-              <Text className="mt-1 text-xs text-[--text-muted]">{t("circle:hub.membersCount", { count: preview.memberCount })}</Text>
+              <Text className="mt-1 text-xs text-text-muted">{t("circle:hub.membersCount", { count: preview.memberCount })}</Text>
               <Text className="mt-2 text-xs font-semibold" style={{ color: preview.status === "active" ? tokens.success : tokens.textMuted }}>
                 {t(`circle:status.${preview.status}`)}
               </Text>

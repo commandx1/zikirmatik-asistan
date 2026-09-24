@@ -50,7 +50,7 @@ export function IntentInputSection({
             onPress={onSend}
             testID={TEST_IDS.aiGuide.send}
             disabled={isLoading}
-            className={`h-10 w-10 items-center justify-center rounded-full bg-[--bg] ${isLoading ? "opacity-60" : ""}`}
+            className={`h-10 w-10 items-center justify-center rounded-full bg-bg ${isLoading ? "opacity-60" : ""}`}
           >
             <FontAwesome6 name="paper-plane" size={14} color={tokens.accent} />
           </Pressable>
@@ -65,7 +65,7 @@ export function IntentInputSection({
           <Pressable
             onPress={onPressCredits}
             disabled={!onPressCredits}
-            className="ml-auto flex-row items-center gap-1.5 rounded-full bg-[--bg] px-3 py-1.5"
+            className="ml-auto flex-row items-center gap-1.5 rounded-full bg-bg px-3 py-1.5"
             accessibilityRole="button"
             accessibilityLabel={t("ai-guide:input.creditBalanceLabel", { count: creditBalance })}
           >

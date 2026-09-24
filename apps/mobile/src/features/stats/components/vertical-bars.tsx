@@ -60,7 +60,7 @@ export function VerticalBars({ data, height = 120 }: VerticalBarsProps) {
               className="items-center"
             >
               {datum.label ? (
-                <Text className="text-[9px] text-[--text-muted]" numberOfLines={1}>
+                <Text className="text-[9px] text-text-muted" numberOfLines={1}>
                   {datum.label}
                 </Text>
               ) : null}

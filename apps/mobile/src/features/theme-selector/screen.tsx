@@ -52,8 +52,8 @@ export function ThemeSelectorScreen() {
                 <Text className="text-sm font-semibold text-[#EAC46B]">{t("theme-selector:screen.premiumActiveBanner")}</Text>
               </View>
             ) : (
-              <View className="rounded-xl border border-white/10 bg-[--card] px-4 py-3">
-                <Text className="text-sm font-semibold text-[--text-primary]">
+              <View className="rounded-xl border border-white/10 bg-card px-4 py-3">
+                <Text className="text-sm font-semibold text-text-primary">
                   {t("theme-selector:screen.premiumLockedBanner")}
                 </Text>
               </View>

@@ -417,22 +417,22 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
       />
 
       <PageScrollView testID={TEST_IDS.vird.editorScroll} contentInnerClassName="w-full px-5" bottomPadding={48}>
-        <Text className="mb-1.5 text-xs font-medium text-[--text-primary]">{t("vird:editor.titleLabel")}</Text>
+        <Text className="mb-1.5 text-xs font-medium text-text-primary">{t("vird:editor.titleLabel")}</Text>
         <ThemedInput
           value={titleDraft}
           onChangeText={setTitleDraft}
           testID={TEST_IDS.vird.editorTitle}
           placeholder={journeyMode ? t("vird:editor.titlePlaceholder") : resolveLocalizedText(buildAutoVirdTitle(enabledSlots), locale)}
-          className="mb-4 rounded-xl bg-[--card] px-3"
+          className="mb-4 rounded-xl bg-card px-3"
         />
 
         {journeyMode ? (
           <>
-            <Text className="mb-2 text-xs font-semibold text-[--text-muted]">{t("vird:editor.journeyReadOnlyNote")}</Text>
+            <Text className="mb-2 text-xs font-semibold text-text-muted">{t("vird:editor.journeyReadOnlyNote")}</Text>
             <View className="mb-4 gap-2">
               {existingProgram!.phases.map((phase, index) => (
-                <View key={`${phase.fromDay}-${index}`} className="rounded-xl border border-white/10 bg-[--card] px-3 py-2.5">
-                  <Text className="text-xs font-semibold text-[--accent]">
+                <View key={`${phase.fromDay}-${index}`} className="rounded-xl border border-white/10 bg-card px-3 py-2.5">
+                  <Text className="text-xs font-semibold text-accent">
                     {phase.toDay != null
                       ? t("vird:templates.detail.dayRangeLabel", { from: phase.fromDay, to: phase.toDay })
                       : t("vird:templates.detail.dayRangeOpenLabel", { from: phase.fromDay })}
@@ -441,11 +441,11 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
               ))}
             </View>
 
-            <Text className="mb-2 text-xs font-semibold text-[--text-muted]">{t("vird:editor.prayerHeading")}</Text>
-            <View className="mb-6 gap-1 rounded-2xl border border-white/10 bg-[--card] px-4 py-2">
+            <Text className="mb-2 text-xs font-semibold text-text-muted">{t("vird:editor.prayerHeading")}</Text>
+            <View className="mb-6 gap-1 rounded-2xl border border-white/10 bg-card px-4 py-2">
               {[1, 2, 3, 4, 5].map((index) => (
                 <View key={index} className="flex-row items-center justify-between py-2">
-                  <Text className="text-sm text-[--text-primary]">{t(`vird:prayerIndex.${index}`)}</Text>
+                  <Text className="text-sm text-text-primary">{t(`vird:prayerIndex.${index}`)}</Text>
                   <TogglePill checked={prayerSelection.includes(index)} onToggle={() => handleTogglePrayerIndex(index)} size="compact" />
                 </View>
               ))}
@@ -460,7 +460,7 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
           </>
         ) : (
           <>
-            <Text className="mb-2 text-xs font-semibold text-[--text-muted]">{t("vird:editor.whenHeading")}</Text>
+            <Text className="mb-2 text-xs font-semibold text-text-muted">{t("vird:editor.whenHeading")}</Text>
             <View className="mb-4 flex-row flex-wrap gap-2">
               {VIRD_SLOT_KEYS.map((slot) => (
                 <ThemedTag

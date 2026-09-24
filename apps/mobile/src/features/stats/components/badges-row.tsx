@@ -22,7 +22,7 @@ function BadgeCard({ badge }: { badge: StatsBadge }) {
       <View className="h-12 w-12 items-center justify-center rounded-full" style={{ backgroundColor: withAlpha(tint, 0.18) }}>
         <FontAwesome6 name={badge.achieved ? "medal" : "lock"} iconStyle="solid" size={18} color={tint} />
       </View>
-      <Text className="mt-2 text-center text-xs font-medium text-[--text-primary]" numberOfLines={2}>
+      <Text className="mt-2 text-center text-xs font-medium text-text-primary" numberOfLines={2}>
         {badge.label}
       </Text>
       <Text className="mt-1 text-[11px] font-semibold" style={{ color: badge.achieved ? tokens.accent : tokens.textMuted }}>

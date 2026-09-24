@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs";
 import { PageLayout } from "../../components/ui/page-layout";
+import { ErrorBox } from "../../components/ui/error-box";
 import { usePremiumSheet } from "../../hooks/use-premium-sheet";
 import { useRequireAuth } from "../auth/hooks/use-require-auth";
 import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
@@ -104,9 +105,7 @@ export function AiChatScreen() {
               ) : null}
 
               {chat.error ? (
-                <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 p-3">
-                  <Text className="text-sm text-[#fecaca]">{chat.error}</Text>
-                </View>
+                <ErrorBox message={chat.error} />
               ) : null}
 
               {chat.aiUnavailable ? (

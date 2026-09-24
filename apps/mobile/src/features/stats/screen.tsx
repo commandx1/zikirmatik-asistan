@@ -62,7 +62,7 @@ export function StatsScreen() {
         </View>
       ) : error && !data ? (
         <View className="items-center justify-center gap-3 px-5 py-24">
-          <Text className="text-center text-sm text-[--text-muted]">{error}</Text>
+          <Text className="text-center text-sm text-text-muted">{error}</Text>
           <Pressable
             onPress={refresh}
             className="rounded-full px-5 py-2.5"

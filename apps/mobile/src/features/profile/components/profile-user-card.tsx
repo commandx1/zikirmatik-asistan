@@ -37,7 +37,7 @@ export function ProfileUserCard({
   return (
     <View className="mt-2 items-center">
       <View className="relative mb-4">
-        <View className="h-24 w-24 items-center justify-center rounded-full border-2 border-[--accent]/30 bg-[--card]">
+        <View className="h-24 w-24 items-center justify-center rounded-full border-2 border-[--accent]/30 bg-card">
           {normalizedProfileImageUrl ? (
             <Image
               source={{ uri: normalizedProfileImageUrl }}
@@ -56,19 +56,19 @@ export function ProfileUserCard({
         </View>
       </View>
 
-      <Text testID={TEST_IDS.profile.name} className="mb-1 px-2 text-2xl leading-[34px] font-semibold tracking-tight text-center text-[--text-primary]" numberOfLines={2}>
+      <Text testID={TEST_IDS.profile.name} className="mb-1 px-2 text-2xl leading-[34px] font-semibold tracking-tight text-center text-text-primary" numberOfLines={2}>
         {displayName}
       </Text>
-      <Text className="mb-3 text-sm leading-[18px] text-[--text-muted]">{memberSinceLabel}</Text>
+      <Text className="mb-3 text-sm leading-[18px] text-text-muted">{memberSinceLabel}</Text>
 
       {isPremium ? (
-        <View className="flex-row items-center gap-1.5 rounded-full bg-[--accent] px-4 py-1.5 shadow-md shadow-[#C8972A]/30">
+        <View className="flex-row items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 shadow-md shadow-[#C8972A]/30">
           <FontAwesome6 name="star" iconStyle="solid" size={11} color="#0F1B2D" />
           <Text className="text-sm font-bold text-[#0F1B2D]" style={strongTextStyle}>{t("profile:userCard.premiumBadge")}</Text>
         </View>
       ) : (
         <Pressable onPress={onPressUpgrade} className="rounded-full border border-[--accent]/20 bg-[--accent]/10 px-5 py-2">
-          <Text className="text-sm font-semibold text-[--accent]">{t("profile:userCard.upgradeButton")}</Text>
+          <Text className="text-sm font-semibold text-accent">{t("profile:userCard.upgradeButton")}</Text>
         </Pressable>
       )}
     </View>

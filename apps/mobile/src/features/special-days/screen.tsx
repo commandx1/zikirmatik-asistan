@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
+import { ErrorBox } from "../../components/ui/error-box";
 import { HeroCountdownCard } from "./components/hero-countdown-card";
 import { SpecialDaysHeader } from "./components/special-days-header";
 import { SpecialDaysSkeleton } from "./components/special-days-skeleton";
@@ -19,9 +20,10 @@ export function SpecialDaysScreen() {
           <SpecialDaysHeader />
           <View className="gap-6 px-5 pb-8">
             {specialDays.error ? (
-              <View className="rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 px-4 py-3">
-                <Text className="text-sm text-[#fecaca]">{specialDays.error}</Text>
-              </View>
+              <ErrorBox
+                message={specialDays.error}
+                className="rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 px-4 py-3"
+              />
             ) : null}
             {specialDays.isLoading && !specialDays.hasLoadedOnce ? (
               <SpecialDaysSkeleton />

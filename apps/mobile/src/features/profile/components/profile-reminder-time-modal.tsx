@@ -48,17 +48,17 @@ export function ProfileReminderTimeModal({
       animationType="fade"
       showHandle
       overlayClassName="flex-1 justify-end bg-black/55"
-      sheetClassName="rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-10"
+      sheetClassName="rounded-t-3xl border-t border-white/10 bg-card p-5 pb-10"
       scrollContentContainerStyle={{ paddingBottom: 24 }}
     >
-      <Text className="mb-1 text-lg font-semibold text-[--text-primary]">{t("profile:reminderTimeModal.title")}</Text>
-      <Text className="mb-4 text-xs text-[--text-muted]">
+      <Text className="mb-1 text-lg font-semibold text-text-primary">{t("profile:reminderTimeModal.title")}</Text>
+      <Text className="mb-4 text-xs text-text-muted">
         {t("profile:reminderTimeModal.description")}
       </Text>
 
       <View className="flex-row items-end gap-3">
         <View className="flex-1">
-          <Text className="mb-1.5 text-xs font-medium text-[--text-primary]">{t("profile:reminderTimeModal.hour")}</Text>
+          <Text className="mb-1.5 text-xs font-medium text-text-primary">{t("profile:reminderTimeModal.hour")}</Text>
           <AppSelectBox
             value={hourDraft}
             options={HOUR_OPTIONS}
@@ -66,9 +66,9 @@ export function ProfileReminderTimeModal({
             title={t("profile:reminderTimeModal.hourPickerTitle")}
           />
         </View>
-        <Text className="mb-3 text-lg font-semibold text-[--text-muted]">:</Text>
+        <Text className="mb-3 text-lg font-semibold text-text-muted">:</Text>
         <View className="flex-1">
-          <Text className="mb-1.5 text-xs font-medium text-[--text-primary]">{t("profile:reminderTimeModal.minute")}</Text>
+          <Text className="mb-1.5 text-xs font-medium text-text-primary">{t("profile:reminderTimeModal.minute")}</Text>
           <AppSelectBox
             value={minuteDraft}
             options={MINUTE_OPTIONS}
@@ -86,7 +86,7 @@ export function ProfileReminderTimeModal({
           disabled={isSaving}
           className={`rounded-full border border-white/20 px-4 py-2 ${isSaving ? "opacity-60" : ""}`}
         >
-          <Text className="text-sm font-medium text-[--text-primary]">{t("common:actions.cancel")}</Text>
+          <Text className="text-sm font-medium text-text-primary">{t("common:actions.cancel")}</Text>
         </Pressable>
         <PrimaryCtaButton
           label={isSaving ? t("common:actions.saving") : t("common:actions.save")}

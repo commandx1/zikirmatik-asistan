@@ -28,12 +28,12 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
             className="px-2.5 py-1"
             textClassName="text-xs"
           />
-          <Text className="text-xs font-semibold text-[--text-muted]">{item.repeatLabel}</Text>
+          <Text className="text-xs font-semibold text-text-muted">{item.repeatLabel}</Text>
         </View>
 
         <View className="relative z-10 mb-4">
           {item.title ? (
-            <Text className="mb-1 mt-1 px-0.5 text-sm font-semibold text-[--text-primary]">{item.title}</Text>
+            <Text className="mb-1 mt-1 px-0.5 text-sm font-semibold text-text-primary">{item.title}</Text>
           ) : null}
           <DhikrContentStack
             arabic={item.arabic}
@@ -43,7 +43,7 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
           <RecommendationEvidence item={item} />
         </View>
 
-        <Pressable onPress={() => onSelect(item)} className="relative z-10 w-full rounded-full bg-[--accent] py-3">
+        <Pressable onPress={() => onSelect(item)} className="relative z-10 w-full rounded-full bg-accent py-3">
           <Text className="text-center text-sm font-semibold text-[#111827]">{t("ai-guide:recommendation.start")}</Text>
         </Pressable>
       </ThemedCard>
@@ -64,7 +64,7 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
 
       <View className="mb-4">
         {item.title ? (
-          <Text className="mb-1 mt-1 px-0.5 text-sm font-semibold text-[--text-primary]">{item.title}</Text>
+          <Text className="mb-1 mt-1 px-0.5 text-sm font-semibold text-text-primary">{item.title}</Text>
         ) : null}
         <DhikrContentStack
           arabic={item.arabic}
@@ -75,7 +75,7 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
       </View>
 
       <Pressable onPress={() => onSelect(item)} className="w-full rounded-full border border-[--accent]/40 py-2.5">
-        <Text className="text-center text-sm font-medium text-[--accent]">{t("ai-guide:recommendation.start")}</Text>
+        <Text className="text-center text-sm font-medium text-accent">{t("ai-guide:recommendation.start")}</Text>
       </Pressable>
     </ThemedCard>
   );
@@ -93,8 +93,8 @@ function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
     <View className="mt-3 gap-2">
       {item.virtue ? (
         <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-          <Text className="mb-1 text-xs font-semibold tracking-[0.9px] text-[--text-muted]">{upper(t("ai-guide:recommendation.virtue"))}</Text>
-          <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+          <Text className="mb-1 text-xs font-semibold tracking-[0.9px] text-text-muted">{upper(t("ai-guide:recommendation.virtue"))}</Text>
+          <Text className="text-xs leading-5 text-text-muted" style={{ textAlign: "justify" }}>
             {item.virtue}
           </Text>
         </View>
@@ -103,14 +103,14 @@ function RecommendationEvidence({ item }: { item: AiGuideRecommendation }) {
         <View className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
           {item.source ? (
             <>
-              <Text className="mb-1 text-xs font-semibold tracking-[0.9px] text-[--text-muted]">{upper(t("ai-guide:recommendation.source"))}</Text>
-              <Text className="text-xs leading-5 text-[--text-muted]" style={{ textAlign: "justify" }}>
+              <Text className="mb-1 text-xs font-semibold tracking-[0.9px] text-text-muted">{upper(t("ai-guide:recommendation.source"))}</Text>
+              <Text className="text-xs leading-5 text-text-muted" style={{ textAlign: "justify" }}>
                 {item.source}
               </Text>
             </>
           ) : null}
           {item.recommendedCount ? (
-            <Text className={`${item.source ? "mt-2" : ""} text-xs text-[--text-muted]`}>
+            <Text className={`${item.source ? "mt-2" : ""} text-xs text-text-muted`}>
               {t("ai-guide:recommendation.recommendedTarget", { count: item.recommendedCount })}
             </Text>
           ) : null}

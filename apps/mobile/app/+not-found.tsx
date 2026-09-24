@@ -13,8 +13,8 @@ export default function NotFoundScreen() {
   return (
     <PageLayout>
       <View className="flex-1 items-center justify-center px-8">
-        <Text className="mb-2 text-lg font-semibold text-[--text-primary]">{t("common:notFound.title")}</Text>
-        <Text className="mb-6 text-center text-sm text-[--text-muted]">{t("common:notFound.message")}</Text>
+        <Text className="mb-2 text-lg font-semibold text-text-primary">{t("common:notFound.title")}</Text>
+        <Text className="mb-6 text-center text-sm text-text-muted">{t("common:notFound.message")}</Text>
         <Link href="/" style={{ color: tokens.accent, fontSize: 14, fontWeight: "600" }}>
           {t("common:notFound.goHome")}
         </Link>

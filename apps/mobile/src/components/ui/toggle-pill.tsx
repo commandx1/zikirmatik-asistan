@@ -19,8 +19,8 @@ type TogglePillProps = {
 export function TogglePill({
   checked,
   onToggle,
-  activeTrackClassName = "bg-[#2E7D5E]",
-  inactiveTrackClassName = "bg-[#1A2E24]",
+  activeTrackClassName = "bg-toggle-on",
+  inactiveTrackClassName = "bg-toggle-on-muted",
   knobSize = 18,
   size = "default"
 }: TogglePillProps) {
@@ -49,7 +49,7 @@ export function TogglePill({
       style={{ height, width }}
     >
       <Animated.View
-        className="rounded-full bg-[#F7F7F7]"
+        className="rounded-full bg-toggle-off"
         style={[{ height: knobSize, width: knobSize }, knobAnimatedStyle]}
       />
     </Pressable>

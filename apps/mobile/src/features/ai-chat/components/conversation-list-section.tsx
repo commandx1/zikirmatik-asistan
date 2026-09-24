@@ -35,11 +35,11 @@ export function ConversationListSection({
       <View className="mb-3 flex-row items-center justify-between px-1">
         <View className="flex-row items-center gap-2">
           <FontAwesome6 name="comments" size={12} color={tokens.accent} />
-          <Text className="text-sm font-semibold text-[--text-primary]">{t("ai-chat:history.title")}</Text>
+          <Text className="text-sm font-semibold text-text-primary">{t("ai-chat:history.title")}</Text>
         </View>
         {items.length > 3 ? (
           <Pressable onPress={() => setExpanded((v) => !v)} className="rounded-full px-3 py-1.5">
-            <Text className="text-xs font-semibold text-[--accent]">
+            <Text className="text-xs font-semibold text-accent">
               {isExpanded ? t("ai-chat:history.showLess") : t("ai-chat:history.showAll")}
             </Text>
           </Pressable>
@@ -59,10 +59,10 @@ export function ConversationListSection({
                 backgroundColor: isActive ? withAlpha(tokens.accent, 0.12) : withAlpha(tokens.card, 0.84)
               }}
             >
-              <Text className="mr-3 flex-1 text-sm text-[--text-primary]" numberOfLines={1}>
+              <Text className="mr-3 flex-1 text-sm text-text-primary" numberOfLines={1}>
                 {item.title}
               </Text>
-              <Text className="text-xs text-[--text-muted]">{formatConversationDate(item.lastMessageAt)}</Text>
+              <Text className="text-xs text-text-muted">{formatConversationDate(item.lastMessageAt)}</Text>
             </Pressable>
           );
         })}

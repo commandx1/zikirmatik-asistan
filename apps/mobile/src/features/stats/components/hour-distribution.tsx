@@ -20,7 +20,7 @@ export function HourDistribution({ distribution }: { distribution: StatsDistribu
   });
 
   return (
-    <View className="rounded-2xl border border-[--border] bg-[--card] p-4">
+    <View className="rounded-2xl border border-border bg-card p-4">
       <VerticalBars data={data} height={110} />
     </View>
   );

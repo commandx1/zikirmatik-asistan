@@ -50,7 +50,7 @@ export function CollectionCategoryFilter({ activeCategory, onChange }: Props) {
             className={[
               "rounded-full px-4 items-center justify-center border",
               isActive
-                ? "bg-[--accent] border-[--accent]"
+                ? "bg-accent border-accent"
                 : "border-white/15 bg-white/5",
             ].join(" ")}
           >

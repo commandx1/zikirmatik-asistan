@@ -40,7 +40,7 @@ export function ProfileHapticsPatternRow({ label, iconName, value, onChange }: P
         >
           <FontAwesome6 name={iconName} size={14} color={tokens.accent} />
         </View>
-        <Text className="text-base font-medium text-[--text-primary]">{label}</Text>
+        <Text className="text-base font-medium text-text-primary">{label}</Text>
       </View>
       <View className="flex-row gap-2">
         {PATTERNS.map((pattern) => {
@@ -52,7 +52,7 @@ export function ProfileHapticsPatternRow({ label, iconName, value, onChange }: P
               accessibilityState={{ selected: isSelected }}
               onPress={() => selectPattern(pattern)}
               className={`flex-1 items-center justify-center rounded-full py-2 ${
-                isSelected ? "bg-[--accent]" : "border border-white/10 bg-white/5"
+                isSelected ? "bg-accent" : "border border-white/10 bg-white/5"
               }`}
             >
               <Text

@@ -108,7 +108,7 @@ export function ProfileSettingsSections({
           <ProfileLinkRow
             label={t("profile:sections.premium.features")}
             iconName="star"
-            iconContainerClassName="bg-[--accent]"
+            iconContainerClassName="bg-accent"
             iconColor="#0F1B2D"
             bottomBorder
             onPress={onPressPremium}

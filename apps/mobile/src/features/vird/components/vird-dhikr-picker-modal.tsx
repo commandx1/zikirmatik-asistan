@@ -47,11 +47,11 @@ const PickerRowView = memo(function PickerRowView({ item, alreadyInSlot, tokens,
       }}
     >
       <View className="flex-1 pr-3">
-        <Text className="text-sm font-medium text-[--text-primary]" numberOfLines={1}>
+        <Text className="text-sm font-medium text-text-primary" numberOfLines={1}>
           {item.label}
         </Text>
         {item.secondary ? (
-          <Text className="mt-0.5 text-xs text-[--text-muted]" numberOfLines={1}>
+          <Text className="mt-0.5 text-xs text-text-muted" numberOfLines={1}>
             {item.secondary}
           </Text>
         ) : null}
@@ -215,11 +215,11 @@ export function VirdDhikrPickerModal({
       onRequestClose={onRequestClose}
       showHandle
       overlayClassName="flex-1 justify-end bg-black/55"
-      sheetClassName="rounded-t-3xl border-t border-white/10 bg-[--card] p-5 pb-8"
+      sheetClassName="rounded-t-3xl border-t border-white/10 bg-card p-5 pb-8"
       sheetStyle={{ maxHeight: "82%" }}
     >
       <View className="mb-3 flex-row items-center justify-between">
-        <Text className="text-base font-semibold text-[--text-primary]">{t("vird:editor.pickerTitle")}</Text>
+        <Text className="text-base font-semibold text-text-primary">{t("vird:editor.pickerTitle")}</Text>
         <Pressable onPress={onRequestClose} hitSlop={8} accessibilityRole="button" testID={TEST_IDS.vird.pickerDone}>
           <Text className="text-sm font-semibold" style={{ color: tokens.accent }}>
             {t("vird:editor.pickerDone")}
@@ -230,16 +230,16 @@ export function VirdDhikrPickerModal({
         value={query}
         onChangeText={setQuery}
         placeholder={t("vird:editor.searchPlaceholder")}
-        className="mb-3 rounded-xl bg-[--bg] px-3"
+        className="mb-3 rounded-xl bg-bg px-3"
         autoFocus
       />
 
       {isLoading ? (
-        <Text className="py-6 text-center text-xs text-[--text-muted]">{t("vird:editor.searchLoading")}</Text>
+        <Text className="py-6 text-center text-xs text-text-muted">{t("vird:editor.searchLoading")}</Text>
       ) : loadError ? (
-        <Text className="py-6 text-center text-xs text-[--text-muted]">{loadError}</Text>
+        <Text className="py-6 text-center text-xs text-text-muted">{loadError}</Text>
       ) : rows.length === 0 ? (
-        <Text className="py-6 text-center text-xs text-[--text-muted]">{t("vird:editor.searchEmpty")}</Text>
+        <Text className="py-6 text-center text-xs text-text-muted">{t("vird:editor.searchEmpty")}</Text>
       ) : (
         <FlatList
           data={rows}

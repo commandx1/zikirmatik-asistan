@@ -29,13 +29,13 @@ export function DailyEsmaShortcutCard({ onPress }: DailyEsmaShortcutCardProps) {
           <FontAwesome6 name="star-and-crescent" size={15} color={tokens.accent} />
         </View>
         <View className="flex-1">
-          <Text className="text-sm font-semibold text-[--text-primary]">{t("ai-guide:dailyEsmaShortcut.title")}</Text>
-          <Text className="mt-1 text-xs leading-5 text-[--text-muted]">
+          <Text className="text-sm font-semibold text-text-primary">{t("ai-guide:dailyEsmaShortcut.title")}</Text>
+          <Text className="mt-1 text-xs leading-5 text-text-muted">
             {t("ai-guide:dailyEsmaShortcut.subtitle")}
           </Text>
         </View>
         <View className="rounded-full px-3 py-2" style={{ backgroundColor: withAlpha(tokens.accent, 0.14) }}>
-          <Text className="text-xs font-semibold text-[--accent]">{t("ai-guide:dailyEsmaShortcut.open")}</Text>
+          <Text className="text-xs font-semibold text-accent">{t("ai-guide:dailyEsmaShortcut.open")}</Text>
         </View>
       </View>
     </Pressable>

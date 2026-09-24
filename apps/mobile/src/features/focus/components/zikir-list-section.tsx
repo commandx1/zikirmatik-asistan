@@ -63,8 +63,8 @@ export function ZikirListSection() {
         ListHeaderComponent={ZikirFilterTabs}
         ListEmptyComponent={
           <View className="px-5">
-            <View className="items-center rounded-2xl border border-white/5 bg-[--card] p-6">
-              <Text className="text-sm text-[--text-muted]">{t("focus:list.empty")}</Text>
+            <View className="items-center rounded-2xl border border-white/5 bg-card p-6">
+              <Text className="text-sm text-text-muted">{t("focus:list.empty")}</Text>
             </View>
           </View>
         }

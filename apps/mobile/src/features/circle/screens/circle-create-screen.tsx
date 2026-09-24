@@ -104,23 +104,23 @@ export function CircleCreateScreen() {
       <PageHeader title={t("circle:create.title")} leftIconName="arrow-left" onPressLeft={() => router.back()} />
 
       <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
-        <Text className="mb-1.5 text-xs font-semibold text-[--text-muted]">{t("circle:create.nameLabel")}</Text>
+        <Text className="mb-1.5 text-xs font-semibold text-text-muted">{t("circle:create.nameLabel")}</Text>
         <ThemedInput value={name} onChangeText={setName} placeholder={t("circle:create.namePlaceholder")} className="mb-4" />
 
-        <Text className="mb-1.5 text-xs font-semibold text-[--text-muted]">{t("circle:create.dhikrLabel")}</Text>
+        <Text className="mb-1.5 text-xs font-semibold text-text-muted">{t("circle:create.dhikrLabel")}</Text>
         <Pressable
           onPress={() => setPickerVisible(true)}
           testID={TEST_IDS.circle.pickDhikr}
-          className="mb-4 flex-row items-center justify-between rounded-xl border border-white/10 bg-[--card] px-4 py-3.5"
+          className="mb-4 flex-row items-center justify-between rounded-xl border border-white/10 bg-card px-4 py-3.5"
         >
-          <Text className="text-sm font-medium text-[--text-primary]">
+          <Text className="text-sm font-medium text-text-primary">
             {selected
               ? resolveLocalizedText(selected.snapshot.transliteration ?? selected.snapshot.name, locale)
               : t("circle:create.pickDhikr")}
           </Text>
         </Pressable>
 
-        <Text className="mb-1.5 text-xs font-semibold text-[--text-muted]">{t("circle:create.goalLabel")}</Text>
+        <Text className="mb-1.5 text-xs font-semibold text-text-muted">{t("circle:create.goalLabel")}</Text>
         <ThemedInput
           value={goalCount}
           onChangeText={setGoalCount}
@@ -129,7 +129,7 @@ export function CircleCreateScreen() {
           className="mb-4"
         />
 
-        <Text className="mb-1.5 text-xs font-semibold text-[--text-muted]">{t("circle:create.durationLabel")}</Text>
+        <Text className="mb-1.5 text-xs font-semibold text-text-muted">{t("circle:create.durationLabel")}</Text>
         <View className="mb-6 flex-row flex-wrap gap-2">
           {durationOptions.map((option) => {
             const isActive = duration === option.key;

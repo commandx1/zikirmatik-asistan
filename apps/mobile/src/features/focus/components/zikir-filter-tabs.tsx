@@ -15,9 +15,9 @@ export function ZikirFilterTabs() {
               <Pressable
                 key={filter.key}
                 onPress={() => setActiveFilter(filter.key)}
-                className={`rounded-full px-4 py-2 ${active ? "bg-[--accent]" : "border border-white/5 bg-[--card]"}`}
+                className={`rounded-full px-4 py-2 ${active ? "bg-accent" : "border border-white/5 bg-card"}`}
               >
-                <Text className={`text-xs ${active ? "font-semibold text-[#111827]" : "font-medium text-[--text-primary]"}`}>{filter.label}</Text>
+                <Text className={`text-xs ${active ? "font-semibold text-[#111827]" : "font-medium text-text-primary"}`}>{filter.label}</Text>
               </Pressable>
             );
           })}

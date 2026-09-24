@@ -99,12 +99,12 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
       </View>
       <View className="z-10 mb-6 mt-4">
         <Text
-          className="text-2xl leading-[34px] font-semibold tracking-tight text-[--text-primary]"
+          className="text-2xl leading-[34px] font-semibold tracking-tight text-text-primary"
           numberOfLines={2}
         >
           {data.title}
         </Text>
-        <Text className="pt-1 text-sm leading-5 text-[--text-muted]">
+        <Text className="pt-1 text-sm leading-5 text-text-muted">
           {data.dateLabel}
         </Text>
       </View>
@@ -120,7 +120,7 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
           size={12}
           color={isTodaySpecial ? tokens.textPrimary : tokens.textMuted}
         />
-        <Text className={`text-xs leading-5 ${isTodaySpecial ? "text-[--text-primary]" : "text-[--text-muted]"}`}>
+        <Text className={`text-xs leading-5 ${isTodaySpecial ? "text-text-primary" : "text-text-muted"}`}>
           {t("special-days:hero.remainingPrefix", { remaining: data.remaining })}
         </Text>
       </View>

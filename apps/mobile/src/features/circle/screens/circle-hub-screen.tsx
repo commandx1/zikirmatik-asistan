@@ -88,13 +88,13 @@ export function CircleHubScreen() {
 
       <PageScrollView testID={TEST_IDS.circle.hub} contentInnerClassName="w-full px-5" bottomPadding={40}>
         {authStatus !== "authenticated" ? (
-          <View className="mb-4 rounded-xl border border-white/10 bg-[--card] px-3 py-2.5">
-            <Text className="text-xs text-[--text-muted]">{t("circle:hub.guestHint")}</Text>
+          <View className="mb-4 rounded-xl border border-white/10 bg-card px-3 py-2.5">
+            <Text className="text-xs text-text-muted">{t("circle:hub.guestHint")}</Text>
           </View>
         ) : null}
 
         {authStatus === "authenticated" && sortedCircles.length === 0 ? (
-          <Text className="mb-4 text-xs text-[--text-muted]">{t("circle:hub.empty")}</Text>
+          <Text className="mb-4 text-xs text-text-muted">{t("circle:hub.empty")}</Text>
         ) : null}
 
         {authStatus === "authenticated"
@@ -103,7 +103,7 @@ export function CircleHubScreen() {
 
         <PrimaryCtaButton label={t("circle:hub.newCircle")} onPress={handleCreate} testID={TEST_IDS.circle.newCircle} className="mb-4 mt-2 w-full" />
 
-        <Text className="mb-2 text-xs font-semibold text-[--text-muted]">{t("circle:hub.joinWithCode")}</Text>
+        <Text className="mb-2 text-xs font-semibold text-text-muted">{t("circle:hub.joinWithCode")}</Text>
         <View className="mb-1 flex-row items-center gap-2">
           <View className="flex-1">
             <ThemedInput
@@ -148,7 +148,7 @@ function CircleRow({ circle }: { circle: CircleSummary }) {
     <Pressable onPress={() => router.push(`/circle/${circle.id}` as Href)}>
       <ThemedCard className="mb-3 rounded-2xl p-4">
         <View className="mb-1 flex-row items-center justify-between">
-          <Text className="flex-1 pr-2 text-sm font-semibold text-[--text-primary]" numberOfLines={1}>
+          <Text className="flex-1 pr-2 text-sm font-semibold text-text-primary" numberOfLines={1}>
             {circle.name || resolveLocalizedText(circle.dhikr.name, locale)}
           </Text>
           <Text className="text-xs font-semibold" style={{ color: circle.status === "active" ? tokens.success : tokens.textMuted }}>
@@ -158,7 +158,7 @@ function CircleRow({ circle }: { circle: CircleSummary }) {
         <View className="mb-1.5 h-1.5 overflow-hidden rounded-full bg-white/10">
           <View className="h-1.5 rounded-full" style={{ width: `${percent}%`, backgroundColor: tokens.accent }} />
         </View>
-        <Text className="text-xs text-[--text-muted]">
+        <Text className="text-xs text-text-muted">
           {t("circle:home.progress", { total: circle.totalCount, goal: circle.goalCount })}
         </Text>
       </ThemedCard>

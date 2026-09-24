@@ -20,7 +20,7 @@ export function ProfileLinkRow({
   label,
   iconName,
   value,
-  valueClassName = "text-[--text-muted]",
+  valueClassName = "text-text-muted",
   iconContainerClassName,
   iconColor,
   rightIconName = "chevron-right",
@@ -40,7 +40,7 @@ export function ProfileLinkRow({
         >
           <FontAwesome6 name={iconName} size={14} color={resolvedIconColor} />
         </View>
-        <Text className="text-base font-medium text-[--text-primary]">{label}</Text>
+        <Text className="text-base font-medium text-text-primary">{label}</Text>
       </View>
 
       <View className="flex-row items-center gap-2">

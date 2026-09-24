@@ -260,7 +260,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
       <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
         {locked ? (
           <ThemedCard className="mb-4 items-center rounded-2xl px-4 py-6">
-            <Text className="mb-4 text-sm text-[--text-muted]">
+            <Text className="mb-4 text-sm text-text-muted">
               {storedCircle.status === "completed" ? t("circle:session.completedNotice") : t("circle:session.closedNotice")}
             </Text>
             <PrimaryCtaButton label={t("circle:session.close")} onPress={close} className="w-full" />
@@ -272,7 +272,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
             ) : (
               <AppleWatchView model={model} controls="none" />
             )}
-            <Text className="-mt-4 mb-3 text-center text-xs text-[--text-muted]">
+            <Text className="-mt-4 mb-3 text-center text-xs text-text-muted">
               {t("circle:session.mine", { count: liveCountRef.current })}
             </Text>
           </>
