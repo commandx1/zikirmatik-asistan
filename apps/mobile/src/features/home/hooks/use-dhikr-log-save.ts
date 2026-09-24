@@ -16,7 +16,6 @@ type Options = {
 
 export function useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave }: Options) {
   const { t } = useTranslation('home')
-  const syncError = useDhikrStore(state => state.syncError)
   const setSyncError = useDhikrStore(state => state.setSyncError)
   const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
   const activeAiContext = useDhikrStore(state => state.activeAiContext)
@@ -108,8 +107,8 @@ export function useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave 
   })
 
   const ui = useMemo(
-    () => ({ isSavingLog, syncError, autoSaveNoticeId, unsavedTransitionError, onSavePress }),
-    [isSavingLog, syncError, autoSaveNoticeId, unsavedTransitionError, onSavePress]
+    () => ({ isSavingLog, autoSaveNoticeId, unsavedTransitionError, onSavePress }),
+    [isSavingLog, autoSaveNoticeId, unsavedTransitionError, onSavePress]
   )
 
   return {

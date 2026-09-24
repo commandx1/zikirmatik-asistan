@@ -54,23 +54,19 @@ function useHomeValues() {
   const freeSave = useFreeSaveForm()
   const save = useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave: freeSave.open })
   const engine = useCounterEngine({ selectedDhikr, onAutoSave: save.autoSaveSelected, openFreeSave: freeSave.open })
-  const editors = useHomeEditors({ selectedDhikr, dhikrDisplayName, freeModeLabel })
+  const editors = useHomeEditors({ selectedDhikr })
   const transition = useDhikrTransition({
     selectedDhikr,
     dhikrDisplayName,
     freeModeLabel,
     save,
     freeSave,
-    resetFreeSession: engine.resetFreeSession,
-    setDemoCompleted: engine.setDemoCompleted,
-    closeDhikrPicker: editors.closeDhikrPicker
+    resetFreeSession: engine.resetFreeSession
   })
   const esma = useDailyEsmaWelcome({
     isHomeBusy:
       transition.hasUnsavedActiveDhikr ||
       editors.isEditingTarget ||
-      editors.isSelectingDhikr ||
-      editors.isCreatingDhikr ||
       freeSave.isOpen ||
       Boolean(transition.pendingDhikrTransition) ||
       transition.isSelectingEsmaDhikr,
@@ -97,11 +93,6 @@ function useHomeValues() {
     }),
     [mainDhikrId, mainDhikrSource, mainDhikrName, mainDhikrTransliteration, mainDhikrArabic, mainDhikrMeaning]
   )
-  const selectedSourceLabel = selectedDhikr
-    ? selectedDhikr.source === 'personal'
-      ? t('home:selectedSource.myDhikrs')
-      : t('home:selectedSource.ready')
-    : t('home:selectedSource.free')
   const greeting = t('home:greeting', { name: authDisplayName?.trim() || t('home:defaultName') })
   const streakLabel = t('home:streakLabel', { count: streakDays })
 
@@ -126,7 +117,6 @@ function useHomeValues() {
       toggleTapAnywhere,
       mainDhikr,
       selectedDhikrId,
-      selectedSourceLabel,
       ...save.ui,
       ...engine.ui,
       ...editors.ui,
@@ -135,7 +125,7 @@ function useHomeValues() {
     }),
     [
       greeting, streakLabel, streakDays, isRefreshing, refresh, tapAnywhereEnabled, toggleTapAnywhere, mainDhikr,
-      selectedDhikrId, selectedSourceLabel, save.ui, engine.ui, editors.ui, transition.ui, esma
+      selectedDhikrId, save.ui, engine.ui, editors.ui, transition.ui, esma
     ]
   )
 

@@ -6,11 +6,6 @@
   "greeting": "Hi, {{name}}",
   "defaultName": "friend",
   "streakLabel": "{{count}} days",
-  "selectedSource": {
-    "myDhikrs": "Source: My Dhikrs",
-    "ready": "Source: Ready-made",
-    "free": "Free Dhikr"
-  },
   "lastActivity": {
     "notStarted": "Not started yet"
   },
@@ -84,8 +79,7 @@
     "dhikrUpdateFailed": "Couldn't update the dhikr. Please try again.",
     "esmaDhikrNotFound": "Couldn't find that Beautiful Name dhikr.",
     "nameRequired": "Dhikr name is required.",
-    "targetInvalid": "The target must be 1 or greater if set.",
-    "dhikrSyncFailed": "Couldn't sync the dhikr log."
+    "targetInvalid": "The target must be 1 or greater if set."
   },
   "streakReminder": {
     "title": "Your streak is waiting 🔥",

@@ -43,8 +43,6 @@ type Options = {
   }
   freeSave: ReturnType<typeof useFreeSaveForm>
   resetFreeSession: () => void
-  setDemoCompleted: (value: boolean) => void
-  closeDhikrPicker: () => void
 }
 
 /** Switching the active dhikr (picker, quick chips, free mode, Esma) behind the unsaved-progress guard. */
@@ -54,9 +52,7 @@ export function useDhikrTransition({
   freeModeLabel,
   save,
   freeSave,
-  resetFreeSession,
-  setDemoCompleted,
-  closeDhikrPicker
+  resetFreeSession
 }: Options) {
   const { t } = useTranslation('home')
   const items = useDhikrStore(state => state.items)
@@ -105,7 +101,6 @@ export function useDhikrTransition({
     selectDhikr(dhikr._id)
     setActiveQuickDhikr(dhikrDisplayName(dhikr))
     resetFreeSession()
-    setDemoCompleted(false)
     setEsmaResumePending(null)
   }
 
@@ -154,7 +149,6 @@ export function useDhikrTransition({
 
     if (transition.kind === 'select') {
       selectDhikr(transition.id)
-      closeDhikrPicker()
       return
     }
 

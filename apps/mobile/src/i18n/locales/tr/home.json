@@ -6,11 +6,6 @@
   "greeting": "Selam, {{name}}",
   "defaultName": "Dostum",
   "streakLabel": "{{count}} gün",
-  "selectedSource": {
-    "myDhikrs": "Kaynak: Zikirlerim",
-    "ready": "Kaynak: Hazır",
-    "free": "Serbest Zikir"
-  },
   "lastActivity": {
     "notStarted": "Henüz başlanmadı"
   },
@@ -84,8 +79,7 @@
     "dhikrUpdateFailed": "Zikir güncellenemedi. Lütfen tekrar dene.",
     "esmaDhikrNotFound": "Esma zikri bulunamadı.",
     "nameRequired": "Zikir adı zorunlu.",
-    "targetInvalid": "Hedef girilecekse 1 veya daha büyük olmalı.",
-    "dhikrSyncFailed": "Zikir kaydı senkronize edilemedi."
+    "targetInvalid": "Hedef girilecekse 1 veya daha büyük olmalı."
   },
   "streakReminder": {
     "title": "Streak'in seni bekliyor 🔥",

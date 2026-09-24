@@ -7,7 +7,7 @@ import { useCounterStyleStore } from '../../../store/counter-style-store'
 import { useDhikrStore } from '../../../store/dhikr-store'
 import { useProfileStore } from '../../../store/profile-store'
 import type { ZikirItem } from '../../focus/types'
-import { computeCurrentLap, computeLapProgress, lapNumberCompletedAt, resolveLapSize } from '../services/lap-counter'
+import { computeCurrentLap, lapNumberCompletedAt, resolveLapSize } from '../services/lap-counter'
 
 type Options = {
   selectedDhikr: ZikirItem | undefined
@@ -23,7 +23,6 @@ export function useCounterEngine({ selectedDhikr, onAutoSave, openFreeSave }: Op
   const freeModeLapSize = useDhikrStore(state => state.freeModeLapSize)
   const incrementSelected = useDhikrStore(state => state.incrementSelected)
   const resetSelected = useDhikrStore(state => state.resetSelected)
-  const setSelectedCount = useDhikrStore(state => state.setSelectedCount)
   const setSelectedLapSize = useDhikrStore(state => state.setSelectedLapSize)
   const incrementFreeMode = useDhikrStore(state => state.incrementFreeMode)
   const resetFreeMode = useDhikrStore(state => state.resetFreeMode)
@@ -40,7 +39,6 @@ export function useCounterEngine({ selectedDhikr, onAutoSave, openFreeSave }: Op
   const soundPack = useCounterStyleStore(state => state.soundPack)
   const effectiveSoundPack = isPremium ? soundPack : 'off'
 
-  const [demoCompleted, setDemoCompleted] = useState(false)
   const [lapCompletedNoticeId, setLapCompletedNoticeId] = useState(0)
   const [lastCompletedLap, setLastCompletedLap] = useState(0)
 
@@ -67,7 +65,6 @@ export function useCounterEngine({ selectedDhikr, onAutoSave, openFreeSave }: Op
   const progress = target > 0 ? count / target : 0
   const lapSize = resolveLapSize(selectedDhikr ? selectedDhikr.lapSize : freeModeLapSize)
   const currentLap = computeCurrentLap(count, lapSize)
-  const lapProgress = computeLapProgress(count, lapSize)
 
   const giveFeedback = (prev: number, next: number) => {
     if (fireCounterFeedback({ prev, next, lapSize, pattern: hapticsPattern, soundPack: effectiveSoundPack })) {
@@ -77,10 +74,6 @@ export function useCounterEngine({ selectedDhikr, onAutoSave, openFreeSave }: Op
   }
 
   const onCountPress = useStableCallback(() => {
-    if (demoCompleted) {
-      return
-    }
-
     if (!selectedDhikr) {
       const prevCount = liveFreeCountRef.current
       const nextRawCount = prevCount + 1
@@ -151,14 +144,6 @@ export function useCounterEngine({ selectedDhikr, onAutoSave, openFreeSave }: Op
     setFreeModeLapSize(size)
   })
 
-  const onToggleDemoComplete = useStableCallback(() => {
-    setDemoCompleted(prev => {
-      const next = !prev
-      setSelectedCount(next ? (selectedDhikr?.target ?? 0) : 0)
-      return next
-    })
-  })
-
   /** Drops the free-mode session and the live count the next tap builds on. */
   const resetFreeSession = useCallback(() => {
     liveFreeCountRef.current = 0
@@ -166,14 +151,14 @@ export function useCounterEngine({ selectedDhikr, onAutoSave, openFreeSave }: Op
   }, [clearFreeModeSession])
 
   const counter = useMemo(
-    () => ({ count, target, progress, isTargetMode, lapSize, currentLap, lapProgress, onCountPress, onResetPress }),
-    [count, target, progress, isTargetMode, lapSize, currentLap, lapProgress, onCountPress, onResetPress]
+    () => ({ count, target, progress, isTargetMode, lapSize, currentLap, onCountPress, onResetPress }),
+    [count, target, progress, isTargetMode, lapSize, currentLap, onCountPress, onResetPress]
   )
 
   const ui = useMemo(
-    () => ({ setLapSize, lapCompletedNoticeId, lastCompletedLap, demoCompleted, onToggleDemoComplete }),
-    [setLapSize, lapCompletedNoticeId, lastCompletedLap, demoCompleted, onToggleDemoComplete]
+    () => ({ setLapSize, lapCompletedNoticeId, lastCompletedLap }),
+    [setLapSize, lapCompletedNoticeId, lastCompletedLap]
   )
 
-  return { counter, ui, setDemoCompleted, resetFreeSession }
+  return { counter, ui, resetFreeSession }
 }
