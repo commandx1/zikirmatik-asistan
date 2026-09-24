@@ -1,538 +1,73 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Keyboard } from "react-native";
+// AI Rehber ekranının kompozisyon kökü. Parçalar:
+//   - use-ai-guide-request.ts: girdi + istek durum makinesi (kredi, soket, 503, satın alma sonrası devam)
+//   - use-ai-guide-history.ts: aktif sonuç + geçmiş + backend/cache hidrasyonu
+//   - ../services/ai-guide-localize.ts: RAW → ekran metni (render anında, aktif dile göre)
+// Burada yalnızca bunların birleşimi, çözümleme memo'ları ve küçük UI anahtarları var.
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { aiGuideLastKey } from "../../../lib/storage/keys";
-import { createFlowId } from "../../../lib/ids";
-import type {
-  AiGuideHistoryItem,
-  AiGuideHistoryItemRaw,
-  AiGuideRecommendation,
-  AiGuideRecommendationRaw
-} from "../types";
+import type { AiGuideHistoryItem, AiGuideRecommendation, AiGuideRecommendationRaw } from "../types";
 import { useAuthStore } from "../../../store/auth-store";
 import { useDhikrStore } from "../../../store/dhikr-store";
-import { resolveLocalizedText } from "@zikirmatik/shared";
-import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
-import { fetchAiRecommendations } from "../../ai-shared/services/ai-queries";
-import { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
-import {
-  AiApiError,
-  AI_CREDIT_INSUFFICIENT_CODE,
-  AI_UNAVAILABLE_CODE,
-  DAILY_LIMIT_REACHED_CODE,
-  createAiRecommendation,
-  isAiClarificationResponse,
-  isAiOffTopicResponse,
-  selectAiRecommendation
-} from "../services/ai-api-client";
-import { createAiProgressSocket } from "../services/ai-progress-socket";
-import { buildAiGuideHistoryItems, resolveVisibleAiGuideHistory } from "../services/ai-guide-history-service";
 import { useProfileStore } from "../../../store/profile-store";
-
-/**
- * AsyncStorage cache payload şekli. `version: 2` ile dil-bağımlı alanların
- * artık RAW (LocalizedText) saklandığını işaretliyoruz — v1'de (bu alan
- * yokken) çözülmüş plain string saklanıyordu. hydrateLastResultFromCache bu
- * versiyonu kontrol edip eski şekilli cache'i sessizce görmezden gelir.
- */
-const AI_GUIDE_CACHE_VERSION = 2;
-
-type LastAiGuideResult = {
-  version: typeof AI_GUIDE_CACHE_VERSION;
-  prompt: string;
-  assistantNote?: string;
-  recommendationId?: string;
-  recommendations: AiGuideRecommendationRaw[];
-};
-
-type ClarificationState = {
-  message: string;
-};
-
-type AiUnavailableState = {
-  message: string;
-};
-
-type PendingAiRequest = {
-  freeText?: string;
-  flowId: string;
-};
+import { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
+import { AiApiError, selectAiRecommendation } from "../services/ai-api-client";
+import { resolveVisibleAiGuideHistory } from "../services/ai-guide-history-service";
+import { resolveRecommendation } from "../services/ai-guide-localize";
+import { useAiGuideHistory } from "./use-ai-guide-history";
+import { useAiGuideRequest } from "./use-ai-guide-request";
 
 export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const { t } = useTranslation("ai-guide");
-  const [intentInput, setIntentInput] = useState("");
-  // Özel gün detayından taşınan bağlam. State değil ref: yalnızca istek
-  // gönderilirken okunur, render'ı etkilemez.
-  const specialDayNameRef = useRef<string | undefined>(undefined);
   const [showInfo, setShowInfo] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string>();
-  const [offTopicMessage, setOffTopicMessage] = useState<string>();
-  const [clarification, setClarification] = useState<ClarificationState>();
-  const [aiUnavailable, setAiUnavailable] = useState<AiUnavailableState | null>(null);
-  const [recommendationId, setRecommendationId] = useState<string>();
-  // Dil-bağımlı alanlar RAW (LocalizedText) saklanır; ekrana basılacak
-  // çözülmüş string'ler aşağıda `resolvedRecommendations`/`resolvedHistoryItems`
-  // ile render anında, aktif dile göre üretilir (bkz. resolveRecommendation).
-  const [recommendations, setRecommendations] = useState<AiGuideRecommendationRaw[]>([]);
-  const [assistantNote, setAssistantNote] = useState<string>();
-  const [historyItems, setHistoryItems] = useState<AiGuideHistoryItemRaw[]>([]);
-  const [isHistoryExpanded, setHistoryExpanded] = useState(false);
-  const [lastPrompt, setLastPrompt] = useState("");
-  const [activeFlowId, setActiveFlowId] = useState<string>();
-  const [loadingStep, setLoadingStep] = useState("");
-  const [postPurchaseNotice, setPostPurchaseNotice] = useState<string>();
-  const pendingRequestRef = useRef<PendingAiRequest | null>(null);
-  // AI_UNAVAILABLE (503) alındığında son isteği burada saklarız — kredi
-  // düşülmediği için pendingRequestRef'ten (kredi satın alma akışı) ayrı
-  // tutulur; retryLastRequest aynı flowId ile aynı isteği tekrar gönderir.
-  const aiUnavailableRequestRef = useRef<PendingAiRequest | null>(null);
-
   const authStatus = useAuthStore((s) => s.status);
-  const userId = useAuthStore((s) => s.session?.userId);
-  const {
-    creditBalance,
-    refreshCredits,
-    resetCredits,
-    ensureCreditsAvailable,
-    applyRemainingCredits,
-    markInsufficient,
-    waitForCredits
-  } = useAiCredits({ onOpenPremiumSheet });
-  // Canonical locale kaynağı: useProfileStore.locale (reactive selector).
-  // setLocale() hem bu store'u hem i18n.changeLanguage()'i günceller, ama
-  // burada zustand selector kullanmak dil değişince re-render'ı garanti eder
-  // (i18n.language de değişir ama bu hook doğrudan onu izlemiyordu).
+  // Canonical locale kaynağı: useProfileStore.locale (reactive selector) —
+  // dil değişince re-render'ı garanti eder.
   const locale = useProfileStore((s) => s.locale);
   const selectDhikr = useDhikrStore((s) => s.selectDhikr);
+
+  const credits = useAiCredits({ onOpenPremiumSheet });
+  const history = useAiGuideHistory(credits.refreshCredits);
+  const request = useAiGuideRequest({ credits, history, onOpenPremiumSheet });
+  const { recommendationId, lastPrompt, assistantNote, isHistoryExpanded } = history;
+  const { setError } = request;
 
   const closeInfo = () => setShowInfo(false);
   const toggleInfo = () => setShowInfo((value) => !value);
 
-  const cacheKey = userId ? aiGuideLastKey(userId) : "";
-
-  useEffect(() => {
-    setError(undefined);
-    setRecommendationId(undefined);
-    setRecommendations([]);
-    setAssistantNote(undefined);
-    setHistoryItems([]);
-    setHistoryExpanded(false);
-    setLastPrompt("");
-    setIntentInput("");
-    resetCredits();
-    setActiveFlowId(undefined);
-  }, [authStatus, cacheKey, resetCredits]);
-
-  const hydrateLastResultFromCache = useCallback(async () => {
-    if (!cacheKey) {
-      return false;
-    }
-
-    const raw = await AsyncStorage.getItem(cacheKey);
-    if (!raw) {
-      return false;
-    }
-
-    const parsed = JSON.parse(raw) as Partial<LastAiGuideResult>;
-    // v1 cache'i (bu değişiklikten önce yazılmış) recommendations alanında
-    // çözülmüş plain string'ler barındırıyordu; version alanı yoksa/uymuyorsa
-    // eski şekilli veriyi sessizce yok say (crash etme).
-    if (!parsed || parsed.version !== AI_GUIDE_CACHE_VERSION || !Array.isArray(parsed.recommendations)) {
-      return false;
-    }
-
-    setLastPrompt(parsed.prompt || "");
-    setAssistantNote(parsed.assistantNote?.trim() || undefined);
-    setRecommendationId(parsed.recommendationId);
-    setRecommendations(parsed.recommendations);
-    setHistoryItems(
-      parsed.recommendationId
-        ? [
-            {
-              id: parsed.recommendationId,
-              prompt: parsed.prompt?.trim() || t("ai-guide:genericPrompt"),
-              assistantNote: parsed.assistantNote?.trim() || undefined,
-              createdAt: "",
-              recommendations: parsed.recommendations
-            }
-          ]
-        : []
-    );
-    setHistoryExpanded(false);
-    return true;
-  }, [cacheKey, t]);
-
-  const hydrateLastResultFromBackend = useCallback(async () => {
-    if (authStatus !== "authenticated" || !userId) {
-      return false;
-    }
-
-    const [recommendationRows, catalog] = await Promise.all([
-      fetchAiRecommendations(userId),
-      fetchDhikrCatalog(),
-    ]);
-    await refreshCredits();
-
-    const nextHistoryItems = buildAiGuideHistoryItems(recommendationRows, catalog);
-    setHistoryItems(nextHistoryItems);
-
-    const latest = nextHistoryItems[0];
-    if (!latest) {
-      return false;
-    }
-
-    const prompt = latest.prompt === t("ai-guide:genericPrompt") ? "" : latest.prompt;
-    setLastPrompt(prompt);
-    setAssistantNote(latest.assistantNote);
-    setRecommendationId(latest.id);
-    setRecommendations(latest.recommendations);
-
-    if (cacheKey) {
-      void AsyncStorage.setItem(
-        cacheKey,
-        JSON.stringify({
-          version: AI_GUIDE_CACHE_VERSION,
-          prompt,
-          assistantNote: latest.assistantNote,
-          recommendationId: latest.id,
-          recommendations: latest.recommendations
-        } satisfies LastAiGuideResult)
-      ).catch(() => {
-        // ignore cache write errors
-      });
-    }
-
-    return true;
-  }, [authStatus, cacheKey, refreshCredits, userId, t]);
-
-  useEffect(() => {
-    if (authStatus !== "authenticated" || !cacheKey) {
-      return;
-    }
-
-    let isCancelled = false;
-    const run = async () => {
-      try {
-        const loadedFromBackend = await hydrateLastResultFromBackend();
-        if (isCancelled || loadedFromBackend) {
-          return;
-        }
-      } catch {
-        // fallback to local cache
-      }
-
-      try {
-        if (!isCancelled) {
-          await hydrateLastResultFromCache();
-        }
-      } catch {
-        // ignore cache read errors
-      }
-    };
-
-    void run();
-    return () => {
-      isCancelled = true;
-    };
-  }, [authStatus, cacheKey, hydrateLastResultFromBackend, hydrateLastResultFromCache]);
-
-  const applyPrompt = (value: string) => {
-    setIntentInput(value);
-  };
-
-  /**
-   * Özel gün detayından gelen niyeti girdi alanına yazar. Otomatik submit
-   * YOK: istek atmak 1 kredi yakar, kullanıcı butona kendisi basmalı.
-   */
-  const applySpecialDayIntent = (intent: { freeText: string; specialDayName: string }) => {
-    setIntentInput(intent.freeText);
-    specialDayNameRef.current = intent.specialDayName;
-  };
-
-  const onIntentInputChange = (value: string) => {
-    setIntentInput(value);
-    setPostPurchaseNotice(undefined);
-  };
-
-  const executeRecommendationRequest = useCallback(
-    async (request: PendingAiRequest) => {
-      pendingRequestRef.current = null;
-      setIsLoading(true);
-      setLoadingStep("");
-      setError(undefined);
-      setOffTopicMessage(undefined);
-      setClarification(undefined);
-      setAiUnavailable(null);
-
-      const progressSocket = createAiProgressSocket();
-      let socketId: string | undefined;
-      try {
-        socketId = await progressSocket.connect();
-        progressSocket.onStep(({ key }) =>
-          setLoadingStep(
-            t(`ai-guide:loading.steps.${key}`, { defaultValue: t("ai-guide:loading.defaultStep") })
-          )
-        );
-      } catch {
-        // socket bağlanamazsa silent devam
-      }
-
-      try {
-        if (authStatus !== "authenticated" || !userId) {
-          setRecommendations([]);
-          setIntentInput("");
-          return;
-        }
-
-        const now = new Date();
-        const matchedSpecialDayName = resolveSpecialDayContext(
-          specialDayNameRef.current,
-          request.freeText
-        );
-        const response = await createAiRecommendation({
-          userId,
-          flowId: request.flowId,
-          freeText: request.freeText,
-          maxRecommendations: 3,
-          socketId,
-          timeContext: {
-            hour: now.getHours(),
-            dayOfWeek: now.getDay(),
-            // Özel gün bağlamı yalnızca gün adı metinde hâlâ duruyorsa
-            // gönderilir; kullanıcı adı silip başka bir şey sorduğunda
-            // retrieval yanlış güne kaymasın.
-            isSpecialDay: Boolean(matchedSpecialDayName),
-            ...(matchedSpecialDayName ? { specialDayName: matchedSpecialDayName } : {})
-          }
-        });
-
-        if (isAiOffTopicResponse(response)) {
-          setOffTopicMessage(response.message);
-          setRecommendations([]);
-          setAssistantNote(undefined);
-          setRecommendationId(undefined);
-          setActiveFlowId(undefined);
-          setIntentInput("");
-          return;
-        }
-
-        if (isAiClarificationResponse(response)) {
-          setClarification({ message: response.message });
-          setRecommendations([]);
-          setAssistantNote(undefined);
-          setRecommendationId(undefined);
-          return;
-        }
-
-        setRecommendationId(response.recommendationId);
-        const nextAssistantNote = response.reasoning?.trim() || undefined;
-        // Dil-bağımlı alanlar RAW (LocalizedText) saklanır — çözüm burada
-        // YAPILMAZ, render anında aktif dile göre yapılır. Böylece kullanıcı
-        // dili değiştirdiğinde bu kayıt yeniden fetch edilmeden güncellenir.
-        const rawItems: AiGuideRecommendationRaw[] = response.items.map((item) => ({
-          id: item.id,
-          name: item.name,
-          arabic: item.nameArabic,
-          transliteration: item.transliteration,
-          meaning: item.meaning,
-          virtue: item.virtue,
-          source: item.source,
-          recommendedCount: item.recommendedCount
-        }));
-        const normalizedPrompt = request.freeText?.trim() || "";
-        setLastPrompt(normalizedPrompt);
-        setAssistantNote(nextAssistantNote);
-        setRecommendations(rawItems);
-        setHistoryItems((prev) => [
-          {
-            id: response.recommendationId,
-            prompt: normalizedPrompt || t("ai-guide:genericPrompt"),
-            assistantNote: nextAssistantNote,
-            createdAt: new Date().toISOString(),
-            recommendations: rawItems
-          },
-          ...prev.filter((item) => item.id !== response.recommendationId)
-        ]);
-        setHistoryExpanded(false);
-
-        if (cacheKey) {
-          void AsyncStorage.setItem(
-            cacheKey,
-            JSON.stringify({
-              version: AI_GUIDE_CACHE_VERSION,
-              prompt: normalizedPrompt,
-              assistantNote: nextAssistantNote,
-              recommendationId: response.recommendationId,
-              recommendations: rawItems
-            } satisfies LastAiGuideResult)
-          ).catch(() => {
-            // ignore cache write errors
-          });
-        }
-
-        applyRemainingCredits(response.remainingCredits);
-
-        setActiveFlowId(undefined);
-        setIntentInput("");
-      } catch (error) {
-        if (
-          error instanceof AiApiError &&
-          (error.code === AI_CREDIT_INSUFFICIENT_CODE ||
-            error.code === DAILY_LIMIT_REACHED_CODE)
-        ) {
-          markInsufficient();
-          pendingRequestRef.current = request;
-          onOpenPremiumSheet?.();
-        } else if (error instanceof AiApiError && error.code === AI_UNAVAILABLE_CODE) {
-          // 503: kredi düşülmedi, bakiyeye ya da premium sheet'e dokunma —
-          // yalnızca aynı flowId ile tekrar denemeyi teklif et.
-          aiUnavailableRequestRef.current = request;
-          setAiUnavailable({ message: error.message || t("ai-guide:errors.aiUnavailable") });
-        } else if (error instanceof AiApiError) {
-          setError(error.message);
-        } else {
-          setError(t("ai-guide:errors.recommendationFailed"));
-        }
-      } finally {
-        progressSocket.disconnect();
-        setIsLoading(false);
-        setLoadingStep("");
-      }
-    },
-    [applyRemainingCredits, authStatus, cacheKey, markInsufficient, onOpenPremiumSheet, userId, t]
-  );
-
-  const submitIntent = async () => {
-    if (isLoading) {
-      return;
-    }
-
-    Keyboard.dismiss();
-    setPostPurchaseNotice(undefined);
-    setAiUnavailable(null);
-    const flowId = createFlowId();
-    setActiveFlowId(flowId);
-    const request = { freeText: intentInput.trim() || undefined, flowId };
-
-    if (!(await ensureCreditsAvailable())) {
-      pendingRequestRef.current = request;
-      return;
-    }
-
-    await executeRecommendationRequest(request);
-  };
-
-  /**
-   * AI_UNAVAILABLE (503) sonrası "Tekrar dene" — aynı istek nesnesini
-   * (dolayısıyla aynı flowId'yi) yeniden gönderir. Sunucu flowId+promptHash
-   * üzerinden idempotency uyguladığı için aynı flowId'nin tekrar
-   * kullanılması güvenlidir; kredi zaten düşülmemişti.
-   */
-  const retryLastRequest = async () => {
-    if (isLoading) {
-      return;
-    }
-
-    const request = aiUnavailableRequestRef.current;
-    if (!request) {
-      return;
-    }
-
-    setPostPurchaseNotice(undefined);
-
-    if (!(await ensureCreditsAvailable())) {
-      pendingRequestRef.current = request;
-      return;
-    }
-
-    await executeRecommendationRequest(request);
-  };
-
-  const resumeAfterCreditPurchase = async () => {
-    if (isLoading) {
-      return;
-    }
-
-    setPostPurchaseNotice(undefined);
-    setIsLoading(true);
-    setLoadingStep(t("ai-guide:loading.creditsLoading"));
-
-    if (!(await waitForCredits())) {
-      setIsLoading(false);
-      setLoadingStep("");
-      setPostPurchaseNotice(t("ai-guide:loading.creditsLoadingRetry"));
-      return;
-    }
-
-    const request =
-      pendingRequestRef.current ??
-      (intentInput.trim() ? { freeText: intentInput.trim(), flowId: activeFlowId || createFlowId() } : null);
-    pendingRequestRef.current = null;
-    setIsLoading(false);
-    setLoadingStep("");
-    if (request) {
-      await executeRecommendationRequest(request);
-    }
-  };
-
-  // RAW (LocalizedText) bir öneriyi ekranda gösterilecek çözülmüş stringlere
-  // dönüştürür. `locale` (useProfileStore selector) veya `t` değiştiğinde bu
-  // fonksiyon yeniden oluşur, böylece aşağıdaki useMemo'lar da yeniden
-  // hesaplanır — dil değişince kart metinleri anında güncellenir.
-  const resolveRecommendation = useCallback(
-    (raw: AiGuideRecommendationRaw, index: number): AiGuideRecommendation => {
-      const resolvedName = raw.name ? resolveLocalizedText(raw.name, locale) : undefined;
-      const resolvedTransliteration = resolveLocalizedText(raw.transliteration, locale);
-      return {
-        id: raw.id,
-        title: resolvedName,
-        chipEmoji: index === 0 ? "💆" : "✨",
-        chipLabel:
-          index === 0
-            ? t("ai-guide:recommendation.chipLabelPrimary")
-            : t("ai-guide:recommendation.chipLabelSecondary"),
-        repeatLabel: index === 0 ? t("ai-guide:recommendation.repeatLabelPrimary") : undefined,
-        arabic: raw.arabic,
-        transliteration: resolvedTransliteration || resolvedName || "",
-        meaning: resolveLocalizedText(raw.meaning, locale),
-        virtue: raw.virtue ? resolveLocalizedText(raw.virtue, locale) : undefined,
-        source: raw.source ? resolveLocalizedText(raw.source, locale) : undefined,
-        recommendedCount: raw.recommendedCount,
-        isPrimary: index === 0
-      };
-    },
+  // `locale` veya `t` değişince yeniden oluşur → aşağıdaki memo'lar da.
+  const resolve = useCallback(
+    (raw: AiGuideRecommendationRaw, index: number) => resolveRecommendation(raw, index, locale, t),
     [locale, t]
   );
 
   const resolvedRecommendations = useMemo(
-    () => recommendations.map((raw, index) => resolveRecommendation(raw, index)),
-    [recommendations, resolveRecommendation]
+    () => history.recommendations.map((raw, index) => resolve(raw, index)),
+    [history.recommendations, resolve]
   );
 
   const resolvedHistoryItems = useMemo<AiGuideHistoryItem[]>(
     () =>
-      historyItems.map((item) => ({
+      history.historyItems.map((item) => ({
         id: item.id,
         prompt: item.prompt,
         assistantNote: item.assistantNote,
         createdAt: item.createdAt,
-        recommendations: item.recommendations.map((raw, index) => resolveRecommendation(raw, index))
+        recommendations: item.recommendations.map((raw, index) => resolve(raw, index))
       })),
-    [historyItems, resolveRecommendation]
+    [history.historyItems, resolve]
+  );
+
+  const visibleHistoryItems = useMemo(
+    () => resolveVisibleAiGuideHistory(resolvedHistoryItems, isHistoryExpanded),
+    [resolvedHistoryItems, isHistoryExpanded]
   );
 
   const selectRecommendation = (recommendation: AiGuideRecommendation) => {
     selectDhikr(
       recommendation.id,
       recommendationId
-        ? {
-            recommendationId,
-            prompt: lastPrompt.trim() || t("ai-guide:genericPrompt"),
-            assistantNote
-          }
+        ? { recommendationId, prompt: lastPrompt.trim() || t("ai-guide:genericPrompt"), assistantNote }
         : undefined
     );
 
@@ -547,20 +82,8 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     });
   };
 
-  const visibleHistoryItems = useMemo(
-    () => resolveVisibleAiGuideHistory(resolvedHistoryItems, isHistoryExpanded),
-    [resolvedHistoryItems, isHistoryExpanded]
-  );
-
   const openHistoryItem = (item: AiGuideHistoryItem) => {
-    // `item` render'a döndürülen çözülmüş (display) tipte gelir; state'e
-    // yazarken raw kaynağı `historyItems` içinden id ile buluyoruz ki dil
-    // değişince bu kayıt da yeniden çözülsün.
-    const rawItem = historyItems.find((entry) => entry.id === item.id);
-    setRecommendationId(item.id);
-    setLastPrompt(item.prompt === t("ai-guide:genericPrompt") ? "" : item.prompt);
-    setAssistantNote(item.assistantNote);
-    setRecommendations(rawItem?.recommendations ?? []);
+    history.openHistoryItem(item);
     setError(undefined);
   };
 
@@ -568,52 +91,41 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     closeInfo();
     setIsRefreshing(true);
     try {
-      await refreshCredits();
+      await credits.refreshCredits();
     } finally {
       setIsRefreshing(false);
     }
   };
 
   return {
-    intentInput,
+    intentInput: request.intentInput,
     showInfo,
-    isLoading,
-    loadingStep,
+    isLoading: request.isLoading,
+    loadingStep: request.loadingStep,
     isRefreshing,
-    error,
-    postPurchaseNotice,
-    resumeAfterCreditPurchase,
-    offTopicMessage,
-    clarification,
-    aiUnavailable,
-    retryLastRequest,
+    error: request.error,
+    postPurchaseNotice: request.postPurchaseNotice,
+    resumeAfterCreditPurchase: request.resumeAfterCreditPurchase,
+    offTopicMessage: request.offTopicMessage,
+    clarification: request.clarification,
+    aiUnavailable: request.aiUnavailable,
+    retryLastRequest: request.retryLastRequest,
     recommendationId,
     assistantNote,
     recommendations: resolvedRecommendations,
     historyItems: resolvedHistoryItems,
     visibleHistoryItems,
     isHistoryExpanded,
-    creditBalance,
+    creditBalance: credits.creditBalance,
     closeInfo,
     toggleInfo,
-    applyPrompt,
-    applySpecialDayIntent,
-    onIntentInputChange,
-    submitIntent,
+    applyPrompt: request.applyPrompt,
+    applySpecialDayIntent: request.applySpecialDayIntent,
+    onIntentInputChange: request.onIntentInputChange,
+    submitIntent: request.submitIntent,
     refresh,
     selectRecommendation,
     openHistoryItem,
-    toggleHistoryExpanded: () => setHistoryExpanded((value) => !value)
+    toggleHistoryExpanded: history.toggleHistoryExpanded
   };
-}
-
-function resolveSpecialDayContext(specialDayName?: string, freeText?: string) {
-  const name = specialDayName?.trim();
-  if (!name || !freeText) {
-    return undefined;
-  }
-
-  return freeText.toLocaleLowerCase("tr-TR").includes(name.toLocaleLowerCase("tr-TR"))
-    ? name
-    : undefined;
 }

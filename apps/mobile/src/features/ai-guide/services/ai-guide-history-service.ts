@@ -21,7 +21,7 @@ export function resolveVisibleAiGuideHistory(items: AiGuideHistoryItem[], showAl
 /**
  * Backend geçmiş kayıtlarını dil-bağımsız (raw LocalizedText) alanlarla üretir.
  * Görüntülenecek dize çözümü render anında, aktif dile göre yapılmalıdır
- * (bkz. use-ai-guide.ts -> resolveRecommendation) — burada locale'e göre
+ * (bkz. ai-guide-localize.ts -> resolveRecommendation) — burada locale'e göre
  * çözüm YAPILMAZ ki dil değişince kartlar da güncellenebilsin.
  */
 export function buildAiGuideHistoryItems(rows: BackendAiRecommendation[], catalog: CatalogDhikr[]): AiGuideHistoryItemRaw[] {
