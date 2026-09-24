@@ -1,6 +1,6 @@
-import { Platform } from "react-native";
 import type { StatsSummary } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
+import { API_BASE_URL } from "../../../lib/env";
 
 export class StatsApiError extends Error {
   constructor(
@@ -13,21 +13,8 @@ export class StatsApiError extends Error {
   }
 }
 
-const API_BASE_URL = resolveApiBaseUrl();
-
 export async function getStatsSummary(accessToken?: string): Promise<StatsSummary> {
   return requestJson<StatsSummary>("/v1/stats/summary", accessToken);
-}
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
 }
 
 async function requestJson<TResponse>(

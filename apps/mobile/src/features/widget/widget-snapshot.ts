@@ -20,14 +20,7 @@ import type { VirdDayProgressByDate, VirdProgramLocal, VirdSlotKey } from "../vi
 // yüzden handler AsyncStorage'daki ham JSON string'lerini okuyup burada
 // tanımlı saf fonksiyona verir.
 
-export const WIDGET_STORAGE_KEYS = {
-  dhikrStore: "dhikr-store-v1",
-  virdStore: "vird-store-v1",
-  circleStore: "circle-store-v1",
-  profileStore: "profile-store-v1",
-  themeStore: "theme-store-v1",
-  widgetState: "widget-state-v1"
-} as const;
+export { WIDGET_STORAGE_KEYS } from "../../lib/storage/keys";
 
 export type WidgetRawInput = {
   dhikrStore: string | null;

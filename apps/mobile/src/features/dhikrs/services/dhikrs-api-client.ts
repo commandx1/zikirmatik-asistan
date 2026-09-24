@@ -1,5 +1,5 @@
-import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
+import { ApiError, request } from "../../../lib/http/client";
 import type { LocalizedText } from "@zikirmatik/shared";
 
 export type BackendDhikr = {
@@ -13,105 +13,22 @@ export type BackendDhikr = {
   recommendedCount: number;
 };
 
-export class DhikrsApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number
-  ) {
-    super(message);
-    this.name = "DhikrsApiError";
-  }
-}
+export const DhikrsApiError = ApiError;
+export type DhikrsApiError = ApiError;
 
-const API_BASE_URL = resolveApiBaseUrl();
+const errors = () => ({
+  failed: i18n.t("dhikrs:errors.listFailed"),
+  unreachable: i18n.t("dhikrs:errors.serverUnreachable")
+});
 
 export async function listVerifiedActiveDhikrs(): Promise<BackendDhikr[]> {
-  return requestJson<BackendDhikr[]>("/v1/dhikrs/verified-active");
+  return request<BackendDhikr[]>("/v1/dhikrs/verified-active", { emptyValue: [], errors: errors() });
 }
 
 export async function findVerifiedActiveDhikrByTransliteration(transliteration: string): Promise<BackendDhikr> {
-  return requestJson<BackendDhikr>(
-    `/v1/dhikrs/lookup?transliteration=${encodeURIComponent(transliteration)}`
-  );
-}
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
-}
-
-async function requestJson<TResponse>(path: string): Promise<TResponse> {
-  try {
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: "GET",
-      headers: {
-        "content-type": "application/json"
-      }
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("dhikrs:errors.listFailed"));
-      throw new DhikrsApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
-    }
-
-    return (data ?? []) as TResponse;
-  } catch (error) {
-    if (error instanceof DhikrsApiError) {
-      throw error;
-    }
-
-    throw new DhikrsApiError("transient", i18n.t("dhikrs:errors.serverUnreachable"));
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) {
-    return payload;
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const candidate = payload as { message?: unknown; error?: unknown };
-  if (typeof candidate.message === "string" && candidate.message.trim()) {
-    return candidate.message;
-  }
-
-  if (typeof candidate.error === "string" && candidate.error.trim()) {
-    return candidate.error;
-  }
-
-  return fallback;
+  // emptyValue [] preserves the legacy shared `?? []` fallback of this file.
+  return request<BackendDhikr>(`/v1/dhikrs/lookup?transliteration=${encodeURIComponent(transliteration)}`, {
+    emptyValue: [] as unknown as BackendDhikr,
+    errors: errors()
+  });
 }

@@ -1,5 +1,5 @@
-import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
+import { API_BASE_URL } from "../../../lib/env";
 
 export type DevicePrefs = {
   specialDays?: boolean;
@@ -26,8 +26,6 @@ export class DevicesApiError extends Error {
   }
 }
 
-const API_BASE_URL = resolveApiBaseUrl();
-
 // Public: works for guests too. When accessToken is provided the API links
 // the device to that user; omit it to register/keep a guest device.
 export async function registerDevice(
@@ -41,17 +39,6 @@ export async function registerDevice(
 // intentionally does not require a bearer token.
 export async function unlinkDevice(deviceId: string): Promise<void> {
   await requestJson("/v1/devices/unlink", { deviceId });
-}
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
 }
 
 async function requestJson(

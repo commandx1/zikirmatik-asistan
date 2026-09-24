@@ -2,6 +2,16 @@ import type { AuthProvider } from '@zikirmatik/shared';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
 import { i18n } from '../../../i18n';
+import {
+  AUTH_SIMULATE_PROVIDER_OUTAGE,
+  DEV_GOOGLE_EMAIL,
+  DEV_GOOGLE_NAME,
+  DEV_GOOGLE_SUB,
+  E2E_MOCK_AUTH,
+  GOOGLE_ANDROID_CLIENT_ID,
+  GOOGLE_IOS_CLIENT_ID,
+  GOOGLE_WEB_CLIENT_ID,
+} from '../../../lib/env';
 
 export class ProviderAuthError extends Error {
   constructor(
@@ -14,7 +24,7 @@ export class ProviderAuthError extends Error {
 }
 
 export async function requestProviderIdToken(provider: AuthProvider) {
-  if (process.env.EXPO_PUBLIC_AUTH_SIMULATE_PROVIDER_OUTAGE === '1') {
+  if (AUTH_SIMULATE_PROVIDER_OUTAGE) {
     throw new ProviderAuthError(
       'transient',
       i18n.t('auth:errors.providerOutage'),
@@ -123,7 +133,7 @@ async function requestAppleIdentityToken() {
 }
 
 async function requestGoogleIdentityToken() {
-  if (__DEV__ || process.env.EXPO_PUBLIC_E2E_MOCK_AUTH === '1') {
+  if (__DEV__ || E2E_MOCK_AUTH) {
     return buildDevGoogleIdentityToken();
   }
 
@@ -223,15 +233,15 @@ async function requestGoogleIdentityToken() {
 }
 
 function resolveGoogleWebClientId() {
-  return process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?.trim();
+  return GOOGLE_WEB_CLIENT_ID;
 }
 
 function resolveGoogleAndroidClientId() {
-  return process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID?.trim();
+  return GOOGLE_ANDROID_CLIENT_ID;
 }
 
 function resolveGoogleIosClientId() {
-  return process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim();
+  return GOOGLE_IOS_CLIENT_ID;
 }
 
 async function loadGoogleSignInModule() {
@@ -313,11 +323,11 @@ function formatGoogleClientConfigSummary({
 function buildDevGoogleIdentityToken() {
   const email =
     //process.env.EXPO_PUBLIC_DEV_GOOGLE_EMAIL?.trim() || 's10155641@gmail.com';
-    process.env.EXPO_PUBLIC_DEV_GOOGLE_EMAIL?.trim() || 'serhatbelen7@gmail.com';
+    DEV_GOOGLE_EMAIL || 'serhatbelen7@gmail.com';
   const displayName =
-    process.env.EXPO_PUBLIC_DEV_GOOGLE_NAME?.trim() || 'Serhat Belen';
+    DEV_GOOGLE_NAME || 'Serhat Belen';
   const stableSub =
-    process.env.EXPO_PUBLIC_DEV_GOOGLE_SUB?.trim() || `dev-google-${email}`;
+    DEV_GOOGLE_SUB || `dev-google-${email}`;
 
   return JSON.stringify({
     sub: stableSub,

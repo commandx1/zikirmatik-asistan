@@ -1,10 +1,11 @@
 import type { EsmaulHusnaItem } from "../../focus/types";
+import { dailyEsmaWelcomeKey } from "../../../lib/storage/keys";
 
 const DEFAULT_SUGGESTION_COUNT = 3;
 const DAY_MS = 86_400_000;
 
 export function buildDailyEsmaWelcomeStorageKey(date: Date) {
-  return `daily-esma-welcome:${toLocalDateKey(date)}`;
+  return dailyEsmaWelcomeKey(toLocalDateKey(date));
 }
 
 export function toLocalDateKey(date: Date) {

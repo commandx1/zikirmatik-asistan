@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 
 // Local mirror of this device's push-campaign prefs (special days, Friday).
 // These are device-scoped on the backend (see apps/api devices module).
@@ -18,30 +18,6 @@ type DeviceNotificationPrefsState = {
   friday: boolean;
   setSpecialDays: (enabled: boolean) => void;
   setFriday: (enabled: boolean) => void;
-};
-
-const safeAsyncStorage: StateStorage = {
-  getItem: async (name) => {
-    try {
-      return await AsyncStorage.getItem(name);
-    } catch {
-      return null;
-    }
-  },
-  setItem: async (name, value) => {
-    try {
-      await AsyncStorage.setItem(name, value);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  },
-  removeItem: async (name) => {
-    try {
-      await AsyncStorage.removeItem(name);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  }
 };
 
 export const useDeviceNotificationPrefsStore = create<DeviceNotificationPrefsState>()(

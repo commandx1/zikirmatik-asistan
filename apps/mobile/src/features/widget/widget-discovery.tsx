@@ -10,12 +10,12 @@ import { useVirdStore } from "../../store/vird-store";
 import { dayIndexFor, expectedItemsForDay, isDayComplete } from "../vird/services/vird-day";
 import { trackEvent } from "../../lib/analytics";
 import { WIDGET_NAMES } from "./widgets";
+import { WIDGET_DISCOVERY_KEY } from "../../lib/storage/keys";
 
 // Ana ekran widget'ı için keşif yüzeyleri: ana ekrandaki tek seferlik kart +
 // Profil'deki kalıcı satırın açtığı ortak "nasıl eklenir" modalı. Kendi
 // AsyncStorage anahtarını kullanır — widget-snapshot.ts'teki `widget-state-v1`
 // (widget'ın kendi görüntü verisi) ile KARIŞTIRILMAMALI.
-const DISCOVERY_STORAGE_KEY = "widget-discovery-v1";
 
 type DiscoveryState = {
   dismissed?: boolean;
@@ -28,7 +28,7 @@ function isDiscoveryState(value: unknown): value is DiscoveryState {
 
 export async function readDiscoveryState(): Promise<DiscoveryState> {
   try {
-    const raw = await AsyncStorage.getItem(DISCOVERY_STORAGE_KEY);
+    const raw = await AsyncStorage.getItem(WIDGET_DISCOVERY_KEY);
     if (!raw) {
       return {};
     }
@@ -43,7 +43,7 @@ export async function writeDiscoveryState(patch: Partial<DiscoveryState>): Promi
   try {
     const current = await readDiscoveryState();
     const next = { ...current, ...patch };
-    await AsyncStorage.setItem(DISCOVERY_STORAGE_KEY, JSON.stringify(next));
+    await AsyncStorage.setItem(WIDGET_DISCOVERY_KEY, JSON.stringify(next));
   } catch {
     // Depolama başarısız olursa keşif yüzeyi sonraki mount'ta yeniden dener.
   }

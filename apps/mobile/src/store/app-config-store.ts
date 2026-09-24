@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 
 // Rollout flags fetched from the server (GET /app-config, see
 // src/lib/app-config.ts: fetchAppConfigOrNull). Currently a single flag:
@@ -22,30 +22,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 type AppConfigState = {
   serverPushEnabled: boolean;
   setServerPushEnabled: (enabled: boolean) => void;
-};
-
-const safeAsyncStorage: StateStorage = {
-  getItem: async (name) => {
-    try {
-      return await AsyncStorage.getItem(name);
-    } catch {
-      return null;
-    }
-  },
-  setItem: async (name, value) => {
-    try {
-      await AsyncStorage.setItem(name, value);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  },
-  removeItem: async (name) => {
-    try {
-      await AsyncStorage.removeItem(name);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  }
 };
 
 export const useAppConfigStore = create<AppConfigState>()(

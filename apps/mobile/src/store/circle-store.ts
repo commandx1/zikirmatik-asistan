@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 import type { CircleDetail, CircleSummary } from "@zikirmatik/shared";
 
 // Zikir Halkası (grup zikri) için yerel store. Desen vird-store.ts ile aynı:
@@ -34,30 +34,6 @@ export type CircleStore = CircleStoreData & {
   bumpTotal: (id: string, total: number) => void;
   resetCircles: () => void;
   markHydrated: () => void;
-};
-
-const safeAsyncStorage: StateStorage = {
-  getItem: async (name) => {
-    try {
-      return await AsyncStorage.getItem(name);
-    } catch {
-      return null;
-    }
-  },
-  setItem: async (name, value) => {
-    try {
-      await AsyncStorage.setItem(name, value);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  },
-  removeItem: async (name) => {
-    try {
-      await AsyncStorage.removeItem(name);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  }
 };
 
 function defaultData(): CircleStoreData {

@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AppState, Platform, type AppStateStatus } from "react-native";
+import { AppState, type AppStateStatus } from "react-native";
 import { getOrCreateDeviceId } from "../features/notifications/services/push-device-registration";
 import { useAuthStore } from "../store/auth-store";
+import { ANALYTICS_QUEUE_KEY } from "./storage/keys";
+import { API_BASE_URL } from "./env";
 
 // Sıfır maliyetli, kendi API'mize yazan minimal ürün-olayı (analytics)
 // istemcisi. Olayları bellek + AsyncStorage kuyruğunda tutar, en fazla
@@ -16,30 +18,16 @@ type QueuedAnalyticsEvent = {
   ts: string;
 };
 
-const QUEUE_STORAGE_KEY = "analytics-queue-v1";
 const MAX_QUEUE_SIZE = 200;
 const MAX_BATCH_SIZE = 50;
 const AUTO_FLUSH_THRESHOLD = 20;
 const MIN_FLUSH_INTERVAL_MS = 30_000;
-
-const API_BASE_URL = resolveApiBaseUrl();
 
 let memoryQueue: QueuedAnalyticsEvent[] = [];
 let hydrationPromise: Promise<void> | null = null;
 let isFlushing = false;
 let lastFlushAttemptAt = 0;
 let appStateSubscription: { remove: () => void } | null = null;
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
-}
 
 function isQueuedAnalyticsEvent(value: unknown): value is QueuedAnalyticsEvent {
   if (!value || typeof value !== "object") {
@@ -56,7 +44,7 @@ async function ensureHydrated(): Promise<void> {
   if (!hydrationPromise) {
     hydrationPromise = (async () => {
       try {
-        const raw = await AsyncStorage.getItem(QUEUE_STORAGE_KEY);
+        const raw = await AsyncStorage.getItem(ANALYTICS_QUEUE_KEY);
         if (!raw) {
           return;
         }
@@ -76,7 +64,7 @@ async function ensureHydrated(): Promise<void> {
 
 async function persistQueue(): Promise<void> {
   try {
-    await AsyncStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(memoryQueue));
+    await AsyncStorage.setItem(ANALYTICS_QUEUE_KEY, JSON.stringify(memoryQueue));
   } catch {
     // Best effort: bellek kuyruğu bu oturumda flush için yine de yeterli.
   }

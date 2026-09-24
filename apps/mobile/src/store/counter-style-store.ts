@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 
 // Ana sayaç görselinin stilini ve (tesbih modu seçiliyken) malzeme/ses
 // tercihini tutar. Kasıtlı olarak sunucu senkronu YOK (bkz. theme-store'daki
@@ -20,30 +20,6 @@ type CounterStyleState = {
   setCounterStyle: (counterStyle: CounterStyle) => void;
   setMaterial: (material: TesbihMaterial) => void;
   setSoundPack: (soundPack: CounterSoundPack) => void;
-};
-
-const safeAsyncStorage: StateStorage = {
-  getItem: async (name) => {
-    try {
-      return await AsyncStorage.getItem(name);
-    } catch {
-      return null;
-    }
-  },
-  setItem: async (name, value) => {
-    try {
-      await AsyncStorage.setItem(name, value);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  },
-  removeItem: async (name) => {
-    try {
-      await AsyncStorage.removeItem(name);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  }
 };
 
 export const useCounterStyleStore = create<CounterStyleState>()(

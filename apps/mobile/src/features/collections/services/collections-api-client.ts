@@ -1,6 +1,6 @@
-import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
 import type { LocalizedText } from "@zikirmatik/shared";
+import { API_BASE_URL } from "../../../lib/env";
 
 export type CollectionCategory =
   | "gunluk"
@@ -47,8 +47,6 @@ export class CollectionsApiError extends Error {
   }
 }
 
-const API_BASE_URL = resolveApiBaseUrl();
-
 export async function listCollections(
   category?: CollectionCategory,
 ): Promise<BackendCollection[]> {
@@ -68,17 +66,6 @@ export async function getCollectionDetail(
   key: string,
 ): Promise<BackendCollectionDetail> {
   return requestJson<BackendCollectionDetail>(`/v1/dhikr-collections/${key}`);
-}
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
 }
 
 async function requestJson<TResponse>(path: string): Promise<TResponse> {

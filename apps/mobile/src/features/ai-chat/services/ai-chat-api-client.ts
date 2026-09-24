@@ -1,4 +1,3 @@
-import { Platform } from "react-native";
 // expo/fetch: RN'de gerçek streaming Response.body (ReadableStream) sağlayan,
 // expo paketiyle birlikte gelen (ekstra bağımlılık gerektirmeyen) fetch
 // implementasyonu. Web'de globalThis.fetch'e fallback eder. SSE tüketimi
@@ -7,6 +6,7 @@ import { fetch as streamFetch } from "expo/fetch";
 import { i18n } from "../../../i18n";
 import { AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
 import type { AiSourceCitation, ChatConversationSummary, ChatMessageRaw, ChatMode, ChatCoverage } from "../types";
+import { API_BASE_URL } from "../../../lib/env";
 
 export const AI_CREDIT_INSUFFICIENT_CODE = "AI_CREDIT_INSUFFICIENT";
 export { AI_UNAVAILABLE_CODE };
@@ -58,8 +58,6 @@ export type PaginatedResponse<T> = {
   total: number;
   hasMore: boolean;
 };
-
-const API_BASE_URL = resolveApiBaseUrl();
 
 export async function createChatConversation(
   payload: CreateConversationPayload,
@@ -290,17 +288,6 @@ export async function listChatMessages(
     `/v1/ai/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`,
     { method: "GET", accessToken }
   );
-}
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
 }
 
 async function requestJson<TResponse>(

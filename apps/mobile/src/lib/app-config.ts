@@ -1,5 +1,6 @@
 import * as Application from "expo-application";
 import { Platform } from "react-native";
+import { API_BASE_URL } from "./env";
 
 const ANDROID_PACKAGE = "com.zikirmatik_asistan.app";
 const PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${ANDROID_PACKAGE}`;
@@ -19,14 +20,6 @@ type AppConfigResponseJson = {
   serverPushEnabled?: boolean;
 };
 
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) return configured.replace(/\/+$/, "");
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
-}
-
 /**
  * Raw GET /app-config call. Returns null when the request itself failed
  * (network error, non-2xx, unparsable JSON) — as opposed to a value the
@@ -37,7 +30,7 @@ function resolveApiBaseUrl() {
  */
 export async function fetchAppConfigOrNull(): Promise<AppConfigPayload | null> {
   try {
-    const response = await fetch(`${resolveApiBaseUrl()}/app-config`);
+    const response = await fetch(`${API_BASE_URL}/app-config`);
     if (!response.ok) return null;
     const json = (await response.json()) as AppConfigResponseJson;
     const minVersion = json?.data?.minVersion ?? json?.minVersion ?? null;

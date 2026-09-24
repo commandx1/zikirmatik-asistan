@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { TAP_ANYWHERE_ENABLED_KEY } from '../../lib/storage/keys'
 import { i18n } from '../../i18n'
 import { useAuthStore } from '../../store/auth-store'
 import { MAX_DHIKR_TARGET, resolveLocalizedText, useDhikrStore } from '../../store/dhikr-store'
@@ -260,13 +261,13 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const toggleTapAnywhere = useCallback(() => {
     setTapAnywhereEnabled(prev => {
       const next = !prev
-      void AsyncStorage.setItem('tap-anywhere-enabled', next ? '1' : '0')
+      void AsyncStorage.setItem(TAP_ANYWHERE_ENABLED_KEY, next ? '1' : '0')
       return next
     })
   }, [])
 
   useEffect(() => {
-    void AsyncStorage.getItem('tap-anywhere-enabled').then(val => {
+    void AsyncStorage.getItem(TAP_ANYWHERE_ENABLED_KEY).then(val => {
       if (val === '1') setTapAnywhereEnabled(true)
     })
   }, [])

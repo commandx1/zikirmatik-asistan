@@ -3,7 +3,6 @@
 // Desen vird-api-client.ts ile aynı (requestJson, {success,data} zarfını açma,
 // hata code/message çıkarımı) — her istemci dosyası kasıtlı olarak kendi küçük
 // kopyasını taşır, ortak taban yok (bkz. vird-api-client.ts dosya başı notu).
-import { Platform } from "react-native";
 import {
   CIRCLE_ERROR_CODE,
   type CircleDetail,
@@ -13,6 +12,7 @@ import {
   type CreateCircleRequest
 } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
+import { API_BASE_URL } from "../../../lib/env";
 
 export { CIRCLE_ERROR_CODE };
 
@@ -85,19 +85,6 @@ export function resolveCircleErrorMessage(code: string | undefined, fallback: st
 }
 
 // --- İstek altyapısı (vird-api-client.ts ile aynı desen). ---
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
-}
-
-const API_BASE_URL = resolveApiBaseUrl();
 
 async function requestJson<TResponse>(
   path: string,

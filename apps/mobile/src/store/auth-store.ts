@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 import { Platform } from "react-native";
 import { i18n } from "../i18n";
 import type {
@@ -14,6 +14,7 @@ import { captureGuestMigrationSnapshot } from "../features/auth/services/guest-m
 import { getOrCreateDeviceId, unlinkPushDevice } from "../features/notifications/services/push-device-registration";
 import { resetSessionScopedStores } from "./session-boundary";
 import { useGuestMigrationStore } from "./guest-migration-store";
+import { registerAuthBridge } from "../lib/http/auth-bridge";
 
 type AuthStatus = "signed_out" | "authenticating" | "authenticated";
 
@@ -34,29 +35,8 @@ type AuthStore = {
   markHydrated: () => void;
 };
 
-const safeAsyncStorage: StateStorage = {
-  getItem: async (name) => {
-    try {
-      return await AsyncStorage.getItem(name);
-    } catch {
-      return null;
-    }
-  },
-  setItem: async (name, value) => {
-    try {
-      await AsyncStorage.setItem(name, value);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  },
-  removeItem: async (name) => {
-    try {
-      await AsyncStorage.removeItem(name);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  }
-};
+// Shared in-flight refresh; `isSessionRefreshing` stays as the UI flag.
+let refreshPromise: Promise<void> | null = null;
 
 export const useAuthStore = create<AuthStore>()(
   persist(
@@ -122,46 +102,22 @@ export const useAuthStore = create<AuthStore>()(
           });
         }
       },
-      refreshAuthenticatedSession: async () => {
-        const { status, session, isSessionRefreshing } = get();
-        if (status !== "authenticated" || !session || isSessionRefreshing) {
-          return;
+      refreshAuthenticatedSession: () => {
+        // Concurrent callers (e.g. several requests hitting 401 at once) share
+        // the in-flight refresh instead of returning before it lands.
+        if (refreshPromise) {
+          return refreshPromise;
         }
 
-        set({ isSessionRefreshing: true });
-        try {
-          const refreshed = await refreshSession({ refreshToken: session.refreshToken });
-          set((state) => {
-            if (!state.session) {
-              return { isSessionRefreshing: false };
-            }
-
-            return {
-              session: {
-                ...state.session,
-                ...refreshed,
-                isNewUser: state.session.isNewUser
-              },
-              authError: undefined,
-              isSessionRefreshing: false,
-              lastSessionRefreshAt: new Date().toISOString(),
-              lastAuthenticatedUserId: refreshed.userId
-            };
-          });
-        } catch (error) {
-          if (error instanceof AuthApiError && error.kind === "transient") {
-            set({ isSessionRefreshing: false });
-            return;
-          }
-
-          set({
-            status: "signed_out",
-            session: undefined,
-            authError: toUserFacingAuthMessage(error),
-            isSessionRefreshing: false,
-            lastSessionRefreshAt: undefined
-          });
+        const { status, session } = get();
+        if (status !== "authenticated" || !session) {
+          return Promise.resolve();
         }
+
+        refreshPromise = runSessionRefresh(session.refreshToken).finally(() => {
+          refreshPromise = null;
+        });
+        return refreshPromise;
       },
       signOut: async () => {
         resetSessionScopedStores();
@@ -210,6 +166,49 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
+
+registerAuthBridge({
+  getAccessToken: () => useAuthStore.getState().session?.accessToken,
+  refresh: () => useAuthStore.getState().refreshAuthenticatedSession()
+});
+
+async function runSessionRefresh(refreshToken: string) {
+  const set = useAuthStore.setState;
+  set({ isSessionRefreshing: true });
+  try {
+    const refreshed = await refreshSession({ refreshToken });
+    set((state) => {
+      if (!state.session) {
+        return { isSessionRefreshing: false };
+      }
+
+      return {
+        session: {
+          ...state.session,
+          ...refreshed,
+          isNewUser: state.session.isNewUser
+        },
+        authError: undefined,
+        isSessionRefreshing: false,
+        lastSessionRefreshAt: new Date().toISOString(),
+        lastAuthenticatedUserId: refreshed.userId
+      };
+    });
+  } catch (error) {
+    if (error instanceof AuthApiError && error.kind === "transient") {
+      set({ isSessionRefreshing: false });
+      return;
+    }
+
+    set({
+      status: "signed_out",
+      session: undefined,
+      authError: toUserFacingAuthMessage(error),
+      isSessionRefreshing: false,
+      lastSessionRefreshAt: undefined
+    });
+  }
+}
 
 function resolveClientPlatform(): ClientPlatform {
   return Platform.OS === "ios" ? "ios" : "android";

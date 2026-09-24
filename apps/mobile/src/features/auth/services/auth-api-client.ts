@@ -4,10 +4,8 @@ import type {
   RefreshTokenRequest,
   RefreshTokenResponse
 } from "@zikirmatik/shared";
-import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
-
-const API_BASE_URL = resolveApiBaseUrl();
+import { API_BASE_URL } from "../../../lib/env";
 
 export class AuthApiError extends Error {
   constructor(
@@ -26,17 +24,6 @@ export async function verifyProvider(payload: AuthProviderVerifyRequest): Promis
 
 export async function refreshSession(payload: RefreshTokenRequest): Promise<RefreshTokenResponse> {
   return requestJson<RefreshTokenResponse>("/v1/auth/refresh", payload);
-}
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
 }
 
 async function requestJson<TResponse>(path: string, body: unknown): Promise<TResponse> {

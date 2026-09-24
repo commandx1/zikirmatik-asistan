@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
+import { REVENUECAT_API_KEY_ANDROID, REVENUECAT_API_KEY_IOS, REVENUECAT_ENTITLEMENT_ID } from "../../../lib/env";
 import Purchases, {
   LOG_LEVEL,
   PRODUCT_CATEGORY,
@@ -29,7 +30,7 @@ export class RevenueCatClientError extends Error {
   }
 }
 
-const REVENUECAT_ENTITLEMENT = process.env.EXPO_PUBLIC_REVENUECAT_ENTITLEMENT_ID?.trim() || "premium";
+const REVENUECAT_ENTITLEMENT = REVENUECAT_ENTITLEMENT_ID || "premium";
 
 export type CreditTopupProduct = {
   productId: string;
@@ -172,8 +173,8 @@ async function ensureRevenueCatConfigured(appUserId: string) {
 function resolveRevenueCatApiKey() {
   const key =
     Platform.OS === "ios"
-      ? process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_IOS?.trim()
-      : process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID?.trim();
+      ? REVENUECAT_API_KEY_IOS
+      : REVENUECAT_API_KEY_ANDROID;
 
   if (!key) {
     throw new RevenueCatClientError(
@@ -190,8 +191,8 @@ function resolveRevenueCatApiKey() {
 export function isRevenueCatConfigured() {
   const key =
     Platform.OS === "ios"
-      ? process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_IOS?.trim()
-      : process.env.EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID?.trim();
+      ? REVENUECAT_API_KEY_IOS
+      : REVENUECAT_API_KEY_ANDROID;
 
   return Boolean(key);
 }

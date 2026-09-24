@@ -1,5 +1,5 @@
-import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
+import { API_BASE_URL } from "../../../lib/env";
 
 type SubscriptionProvider = "apple" | "google";
 type SubscriptionStatus = "active" | "expired" | "cancelled";
@@ -31,8 +31,6 @@ export class SubscriptionsApiError extends Error {
   }
 }
 
-const API_BASE_URL = resolveApiBaseUrl();
-
 export async function createSubscription(payload: CreateSubscriptionPayload, accessToken?: string) {
   return requestJson("/v1/subscriptions", {
     method: "POST",
@@ -51,17 +49,6 @@ export async function syncSubscriptionForUser(
     body: payload,
     accessToken
   });
-}
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
 }
 
 async function requestJson<TResponse>(

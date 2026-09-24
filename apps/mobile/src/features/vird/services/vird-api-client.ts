@@ -11,7 +11,6 @@
 // hali) ve Date alanları ISO string olarak gelir. Bu dosya her programı
 // `_id` -> `id` eşlemesiyle @zikirmatik/shared'deki VirdProgram şekline
 // çevirir; diğer alanlar zaten sunucu ile aynı isimdedir.
-import { Platform } from "react-native";
 import type {
   CreateVirdProgramRequest,
   UpdateVirdProgramRequest,
@@ -22,6 +21,7 @@ import type {
   VirdTodayResponse
 } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
+import { API_BASE_URL } from "../../../lib/env";
 
 export type { CreateVirdProgramRequest, UpdateVirdProgramRequest, VirdProgram, VirdTodayResponse, VirdHistoryResponse };
 
@@ -49,8 +49,6 @@ function mapProgram(raw: RawVirdProgram): VirdProgram {
 function mapTodayResponse(raw: RawVirdTodayResponse): VirdTodayResponse {
   return { ...raw, program: raw.program ? mapProgram(raw.program) : null };
 }
-
-const API_BASE_URL = resolveApiBaseUrl();
 
 // --- Programlar (v1/vird/programs*) — accessToken zorunlu (JwtAuthGuard). ---
 
@@ -141,17 +139,6 @@ export async function fetchVirdTemplate(key: string, accessToken?: string): Prom
 }
 
 // --- İstek altyapısı (ai-api-client.ts / dhikrs-api-client.ts ile aynı desen). ---
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
-}
 
 async function requestJson<TResponse>(
   path: string,

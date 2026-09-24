@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 
 // Tracks whether THIS device currently has a confirmed, working server-side
 // push registration (see features/notifications/services/push-device-registration.ts:
@@ -19,30 +19,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 type PushRegistrationState = {
   serverPushActive: boolean;
   setServerPushActive: (active: boolean) => void;
-};
-
-const safeAsyncStorage: StateStorage = {
-  getItem: async (name) => {
-    try {
-      return await AsyncStorage.getItem(name);
-    } catch {
-      return null;
-    }
-  },
-  setItem: async (name, value) => {
-    try {
-      await AsyncStorage.setItem(name, value);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  },
-  removeItem: async (name) => {
-    try {
-      await AsyncStorage.removeItem(name);
-    } catch {
-      // Native module missing in current binary; ignore and keep in-memory state.
-    }
-  }
 };
 
 export const usePushRegistrationStore = create<PushRegistrationState>()(

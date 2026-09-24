@@ -1,7 +1,7 @@
-import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
 import type { LocalizedText, VirdSlotKey } from "@zikirmatik/shared";
 import { AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
+import { API_BASE_URL } from "../../../lib/env";
 
 export type CreateAiRecommendationPayload = {
   userId: string;
@@ -133,8 +133,6 @@ export class AiApiError extends Error {
   }
 }
 
-const API_BASE_URL = resolveApiBaseUrl();
-
 export async function createAiRecommendation(
   payload: CreateAiRecommendationPayload,
   accessToken?: string
@@ -263,17 +261,6 @@ export async function createAiVirdProgram(
     body: payload,
     accessToken
   });
-}
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
 }
 
 async function requestJson<TResponse>(

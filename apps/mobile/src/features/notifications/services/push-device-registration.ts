@@ -5,9 +5,8 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { registerDevice, unlinkDevice } from "./devices-api-client";
 import { usePushRegistrationStore } from "../../../store/push-registration-store";
+import { PUSH_DEVICE_ID_KEY, PUSH_PERMISSION_PROMPTED_KEY } from "../../../lib/storage/keys";
 
-const DEVICE_ID_STORAGE_KEY = "push-device-id-v1";
-const PERMISSION_PROMPTED_STORAGE_KEY = "push-permission-prompted-v1";
 
 let cachedDeviceId: string | null = null;
 
@@ -19,7 +18,7 @@ export async function getOrCreateDeviceId(): Promise<string> {
     return cachedDeviceId;
   }
 
-  const stored = await safeGetItem(DEVICE_ID_STORAGE_KEY);
+  const stored = await safeGetItem(PUSH_DEVICE_ID_KEY);
   if (stored) {
     cachedDeviceId = stored;
     return stored;
@@ -27,7 +26,7 @@ export async function getOrCreateDeviceId(): Promise<string> {
 
   const generated = Crypto.randomUUID();
   cachedDeviceId = generated;
-  await safeSetItem(DEVICE_ID_STORAGE_KEY, generated);
+  await safeSetItem(PUSH_DEVICE_ID_KEY, generated);
   return generated;
 }
 
@@ -50,12 +49,12 @@ async function ensurePushPermission(): Promise<boolean> {
     return false;
   }
 
-  const alreadyPrompted = await safeGetItem(PERMISSION_PROMPTED_STORAGE_KEY);
+  const alreadyPrompted = await safeGetItem(PUSH_PERMISSION_PROMPTED_KEY);
   if (alreadyPrompted) {
     return false;
   }
 
-  await safeSetItem(PERMISSION_PROMPTED_STORAGE_KEY, "1");
+  await safeSetItem(PUSH_PERMISSION_PROMPTED_KEY, "1");
   const requested = await Notifications.requestPermissionsAsync();
   return requested.granted;
 }

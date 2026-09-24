@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 import type { VirdDayProgressByDate, VirdProgramLocal } from "../features/vird/types";
 
 export type GuestSnapshotItem = {
@@ -136,7 +136,7 @@ export const useGuestMigrationStore = create<GuestMigrationStore>()(
     }),
     {
       name: "zikirmatik-guest-migration",
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => safeAsyncStorage),
       partialize: (state) => ({
         // Never persist a live "running" state — if the app dies mid-run the
         // migration must resume as "pending" (each step is idempotent).

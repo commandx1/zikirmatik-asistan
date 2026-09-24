@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { aiGuideLastKey } from "../../../lib/storage/keys";
 import type {
   AiGuideHistoryItem,
   AiGuideHistoryItemRaw,
@@ -137,7 +138,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const closeInfo = () => setShowInfo(false);
   const toggleInfo = () => setShowInfo((value) => !value);
 
-  const cacheKey = userId ? `ai-guide:last:${userId}` : "";
+  const cacheKey = userId ? aiGuideLastKey(userId) : "";
 
   const refreshCredits = useCallback(async () => {
     if (authStatus !== "authenticated") {

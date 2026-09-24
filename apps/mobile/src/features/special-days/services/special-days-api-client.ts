@@ -1,6 +1,6 @@
-import { Platform } from "react-native";
 import { i18n } from "../../../i18n";
 import type { LocalizedText } from "@zikirmatik/shared";
+import { API_BASE_URL } from "../../../lib/env";
 
 export type SpecialDayType = "kandil" | "ramazan" | "bayram" | "özel gün";
 
@@ -75,8 +75,6 @@ export class SpecialDaysApiError extends Error {
   }
 }
 
-const API_BASE_URL = resolveApiBaseUrl();
-
 export async function getSpecialDaysHome(
   date?: string,
   accessToken?: string
@@ -102,17 +100,6 @@ export async function getSpecialDayDetail(
     method: "GET",
     accessToken,
   });
-}
-
-function resolveApiBaseUrl() {
-  const configured = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
-  if (configured) {
-    return configured.replace(/\/+$/, "");
-  }
-
-  const port = process.env.EXPO_PUBLIC_API_PORT?.trim() || "3000";
-  const host = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-  return `http://${host}:${port}`;
 }
 
 async function requestJson<TResponse>(
