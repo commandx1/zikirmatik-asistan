@@ -260,23 +260,20 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
 
     if (isMember) {
       if (existingProgram && existingProgram.origin === "server") {
-        const server = await updateVirdProgram(existingProgram.id, { title, phases, prayerSelection }, accessToken as string);
+        const server = await updateVirdProgram(existingProgram.id, { title, phases, prayerSelection });
         localProgram = { ...toLocalVirdProgram(server, existingProgram), dhikrs: dhikrsSnapshot };
       } else {
         const seedClientId = existingProgram?.clientId ?? Crypto.randomUUID();
-        const server = await createVirdProgram(
-          {
-            clientId: seedClientId,
-            title,
-            kind: existingProgram?.kind ?? "routine",
-            source: "manual",
-            phases,
-            startDate: existingProgram?.startDate ?? todayKey,
-            prayerSelection,
-            reminders: { enabled: false, slots: { morning: false, prayer: false, evening: false, night: false } }
-          },
-          accessToken as string
-        );
+        const server = await createVirdProgram({
+          clientId: seedClientId,
+          title,
+          kind: existingProgram?.kind ?? "routine",
+          source: "manual",
+          phases,
+          startDate: existingProgram?.startDate ?? todayKey,
+          prayerSelection,
+          reminders: { enabled: false, slots: { morning: false, prayer: false, evening: false, night: false } }
+        });
         localProgram = { ...toLocalVirdProgram(server), dhikrs: dhikrsSnapshot };
       }
     } else {
@@ -338,7 +335,7 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
     const isMember = authStatus === "authenticated" && Boolean(accessToken);
 
     if (isMember && existingProgram.origin === "server") {
-      const server = await updateVirdProgram(existingProgram.id, { title, prayerSelection }, accessToken as string);
+      const server = await updateVirdProgram(existingProgram.id, { title, prayerSelection });
       localProgram = toLocalVirdProgram(server, existingProgram);
     } else {
       localProgram = { ...existingProgram, title, prayerSelection, updatedAt: nowIso() };

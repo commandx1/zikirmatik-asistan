@@ -31,7 +31,6 @@ function toMessage(error: unknown): string {
 export function useStats(): UseStatsResult {
   const authStatus = useAuthStore((s) => s.status);
   const guestMode = useAuthStore((s) => s.guestMode);
-  const accessToken = useAuthStore((s) => s.session?.accessToken);
   const isPremium = useProfileStore((s) => s.isPremium);
   const dhikrItems = useDhikrStore((s) => s.items);
   const freeModeCount = useDhikrStore((s) => s.freeModeCount);
@@ -68,7 +67,7 @@ export function useStats(): UseStatsResult {
     setIsLoading(true);
     setError(undefined);
 
-    getStatsSummary(accessToken)
+    getStatsSummary()
       .then((summary) => {
         if (!isCancelled) {
           setData(summary);
@@ -91,7 +90,7 @@ export function useStats(): UseStatsResult {
     // `isPremium` is intentionally included: once the user activates premium
     // (or it changes for any other reason), we must refetch so the
     // server-enforced `locked` detail sections come back unlocked.
-  }, [accessToken, authStatus, isGuest, isPremium]);
+  }, [authStatus, isGuest, isPremium]);
 
   const refresh = useCallback(async () => {
     if (isGuest) {
@@ -105,14 +104,14 @@ export function useStats(): UseStatsResult {
     setIsRefreshing(true);
     setError(undefined);
     try {
-      const summary = await getStatsSummary(accessToken);
+      const summary = await getStatsSummary();
       setData(summary);
     } catch (cause) {
       setError(toMessage(cause));
     } finally {
       setIsRefreshing(false);
     }
-  }, [accessToken, authStatus, dhikrItems, freeModeCount, freeModeActivityAt, isGuest, isPremium]);
+  }, [authStatus, dhikrItems, freeModeCount, freeModeActivityAt, isGuest, isPremium]);
 
   const locked = data?.locked ?? !isPremium;
 

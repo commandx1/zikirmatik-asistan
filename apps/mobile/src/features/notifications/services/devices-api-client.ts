@@ -1,5 +1,5 @@
 import { i18n } from "../../../i18n";
-import { API_BASE_URL } from "../../../lib/env";
+import { ApiError, request } from "../../../lib/http/client";
 
 export type DevicePrefs = {
   specialDays?: boolean;
@@ -15,16 +15,13 @@ export type RegisterDevicePayload = {
   prefs?: DevicePrefs;
 };
 
-export class DevicesApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number
-  ) {
-    super(message);
-    this.name = "DevicesApiError";
-  }
-}
+export const DevicesApiError = ApiError;
+export type DevicesApiError = ApiError;
+
+const errors = () => ({
+  failed: i18n.t("notifications:errors.registerFailed"),
+  unreachable: i18n.t("notifications:errors.serverUnreachable")
+});
 
 // Public: works for guests too. When accessToken is provided the API links
 // the device to that user; omit it to register/keep a guest device.
@@ -32,90 +29,24 @@ export async function registerDevice(
   payload: RegisterDevicePayload,
   accessToken?: string
 ): Promise<void> {
-  await requestJson("/v1/devices/register", payload, accessToken);
+  // emptyValue: undefined preserves the legacy behavior of returning the raw
+  // (possibly undefined) body instead of falling back to `{}`.
+  await request<unknown>("/v1/devices/register", {
+    method: "POST",
+    body: payload,
+    auth: accessToken ?? false,
+    emptyValue: undefined,
+    errors: errors()
+  });
 }
 
 // Public: called right as the local session is torn down on logout, so it
 // intentionally does not require a bearer token.
 export async function unlinkDevice(deviceId: string): Promise<void> {
-  await requestJson("/v1/devices/unlink", { deviceId });
-}
-
-async function requestJson(
-  path: string,
-  body: unknown,
-  accessToken?: string
-): Promise<unknown> {
-  try {
-    const headers: Record<string, string> = {
-      "content-type": "application/json"
-    };
-    if (accessToken?.trim()) {
-      headers.authorization = `Bearer ${accessToken.trim()}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body)
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("notifications:errors.registerFailed"));
-      throw new DevicesApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
-    }
-
-    return data;
-  } catch (error) {
-    if (error instanceof DevicesApiError) {
-      throw error;
-    }
-
-    throw new DevicesApiError("transient", i18n.t("notifications:errors.serverUnreachable"));
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) {
-    return payload;
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const candidate = payload as { message?: unknown; error?: unknown };
-  if (typeof candidate.message === "string" && candidate.message.trim()) {
-    return candidate.message;
-  }
-
-  if (typeof candidate.error === "string" && candidate.error.trim()) {
-    return candidate.error;
-  }
-
-  return fallback;
+  await request<unknown>("/v1/devices/unlink", {
+    method: "POST",
+    body: { deviceId },
+    emptyValue: undefined,
+    errors: errors()
+  });
 }

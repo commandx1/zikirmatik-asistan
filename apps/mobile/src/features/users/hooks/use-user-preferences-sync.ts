@@ -61,7 +61,7 @@ export function useUserPreferencesSync() {
           );
         }
 
-        const user = await getUserById(session.userId, session.accessToken);
+        const user = await getUserById(session.userId);
         if (cancelled) {
           return;
         }
@@ -108,8 +108,7 @@ export function useUserPreferencesSync() {
           hydrateProfile({ dailyReminderEnabled: false });
           await saveUserPreferences(
             session.userId,
-            { dailyReminder: false, reminderTime },
-            session.accessToken
+            { dailyReminder: false, reminderTime }
           ).catch(() => {});
         }
       } catch {

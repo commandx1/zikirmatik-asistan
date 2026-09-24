@@ -1,6 +1,6 @@
 import type { VirdSlotKey } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
-import { API_BASE_URL } from "../../../lib/env";
+import { ApiError, request } from "../../../lib/http/client";
 
 // --- Vird programı alanları (opsiyonel) ---
 // Bir log bir vird programının bir dilimine bağlıysa doldurulur (bkz.
@@ -62,22 +62,27 @@ export type CreateDhikrLogPayload = {
   circleId?: string;
 } & VirdLogFields;
 
-export class DhikrLogsApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number
-  ) {
-    super(message);
-    this.name = "DhikrLogsApiError";
-  }
+export const DhikrLogsApiError = ApiError;
+export type DhikrLogsApiError = ApiError;
+
+const errors = () => ({
+  failed: i18n.t("dhikrs:errors.logActionFailed"),
+  unreachable: i18n.t("dhikrs:errors.serverUnreachable")
+});
+
+function options(method: "GET" | "POST" | "PATCH" | "DELETE", body?: unknown) {
+  return {
+    method,
+    body,
+    auth: true as const,
+    errors: errors()
+  };
 }
 
 export async function listDhikrLogsByUser(
   userId: string,
   dateFrom?: string,
-  dateTo?: string,
-  accessToken?: string
+  dateTo?: string
 ): Promise<BackendDhikrLog[]> {
   const params = new URLSearchParams({ userId });
   if (dateFrom) {
@@ -87,27 +92,17 @@ export async function listDhikrLogsByUser(
     params.set("dateTo", dateTo);
   }
 
-  return requestJson<BackendDhikrLog[]>(`/v1/dhikr-logs?${params.toString()}`, {
-    method: "GET",
-    accessToken
-  });
+  return request<BackendDhikrLog[]>(`/v1/dhikr-logs?${params.toString()}`, options("GET"));
 }
 
-export async function createDhikrLog(
-  payload: CreateDhikrLogPayload,
-  accessToken?: string
-): Promise<BackendDhikrLog> {
-  return requestJson<BackendDhikrLog>("/v1/dhikr-logs", {
-    method: "POST",
-    body: payload,
-    accessToken
-  });
+export async function createDhikrLog(payload: CreateDhikrLogPayload): Promise<BackendDhikrLog> {
+  return request<BackendDhikrLog>("/v1/dhikr-logs", options("POST", payload));
 }
 
-export async function deleteDhikrLogsByKey(
-  payload: { dhikrId?: string; customDhikrId?: string },
-  accessToken?: string
-): Promise<{ deleted: boolean; deletedCount: number }> {
+export async function deleteDhikrLogsByKey(payload: {
+  dhikrId?: string;
+  customDhikrId?: string;
+}): Promise<{ deleted: boolean; deletedCount: number }> {
   const params = new URLSearchParams();
   if (payload.dhikrId?.trim()) {
     params.set("dhikrId", payload.dhikrId.trim());
@@ -116,103 +111,19 @@ export async function deleteDhikrLogsByKey(
     params.set("customDhikrId", payload.customDhikrId.trim());
   }
 
-  return requestJson<{ deleted: boolean; deletedCount: number }>(
+  return request<{ deleted: boolean; deletedCount: number }>(
     `/v1/dhikr-logs/by-dhikr?${params.toString()}`,
-    {
-      method: "DELETE",
-      accessToken
-    }
+    options("DELETE")
   );
 }
 
-export async function setDhikrFavoriteByKey(
-  payload: { dhikrId?: string; customDhikrId?: string; isFavorite: boolean },
-  accessToken?: string
-): Promise<{ updated: boolean; matchedCount: number; modifiedCount: number; isFavorite: boolean }> {
-  return requestJson<{ updated: boolean; matchedCount: number; modifiedCount: number; isFavorite: boolean }>(
+export async function setDhikrFavoriteByKey(payload: {
+  dhikrId?: string;
+  customDhikrId?: string;
+  isFavorite: boolean;
+}): Promise<{ updated: boolean; matchedCount: number; modifiedCount: number; isFavorite: boolean }> {
+  return request<{ updated: boolean; matchedCount: number; modifiedCount: number; isFavorite: boolean }>(
     "/v1/dhikr-logs/favorite/by-dhikr",
-    {
-      method: "PATCH",
-      body: payload,
-      accessToken
-    }
+    options("PATCH", payload)
   );
-}
-
-async function requestJson<TResponse>(
-  path: string,
-  options: { method: "GET" | "POST" | "PATCH" | "DELETE"; body?: unknown; accessToken?: string }
-): Promise<TResponse> {
-  try {
-    const headers: Record<string, string> = {
-      "content-type": "application/json"
-    };
-    if (options.accessToken?.trim()) {
-      headers.authorization = `Bearer ${options.accessToken.trim()}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: options.method,
-      headers,
-      ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {})
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("dhikrs:errors.logActionFailed"));
-      throw new DhikrLogsApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
-    }
-
-    return (data ?? {}) as TResponse;
-  } catch (error) {
-    if (error instanceof DhikrLogsApiError) {
-      throw error;
-    }
-
-    throw new DhikrLogsApiError("transient", i18n.t("dhikrs:errors.serverUnreachable"));
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) {
-    return payload;
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const candidate = payload as { message?: unknown; error?: unknown };
-  if (typeof candidate.message === "string" && candidate.message.trim()) {
-    return candidate.message;
-  }
-
-  if (typeof candidate.error === "string" && candidate.error.trim()) {
-    return candidate.error;
-  }
-
-  return fallback;
 }

@@ -78,17 +78,13 @@ async function send<T>(path: string, options: RequestOptions<T>, token: string |
       clearTimeout(timeoutId);
     }
 
-    const data = unwrapDataEnvelope(safeParseJson(await response.text()));
+    const rawBody = await response.text();
 
     if (!response.ok) {
-      throw new ApiError(
-        response.status >= 500 ? "transient" : "terminal",
-        extractErrorMessage(data, errors.failed),
-        response.status,
-        extractErrorCode(data)
-      );
+      throw errorFromBody(response.status, rawBody, errors.failed);
     }
 
+    const data = unwrapDataEnvelope(safeParseJson(rawBody));
     return data ?? ("emptyValue" in options ? options.emptyValue : {});
   } catch (error) {
     if (error instanceof ApiError) {
@@ -99,7 +95,13 @@ async function send<T>(path: string, options: RequestOptions<T>, token: string |
   }
 }
 
-function safeParseJson(payload: string): unknown {
+/** Maps a non-2xx body to ApiError; shared with the hand-written SSE path in ai-chat. */
+export function errorFromBody(status: number, rawBody: string, fallback: string): ApiError {
+  const data = unwrapDataEnvelope(safeParseJson(rawBody));
+  return new ApiError(status >= 500 ? "transient" : "terminal", extractErrorMessage(data, fallback), status, extractErrorCode(data));
+}
+
+export function safeParseJson(payload: string): unknown {
   if (!payload) {
     return undefined;
   }

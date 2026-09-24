@@ -1,8 +1,5 @@
 // Zikir Halkası API istemcisi. Sunucu sözleşmesi: apps/api/src/modules/circles/
 // (v1/circles* — JwtAuthGuard, v1/circles/preview/:code hariç herkese açık).
-// Desen vird-api-client.ts ile aynı (requestJson, {success,data} zarfını açma,
-// hata code/message çıkarımı) — her istemci dosyası kasıtlı olarak kendi küçük
-// kopyasını taşır, ortak taban yok (bkz. vird-api-client.ts dosya başı notu).
 import {
   CIRCLE_ERROR_CODE,
   type CircleDetail,
@@ -12,49 +9,55 @@ import {
   type CreateCircleRequest
 } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
-import { API_BASE_URL } from "../../../lib/env";
+import { ApiError, request } from "../../../lib/http/client";
 
 export { CIRCLE_ERROR_CODE };
 
-export class CircleApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number,
-    public readonly code?: string
-  ) {
-    super(message);
-    this.name = "CircleApiError";
-  }
+export const CircleApiError = ApiError;
+export type CircleApiError = ApiError;
+
+const errors = () => ({
+  failed: i18n.t("circle:errors.serviceUnavailable"),
+  unreachable: i18n.t("circle:errors.serviceUnreachable")
+});
+
+function options(method: "GET" | "POST", body?: unknown, auth: boolean = true) {
+  return {
+    method,
+    body,
+    auth,
+    headers: { "accept-language": i18n.language },
+    errors: errors()
+  };
 }
 
-export async function fetchCircles(accessToken: string): Promise<CircleSummary[]> {
-  return requestJson<CircleSummary[]>("/v1/circles", { method: "GET", accessToken });
+export async function fetchCircles(): Promise<CircleSummary[]> {
+  return request<CircleSummary[]>("/v1/circles", options("GET"));
 }
 
-export async function fetchCircle(id: string, accessToken: string, date?: string): Promise<CircleDetail> {
+export async function fetchCircle(id: string, date?: string): Promise<CircleDetail> {
   const query = date ? `?date=${encodeURIComponent(date)}` : "";
-  return requestJson<CircleDetail>(`/v1/circles/${encodeURIComponent(id)}${query}`, { method: "GET", accessToken });
+  return request<CircleDetail>(`/v1/circles/${encodeURIComponent(id)}${query}`, options("GET"));
 }
 
 export async function fetchCirclePreview(code: string): Promise<CirclePreview> {
-  return requestJson<CirclePreview>(`/v1/circles/preview/${encodeURIComponent(code)}`, { method: "GET" });
+  return request<CirclePreview>(`/v1/circles/preview/${encodeURIComponent(code)}`, options("GET", undefined, false));
 }
 
-export async function createCircle(body: CreateCircleRequest, accessToken: string): Promise<CircleSummary> {
-  return requestJson<CircleSummary>("/v1/circles", { method: "POST", body, accessToken });
+export async function createCircle(body: CreateCircleRequest): Promise<CircleSummary> {
+  return request<CircleSummary>("/v1/circles", options("POST", body));
 }
 
-export async function joinCircle(code: string, accessToken: string): Promise<CircleSummary> {
-  return requestJson<CircleSummary>("/v1/circles/join", { method: "POST", body: { code }, accessToken });
+export async function joinCircle(code: string): Promise<CircleSummary> {
+  return request<CircleSummary>("/v1/circles/join", options("POST", { code }));
 }
 
-export async function leaveCircle(id: string, accessToken: string): Promise<void> {
-  await requestJson<unknown>(`/v1/circles/${encodeURIComponent(id)}/leave`, { method: "POST", accessToken });
+export async function leaveCircle(id: string): Promise<void> {
+  await request<unknown>(`/v1/circles/${encodeURIComponent(id)}/leave`, options("POST"));
 }
 
-export async function closeCircle(id: string, accessToken: string): Promise<void> {
-  await requestJson<unknown>(`/v1/circles/${encodeURIComponent(id)}/close`, { method: "POST", accessToken });
+export async function closeCircle(id: string): Promise<void> {
+  await request<unknown>(`/v1/circles/${encodeURIComponent(id)}/close`, options("POST"));
 }
 
 // CIRCLE_ERROR_CODE.* -> circle.json çeviri anahtarı (bkz. vird-error-codes.ts
@@ -81,93 +84,5 @@ export function resolveCircleErrorMessage(code: string | undefined, fallback: st
   if (code && isCircleErrorCode(code)) {
     return i18n.t(CIRCLE_ERROR_MESSAGE_KEY[code]);
   }
-  return fallback;
-}
-
-// --- İstek altyapısı (vird-api-client.ts ile aynı desen). ---
-
-async function requestJson<TResponse>(
-  path: string,
-  options: { method: "GET" | "POST"; body?: unknown; accessToken?: string }
-): Promise<TResponse> {
-  try {
-    const headers: Record<string, string> = {
-      "content-type": "application/json",
-      "accept-language": i18n.language
-    };
-    if (options.accessToken?.trim()) {
-      headers.authorization = `Bearer ${options.accessToken.trim()}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: options.method,
-      headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body)
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("circle:errors.serviceUnavailable"));
-      const code = extractErrorCode(data);
-      throw new CircleApiError(response.status >= 500 ? "transient" : "terminal", message, response.status, code);
-    }
-
-    return (data ?? {}) as TResponse;
-  } catch (error) {
-    if (error instanceof CircleApiError) {
-      throw error;
-    }
-
-    throw new CircleApiError("transient", i18n.t("circle:errors.serviceUnreachable"));
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorCode(payload: unknown): string | undefined {
-  if (!payload || typeof payload !== "object") return undefined;
-  const candidate = payload as { code?: unknown };
-  return typeof candidate.code === "string" ? candidate.code : undefined;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) {
-    return payload;
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const candidate = payload as { message?: unknown; error?: unknown };
-  if (typeof candidate.message === "string" && candidate.message.trim()) {
-    return candidate.message;
-  }
-
-  if (typeof candidate.error === "string" && candidate.error.trim()) {
-    return candidate.error;
-  }
-
   return fallback;
 }

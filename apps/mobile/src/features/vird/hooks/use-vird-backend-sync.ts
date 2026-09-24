@@ -35,8 +35,7 @@ export function useVirdBackendSync(): void {
       return;
     }
 
-    const accessToken = useAuthStore.getState().session?.accessToken;
-    if (useAuthStore.getState().status !== "authenticated" || !accessToken) {
+    if (useAuthStore.getState().status !== "authenticated") {
       return;
     }
 
@@ -48,7 +47,7 @@ export function useVirdBackendSync(): void {
       const localOnlyPrograms = useVirdStore.getState().programs.filter((program) => program.origin === "local");
       for (const program of localOnlyPrograms) {
         const wasActive = useVirdStore.getState().activeProgramId === program.id;
-        const serverProgram = await pushLocalVirdProgram(program, accessToken, { activate: wasActive });
+        const serverProgram = await pushLocalVirdProgram(program, { activate: wasActive });
         const merged = toLocalVirdProgram(serverProgram, program);
         useVirdStore.getState().upsertProgram(merged);
         if (wasActive && merged.id !== program.id) {
@@ -68,8 +67,8 @@ export function useVirdBackendSync(): void {
         .programs.find((program) => program.id === useVirdStore.getState().activeProgramId);
       const activeProgramId = activeProgram?.origin === "server" ? activeProgram.id : undefined;
       const [serverPrograms, today] = await Promise.all([
-        fetchVirdPrograms(accessToken),
-        fetchVirdToday(accessToken, todayKey, activeProgramId)
+        fetchVirdPrograms(),
+        fetchVirdToday(todayKey, activeProgramId)
       ]);
 
       const localById = new Map(useVirdStore.getState().programs.map((program) => [program.id, program]));

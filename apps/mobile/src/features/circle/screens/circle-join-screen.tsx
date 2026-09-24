@@ -65,7 +65,7 @@ export function CircleJoinScreen({ code: rawCode }: { code: string }) {
         if (!sessionAccessToken) return;
         setIsJoining(true);
         try {
-          const circle = await joinCircle(code, sessionAccessToken);
+          const circle = await joinCircle(code);
           upsertCircle(circle);
           void trackEvent("circle_joined");
           router.replace(`/circle/${circle.id}` as Href);

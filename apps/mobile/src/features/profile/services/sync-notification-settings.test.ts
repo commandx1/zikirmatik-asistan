@@ -64,8 +64,7 @@ describe("runNotificationSettingsToggle", () => {
     });
     expect(saveUserPreferences).toHaveBeenCalledWith(
       "user-1",
-      { dailyReminder: true, reminderTime: "08:00" },
-      "token-1"
+      { dailyReminder: true, reminderTime: "08:00" }
     );
     expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: true, friday: true }, "token-1");
     expect(onError).not.toHaveBeenCalled();
@@ -216,8 +215,7 @@ describe("runNotificationSettingsToggle", () => {
     expect(updateDevicePrefs).toHaveBeenCalledWith({ specialDays: true, friday: true }, "token-1");
     expect(saveUserPreferences).toHaveBeenCalledWith(
       "user-1",
-      { dailyReminder: true, reminderTime: "08:00" },
-      "token-1"
+      { dailyReminder: true, reminderTime: "08:00" }
     );
     expect(onError).not.toHaveBeenCalled();
   });

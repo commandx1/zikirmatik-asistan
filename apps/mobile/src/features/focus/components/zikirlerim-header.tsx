@@ -13,7 +13,6 @@ export function ZikirlerimHeader() {
   const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
   const removePersonalDhikr = useDhikrStore(state => state.removePersonalDhikr)
   const authStatus = useAuthStore(state => state.status)
-  const sessionAccessToken = useAuthStore(state => state.session?.accessToken)
 
   const [isCreateOpen, setCreateOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -37,16 +36,13 @@ export function ZikirlerimHeader() {
     if (authStatus === 'authenticated') {
       setIsSaving(true)
       try {
-        await createUserDhikr(
-          {
-            clientId: createdId,
-            name: trimmedName,
-            transliteration: trimmedPronunciation || undefined,
-            meaning: values.meaning.trim() || undefined,
-            target: values.target > 0 ? values.target : 0
-          },
-          sessionAccessToken
-        )
+        await createUserDhikr({
+          clientId: createdId,
+          name: trimmedName,
+          transliteration: trimmedPronunciation || undefined,
+          meaning: values.meaning.trim() || undefined,
+          target: values.target > 0 ? values.target : 0
+        })
       } catch {
         removePersonalDhikr(createdId)
         setError(t('focus:errors.dhikrSaveFailed'))

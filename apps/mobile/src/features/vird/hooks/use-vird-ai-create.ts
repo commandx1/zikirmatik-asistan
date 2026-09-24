@@ -44,40 +44,6 @@ type AiUnavailableState = { message: string };
 
 type CreditState = { balance: number; isPremium: boolean };
 
-/**
- * AI API çağrısını çalıştırır; 401 alınırsa oturumu bir kez yenileyip taze
- * access token ile tekrar dener. use-ai-guide.ts'teki aynı adlı yardımcının
- * bilerek DUCK-TYPED bir kopyasıdır — bu hook hem AiApiError (`/v1/ai/*`) hem
- * VirdApiError (`/v1/vird/*`) fırlatan çağrıları sarar, ikisi de `.status`
- * taşır. `/v1/vird/*` uçları accessToken'ı ZORUNLU aldığından (bkz.
- * vird-api-client.ts dosya başı notu) `call` burada `string` (opsiyonel değil)
- * bekler; oturum yoksa çağrı hiç yapılmadan hata fırlatılır.
- */
-async function callWithAuthRetry<T>(call: (accessToken: string) => Promise<T>): Promise<T> {
-  const initialToken = useAuthStore.getState().session?.accessToken;
-  if (!initialToken) {
-    throw new AiApiError("terminal", "Oturum bulunamadı.");
-  }
-
-  try {
-    return await call(initialToken);
-  } catch (error) {
-    const status = (error as { status?: number } | null)?.status;
-    if (status !== 401) {
-      throw error;
-    }
-
-    await useAuthStore.getState().refreshAuthenticatedSession();
-
-    const refreshedToken = useAuthStore.getState().session?.accessToken;
-    if (!refreshedToken || refreshedToken === initialToken) {
-      throw error;
-    }
-
-    return call(refreshedToken);
-  }
-}
-
 function createFlowId() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
     const random = Math.floor(Math.random() * 16);
@@ -139,7 +105,7 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
     }
 
     try {
-      const credits = await callWithAuthRetry((token) => getAiCredits(token));
+      const credits = await getAiCredits();
       const balance = Math.max(0, Math.floor(credits.balance));
       const isPremium = Boolean(credits.isPremium);
       setCreditBalance(balance);
@@ -192,7 +158,7 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
           return;
         }
 
-        const response = await callWithAuthRetry((token) => createAiVirdProgram(payload, token));
+        const response = await createAiVirdProgram(payload);
 
         if (isAiVirdProgramOffTopicResponse(response)) {
           setOffTopicMessage(response.message);
@@ -331,7 +297,7 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
       setActivationConflict(false);
 
       try {
-        const activated = await callWithAuthRetry((token) => activateVirdProgram(targetProgramId, token));
+        const activated = await activateVirdProgram(targetProgramId);
         // AI programı sunucuda bare {dhikrId,target} taşır (ad/anlam denormalize
         // EDİLMEZ) — ana ekranın kartı (todays-vird-card.tsx) içerik gösterebilsin
         // diye katalogdan taze çözülüp dhikrs snapshot'ı olarak yazılır (bkz.
@@ -381,9 +347,7 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
 
     if (currentActive) {
       try {
-        const paused = await callWithAuthRetry((token) =>
-          updateVirdProgram(currentActive.id, { status: "paused" }, token)
-        );
+        const paused = await updateVirdProgram(currentActive.id, { status: "paused" });
         useVirdStore.getState().upsertProgram(toLocalVirdProgram(paused, currentActive));
       } catch (error) {
         setActivationError(

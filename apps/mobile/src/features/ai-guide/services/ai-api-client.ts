@@ -1,7 +1,7 @@
 import { i18n } from "../../../i18n";
 import type { LocalizedText, VirdSlotKey } from "@zikirmatik/shared";
 import { AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
-import { API_BASE_URL } from "../../../lib/env";
+import { ApiError, request } from "../../../lib/http/client";
 
 export type CreateAiRecommendationPayload = {
   userId: string;
@@ -121,39 +121,41 @@ export type BackendAiRecommendation = {
   createdAt: string;
 };
 
-export class AiApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number,
-    public readonly code?: string
-  ) {
-    super(message);
-    this.name = "AiApiError";
-  }
+export const AiApiError = ApiError;
+export type AiApiError = ApiError;
+
+const errors = () => ({
+  failed: i18n.t("ai-guide:errors.serviceUnavailable"),
+  unreachable: i18n.t("ai-guide:errors.serviceUnreachable")
+});
+
+function options(method: "GET" | "POST" | "PATCH", body?: unknown) {
+  return {
+    method,
+    body,
+    auth: true as const,
+    headers: { "accept-language": i18n.language },
+    errors: errors()
+  };
 }
 
 export async function createAiRecommendation(
-  payload: CreateAiRecommendationPayload,
-  accessToken?: string
+  payload: CreateAiRecommendationPayload
 ): Promise<CreateAiRecommendationResponse> {
-  return requestJson<CreateAiRecommendationResponse>("/v1/ai/recommendations", {
-    method: "POST",
-    body: payload,
-    accessToken
-  });
+  return request<CreateAiRecommendationResponse>(
+    "/v1/ai/recommendations",
+    options("POST", payload)
+  );
 }
 
 export async function selectAiRecommendation(
   recommendationId: string,
-  selectedDhikrId: string,
-  accessToken?: string
+  selectedDhikrId: string
 ) {
-  return requestJson(`/v1/ai/recommendations/${recommendationId}/select`, {
-    method: "PATCH",
-    body: { selectedDhikrId },
-    accessToken
-  });
+  return request(
+    `/v1/ai/recommendations/${recommendationId}/select`,
+    options("PATCH", { selectedDhikrId })
+  );
 }
 
 export type AiDailyQuota = {
@@ -169,25 +171,16 @@ export type AiCredits = {
   monthlyGrant: number;
 };
 
-export async function getAiCredits(accessToken?: string): Promise<AiCredits> {
-  return requestJson<AiCredits>("/v1/ai/credits", {
-    method: "GET",
-    accessToken
-  });
+export async function getAiCredits(): Promise<AiCredits> {
+  return request<AiCredits>("/v1/ai/credits", options("GET"));
 }
 
-export async function getAiDailyQuota(accessToken?: string): Promise<AiDailyQuota> {
-  return requestJson<AiDailyQuota>("/v1/ai/quota", {
-    method: "GET",
-    accessToken
-  });
+export async function getAiDailyQuota(): Promise<AiDailyQuota> {
+  return request<AiDailyQuota>("/v1/ai/quota", options("GET"));
 }
 
-export async function listAiRecommendations(accessToken?: string) {
-  return requestJson<BackendAiRecommendation[]>("/v1/ai/recommendations", {
-    method: "GET",
-    accessToken
-  });
+export async function listAiRecommendations() {
+  return request<BackendAiRecommendation[]>("/v1/ai/recommendations", options("GET"));
 }
 
 // --- AI Vird Programı (POST /v1/ai/vird-programs) — sözleşme: docs/vird-programi.md
@@ -253,98 +246,10 @@ export function isAiVirdProgramOffTopicResponse(
  * aynı flowId ile tekrar denemek güvenlidir.
  */
 export async function createAiVirdProgram(
-  payload: CreateAiVirdProgramPayload,
-  accessToken?: string
+  payload: CreateAiVirdProgramPayload
 ): Promise<CreateAiVirdProgramResponse> {
-  return requestJson<CreateAiVirdProgramResponse>("/v1/ai/vird-programs", {
-    method: "POST",
-    body: payload,
-    accessToken
-  });
-}
-
-async function requestJson<TResponse>(
-  path: string,
-  options: { method: "GET" | "POST" | "PATCH"; body?: unknown; accessToken?: string }
-): Promise<TResponse> {
-  try {
-    const headers: Record<string, string> = {
-      "content-type": "application/json",
-      "accept-language": i18n.language
-    };
-    if (options.accessToken?.trim()) {
-      headers.authorization = `Bearer ${options.accessToken.trim()}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: options.method,
-      headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body)
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("ai-guide:errors.serviceUnavailable"));
-      const code = extractErrorCode(data);
-      throw new AiApiError(response.status >= 500 ? "transient" : "terminal", message, response.status, code);
-    }
-
-    return (data ?? {}) as TResponse;
-  } catch (error) {
-    if (error instanceof AiApiError) {
-      throw error;
-    }
-
-    throw new AiApiError("transient", i18n.t("ai-guide:errors.serviceUnreachable"));
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorCode(payload: unknown): string | undefined {
-  if (!payload || typeof payload !== "object") return undefined;
-  const candidate = payload as { code?: unknown };
-  return typeof candidate.code === "string" ? candidate.code : undefined;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) {
-    return payload;
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const candidate = payload as { message?: unknown; error?: unknown };
-  if (typeof candidate.message === "string" && candidate.message.trim()) {
-    return candidate.message;
-  }
-
-  if (typeof candidate.error === "string" && candidate.error.trim()) {
-    return candidate.error;
-  }
-
-  return fallback;
+  return request<CreateAiVirdProgramResponse>(
+    "/v1/ai/vird-programs",
+    options("POST", payload)
+  );
 }

@@ -1,6 +1,6 @@
 import { i18n } from "../../../i18n";
 import type { LocalizedText } from "@zikirmatik/shared";
-import { API_BASE_URL } from "../../../lib/env";
+import { ApiError, request } from "../../../lib/http/client";
 
 export type CollectionCategory =
   | "gunluk"
@@ -36,16 +36,13 @@ export type BackendCollectionDetail = BackendCollection & {
   dhikrs: BackendCollectionDhikr[];
 };
 
-export class CollectionsApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number,
-  ) {
-    super(message);
-    this.name = "CollectionsApiError";
-  }
-}
+export const CollectionsApiError = ApiError;
+export type CollectionsApiError = ApiError;
+
+const errors = () => ({
+  failed: i18n.t("collections:errors.fetchFailed"),
+  unreachable: i18n.t("collections:errors.serverUnreachable")
+});
 
 export async function listCollections(
   category?: CollectionCategory,
@@ -59,69 +56,14 @@ export async function listCollections(
   const path = query
     ? `/v1/dhikr-collections?${query}`
     : "/v1/dhikr-collections";
-  return requestJson<BackendCollection[]>(path);
+  return request<BackendCollection[]>(path, { emptyValue: [], errors: errors() });
 }
 
 export async function getCollectionDetail(
   key: string,
 ): Promise<BackendCollectionDetail> {
-  return requestJson<BackendCollectionDetail>(`/v1/dhikr-collections/${key}`);
-}
-
-async function requestJson<TResponse>(path: string): Promise<TResponse> {
-  try {
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: "GET",
-      headers: { "content-type": "application/json" },
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("collections:errors.fetchFailed"));
-      throw new CollectionsApiError(
-        response.status >= 500 ? "transient" : "terminal",
-        message,
-        response.status,
-      );
-    }
-
-    return (data ?? []) as TResponse;
-  } catch (error) {
-    if (error instanceof CollectionsApiError) {
-      throw error;
-    }
-
-    throw new CollectionsApiError(
-      "transient",
-      i18n.t("collections:errors.serverUnreachable"),
-    );
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) return undefined;
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) return payload;
-  if (!payload || typeof payload !== "object") return fallback;
-  const c = payload as { message?: unknown; error?: unknown };
-  if (typeof c.message === "string" && c.message.trim()) return c.message;
-  if (typeof c.error === "string" && c.error.trim()) return c.error;
-  return fallback;
+  return request<BackendCollectionDetail>(`/v1/dhikr-collections/${key}`, {
+    emptyValue: [] as unknown as BackendCollectionDetail,
+    errors: errors()
+  });
 }

@@ -86,7 +86,7 @@ export function useProfile() {
       return;
     }
 
-    const user = await getUserById(session.userId, session.accessToken);
+    const user = await getUserById(session.userId);
 
     setBackendUser(user);
     hydrateFromBackend({
@@ -112,7 +112,7 @@ export function useProfile() {
               ? user.fontFamily
               : undefined
         });
-  }, [authStatus, hydrateAppearance, hydrateFromBackend, session?.accessToken, session?.userId]);
+  }, [authStatus, hydrateAppearance, hydrateFromBackend, session?.userId]);
 
   const refresh = useCallback(async () => {
     if (authStatus !== "authenticated" || !session?.userId) {
@@ -188,7 +188,7 @@ export function useProfile() {
     if (!session?.userId) return;
     setIsDeletingAccount(true);
     try {
-      await deleteUser(session.userId, session.accessToken);
+      await deleteUser(session.userId);
       await signOut();
       router.replace("/auth");
     } finally {
@@ -450,8 +450,7 @@ export function useProfile() {
           {
             reminderTime: nextReminderTime,
             dailyReminder: dailyReminderEnabled
-          },
-          session.accessToken
+          }
         );
       }
 
@@ -477,13 +476,12 @@ export function useProfile() {
         session.userId,
         // hapticsEnabled geriye uyumluluk için türetilip birlikte gönderilir
         // (bkz. store/profile-store.ts setHapticsPattern).
-        { hapticsPattern: pattern, hapticsEnabled: pattern !== "off" },
-        session.accessToken
+        { hapticsPattern: pattern, hapticsEnabled: pattern !== "off" }
       ).catch(() => {
         setHapticsPattern(previousPattern);
       });
     },
-    [authStatus, hapticsPattern, session?.accessToken, session?.userId, setHapticsPattern]
+    [authStatus, hapticsPattern, session?.userId, setHapticsPattern]
   );
 
   return {

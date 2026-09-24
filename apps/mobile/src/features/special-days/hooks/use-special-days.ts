@@ -12,7 +12,6 @@ import {
   type BackendSpecialDayHomeItem,
 } from "../services/special-days-api-client";
 import { useProfileStore } from "../../../store/profile-store";
-import { useAuthStore } from "../../../store/auth-store";
 import { formatLongDate } from "../../../lib/locale-format";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
 
@@ -27,13 +26,12 @@ export function useSpecialDays() {
   const notificationsEnabled = useProfileStore((s) => s.kandilNotificationsEnabled);
   const setKandilNotificationsEnabled = useProfileStore((s) => s.setKandilNotificationsEnabled);
   const locale = useProfileStore((s) => s.locale);
-  const accessToken = useAuthStore((s) => s.session?.accessToken);
 
   const refresh = useCallback(async () => {
     setIsLoading(true);
     setError(undefined);
     try {
-      const response = await getSpecialDaysHome(toDateKey(new Date()), accessToken);
+      const response = await getSpecialDaysHome(toDateKey(new Date()));
       if (response.hero) {
         const days = daysUntil(response.hero.date);
         setHeroCard({
@@ -68,7 +66,7 @@ export function useSpecialDays() {
       setIsLoading(false);
       setHasLoadedOnce(true);
     }
-  }, [accessToken, locale]);
+  }, [locale]);
 
   useEffect(() => {
     void refresh();

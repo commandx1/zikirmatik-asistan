@@ -45,7 +45,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
       return;
     }
     try {
-      const fresh = await fetchCircle(id, sessionAccessToken, toDateKey(new Date()));
+      const fresh = await fetchCircle(id, toDateKey(new Date()));
       upsertCircle(fresh);
     } catch (error) {
       console.warn("[circle-detail] fetch başarısız", error);
@@ -90,7 +90,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
     if (!sessionAccessToken) return;
     setIsBusy(true);
     try {
-      await leaveCircle(id, sessionAccessToken);
+      await leaveCircle(id);
       removeCircle(id);
       router.back();
     } catch (error) {
@@ -105,7 +105,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
     if (!sessionAccessToken) return;
     setIsBusy(true);
     try {
-      await closeCircle(id, sessionAccessToken);
+      await closeCircle(id);
       upsertCircle({ ...storedCircle, status: "closed" });
     } catch (error) {
       console.warn("[circle-detail] kapatma başarısız", error);

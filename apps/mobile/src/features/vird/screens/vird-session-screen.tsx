@@ -158,7 +158,6 @@ function SessionBody({
 
   const authStatus = useAuthStore((state) => state.status)
   const sessionUserId = useAuthStore((state) => state.session?.userId)
-  const sessionAccessToken = useAuthStore((state) => state.session?.accessToken)
   const applySavedBackendLog = useDhikrStore((state) => state.applySavedBackendLog)
 
   // Bu oturumda değişip henüz sunucuya yazılmamış item'lar. Yalnız bunlar POST edilir;
@@ -191,14 +190,14 @@ function SessionBody({
           locale,
           fallbackName
         })
-        const saved = await createDhikrLog(payload, sessionAccessToken)
+        const saved = await createDhikrLog(payload)
         applySavedBackendLog(saved)
       } catch (error: unknown) {
         dirtyRef.current.add(itemKey)
         console.warn('[vird-session] log kaydı başarısız', error)
       }
     },
-    [authStatus, sessionUserId, sessionAccessToken, todayKey, items, program, dayIndex, locale, fallbackName, applySavedBackendLog]
+    [authStatus, sessionUserId, todayKey, items, program, dayIndex, locale, fallbackName, applySavedBackendLog]
   )
 
   // unmount/AppState background flush her zaman EN GÜNCEL items/flush'ı

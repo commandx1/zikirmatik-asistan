@@ -20,14 +20,13 @@ export function useCircleSync(): void {
       return;
     }
 
-    const accessToken = useAuthStore.getState().session?.accessToken;
-    if (useAuthStore.getState().status !== "authenticated" || !accessToken) {
+    if (useAuthStore.getState().status !== "authenticated") {
       return;
     }
 
     isSyncingRef.current = true;
     try {
-      const circles = await fetchCircles(accessToken);
+      const circles = await fetchCircles();
       useCircleStore.getState().replaceFromServer(circles);
     } catch (error) {
       // Yerel state dokunulmadan kalır — bir sonraki tetikte (foreground,

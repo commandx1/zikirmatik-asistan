@@ -76,15 +76,12 @@ export function CircleCreateScreen() {
     try {
       const endDate = duration === "unlimited" ? undefined : shiftDateKey(toDateKey(new Date()), Number.parseInt(duration, 10));
 
-      const circle = await createCircle(
-        {
-          name: name.trim() || undefined,
-          dhikrId: selected.ref,
-          goalCount: goal,
-          endDate
-        },
-        sessionAccessToken
-      );
+      const circle = await createCircle({
+        name: name.trim() || undefined,
+        dhikrId: selected.ref,
+        goalCount: goal,
+        endDate
+      });
 
       upsertCircle(circle);
       void trackEvent("circle_created", { goalCount: goal });

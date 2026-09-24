@@ -45,19 +45,18 @@ function isConflict(error: unknown): boolean {
  */
 export async function pushLocalVirdProgram(
   program: VirdProgramLocal,
-  accessToken: string,
   options: { activate?: boolean } = {}
 ): Promise<VirdProgram> {
   let serverProgram: VirdProgram;
 
   try {
-    serverProgram = await createVirdProgram(buildCreateVirdProgramRequest(program), accessToken);
+    serverProgram = await createVirdProgram(buildCreateVirdProgramRequest(program));
   } catch (error) {
     if (!isConflict(error)) {
       throw error;
     }
 
-    const existing = (await fetchVirdPrograms(accessToken)).find(
+    const existing = (await fetchVirdPrograms()).find(
       (candidate) => candidate.clientId === program.clientId
     );
     if (!existing) {
@@ -67,7 +66,7 @@ export async function pushLocalVirdProgram(
   }
 
   if (options.activate && serverProgram.status !== "active") {
-    serverProgram = await activateVirdProgram(serverProgram.id, accessToken);
+    serverProgram = await activateVirdProgram(serverProgram.id);
   }
 
   return serverProgram;

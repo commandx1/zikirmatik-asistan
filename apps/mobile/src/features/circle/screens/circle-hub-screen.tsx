@@ -41,7 +41,7 @@ export function CircleHubScreen() {
     useCallback(() => {
       if (!sessionAccessToken) return;
       let cancelled = false;
-      fetchCircles(sessionAccessToken)
+      fetchCircles()
         .then((list) => {
           if (!cancelled) replaceFromServer(list);
         })

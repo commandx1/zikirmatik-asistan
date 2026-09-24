@@ -1,6 +1,6 @@
 import { i18n } from "../../../i18n";
 import type { LocalizedText } from "@zikirmatik/shared";
-import { API_BASE_URL } from "../../../lib/env";
+import { ApiError, request } from "../../../lib/http/client";
 
 export type SpecialDayType = "kandil" | "ramazan" | "bayram" | "özel gün";
 
@@ -64,21 +64,15 @@ export type BackendSpecialDayDetail = BackendSpecialDayHomeItem & {
   practices: SpecialDayPractice[];
 };
 
-export class SpecialDaysApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number,
-  ) {
-    super(message);
-    this.name = "SpecialDaysApiError";
-  }
-}
+export const SpecialDaysApiError = ApiError;
+export type SpecialDaysApiError = ApiError;
 
-export async function getSpecialDaysHome(
-  date?: string,
-  accessToken?: string
-): Promise<BackendSpecialDayHomeResponse> {
+const errors = () => ({
+  failed: i18n.t("special-days:errors.fetchFailed"),
+  unreachable: i18n.t("special-days:errors.serverUnreachable")
+});
+
+export async function getSpecialDaysHome(date?: string): Promise<BackendSpecialDayHomeResponse> {
   const params = new URLSearchParams();
   if (date) {
     params.set("date", date);
@@ -86,95 +80,17 @@ export async function getSpecialDaysHome(
 
   const query = params.toString();
   const path = query ? `/v1/special-days/home?${query}` : "/v1/special-days/home";
-  return requestJson<BackendSpecialDayHomeResponse>(path, {
+  return request<BackendSpecialDayHomeResponse>(path, {
     method: "GET",
-    accessToken,
+    auth: true,
+    errors: errors()
   });
 }
 
-export async function getSpecialDayDetail(
-  id: string,
-  accessToken?: string
-): Promise<BackendSpecialDayDetail> {
-  return requestJson<BackendSpecialDayDetail>(`/v1/special-days/${id}/detail`, {
+export async function getSpecialDayDetail(id: string): Promise<BackendSpecialDayDetail> {
+  return request<BackendSpecialDayDetail>(`/v1/special-days/${id}/detail`, {
     method: "GET",
-    accessToken,
+    auth: true,
+    errors: errors()
   });
-}
-
-async function requestJson<TResponse>(
-  path: string,
-  options: { method: "GET"; accessToken?: string },
-): Promise<TResponse> {
-  try {
-    const headers: Record<string, string> = {
-      "content-type": "application/json",
-    };
-    if (options.accessToken?.trim()) {
-      headers.authorization = `Bearer ${options.accessToken.trim()}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: options.method,
-      headers,
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("special-days:errors.fetchFailed"));
-      throw new SpecialDaysApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
-    }
-
-    return (data ?? {}) as TResponse;
-  } catch (error) {
-    if (error instanceof SpecialDaysApiError) {
-      throw error;
-    }
-
-    throw new SpecialDaysApiError("transient", i18n.t("special-days:errors.serverUnreachable"));
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) {
-    return payload;
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const candidate = payload as { message?: unknown; error?: unknown };
-  if (typeof candidate.message === "string" && candidate.message.trim()) {
-    return candidate.message;
-  }
-
-  if (typeof candidate.error === "string" && candidate.error.trim()) {
-    return candidate.error;
-  }
-
-  return fallback;
 }

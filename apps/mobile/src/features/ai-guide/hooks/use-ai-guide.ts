@@ -61,32 +61,6 @@ type PendingAiRequest = {
   flowId: string;
 };
 
-/**
- * AI API çağrısını çalıştırır; 401 alınırsa oturumu bir kez yenileyip
- * taze access token ile isteği tekrar dener. Refresh başarısızsa veya
- * token değişmediyse orijinal hata fırlatılır.
- */
-async function callWithAuthRetry<T>(call: (accessToken?: string) => Promise<T>): Promise<T> {
-  const initialToken = useAuthStore.getState().session?.accessToken;
-
-  try {
-    return await call(initialToken);
-  } catch (error) {
-    if (!(error instanceof AiApiError) || error.status !== 401) {
-      throw error;
-    }
-
-    await useAuthStore.getState().refreshAuthenticatedSession();
-
-    const refreshedToken = useAuthStore.getState().session?.accessToken;
-    if (!refreshedToken || refreshedToken === initialToken) {
-      throw error;
-    }
-
-    return call(refreshedToken);
-  }
-}
-
 export function useAiGuide(onOpenPremiumSheet?: () => void) {
   const { t } = useTranslation("ai-guide");
   const [intentInput, setIntentInput] = useState("");
@@ -126,7 +100,6 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
-  const accessToken = useAuthStore((s) => s.session?.accessToken);
   const isPremium = useProfileStore((s) => s.isPremium);
   // Canonical locale kaynağı: useProfileStore.locale (reactive selector).
   // setLocale() hem bu store'u hem i18n.changeLanguage()'i günceller, ama
@@ -150,7 +123,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     try {
-      const credits = await callWithAuthRetry((token) => getAiCredits(token));
+      const credits = await getAiCredits();
       setCreditBalance(Math.max(0, Math.floor(credits.balance)));
       setDailyGrant(Math.max(0, Math.floor(credits.dailyGrant)));
       setMonthlyGrant(Math.max(0, Math.floor(credits.monthlyGrant)));
@@ -158,7 +131,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       setCreditsConfirmed(true);
       return { balance: credits.balance, isPremium: credits.isPremium };
     } catch {
-      const quota = await callWithAuthRetry((token) => getAiDailyQuota(token));
+      const quota = await getAiDailyQuota();
       const fallbackBalance = quota.isPremium
         ? Number.MAX_SAFE_INTEGER
         : Math.max(0, (quota.limit ?? 1) - quota.used);
@@ -169,7 +142,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       setCreditsConfirmed(true);
       return { balance: fallbackBalance, isPremium: quota.isPremium };
     }
-  }, [accessToken, authStatus]);
+  }, [authStatus]);
 
   useEffect(() => {
     setError(undefined);
@@ -232,7 +205,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     const [recommendationRows, catalog] = await Promise.all([
-      callWithAuthRetry((token) => listAiRecommendations(token)),
+      listAiRecommendations(),
       listVerifiedActiveDhikrs(),
     ]);
     await refreshCredits();
@@ -267,7 +240,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     }
 
     return true;
-  }, [accessToken, authStatus, cacheKey, refreshCredits, userId]);
+  }, [authStatus, cacheKey, refreshCredits, userId]);
 
   useEffect(() => {
     if (authStatus !== "authenticated" || !cacheKey) {
@@ -305,7 +278,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
 
     if (authStatus === "authenticated" && userId) {
       try {
-        const user = await getUserById(userId, accessToken);
+        const user = await getUserById(userId);
         setIsPremiumVerified(Boolean(user.isPremium));
       } catch {
         // Keep existing state when user document cannot be fetched.
@@ -313,7 +286,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     } else {
       setIsPremiumVerified(false);
     }
-  }, [accessToken, authStatus, userId]);
+  }, [authStatus, userId]);
 
   useEffect(() => {
     void loadCurrentState();
@@ -399,24 +372,22 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
           specialDayNameRef.current,
           request.freeText
         );
-        const response = await callWithAuthRetry((token) =>
-          createAiRecommendation({
-            userId,
-            flowId: request.flowId,
-            freeText: request.freeText,
-            maxRecommendations: 3,
-            socketId,
-            timeContext: {
-              hour: now.getHours(),
-              dayOfWeek: now.getDay(),
-              // Özel gün bağlamı yalnızca gün adı metinde hâlâ duruyorsa
-              // gönderilir; kullanıcı adı silip başka bir şey sorduğunda
-              // retrieval yanlış güne kaymasın.
-              isSpecialDay: Boolean(matchedSpecialDayName),
-              ...(matchedSpecialDayName ? { specialDayName: matchedSpecialDayName } : {})
-            }
-          }, token)
-        );
+        const response = await createAiRecommendation({
+          userId,
+          flowId: request.flowId,
+          freeText: request.freeText,
+          maxRecommendations: 3,
+          socketId,
+          timeContext: {
+            hour: now.getHours(),
+            dayOfWeek: now.getDay(),
+            // Özel gün bağlamı yalnızca gün adı metinde hâlâ duruyorsa
+            // gönderilir; kullanıcı adı silip başka bir şey sorduğunda
+            // retrieval yanlış güne kaymasın.
+            isSpecialDay: Boolean(matchedSpecialDayName),
+            ...(matchedSpecialDayName ? { specialDayName: matchedSpecialDayName } : {})
+          }
+        });
 
         if (isAiOffTopicResponse(response)) {
           setOffTopicMessage(response.message);
@@ -515,7 +486,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
         setLoadingStep("");
       }
     },
-    [accessToken, authStatus, cacheKey, onOpenPremiumSheet, userId, t]
+    [authStatus, cacheKey, onOpenPremiumSheet, userId, t]
   );
 
   const submitIntent = async () => {
@@ -676,7 +647,7 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
       return;
     }
 
-    void callWithAuthRetry((token) => selectAiRecommendation(recommendationId, recommendation.id, token)).catch((error) => {
+    void selectAiRecommendation(recommendationId, recommendation.id).catch((error) => {
       if (error instanceof AiApiError) {
         setError(error.message);
       }

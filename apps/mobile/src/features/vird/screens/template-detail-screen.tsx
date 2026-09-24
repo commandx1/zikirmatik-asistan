@@ -68,7 +68,7 @@ export function TemplateDetailScreen({ templateKey }: Props) {
     setIsLoading(true);
     setLoadError(undefined);
 
-    fetchVirdTemplate(templateKey, accessToken)
+    fetchVirdTemplate(templateKey)
       .then((detail) => {
         if (!isCancelled) {
           setTemplate(detail);
@@ -127,17 +127,14 @@ export function TemplateDetailScreen({ templateKey }: Props) {
 
       if (isMember) {
         const clientId = Crypto.randomUUID();
-        const server = await createVirdProgram(
-          {
-            clientId,
-            title: template.title ?? fallbackTitle,
-            kind: template.kind,
-            source: "template",
-            templateKey: template.key,
-            startDate: startDateKey
-          },
-          accessToken as string
-        );
+        const server = await createVirdProgram({
+          clientId,
+          title: template.title ?? fallbackTitle,
+          kind: template.kind,
+          source: "template",
+          templateKey: template.key,
+          startDate: startDateKey
+        });
         const seed = buildLocalProgramFromTemplate(template, {
           id: clientId,
           clientId,

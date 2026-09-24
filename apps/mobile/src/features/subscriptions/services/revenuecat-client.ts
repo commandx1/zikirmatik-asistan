@@ -228,21 +228,18 @@ async function syncBackendFromCustomerInfo(
       customerInfo.latestExpirationDate ||
       oneMonthLaterIso();
 
-    await createSubscription(
-      {
-        userId,
-        plan: "premium",
-        provider,
-        status: "active",
-        productId,
-        startDate: purchaseDate,
-        endDate: expirationDate
-      },
-      accessToken
-    );
+    await createSubscription({
+      userId,
+      plan: "premium",
+      provider,
+      status: "active",
+      productId,
+      startDate: purchaseDate,
+      endDate: expirationDate
+    });
   }
 
-  const synced = await syncSubscriptionForUser(userId, accessToken, {
+  const synced = await syncSubscriptionForUser(userId, {
     hasActivePremiumEntitlement: Boolean(activeEntitlement),
     provider
   });

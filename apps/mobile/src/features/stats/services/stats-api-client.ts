@@ -1,95 +1,17 @@
 import type { StatsSummary } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
-import { API_BASE_URL } from "../../../lib/env";
+import { ApiError, request } from "../../../lib/http/client";
 
-export class StatsApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number
-  ) {
-    super(message);
-    this.name = "StatsApiError";
-  }
-}
+export const StatsApiError = ApiError;
+export type StatsApiError = ApiError;
 
-export async function getStatsSummary(accessToken?: string): Promise<StatsSummary> {
-  return requestJson<StatsSummary>("/v1/stats/summary", accessToken);
-}
-
-async function requestJson<TResponse>(
-  path: string,
-  accessToken?: string
-): Promise<TResponse> {
-  try {
-    const headers: Record<string, string> = {
-      "content-type": "application/json"
-    };
-    if (accessToken?.trim()) {
-      headers.authorization = `Bearer ${accessToken.trim()}`;
+export async function getStatsSummary(): Promise<StatsSummary> {
+  return request<StatsSummary>("/v1/stats/summary", {
+    method: "GET",
+    auth: true,
+    errors: {
+      failed: i18n.t("stats:errors.fetchFailed"),
+      unreachable: i18n.t("stats:errors.serverUnreachable")
     }
-
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: "GET",
-      headers
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("stats:errors.fetchFailed"));
-      throw new StatsApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
-    }
-
-    return (data ?? {}) as TResponse;
-  } catch (error) {
-    if (error instanceof StatsApiError) {
-      throw error;
-    }
-
-    throw new StatsApiError("transient", i18n.t("stats:errors.serverUnreachable"));
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) {
-    return payload;
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const candidate = payload as { message?: unknown; error?: unknown };
-  if (typeof candidate.message === "string" && candidate.message.trim()) {
-    return candidate.message;
-  }
-
-  if (typeof candidate.error === "string" && candidate.error.trim()) {
-    return candidate.error;
-  }
-
-  return fallback;
+  });
 }

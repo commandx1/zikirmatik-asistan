@@ -70,7 +70,7 @@ async function applyNotificationSettings(
 
   await Promise.all([
     userId
-      ? saveUserPreferences(userId, { dailyReminder: enabled, reminderTime }, accessToken)
+      ? saveUserPreferences(userId, { dailyReminder: enabled, reminderTime })
       : Promise.resolve(),
     updateDevicePrefs({ specialDays: enabled, friday: enabled }, accessToken)
   ]);

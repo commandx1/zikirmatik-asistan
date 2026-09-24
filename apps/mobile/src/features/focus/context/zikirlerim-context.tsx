@@ -95,7 +95,6 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const lastSavedBackendLog = useDhikrStore((state) => state.lastSavedBackendLog);
   const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
-  const sessionAccessToken = useAuthStore((state) => state.session?.accessToken);
   const [logs, setLogs] = useState<BackendDhikrLog[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [deletingDhikrId, setDeletingDhikrId] = useState("");
@@ -116,14 +115,13 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       const nextLogs = await listDhikrLogsByUser(
         sessionUserId,
         undefined,
-        undefined,
-        sessionAccessToken
+        undefined
       );
       setLogs(nextLogs);
     } catch {
       setLogs([]);
     }
-  }, [authStatus, sessionAccessToken, sessionUserId]);
+  }, [authStatus, sessionUserId]);
 
   useEffect(() => {
     if (authStatus !== "authenticated" || !sessionUserId || !lastSavedBackendLog) {
@@ -170,8 +168,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     void listDhikrLogsByUser(
       sessionUserId,
       undefined,
-      undefined,
-      sessionAccessToken
+      undefined
     )
       .then((nextLogs) => {
         if (isCancelled) {
@@ -189,7 +186,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, sessionAccessToken, sessionUserId]);
+  }, [authStatus, sessionUserId]);
 
   const refresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -345,16 +342,12 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
       try {
         if (authStatus === "authenticated" && sessionUserId) {
-          await updateUserDhikrByClientId(
-            editingDhikr.id,
-            {
-              name: trimmedName,
-              transliteration: trimmedTransliteration || undefined,
-              meaning: trimmedMeaning || undefined,
-              target: nextTarget
-            },
-            sessionAccessToken
-          );
+          await updateUserDhikrByClientId(editingDhikr.id, {
+            name: trimmedName,
+            transliteration: trimmedTransliteration || undefined,
+            meaning: trimmedMeaning || undefined,
+            target: nextTarget
+          });
         }
 
         setEditingDhikrId("");
@@ -376,7 +369,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
         setIsUpdatingDhikr(false);
       }
     },
-    [authStatus, editingDhikr, isUpdatingDhikr, locale, sessionAccessToken, sessionUserId, t, upsertPersonalDhikr]
+    [authStatus, editingDhikr, isUpdatingDhikr, locale, sessionUserId, t, upsertPersonalDhikr]
   );
 
   const selectDhikrImmediately = useCallback(
@@ -452,7 +445,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     setUnsavedTransitionError(null);
     setSyncError(undefined);
     try {
-      const savedLog = await createDhikrLog(payload, sessionAccessToken);
+      const savedLog = await createDhikrLog(payload);
       applySavedBackendLog(savedLog);
       return true;
     } catch (error: unknown) {
@@ -469,7 +462,6 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     dhikrDisplayName,
     items,
     selectedDhikrId,
-    sessionAccessToken,
     sessionUserId,
     setSyncError,
     t
@@ -593,16 +585,11 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
       const favoriteRequest =
         contextItem.source === "personal"
-          ? updateUserDhikrByClientId(
-              id,
-              { isFavorite: nextFavorite },
-              sessionAccessToken
-            )
+          ? updateUserDhikrByClientId(id, { isFavorite: nextFavorite })
           : setDhikrFavoriteByKey(
               isObjectIdLike(id)
                 ? { dhikrId: id, isFavorite: nextFavorite }
-                : { customDhikrId: id, isFavorite: nextFavorite },
-              sessionAccessToken
+                : { customDhikrId: id, isFavorite: nextFavorite }
             );
 
       void favoriteRequest.catch(() => {
@@ -633,16 +620,13 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       try {
         if (authStatus === "authenticated" && sessionUserId) {
           if (item.source === "personal") {
-            await deleteUserDhikrByClientId(item.id, sessionAccessToken);
+            await deleteUserDhikrByClientId(item.id);
           }
 
           const deletePayload = isObjectIdLike(item.id)
             ? { dhikrId: item.id }
             : { customDhikrId: item.id };
-          await deleteDhikrLogsByKey(
-            deletePayload,
-            sessionAccessToken
-          );
+          await deleteDhikrLogsByKey(deletePayload);
         }
 
         setLogs((prev) => prev.filter((log) => resolveLogDhikrKey(log) !== item.id));

@@ -1,5 +1,5 @@
 import { i18n } from "../../../i18n";
-import { API_BASE_URL } from "../../../lib/env";
+import { ApiError, request } from "../../../lib/http/client";
 
 type SubscriptionProvider = "apple" | "google";
 type SubscriptionStatus = "active" | "expired" | "cancelled";
@@ -20,111 +20,31 @@ export type SyncSubscriptionPayload = {
   provider?: SubscriptionProvider;
 };
 
-export class SubscriptionsApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number
-  ) {
-    super(message);
-    this.name = "SubscriptionsApiError";
-  }
-}
+export const SubscriptionsApiError = ApiError;
+export type SubscriptionsApiError = ApiError;
 
-export async function createSubscription(payload: CreateSubscriptionPayload, accessToken?: string) {
-  return requestJson("/v1/subscriptions", {
+const errors = () => ({
+  failed: i18n.t("subscriptions:errors.requestFailed"),
+  unreachable: i18n.t("subscriptions:errors.serverUnreachable")
+});
+
+export async function createSubscription(payload: CreateSubscriptionPayload) {
+  return request<unknown>("/v1/subscriptions", {
     method: "POST",
     body: payload,
-    accessToken
+    auth: true,
+    errors: errors()
   });
 }
 
 export async function syncSubscriptionForUser(
   userId: string,
-  accessToken?: string,
   payload: SyncSubscriptionPayload = {}
 ): Promise<{ userId: string; isPremium: boolean }> {
-  return requestJson(`/v1/subscriptions/sync-user/${userId}`, {
+  return request(`/v1/subscriptions/sync-user/${userId}`, {
     method: "POST",
     body: payload,
-    accessToken
+    auth: true,
+    errors: errors()
   });
-}
-
-async function requestJson<TResponse>(
-  path: string,
-  options: { method: "POST"; body: unknown; accessToken?: string }
-): Promise<TResponse> {
-  try {
-    const headers: Record<string, string> = {
-      "content-type": "application/json"
-    };
-    if (options.accessToken?.trim()) {
-      headers.authorization = `Bearer ${options.accessToken.trim()}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: options.method,
-      headers,
-      body: JSON.stringify(options.body)
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("subscriptions:errors.requestFailed"));
-      throw new SubscriptionsApiError(response.status >= 500 ? "transient" : "terminal", message, response.status);
-    }
-
-    return (data ?? {}) as TResponse;
-  } catch (error) {
-    if (error instanceof SubscriptionsApiError) {
-      throw error;
-    }
-
-    throw new SubscriptionsApiError("transient", i18n.t("subscriptions:errors.serverUnreachable"));
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) {
-    return payload;
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const candidate = payload as { message?: unknown; error?: unknown };
-  if (typeof candidate.message === "string" && candidate.message.trim()) {
-    return candidate.message;
-  }
-
-  if (typeof candidate.error === "string" && candidate.error.trim()) {
-    return candidate.error;
-  }
-
-  return fallback;
 }

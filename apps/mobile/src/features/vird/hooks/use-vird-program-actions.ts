@@ -49,7 +49,7 @@ export function useVirdProgramActions() {
       try {
         let merged: VirdProgramLocal;
         if (isServerBacked(program)) {
-          const server = await updateVirdProgram(program.id, { status: "paused" }, accessToken as string);
+          const server = await updateVirdProgram(program.id, { status: "paused" });
           merged = toLocalVirdProgram(server, program);
         } else {
           merged = { ...program, status: "paused", updatedAt: nowIso() };
@@ -75,7 +75,7 @@ export function useVirdProgramActions() {
     async (program: VirdProgramLocal): Promise<VirdActionResult> => {
       try {
         if (isServerBacked(program)) {
-          await deleteVirdProgram(program.id, accessToken as string);
+          await deleteVirdProgram(program.id);
         }
         removeProgram(program.id);
         return { ok: true, program };
@@ -97,7 +97,7 @@ export function useVirdProgramActions() {
 
       if (isServerBacked(program)) {
         try {
-          const server = await activateVirdProgram(program.id, accessToken as string);
+          const server = await activateVirdProgram(program.id);
           const merged = toLocalVirdProgram(server, program);
           upsertProgram(merged);
           setActiveProgram(merged.id);

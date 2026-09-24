@@ -65,7 +65,6 @@ export function AiGuideScreen() {
   const applySavedBackendLog = useDhikrStore(s => s.applySavedBackendLog);
   const authStatus = useAuthStore(s => s.status);
   const sessionUserId = useAuthStore(s => s.session?.userId);
-  const sessionAccessToken = useAuthStore(s => s.session?.accessToken);
   const scrollRef = useRef<ScrollView>(null);
   const loadingSectionY = useRef(0);
   const [isDailyEsmaOpen, setDailyEsmaOpen] = useState(false);
@@ -132,8 +131,7 @@ export function AiGuideScreen() {
       const savedLog = await createDhikrLog(
         isObjectId
           ? { userId: sessionUserId, dhikrId: selectedDhikr.id, count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted, isFavorite: selectedDhikr.isFavorite }
-          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: resolveLocalizedText(selectedDhikr.name, locale) || resolveLocalizedText(selectedDhikr.transliteration, locale), count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite },
-        sessionAccessToken
+          : { userId: sessionUserId, customDhikrId: selectedDhikr.id, customDhikrName: resolveLocalizedText(selectedDhikr.name, locale) || resolveLocalizedText(selectedDhikr.transliteration, locale), count: safeCount, targetCount: selectedDhikr.target, date: dateKey, ...aiCtx, isCompleted: false, isFavorite: selectedDhikr.isFavorite }
       );
       applySavedBackendLog(savedLog);
       setPendingRecommendation(null);

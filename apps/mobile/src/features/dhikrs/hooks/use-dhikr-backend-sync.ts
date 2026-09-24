@@ -76,7 +76,6 @@ export function indexLatestDhikrLogs(logs: BackendDhikrLog[]): {
 export function useDhikrBackendSync() {
   const authStatus = useAuthStore((s) => s.status);
   const sessionUserId = useAuthStore((s) => s.session?.userId);
-  const sessionAccessToken = useAuthStore((s) => s.session?.accessToken);
   const hydrateReadyItems = useDhikrStore((s) => s.hydrateReadyItems);
   const hydratePersonalItems = useDhikrStore((s) => s.hydratePersonalItems);
   const setSyncError = useDhikrStore((s) => s.setSyncError);
@@ -99,16 +98,11 @@ export function useDhikrBackendSync() {
 
         const [dhikrs, personalDhikrs, aiRecommendations] = await Promise.all([
           listVerifiedActiveDhikrs(),
-          listUserDhikrs(sessionAccessToken),
-          sessionUserId ? listAiRecommendations(sessionAccessToken).catch(() => []) : Promise.resolve([])
+          listUserDhikrs(),
+          sessionUserId ? listAiRecommendations().catch(() => []) : Promise.resolve([])
         ]);
         const logs = sessionUserId
-          ? await listDhikrLogsByUser(
-              sessionUserId,
-              undefined,
-              undefined,
-              sessionAccessToken
-            )
+          ? await listDhikrLogsByUser(sessionUserId, undefined, undefined)
           : [];
 
         const assistantNoteByRecommendationId = new Map(
@@ -178,7 +172,7 @@ export function useDhikrBackendSync() {
     return () => {
       isCancelled = true;
     };
-  }, [authStatus, hydratePersonalItems, hydrateReadyItems, isMigrationBlocking, sessionAccessToken, sessionUserId, setSyncError]);
+  }, [authStatus, hydratePersonalItems, hydrateReadyItems, isMigrationBlocking, sessionUserId, setSyncError]);
 }
 
 function toLastActivityLabel(createdAt: string) {

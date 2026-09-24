@@ -80,7 +80,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
       return;
     }
     try {
-      const fresh = await fetchCircle(id, sessionAccessToken, todayKey);
+      const fresh = await fetchCircle(id, todayKey);
       setDetail(fresh);
       // Store artık monoton (upsertCircle geri düşürmez) — halka ekranları
       // arası tutarlılık için burada da yazılır.
@@ -122,8 +122,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
     lastFlushedRef.current = count;
     try {
       const response = await createDhikrLog(
-        buildCircleLogPayload({ userId: sessionUserId, circle: { id: detail.id, dhikrId: detail.dhikrId, goalCount: detail.goalCount }, count, date: todayKey }),
-        sessionAccessToken
+        buildCircleLogPayload({ userId: sessionUserId, circle: { id: detail.id, dhikrId: detail.dhikrId, goalCount: detail.goalCount }, count, date: todayKey })
       );
       if (typeof response.circleTotalCount === "number") {
         // mine = sunucunun $max sonrası GERÇEK log sayısı (başka cihaz daha

@@ -307,8 +307,8 @@ export async function runGuestMigration(
 ): Promise<GuestMigrationPlan> {
   const [verifiedDhikrs, userDhikrs, logs, existingVirdPrograms] = await Promise.all([
     listVerifiedActiveDhikrs(),
-    listUserDhikrs(session.accessToken),
-    listDhikrLogsByUser(session.userId, undefined, undefined, session.accessToken),
+    listUserDhikrs(),
+    listDhikrLogsByUser(session.userId),
     // Vird programları JwtAuthGuard (zorunlu token) arkasındadır; token
     // yoksa (olağandışı) boş listeyle devam et — bu, aşağıdaki vird
     // adımlarının 409-fallback'i üzerinden zaten idempotent olduğundan
@@ -316,7 +316,7 @@ export async function runGuestMigration(
     // kaybına değil. Bir servis kesintisi de aynı şekilde (dhikr
     // migrasyonunu bloklamadan) boş listeye düşer.
     session.accessToken
-      ? fetchVirdPrograms(session.accessToken).catch(() => [] as VirdProgram[])
+      ? fetchVirdPrograms().catch(() => [] as VirdProgram[])
       : Promise.resolve([] as VirdProgram[])
   ]);
 
@@ -324,7 +324,7 @@ export async function runGuestMigration(
 
   for (const payload of plan.createUserDhikrs) {
     try {
-      await createUserDhikr(payload, session.accessToken);
+      await createUserDhikr(payload);
     } catch (error) {
       if (isTerminalConflict(error)) {
         continue; // already exists — union semantics
@@ -334,17 +334,16 @@ export async function runGuestMigration(
   }
 
   for (const payload of plan.createLogs) {
-    await createDhikrLog({ ...payload, userId: session.userId }, session.accessToken);
+    await createDhikrLog({ ...payload, userId: session.userId });
   }
 
   for (const update of plan.favoriteUpdates) {
-    await setDhikrFavoriteByKey(update, session.accessToken);
+    await setDhikrFavoriteByKey(update);
   }
 
   // Vird programları + son 30 günlük ilerlemesi. Vird uçları accessToken
   // ZORUNLU (JwtAuthGuard) olduğundan token yoksa bu adım tamamen atlanır.
   if (session.accessToken) {
-    const accessToken = session.accessToken;
     // clientId -> sunucu _id eşlemesi. ÖNCE zaten var olan (bu göçten önce
     // sunucuya senkronize edilmiş — bkz. existingVirdPrograms) programlarla
     // tohumlanır: aksi halde createVirdPrograms'ta ATLANAN (zaten var
@@ -358,7 +357,7 @@ export async function runGuestMigration(
     }
 
     for (const item of plan.createVirdPrograms) {
-      const serverProgram = await pushLocalVirdProgram(item.program, accessToken, { activate: item.shouldActivate });
+      const serverProgram = await pushLocalVirdProgram(item.program, { activate: item.shouldActivate });
       clientIdToServerId.set(item.program.clientId, serverProgram.id);
     }
 
@@ -369,7 +368,7 @@ export async function runGuestMigration(
         // kaybı yerine bu tek girdiyi atla, geri kalan göçü bloklama.
         continue;
       }
-      await createDhikrLog({ ...item.payload, userId: session.userId, virdProgramId }, accessToken);
+      await createDhikrLog({ ...item.payload, userId: session.userId, virdProgramId });
     }
   }
 

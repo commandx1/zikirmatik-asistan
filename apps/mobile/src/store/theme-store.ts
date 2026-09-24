@@ -65,7 +65,7 @@ function syncUserAppearance(payload: { theme?: string; fontFamily?: AppFontFamil
     return;
   }
 
-  void saveUserPreferences(auth.session.userId, payload, auth.session.accessToken).catch(() => {
+  void saveUserPreferences(auth.session.userId, payload).catch(() => {
     // Non-blocking best-effort sync; local preference remains source of truth.
   });
 }

@@ -206,7 +206,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
   const authDisplayName = useAuthStore(state => state.session?.displayName)
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
-  const sessionAccessToken = useAuthStore(state => state.session?.accessToken)
   const storedHapticsPattern = useProfileStore(state => state.hapticsPattern)
   const storedHapticsEnabled = useProfileStore(state => state.hapticsEnabled)
   const hapticsPattern = resolveHapticsPattern(storedHapticsPattern, storedHapticsEnabled)
@@ -314,13 +313,13 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const streak = await getUserStreak(sessionUserId, sessionAccessToken)
+      const streak = await getUserStreak(sessionUserId)
       setStreakDays(streak.currentStreak)
       void cacheServerStreak(streak.currentStreak, streak.lastActiveDate)
     } catch {
       // Keep the existing streak value when network is unavailable.
     }
-  }, [authStatus, sessionAccessToken, sessionUserId])
+  }, [authStatus, sessionUserId])
 
   useEffect(() => {
     if (!selectedDhikr) {
@@ -598,12 +597,9 @@ export function HomeProvider({ children }: { children: ReactNode }) {
             isFavorite: selectedDhikr.isFavorite
           }
       try {
-        const savedLog = await createDhikrLog(
-          {
-            ...payload
-          },
-          sessionAccessToken
-        )
+        const savedLog = await createDhikrLog({
+          ...payload
+        })
         applySavedBackendLog(savedLog)
         setSelectedSource(undefined)
         return true
@@ -1015,15 +1011,12 @@ export function HomeProvider({ children }: { children: ReactNode }) {
           target: Number.isNaN(parsedTarget) ? 33 : parsedTarget
         })
         if (authStatus === 'authenticated') {
-          void createUserDhikr(
-            {
-              clientId: createdId,
-              name: trimmed,
-              transliteration: createArabicDraft.trim() || undefined,
-              target: Number.isNaN(parsedTarget) ? 33 : parsedTarget
-            },
-            sessionAccessToken
-          ).catch(() => {
+          void createUserDhikr({
+            clientId: createdId,
+            name: trimmed,
+            transliteration: createArabicDraft.trim() || undefined,
+            target: Number.isNaN(parsedTarget) ? 33 : parsedTarget
+          }).catch(() => {
             setSyncError(t('home:errors.dhikrSyncFailed'))
           })
         }
@@ -1086,30 +1079,24 @@ export function HomeProvider({ children }: { children: ReactNode }) {
 
         setIsSavingLog(true)
         setSyncError(undefined)
-        void createUserDhikr(
-          {
-            clientId: createdId,
-            name: trimmed,
-            transliteration: freeSaveTransliterationDraft.trim() || undefined,
-            meaning: freeSaveMeaningDraft.trim() || undefined,
-            target: targetToSave
-          },
-          sessionAccessToken
-        )
+        void createUserDhikr({
+          clientId: createdId,
+          name: trimmed,
+          transliteration: freeSaveTransliterationDraft.trim() || undefined,
+          meaning: freeSaveMeaningDraft.trim() || undefined,
+          target: targetToSave
+        })
           .then(() =>
-            createDhikrLog(
-              {
-                userId: sessionUserId,
-                customDhikrId: createdId,
-                customDhikrName: trimmed,
-                count: countToSave,
-                targetCount: targetToSave,
-                date: toDateKey(new Date()),
-                source: 'manual',
-                isCompleted: targetToSave > 0 && countToSave >= targetToSave
-              },
-              sessionAccessToken
-            )
+            createDhikrLog({
+              userId: sessionUserId,
+              customDhikrId: createdId,
+              customDhikrName: trimmed,
+              count: countToSave,
+              targetCount: targetToSave,
+              date: toDateKey(new Date()),
+              source: 'manual',
+              isCompleted: targetToSave > 0 && countToSave >= targetToSave
+            })
           )
           .then(savedLog => {
             applySavedBackendLog(savedLog)
@@ -1226,7 +1213,6 @@ export function HomeProvider({ children }: { children: ReactNode }) {
     selectedDhikrId,
     selectedDhikr,
     sessionUserId,
-    sessionAccessToken,
     setSyncError,
     streakDays,
     authDisplayName,

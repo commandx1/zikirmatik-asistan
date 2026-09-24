@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import type { VirdTemplateSummary } from "@zikirmatik/shared";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
-import { useAuthStore } from "../../../store/auth-store";
 import { fetchVirdTemplates } from "../services/vird-api-client";
 
 // collections/screen.tsx'in "all" sayfasının üstünde (ListHeaderComponent
@@ -19,7 +18,6 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
   const locale = (i18n.language === "en" ? "en" : "tr") as "tr" | "en";
   const { tokens } = useThemeTokens();
   const router = useRouter();
-  const sessionAccessToken = useAuthStore((state) => state.session?.accessToken);
 
   const [templates, setTemplates] = useState<VirdTemplateSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +28,7 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
     setIsLoading(true);
     setError(undefined);
 
-    fetchVirdTemplates(sessionAccessToken)
+    fetchVirdTemplates()
       .then((data) => {
         if (!isCancelled) {
           setTemplates(data);
@@ -50,7 +48,7 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
     return () => {
       isCancelled = true;
     };
-  }, [sessionAccessToken, t]);
+  }, [t]);
 
   if (!isLoading && !error && templates.length === 0) {
     return null;

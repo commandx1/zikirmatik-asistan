@@ -21,7 +21,7 @@ describe("fetchCircle", () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, text: async () => JSON.stringify({ data: {} }) });
     vi.stubGlobal("fetch", fetchMock);
 
-    await fetchCircle("c1", "token", "2026-09-19");
+    await fetchCircle("c1", "2026-09-19");
 
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/v1/circles/c1?date=2026-09-19"), expect.anything());
     vi.unstubAllGlobals();
@@ -31,7 +31,7 @@ describe("fetchCircle", () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, text: async () => JSON.stringify({ data: {} }) });
     vi.stubGlobal("fetch", fetchMock);
 
-    await fetchCircle("c1", "token");
+    await fetchCircle("c1");
 
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/v1/circles/c1"), expect.anything());
     expect(fetchMock.mock.calls[0][0]).not.toContain("?date=");

@@ -7,20 +7,27 @@ import { i18n } from "../../../i18n";
 import { AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
 import type { AiSourceCitation, ChatConversationSummary, ChatMessageRaw, ChatMode, ChatCoverage } from "../types";
 import { API_BASE_URL } from "../../../lib/env";
+import { ApiError, errorFromBody, request, safeParseJson } from "../../../lib/http/client";
 
 export const AI_CREDIT_INSUFFICIENT_CODE = "AI_CREDIT_INSUFFICIENT";
 export { AI_UNAVAILABLE_CODE };
 
-export class AiChatApiError extends Error {
-  constructor(
-    public readonly kind: "transient" | "terminal",
-    message: string,
-    public readonly status?: number,
-    public readonly code?: string
-  ) {
-    super(message);
-    this.name = "AiChatApiError";
-  }
+export const AiChatApiError = ApiError;
+export type AiChatApiError = ApiError;
+
+const errors = () => ({
+  failed: i18n.t("ai-chat:errors.serviceUnavailable"),
+  unreachable: i18n.t("ai-chat:errors.serviceUnreachable")
+});
+
+function options(method: "GET" | "POST", body?: unknown) {
+  return {
+    method,
+    body,
+    auth: true as const,
+    headers: { "accept-language": i18n.language },
+    errors: errors()
+  };
 }
 
 export type CreateConversationPayload = {
@@ -60,28 +67,18 @@ export type PaginatedResponse<T> = {
 };
 
 export async function createChatConversation(
-  payload: CreateConversationPayload,
-  accessToken?: string
+  payload: CreateConversationPayload
 ): Promise<CreateConversationResponse> {
-  return requestJson<CreateConversationResponse>("/v1/ai/chat/conversations", {
-    method: "POST",
-    body: payload,
-    accessToken
-  });
+  return request<CreateConversationResponse>("/v1/ai/chat/conversations", options("POST", payload));
 }
 
 export async function sendChatMessage(
   conversationId: string,
-  payload: SendMessagePayload,
-  accessToken?: string
+  payload: SendMessagePayload
 ): Promise<SendMessageResponse> {
-  return requestJson<SendMessageResponse>(
+  return request<SendMessageResponse>(
     `/v1/ai/chat/conversations/${conversationId}/messages`,
-    {
-      method: "POST",
-      body: payload,
-      accessToken
-    }
+    options("POST", payload)
   );
 }
 
@@ -151,6 +148,10 @@ export async function streamChatMessage(
   );
 }
 
+// PRESERVED DEVIATION: SSE responses cannot go through request() — expo/fetch's
+// streaming Response.body (ReadableStream) must be read incrementally with a
+// manual reader loop, so this function (and its private JSON helpers below)
+// keeps its own fetch call and error parsing instead of using request().
 async function consumeChatSse(
   path: string,
   body: unknown,
@@ -184,11 +185,7 @@ async function consumeChatSse(
 
   if (!response.ok || !response.body) {
     const rawResponse = await response.text().catch(() => "");
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-    const message = extractErrorMessage(data, i18n.t("ai-chat:errors.serviceUnavailable"));
-    const code = extractErrorCode(data);
-    throw new AiChatApiError(response.status >= 500 ? "transient" : "terminal", message, response.status, code);
+    throw errorFromBody(response.status, rawResponse, i18n.t("ai-chat:errors.serviceUnavailable"));
   }
 
   const reader = response.body.getReader();
@@ -269,109 +266,21 @@ function processSseEvent(rawEvent: string, handlers: ChatStreamHandlers) {
 
 export async function listChatConversations(
   page = 1,
-  limit = 20,
-  accessToken?: string
+  limit = 20
 ): Promise<PaginatedResponse<ChatConversationSummary>> {
-  return requestJson<PaginatedResponse<ChatConversationSummary>>(
+  return request<PaginatedResponse<ChatConversationSummary>>(
     `/v1/ai/chat/conversations?page=${page}&limit=${limit}`,
-    { method: "GET", accessToken }
+    options("GET")
   );
 }
 
 export async function listChatMessages(
   conversationId: string,
   page = 1,
-  limit = 20,
-  accessToken?: string
+  limit = 20
 ): Promise<PaginatedResponse<ChatMessageRaw>> {
-  return requestJson<PaginatedResponse<ChatMessageRaw>>(
+  return request<PaginatedResponse<ChatMessageRaw>>(
     `/v1/ai/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`,
-    { method: "GET", accessToken }
+    options("GET")
   );
-}
-
-async function requestJson<TResponse>(
-  path: string,
-  options: { method: "GET" | "POST" | "PATCH"; body?: unknown; accessToken?: string }
-): Promise<TResponse> {
-  try {
-    const headers: Record<string, string> = {
-      "content-type": "application/json",
-      "accept-language": i18n.language
-    };
-    if (options.accessToken?.trim()) {
-      headers.authorization = `Bearer ${options.accessToken.trim()}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method: options.method,
-      headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body)
-    });
-
-    const rawResponse = await response.text();
-    const parsed = safeParseJson(rawResponse);
-    const data = unwrapDataEnvelope(parsed);
-
-    if (!response.ok) {
-      const message = extractErrorMessage(data, i18n.t("ai-chat:errors.serviceUnavailable"));
-      const code = extractErrorCode(data);
-      throw new AiChatApiError(response.status >= 500 ? "transient" : "terminal", message, response.status, code);
-    }
-
-    return (data ?? {}) as TResponse;
-  } catch (error) {
-    if (error instanceof AiChatApiError) {
-      throw error;
-    }
-
-    throw new AiChatApiError("transient", i18n.t("ai-chat:errors.serviceUnreachable"));
-  }
-}
-
-function safeParseJson(payload: string): unknown {
-  if (!payload) {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return payload;
-  }
-}
-
-function unwrapDataEnvelope(payload: unknown) {
-  if (!payload || typeof payload !== "object" || !("data" in payload)) {
-    return payload;
-  }
-
-  return (payload as { data: unknown }).data;
-}
-
-function extractErrorCode(payload: unknown): string | undefined {
-  if (!payload || typeof payload !== "object") return undefined;
-  const candidate = payload as { code?: unknown };
-  return typeof candidate.code === "string" ? candidate.code : undefined;
-}
-
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (typeof payload === "string" && payload.trim()) {
-    return payload;
-  }
-
-  if (!payload || typeof payload !== "object") {
-    return fallback;
-  }
-
-  const candidate = payload as { message?: unknown; error?: unknown };
-  if (typeof candidate.message === "string" && candidate.message.trim()) {
-    return candidate.message;
-  }
-
-  if (typeof candidate.error === "string" && candidate.error.trim()) {
-    return candidate.error;
-  }
-
-  return fallback;
 }

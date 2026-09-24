@@ -175,7 +175,7 @@ describe("pushLocalVirdProgram", () => {
     fetchVirdPrograms.mockReset();
     activateVirdProgram.mockReset();
 
-    const result = await pushLocalVirdProgram(makeLocalProgram(), "token-1");
+    const result = await pushLocalVirdProgram(makeLocalProgram());
 
     expect(result.id).toBe("server-1");
     expect(fetchVirdPrograms).not.toHaveBeenCalled();
@@ -187,7 +187,7 @@ describe("pushLocalVirdProgram", () => {
     fetchVirdPrograms.mockReset().mockResolvedValue([makeServerProgram({ id: "server-2", clientId: "client-1" })]);
     activateVirdProgram.mockReset();
 
-    const result = await pushLocalVirdProgram(makeLocalProgram(), "token-1");
+    const result = await pushLocalVirdProgram(makeLocalProgram());
 
     expect(result.id).toBe("server-2");
     expect(activateVirdProgram).not.toHaveBeenCalled();
@@ -197,7 +197,7 @@ describe("pushLocalVirdProgram", () => {
     createVirdProgram.mockReset().mockRejectedValue(new VirdApiError("terminal", "bad request", 400));
     fetchVirdPrograms.mockReset();
 
-    await expect(pushLocalVirdProgram(makeLocalProgram(), "token-1")).rejects.toThrow("bad request");
+    await expect(pushLocalVirdProgram(makeLocalProgram())).rejects.toThrow("bad request");
     expect(fetchVirdPrograms).not.toHaveBeenCalled();
   });
 
@@ -205,7 +205,7 @@ describe("pushLocalVirdProgram", () => {
     createVirdProgram.mockReset().mockRejectedValue(new VirdApiError("transient", "network down"));
     fetchVirdPrograms.mockReset();
 
-    await expect(pushLocalVirdProgram(makeLocalProgram(), "token-1")).rejects.toThrow("network down");
+    await expect(pushLocalVirdProgram(makeLocalProgram())).rejects.toThrow("network down");
     expect(fetchVirdPrograms).not.toHaveBeenCalled();
   });
 
@@ -213,16 +213,16 @@ describe("pushLocalVirdProgram", () => {
     createVirdProgram.mockReset().mockRejectedValue(new VirdApiError("terminal", "conflict", 409));
     fetchVirdPrograms.mockReset().mockResolvedValue([]);
 
-    await expect(pushLocalVirdProgram(makeLocalProgram(), "token-1")).rejects.toThrow("conflict");
+    await expect(pushLocalVirdProgram(makeLocalProgram())).rejects.toThrow("conflict");
   });
 
   it("activates the program when requested and it is not already active", async () => {
     createVirdProgram.mockReset().mockResolvedValue(makeServerProgram({ status: "draft" }));
     activateVirdProgram.mockReset().mockResolvedValue(makeServerProgram({ status: "active" }));
 
-    const result = await pushLocalVirdProgram(makeLocalProgram(), "token-1", { activate: true });
+    const result = await pushLocalVirdProgram(makeLocalProgram(), { activate: true });
 
-    expect(activateVirdProgram).toHaveBeenCalledWith("server-1", "token-1");
+    expect(activateVirdProgram).toHaveBeenCalledWith("server-1");
     expect(result.status).toBe("active");
   });
 
@@ -230,7 +230,7 @@ describe("pushLocalVirdProgram", () => {
     createVirdProgram.mockReset().mockResolvedValue(makeServerProgram({ status: "active" }));
     activateVirdProgram.mockReset();
 
-    await pushLocalVirdProgram(makeLocalProgram(), "token-1", { activate: true });
+    await pushLocalVirdProgram(makeLocalProgram(), { activate: true });
 
     expect(activateVirdProgram).not.toHaveBeenCalled();
   });

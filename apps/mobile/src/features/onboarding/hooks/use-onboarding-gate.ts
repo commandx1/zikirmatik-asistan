@@ -24,7 +24,7 @@ export function useOnboardingGate() {
 
     let cancelled = false;
 
-    void getUserById(session.userId, session.accessToken)
+    void getUserById(session.userId)
       .then((user) => {
         if (cancelled) {
           return;
@@ -46,7 +46,6 @@ export function useOnboardingGate() {
     authHydrated,
     authStatus,
     onboardingHydrated,
-    session?.accessToken,
     session?.userId
   ]);
 

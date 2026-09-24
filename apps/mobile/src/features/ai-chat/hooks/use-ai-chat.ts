@@ -31,32 +31,6 @@ type AiUnavailableState = {
   message: string;
 };
 
-/**
- * AI API çağrısını çalıştırır; 401 alınırsa oturumu bir kez yenileyip
- * taze access token ile isteği tekrar dener. use-ai-guide.ts'teki
- * callWithAuthRetry ile aynı desen.
- */
-async function callWithAuthRetry<T>(call: (accessToken?: string) => Promise<T>): Promise<T> {
-  const initialToken = useAuthStore.getState().session?.accessToken;
-
-  try {
-    return await call(initialToken);
-  } catch (error) {
-    if (!(error instanceof AiChatApiError) || error.status !== 401) {
-      throw error;
-    }
-
-    await useAuthStore.getState().refreshAuthenticatedSession();
-
-    const refreshedToken = useAuthStore.getState().session?.accessToken;
-    if (!refreshedToken || refreshedToken === initialToken) {
-      throw error;
-    }
-
-    return call(refreshedToken);
-  }
-}
-
 export function useAiChat(onOpenPremiumSheet?: () => void) {
   const { t } = useTranslation("ai-chat");
   const authStatus = useAuthStore((s) => s.status);
@@ -100,13 +74,13 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
     }
 
     try {
-      const credits = await callWithAuthRetry((token) => getAiCredits(token));
+      const credits = await getAiCredits();
       setCreditBalance(Math.max(0, Math.floor(credits.balance)));
       setCreditsConfirmed(true);
       return { balance: credits.balance, isPremium: credits.isPremium };
     } catch {
       try {
-        const quota = await callWithAuthRetry((token) => getAiDailyQuota(token));
+        const quota = await getAiDailyQuota();
         const fallbackBalance = quota.isPremium
           ? Number.MAX_SAFE_INTEGER
           : Math.max(0, (quota.limit ?? 1) - quota.used);
@@ -145,7 +119,7 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
 
     setIsConversationsLoading(true);
     try {
-      const response = await callWithAuthRetry((token) => listChatConversations(1, 20, token));
+      const response = await listChatConversations(1, 20);
       setConversations(response.items);
     } catch {
       // sessizce yok say — sohbet ekranı geçmiş olmadan da çalışır
@@ -164,7 +138,7 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
       setError(undefined);
       setConversationId(id);
       try {
-        const response = await callWithAuthRetry((token) => listChatMessages(id, 1, 50, token));
+        const response = await listChatMessages(id, 1, 50);
         setMessages(response.items);
       } catch (err) {
         setError(err instanceof AiChatApiError ? err.message : t("ai-chat:errors.historyFailed"));
@@ -296,14 +270,11 @@ export function useAiChat(onOpenPremiumSheet?: () => void) {
           return;
         }
 
+        const accessToken = useAuthStore.getState().session?.accessToken;
         if (!activeConversationId) {
-          await callWithAuthRetry((token) =>
-            streamCreateConversation({ firstMessage: text, locale, socketId }, token, handlers, abortController.signal)
-          );
+          await streamCreateConversation({ firstMessage: text, locale, socketId }, accessToken, handlers, abortController.signal);
         } else {
-          await callWithAuthRetry((token) =>
-            streamChatMessage(activeConversationId, { message: text, socketId }, token, handlers, abortController.signal)
-          );
+          await streamChatMessage(activeConversationId, { message: text, socketId }, accessToken, handlers, abortController.signal);
         }
       } catch (err) {
         setMessages((prev) =>
