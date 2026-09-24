@@ -129,3 +129,15 @@ export function toActivatedAiVirdProgramLocal(server: VirdProgram, catalog: Back
   const base = toLocalVirdProgram(server);
   return { ...base, dhikrs: buildAiVirdDhikrSnapshots(server.phases, catalog) };
 }
+
+/**
+ * 403 VIRD_FREE_LIMIT_ACTIVE çakışmasında duraklatılacak programlar: sunucu
+ * `status: 'active'` olan HER programı sayar (tür fark etmez; bkz. apps/api
+ * vird-programs.service.ts activate), bu yüzden hedef dışındaki tüm aktifler.
+ */
+export function selectProgramsToPause<T extends Pick<VirdProgram, "id" | "status">>(
+  programs: readonly T[],
+  targetId: string
+): T[] {
+  return programs.filter((program) => program.status === "active" && program.id !== targetId);
+}

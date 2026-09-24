@@ -1,16 +1,16 @@
 // AI programının aktivasyonu (POST /v1/vird/programs/:id/activate) ve
 // 403 VIRD_FREE_LIMIT_ACTIVE çakışma akışı: mevcut aktifi duraklatıp tekrar
 // dene, vazgeç (taslak kalır) ya da premium'a geç.
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../../../store/auth-store";
 import { useVirdStore } from "../../../store/vird-store";
 import { trackEvent } from "../../../lib/analytics";
 import { fetchDhikrCatalog } from "../../dhikrs/services/dhikr-queries";
-import { activateVirdProgram, updateVirdProgram, VirdApiError } from "../services/vird-api-client";
+import { activateVirdProgram, fetchVirdPrograms, updateVirdProgram, VirdApiError } from "../services/vird-api-client";
 import { VIRD_ERROR_CODE, resolveVirdErrorMessage } from "../services/vird-error-codes";
 import { toLocalVirdProgram } from "../services/vird-sync";
-import { toActivatedAiVirdProgramLocal } from "../services/vird-ai-create-service";
+import { selectProgramsToPause, toActivatedAiVirdProgramLocal } from "../services/vird-ai-create-service";
 
 export function useVirdActivation(programId: string | undefined, onOpenPremiumSheet?: () => void) {
   const { t } = useTranslation("ai-guide");
@@ -19,13 +19,17 @@ export function useVirdActivation(programId: string | undefined, onOpenPremiumSh
   const [isActivating, setIsActivating] = useState(false);
   const [activationError, setActivationError] = useState<string>();
   const [activationConflict, setActivationConflict] = useState(false);
+  // Çakışma modalından premium sheet'e geçildi: modal kapanır, satın alma
+  // sonrası retryActivationAfterPremium aktivasyonu yalnız bu bayrakla tekrar dener.
+  const conflictRetryPendingRef = useRef(false);
 
   const performActivation = useCallback(
-    async (targetProgramId: string): Promise<boolean> => {
+    async (targetProgramId: string, options?: { conflictAsError?: boolean }): Promise<boolean> => {
       if (authStatus !== "authenticated") {
         return false;
       }
 
+      conflictRetryPendingRef.current = false;
       setIsActivating(true);
       setActivationError(undefined);
       setActivationConflict(false);
@@ -42,7 +46,13 @@ export function useVirdActivation(programId: string | undefined, onOpenPremiumSh
         void trackEvent("program_activated", { source: "ai" });
         return true;
       } catch (error) {
-        if (error instanceof VirdApiError && error.code === VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE) {
+        // Duraklatma turundan sonra hâlâ limit: modalı sonsuza dek yeniden
+        // açmak yerine hata gösterilir (aşağıdaki genel dal).
+        if (
+          error instanceof VirdApiError &&
+          error.code === VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE &&
+          !options?.conflictAsError
+        ) {
           setActivationConflict(true);
           return false;
         }
@@ -66,31 +76,37 @@ export function useVirdActivation(programId: string | undefined, onOpenPremiumSh
     return performActivation(programId);
   }, [isActivating, performActivation, programId]);
 
-  /** Çakışma çözümü: mevcut aktif programı duraklatıp yeni programı tekrar aktifleştirir. */
+  /**
+   * Çakışma çözümü: sunucudaki hedef dışı TÜM aktif programları sırayla
+   * duraklatıp yeni programı tekrar aktifleştirir. Liste sunucudan taze
+   * çekilir — yerel store yalnız activeProgramId'yi bilir; premium'dan
+   * düşen kullanıcının başka aktif programları kalmış olabilir.
+   */
   const resolveActivationConflictByPausingExisting = useCallback(async (): Promise<boolean> => {
     if (!programId || authStatus !== "authenticated") {
       return false;
     }
 
-    const currentActiveId = useVirdStore.getState().activeProgramId;
-    const currentActive = useVirdStore.getState().programs.find((program) => program.id === currentActiveId);
-
-    if (currentActive) {
-      try {
-        const paused = await updateVirdProgram(currentActive.id, { status: "paused" });
-        useVirdStore.getState().upsertProgram(toLocalVirdProgram(paused, currentActive));
-      } catch (error) {
-        setActivationError(
-          error instanceof VirdApiError ? error.message : t("ai-guide:virdProgram.errors.activationFailed")
-        );
-        return false;
+    try {
+      const toPause = selectProgramsToPause(await fetchVirdPrograms(), programId);
+      for (const server of toPause) {
+        const paused = await updateVirdProgram(server.id, { status: "paused" });
+        const previousLocal = useVirdStore.getState().programs.find((program) => program.id === server.id);
+        useVirdStore.getState().upsertProgram(toLocalVirdProgram(paused, previousLocal));
       }
+    } catch (error) {
+      setActivationError(
+        error instanceof VirdApiError ? error.message : t("ai-guide:virdProgram.errors.activationFailed")
+      );
+      return false;
     }
 
-    return performActivation(programId);
+    return performActivation(programId, { conflictAsError: true });
   }, [authStatus, performActivation, programId, t]);
 
   const openPremiumSheetForActivationConflict = useCallback(() => {
+    conflictRetryPendingRef.current = true;
+    setActivationConflict(false);
     onOpenPremiumSheet?.();
   }, [onOpenPremiumSheet]);
 
@@ -103,9 +119,9 @@ export function useVirdActivation(programId: string | undefined, onOpenPremiumSh
     setActivationConflict(false);
   }, []);
 
+  /** Yalnız çakışma modalından premium'a geçildiyse aktivasyonu tekrar dener. */
   const retryActivationAfterPremium = useCallback(async (): Promise<boolean> => {
-    setActivationConflict(false);
-    if (!programId) {
+    if (!conflictRetryPendingRef.current || !programId) {
       return false;
     }
     return performActivation(programId);
@@ -113,6 +129,7 @@ export function useVirdActivation(programId: string | undefined, onOpenPremiumSh
 
   /** Taslak atıldığında aktivasyon durumunu temizler. */
   const resetActivation = useCallback(() => {
+    conflictRetryPendingRef.current = false;
     setActivationConflict(false);
     setActivationError(undefined);
   }, []);

@@ -13,6 +13,7 @@ import {
   buildAiVirdDhikrSnapshots,
   buildCreateAiVirdProgramPayload,
   mapAiVirdCreateError,
+  selectProgramsToPause,
   toActivatedAiVirdProgramLocal
 } from "./vird-ai-create-service";
 import type { VirdPhase, VirdProgramLocal } from "../types";
@@ -186,5 +187,25 @@ describe("toActivatedAiVirdProgramLocal", () => {
     expect(local.origin).toBe("server");
     expect(local.clientId).toBe("program-1");
     expect(Object.keys(local.dhikrs)).toEqual(["dhikr-a"]);
+  });
+});
+
+describe("selectProgramsToPause", () => {
+  const p = (id: string, status: VirdProgram["status"]) => ({ id, status });
+
+  it("returns nothing when no other program is active", () => {
+    expect(selectProgramsToPause([p("target", "draft"), p("a", "paused"), p("b", "completed")], "target")).toEqual([]);
+  });
+
+  it("returns the single other active program", () => {
+    expect(selectProgramsToPause([p("target", "draft"), p("a", "active"), p("b", "paused")], "target")).toEqual([
+      p("a", "active")
+    ]);
+  });
+
+  it("returns every other active program and excludes the target", () => {
+    expect(
+      selectProgramsToPause([p("a", "active"), p("target", "active"), p("b", "active"), p("c", "draft")], "target")
+    ).toEqual([p("a", "active"), p("b", "active")]);
   });
 });

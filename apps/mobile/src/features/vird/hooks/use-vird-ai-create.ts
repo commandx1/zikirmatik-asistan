@@ -46,10 +46,9 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
       await resumeGenerateAfterCreditPurchase();
       return;
     }
-    if (activationConflict) {
-      await retryActivationAfterPremium();
-    }
-  }, [activationConflict, hasPendingGenerate, resumeGenerateAfterCreditPurchase, retryActivationAfterPremium]);
+    // Çakışma modalından premium'a geçilmediyse no-op (bayrak hook içinde).
+    await retryActivationAfterPremium();
+  }, [hasPendingGenerate, resumeGenerateAfterCreditPurchase, retryActivationAfterPremium]);
 
   return {
     // form
