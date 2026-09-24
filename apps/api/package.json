@@ -17,10 +17,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config ./test/jest-e2e.json --maxWorkers=2",
     "seed:dhikrs": "node scripts/seed-dhikrs.mjs",
     "seed:collections": "node scripts/seed-collections.mjs",
     "seed:vird-templates": "node scripts/seed-vird-templates.mjs",
+    "seed:e2e": "node scripts/e2e-seed.mjs",
     "seed:embeddings": "node scripts/backfill-dhikr-embeddings.mjs",
     "seed:special-days": "node scripts/seed-special-days.mjs",
     "seed:special-days:kurban-2026": "node scripts/seed-special-days.mjs --event kurban-bayrami-2026",
@@ -32,7 +33,11 @@
     "eval:chat": "ts-node -r tsconfig-paths/register scripts/eval/run-chat-eval.ts",
     "eval:retrieval": "ts-node -r tsconfig-paths/register scripts/eval/run-retrieval-eval.ts",
     "eval:vird": "ts-node -r tsconfig-paths/register scripts/eval/run-vird-eval.ts",
-    "test:scripts": "node --test scripts/lib/*.test.mjs"
+    "test:scripts": "node --test scripts/lib/*.test.mjs",
+    "test:load:smoke": "k6 run -e PROFILE=smoke -e SCENARIO=all load/run.js",
+    "test:load:load": "k6 run -e PROFILE=load -e SCENARIO=all load/run.js",
+    "test:load:spike": "k6 run -e PROFILE=spike -e SCENARIO=all load/run.js",
+    "test:load:circle": "node load/seed.mjs && k6 run -e PROFILE=smoke -e SCENARIO=circle load/run.js && node load/verify-circle.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.74",
@@ -93,9 +98,26 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.ts",
+      "!**/*.spec.ts",
+      "!main.ts",
+      "!app.setup.ts",
+      "!**/*.module.ts",
+      "!**/schemas/**",
+      "!**/dto/**",
+      "!**/testing/**",
+      "!**/eval/**",
+      "!**/*.types.ts",
+      "!**/*.constants.ts",
+      "!**/*.d.ts"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageThreshold": {
+      "global": {
+        "lines": 71,
+        "branches": 57
+      }
+    }
   }
 }

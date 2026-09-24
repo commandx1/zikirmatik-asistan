@@ -8,6 +8,7 @@ import { useGlassTabBarInset } from '../../../components/ui/glass-tab-bar'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 import { trackEvent } from '../../../lib/analytics'
+import { TEST_IDS } from '../../../test-ids'
 
 type CreditTopupItem = {
   productId: string
@@ -111,8 +112,9 @@ export function ProfilePremiumSheet({
   return (
     <View className='absolute inset-0 z-50 justify-end'>
       <Pressable className='absolute inset-0 bg-black/60' onPress={onClose} />
-      <View className='rounded-t-[32px] border-t border-[--accent]/30 bg-[--card]' style={{ maxHeight: '90%' }}>
+      <View testID={TEST_IDS.premium.sheet} className='rounded-t-[32px] border-t border-[--accent]/30 bg-[--card]' style={{ maxHeight: '90%' }}>
         <ScrollView
+          testID={TEST_IDS.premium.scroll}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 24, paddingBottom: 24 + sheetBottomInset }}
         >
@@ -244,7 +246,7 @@ export function ProfilePremiumSheet({
             {t('profile:premiumSheet.dailyFreeCreditNote')}
           </Text>
 
-          <Pressable onPress={onClose} className='py-2'>
+          <Pressable onPress={onClose} testID={TEST_IDS.premium.close} className='py-2'>
             <Text className='text-center text-sm font-medium text-[--text-muted]' style={regularTextStyle}>
               {t('profile:premiumSheet.maybeLater')}
             </Text>

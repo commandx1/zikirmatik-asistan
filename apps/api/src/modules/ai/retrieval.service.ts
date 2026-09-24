@@ -118,7 +118,7 @@ function resolveLocalizedText(
   return (text.tr?.trim() || text.en?.trim() || '') ?? '';
 }
 
-function toDhikrCandidate(
+export function toDhikrCandidate(
   item: DhikrHybridLean,
   locale: SupportedAiLocale,
   extra?: { textScore?: number; fusedScore?: number; matchedBy?: MatchedBy },
@@ -290,7 +290,7 @@ export class RetrievalService {
 
   constructor(
     @InjectModel(Dhikr.name)
-    private readonly dhikrModel: Model<DhikrDocument>,
+    protected readonly dhikrModel: Model<DhikrDocument>,
     @InjectModel(SourcePassage.name)
     private readonly sourcePassageModel: Model<SourcePassageDocument>,
     @InjectModel(DhikrLog.name)

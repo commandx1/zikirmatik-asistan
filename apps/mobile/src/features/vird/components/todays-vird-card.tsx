@@ -22,6 +22,7 @@ import { getPrayerTimes } from '../services/prayer-times'
 import { resolveNowSlot } from '../services/vird-now'
 import { calculateVirdStreak } from '../services/vird-streak'
 import type { VirdProgramLocal } from '../types'
+import { TEST_IDS } from '../../../test-ids'
 
 // Ana ekranda VE hub'da (vird-hub-screen.tsx) ortak kullanılan Bugünkü Vird
 // kartı. Salt veri katmanı (vird-day.ts, vird-now.ts, vird-streak.ts)
@@ -73,7 +74,7 @@ function EmptyVirdCard({ onPressCard }: { onPressCard?: () => void }) {
         <Text className='mb-3 text-xs leading-4' style={{ color: tokens.textMuted }}>
           {t('home.emptySubtitle')}
         </Text>
-        <Pressable onPress={handlePress} className='self-start rounded-full px-4 py-2' style={{ backgroundColor: tokens.accent }}>
+        <Pressable onPress={handlePress} testID={TEST_IDS.vird.emptyCta} className='self-start rounded-full px-4 py-2' style={{ backgroundColor: tokens.accent }}>
           <Text className='text-xs font-semibold' style={{ color: tokens.bg }}>
             {t('home.emptyCta')}
           </Text>
@@ -154,6 +155,7 @@ function SlotRow({
   return (
     <Pressable
       onPress={() => onStart()}
+      testID={`${TEST_IDS.vird.todayStart}-${slot}`}
       className='flex-row items-center justify-between px-2 py-2'
       style={rowStyle}
     >
@@ -270,6 +272,7 @@ export function TodaysVirdCard({ onPressCard, highlightSlot }: TodaysVirdCardPro
       <Pressable
         onPress={onPressCard}
         disabled={!onPressCard}
+        testID={TEST_IDS.vird.todayCard}
         className='rounded-2xl px-4 py-3'
         style={{
           borderWidth: 1,
@@ -287,7 +290,7 @@ export function TodaysVirdCard({ onPressCard, highlightSlot }: TodaysVirdCardPro
         </View>
 
         {dayComplete ? (
-          <Text className='mb-2 text-xs font-semibold' style={{ color: tokens.success }}>
+          <Text testID={TEST_IDS.vird.todayDone} className='mb-2 text-xs font-semibold' style={{ color: tokens.success }}>
             {t('home.dayCompleteBadge')}
           </Text>
         ) : totals.total > 0 ? (

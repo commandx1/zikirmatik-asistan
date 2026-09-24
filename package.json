@@ -4,7 +4,8 @@
   "packageManager": "pnpm@10.8.0",
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@shopify/react-native-skia"
+      "@shopify/react-native-skia",
+      "detox"
     ]
   },
   "scripts": {
@@ -13,7 +14,14 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",
     "test": "turbo run test",
+    "test:e2e": "pnpm --filter api test:e2e",
+    "db:test": "docker compose up -d --wait mongo-test",
+    "db:test:down": "docker compose down -v",
     "typecheck": "turbo run typecheck",
+    "test:web": "pnpm --filter @zikirmatik/website test:web",
+    "test:detox": "pnpm --filter @zikirmatik/mobile test:detox:ios",
+    "seed:e2e": "pnpm --filter api seed:e2e",
+    "test:load": "pnpm --filter api test:load:smoke",
     "parity:check": "node scripts/visual-regression/compare.mjs",
     "prepare": "husky"
   },

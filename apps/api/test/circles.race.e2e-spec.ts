@@ -7,11 +7,8 @@
  * doğrulamaktır. Nest DI kullanılmaz: modeller doğrudan bir mongoose
  * bağlantısından üretilir, servisler elle new'lenir.
  *
- * Çalıştırma:
- *   MONGODB_TEST_URI=mongodb://127.0.0.1:27018/zikir_qa_circles \
- *     pnpm --filter api test:e2e
- *
- * MONGODB_TEST_URI yoksa tüm blok atlanır (CI yeşil kalır).
+ * Çalıştırma: pnpm db:test && pnpm --filter api test:e2e
+ * (MONGODB_URI test/setup-env.ts'te yerel zikir_e2e_w* DB'sine ayarlanır.)
  */
 import mongoose, { Types, type Connection, type Model } from 'mongoose';
 import { istanbulDateKey, shiftDateKey } from '../src/common/utils/date-keys';
@@ -48,17 +45,6 @@ import type { DevicesService } from '../src/modules/devices/devices.service';
 import type { PushSenderService } from '../src/modules/push/push-sender.service';
 import type { StreaksService } from '../src/modules/streaks/streaks.service';
 import type { VirdProgressService } from '../src/modules/vird/vird-progress.service';
-
-const MONGODB_TEST_URI = process.env.MONGODB_TEST_URI;
-
-if (!MONGODB_TEST_URI) {
-  console.log(
-    '[circles.race] MONGODB_TEST_URI yok — halka eşzamanlılık testleri atlandı. ' +
-      'Çalıştırmak için: MONGODB_TEST_URI=mongodb://127.0.0.1:27018/zikir_qa_circles pnpm --filter api test:e2e',
-  );
-}
-
-const describeRace = MONGODB_TEST_URI ? describe : describe.skip;
 
 jest.setTimeout(60_000);
 
@@ -114,7 +100,7 @@ function summarize<T>(results: PromiseSettledResult<T>[]) {
   return { ok: fulfilled.length, values: fulfilled.map((r) => r.value), codes };
 }
 
-describeRace('Zikir Halkası — gerçek Mongo eşzamanlılık', () => {
+describe('Zikir Halkası — gerçek Mongo eşzamanlılık', () => {
   let connection: Connection;
   let circleModel: Model<CircleDocument>;
   let dhikrLogModel: Model<DhikrLogDocument>;
@@ -138,7 +124,7 @@ describeRace('Zikir Halkası — gerçek Mongo eşzamanlılık', () => {
 
   beforeAll(async () => {
     connection = await mongoose
-      .createConnection(MONGODB_TEST_URI as string)
+      .createConnection(process.env.MONGODB_URI as string)
       .asPromise();
 
     circleModel = connection.model<CircleDocument>(Circle.name, CircleSchema);

@@ -8,6 +8,8 @@ type IconName = ComponentProps<typeof FontAwesome6>["name"];
 type PageHeaderProps = {
   title: string;
   subtitle?: string;
+  subtitleTestID?: string;
+  leftTestID?: string;
   leftIconName?: IconName;
   leftIconStyle?: "solid" | "regular";
   onPressLeft?: () => void;
@@ -21,6 +23,8 @@ type PageHeaderProps = {
 export function PageHeader({
   title,
   subtitle,
+  subtitleTestID,
+  leftTestID,
   leftIconName,
   leftIconStyle = "regular",
   onPressLeft,
@@ -41,6 +45,7 @@ export function PageHeader({
           onPressLeft ? (
             <Pressable
               onPress={onPressLeft}
+              testID={leftTestID}
               className="h-9 w-9 items-center justify-center rounded-full border border-white/10"
             >
               <FontAwesome6 name={leftIconName} iconStyle={leftIconStyle} size={14} color={tokens.textMuted} />
@@ -59,7 +64,7 @@ export function PageHeader({
             {title}
           </Text>
           {subtitle ? (
-            <Text className="mt-0.5 text-sm leading-5 text-center text-[--text-muted]" numberOfLines={2}>
+            <Text testID={subtitleTestID} className="mt-0.5 text-sm leading-5 text-center text-[--text-muted]" numberOfLines={2}>
               {subtitle}
             </Text>
           ) : null}

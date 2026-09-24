@@ -16,6 +16,7 @@ import { ProfilePremiumSheet } from "../../profile/components/profile-premium-sh
 import { VirdDhikrPickerModal, type VirdDhikrPickerSelection } from "../../vird/components/vird-dhikr-picker-modal";
 import { trackEvent } from "../../../lib/analytics";
 import { CIRCLE_ERROR_CODE, CircleApiError, createCircle, resolveCircleErrorMessage } from "../services/circle-api-client";
+import { TEST_IDS } from "../../../test-ids";
 
 type DurationOption = "7" | "30" | "40" | "unlimited";
 
@@ -111,6 +112,7 @@ export function CircleCreateScreen() {
         <Text className="mb-1.5 text-xs font-semibold text-[--text-muted]">{t("circle:create.dhikrLabel")}</Text>
         <Pressable
           onPress={() => setPickerVisible(true)}
+          testID={TEST_IDS.circle.pickDhikr}
           className="mb-4 flex-row items-center justify-between rounded-xl border border-white/10 bg-[--card] px-4 py-3.5"
         >
           <Text className="text-sm font-medium text-[--text-primary]">
@@ -124,6 +126,7 @@ export function CircleCreateScreen() {
         <ThemedInput
           value={goalCount}
           onChangeText={setGoalCount}
+          testID={TEST_IDS.circle.goalInput}
           keyboardType="number-pad"
           className="mb-4"
         />
@@ -155,6 +158,7 @@ export function CircleCreateScreen() {
         <PrimaryCtaButton
           label={t("circle:create.submit")}
           onPress={() => void handleSubmit()}
+          testID={TEST_IDS.circle.submit}
           disabled={isSubmitting}
           className="w-full"
         />

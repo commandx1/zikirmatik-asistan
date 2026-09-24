@@ -10,6 +10,7 @@ import { listVerifiedActiveDhikrs, type BackendDhikr } from "../../dhikrs/servic
 import { VIRD_ERROR_CODE } from "../services/vird-error-codes";
 import { wouldExceedFreeDhikrLimit } from "../services/vird-editor-helpers";
 import type { DhikrSnapshot } from "../types";
+import { TEST_IDS } from "../../../test-ids";
 
 type PickerRow = {
   ref: string;
@@ -166,7 +167,7 @@ export function VirdDhikrPickerModal({
     >
       <View className="mb-3 flex-row items-center justify-between">
         <Text className="text-base font-semibold text-[--text-primary]">{t("vird:editor.pickerTitle")}</Text>
-        <Pressable onPress={onRequestClose} hitSlop={8} accessibilityRole="button">
+        <Pressable onPress={onRequestClose} hitSlop={8} accessibilityRole="button" testID={TEST_IDS.vird.pickerDone}>
           <Text className="text-sm font-semibold" style={{ color: tokens.accent }}>
             {t("vird:editor.pickerDone")}
           </Text>
@@ -196,6 +197,7 @@ export function VirdDhikrPickerModal({
             return (
               <Pressable
                 onPress={() => handlePick(item)}
+                testID={TEST_IDS.vird.pickerRow}
                 className="mb-2 flex-row items-center justify-between rounded-xl border px-3.5 py-3"
                 style={{
                   borderColor: alreadyInSlot ? withAlpha(tokens.textPrimary, 0.06) : withAlpha(tokens.textPrimary, 0.12),

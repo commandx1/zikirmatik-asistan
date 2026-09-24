@@ -31,6 +31,7 @@ import { usePremiumSheet } from "../../hooks/use-premium-sheet";
 import { useRequireAuth } from "../auth/hooks/use-require-auth";
 import { ProfilePremiumSheet } from "../profile/components/profile-premium-sheet";
 import type { AiGuideRecommendation } from "./types";
+import { TEST_IDS } from "../../test-ids";
 
 function toDateKey(value: Date) {
   const year = value.getFullYear();
@@ -193,6 +194,7 @@ export function AiGuideScreen() {
         <InfoTooltip visible={guide.showInfo} />
 
         <PageScrollView
+          testID={TEST_IDS.aiGuide.scroll}
           scrollRef={scrollRef}
           contentInnerClassName="w-full px-5"
           keyboardShouldPersistTaps="handled"
@@ -220,6 +222,7 @@ export function AiGuideScreen() {
             onPress={() => {
               requireAuth(() => router.push("/ai-chat"));
             }}
+            testID={TEST_IDS.aiChat.entry}
             className="mb-3 flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">

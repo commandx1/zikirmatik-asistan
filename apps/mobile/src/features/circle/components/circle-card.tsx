@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useCircleStore } from "../../../store/circle-store";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
+import { TEST_IDS } from "../../../test-ids";
 
 function withAlpha(hex: string, alpha: number) {
   const normalized = hex.replace("#", "");
@@ -36,6 +37,7 @@ export function CircleCard() {
         <Pressable
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onPress={() => router.push("/circle" as any)}
+          testID={TEST_IDS.circle.homeCard}
           className="rounded-2xl px-4 py-4"
           style={{
             borderWidth: 1,

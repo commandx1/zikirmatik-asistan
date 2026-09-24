@@ -9,6 +9,11 @@
     "lint": "eslint app src --ext .ts,.tsx",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
+    "test:cov": "vitest run --coverage",
+    "test:detox:build:ios": "detox build -c ios.sim.release",
+    "test:detox:ios": "detox test -c ios.sim.release",
+    "test:detox:build:android": "detox build -c android.emu.release",
+    "test:detox:android": "detox test -c android.emu.release",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "postinstall": "install-skia"
@@ -62,6 +67,9 @@
     "zustand": "^5.0.5"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "3.2.4",
+    "detox": "^20.51.4",
+    "jest": "^30.4.1",
     "tailwindcss": "3.4.17"
   }
 }

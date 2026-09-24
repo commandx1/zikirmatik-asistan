@@ -17,6 +17,7 @@ import { resolveLocalizedText } from "../../../store/dhikr-store";
 import { trackEvent } from "../../../lib/analytics";
 import { closeCircle, fetchCircle, leaveCircle } from "../services/circle-api-client";
 import { buildCircleShareMessage } from "../services/circle-share";
+import { TEST_IDS } from "../../../test-ids";
 
 const POLL_INTERVAL_MS = 15_000;
 
@@ -187,7 +188,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
         <ThemedCard className="mb-4 flex-row items-center justify-between rounded-2xl p-4">
           <View>
             <Text className="text-xs text-[--text-muted]">{t("circle:detail.code")}</Text>
-            <Text className="text-base font-semibold tracking-[2px] text-[--text-primary]">{storedCircle.code}</Text>
+            <Text testID={TEST_IDS.circle.code} className="text-base font-semibold tracking-[2px] text-[--text-primary]">{storedCircle.code}</Text>
           </View>
           <PrimaryCtaButton label={t("circle:detail.share")} onPress={() => void handleShare()} style={{ paddingVertical: 10, paddingHorizontal: 18 }} textClassName="text-sm" />
         </ThemedCard>

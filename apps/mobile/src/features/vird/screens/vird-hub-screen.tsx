@@ -18,6 +18,7 @@ import { VirdProgramListItem } from "../components/vird-program-list-item";
 import { VirdProgramSummaryCard } from "../components/vird-program-summary-card";
 import { VirdReminderSettings } from "../components/vird-reminder-settings";
 import { isJourneyFinished } from "../services/vird-day";
+import { TEST_IDS } from "../../../test-ids";
 
 // Vird hub'ı (`/vird`): Zikirlerim'deki "Vird programım" satırı ve ana
 // ekrandaki Bugünkü Vird kartından buraya gelinir. Eski vird-setup-panel.tsx
@@ -75,7 +76,7 @@ export function VirdHubScreen() {
     <PageLayout>
       <PageHeader title={t("vird:hub.title")} leftIconName="arrow-left" onPressLeft={() => router.back()} />
 
-      <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
+      <PageScrollView testID={TEST_IDS.vird.hub} contentInnerClassName="w-full px-5" bottomPadding={40}>
         {authStatus === "authenticated" ? (
           syncError ? (
             <View className="mb-4 rounded-xl border border-[#ef4444]/30 bg-[#ef4444]/10 px-3 py-2.5">
@@ -114,6 +115,7 @@ export function VirdHubScreen() {
         <View className="mb-4 gap-2.5">
           <Pressable
             onPress={() => router.push("/vird/editor")}
+            testID={TEST_IDS.vird.newManual}
             className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-[--card] px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">

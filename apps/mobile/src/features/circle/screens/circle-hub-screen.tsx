@@ -18,6 +18,7 @@ import { useRequireAuth } from "../../auth/hooks/use-require-auth";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
 import { ProfilePremiumSheet } from "../../profile/components/profile-premium-sheet";
 import { parseCircleCode } from "../services/circle-share";
+import { TEST_IDS } from "../../../test-ids";
 
 // Zikir Halkası hub'ı (`/circle`): mevcut halkaları listeler, yeni halka
 // kurma / kodla katılma seçeneklerini sunar. Desen vird-hub-screen.tsx ile
@@ -84,7 +85,7 @@ export function CircleHubScreen() {
     <PageLayout>
       <PageHeader title={t("circle:hub.title")} leftIconName="arrow-left" onPressLeft={() => router.back()} />
 
-      <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
+      <PageScrollView testID={TEST_IDS.circle.hub} contentInnerClassName="w-full px-5" bottomPadding={40}>
         {authStatus !== "authenticated" ? (
           <View className="mb-4 rounded-xl border border-white/10 bg-[--card] px-3 py-2.5">
             <Text className="text-xs text-[--text-muted]">{t("circle:hub.guestHint")}</Text>
@@ -99,7 +100,7 @@ export function CircleHubScreen() {
           ? sortedCircles.map((circle) => <CircleRow key={circle.id} circle={circle} />)
           : null}
 
-        <PrimaryCtaButton label={t("circle:hub.newCircle")} onPress={handleCreate} className="mb-4 mt-2 w-full" />
+        <PrimaryCtaButton label={t("circle:hub.newCircle")} onPress={handleCreate} testID={TEST_IDS.circle.newCircle} className="mb-4 mt-2 w-full" />
 
         <Text className="mb-2 text-xs font-semibold text-[--text-muted]">{t("circle:hub.joinWithCode")}</Text>
         <View className="mb-1 flex-row items-center gap-2">
@@ -111,11 +112,12 @@ export function CircleHubScreen() {
                 setCodeError(null);
               }}
               placeholder={t("circle:hub.codePlaceholder")}
+              testID={TEST_IDS.circle.codeInput}
               autoCapitalize="characters"
             />
           </View>
         </View>
-        <PrimaryCtaButton label={t("circle:hub.join")} onPress={handleJoinWithCode} className="mt-2 w-full" style={{ paddingVertical: 11 }} textClassName="text-base" />
+        <PrimaryCtaButton label={t("circle:hub.join")} onPress={handleJoinWithCode} testID={TEST_IDS.circle.joinButton} className="mt-2 w-full" style={{ paddingVertical: 11 }} textClassName="text-base" />
         {codeError ? <Text className="mt-2 text-xs" style={{ color: "#ef4444" }}>{codeError}</Text> : null}
       </PageScrollView>
 

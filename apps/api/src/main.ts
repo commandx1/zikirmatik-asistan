@@ -1,11 +1,9 @@
-import { LogLevel, ValidationPipe } from '@nestjs/common';
+import { LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
 import { AppLogger } from './common/logging/app-logger';
 import { bootChecks, registerProcessHandlers } from './common/logging/boot';
-import { requestContext } from './common/logging/request-context';
-import { AllExceptionsFilter } from './common/logging/all-exceptions.filter';
 import { AppModule } from './app.module';
+import { configureApp } from './app.setup';
 
 // LOG_LEVEL o seviye ve üzerini açar (bkz. isLogLevelEnabled: tek elemanlı
 // dizi "bu seviye ve üstü" anlamına gelir). 'info' Nest'in 'log' seviyesine denk düşer.
@@ -28,19 +26,7 @@ async function bootstrap() {
     process.env.NODE_ENV === 'production' ? 'log' : 'debug';
   logger.setLogLevels([configuredLevel ?? defaultLevel]);
 
-  app.use(requestContext);
-
-  app.enableCors();
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidUnknownValues: true,
-    }),
-  );
-  app.useGlobalInterceptors(new ResponseTransformInterceptor());
-  app.useGlobalFilters(new AllExceptionsFilter());
-  app.enableShutdownHooks();
+  configureApp(app);
 
   bootChecks(logger);
   registerProcessHandlers(logger);

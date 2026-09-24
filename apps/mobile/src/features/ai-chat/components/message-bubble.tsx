@@ -1,6 +1,7 @@
 import { Text, View } from "react-native";
 import { i18n } from "../../../i18n";
 import type { ChatMessage } from "../hooks/use-ai-chat";
+import { TEST_IDS } from "../../../test-ids";
 
 type MessageBubbleProps = {
   message: ChatMessage;
@@ -16,7 +17,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           isUser ? "rounded-br-sm bg-[--accent]" : "rounded-bl-sm border border-white/10 bg-[--card]"
         }`}
       >
-        <Text className={`text-sm leading-5 ${isUser ? "text-[#111827]" : "text-[--text-primary]"}`}>
+        <Text
+          testID={isUser ? undefined : TEST_IDS.aiChat.assistantMessage}
+          className={`text-sm leading-5 ${isUser ? "text-[#111827]" : "text-[--text-primary]"}`}
+        >
           {message.content}
         </Text>
 

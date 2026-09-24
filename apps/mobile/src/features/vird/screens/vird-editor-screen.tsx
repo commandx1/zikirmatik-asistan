@@ -28,6 +28,7 @@ import { buildAutoVirdTitle, buildEditorSlotsFromPhase, toLocalizedText, type Ed
 import { VIRD_ERROR_CODE, resolveVirdErrorMessage } from "../services/vird-error-codes";
 import { toLocalVirdProgram } from "../services/vird-sync";
 import type { DhikrSnapshot, VirdProgramLocal } from "../types";
+import { TEST_IDS } from "../../../test-ids";
 
 type PendingSwap = { localProgram: VirdProgramLocal };
 
@@ -418,11 +419,12 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
         onPressLeft={() => router.back()}
       />
 
-      <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={48}>
+      <PageScrollView testID={TEST_IDS.vird.editorScroll} contentInnerClassName="w-full px-5" bottomPadding={48}>
         <Text className="mb-1.5 text-xs font-medium text-[--text-primary]">{t("vird:editor.titleLabel")}</Text>
         <ThemedInput
           value={titleDraft}
           onChangeText={setTitleDraft}
+          testID={TEST_IDS.vird.editorTitle}
           placeholder={journeyMode ? t("vird:editor.titlePlaceholder") : resolveLocalizedText(buildAutoVirdTitle(enabledSlots), locale)}
           className="mb-4 rounded-xl bg-[--card] px-3"
         />
@@ -494,6 +496,7 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
         <PrimaryCtaButton
           label={isSaving ? t("vird:editor.savingButton") : existingProgram ? t("vird:editor.saveButton") : t("vird:editor.saveAndStart")}
           onPress={() => void handleSave()}
+          testID={TEST_IDS.vird.saveAndStart}
           disabled={isSaving}
           className={isSaving ? "opacity-60" : ""}
         />

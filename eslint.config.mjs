@@ -20,6 +20,41 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    // Düz JS/MJS (k6, Detox, jest/detox config, betikler): Node + CommonJS globalleri.
+    files: ["**/*.{js,mjs,cjs}"],
+    languageOptions: {
+      globals: {
+        ...globals.es2024,
+        ...globals.node,
+        ...globals.commonjs
+      }
+    },
+    rules: {
+      "no-console": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" }]
+    }
+  },
+  {
+    // k6 betikleri: k6 runtime globalleri.
+    files: ["apps/api/load/**/*.js"],
+    languageOptions: {
+      globals: { __ENV: "readonly", __VU: "readonly", __ITER: "readonly", open: "readonly" }
+    }
+  },
+  {
+    // Detox e2e: jest globalleri (device/element/by/expect detox'tan require ediliyor).
+    files: ["apps/mobile/e2e/**/*.js"],
+    languageOptions: {
+      globals: { ...globals.jest }
+    }
+  },
+  {
+    // apps/api kendi eslint.config'inde any'yi kapatıyor; lint-staged kökten koştuğu için burada da eşitle.
+    files: ["apps/api/**/*.ts"],
+    rules: { "@typescript-eslint/no-explicit-any": "off" }
+  },
+  {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       globals: {

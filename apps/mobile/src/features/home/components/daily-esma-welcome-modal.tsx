@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeTokens } from '@zikirmatik/ui'
 import type { EsmaulHusnaItem } from '../../focus/types'
+import { TEST_IDS } from '../../../test-ids'
 
 type DailyEsmaWelcomeModalProps = {
   visible: boolean
@@ -96,6 +97,7 @@ export function DailyEsmaWelcomeModal({
           <View className='mt-5 flex-row gap-3'>
             <Pressable
               onPress={onDismiss}
+              testID={TEST_IDS.home.welcomeLater}
               className='flex-1 rounded-full px-4 py-3'
               style={{ borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.18) }}
             >

@@ -36,6 +36,7 @@ import { useCounterStyleStore } from '../../store/counter-style-store'
 import { useProfileStore } from '../../store/profile-store'
 import { ProfilePremiumSheet } from '../profile/components/profile-premium-sheet'
 import { WidgetDiscoveryCard } from '../widget/widget-discovery'
+import { TEST_IDS } from '../../test-ids'
 
 const EsmaulHusnaSection = lazy(() =>
   import('./components/esmaul-husna-section').then((m) => ({ default: m.EsmaulHusnaSection }))
@@ -82,6 +83,7 @@ function TopBar({
     <PageHeader
       title={t('home:topBar.title')}
       subtitle={t('home:topBar.subtitle', { greeting: home.greeting, streak: home.streakLabel })}
+      subtitleTestID={TEST_IDS.home.streak}
       rightAccessory={<TapAnywhereToggle onPress={onToggleTapAnywhere} spotlightRef={tapAnywhereRef} />}
     />
   )
@@ -303,6 +305,7 @@ function FreeSaveNameModal() {
       <TextInput
         value={home.freeSaveNameDraft}
         onChangeText={home.onFreeSaveNameChange}
+        testID={TEST_IDS.home.saveNameInput}
         autoFocus
         placeholder={t('home:freeSaveNameModal.namePlaceholder')}
         placeholderTextColor={tokens.textMuted}
@@ -353,6 +356,7 @@ function FreeSaveNameModal() {
       <TextInput
         value={home.freeSaveTargetDraft}
         onChangeText={home.onFreeSaveTargetChange}
+        testID={TEST_IDS.home.saveTargetInput}
         keyboardType='number-pad'
         placeholder={t('home:freeSaveNameModal.targetPlaceholder')}
         placeholderTextColor={tokens.textMuted}
@@ -378,6 +382,7 @@ function FreeSaveNameModal() {
         </Pressable>
         <Pressable
           onPress={home.onFreeSaveNameSubmit}
+          testID={TEST_IDS.home.saveNameSubmit}
           className='rounded-full px-4 py-2'
           style={{ backgroundColor: tokens.accent }}
         >
@@ -600,6 +605,7 @@ export function HomeView() {
       <TopBar onToggleTapAnywhere={home.toggleTapAnywhere} tapAnywhereRef={tapAnywhereRef} />
       <PageScrollView
         scrollRef={scrollRef}
+        testID={TEST_IDS.home.scroll}
         contentInnerClassName='w-full'
         contentContainerStyle={!hasDhikrDetail ? { flexGrow: 1, justifyContent: 'center' } : undefined}
         bottomPadding={hasDhikrDetail ? 32 : 0}

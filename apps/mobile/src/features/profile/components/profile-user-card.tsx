@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
+import { TEST_IDS } from "../../../test-ids";
 
 type ProfileUserCardProps = {
   displayName: string;
@@ -55,7 +56,7 @@ export function ProfileUserCard({
         </View>
       </View>
 
-      <Text className="mb-1 px-2 text-2xl leading-[34px] font-semibold tracking-tight text-center text-[--text-primary]" numberOfLines={2}>
+      <Text testID={TEST_IDS.profile.name} className="mb-1 px-2 text-2xl leading-[34px] font-semibold tracking-tight text-center text-[--text-primary]" numberOfLines={2}>
         {displayName}
       </Text>
       <Text className="mb-3 text-sm leading-[18px] text-[--text-muted]">{memberSinceLabel}</Text>

@@ -102,6 +102,12 @@ android {
         versionCode 10
         versionName "0.1.0"
 
+        // Detox e2e: `-DtestBuildType=release` ile androidTest APK'sı release'e karşı derlenir.
+        testBuildType System.getProperty('testBuildType', 'debug')
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        // Release'te cleartext kapalı; e2e build'i (-PdetoxE2E) yerel API (10.0.2.2) + Detox soketi (localhost) için açar.
+        manifestPlaceholders.e2eCleartextTraffic = findProperty('detoxE2E') != null ? 'true' : 'false'
+
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
     signingConfigs {
@@ -173,6 +179,7 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    androidTestImplementation('com.wix:detox:+')
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

@@ -37,6 +37,18 @@ export function validateEnv(config: Record<string, unknown>) {
     throw new Error("SERVER_PUSH_ENABLED tanımlıysa '0' veya '1' olmalıdır.");
   }
 
+  // Opsiyonel: e2e/k6 AI mock anahtarı (bkz. modules/ai/testing/ai-mocks.ts).
+  // '1' iken LLM/embedding/retrieval sahteleriyle değişir; mock sınıfları
+  // NODE_ENV=production'da kendiliğinden fırlatır.
+  if (
+    config.AI_RUNTIME_MOCK !== undefined &&
+    config.AI_RUNTIME_MOCK !== '' &&
+    config.AI_RUNTIME_MOCK !== '0' &&
+    config.AI_RUNTIME_MOCK !== '1'
+  ) {
+    throw new Error("AI_RUNTIME_MOCK tanımlıysa '0' veya '1' olmalıdır.");
+  }
+
   // Opsiyonel: gözlemlenebilirlik (bkz. apps/api/src/common/logging/).
   // Tanımsızsa varsayılanlar kullanılır — hiçbiri zorunlu değil.
   if (

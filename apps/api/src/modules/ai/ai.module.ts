@@ -18,6 +18,7 @@ import { AiVirdService } from './ai-vird.service';
 import { RecommendationAgentService } from './recommendation-agent.service';
 import { RetrievalService } from './retrieval.service';
 import { VirdProgramAgentService } from './vird-program-agent.service';
+import { MockAiRuntimeService, MockRetrievalService } from './testing/ai-mocks';
 import { AiUsageLog, AiUsageLogSchema } from './schemas/ai-usage-log.schema';
 import {
   AiRecommendation,
@@ -35,6 +36,8 @@ import {
   SourcePassage,
   SourcePassageSchema,
 } from './schemas/source-passage.schema';
+
+const AI_RUNTIME_MOCK = process.env.AI_RUNTIME_MOCK === '1';
 
 @Module({
   imports: [
@@ -59,8 +62,15 @@ import {
     AiCreditsService,
     AiProgressGateway,
     AiUsageService,
-    AiRuntimeService,
-    RetrievalService,
+    // AI_RUNTIME_MOCK=1: e2e/k6 için sahte LLM + retrieval (bkz. testing/ai-mocks.ts).
+    {
+      provide: AiRuntimeService,
+      useClass: AI_RUNTIME_MOCK ? MockAiRuntimeService : AiRuntimeService,
+    },
+    {
+      provide: RetrievalService,
+      useClass: AI_RUNTIME_MOCK ? MockRetrievalService : RetrievalService,
+    },
     RecommendationAgentService,
     VirdProgramAgentService,
     AiVirdService,

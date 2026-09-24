@@ -7,3 +7,5 @@
 
 expo-env.d.ts
 # @end expo-cli
+# detox (ios/build/ zaten ios/.gitignore içinde)
+e2e/artifacts/

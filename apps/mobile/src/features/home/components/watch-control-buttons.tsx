@@ -15,6 +15,8 @@ type WatchControlButtonsProps = {
   resetBtnRef?: RefObject<View | null>
   saveBtnRef?: RefObject<View | null>
   variant?: 'full' | 'reset-only' | 'none'
+  resetTestID?: string
+  saveTestID?: string
 }
 
 /**
@@ -34,7 +36,9 @@ export function WatchControlButtons({
   targetBtnRef,
   resetBtnRef,
   saveBtnRef,
-  variant = 'full'
+  variant = 'full',
+  resetTestID,
+  saveTestID
 }: WatchControlButtonsProps) {
   const controlButtonBorder = withAlpha(tokens.textPrimary, 0.12)
   const controlButtonBg = withAlpha(tokens.textPrimary, 0.06)
@@ -51,6 +55,7 @@ export function WatchControlButtons({
         <Pressable
           ref={resetBtnRef}
           onPress={onResetPress}
+          testID={resetTestID}
           className='h-9 w-9 items-center justify-center rounded-full border'
           style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
         >
@@ -84,6 +89,7 @@ export function WatchControlButtons({
       <Pressable
         ref={resetBtnRef}
         onPress={onResetPress}
+        testID={resetTestID}
         className='h-9 w-9 items-center justify-center rounded-full border'
         style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
       >
@@ -92,6 +98,7 @@ export function WatchControlButtons({
       <Pressable
         ref={saveBtnRef}
         onPress={onSavePress}
+        testID={saveTestID}
         disabled={isSaving}
         className={`h-9 w-9 items-center justify-center rounded-full border ${isSaving ? 'opacity-50' : ''}`}
         style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}

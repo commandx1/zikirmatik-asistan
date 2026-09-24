@@ -58,7 +58,10 @@ describe('CirclesController', () => {
   });
 
   it('has no guard on preview (public route) but requires JwtAuthGuard on join', () => {
-    const proto: Record<string, object> = CirclesController.prototype;
+    const proto = CirclesController.prototype as unknown as Record<
+      string,
+      object
+    >;
     const previewGuards = Reflect.getMetadata('__guards__', proto.preview) as
       | unknown[]
       | undefined;

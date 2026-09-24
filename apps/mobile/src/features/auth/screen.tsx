@@ -13,6 +13,7 @@ import type { AuthProvider } from "@zikirmatik/shared";
 import { PageLayout } from "../../components/ui/page-layout";
 import { useAuthStore } from "../../store/auth-store";
 import appLogo from "../../assets/app-logo.png";
+import { TEST_IDS } from "../../test-ids";
 
 function hexWithAlpha(hex: string, alpha: number) {
   const clean = hex.replace("#", "");
@@ -84,6 +85,7 @@ export function AuthScreen() {
       {router.canGoBack() ? (
         <Pressable
           onPress={() => router.back()}
+          testID={TEST_IDS.auth.close}
           accessibilityRole="button"
           accessibilityLabel={t("auth:screen.close")}
           className="absolute z-10 h-11 w-11 items-center justify-center rounded-full border border-[--border] bg-[--card]"
@@ -206,6 +208,7 @@ export function AuthScreen() {
             <Pressable
               disabled={busy}
               onPress={() => void handleProvider("google")}
+              testID={TEST_IDS.auth.google}
               accessibilityRole="button"
               accessibilityState={{ disabled: busy, busy: pendingProvider === "google" }}
               className="h-14 flex-row items-center justify-center gap-3 rounded-full border active:opacity-80"
@@ -233,6 +236,7 @@ export function AuthScreen() {
                 continueAsGuest();
                 router.replace("/(tabs)/home");
               }}
+              testID={TEST_IDS.auth.guest}
               accessibilityRole="button"
               className="h-14 flex-row items-center justify-center gap-2 rounded-full border active:opacity-80"
               style={{

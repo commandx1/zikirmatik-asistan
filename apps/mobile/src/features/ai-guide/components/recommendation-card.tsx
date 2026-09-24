@@ -5,6 +5,7 @@ import { ThemedCard } from "../../../components/ui/themed-card";
 import { ThemedTag } from "../../../components/ui/themed-tag";
 import { useLocaleUpper } from "../../../hooks/use-locale-upper";
 import type { AiGuideRecommendation } from "../types";
+import { TEST_IDS } from "../../../test-ids";
 
 type RecommendationCardProps = {
   item: AiGuideRecommendation;
@@ -16,7 +17,7 @@ export function RecommendationCard({ item, onSelect }: RecommendationCardProps) 
 
   if (item.isPrimary) {
     return (
-      <ThemedCard className="relative rounded-[20px] p-5" accent="accent" elevated>
+      <ThemedCard testID={TEST_IDS.aiGuide.recommendation} className="relative rounded-[20px] p-5" accent="accent" elevated>
         <View className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[--accent]/5" />
 
         <View className="relative z-10 mb-3 flex-row items-start justify-between">

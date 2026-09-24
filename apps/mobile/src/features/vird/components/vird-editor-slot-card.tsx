@@ -7,6 +7,7 @@ import { ThemedCard } from "../../../components/ui/themed-card";
 import { ThemedInput } from "../../../components/ui/themed-input";
 import { resolveLocalizedText } from "../../../store/dhikr-store";
 import type { DhikrSnapshot } from "../types";
+import { TEST_IDS } from "../../../test-ids";
 
 export type VirdEditorSlotItem = {
   ref: string;
@@ -54,6 +55,7 @@ export function VirdEditorSlotCard({
         <Text className="text-sm font-semibold text-[--text-primary]">{t(`vird:slots.${slot}`)}</Text>
         <Pressable
           onPress={onAddPress}
+          testID={`${TEST_IDS.vird.slotAdd}-${slot}`}
           className="flex-row items-center gap-1.5 rounded-full px-3 py-1.5"
           style={{ backgroundColor: withAlpha(tokens.accent, 0.15) }}
         >
@@ -106,6 +108,7 @@ export function VirdEditorSlotCard({
                   value={String(item.target)}
                   onChangeText={(value) => onTargetChange(item.ref, Number.parseInt(value.replace(/\D+/g, ""), 10) || 0)}
                   keyboardType="number-pad"
+                  testID={TEST_IDS.vird.itemTarget}
                   className="w-16 rounded-lg bg-[--bg] px-2 py-1.5 text-center"
                 />
                 <Pressable

@@ -123,7 +123,7 @@ async function requestAppleIdentityToken() {
 }
 
 async function requestGoogleIdentityToken() {
-  if (__DEV__) {
+  if (__DEV__ || process.env.EXPO_PUBLIC_E2E_MOCK_AUTH === '1') {
     return buildDevGoogleIdentityToken();
   }
 

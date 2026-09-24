@@ -22,6 +22,7 @@ import Animated, {
 import Svg, { Circle } from 'react-native-svg'
 import { useHomeContext } from '../home-context'
 import { useThemePreferences } from '../../../hooks/use-theme-preferences'
+import { TEST_IDS } from '../../../test-ids'
 
 const WATCH_WIDTH = 234
 const WATCH_HEIGHT = 278
@@ -32,6 +33,13 @@ const INNER_RING_SIZE = 122
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
+const HOME_COUNTER_TEST_IDS = {
+  counter: TEST_IDS.home.counter,
+  countLabel: TEST_IDS.home.countLabel,
+  reset: TEST_IDS.home.reset,
+  save: TEST_IDS.home.save
+}
+
 export type AppleWatchProps = {
   previewTokens?: ThemeTokens;
   spotlightRef?: RefObject<View | null>;
@@ -39,6 +47,8 @@ export type AppleWatchProps = {
   targetBtnRef?: RefObject<View | null>;
   resetBtnRef?: RefObject<View | null>;
   saveBtnRef?: RefObject<View | null>;
+  /** e2e seçicileri (bkz. src/test-ids.ts); yalnız çağıran verirse konur. */
+  testIDs?: { counter?: string; countLabel?: string; reset?: string; save?: string };
 }
 
 export type CounterVisualModel = {
@@ -105,7 +115,8 @@ export function AppleWatchView({
   listBtnRef,
   targetBtnRef,
   resetBtnRef,
-  saveBtnRef
+  saveBtnRef,
+  testIDs
 }: CounterVisualViewProps) {
   const { t } = useTranslation('home')
   const router = useRouter()
@@ -220,6 +231,7 @@ export function AppleWatchView({
               <Pressable
                 ref={spotlightRef}
                 onPress={home.onCountPress}
+                testID={testIDs?.counter}
                 className='relative items-center justify-center'
                 style={{ width: RING_SIZE, height: RING_SIZE }}
               >
@@ -277,6 +289,7 @@ export function AppleWatchView({
               <View className='mt-2 mb-0.5 items-center'>
                 {/* Halka oturumunda count/target 7+ haneye çıkabilir; satır kırılmasın, sığmazsa küçülsün. */}
                 <Animated.Text
+                  testID={testIDs?.countLabel}
                   numberOfLines={1}
                   adjustsFontSizeToFit
                   minimumFontScale={0.4}
@@ -299,6 +312,8 @@ export function AppleWatchView({
                 onSavePress={home.onSavePress}
                 isSaving={home.isSavingLog}
                 variant={controls}
+                resetTestID={testIDs?.reset}
+                saveTestID={testIDs?.save}
               />
             </ScrollView>
           </Animated.View>
@@ -335,7 +350,7 @@ export function AppleWatchView({
 
 export function AppleWatch(props: AppleWatchProps = {}) {
   const home = useHomeContext()
-  return <AppleWatchView {...props} model={home} />
+  return <AppleWatchView testIDs={HOME_COUNTER_TEST_IDS} {...props} model={home} />
 }
 
 function withAlpha(hex: string, alpha: number) {

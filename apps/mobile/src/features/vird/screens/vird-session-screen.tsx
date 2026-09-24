@@ -32,6 +32,7 @@ import {
   type VirdSessionKey
 } from '../services/vird-session'
 import type { VirdProgramLocal } from '../types'
+import { TEST_IDS } from '../../../test-ids'
 
 // Rehberli vird oturumu (`/vird/session`) — tek bir dilime (namaz için tek bir
 // vakte) odaklı sayaç ekranı. `components/todays-vird-card.tsx`'in
@@ -317,7 +318,7 @@ function SessionBody({
 
   return (
     <PageLayout>
-      <PageHeader title={title} leftIconName="xmark" onPressLeft={close} />
+      <PageHeader title={title} leftIconName="xmark" onPressLeft={close} leftTestID={TEST_IDS.vird.sessionClose} />
 
       <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
         {items.length === 0 ? (
@@ -355,7 +356,7 @@ function SessionBody({
                 <Text className="text-sm font-semibold text-[--text-muted]">{t('vird:session.close')}</Text>
               </Pressable>
             ) : (
-              <PrimaryCtaButton label={t('vird:session.close')} onPress={close} className="w-full" style={SESSION_CTA_STYLE} textClassName="text-base" />
+              <PrimaryCtaButton label={t('vird:session.close')} onPress={close} testID={TEST_IDS.vird.sessionFinish} className="w-full" style={SESSION_CTA_STYLE} textClassName="text-base" />
             )}
           </ThemedCard>
         ) : (
@@ -363,9 +364,9 @@ function SessionBody({
             {counterStyle === 'tesbih' && isPremium ? (
               <TesbihCounterView model={model} controls="reset-only" />
             ) : (
-              <AppleWatchView model={model} controls="reset-only" />
+              <AppleWatchView model={model} controls="reset-only" testIDs={{ counter: TEST_IDS.vird.sessionCounter }} />
             )}
-            <Text className="-mt-4 mb-3 text-center text-xs text-[--text-muted]">
+            <Text testID={TEST_IDS.vird.session} className="-mt-4 mb-3 text-center text-xs text-[--text-muted]">
               {`${position} · ${t('vird:session.remaining', { count: remainingReps(items) })}`}
             </Text>
             {current && current.count >= current.target && nextIndex != null ? (
@@ -373,6 +374,7 @@ function SessionBody({
                 <PrimaryCtaButton
                   label={t('vird:session.next')}
                   onPress={goNext}
+                  testID={TEST_IDS.vird.sessionNext}
                   className="mb-1.5 w-full"
                   style={SESSION_CTA_STYLE}
                   textClassName="text-base"

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTourContext } from "./tour-context";
 import type { SpotlightBounds } from "./types";
+import { TEST_IDS } from "../../test-ids";
 
 const OVERLAY_COLOR = "rgba(0,0,0,0.78)";
 const TOOLTIP_WIDTH = 288;
@@ -190,7 +191,7 @@ export function TourOverlay() {
           </Text>
 
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <Pressable onPress={skipTour} style={{ paddingVertical: 6, paddingRight: 12 }}>
+            <Pressable onPress={skipTour} testID={TEST_IDS.tour.skip} style={{ paddingVertical: 6, paddingRight: 12 }}>
               <Text style={{ fontSize: 13, color: tokens.textMuted }}>{t("tour:overlay.skip")}</Text>
             </Pressable>
 
@@ -213,6 +214,7 @@ export function TourOverlay() {
               )}
               <Pressable
                 onPress={nextStep}
+                testID={TEST_IDS.tour.next}
                 style={{
                   height: 36,
                   paddingHorizontal: 16,

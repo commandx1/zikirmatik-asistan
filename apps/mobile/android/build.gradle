@@ -17,6 +17,8 @@ allprojects {
     google()
     mavenCentral()
     maven { url 'https://www.jitpack.io' }
+    // Detox e2e (hoisted node_modules) — yalnız androidTest bağımlılığı çözümler.
+    maven { url(new File(["node", "--print", "require.resolve('detox/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/Detox-android") }
   }
 }
 

@@ -4,6 +4,7 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
 import { ThemedInput } from "../../../components/ui/themed-input";
 import { ThemedTag } from "../../../components/ui/themed-tag";
+import { TEST_IDS } from "../../../test-ids";
 
 type IntentInputSectionProps = {
   value: string;
@@ -37,6 +38,7 @@ export function IntentInputSection({
       <ThemedInput
         value={value}
         onChangeText={onChangeValue}
+        testID={TEST_IDS.aiGuide.input}
         placeholder={t("ai-guide:input.placeholder")}
         shape="xl"
         multiline
@@ -46,6 +48,7 @@ export function IntentInputSection({
         trailing={
           <Pressable
             onPress={onSend}
+            testID={TEST_IDS.aiGuide.send}
             disabled={isLoading}
             className={`h-10 w-10 items-center justify-center rounded-full bg-[--bg] ${isLoading ? "opacity-60" : ""}`}
           >

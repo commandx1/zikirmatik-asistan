@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:web": "playwright test"
   },
   "dependencies": {
     "next": "15.5.21",
@@ -16,6 +17,7 @@
     "react-dom": "19.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^20.14.9",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",

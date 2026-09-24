@@ -35,3 +35,7 @@ apps/api/scripts/eval/reports/*
 !apps/api/scripts/eval/reports/.gitkeep
 # DB onarım betiklerinin yerel yedekleri (veri içerir)
 apps/api/scripts/.backups/
+
+# Yük testi çıktıları
+apps/api/load/out/
+!apps/api/load/out/.gitkeep

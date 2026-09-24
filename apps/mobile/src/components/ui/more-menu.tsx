@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { TEST_IDS } from "../../test-ids";
 
 type MoreMenuProps = {
   open: boolean;
@@ -79,6 +80,7 @@ export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
         <Animated.View style={istatistikStyle}>
           <Pressable
             onPress={() => handleNavigate("/(tabs)/stats")}
+            testID={TEST_IDS.tabs.stats}
             style={[styles.card, { backgroundColor: tokens.card, borderColor: "rgba(255,255,255,0.09)" }]}
           >
             <FontAwesome6 name="chart-line" size={15} color={tokens.accent} iconStyle="solid" />
@@ -89,6 +91,7 @@ export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
         <Animated.View style={kutuphaneStyle}>
           <Pressable
             onPress={() => handleNavigate("/(tabs)/collections")}
+            testID={TEST_IDS.tabs.collections}
             style={[styles.card, { backgroundColor: tokens.card, borderColor: "rgba(255,255,255,0.09)" }]}
           >
             <FontAwesome6 name="book-open" size={15} color={tokens.accent} iconStyle="solid" />
@@ -99,6 +102,7 @@ export function MoreMenu({ open, tabBarHeight, onClose }: MoreMenuProps) {
         <Animated.View style={profilStyle}>
           <Pressable
             onPress={() => handleNavigate("/(tabs)/profile")}
+            testID={TEST_IDS.tabs.profile}
             style={[styles.card, { backgroundColor: tokens.card, borderColor: "rgba(255,255,255,0.09)" }]}
           >
             <FontAwesome6 name="user" size={15} color={tokens.accent} iconStyle="regular" />

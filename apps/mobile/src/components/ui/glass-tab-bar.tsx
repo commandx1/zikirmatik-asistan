@@ -10,12 +10,21 @@ import {
 import { LiquidGlassView, isLiquidGlassSupported } from "@callstack/liquid-glass";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { TabIcon } from "./tab-icons";
+import { TEST_IDS } from "../../test-ids";
 
 export const GLASS_TAB_BAR_HEIGHT = 60;
 export const GLASS_TAB_BAR_BOTTOM_GAP = 10;
 export const GLASS_TAB_BAR_SIDE_MARGIN = 16;
 
 const VISIBLE_TABS = ["home", "focus", "ai-guide", "special-days", "profile"] as const;
+
+const TAB_TEST_IDS: Record<(typeof VISIBLE_TABS)[number], string> = {
+  home: TEST_IDS.tabs.home,
+  focus: TEST_IDS.tabs.focus,
+  "ai-guide": TEST_IDS.tabs.aiGuide,
+  "special-days": TEST_IDS.tabs.specialDays,
+  profile: TEST_IDS.tabs.more,
+};
 
 function relativeLuminance(hex: string) {
   const clean = hex.replace("#", "");
@@ -135,6 +144,7 @@ export function GlassTabBar({ state, descriptors, navigation, onMorePress, moreA
               accessibilityState={{ selected: isActive }}
               accessibilityLabel={label}
               hitSlop={4}
+              testID={TAB_TEST_IDS[name]}
             >
               <View style={{ opacity: isActive ? 1 : 0.6 }}>
                 <TabIcon name={name} color={color} size={25} />

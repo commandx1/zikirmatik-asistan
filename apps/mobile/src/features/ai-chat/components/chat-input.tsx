@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
 import { ThemedInput } from "../../../components/ui/themed-input";
+import { TEST_IDS } from "../../../test-ids";
 
 type ChatInputProps = {
   value: string;
@@ -28,6 +29,7 @@ export function ChatInput({ value, isSending, creditBalance, onPressCredits, onC
         <Pressable
           onPress={onPressCredits}
           disabled={!onPressCredits}
+          testID={TEST_IDS.aiChat.credits}
           className="mb-2 flex-row items-center gap-1.5 self-end rounded-full bg-[--card] px-3 py-1.5"
           accessibilityRole="button"
           accessibilityLabel={t("ai-chat:input.creditBalanceLabel", { count: creditBalance })}
@@ -42,6 +44,7 @@ export function ChatInput({ value, isSending, creditBalance, onPressCredits, onC
       <ThemedInput
         value={value}
         onChangeText={onChangeValue}
+        testID={TEST_IDS.aiChat.input}
         placeholder={t("ai-chat:input.placeholder")}
         shape="xl"
         multiline
@@ -51,6 +54,7 @@ export function ChatInput({ value, isSending, creditBalance, onPressCredits, onC
         trailing={
           <Pressable
             onPress={onSend}
+            testID={TEST_IDS.aiChat.send}
             disabled={isSending || !value.trim()}
             className={`h-10 w-10 items-center justify-center rounded-full bg-[--bg] ${
               isSending || !value.trim() ? "opacity-50" : ""
