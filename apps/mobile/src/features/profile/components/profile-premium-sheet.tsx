@@ -1,7 +1,7 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useSegments } from 'expo-router'
 import { useEffect, useRef } from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import { BackHandler, Pressable, ScrollView, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { useGlassTabBarInset } from '../../../components/ui/glass-tab-bar'
@@ -80,6 +80,19 @@ export function ProfilePremiumSheet({
     }
     wasVisibleRef.current = visible
   }, [visible, source])
+
+  // Inline overlay, not an RN Modal: the Android back button must close the
+  // sheet instead of popping the screen underneath it.
+  useEffect(() => {
+    if (!visible) {
+      return
+    }
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      onClose()
+      return true
+    })
+    return () => subscription.remove()
+  }, [visible, onClose])
 
   if (!visible) {
     return null
