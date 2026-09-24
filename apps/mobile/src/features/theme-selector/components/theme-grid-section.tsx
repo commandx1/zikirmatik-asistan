@@ -37,7 +37,7 @@ export function ThemeGridSection({ options, selected, onSelect, selectedCardRef 
                 </View>
               ) : null}
               {isLocked ? (
-                <View className="absolute left-2 top-2 z-10 flex-row items-center gap-1 rounded-full border border-[--accent]/30 bg-[--accent]/15 px-2 py-1">
+                <View className="absolute left-2 top-2 z-10 flex-row items-center gap-1 rounded-full border px-2 py-1">
                   <FontAwesome6 name="lock" size={8} color="#C8972A" />
                   <Text className="text-xs font-bold tracking-[0.5px] text-accent">{upper(t("theme-selector:gridSection.premiumBadge"))}</Text>
                 </View>

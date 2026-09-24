@@ -18,7 +18,7 @@ function UpcomingDayCard({ day, onPress }: { day: UpcomingDayViewModel; onPress:
     <Pressable onPress={() => onPress(day.id)}>
       <ThemedCard className="rounded-2xl px-4 py-4" borderClassName="border-white/5">
         <View className="flex-row items-start gap-3">
-          <View className="h-10 w-10 items-center justify-center rounded-full border border-[--accent]/20 bg-bg">
+          <View className="h-10 w-10 items-center justify-center rounded-full border bg-bg">
             <FontAwesome6 name={day.icon} size={14} color={tokens.accent} />
           </View>
           <View className="flex-1">

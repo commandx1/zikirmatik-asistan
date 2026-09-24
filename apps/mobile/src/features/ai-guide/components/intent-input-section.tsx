@@ -70,7 +70,7 @@ export function IntentInputSection({
             accessibilityLabel={t("ai-guide:input.creditBalanceLabel", { count: creditBalance })}
           >
             <FontAwesome6 name="coins" size={12} color={tokens.accent} />
-            <Text className="text-xs font-semibold text-[--fg]" style={{ color: tokens.accent }}>
+            <Text className="text-xs font-semibold" style={{ color: tokens.accent }}>
               {t("ai-guide:input.creditBalance", { count: creditBalance })}
             </Text>
           </Pressable>

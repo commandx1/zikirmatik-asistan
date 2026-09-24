@@ -109,11 +109,7 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
         </Text>
       </View>
       <CountdownStrip segments={data.countdown} />
-      <View
-        className={`z-10 mt-4 flex-row items-center justify-center gap-2 rounded-full px-3 py-2 ${
-          isTodaySpecial ? "bg-[--bg]/70" : ""
-        }`}
-      >
+      <View className="z-10 mt-4 flex-row items-center justify-center gap-2 rounded-full px-3 py-2">
         <FontAwesome6
           name="calendar-day"
           iconStyle="regular"
@@ -184,8 +180,8 @@ export function HeroCountdownCard({ data, onPressDetail }: HeroCountdownCardProp
               />
               {/* Animated glows */}
               <Animated.View pointerEvents="none" className="absolute inset-0" style={glowAnimatedStyle}>
-                <View className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[--accent]/28" />
-                <View className="absolute -bottom-16 -left-10 h-44 w-44 rounded-full bg-[--accent]/14" />
+                <View className="absolute -right-12 -top-12 h-40 w-40 rounded-full" />
+                <View className="absolute -bottom-16 -left-10 h-44 w-44 rounded-full" />
               </Animated.View>
               {/* Shimmer */}
               <Animated.View

@@ -42,7 +42,7 @@ export function CollectionCard({ item, onPress }: Props) {
       className="flex-1 m-1.5 rounded-2xl border border-white/8 bg-card p-4"
       style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}
     >
-      <View className="mb-3 h-10 w-10 items-center justify-center rounded-full bg-[--accent]/15">
+      <View className="mb-3 h-10 w-10 items-center justify-center rounded-full">
         <FontAwesome6
           name={iconName}
           iconStyle="solid"

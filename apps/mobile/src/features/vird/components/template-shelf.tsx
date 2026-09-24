@@ -25,7 +25,7 @@ const TemplateRow = memo(function TemplateRow({ item, vertical, locale, t, route
       style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
     >
       {item.isPremium ? (
-        <View className="mb-2 self-start rounded-full bg-[--accent]/15 px-2 py-0.5">
+        <View className="mb-2 self-start rounded-full px-2 py-0.5">
           <Text className="text-[10px] font-semibold text-accent">{t("vird:templates.premiumBadge")}</Text>
         </View>
       ) : null}

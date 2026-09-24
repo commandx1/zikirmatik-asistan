@@ -9,7 +9,7 @@ type CountdownStripProps = {
 export function CountdownStrip({ segments }: CountdownStripProps) {
   const upper = useLocaleUpper();
   return (
-    <View className="mb-6 flex-row items-center rounded-2xl border border-white/5 bg-[--bg]/60 p-4">
+    <View className="mb-6 flex-row items-center rounded-2xl border border-white/5 p-4">
       {segments.map((segment, index) => (
         <View key={segment.label} className="flex-1 flex-row items-center justify-center">
           <View className="items-center px-1">
@@ -20,7 +20,7 @@ export function CountdownStrip({ segments }: CountdownStripProps) {
               {upper(segment.label)}
             </Text>
           </View>
-          {index < segments.length - 1 ? <Text className="px-1.5 text-lg font-semibold text-[--accent]/40">:</Text> : null}
+          {index < segments.length - 1 ? <Text className="px-1.5 text-lg font-semibold">:</Text> : null}
         </View>
       ))}
     </View>
