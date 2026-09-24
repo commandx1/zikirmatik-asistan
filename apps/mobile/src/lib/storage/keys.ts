@@ -25,3 +25,7 @@ export const WIDGET_STORAGE_KEYS = {
 // zustand persist name of the auth store; lives in SecureStore (see
 // secure-session-storage.ts), migrated once from AsyncStorage.
 export const AUTH_STORE_KEY = "auth-store-v2";
+
+// AsyncStorage marker (see secure-session-storage.ts) used to detect a fresh
+// install/reinstall, since Keychain survives uninstall but AsyncStorage doesn't.
+export const SECURE_SESSION_INSTALL_MARKER = "secure-session-install-v1";
