@@ -49,7 +49,7 @@ Sıfır bütçe, tek kurucu, haftada 5–8 saat pazarlama. Yatırım yok; yatır
 1. ✅ 2026-09-25 Giriş duvarı kaldırma + puan isteme (commit da67831)
 2. ✅ 2026-09-25 Ücretsiz halka (1 aktif, 5 üye) + 7. gün yıllık teklifi + süresi dolan oturum uyarısı
 3. ✅ 2026-09-25 KPI betiği (`pnpm --filter api kpi:report --weeks 8`); Play başlığı/kısa açıklama taslağı store-assets/play-2026/store-listing-tr.md'de. Play Console'a giriş: yeni sürüm Play'e çıktıktan SONRA (metin "ilk halka ücretsiz" diyor).
-4. Videolar: Remotion "ShortVideo" şablonu + 3 pilot hazır (apps/promo-video/out/short-pilot-03 sayaç, -04 kütüphane, -05 temalar; git dışı), kullanıcı onayı bekliyor. Senaryolu kayıt: `node apps/promo-video/scripts/record.mjs <counter|library|themes>` (Detox e2e/recordings, normal süitten hariç). Kanca metni ve kaynak satırı kullanıcıdan; onaydan sonra haftada 2.
+4. Videolar: Video 1 "Sayarken şaşırma" hazır (apps/promo-video/out/video-01-sayarken-sasirma.mp4, 33 sn, tek kesintisiz senaryolu kayıt, hız rampalı, döngü yok; git dışı). İlk üç pilot (03/04/05) kullanıcı tarafından reddedildi: döngü + mesajsızlık. Kural: storyboard onayı → senaryolu kayıt → altyazı işaretlerden. Sıradaki: Vird ("Sabah zikirlerini unutuyor musun?") ve Halka ("Ailecek aynı hedefe"), ikisi de premium hesap gerektirir. Seslendirme (ElevenLabs TR) ve HyperFrames değerlendirmesi videolar bitince.
 5. iOS (tetikleyici gerçekleşince)
 
 Kalan işler: yeni Android sürümü (expo-store-review yerel modül), sonra Play Console metin + görsel seti; Play mağaza deneyi (AI vurgulu/vurgusuz görseller); senaryolu Detox kaydı (pilot onayından sonra).
