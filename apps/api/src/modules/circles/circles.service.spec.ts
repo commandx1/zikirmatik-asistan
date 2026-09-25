@@ -10,6 +10,7 @@ import {
   CIRCLE_CODE_ALPHABET,
   CIRCLE_CODE_LENGTH,
   CIRCLE_ERROR_CODE,
+  CIRCLE_FREE_MAX_MEMBERS,
   CIRCLE_MAX_MEMBERS,
   generateCircleCode,
 } from './circles.constants';
@@ -149,8 +150,28 @@ describe('CirclesService', () => {
   });
 
   describe('create', () => {
-    it('rejects a non-premium user', async () => {
+    it('allows a free user to create a first active circle with memberLimit 5', async () => {
       mockPremium(false);
+      circleModel.countDocuments.mockResolvedValue(0);
+      circleModel.create.mockImplementation((doc: Record<string, unknown>) => ({
+        toObject: () => ({ _id: circleObjectId, status: 'active', ...doc }),
+      }));
+
+      const summary = await service.create(userId, {
+        dhikrId: dhikrObjectId.toHexString(),
+        goalCount: 1000,
+      });
+
+      expect(summary.memberLimit).toBe(CIRCLE_FREE_MAX_MEMBERS);
+      const [createdDoc] = circleModel.create.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
+      expect(createdDoc.memberLimit).toBe(CIRCLE_FREE_MAX_MEMBERS);
+    });
+
+    it("rejects a free user's second active circle with PREMIUM_REQUIRED", async () => {
+      mockPremium(false);
+      circleModel.countDocuments.mockResolvedValue(1);
 
       await expect(
         captureForbidden(
@@ -342,6 +363,7 @@ describe('CirclesService', () => {
 
       expect(summary.isCreator).toBe(true);
       expect(summary.memberCount).toBe(1);
+      expect(summary.memberLimit).toBe(CIRCLE_MAX_MEMBERS);
       expect(summary.myTotal).toBe(0);
       expect(summary.status).toBe('active');
       expect(summary.code).toMatch(/^[A-HJ-NP-Z2-9]{8}$/);
@@ -580,9 +602,43 @@ describe('CirclesService', () => {
       expect(preview).not.toHaveProperty('code');
       expect(preview).not.toHaveProperty('myTotal');
     });
+
+    it('defaults memberLimit to 200 when the circle has no memberLimit field', async () => {
+      circleModel.findOne.mockReturnValue(chain(activeCircle()));
+
+      const preview = await service.preview('ABCDEFGH');
+
+      expect(preview.memberLimit).toBe(CIRCLE_MAX_MEMBERS);
+    });
   });
 
   describe('join', () => {
+    it('carries a free circle memberLimit of 5 through the summary', async () => {
+      circleModel.findOne.mockReturnValue(
+        chain(activeCircle({ memberLimit: CIRCLE_FREE_MAX_MEMBERS })),
+      );
+      circleModel.findOneAndUpdate.mockReturnValue(
+        chain(activeCircle({ memberLimit: CIRCLE_FREE_MAX_MEMBERS })),
+      );
+      userModel.findById.mockReturnValue(chain({ displayName: 'Ahmet' }));
+
+      const summary = await service.join(userId, 'abcdefgh');
+
+      expect(summary.memberLimit).toBe(CIRCLE_FREE_MAX_MEMBERS);
+    });
+
+    it('defaults memberLimit to 200 for a legacy circle without the field', async () => {
+      const legacyCircle = activeCircle();
+      delete (legacyCircle as { memberLimit?: number }).memberLimit;
+      circleModel.findOne.mockReturnValue(chain(legacyCircle));
+      circleModel.findOneAndUpdate.mockReturnValue(chain(legacyCircle));
+      userModel.findById.mockReturnValue(chain({ displayName: 'Ahmet' }));
+
+      const summary = await service.join(userId, 'abcdefgh');
+
+      expect(summary.memberLimit).toBe(CIRCLE_MAX_MEMBERS);
+    });
+
     it('reports FULL when the guarded update matches nothing on a still-active circle', async () => {
       circleModel.findOne.mockReturnValue(chain(activeCircle()));
       circleModel.findOneAndUpdate.mockReturnValue(chain(null));
@@ -703,7 +759,10 @@ describe('CirclesService', () => {
       ];
       expect(filter.status).toBe('active');
       expect(filter.$expr).toEqual({
-        $lt: [{ $size: '$memberIds' }, CIRCLE_MAX_MEMBERS],
+        $lt: [
+          { $size: '$memberIds' },
+          { $ifNull: ['$memberLimit', CIRCLE_MAX_MEMBERS] },
+        ],
       });
       expect(options).toMatchObject({ returnDocument: 'before' });
     });

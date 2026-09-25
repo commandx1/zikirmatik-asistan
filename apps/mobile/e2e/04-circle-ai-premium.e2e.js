@@ -1,9 +1,31 @@
 /* global element, by, waitFor */
 const assert = require('node:assert/strict');
-const { freshSignIn, relaunch, visible, exists, waitForHome, scrollTo, skipTourIfShown, openTab, readText, seed } =
-  require('./helpers');
+const {
+  IDS,
+  freshSignIn,
+  relaunch,
+  visible,
+  exists,
+  existsText,
+  tapBack,
+  waitForHome,
+  scrollTo,
+  skipTourIfShown,
+  openTab,
+  readText,
+  seed,
+  dismissIfShown,
+  apiSignIn,
+  apiGet,
+  apiPost,
+} = require('./helpers');
 
 const openCircleHub = async () => {
+  // Günlük Esma "hoş geldin" modalı, tur tamamlandıktan sonra async depolama
+  // kontrolüyle gecikmeli açılabilir (skipTourIfShown'ın ilk denemesinden
+  // sonra) — ev sayfasını kaydırmadan önce tekrar kontrol et, aksi halde
+  // e2e-home-scroll modalın altında kalır ve scrollTo hedefi hiç bulamaz.
+  await dismissIfShown(IDS.welcomeLater, 4000);
   await scrollTo('e2e-circle-home-card', 'e2e-home-scroll');
   await element(by.id('e2e-circle-home-card')).tap();
   await exists('e2e-circle-hub');
@@ -11,18 +33,58 @@ const openCircleHub = async () => {
 
 const creditCount = async () => Number.parseInt((await readText('e2e-ai-chat-credits')).replace(/\D+/g, ''), 10);
 
+// Dhikr seç + gönder — create ekranı her zaman picker'ı gösterir; premium kontrolü
+// yalnız gönderimde (API CIRCLE_PREMIUM_REQUIRED) devreye girer.
+const fillAndSubmitCircleForm = async () => {
+  await visible('e2e-circle-pick-dhikr', 10000);
+  await element(by.id('e2e-circle-pick-dhikr')).tap();
+  await exists('e2e-vird-picker-row', 20000);
+  await element(by.id('e2e-vird-picker-row')).atIndex(0).tap();
+  await element(by.id('e2e-circle-submit')).tap();
+};
+
 describe('04 halka + premium + AI sohbet', () => {
   beforeAll(async () => {
     await freshSignIn();
   });
 
   it('ücretsiz kullanıcı yeni halkada premium sayfasını görür', async () => {
+    // İlk halka artık ücretsiz kullanıcıya da açık (memberLimit 5) — dhikr picker'a
+    // doğrudan gidilir, premium sheet görünmez.
     await openCircleHub();
     await element(by.id('e2e-circle-new')).tap();
+    await fillAndSubmitCircleForm();
+
+    await visible('e2e-circle-code', 20000);
+    // "1/5" — circle:hub.membersCountWithLimit; sayı/limit dilden bağımsız (RegExp).
+    // Not: Detox'un native metin eşleştiricisi (Android Espresso withText / iOS predicate)
+    // regex'i TAM metne uygular (Pattern.matches) — alt dize değil; ".*" ile tüm metni kapla.
+    await existsText(/^1\/5.*/, 20000);
+
+    // İkinci eşzamanlı halka denemesi: detay ekranından hub'a dön (nested stack
+    // ekranında tab bar yok → openTab kullanılamaz; PageHeader geri okuna dokun),
+    // tekrar "yeni halka" → picker yine açılır (gönderim öncesi kısıtlama yok) ama
+    // gönderimde API CIRCLE_PREMIUM_REQUIRED döner → premium sheet açılır.
+    await tapBack();
+    await exists('e2e-circle-hub');
+    await element(by.id('e2e-circle-new')).tap();
+    await fillAndSubmitCircleForm();
     await exists('e2e-premium-sheet');
     await scrollTo('e2e-premium-close', 'e2e-premium-scroll');
     await element(by.id('e2e-premium-close')).tap();
     await waitFor(element(by.id('e2e-premium-sheet'))).not.toExist().withTimeout(10000);
+
+    // Temizlik: Home'daki CircleCard aktif bir halka varken "e2e-circle-home-card"
+    // yerine testID'siz "devam et" kartına döner (bkz. circle-card.tsx) — bu
+    // testID'siz buton için UI'da güvenilir bir dokunma yolu yok, bu yüzden
+    // halkayı API üzerinden kapatıyoruz ki sonraki testlerin openCircleHub()'ı
+    // (boş durum kartı → e2e-circle-home-card) çalışmaya devam etsin.
+    const auth = await apiSignIn();
+    const mine = await apiGet('/v1/circles', auth.accessToken);
+    const createdCircle = (Array.isArray(mine) ? mine : []).find((c) => c.status === 'active');
+    if (createdCircle) {
+      await apiPost(`/v1/circles/${createdCircle.id}/close`, auth.accessToken);
+    }
   });
 
   it('premium olunca halka kurar ve 8 haneli kod görür', async () => {

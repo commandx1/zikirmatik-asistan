@@ -9,18 +9,28 @@ import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 type ReviewState = {
   reviewRequestedAt: string | null;
   markReviewRequested: () => void;
+  // One-shot flag for the "day 7" yearly-plan offer (see
+  // features/home/hooks/use-day7-offer.ts) — same one-per-install shape as
+  // reviewRequestedAt above.
+  day7OfferShownAt: string | null;
+  markDay7OfferShown: () => void;
 };
 
 export const useReviewStore = create<ReviewState>()(
   persist(
     (set) => ({
       reviewRequestedAt: null,
-      markReviewRequested: () => set({ reviewRequestedAt: new Date().toISOString() })
+      markReviewRequested: () => set({ reviewRequestedAt: new Date().toISOString() }),
+      day7OfferShownAt: null,
+      markDay7OfferShown: () => set({ day7OfferShownAt: new Date().toISOString() })
     }),
     {
       name: "review-store-v1",
       storage: createJSONStorage(() => safeAsyncStorage),
-      partialize: (state) => ({ reviewRequestedAt: state.reviewRequestedAt })
+      partialize: (state) => ({
+        reviewRequestedAt: state.reviewRequestedAt,
+        day7OfferShownAt: state.day7OfferShownAt
+      })
     }
   )
 );

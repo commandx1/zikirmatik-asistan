@@ -99,7 +99,11 @@ export function CircleJoinScreen({ code: rawCode }: { code: string }) {
               <Text className="text-xs text-text-muted">
                 {t("circle:home.progress", { total: preview.totalCount, goal: preview.goalCount })}
               </Text>
-              <Text className="mt-1 text-xs text-text-muted">{t("circle:hub.membersCount", { count: preview.memberCount })}</Text>
+              <Text className="mt-1 text-xs text-text-muted">
+                {preview.memberLimit
+                  ? t("circle:hub.membersCountWithLimit", { count: preview.memberCount, limit: preview.memberLimit })
+                  : t("circle:hub.membersCount", { count: preview.memberCount })}
+              </Text>
               <Text className="mt-2 text-xs font-semibold" style={{ color: preview.status === "active" ? tokens.success : tokens.textMuted }}>
                 {t(`circle:status.${preview.status}`)}
               </Text>

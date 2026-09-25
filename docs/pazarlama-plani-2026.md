@@ -46,11 +46,13 @@ Sıfır bütçe, tek kurucu, haftada 5–8 saat pazarlama. Yatırım yok; yatır
 
 ## Sıra (Regaib 10 Aralık 2026'ya kadar, 11 hafta)
 
-1. Giriş duvarı kaldırma + puan isteme
-2. Ücretsiz halka + 7. gün yıllık teklifi
-3. Play başlığı ve görsel seti + haftalık KPI betiği
-4. Videolar: 3 pilot, sonra haftada 2
+1. ✅ 2026-09-25 Giriş duvarı kaldırma + puan isteme (commit da67831)
+2. ✅ 2026-09-25 Ücretsiz halka (1 aktif, 5 üye) + 7. gün yıllık teklifi + süresi dolan oturum uyarısı
+3. ✅ 2026-09-25 KPI betiği (`pnpm --filter api kpi:report --weeks 8`); Play başlığı/kısa açıklama taslağı store-assets/play-2026/store-listing-tr.md'de. Play Console'a giriş: yeni sürüm Play'e çıktıktan SONRA (metin "ilk halka ücretsiz" diyor).
+4. Videolar: Remotion "ShortVideo" şablonu + pilot (apps/promo-video/out/short-pilot-03.mp4, git dışı) kullanıcı onayı bekliyor; onaydan sonra 2 pilot daha, sonra haftada 2. Kanca metni kullanıcıdan.
 5. iOS (tetikleyici gerçekleşince)
+
+Kalan işler: yeni Android sürümü (expo-store-review yerel modül), sonra Play Console metin + görsel seti; Play mağaza deneyi (AI vurgulu/vurgusuz görseller); senaryolu Detox kaydı (pilot onayından sonra).
 
 ## Takvim (2027 tarihleri yaklaşık, Diyanet listesiyle doğrulanacak)
 

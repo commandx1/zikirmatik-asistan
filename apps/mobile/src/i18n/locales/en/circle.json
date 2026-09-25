@@ -16,7 +16,8 @@
     "codePlaceholder": "Enter invite code",
     "join": "Join",
     "invalidCode": "Invalid invite code.",
-    "membersCount": "{{count}} members"
+    "membersCount": "{{count}} members",
+    "membersCountWithLimit": "{{count}}/{{limit}} members"
   },
   "create": {
     "title": "New circle",
@@ -73,7 +74,7 @@
     "closed": "Closed"
   },
   "errors": {
-    "premiumRequired": "Starting a new circle requires premium membership.",
+    "premiumRequired": "Running more than one circle at once requires premium membership.",
     "notFound": "Circle not found.",
     "notActive": "This circle is no longer active.",
     "full": "This circle is full.",

@@ -1,13 +1,13 @@
 {
   "meta": {
-    "siteName": "Zikirmatik Asistan AI",
-    "titleDefault": "Zikirmatik Asistan AI — Your Mindful Dhikr Companion",
-    "description": "Zikirmatik Asistan AI helps you track dhikr, build lasting habits, and stay connected to your daily worship with a calm, distraction-free counter and smart reminders.",
-    "titlePrivacy": "Privacy Policy — Zikirmatik Asistan AI",
-    "titleTerms": "Terms of Service — Zikirmatik Asistan AI",
-    "titleRefund": "Refund Policy — Zikirmatik Asistan AI",
-    "halkaTitle": "Join a Dhikr Circle — Zikirmatik Asistan AI",
-    "halkaDescription": "Join a dhikr circle in Zikirmatik Asistan AI with this invite code."
+    "siteName": "Zikirmatik Asistan",
+    "titleDefault": "Zikirmatik Asistan — Your Mindful Dhikr Companion",
+    "description": "Zikirmatik Asistan helps you track dhikr, build lasting habits, and stay connected to your daily worship with a calm, distraction-free counter and smart reminders.",
+    "titlePrivacy": "Privacy Policy — Zikirmatik Asistan",
+    "titleTerms": "Terms of Service — Zikirmatik Asistan",
+    "titleRefund": "Refund Policy — Zikirmatik Asistan",
+    "halkaTitle": "Join a Dhikr Circle — Zikirmatik Asistan",
+    "halkaDescription": "Join a dhikr circle in Zikirmatik Asistan with this invite code."
   },
   "nav": {
     "features": "Features",
@@ -20,7 +20,7 @@
     "getOnPlay": "Get it on Google Play"
   },
   "hero": {
-    "eyebrow": "Zikirmatik Asistan AI",
+    "eyebrow": "Zikirmatik Asistan",
     "title": "A calm, focused companion for your daily dhikr",
     "subtitle": "Count your dhikr with a beautifully simple counter, build consistent habits with gentle reminders, and, whenever you like, ask AI Guide for a dhikr suited to your moment, complete with its virtue and purpose — all in one distraction-free app.",
     "ctaPrimary": "Get it on Google Play",
@@ -82,12 +82,12 @@
     "note": "You get 1 free credit every day (plus a 3-credit welcome bonus on your first day) — see the Premium section for additional credits."
   },
   "howItWorks": {
-    "title": "How Zikirmatik Asistan AI works",
+    "title": "How Zikirmatik Asistan works",
     "subtitle": "Get started in minutes and build a habit that lasts.",
     "steps": [
       {
         "title": "Download & open",
-        "description": "Install Zikirmatik Asistan AI from Google Play and open the app — no complicated setup required."
+        "description": "Install Zikirmatik Asistan from Google Play and open the app — no complicated setup required."
       },
       {
         "title": "Pick your dhikr",
@@ -110,7 +110,7 @@
   "screenshots": {
     "title": "A closer look at the app",
     "subtitle": "Simple, calm screens designed to keep your attention on your dhikr.",
-    "alt": "Zikirmatik Asistan AI app screenshot"
+    "alt": "Zikirmatik Asistan app screenshot"
   },
   "premium": {
     "title": "Zikirmatik Asistan Premium",
@@ -168,14 +168,14 @@
   },
   "faq": {
     "title": "Frequently asked questions",
-    "subtitle": "Answers to the most common questions about Zikirmatik Asistan AI.",
+    "subtitle": "Answers to the most common questions about Zikirmatik Asistan.",
     "items": [
       {
-        "question": "What is Zikirmatik Asistan AI?",
-        "answer": "Zikirmatik Asistan AI is a mindful dhikr counter and habit-building companion that helps you track, organize and stay consistent with your daily dhikr practice."
+        "question": "What is Zikirmatik Asistan?",
+        "answer": "Zikirmatik Asistan is a mindful dhikr counter and habit-building companion that helps you track, organize and stay consistent with your daily dhikr practice."
       },
       {
-        "question": "Is Zikirmatik Asistan AI free to use?",
+        "question": "Is Zikirmatik Asistan free to use?",
         "answer": "Yes. The dhikr counter, the entire library of 541 dhikr, all collections, reminders, streaks and Google Sign-In sync are completely free. Premium unlocks 50 monthly AI Rehber credits, detailed statistics and all themes."
       },
       {
@@ -187,7 +187,7 @@
         "answer": "No account is required to use the core features. Signing in with Google is optional and lets you securely back up and sync your collections, streaks and settings across devices."
       },
       {
-        "question": "What data does Zikirmatik Asistan AI collect?",
+        "question": "What data does Zikirmatik Asistan collect?",
         "answer": "We collect only the data necessary to provide the app's features, such as your dhikr collections, streaks and account information if you choose to sign in. See our Privacy Policy for full details."
       },
       {
@@ -233,7 +233,7 @@
   },
   "privacy": {
     "title": "Privacy Policy",
-    "intro": "This Privacy Policy explains how Zikirmatik Asistan AI (\"we\", \"us\", \"our app\") collects, uses, discloses and protects your information when you use our mobile application.",
+    "intro": "This Privacy Policy explains how Zikirmatik Asistan (\"we\", \"us\", \"our app\") collects, uses, discloses and protects your information when you use our mobile application.",
     "sections": [
       {
         "heading": "1. Information We Collect",
@@ -265,7 +265,7 @@
       },
       {
         "heading": "8. Children's Privacy",
-        "body": "Zikirmatik Asistan AI is not directed at children under the age of 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us so we can remove it."
+        "body": "Zikirmatik Asistan is not directed at children under the age of 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us so we can remove it."
       },
       {
         "heading": "9. Changes to This Policy",
@@ -279,15 +279,15 @@
   },
   "terms": {
     "title": "Terms of Service",
-    "intro": "These Terms of Service (\"Terms\") govern your access to and use of the Zikirmatik Asistan AI mobile application (the \"App\"). By downloading, accessing or using the App, you agree to be bound by these Terms.",
+    "intro": "These Terms of Service (\"Terms\") govern your access to and use of the Zikirmatik Asistan mobile application (the \"App\"). By downloading, accessing or using the App, you agree to be bound by these Terms.",
     "sections": [
       {
         "heading": "1. Acceptance of Terms",
-        "body": "By installing or using Zikirmatik Asistan AI, you confirm that you have read, understood and agree to these Terms. If you do not agree, please do not use the App."
+        "body": "By installing or using Zikirmatik Asistan, you confirm that you have read, understood and agree to these Terms. If you do not agree, please do not use the App."
       },
       {
         "heading": "2. Description of Service",
-        "body": "Zikirmatik Asistan AI provides a dhikr counter, custom collections, daily and special-day reminders, streaks and statistics, optional Google Sign-In cloud sync, and an optional AI Rehber feature that uses purchasable credit packages."
+        "body": "Zikirmatik Asistan provides a dhikr counter, custom collections, daily and special-day reminders, streaks and statistics, optional Google Sign-In cloud sync, and an optional AI Rehber feature that uses purchasable credit packages."
       },
       {
         "heading": "3. Accounts",
@@ -333,7 +333,7 @@
   },
   "refund": {
     "title": "Refund Policy",
-    "intro": "This Refund Policy explains how refund requests for optional Premium credit purchases made within Zikirmatik Asistan AI are handled.",
+    "intro": "This Refund Policy explains how refund requests for optional Premium credit purchases made within Zikirmatik Asistan are handled.",
     "sections": [
       {
         "heading": "1. Purchases Through Google Play",

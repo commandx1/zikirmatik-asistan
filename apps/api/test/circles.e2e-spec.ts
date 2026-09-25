@@ -8,6 +8,10 @@ import { randomUUID } from 'node:crypto';
 import request from 'supertest';
 import { istanbulDateKey, shiftDateKey } from '../src/common/utils/date-keys';
 import { CIRCLE_ERROR_CODE } from '../src/modules/circles/circles.constants';
+import {
+  Circle,
+  type CircleDocument,
+} from '../src/modules/circles/schemas/circle.schema';
 import type { DhikrDocument } from '../src/modules/dhikrs/schemas/dhikr.schema';
 import {
   User,
@@ -96,10 +100,28 @@ describe('Zikir Halkası (e2e)', () => {
   }
 
   describe('create', () => {
-    it('ücretsiz kullanıcı → 403 CIRCLE_PREMIUM_REQUIRED', async () => {
+    it('ücretsiz kullanıcı → ilk halka 201, memberLimit 5', async () => {
       const user = await newUser();
       const dhikrModel = t.model<DhikrDocument>('Dhikr');
       const dhikrId = await seedDhikr(dhikrModel);
+
+      const res = await request(t.http)
+        .post('/v1/circles')
+        .set(bearer(user.accessToken))
+        .send({ dhikrId, goalCount: 100 })
+        .expect(201);
+      expect(data<{ memberLimit: number }>(res).memberLimit).toBe(5);
+    });
+
+    it('ücretsiz kullanıcı → ikinci aktif halka 403 CIRCLE_PREMIUM_REQUIRED', async () => {
+      const user = await newUser();
+      const dhikrModel = t.model<DhikrDocument>('Dhikr');
+      const dhikrId = await seedDhikr(dhikrModel);
+      await request(t.http)
+        .post('/v1/circles')
+        .set(bearer(user.accessToken))
+        .send({ dhikrId, goalCount: 100 })
+        .expect(201);
 
       const res = await request(t.http)
         .post('/v1/circles')
@@ -109,10 +131,13 @@ describe('Zikir Halkası (e2e)', () => {
       expect(errCode(res)).toBe(CIRCLE_ERROR_CODE.PREMIUM_REQUIRED);
     });
 
-    it('premium → 201, code deseni /^[A-HJ-NP-Z2-9]{8}$/', async () => {
+    it('premium → 201, code deseni /^[A-HJ-NP-Z2-9]{8}$/, memberLimit 200', async () => {
       const user = await premiumUser();
       const { circle } = await seedActiveCircle(user);
       expect(circle.code).toMatch(/^[A-HJ-NP-Z2-9]{8}$/);
+      expect((circle as unknown as { memberLimit: number }).memberLimit).toBe(
+        200,
+      );
     });
 
     it('endDate geçmiş → 400', async () => {
@@ -192,6 +217,64 @@ describe('Zikir Halkası (e2e)', () => {
 
       expect(data<{ memberCount: number }>(first).memberCount).toBe(2);
       expect(data<{ memberCount: number }>(second).memberCount).toBe(2);
+    });
+
+    it('ücretsiz kurucunun halkası 5 üyede dolar → 403 CIRCLE_FULL', async () => {
+      const creator = await newUser();
+      const dhikrModel = t.model<DhikrDocument>('Dhikr');
+      const dhikrId = await seedDhikr(dhikrModel);
+      const createRes = await request(t.http)
+        .post('/v1/circles')
+        .set(bearer(creator.accessToken))
+        .send({ dhikrId, goalCount: 100 })
+        .expect(201);
+      const circle = data<{ code: string }>(createRes);
+
+      // Kurucu dahil 5 üye: 4 katılımcı daha eklenir.
+      for (let i = 0; i < 4; i += 1) {
+        const member = await newUser();
+        await request(t.http)
+          .post('/v1/circles/join')
+          .set(bearer(member.accessToken))
+          .send({ code: circle.code })
+          .expect(201);
+      }
+
+      const sixth = await newUser();
+      const res = await request(t.http)
+        .post('/v1/circles/join')
+        .set(bearer(sixth.accessToken))
+        .send({ code: circle.code })
+        .expect(403);
+      expect(errCode(res)).toBe(CIRCLE_ERROR_CODE.FULL);
+    });
+
+    it('memberLimit alanı olmayan eski halka 5 üyeyi aşabilir (varsayılan 200)', async () => {
+      const creator = await newUser();
+      const dhikrModel = t.model<DhikrDocument>('Dhikr');
+      const dhikrId = await seedDhikr(dhikrModel);
+      const createRes = await request(t.http)
+        .post('/v1/circles')
+        .set(bearer(creator.accessToken))
+        .send({ dhikrId, goalCount: 100 })
+        .expect(201);
+      const circle = data<{ id: string; code: string }>(createRes);
+
+      // Alanı fiilen kaldırarak göç öncesi bir belgeyi taklit eder.
+      await t
+        .model<CircleDocument>(Circle.name)
+        .updateOne({ _id: circle.id }, { $unset: { memberLimit: 1 } })
+        .exec();
+
+      // Kurucu dahil 6 üye: alan olmadan CIRCLE_FREE_MAX_MEMBERS (5) aşılırdı.
+      for (let i = 0; i < 5; i += 1) {
+        const member = await newUser();
+        await request(t.http)
+          .post('/v1/circles/join')
+          .set(bearer(member.accessToken))
+          .send({ code: circle.code })
+          .expect(201);
+      }
     });
   });
 

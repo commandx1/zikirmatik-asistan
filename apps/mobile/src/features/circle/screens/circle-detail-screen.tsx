@@ -125,7 +125,11 @@ export function CircleDetailScreen({ id }: { id: string }) {
             <Text className="text-xs font-semibold" style={{ color: storedCircle.status === "active" ? tokens.success : tokens.textMuted }}>
               {t(`circle:status.${storedCircle.status}`)}
             </Text>
-            <Text className="text-xs text-text-muted">{t("circle:hub.membersCount", { count: storedCircle.memberCount })}</Text>
+            <Text className="text-xs text-text-muted">
+              {storedCircle.memberLimit
+                ? t("circle:hub.membersCountWithLimit", { count: storedCircle.memberCount, limit: storedCircle.memberLimit })
+                : t("circle:hub.membersCount", { count: storedCircle.memberCount })}
+            </Text>
           </View>
 
           <View className="mb-1.5 h-2 overflow-hidden rounded-full bg-white/10">

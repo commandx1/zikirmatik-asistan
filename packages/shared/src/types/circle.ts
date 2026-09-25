@@ -20,6 +20,8 @@ export type CirclePreview = {
   goalCount: number;
   totalCount: number;
   memberCount: number;
+  /** Bu halkanın üye kapasitesi (kurucu dahil). */
+  memberLimit: number;
   status: CircleStatus;
 };
 
@@ -67,3 +69,5 @@ export const CIRCLE_CODE_RE = /^[A-HJ-NP-Z2-9]{8}$/;
 /** Sunucu limitlerinin istemci aynası; asıl zorlama sunucudadır. */
 export const CIRCLE_MAX_MEMBERS = 200;
 export const CIRCLE_MAX_ACTIVE_PER_CREATOR = 10;
+export const CIRCLE_FREE_MAX_ACTIVE_PER_CREATOR = 1;
+export const CIRCLE_FREE_MAX_MEMBERS = 5;

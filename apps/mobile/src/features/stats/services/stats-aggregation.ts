@@ -102,6 +102,7 @@ export function buildLocalStatsSummary(
     },
     badges: computeLocalBadges({
       allTimeCount,
+      currentStreak: streak.currentStreak,
       longestStreak: streak.longestStreak,
       totalDaysActive: activeDays.length
     })

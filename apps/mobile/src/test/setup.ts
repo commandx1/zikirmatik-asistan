@@ -13,7 +13,11 @@ import { vi } from "vitest";
 
 vi.mock("@react-native-async-storage/async-storage", () => ({
   default: {
-    getItem: vi.fn(),
+    // Real AsyncStorage resolves a missing key to `null`; zustand persist's
+    // hydration does JSON.parse on whatever getItem resolves to unless it
+    // is exactly `null`, so a bare vi.fn() (-> `undefined`) makes hydration
+    // throw internally and never call onFinishHydration/hasHydrated.
+    getItem: vi.fn(async () => null),
     setItem: vi.fn(),
     removeItem: vi.fn()
   }

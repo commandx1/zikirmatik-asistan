@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { Dhikr } from '../../dhikrs/schemas/dhikr.schema';
 import { User } from '../../users/schemas/user.schema';
+import { CIRCLE_MAX_MEMBERS } from '../circles.constants';
 
 export type CircleDocument = HydratedDocument<Circle>;
 
@@ -36,6 +37,12 @@ export class Circle {
 
   @Prop({ type: [Types.ObjectId], ref: User.name, default: [] })
   memberIds!: Types.ObjectId[];
+
+  // Bu halkanın en fazla üye kapasitesi (kurucu dahil). Kuruluş anında
+  // kurucunun premium durumuna göre sabitlenir; sonradan değişmez. Eski
+  // belgelerde alan yoksa varsayılan CIRCLE_MAX_MEMBERS (200) geçerlidir.
+  @Prop({ type: Number, default: CIRCLE_MAX_MEMBERS })
+  memberLimit!: number;
 
   // Log toplamının önbelleği — MONOTON: yalnız artan yönde güncellenir
   // (bkz. applyProgress). Gerçeğin kaynağı her zaman dhikr_logs'tur.

@@ -773,6 +773,7 @@ describe('Zikir Halkası — gerçek Mongo eşzamanlılık', () => {
       'dhikr',
       'goalCount',
       'memberCount',
+      'memberLimit',
       'name',
       'status',
       'totalCount',

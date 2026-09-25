@@ -21,6 +21,8 @@ import { User, type UserDocument } from '../users/schemas/user.schema';
 import {
   CIRCLE_ERROR_CODE,
   CIRCLE_ERROR_MESSAGE,
+  CIRCLE_FREE_MAX_ACTIVE_PER_CREATOR,
+  CIRCLE_FREE_MAX_MEMBERS,
   CIRCLE_MAX_ACTIVE_PER_CREATOR,
   CIRCLE_MAX_MEMBERS,
   circleCompletedPush,
@@ -50,6 +52,7 @@ export type CirclePreview = {
   goalCount: number;
   totalCount: number;
   memberCount: number;
+  memberLimit: number;
   status: CircleStatus;
 };
 
@@ -78,6 +81,7 @@ type CircleLean = {
   creatorId: Types.ObjectId;
   code: string;
   memberIds: Types.ObjectId[];
+  memberLimit: number;
   totalCount: number;
   status: CircleStatus;
 };
@@ -111,10 +115,7 @@ export class CirclesService {
 
   async create(userId: string, dto: CreateCircleDto): Promise<CircleSummary> {
     const userObjectId = this.asObjectId(userId);
-
-    if (!(await this.isPremiumUser(userObjectId))) {
-      throw this.forbidden(CIRCLE_ERROR_CODE.PREMIUM_REQUIRED);
-    }
+    const premium = await this.isPremiumUser(userObjectId);
 
     const dhikr = await this.dhikrModel
       .findById(this.asObjectId(dto.dhikrId))
@@ -133,9 +134,20 @@ export class CirclesService {
       creatorId: userObjectId,
       status: 'active',
     });
-    if (activeCount >= CIRCLE_MAX_ACTIVE_PER_CREATOR) {
-      throw this.forbidden(CIRCLE_ERROR_CODE.MAX_ACTIVE);
+    const activeLimit = premium
+      ? CIRCLE_MAX_ACTIVE_PER_CREATOR
+      : CIRCLE_FREE_MAX_ACTIVE_PER_CREATOR;
+    if (activeCount >= activeLimit) {
+      // Ücretsiz kullanıcı zaten 1 aktif halkaya sahipse premium gerekir
+      // (uygulama paywall'ı açar); premium kullanıcı kendi tavanına
+      // ulaştıysa mevcut MAX_ACTIVE hatası kalır.
+      throw this.forbidden(
+        premium
+          ? CIRCLE_ERROR_CODE.MAX_ACTIVE
+          : CIRCLE_ERROR_CODE.PREMIUM_REQUIRED,
+      );
     }
+    const memberLimit = premium ? CIRCLE_MAX_MEMBERS : CIRCLE_FREE_MAX_MEMBERS;
 
     if (dto.endDate && dto.endDate < istanbulDateKey(new Date())) {
       throw new BadRequestException('Bitiş tarihi geçmiş bir gün olamaz.');
@@ -153,6 +165,7 @@ export class CirclesService {
           creatorId: userObjectId,
           code: generateCircleCode(),
           memberIds: [userObjectId],
+          memberLimit,
         });
         return this.toSummary(created.toObject(), dhikr, 0, userObjectId);
       } catch (error) {
@@ -293,6 +306,7 @@ export class CirclesService {
       goalCount: circle.goalCount,
       totalCount: circle.totalCount,
       memberCount: circle.memberIds.length,
+      memberLimit: circle.memberLimit ?? CIRCLE_MAX_MEMBERS,
       status: circle.status,
     };
   }
@@ -325,7 +339,12 @@ export class CirclesService {
         {
           _id: circle._id,
           status: 'active',
-          $expr: { $lt: [{ $size: '$memberIds' }, CIRCLE_MAX_MEMBERS] },
+          $expr: {
+            $lt: [
+              { $size: '$memberIds' },
+              { $ifNull: ['$memberLimit', CIRCLE_MAX_MEMBERS] },
+            ],
+          },
         },
         { $addToSet: { memberIds: userObjectId } },
         { returnDocument: 'before' },
@@ -584,6 +603,7 @@ export class CirclesService {
       goalCount: circle.goalCount,
       totalCount: circle.totalCount,
       memberCount: circle.memberIds.length,
+      memberLimit: circle.memberLimit ?? CIRCLE_MAX_MEMBERS,
       status: circle.status,
       endDate: circle.endDate,
       myTotal,

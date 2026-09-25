@@ -12,6 +12,7 @@ function makeCircle(overrides: Partial<CircleSummary> = {}): CircleSummary {
     goalCount: 1000,
     totalCount: 0,
     memberCount: 1,
+    memberLimit: 200,
     status: "active",
     myTotal: 0,
     creatorId: "u1",

@@ -1,13 +1,13 @@
 {
   "meta": {
-    "siteName": "Zikirmatik Asistan AI",
-    "titleDefault": "Zikirmatik Asistan AI — Zikirlerinizin Sadık Yardımcısı",
-    "description": "Zikirmatik Asistan AI; sakin, dikkat dağıtmayan bir sayaç ve akıllı hatırlatıcılarla zikirlerinizi takip etmenize ve kalıcı alışkanlıklar oluşturmanıza yardımcı olur.",
-    "titlePrivacy": "Gizlilik Politikası — Zikirmatik Asistan AI",
-    "titleTerms": "Kullanım Şartları — Zikirmatik Asistan AI",
-    "titleRefund": "İade Politikası — Zikirmatik Asistan AI",
-    "halkaTitle": "Zikir Halkasına Katıl — Zikirmatik Asistan AI",
-    "halkaDescription": "Bu davet koduyla Zikirmatik Asistan AI uygulamasında bir zikir halkasına katılın."
+    "siteName": "Zikirmatik Asistan",
+    "titleDefault": "Zikirmatik Asistan — Zikirlerinizin Sadık Yardımcısı",
+    "description": "Zikirmatik Asistan; sakin, dikkat dağıtmayan bir sayaç ve akıllı hatırlatıcılarla zikirlerinizi takip etmenize ve kalıcı alışkanlıklar oluşturmanıza yardımcı olur.",
+    "titlePrivacy": "Gizlilik Politikası — Zikirmatik Asistan",
+    "titleTerms": "Kullanım Şartları — Zikirmatik Asistan",
+    "titleRefund": "İade Politikası — Zikirmatik Asistan",
+    "halkaTitle": "Zikir Halkasına Katıl — Zikirmatik Asistan",
+    "halkaDescription": "Bu davet koduyla Zikirmatik Asistan uygulamasında bir zikir halkasına katılın."
   },
   "nav": {
     "features": "Özellikler",
@@ -20,7 +20,7 @@
     "getOnPlay": "Google Play'den İndirin"
   },
   "hero": {
-    "eyebrow": "Zikirmatik Asistan AI",
+    "eyebrow": "Zikirmatik Asistan",
     "title": "Günlük zikirleriniz için sakin ve odaklı bir yardımcı",
     "subtitle": "Şık ve sade bir sayaçla zikirlerinizi sayın, nazik hatırlatıcılarla düzenli bir alışkanlık oluşturun; isterseniz AI Rehber'e danışarak o anınıza uygun zikri, fazilet hadisi ve açık amacıyla birlikte keşfedin — hepsi tek, dikkat dağıtmayan bir uygulamada.",
     "ctaPrimary": "Google Play'den İndirin",
@@ -82,12 +82,12 @@
     "note": "Her gün 1 ücretsiz krediniz yenilenir (ilk gün 3 kredi karşılama bonusuyla) — ek krediler için Premium bölümüne bakın."
   },
   "howItWorks": {
-    "title": "Zikirmatik Asistan AI nasıl çalışır",
+    "title": "Zikirmatik Asistan nasıl çalışır",
     "subtitle": "Dakikalar içinde başlayın ve kalıcı bir alışkanlık oluşturun.",
     "steps": [
       {
         "title": "İndirin ve açın",
-        "description": "Zikirmatik Asistan AI'yı Google Play'den yükleyin ve uygulamayı açın — karmaşık bir kurulum gerekmez."
+        "description": "Zikirmatik Asistan'yı Google Play'den yükleyin ve uygulamayı açın — karmaşık bir kurulum gerekmez."
       },
       {
         "title": "Zikrinizi seçin",
@@ -110,7 +110,7 @@
   "screenshots": {
     "title": "Uygulamaya yakından bakış",
     "subtitle": "Dikkatinizi zikrinizde tutmak için tasarlanmış sade ve sakin ekranlar.",
-    "alt": "Zikirmatik Asistan AI uygulama ekran görüntüsü"
+    "alt": "Zikirmatik Asistan uygulama ekran görüntüsü"
   },
   "premium": {
     "title": "Zikirmatik Asistan Premium",
@@ -168,14 +168,14 @@
   },
   "faq": {
     "title": "Sıkça sorulan sorular",
-    "subtitle": "Zikirmatik Asistan AI hakkında en çok merak edilen sorular.",
+    "subtitle": "Zikirmatik Asistan hakkında en çok merak edilen sorular.",
     "items": [
       {
-        "question": "Zikirmatik Asistan AI nedir?",
-        "answer": "Zikirmatik Asistan AI; günlük zikir pratiğinizi takip etmenize, düzenlemenize ve sürdürmenize yardımcı olan bilinçli bir zikir sayacı ve alışkanlık yardımcısıdır."
+        "question": "Zikirmatik Asistan nedir?",
+        "answer": "Zikirmatik Asistan; günlük zikir pratiğinizi takip etmenize, düzenlemenize ve sürdürmenize yardımcı olan bilinçli bir zikir sayacı ve alışkanlık yardımcısıdır."
       },
       {
-        "question": "Zikirmatik Asistan AI ücretsiz mi?",
+        "question": "Zikirmatik Asistan ücretsiz mi?",
         "answer": "Evet. Zikir sayacı, 541 zikirlik kütüphanenin tamamı, tüm koleksiyonlar, hatırlatıcılar, seriler ve Google ile giriş senkronizasyonu tamamen ücretsizdir. Premium abonelik; AI Rehber için aylık 50 kredi, detaylı istatistikler ve tüm temaların kilidini açar."
       },
       {
@@ -187,7 +187,7 @@
         "answer": "Temel özellikleri kullanmak için hesap gerekmez. Google ile giriş yapmak isteğe bağlıdır ve koleksiyonlarınızı, serilerinizi ve ayarlarınızı cihazlar arasında güvenle yedekleyip senkronize etmenizi sağlar."
       },
       {
-        "question": "Zikirmatik Asistan AI hangi verileri toplar?",
+        "question": "Zikirmatik Asistan hangi verileri toplar?",
         "answer": "Yalnızca uygulamanın özelliklerini sağlamak için gerekli verileri toplarız: zikir koleksiyonlarınız, serileriniz ve giriş yapmayı tercih ederseniz hesap bilgileriniz. Ayrıntılar için Gizlilik Politikamıza bakın."
       },
       {
@@ -233,7 +233,7 @@
   },
   "privacy": {
     "title": "Gizlilik Politikası",
-    "intro": "Bu Gizlilik Politikası, Zikirmatik Asistan AI (\"biz\", \"uygulamamız\") mobil uygulamasını kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı, açıkladığımızı ve koruduğumuzu açıklar.",
+    "intro": "Bu Gizlilik Politikası, Zikirmatik Asistan (\"biz\", \"uygulamamız\") mobil uygulamasını kullandığınızda bilgilerinizi nasıl topladığımızı, kullandığımızı, açıkladığımızı ve koruduğumuzu açıklar.",
     "sections": [
       {
         "heading": "1. Topladığımız Bilgiler",
@@ -265,7 +265,7 @@
       },
       {
         "heading": "8. Çocukların Gizliliği",
-        "body": "Zikirmatik Asistan AI, 13 yaşın altındaki çocuklara yönelik değildir ve bilerek çocuklardan kişisel bilgi toplamayız. Bir çocuğun bize kişisel bilgi sağladığını düşünüyorsanız, bu bilgiyi kaldırabilmemiz için lütfen bizimle iletişime geçin."
+        "body": "Zikirmatik Asistan, 13 yaşın altındaki çocuklara yönelik değildir ve bilerek çocuklardan kişisel bilgi toplamayız. Bir çocuğun bize kişisel bilgi sağladığını düşünüyorsanız, bu bilgiyi kaldırabilmemiz için lütfen bizimle iletişime geçin."
       },
       {
         "heading": "9. Bu Politikadaki Değişiklikler",
@@ -279,15 +279,15 @@
   },
   "terms": {
     "title": "Kullanım Şartları",
-    "intro": "Bu Kullanım Şartları (\"Şartlar\"), Zikirmatik Asistan AI mobil uygulamasına (\"Uygulama\") erişiminizi ve kullanımınızı düzenler. Uygulamayı indirerek, erişerek veya kullanarak bu Şartlara bağlı kalmayı kabul edersiniz.",
+    "intro": "Bu Kullanım Şartları (\"Şartlar\"), Zikirmatik Asistan mobil uygulamasına (\"Uygulama\") erişiminizi ve kullanımınızı düzenler. Uygulamayı indirerek, erişerek veya kullanarak bu Şartlara bağlı kalmayı kabul edersiniz.",
     "sections": [
       {
         "heading": "1. Şartların Kabulü",
-        "body": "Zikirmatik Asistan AI'yı yükleyerek veya kullanarak, bu Şartları okuduğunuzu, anladığınızı ve kabul ettiğinizi onaylarsınız. Kabul etmiyorsanız, lütfen Uygulamayı kullanmayın."
+        "body": "Zikirmatik Asistan'yı yükleyerek veya kullanarak, bu Şartları okuduğunuzu, anladığınızı ve kabul ettiğinizi onaylarsınız. Kabul etmiyorsanız, lütfen Uygulamayı kullanmayın."
       },
       {
         "heading": "2. Hizmetin Tanımı",
-        "body": "Zikirmatik Asistan AI; bir zikir sayacı, özel koleksiyonlar, günlük ve özel gün hatırlatıcıları, seri ve istatistikler, isteğe bağlı Google ile giriş bulut senkronizasyonu ve satın alınabilir kredi paketleri kullanan isteğe bağlı bir AI Rehber özelliği sunar."
+        "body": "Zikirmatik Asistan; bir zikir sayacı, özel koleksiyonlar, günlük ve özel gün hatırlatıcıları, seri ve istatistikler, isteğe bağlı Google ile giriş bulut senkronizasyonu ve satın alınabilir kredi paketleri kullanan isteğe bağlı bir AI Rehber özelliği sunar."
       },
       {
         "heading": "3. Hesaplar",
@@ -333,7 +333,7 @@
   },
   "refund": {
     "title": "İade Politikası",
-    "intro": "Bu İade Politikası, Zikirmatik Asistan AI içinde yapılan isteğe bağlı Premium kredi satın alımları için iade taleplerinin nasıl ele alındığını açıklar.",
+    "intro": "Bu İade Politikası, Zikirmatik Asistan içinde yapılan isteğe bağlı Premium kredi satın alımları için iade taleplerinin nasıl ele alındığını açıklar.",
     "sections": [
       {
         "heading": "1. Google Play Üzerinden Satın Alımlar",

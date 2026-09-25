@@ -15,6 +15,7 @@ export type ActivityItem = {
 export type LocalActivityStats = {
   allTimeCount: number;
   longestStreak: number;
+  currentStreak: number;
   totalDaysActive: number;
 };
 
@@ -64,9 +65,9 @@ export function deriveLocalActivityStats(
     activeDays.add(todayKey);
   }
 
-  const { longestStreak } = calculateLocalCompletionStreak(Array.from(activeDays), today);
+  const { currentStreak, longestStreak } = calculateLocalCompletionStreak(Array.from(activeDays), today);
 
-  return { allTimeCount, longestStreak, totalDaysActive: activeDays.size };
+  return { allTimeCount, currentStreak, longestStreak, totalDaysActive: activeDays.size };
 }
 
 export function computeLocalBadges(stats: LocalActivityStats): StatsBadge[] {

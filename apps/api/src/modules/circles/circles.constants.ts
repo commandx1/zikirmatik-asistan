@@ -18,6 +18,11 @@ export const CIRCLE_MAX_MEMBERS = 200;
 // Bir kullanıcının aynı anda kurucusu olabileceği en fazla AKTİF halka.
 export const CIRCLE_MAX_ACTIVE_PER_CREATOR = 10;
 
+// Ücretsiz kullanıcı limitleri: ilk halka ücretsizdir, ikinci eşzamanlı
+// aktif halka ve daha büyük üye kapasitesi premium gerektirir.
+export const CIRCLE_FREE_MAX_ACTIVE_PER_CREATOR = 1;
+export const CIRCLE_FREE_MAX_MEMBERS = 5;
+
 // Davet kodu alfabesi: karıştırılabilen 0/O/1/I harfleri kasıtlı olarak yok.
 export const CIRCLE_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const CIRCLE_CODE_LENGTH = 8;
@@ -38,10 +43,10 @@ export type CircleErrorCode =
 
 export const CIRCLE_ERROR_MESSAGE: Record<CircleErrorCode, string> = {
   [CIRCLE_ERROR_CODE.PREMIUM_REQUIRED]:
-    'Zikir halkası kurmak premium üyelik gerektirir.',
+    'Aynı anda birden fazla zikir halkası kurmak premium üyelik gerektirir.',
   [CIRCLE_ERROR_CODE.NOT_FOUND]: 'Zikir halkası bulunamadı.',
   [CIRCLE_ERROR_CODE.NOT_ACTIVE]: 'Bu zikir halkası artık aktif değil.',
-  [CIRCLE_ERROR_CODE.FULL]: `Bu zikir halkası dolu (en fazla ${CIRCLE_MAX_MEMBERS} kişi).`,
+  [CIRCLE_ERROR_CODE.FULL]: 'Bu zikir halkası dolu.',
   [CIRCLE_ERROR_CODE.MAX_ACTIVE]: `En fazla ${CIRCLE_MAX_ACTIVE_PER_CREATOR} aktif zikir halkan olabilir.`,
   [CIRCLE_ERROR_CODE.NOT_MEMBER]: 'Bu zikir halkasının üyesi değilsin.',
   [CIRCLE_ERROR_CODE.DHIKR_MISMATCH]: 'Bu kayıt halkanın zikriyle eşleşmiyor.',

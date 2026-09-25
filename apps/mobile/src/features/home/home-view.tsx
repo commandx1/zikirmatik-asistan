@@ -35,9 +35,13 @@ import { useLocaleUpper } from '../../hooks/use-locale-upper'
 import { usePremiumSheet } from '../../hooks/use-premium-sheet'
 import { useCounterStyleStore } from '../../store/counter-style-store'
 import { useProfileStore } from '../../store/profile-store'
+import { useAuthStore } from '../../store/auth-store'
 import { ProfilePremiumSheet } from '../profile/components/profile-premium-sheet'
 import { WidgetDiscoveryCard } from '../widget/widget-discovery'
 import { TEST_IDS } from '../../test-ids'
+import { useDay7Offer } from './hooks/use-day7-offer'
+import { LapsedSessionBanner } from './components/lapsed-session-banner'
+import { shouldShowLapsedSessionBanner } from './services/lapsed-session-banner'
 
 const EsmaulHusnaSection = lazy(() =>
   import('./components/esmaul-husna-section').then((m) => ({ default: m.EsmaulHusnaSection }))
@@ -530,7 +534,7 @@ export function HomeView() {
   // kök navigasyon kurulmadan uygulamayı çökertiyordu (release QA bulguları).
   const pendingPaywallSource = useHomeNavigationIntentStore((s) => s.pendingPaywallSource)
   const consumePaywall = useHomeNavigationIntentStore((s) => s.consumePaywall)
-  const [paywallSource, setPaywallSource] = useState<'tesbih_mode' | 'widget'>('tesbih_mode')
+  const [paywallSource, setPaywallSource] = useState<'tesbih_mode' | 'widget' | 'day7_offer'>('tesbih_mode')
   useEffect(() => {
     if (!pendingPaywallSource) return
     consumePaywall()
@@ -545,6 +549,40 @@ export function HomeView() {
     // aynı sebeple gereksiz yeniden tetikler.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingPaywallSource])
+
+  // "canShow" is the simplest acceptable stand-in for "no other modal is
+  // covering the home screen" (tour, target editor, esma welcome/resume
+  // guard, free-save, unsaved-transition, and the premium sheet itself).
+  // ponytail: doesn't see the badge-celebration modal (its visible state
+  // lives in a separate hook instance mounted at the root layout) — accept
+  // the rare overlap; wire a shared "any modal visible" signal if it starts
+  // to matter.
+  const canShowDay7Offer =
+    isTourCompleted &&
+    !premiumSheet.isOpen &&
+    !home.isEditingTarget &&
+    !home.isDailyEsmaWelcomeOpen &&
+    !home.isFreeSaveNameModalOpen &&
+    !home.isTargetDowngradeWarningOpen &&
+    !home.isUnsavedTransitionModalOpen &&
+    !home.isEsmaResumeGuardOpen
+  useDay7Offer(canShowDay7Offer, () => {
+    setPaywallSource('day7_offer')
+    premiumSheet.setPlan('annual')
+    premiumSheet.open()
+  })
+
+  const guestMode = useAuthStore((s) => s.guestMode)
+  const authStatus = useAuthStore((s) => s.status)
+  const authError = useAuthStore((s) => s.authError)
+  const lastAuthenticatedUserId = useAuthStore((s) => s.lastAuthenticatedUserId)
+  const clearAuthError = useAuthStore((s) => s.clearAuthError)
+  const showLapsedSessionBanner = shouldShowLapsedSessionBanner({
+    guestMode,
+    status: authStatus,
+    authError,
+    lastAuthenticatedUserId
+  })
 
   useEffect(() => {
     registerRef(TOUR_REF_WATCH, appleWatchRef)
@@ -643,6 +681,9 @@ export function HomeView() {
   return (
     <PageLayout frameClassName='relative flex-1 w-full'>
       <TopBar onToggleTapAnywhere={home.toggleTapAnywhere} tapAnywhereRef={tapAnywhereRef} />
+      {showLapsedSessionBanner ? (
+        <LapsedSessionBanner onSignIn={() => router.push('/auth')} onClose={clearAuthError} />
+      ) : null}
       <PageScrollView
         scrollRef={scrollRef}
         testID={TEST_IDS.home.scroll}

@@ -1,15 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// Overrides the global setup.ts stub (bare vi.fn(), which resolves to
-// `undefined`): zustand's persist hydration does `JSON.parse` on whatever
-// getItem resolves to unless it is exactly `null`, so `undefined` makes
-// hydration throw internally and never call onFinishHydration/hasHydrated
-// — hanging awaitHydration() in request-store-review.ts forever. Real
-// AsyncStorage resolves missing keys to `null`, matching this mock.
-vi.mock("@react-native-async-storage/async-storage", () => ({
-  default: { getItem: vi.fn(async () => null), setItem: vi.fn(), removeItem: vi.fn() }
-}));
-
+// AsyncStorage is mocked globally in src/test/setup.ts (getItem resolves to
+// `null`, matching zustand persist hydration's expectations).
 const { useReviewStore } = await import("../../store/review-store");
 
 const isAvailableAsync = vi.fn();

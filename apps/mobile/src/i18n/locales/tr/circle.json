@@ -16,7 +16,8 @@
     "codePlaceholder": "Davet kodunu gir",
     "join": "Katıl",
     "invalidCode": "Geçersiz davet kodu.",
-    "membersCount": "{{count}} üye"
+    "membersCount": "{{count}} üye",
+    "membersCountWithLimit": "{{count}}/{{limit}} üye"
   },
   "create": {
     "title": "Yeni halka",
@@ -73,7 +74,7 @@
     "closed": "Kapalı"
   },
   "errors": {
-    "premiumRequired": "Yeni bir halka kurmak premium üyelik gerektirir.",
+    "premiumRequired": "Aynı anda birden fazla halka kurmak premium üyelik gerektirir.",
     "notFound": "Halka bulunamadı.",
     "notActive": "Bu halka artık aktif değil.",
     "full": "Bu halka dolu.",

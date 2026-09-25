@@ -37,7 +37,7 @@ describe("deriveLocalActivityStats", () => {
 
 describe("computeLocalBadges", () => {
   it("marks a badge achieved once its threshold is reached", () => {
-    const badges = computeLocalBadges({ allTimeCount: 33, longestStreak: 0, totalDaysActive: 0 });
+    const badges = computeLocalBadges({ currentStreak: 0, allTimeCount: 33, longestStreak: 0, totalDaysActive: 0 });
     const firstSteps = badges.find((b) => b.key === "first-steps");
 
     expect(firstSteps?.achieved).toBe(true);
@@ -45,7 +45,7 @@ describe("computeLocalBadges", () => {
   });
 
   it("reports fractional progress below threshold, clamped to [0,1]", () => {
-    const badges = computeLocalBadges({ allTimeCount: 10, longestStreak: 3, totalDaysActive: 0 });
+    const badges = computeLocalBadges({ currentStreak: 0, allTimeCount: 10, longestStreak: 3, totalDaysActive: 0 });
     const firstSteps = badges.find((b) => b.key === "first-steps");
     const streak = badges.find((b) => b.key === "steady-streak");
 
@@ -55,7 +55,7 @@ describe("computeLocalBadges", () => {
   });
 
   it("never returns a negative or above-1 progress", () => {
-    const badges = computeLocalBadges({ allTimeCount: -5, longestStreak: 999, totalDaysActive: 0 });
+    const badges = computeLocalBadges({ currentStreak: 0, allTimeCount: -5, longestStreak: 999, totalDaysActive: 0 });
     const firstSteps = badges.find((b) => b.key === "first-steps");
     const streak = badges.find((b) => b.key === "steady-streak");
 

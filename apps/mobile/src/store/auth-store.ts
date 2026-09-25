@@ -34,6 +34,7 @@ type AuthStore = {
   continueAsGuest: () => void;
   becomeGuest: () => void;
   markHydrated: () => void;
+  clearAuthError: () => void;
 };
 
 // Shared in-flight refresh; `isSessionRefreshing` stays as the UI flag.
@@ -156,7 +157,8 @@ export const useAuthStore = create<AuthStore>()(
       // local data must not be swept into the next signed-in account's
       // guest-migration snapshot (see signInWithProvider).
       becomeGuest: () => set({ guestMode: true }),
-      markHydrated: () => set({ hasHydrated: true })
+      markHydrated: () => set({ hasHydrated: true }),
+      clearAuthError: () => set({ authError: undefined })
     }),
     {
       name: AUTH_STORE_KEY,

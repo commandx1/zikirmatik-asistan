@@ -36,6 +36,15 @@ const visible = (id, ms = 20000) => waitFor(element(by.id(id))).toBeVisible().wi
 // Tur Modal'ı ekranı karartır → Detox görünürlük eşiği (%75) altında kalır; varlık yeter.
 // atIndex(0): Android (Espresso) çoklu eşleşmede (liste satırları) hata verir.
 const exists = (id, ms = 20000) => waitFor(element(by.id(id)).atIndex(0)).toExist().withTimeout(ms);
+// testID'siz metin düğümleri için: Detox by.text RegExp destekler (iOS+Android) → dilden bağımsız.
+const existsText = (regex, ms = 20000) => waitFor(element(by.text(regex)).atIndex(0)).toExist().withTimeout(ms);
+
+// PageHeader'ın geri okunun testID'si yok; accessibilityLabel'i components:a11y.pageHeaderBack
+// (tr: "Geri", en: "Back") — dilden bağımsız regex ile dokun (üst/nested (stack) ekranlarda
+// tab bar yoktur, bu yüzden openTab kullanılamaz).
+async function tapBack() {
+  await element(by.label(/^(Geri|Back)$/)).atIndex(0).tap();
+}
 
 // Ana sayfa açıldı mı: sekme ya da üstündeki onboarding Modal'ı. Android'de RN Modal ayrı
 // pencere; Espresso yalnız odaklı pencerede arar → Modal açıkken sekme "yok" görünür.
@@ -216,6 +225,7 @@ function apiSignIn() {
 }
 
 const apiGet = (urlPath, token) => apiRequest('GET', urlPath, { token });
+const apiPost = (urlPath, token, body) => apiRequest('POST', urlPath, { token, body });
 
 // apps/api/scripts/e2e-seed.mjs'i test DB'sine karşı çalıştır.
 function seed(args) {
@@ -229,9 +239,12 @@ function seed(args) {
 module.exports = {
   IDS,
   TAB_IDS,
+  dismissIfShown,
   E2E_USER,
   visible,
   exists,
+  existsText,
+  tapBack,
   waitForHome,
   goToAuthScreen,
   signInWithGoogle,
@@ -247,5 +260,6 @@ module.exports = {
   waitForTextContaining,
   apiSignIn,
   apiGet,
+  apiPost,
   seed,
 };

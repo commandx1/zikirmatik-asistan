@@ -13,7 +13,6 @@ import { usePremiumSheet } from "../../../hooks/use-premium-sheet";
 import { useAuthStore } from "../../../store/auth-store";
 import { useCircleStore } from "../../../store/circle-store";
 import { fetchCirclesForUser } from "../services/circle-queries";
-import { useProfileStore } from "../../../store/profile-store";
 import { useRequireAuth } from "../../auth/hooks/use-require-auth";
 import { resolveLocalizedText } from "@zikirmatik/shared";
 import { ProfilePremiumSheet } from "../../profile/components/profile-premium-sheet";
@@ -31,7 +30,6 @@ export function CircleHubScreen() {
   const { requireAuth } = useRequireAuth();
 
   const authStatus = useAuthStore((state) => state.status);
-  const isPremium = useProfileStore((state) => state.isPremium);
   const circles = useCircleStore((state) => state.circles);
   const replaceFromServer = useCircleStore((state) => state.replaceFromServer);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
@@ -62,12 +60,11 @@ export function CircleHubScreen() {
   });
 
   const handleCreate = () => {
+    // İlk halka ücretsiz kullanıcılar için de serbest; ikinci eşzamanlı
+    // aktif halka ve daha büyük üye kapasitesi API'de PREMIUM_REQUIRED ile
+    // reddedilir ve create ekranı paywall'ı açar (bkz. circle-create-screen).
     requireAuth(() => {
-      if (isPremium) {
-        router.push("/circle/new");
-      } else {
-        premiumSheet.open();
-      }
+      router.push("/circle/new");
     });
   };
 
