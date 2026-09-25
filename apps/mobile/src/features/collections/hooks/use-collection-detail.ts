@@ -21,12 +21,16 @@ export function useCollectionDetail(key: string) {
     queryClient
   );
 
+  // query.refetch alone (not the whole query object, which gets a new identity on every
+  // render/refetch) — otherwise this re-runs on every render, not just on focus, causing
+  // an infinite refetch loop (see use-collections.ts's identical fix).
   useFocusEffect(
     useCallback(() => {
       if (!key) return () => {};
       void query.refetch();
       return () => {};
-    }, [key, query]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [key, query.refetch]),
   );
 
   const error = query.error

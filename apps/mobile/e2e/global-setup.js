@@ -17,6 +17,8 @@ module.exports = async (...args) => {
     });
   run('node scripts/e2e-seed.mjs --reset');
   run('node scripts/seed-dhikrs.mjs');
+  // Dhikr'lerden sonra: collection seed dhikr key eşleşmesi ister (bkz. e2e/README.md).
+  run('node scripts/seed-collections.mjs');
   run('node scripts/seed-vird-templates.mjs');
   await detoxGlobalSetup(...args);
 };

@@ -25,11 +25,15 @@ export function useCollections() {
     queryClient
   );
 
+  // query.refetch alone (not the whole query object, which gets a new identity on every
+  // render/refetch) — otherwise this re-runs on every render, not just on focus, causing
+  // an infinite refetch loop.
   useFocusEffect(
     useCallback(() => {
       void query.refetch();
       return () => {};
-    }, [query]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [query.refetch]),
   );
 
   const allCollections = useMemo(() => query.data ?? [], [query.data]);

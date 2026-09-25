@@ -4,6 +4,7 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
 import { COLLECTION_CATEGORIES } from "../types";
 import type { CollectionCategory } from "../types";
+import { TEST_IDS } from "../../../test-ids";
 
 type Props = {
   activeCategory: CollectionCategory | "all";
@@ -39,6 +40,7 @@ export function CollectionCategoryFilter({ activeCategory, onChange }: Props) {
         return (
           <Pressable
             key={cat.key}
+            testID={TEST_IDS.collections.filterChip}
             onPress={() => onChange(cat.key)}
             onLayout={(e) => {
               itemLayouts.current[idx] = {

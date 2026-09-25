@@ -29,6 +29,13 @@ export const TEST_IDS = {
     saveNameSubmit: "e2e-home-save-name-submit",
   },
   profile: { name: "e2e-profile-name", signIn: "e2e-profile-sign-in", scroll: "e2e-profile-scroll" },
+  collections: {
+    card: "e2e-collection-card",
+    filterChip: "e2e-collection-filter-chip",
+    addToCounter: "e2e-collection-add-to-counter",
+    detailScroll: "e2e-collection-detail-scroll",
+  },
+  theme: { swatch: "e2e-theme-swatch", scroll: "e2e-theme-scroll" },
   vird: {
     hub: "e2e-vird-hub",
     newManual: "e2e-vird-new-manual",

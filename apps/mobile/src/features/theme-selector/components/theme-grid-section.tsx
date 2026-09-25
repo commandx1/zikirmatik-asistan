@@ -5,6 +5,7 @@ import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import type { ThemeOption } from "../hooks/use-theme-selector";
 import { useLocaleUpper } from "../../../hooks/use-locale-upper";
+import { TEST_IDS } from "../../../test-ids";
 
 type ThemeGridSectionProps = {
   options: ThemeOption[];
@@ -26,6 +27,7 @@ export function ThemeGridSection({ options, selected, onSelect, selectedCardRef 
           return (
             <Pressable
               key={option.id}
+              testID={TEST_IDS.theme.swatch}
               ref={isSelected ? selectedCardRef : undefined}
               collapsable={false}
               onPress={() => onSelect(option.id)}

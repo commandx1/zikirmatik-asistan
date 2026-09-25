@@ -7,6 +7,7 @@ import { resolveLocalizedText } from "@zikirmatik/shared";
 import type { BackendCollection } from "../services/collections-api-client";
 import { COLLECTION_CATEGORIES } from "../types";
 import { useAppLocale } from "../../../i18n";
+import { TEST_IDS } from "../../../test-ids";
 
 type IconName = ComponentProps<typeof FontAwesome6>["name"];
 
@@ -38,6 +39,7 @@ export function CollectionCard({ item, onPress }: Props) {
 
   return (
     <Pressable
+      testID={TEST_IDS.collections.card}
       onPress={onPress}
       className="flex-1 m-1.5 rounded-2xl border border-white/8 bg-card p-4"
       style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}

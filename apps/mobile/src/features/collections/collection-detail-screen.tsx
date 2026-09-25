@@ -20,6 +20,7 @@ import { createDhikrLog } from "../dhikrs/services/dhikr-logs-api-client";
 import { useCollectionDetail } from "./hooks/use-collection-detail";
 import type { BackendCollectionDhikr } from "./services/collections-api-client";
 import { useAppLocale } from "../../i18n";
+import { TEST_IDS } from "../../test-ids";
 
 type Props = {
   collectionKey: string;
@@ -156,6 +157,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
         </View>
       ) : (
         <ScrollView
+          testID={TEST_IDS.collections.detailScroll}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: bottomPadding }}
         >
@@ -203,6 +205,7 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
 
                 <View className="mt-4 flex-row items-center justify-end">
                   <Pressable
+                    testID={TEST_IDS.collections.addToCounter}
                     onPress={() => handleStartDhikr(dhikr)}
                     className="flex-row items-center gap-1.5 rounded-full bg-accent px-4 py-2"
                     style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}

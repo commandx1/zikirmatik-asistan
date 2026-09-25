@@ -14,6 +14,7 @@ import { SelectorHeader } from "./components/selector-header";
 import { SelectorPreviewCard } from "./components/selector-preview-card";
 import { ThemeGridSection } from "./components/theme-grid-section";
 import { useThemeSelector } from "./hooks/use-theme-selector";
+import { TEST_IDS } from "../../test-ids";
 
 export function ThemeSelectorScreen() {
   const { t } = useTranslation("theme-selector");
@@ -44,7 +45,12 @@ export function ThemeSelectorScreen() {
     <PageLayout>
       <View className="flex-1 w-full">
         <SelectorHeader title={t("theme-selector:screen.title")} subtitle={t("theme-selector:screen.subtitle")} showBackButton />
-        <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={24} scrollRef={scrollRef}>
+        <PageScrollView
+          testID={TEST_IDS.theme.scroll}
+          contentInnerClassName="w-full px-5"
+          bottomPadding={24}
+          scrollRef={scrollRef}
+        >
           <View className="gap-8">
             <CounterStyleSection onRequestPremium={premiumSheet.open} />
             {selector.isPremium ? (
