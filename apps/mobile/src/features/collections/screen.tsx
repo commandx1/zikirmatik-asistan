@@ -16,6 +16,7 @@ import { useCollections } from "./hooks/use-collections";
 import { COLLECTION_CATEGORIES } from "./types";
 import type { CollectionCategory } from "./types";
 import type { BackendCollection } from "./services/collections-api-client";
+import { TEST_IDS } from "../../test-ids";
 
 export function CollectionsScreen() {
   const router = useRouter();
@@ -81,6 +82,7 @@ export function CollectionsScreen() {
     return (
       <View key={catKey} className="flex-1">
         <FlatList<BackendCollection>
+          testID={`${TEST_IDS.collections.scroll}-${catKey}`}
           data={data}
           keyExtractor={(item) => item.key}
           numColumns={2}

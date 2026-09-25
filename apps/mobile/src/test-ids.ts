@@ -34,6 +34,9 @@ export const TEST_IDS = {
     filterChip: "e2e-collection-filter-chip",
     addToCounter: "e2e-collection-add-to-counter",
     detailScroll: "e2e-collection-detail-scroll",
+    // Kategori sayfası başına bir FlatList (screen.tsx, PagerView): `${scroll}-${categoryKey}`
+    // (ör. e2e-collection-scroll-gunluk) — testID'siz FlatList'e scroll() güvenilir değil.
+    scroll: "e2e-collection-scroll",
   },
   theme: { swatch: "e2e-theme-swatch", scroll: "e2e-theme-scroll" },
   vird: {
