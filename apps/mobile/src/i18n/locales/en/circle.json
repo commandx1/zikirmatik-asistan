@@ -5,6 +5,7 @@
     "emptySubtitle": "Start a circle or join with a code, and reach the goal together.",
     "emptyCta": "Start / Join with code",
     "continueCta": "Continue",
+    "openHub": "Open circle",
     "progress": "{{total}} / {{goal}}"
   },
   "hub": {

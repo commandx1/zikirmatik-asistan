@@ -53,6 +53,7 @@ export function CircleCard() {
     <View className="mb-5 px-5">
       <Pressable
         onPress={() => router.push({ pathname: "/circle/session", params: { id: activeCircle.id } })}
+        testID={TEST_IDS.circle.homeCardActive}
         className="rounded-2xl px-4 py-4"
         style={{
           borderWidth: 1,
@@ -77,6 +78,15 @@ export function CircleCard() {
             {t("circle:home.continueCta")}
           </Text>
         </View>
+      </Pressable>
+      <Pressable
+        onPress={() => router.push("/circle")}
+        testID={TEST_IDS.circle.homeCardHub}
+        className="mt-1.5 self-start px-1 py-1"
+      >
+        <Text className="text-xs font-semibold" style={{ color: tokens.textMuted }}>
+          {t("circle:home.openHub")}
+        </Text>
       </Pressable>
     </View>
   );

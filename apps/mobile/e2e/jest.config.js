@@ -2,6 +2,9 @@
 module.exports = {
   rootDir: '..',
   testMatch: ['<rootDir>/e2e/**/*.e2e.js'],
+  // Kayıt (promo video) spec'leri normal suite'in parçası değil — apps/promo-video/scripts/record.mjs
+  // bunları ayrı e2e/recordings/jest.config.js ile çalıştırır.
+  testPathIgnorePatterns: ['<rootDir>/e2e/recordings/'],
   testTimeout: 180000,
   maxWorkers: 1,
   testSequencer: '<rootDir>/e2e/sequencer.js',

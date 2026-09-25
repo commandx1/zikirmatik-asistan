@@ -57,6 +57,8 @@ export const TEST_IDS = {
     codeInput: "e2e-circle-code-input",
     joinButton: "e2e-circle-join",
     homeCard: "e2e-circle-home-card",
+    homeCardActive: "e2e-circle-home-card-active",
+    homeCardHub: "e2e-circle-home-card-hub",
     pickDhikr: "e2e-circle-pick-dhikr",
     goalInput: "e2e-circle-goal-input",
     submit: "e2e-circle-submit",

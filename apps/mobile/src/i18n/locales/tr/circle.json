@@ -5,6 +5,7 @@
     "emptySubtitle": "Bir halka kur ya da kodla katıl, hedefe birlikte ulaşın.",
     "emptyCta": "Halka kur / Kodla katıl",
     "continueCta": "Devam et",
+    "openHub": "Halkaya git",
     "progress": "{{total}} / {{goal}}"
   },
   "hub": {

@@ -54,15 +54,21 @@ Sıfır bütçe, tek kurucu, haftada 5–8 saat pazarlama. Yatırım yok; yatır
 
 Kalan işler: yeni Android sürümü (expo-store-review yerel modül), sonra Play Console metin + görsel seti; Play mağaza deneyi (AI vurgulu/vurgusuz görseller); senaryolu Detox kaydı (pilot onayından sonra).
 
-## Takvim (2027 tarihleri yaklaşık, Diyanet listesiyle doğrulanacak)
+## Takvim (Diyanet 2026/2027 listeleriyle doğrulandı, 2026-09-25)
 
 | Tarih | Olay | Not |
 |---|---|---|
-| 2026-12-10 | Regaib, üç ayların başı | ilk organik dalga, prova |
-| 2027-01-04 | Miraç | |
-| 2027-01-22 | Berat | Ramazan teklifi başlar |
-| 2027-02-08 | Ramazan başı | kategori zirvesi |
-| 2027-03-06 | Kadir Gecesi | teklif biter |
+| 2026-12-10 Per | Regaib Kandili, üç ayların başı | ilk organik dalga, prova |
+| 2027-01-04 Pzt | Miraç Kandili | |
+| 2027-01-22 Cum | Berat Kandili | Ramazan teklifi başlar |
+| 2027-02-08 Pzt | Ramazan başı | kategori zirvesi |
+| 2027-03-05 Cum | Kadir Gecesi | teklif biter |
+| 2027-03-09 Sal | Ramazan Bayramı (3 gün) | |
+| 2027-05-16 Paz | Kurban Bayramı (4 gün) | ikinci dalga |
+| 2027-08-13 Cum | Mevlid Kandili | |
+| 2027-12-02 Per | Regaib 2027 | |
+
+Kaynak: vakithesaplama.diyanet.gov.tr icerik 153 (2026) ve 154 (2027). Gece olayları Diyanet kuralıyla akşamı geceyi başlatan günün tarihindedir.
 
 ## Haftalık ritüel (Cuma bloğu)
 
