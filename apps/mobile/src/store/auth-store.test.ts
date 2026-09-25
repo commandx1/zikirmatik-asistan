@@ -33,6 +33,11 @@ vi.mock("./guest-migration-store", () => ({ useGuestMigrationStore: { getState: 
 
 const { useAuthStore } = await import("./auth-store");
 const { getAuthBridge } = await import("../lib/http/auth-bridge");
+const { captureGuestMigrationSnapshot } = await import("../features/auth/services/guest-migration");
+const { useGuestMigrationStore } = await import("./guest-migration-store");
+const { verifyProvider, AuthApiError } = await import("../features/auth/services/auth-api-client");
+const { getOrCreateDeviceId } = await import("../features/notifications/services/push-device-registration");
+const { requestProviderIdToken } = await import("../features/auth/services/mock-provider-auth");
 
 const session = { userId: "u1", accessToken: "old-access", refreshToken: "refresh-1", isNewUser: false };
 
@@ -80,5 +85,73 @@ describe("auth-store refreshAuthenticatedSession", () => {
     expect(getAuthBridge().getAccessToken()).toBe("old-access");
     await getAuthBridge().refresh();
     expect(getAuthBridge().getAccessToken()).toBe("bridged");
+  });
+});
+
+describe("auth-store lapsed session → becomeGuest", () => {
+  beforeEach(() => {
+    refreshSession.mockReset();
+    (captureGuestMigrationSnapshot as ReturnType<typeof vi.fn>).mockReset();
+    (verifyProvider as ReturnType<typeof vi.fn>).mockReset();
+    (getOrCreateDeviceId as ReturnType<typeof vi.fn>).mockReset().mockResolvedValue("device-1");
+    (requestProviderIdToken as ReturnType<typeof vi.fn>).mockReset().mockResolvedValue("id-token");
+    useAuthStore.setState({
+      status: "authenticated",
+      session: session as never,
+      guestMode: false,
+      authError: undefined,
+      lastAuthenticatedUserId: session.userId,
+      isSessionRefreshing: false
+    });
+  });
+
+  it("keeps authError and lastAuthenticatedUserId on a terminal refresh error, and becomeGuest does not clear them", async () => {
+    refreshSession.mockRejectedValue(new AuthApiError("terminal", "session expired"));
+
+    await useAuthStore.getState().refreshAuthenticatedSession();
+
+    expect(useAuthStore.getState().status).toBe("signed_out");
+    expect(useAuthStore.getState().session).toBeUndefined();
+    expect(useAuthStore.getState().authError).toBe("session expired");
+    expect(useAuthStore.getState().lastAuthenticatedUserId).toBe(session.userId);
+    expect(useAuthStore.getState().guestMode).toBe(false);
+
+    // Root effect calls becomeGuest, not continueAsGuest, for this transition.
+    useAuthStore.getState().becomeGuest();
+    expect(useAuthStore.getState().guestMode).toBe(true);
+    expect(useAuthStore.getState().authError).toBe("session expired");
+    expect(useAuthStore.getState().lastAuthenticatedUserId).toBe(session.userId);
+  });
+
+  it("a subsequent sign-in as a different user does not queue a guest-migration snapshot for the lapsed user's data", async () => {
+    refreshSession.mockRejectedValue(new AuthApiError("terminal", "session expired"));
+    await useAuthStore.getState().refreshAuthenticatedSession();
+    useAuthStore.getState().becomeGuest();
+    expect(useAuthStore.getState().guestMode).toBe(true);
+    expect(useAuthStore.getState().lastAuthenticatedUserId).toBe(session.userId);
+
+    (verifyProvider as ReturnType<typeof vi.fn>).mockResolvedValue({
+      userId: "u2",
+      accessToken: "new-access",
+      refreshToken: "new-refresh",
+      isNewUser: false
+    });
+    const queueSnapshot = useGuestMigrationStore.getState().queueSnapshot as ReturnType<typeof vi.fn>;
+    queueSnapshot.mockClear();
+
+    await useAuthStore.getState().signInWithProvider("google");
+
+    expect(captureGuestMigrationSnapshot).not.toHaveBeenCalled();
+    expect(queueSnapshot).not.toHaveBeenCalled();
+    expect(useAuthStore.getState().status).toBe("authenticated");
+    expect(useAuthStore.getState().lastAuthenticatedUserId).toBe("u2");
+  });
+});
+
+describe("auth-store persisted state", () => {
+  it("never persists a mid-flight authenticating status", () => {
+    const partialize = useAuthStore.persist.getOptions().partialize!;
+    const persisted = partialize({ ...useAuthStore.getState(), status: "authenticating" }) as { status: string };
+    expect(persisted.status).toBe("signed_out");
   });
 });

@@ -28,7 +28,7 @@ export const TEST_IDS = {
     saveTargetInput: "e2e-home-save-target-input",
     saveNameSubmit: "e2e-home-save-name-submit",
   },
-  profile: { name: "e2e-profile-name" },
+  profile: { name: "e2e-profile-name", signIn: "e2e-profile-sign-in", scroll: "e2e-profile-scroll" },
   vird: {
     hub: "e2e-vird-hub",
     newManual: "e2e-vird-new-manual",

@@ -1,12 +1,27 @@
 /* global device, element, by, waitFor */
-const { visible, waitForHome, signInWithGoogle, continueAsGuest, skipTourIfShown, openTab, relaunch, TAB_IDS } = require('./helpers');
+const {
+  visible,
+  waitForHome,
+  signInWithGoogle,
+  skipTourIfShown,
+  openTab,
+  relaunch,
+  TAB_IDS,
+} = require('./helpers');
 
 describe('01 giriş + onboarding', () => {
   beforeAll(async () => {
     await device.launchApp({ newInstance: true, delete: true, permissions: { notifications: 'YES' } });
   });
 
-  it('Google (mock) ile giriş yapar, turu geçer, profilde adı gösterir', async () => {
+  it('temiz kurulumda misafir olarak doğrudan ana sayfayı açar (auth duvarı yok)', async () => {
+    await waitForHome();
+    await skipTourIfShown();
+    await visible(TAB_IDS.home);
+    await expect(element(by.id('e2e-auth-google'))).not.toExist();
+  });
+
+  it('profilden Google (mock) ile giriş yapar, adı gösterir', async () => {
     await signInWithGoogle();
     await skipTourIfShown();
     await openTab('profile');
@@ -23,9 +38,9 @@ describe('01 giriş + onboarding', () => {
     await expect(element(by.id('e2e-auth-google'))).not.toExist();
   });
 
-  it('misafir olarak devam eder', async () => {
+  it('yeni bir kurulum yine misafir olarak açılır', async () => {
     await device.launchApp({ newInstance: true, delete: true, permissions: { notifications: 'YES' } });
-    await continueAsGuest();
+    await waitForHome();
     await skipTourIfShown();
     await expect(element(by.id(TAB_IDS.home))).toBeVisible();
   });

@@ -24,8 +24,11 @@ import { NotificationPermissionDeniedModal } from "../src/components/ui/notifica
 import { AuthPromptModal } from "../src/features/auth/components/auth-prompt-modal";
 import { fetchAppConfigOrNull, isUpdateRequired } from "../src/lib/app-config";
 import { initAnalytics } from "../src/lib/analytics";
+import { useAppOpened } from "../src/features/analytics/use-app-opened";
 import { useAuthSessionSync } from "../src/features/auth/hooks/use-auth-session-sync";
 import { useGuestMigration } from "../src/features/auth/hooks/use-guest-migration";
+import { useAuthStore } from "../src/store/auth-store";
+import { shouldAutoBecomeGuest } from "../src/features/onboarding/should-auto-become-guest";
 import { useDhikrBackendSync } from "../src/features/dhikrs/hooks/use-dhikr-backend-sync";
 import { useVirdBackendSync } from "../src/features/vird/hooks/use-vird-backend-sync";
 import { useCircleSync } from "../src/features/circle/hooks/use-circle-sync";
@@ -68,6 +71,25 @@ function RootProviders({ children }: { children: ReactNode }) {
     IndieFlower_400Regular
   });
   useAuthSessionSync();
+  // Fresh installs never see the auth wall: a signed-out, non-guest user
+  // becomes a guest automatically, no matter which route the app cold-opens
+  // into (deep link to /halka/[code], widget, notification tap — those never
+  // mount app/index.tsx). Runs here, at the root, so the invariant
+  // ("signed_out" implies guestMode) holds before any screen reads it (e.g.
+  // the guest-migration snapshot on sign-in, stats' isGuest logic).
+  const authHydrated = useAuthStore((s) => s.hasHydrated);
+  const authStatus = useAuthStore((s) => s.status);
+  const guestMode = useAuthStore((s) => s.guestMode);
+  const becomeGuest = useAuthStore((s) => s.becomeGuest);
+  const mustBecomeGuest = shouldAutoBecomeGuest(authHydrated, authStatus, guestMode);
+  useEffect(() => {
+    if (mustBecomeGuest) {
+      // becomeGuest (not continueAsGuest): this effect also fires right
+      // after a lapsed session (terminal refresh error), where authError and
+      // lastAuthenticatedUserId must survive (see auth-store.ts).
+      becomeGuest();
+    }
+  }, [mustBecomeGuest, becomeGuest]);
   // Order matters: migration drains the pending guest snapshot and gates
   // useDhikrBackendSync (ve aynı gate'i paylaşan useVirdBackendSync)
   // tamamlanana kadar (bkz. useGuestMigrationStore).
@@ -80,6 +102,7 @@ function RootProviders({ children }: { children: ReactNode }) {
   useEffect(() => {
     initAnalytics();
   }, []);
+  useAppOpened();
   useNotificationTapRouting();
   useStreakReminderSync();
   useWidgetSync();

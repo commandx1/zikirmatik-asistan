@@ -5,6 +5,12 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useBadgeCelebrationStore } from "../../../store/badge-celebration-store";
 import { computeLocalBadges, deriveLocalActivityStats } from "../services/local-badges";
 import { evaluateBadgeCelebration } from "../services/badge-celebration";
+import { maybeRequestStoreReview } from "../../review/request-store-review";
+
+// Badge key for the 7-day streak (see local-badges.ts): dismissing its
+// celebration is the "success UI already shown" moment for the store review
+// prompt.
+const STREAK_7_BADGE_KEY = "steady-streak";
 
 // Root-mounted (see app/_layout.tsx), mirroring useStreakReminderSync:
 // reacting to dhikr-store gives badge celebration for free wherever the user
@@ -84,6 +90,9 @@ export function useBadgeCelebration() {
   const current = queue[0] ?? null;
 
   const dismiss = () => {
+    if (current?.key === STREAK_7_BADGE_KEY) {
+      void maybeRequestStoreReview("streak_7");
+    }
     setQueue((prev) => prev.slice(1));
   };
 

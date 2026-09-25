@@ -5,6 +5,7 @@ import { ConfirmModal } from "../../components/ui/confirm-modal";
 import { PageLayout, PageScrollView } from "../../components/ui/page-layout";
 import { WidgetGuideModal } from "../widget/widget-discovery";
 import { trackEvent } from "../../lib/analytics";
+import { TEST_IDS } from "../../test-ids";
 import { ProfileHeader } from "./components/profile-header";
 import { ProfileDeleteAccountModal } from "./components/profile-delete-account-modal";
 import { ProfilePremiumSheet } from "./components/profile-premium-sheet";
@@ -25,6 +26,7 @@ export function ProfileScreen() {
       <View className="relative flex-1 w-full">
         <ProfileHeader />
         <PageScrollView
+          testID={TEST_IDS.profile.scroll}
           contentInnerClassName="w-full px-5"
           bottomPadding={24}
           onRefresh={profile.refresh}
@@ -55,7 +57,9 @@ export function ProfileScreen() {
                 setIsWidgetGuideOpen(true);
                 void trackEvent("widget_guide_opened", { from: "profile" });
               }}
+              isAuthenticated={profile.isAuthenticated}
               onPressLogout={profile.onLogout}
+              onPressSignIn={profile.goSignIn}
               onPressDeleteAccount={profile.openDeleteAccountModal}
               onChangeHapticsPattern={profile.onChangeHapticsPattern}
               notificationsEnabled={notificationSettings.notificationsEnabled}

@@ -54,3 +54,14 @@ export function lapNumberCompletedAt(nextCount: number, lapSize: number | undefi
   const safeLapSize = resolveLapSize(lapSize);
   return Math.floor(Math.max(0, Math.floor(nextCount)) / safeLapSize);
 }
+
+/**
+ * True exactly when advancing from `prevCount` to `nextCount` crosses a
+ * positive target for the first time — i.e. the tap that reaches the
+ * target, not a no-op tap once already capped at it. Drives the single
+ * `dhikr_completed` analytics emission (see use-counter-engine.ts); it must
+ * fire once per completion, never per tap.
+ */
+export function didReachTarget(prevCount: number, nextCount: number, target: number): boolean {
+  return target > 0 && prevCount < target && nextCount >= target;
+}

@@ -1,17 +1,14 @@
-import { Redirect, Tabs, usePathname } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { useAuthStore } from "../../src/store/auth-store";
 import { MoreMenu } from "../../src/components/ui/more-menu";
 import { GlassTabBar, useGlassTabBarInset } from "../../src/components/ui/glass-tab-bar";
 
 export default function TabsLayout() {
   const { tokens } = useThemeTokens();
   const { t } = useTranslation("common");
-  const authStatus = useAuthStore((s) => s.status);
-  const guestMode = useAuthStore((s) => s.guestMode);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const pathname = usePathname();
   const isMoreMenuRoute = !["/home", "/focus", "/ai-guide", "/special-days"].some(
@@ -19,10 +16,9 @@ export default function TabsLayout() {
   );
   const tabBarHeight = useGlassTabBarInset();
 
-  if (authStatus !== "authenticated" && !guestMode) {
-    return <Redirect href="/auth" />;
-  }
-
+  // The auto-guest effect in the root layout (app/_layout.tsx) guarantees
+  // authenticated-or-guest for every entry route, including a cold deep link
+  // straight into (tabs), so no /auth redirect guard is needed here.
   return (
     <View className="flex-1">
       <Tabs

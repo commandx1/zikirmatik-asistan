@@ -36,7 +36,8 @@
       "tourReplay": "Uygulamayı Tanıt",
       "rateApp": "Uygulamayı Oyla",
       "sendFeedback": "Geri Bildirim Gönder",
-      "logout": "Çıkış Yap"
+      "logout": "Çıkış Yap",
+      "signIn": "Giriş yap"
     },
     "account": {
       "title": "Hesap",

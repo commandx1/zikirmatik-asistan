@@ -9,6 +9,8 @@ const IDS = {
   tourSkip: 'e2e-tour-skip',
   welcomeLater: 'e2e-home-welcome-later',
   tabMore: 'e2e-tab-more',
+  profileSignIn: 'e2e-profile-sign-in',
+  profileScroll: 'e2e-profile-scroll',
 };
 
 const TAB_IDS = {
@@ -54,12 +56,22 @@ async function waitForHome(ms = 30000) {
   }
 }
 
+// Auth ekranı artık açılışta gösterilmiyor (uygulama misafir olarak başlar);
+// giriş akışı profildeki "Giriş yap" satırından tetiklenir.
+async function goToAuthScreen() {
+  await openTab('profile');
+  await scrollTo(IDS.profileSignIn, IDS.profileScroll);
+  await element(by.id(IDS.profileSignIn)).tap();
+  await visible(IDS.authGoogle, 20000);
+}
+
 async function signInWithGoogle() {
-  await visible(IDS.authGoogle, 60000);
+  await goToAuthScreen();
   await element(by.id(IDS.authGoogle)).tap();
   await waitForHome();
 }
 
+// Auth ekranında kalırken (örn. profilden açıldıktan sonra) misafire dönmek için.
 async function continueAsGuest() {
   await visible(IDS.authGuest, 60000);
   await element(by.id(IDS.authGuest)).tap();
@@ -76,6 +88,21 @@ async function dismissIfShown(id, ms) {
   await waitFor(element(by.id(id))).not.toExist().withTimeout(10000);
 }
 
+// Yeni: ilk vird günü/7 gün seri/halka hedefi gibi başarı anlarında native
+// SKStoreReviewController (expo-store-review) tetiklenebilir — RN ağacı dışında bir
+// sistem sayfası, testID yok. Görünüyorsa dile göre kapat; görünmüyorsa sessizce geç.
+async function dismissNativeReviewPromptIfShown(ms = 4000) {
+  for (const label of ['Şimdi Değil', 'Not Now']) {
+    try {
+      await waitFor(element(by.label(label))).toBeVisible().withTimeout(ms);
+      await element(by.label(label)).tap();
+      return;
+    } catch {
+      // bu dilde gösterilmedi; sıradakini dene
+    }
+  }
+}
+
 // İlk açılışta ana sayfada sırayla: tur (Modal, ~600 ms sonra) → "Hoş geldin"
 // Esma sayfası (Modal). İkisi de tap'ları yutar.
 async function skipTourIfShown(ms = 3000) {
@@ -83,23 +110,43 @@ async function skipTourIfShown(ms = 3000) {
   await dismissIfShown(IDS.welcomeLater, ms);
 }
 
-// Temiz kurulum + mock Google girişi + onboarding modallarını kapat.
+// Temiz kurulum (artık misafir olarak açılır) + onboarding modallarını kapat +
+// profilden mock Google girişi.
 async function freshSignIn() {
   await device.launchApp({ newInstance: true, delete: true, permissions: { notifications: 'YES' } });
+  await waitForHome();
+  await skipTourIfShown();
   await signInWithGoogle();
+  // signInWithGoogle profilden açılır; başarılı girişte ekran router.back() ile Profil'e
+  // döner (Home'a değil) — testler Home ekranında başladığını varsayıyor, açıkça geç.
+  await openTab('home');
   await skipTourIfShown();
   await visible(TAB_IDS.home);
 }
 
+// Sekmeye dokun; ekran geçişi (örn. girişten sonra router.back()) hâlâ animasyondaysa
+// tüm ekranı kaplayan geçiş katmanı dokunuşu yutar ("not hittable") → kısa aralıklarla dene.
+async function tapWhenHittable(id, { retries = 6, delayMs = 300 } = {}) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await element(by.id(id)).tap();
+      return;
+    } catch (err) {
+      if (attempt >= retries) throw err;
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+  }
+}
+
 async function openTab(name) {
   if (TAB_IDS[name]) {
-    await element(by.id(TAB_IDS[name])).tap();
+    await tapWhenHittable(TAB_IDS[name]);
     return;
   }
   if (!MORE_IDS[name]) throw new Error(`Bilinmeyen sekme: ${name}`);
-  await element(by.id(IDS.tabMore)).tap();
+  await tapWhenHittable(IDS.tabMore);
   await visible(MORE_IDS[name], 5000);
-  await element(by.id(MORE_IDS[name])).tap();
+  await tapWhenHittable(MORE_IDS[name]);
 }
 
 function relaunch(opts = {}) {
@@ -108,7 +155,12 @@ function relaunch(opts = {}) {
 
 // Görünene kadar verilen ScrollView'u kaydır.
 // startY: kaydırma başlangıcı (0-1); ScrollView'un bir kısmı örtülüyse (klavye) aşağıdan başla.
-async function scrollTo(id, scrollId, { dy = 250, direction = 'down', startY = NaN } = {}) {
+async function scrollTo(id, scrollId, { dy = 250, direction = 'down', startY = 0.5 } = {}) {
+  // Varsayılan (NaN) başlangıç noktası container'ın en alt kenarına çok yakın seçiliyor;
+  // bu cihaz/derlemede o kenar kesirli-pt (sub-pixel) genişlikte olduğundan Detox'un jest
+  // için istediği TAM (%100) görünürlük eşiğini hep başarısız kılıyor ("not visible (100)").
+  // Ortadan (0.5) başlamak aynı sonucu (hedef görünene kadar kaydırma) o kenara değmeden verir.
+  await visible(scrollId, 10000);
   await waitFor(element(by.id(id)))
     .toBeVisible()
     .whileElement(by.id(scrollId))
@@ -181,11 +233,14 @@ module.exports = {
   visible,
   exists,
   waitForHome,
+  goToAuthScreen,
   signInWithGoogle,
   continueAsGuest,
   skipTourIfShown,
   freshSignIn,
   openTab,
+  tapWhenHittable,
+  dismissNativeReviewPromptIfShown,
   relaunch,
   scrollTo,
   readText,

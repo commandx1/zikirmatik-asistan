@@ -66,8 +66,10 @@ export function useProfile() {
   const goFontSelector = () => router.push("/font-selector");
   const onLogout = async () => {
     await signOut();
-    router.replace("/auth");
+    router.replace("/(tabs)/home");
   };
+
+  const goSignIn = () => router.push("/auth");
 
   const tourReplay = () => {
     resetTour();
@@ -82,7 +84,7 @@ export function useProfile() {
     try {
       await deleteUser(session.userId);
       await signOut();
-      router.replace("/auth");
+      router.replace("/(tabs)/home");
     } finally {
       setIsDeletingAccount(false);
     }
@@ -276,7 +278,9 @@ export function useProfile() {
     setPremiumPlan: premiumSheet.setPlan,
     activatePremium: premiumSheet.activate,
     tourReplay,
+    isAuthenticated: authStatus === "authenticated",
     onLogout,
+    goSignIn,
     isDeleteAccountModalOpen,
     isDeletingAccount,
     openDeleteAccountModal,

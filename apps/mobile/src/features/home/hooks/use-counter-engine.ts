@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toDateKey } from '@zikirmatik/shared'
+import { trackEvent } from '../../../lib/analytics'
 import { useStableCallback } from '../../../hooks/use-stable-callback'
 import { fireCounterFeedback } from '../../../services/counter-feedback'
 import { resolveHapticsPattern } from '../../../services/haptics'
@@ -7,7 +8,7 @@ import { useCounterStyleStore } from '../../../store/counter-style-store'
 import { useDhikrStore } from '../../../store/dhikr-store'
 import { useProfileStore } from '../../../store/profile-store'
 import type { ZikirItem } from '../../focus/types'
-import { computeCurrentLap, lapNumberCompletedAt, resolveLapSize } from '../services/lap-counter'
+import { computeCurrentLap, didReachTarget, lapNumberCompletedAt, resolveLapSize } from '../services/lap-counter'
 
 type Options = {
   selectedDhikr: ZikirItem | undefined
@@ -115,10 +116,11 @@ export function useCounterEngine({ selectedDhikr, onAutoSave, openFreeSave }: Op
     // silently lost. Bound to the tap path on purpose: an effect would also
     // fire on mount for a persisted at-target dhikr and for the tour's
     // demo toggle, which must not write logs.
-    if (selectedDhikr.target > 0 && baseCount < selectedDhikr.target && nextCount >= selectedDhikr.target) {
+    if (didReachTarget(baseCount, nextCount, selectedDhikr.target)) {
       const autoSaveKey = `${selectedDhikr.id}:${toDateKey(new Date())}:${selectedDhikr.target}`
       if (autoSavedKeyRef.current !== autoSaveKey) {
         autoSavedKeyRef.current = autoSaveKey
+        void trackEvent('dhikr_completed', { count: nextCount, key: selectedDhikr.id })
         void onAutoSave(nextCount).then(didSave => {
           if (!didSave) {
             // Allow another attempt once the user resets and re-reaches it.

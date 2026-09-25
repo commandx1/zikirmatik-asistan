@@ -32,7 +32,7 @@ type AuthStore = {
   refreshAuthenticatedSession: () => Promise<void>;
   signOut: () => Promise<void>;
   continueAsGuest: () => void;
-  exitGuest: () => void;
+  becomeGuest: () => void;
   markHydrated: () => void;
 };
 
@@ -56,8 +56,11 @@ export const useAuthStore = create<AuthStore>()(
         const platform = resolveClientPlatform();
         const previousUserId = get().lastAuthenticatedUserId;
         // Capture guest-local progress BEFORE any session-scoped reset can wipe
-        // it; only queued after the sign-in actually succeeds.
-        const guestSnapshot = get().guestMode ? captureGuestMigrationSnapshot() : null;
+        // it; only queued after the sign-in actually succeeds. A lapsed
+        // member (guestMode true but a previousUserId still on record, e.g.
+        // after a terminal refresh error) is not guest data — it belongs to
+        // that previous account, not the next one signing in.
+        const guestSnapshot = get().guestMode && !previousUserId ? captureGuestMigrationSnapshot() : null;
 
         set({
           status: "authenticating",
@@ -124,11 +127,12 @@ export const useAuthStore = create<AuthStore>()(
         resetSessionScopedStores(get().session?.userId);
         set({
           status: "signed_out",
-          guestMode: false,
+          guestMode: true,
           session: undefined,
           authError: undefined,
           isSessionRefreshing: false,
-          lastSessionRefreshAt: undefined
+          lastSessionRefreshAt: undefined,
+          lastAuthenticatedUserId: undefined
         });
 
         await clearProviderSession("google");
@@ -145,17 +149,22 @@ export const useAuthStore = create<AuthStore>()(
           isSessionRefreshing: false,
           lastSessionRefreshAt: undefined
         }),
-      exitGuest: () =>
-        set({
-          guestMode: false
-        }),
+      // Used by the root effect for the "signed_out implies guestMode"
+      // invariant after a lapsed session (terminal refresh error). Unlike
+      // continueAsGuest, it does not clear authError or session (already
+      // undefined in that branch) or lastAuthenticatedUserId — that user's
+      // local data must not be swept into the next signed-in account's
+      // guest-migration snapshot (see signInWithProvider).
+      becomeGuest: () => set({ guestMode: true }),
       markHydrated: () => set({ hasHydrated: true })
     }),
     {
       name: AUTH_STORE_KEY,
       storage: createJSONStorage(() => secureSessionStorage),
       partialize: (state) => ({
-        status: state.status,
+        // Never persist a mid-flight "authenticating" — a kill during
+        // sign-in must not reopen next launch stuck in that transient state.
+        status: state.status === "authenticating" ? "signed_out" : state.status,
         guestMode: state.guestMode,
         session: state.session,
         lastSessionRefreshAt: state.lastSessionRefreshAt,

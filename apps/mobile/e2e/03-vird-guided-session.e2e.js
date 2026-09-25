@@ -1,5 +1,5 @@
 /* global element, by */
-const { freshSignIn, visible, exists, scrollTo } = require('./helpers');
+const { freshSignIn, visible, exists, scrollTo, tapWhenHittable, dismissNativeReviewPromptIfShown } = require('./helpers');
 
 const tapN = async (id, n) => {
   for (let i = 0; i < n; i += 1) await element(by.id(id)).tap();
@@ -44,8 +44,13 @@ describe('03 vird: manuel program + rehberli seans', () => {
     await element(by.id('e2e-vird-session-next')).tap();
     await tapN('e2e-vird-session-counter', 2);
 
+    // İlk vird günü tamamlanınca native mağaza puanlama sayfası (expo-store-review,
+    // RN ağacı dışında) tetiklenebilir — son sayaç dokunuşuyla aynı anda gelip "Bitir"
+    // butonunu bloke edebiliyor ("not hittable"); önce/sonra kapat.
+    await dismissNativeReviewPromptIfShown();
     await visible('e2e-vird-session-finish');
-    await element(by.id('e2e-vird-session-finish')).tap();
+    await tapWhenHittable('e2e-vird-session-finish');
+    await dismissNativeReviewPromptIfShown();
 
     await visible('e2e-vird-today-done', 20000);
   });

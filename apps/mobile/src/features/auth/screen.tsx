@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, Platform, Pressable, ScrollView, Text, View } from "react-native";
-import { Redirect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeInDown, ReduceMotion } from "react-native-reanimated";
@@ -62,8 +62,23 @@ export function AuthScreen() {
   const busy = status === "authenticating";
   const isLightTheme = relativeLuminance(tokens.bg) > 0.5;
 
+  // /auth is now pushed on top of (tabs) (e.g. the auth-prompt modal's
+  // router.push), so a plain replace to /(tabs)/home would stack a second
+  // tabs instance underneath. Go back to whatever screen pushed us here
+  // when possible, and only fall back to replacing when /auth was the
+  // initial route (nothing to go back to).
+  useEffect(() => {
+    if (status === "authenticated") {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace("/(tabs)/home");
+      }
+    }
+  }, [status, router]);
+
   if (status === "authenticated") {
-    return <Redirect href="/" />;
+    return null;
   }
 
   const handleProvider = async (provider: AuthProvider) => {
@@ -227,7 +242,11 @@ export function AuthScreen() {
               disabled={busy}
               onPress={() => {
                 continueAsGuest();
-                router.replace("/(tabs)/home");
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace("/(tabs)/home");
+                }
               }}
               testID={TEST_IDS.auth.guest}
               accessibilityRole="button"

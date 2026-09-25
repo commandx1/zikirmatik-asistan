@@ -36,7 +36,8 @@
       "tourReplay": "Take the App Tour",
       "rateApp": "Rate the App",
       "sendFeedback": "Send Feedback",
-      "logout": "Log Out"
+      "logout": "Log Out",
+      "signIn": "Sign in"
     },
     "account": {
       "title": "Account",

@@ -20,6 +20,7 @@ import { resolveHapticsPattern } from "../../../services/haptics";
 import { fireCounterFeedback } from "../../../services/counter-feedback";
 import { createDhikrLog } from "../../dhikrs/services/dhikr-logs-api-client";
 import { trackEvent } from "../../../lib/analytics";
+import { maybeRequestStoreReview } from "../../review/request-store-review";
 import { AppleWatchView, type CounterVisualModel } from "../../home/components/apple-watch";
 import { TesbihCounterView } from "../../home/components/tesbih-counter";
 import { fetchCircle } from "../services/circle-api-client";
@@ -74,6 +75,11 @@ export function CircleSessionScreen({ id }: { id: string }) {
   // computeDisplayTotal formülü anlık olarak yanlış bir "başkalarının payı"
   // hesaplardı. Poll'da fresh'ten, flush yanıtında circleTotalCount'tan gelir.
   const serverPairRef = useRef<{ total: number; mine: number } | null>(null);
+  // Tracks the last-seen server status/total for this mount so the
+  // circle_goal_reached event (and review prompt) only fire on a
+  // not-reached→reached transition observed here — not when simply opening
+  // an already-completed circle's session (cold open / remount).
+  const prevGoalStateRef = useRef<{ status: CircleDetail["status"] | null; total: number }>({ status: null, total: 0 });
 
   // Ekranda gösterilen (asla geriye düşmeyen) toplam — artık ref yerine
   // state: her artış onCountPress/flush/poll içinde (render GÖVDESİNDE
@@ -110,11 +116,18 @@ export function CircleSessionScreen({ id }: { id: string }) {
     // arası tutarlılık için burada da yazılır.
     upsertCircle(fresh);
     serverPairRef.current = { total: fresh.totalCount, mine: fresh.myTodayCount ?? 0 };
+    // Baseline is null on the first fetch of this mount, so opening an
+    // already-completed circle's session never counts as a transition —
+    // only a status change observed WITHIN this mount does.
+    const prevStatus = prevGoalStateRef.current.status;
+    prevGoalStateRef.current = { status: fresh.status, total: fresh.totalCount };
     if (fresh.status !== "active") {
       setLocked(true);
-      if (fresh.status === "completed" && !goalReachedFired.has(id)) {
+      const justReached = prevStatus !== null && prevStatus !== "completed" && fresh.status === "completed";
+      if (justReached && !goalReachedFired.has(id)) {
         goalReachedFired.add(id);
         void trackEvent("circle_goal_reached");
+        void maybeRequestStoreReview("circle_goal");
       }
     }
     if (!seededRef.current) {

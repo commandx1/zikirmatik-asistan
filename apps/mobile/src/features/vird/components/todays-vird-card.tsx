@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
@@ -7,6 +7,7 @@ import { useThemeTokens } from '@zikirmatik/ui'
 import { toDateKey, type VirdSlotKey, withAlpha} from "@zikirmatik/shared";
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 import { trackEvent } from '../../../lib/analytics'
+import { maybeRequestStoreReview } from '../../review/request-store-review'
 import { useAuthStore } from '../../../store/auth-store'
 import { useVirdStore } from '../../../store/vird-store'
 import { useHydrateVirdSnapshots } from '../hooks/use-hydrate-vird-snapshots'
@@ -232,8 +233,18 @@ export function TodaysVirdCard({ onPressCard, highlightSlot }: TodaysVirdCardPro
     return activeProgram ? calculateVirdStreak(activeProgram, dayProgress) : { currentStreak: 0, longestStreak: 0 }
   }, [authStatus, virdStreak, activeProgram, dayProgress])
 
+  // dayComplete can already be true on the FIRST render of this mount (cold
+  // start after the day was completed earlier, or simply reopening the app):
+  // that must not re-fire vird_day_completed/the review prompt. Only a
+  // false→true transition observed within this mount counts — the module
+  // guard above only dedupes across remounts on the SAME day, it does not
+  // distinguish "already true on mount" from "just became true".
+  const prevDayCompleteRef = useRef(dayComplete)
   useEffect(() => {
-    if (!activeProgram || !dayComplete) {
+    const wasComplete = prevDayCompleteRef.current
+    prevDayCompleteRef.current = dayComplete
+
+    if (!activeProgram || !dayComplete || wasComplete) {
       return
     }
     const fireKey = `${activeProgram.id}:${todayKey}`
@@ -242,6 +253,7 @@ export function TodaysVirdCard({ onPressCard, highlightSlot }: TodaysVirdCardPro
     }
     dayCompletedFired.add(fireKey)
     void trackEvent('vird_day_completed')
+    void maybeRequestStoreReview('vird_day')
   }, [activeProgram, dayComplete, todayKey])
 
   if (!activeProgram) {

@@ -14,6 +14,7 @@ type ProfileLinkRowProps = {
   rightIconRegular?: boolean;
   bottomBorder?: boolean;
   onPress?: () => void;
+  testID?: string;
 };
 
 export function ProfileLinkRow({
@@ -26,13 +27,18 @@ export function ProfileLinkRow({
   rightIconName = "chevron-right",
   rightIconRegular = false,
   bottomBorder = false,
-  onPress
+  onPress,
+  testID
 }: ProfileLinkRowProps) {
   const { tokens } = useThemeTokens();
   const resolvedIconColor = iconColor ?? tokens.accent;
 
   return (
-    <Pressable onPress={onPress} className={`flex-row items-center justify-between p-4 ${bottomBorder ? "border-b border-white/5" : ""}`}>
+    <Pressable
+      onPress={onPress}
+      testID={testID}
+      className={`flex-row items-center justify-between p-4 ${bottomBorder ? "border-b border-white/5" : ""}`}
+    >
       <View className="flex-row items-center gap-3">
         <View
           className={`h-8 w-8 items-center justify-center rounded-full ${iconContainerClassName ?? ""}`}

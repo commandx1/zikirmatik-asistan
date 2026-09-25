@@ -3,6 +3,7 @@ import {
   computeCurrentLap,
   computeLapProgress,
   didCompleteLap,
+  didReachTarget,
   lapNumberCompletedAt,
   resolveLapSize
 } from "./lap-counter";
@@ -90,5 +91,27 @@ describe("lapNumberCompletedAt", () => {
     expect(lapNumberCompletedAt(33, 33)).toBe(1);
     expect(lapNumberCompletedAt(66, 33)).toBe(2);
     expect(lapNumberCompletedAt(99, 99)).toBe(1);
+  });
+});
+
+describe("didReachTarget", () => {
+  it("is true exactly on the tap that reaches the target", () => {
+    expect(didReachTarget(32, 33, 33)).toBe(true);
+  });
+
+  it("is false for a no-op tap once already capped at the target", () => {
+    expect(didReachTarget(33, 33, 33)).toBe(false);
+  });
+
+  it("is false mid-way, before the target is reached", () => {
+    expect(didReachTarget(10, 11, 33)).toBe(false);
+  });
+
+  it("is false when there is no target (free mode, uncapped)", () => {
+    expect(didReachTarget(10, 11, 0)).toBe(false);
+  });
+
+  it("is false on reset/decrement even past the target", () => {
+    expect(didReachTarget(40, 0, 33)).toBe(false);
   });
 });

@@ -9,6 +9,7 @@ import { ProfileSectionTitle } from "./profile-section-title";
 import { ProfileSettingsCard } from "./profile-settings-card";
 import { ProfileTimeRow } from "./profile-time-row";
 import { ProfileToggleRow } from "./profile-toggle-row";
+import { TEST_IDS } from "../../../test-ids";
 
 type ProfileSettingsSectionsProps = {
   reminderTime: string;
@@ -25,7 +26,9 @@ type ProfileSettingsSectionsProps = {
   onPressSendFeedback: () => void;
   onPressTourReplay: () => void;
   onPressWidgetGuide: () => void;
+  isAuthenticated: boolean;
   onPressLogout: () => void;
+  onPressSignIn: () => void;
   onPressDeleteAccount: () => void;
   onToggleNotifications: (value: boolean) => void;
   onChangeHapticsPattern: (pattern: HapticsPattern) => void;
@@ -46,7 +49,9 @@ export function ProfileSettingsSections({
   onPressSendFeedback,
   onPressTourReplay,
   onPressWidgetGuide,
+  isAuthenticated,
   onPressLogout,
+  onPressSignIn,
   onPressDeleteAccount,
   onToggleNotifications,
   onChangeHapticsPattern
@@ -129,7 +134,16 @@ export function ProfileSettingsSections({
           <ProfileLinkRow label={t("profile:sections.other.tourReplay")} iconName="circle-question" bottomBorder onPress={onPressTourReplay} />
           <ProfileLinkRow label={t("profile:sections.other.rateApp")} iconName="star" rightIconRegular bottomBorder onPress={onPressRateApp} />
           <ProfileLinkRow label={t("profile:sections.other.sendFeedback")} iconName="comment-dots" rightIconRegular bottomBorder onPress={onPressSendFeedback} />
-          <ProfileLogoutRow onPress={onPressLogout} />
+          {isAuthenticated ? (
+            <ProfileLogoutRow onPress={onPressLogout} />
+          ) : (
+            <ProfileLinkRow
+              label={t("profile:sections.other.signIn")}
+              iconName="right-to-bracket"
+              onPress={onPressSignIn}
+              testID={TEST_IDS.profile.signIn}
+            />
+          )}
         </ProfileSettingsCard>
       </View>
 
