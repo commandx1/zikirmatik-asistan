@@ -158,7 +158,7 @@ function RampedClip({ from, to, rate }: { from: number; to: number; rate: number
   return <RampedClipFrom src={RECORDING_SRC} from={from} to={to} rate={rate} />;
 }
 
-function CaptionPill({ text }: { text: string }) {
+export function CaptionPill({ text }: { text: string }) {
   const frame = useCurrentFrame();
   const opacity = fadeIn(frame, 0, 10);
   const y = slideUp(frame, 0, 14, 20);

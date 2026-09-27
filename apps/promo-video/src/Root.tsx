@@ -7,6 +7,16 @@ import pilot04Props from "../pilots/pilot-04-kutuphane.json";
 import pilot05Props from "../pilots/pilot-05-temalar.json";
 import storyCounterProps from "../pilots/story-counter.json";
 import { RichVideo01, richVideoDurationInFrames } from "./RichVideo";
+import { createRichVideo, richVideoGenericDurationInFrames, type RichVideoManifest } from "./RichVideoGeneric";
+import rich02Config from "../pilots/rich-02.json";
+import rich03Config from "../pilots/rich-03.json";
+import vo02 from "../public/audio/vo-02.json";
+import vo03 from "../public/audio/vo-03.json";
+
+const richVideo02Manifest = { ...rich02Config, voManifest: vo02 } as unknown as RichVideoManifest;
+const richVideo03Manifest = { ...rich03Config, voManifest: vo03 } as unknown as RichVideoManifest;
+const RichVideo02 = createRichVideo(richVideo02Manifest);
+const RichVideo03 = createRichVideo(richVideo03Manifest);
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -129,6 +139,29 @@ export const RemotionRoot: React.FC = () => {
         id="RichVideo-01"
         component={RichVideo01}
         durationInFrames={richVideoDurationInFrames(FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      {/*
+        Video 2 ("Vird") / Video 3 ("Halka"), voiced: JSON-driven via src/RichVideoGeneric.tsx
+        (pilots/rich-02.json / rich-03.json — per-scene source ranges + speed ramps, public/
+        audio/vo-02.json / vo-03.json for the timeline). Render with
+        `npx remotion render RichVideo-02 out/video-02-vird-sesli.mp4 --codec=h264` /
+        `npx remotion render RichVideo-03 out/video-03-halka-sesli.mp4 --codec=h264`.
+      */}
+      <Composition
+        id="RichVideo-02"
+        component={RichVideo02}
+        durationInFrames={richVideoGenericDurationInFrames(richVideo02Manifest, FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      <Composition
+        id="RichVideo-03"
+        component={RichVideo03}
+        durationInFrames={richVideoGenericDurationInFrames(richVideo03Manifest, FPS)}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}

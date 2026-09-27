@@ -26,10 +26,15 @@ import { TesbihCounterView } from "../../home/components/tesbih-counter";
 import { fetchCircle } from "../services/circle-api-client";
 import { buildCircleLogPayload, computeDisplayTotal } from "../services/circle-share";
 import { useAppLocale } from "../../../i18n";
+import { TEST_IDS } from "../../../test-ids";
 
 const POLL_INTERVAL_MS = 5_000;
 const FLUSH_INTERVAL_MS = 3_000;
 const LAP_SIZE = 33;
+// apps/mobile/e2e/recordings/story-circle.e2e.js için eklendi (bkz. rapor):
+// AppleWatchView/TesbihCounterView testIDs prop'unu destekliyor ama bu ekran hiç
+// geçmiyordu — additive only, davranış değişmedi.
+const SESSION_TEST_IDS = { counter: TEST_IDS.circle.sessionCounter, countLabel: TEST_IDS.circle.sessionCountLabel };
 
 // Bir halkanın hedefine ulaştığı analitik olayının BİR KEZ (halka başına)
 // atılmasını sağlamak için modül düzeyinde bir guard (bkz. todays-vird-card.tsx
@@ -268,7 +273,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
 
   return (
     <PageLayout>
-      <PageHeader title={circleName} leftIconName="xmark" onPressLeft={close} />
+      <PageHeader title={circleName} leftIconName="xmark" onPressLeft={close} leftTestID={TEST_IDS.circle.sessionClose} />
 
       <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
         {locked ? (
@@ -281,9 +286,9 @@ export function CircleSessionScreen({ id }: { id: string }) {
         ) : (
           <>
             {counterStyle === "tesbih" && isPremium ? (
-              <TesbihCounterView model={model} controls="none" />
+              <TesbihCounterView model={model} controls="none" testIDs={SESSION_TEST_IDS} />
             ) : (
-              <AppleWatchView model={model} controls="none" />
+              <AppleWatchView model={model} controls="none" testIDs={SESSION_TEST_IDS} />
             )}
             <Text className="-mt-4 mb-3 text-center text-xs text-text-muted">
               {t("circle:session.mine", { count: liveCountRef.current })}

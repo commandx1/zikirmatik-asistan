@@ -243,6 +243,187 @@ Earlier finding, from the manual-pilot session, still relevant for any future ma
 `xcrun simctl openurl booted "zikirmatik://theme-selector"` (deep link, scheme from `app.json`)
 is a much more reliable way to reach a screen than chasing a flaky bottom-tab "more" popover.
 
+## Sesli sürüm, Video 2 ("Vird") ve Video 3 ("Halka") — JSON-driven RichVideo
+
+`RichVideo-02`/`RichVideo-03` (compositions in `src/Root.tsx`) are driven by
+`src/RichVideoGeneric.tsx`, a generic scene renderer, NOT a copy of `RichVideo01`'s bespoke
+Scene2/3/4 (`src/RichVideo.tsx`) — that file's own scenes (AI Rehber split, dark-overlay
+relaunch trick) are untouched; `RichVideoGeneric` only reuses its side-effect-free exports
+(`buildTimelineFor`, `HookScene`, `BrandOutroScene`, `RampedClipFrom`, `CaptionPill`,
+`PhoneStage`). Re-rendering `RichVideo-01` after this change reproduces the exact same
+24.09s ±0.1 duration (regression-checked) — see `pilots/rich-02.json` / `rich-03.json` for a
+live example of the schema below.
+
+### `pilots/rich-0N.json` schema
+
+```jsonc
+{
+  "recordingSrc": "recordings/story-vird.mp4",   // one recording for scenes 2-4
+  "scenes": [                                     // exactly 3: scene2, scene3, scene4
+    {
+      // Video segments, speed-ramped to fill the scene's audio-driven output time
+      // (sentence audio + 0.35s gap). At most one "ramp" segment per scene (fills
+      // whatever output time the "fixed" segments don't use); any number of "fixed"
+      // segments (fixed REAL seconds window at an explicit `rate`, >= 0.56x — the
+      // OffthreadVideo blank-frame floor, see "Bilinen pürüz" above).
+      "segments": [
+        { "kind": "ramp", "from": 0.3, "to": 7.0 },
+        { "kind": "fixed", "from": 7.0, "to": 8.6, "rate": 0.75 }
+      ],
+      // Optional: a small gold pulse label over a specific segment (e.g. "Sonraki").
+      "badge": { "text": "Sonraki", "segmentIndex": 1, "atFrame": 4, "durationFrames": 24 }
+    },
+    { "segments": [ /* ... */ ] },
+    {
+      // OR: a single static image filling the whole scene instead of segments (the same
+      // "static frame" trick RichVideo01 uses for its own relaunch payoff) — for when the
+      // live recording's tail didn't survive (see the story-circle finding below).
+      "staticImage": "recordings/circle-detail-settled.png"
+    }
+  ]
+}
+```
+
+`from`/`to` are **absolute seconds within `recordingSrc`**, not scene-relative. The VO
+manifest (`public/audio/vo-0N.json`) is imported separately in `Root.tsx` and passed in as
+`voManifest` — it drives the timeline (scene lengths, lead-in, hold) exactly like vo-01 does
+for `RichVideo-01`.
+
+### `scripts/record.mjs`: new flows + selectable Detox config
+
+- New flows `story-vird` / `story-circle` (same marker-based trim + `minterpolate=blend`
+  pipeline as `story-counter`), writing `public/recordings/story-vird.mp4` /
+  `story-circle.mp4` at 1206x2622. Their beat offsets (A/B/C/end, printed after each run) are
+  for hand-authoring the `pilots/rich-0N.json` source ranges above — record.mjs does NOT
+  auto-generate those two videos' pilot JSON the way it does `pilots/story-counter.json`
+  (different composition shape, no fixed caption text to bake in).
+- The Detox config to build/run against is now selectable per flow (`CONFIGS` map in
+  `record.mjs`) — `story-vird`/`story-circle` use `ios.sim.record`
+  (`apps/mobile/.detoxrc.js`), a near-duplicate of `ios.sim.release`/`ios.release` that only
+  changes the mock-Google display name/email (`EXPO_PUBLIC_DEV_GOOGLE_NAME="Ahmet"`,
+  `EXPO_PUBLIC_DEV_GOOGLE_EMAIL=ahmet@example.com`) and uses a separate derivedData path
+  (`ios/build-record`) so it doesn't clobber the shared e2e-release binary. These two flows
+  need a **signed-in premium user on screen** (vird programs, circle detail), and the header
+  must never show "E2E Kullanıcı" — build with `npx detox build -c ios.sim.record` first.
+
+### `apps/mobile/e2e/recordings/story-vird.e2e.js` / `story-circle.e2e.js`
+
+Same shape as `story-counter.e2e.js` (testID-only, beat markers `{A,B,C,end}` via
+`STORY_MARKERS_PATH`, excluded from the normal suite — verified with
+`npx detox test -c ios.sim.release --listTests`), but sign in for real
+(`freshSignIn()` + `seed('--premium e2e-user')` + `relaunch()`) instead of staying a fresh
+guest. `story-circle.e2e.js` also does a cheap bonus: a second member joins via a raw
+`fetch()` to `/v1/auth/provider/verify` + `/v1/circles/join` with a different mock-auth
+`sub` (`e2e-user-2`) — no second Detox device needed, the members list just shows two people.
+
+**Findings from live recording (2026-09-27):**
+- **`goNext()` (the vird session's "Sonraki"/"Atla" transition) never marks an item
+  completed** — it only advances `currentIndex`. Repeatedly skipping ("Atla") through a
+  template's real dataset therefore can NEVER reach the "day completed" banner: eventually
+  `pickNextIndex` returns the item after the last incomplete one, at which point neither
+  "Sonraki" nor "Atla" render (both require `nextIndex != null`) and the session is stuck.
+  Verified twice live (first attempt hit jest's 180s test timeout; second hit the explicit
+  10s wait for `e2e-vird-session-finish`). `story-vird.e2e.js` deliberately does NOT chase
+  day-completion: it does real counting + one real "Sonraki" transition (item 2, a
+  small-target item) + a few "Atla" skips, then closes the session screen directly. A
+  `sessionSkip` testID (`e2e-vird-session-skip`) was added to `vird-session-screen.tsx` for
+  this — it had none.
+- **`simctl io recordVideo` loses ~5-8s off the tail of a capture after SIGINT**, and the
+  loss is NOT proportional to how long you pad with an in-app dwell afterward — padding the
+  dwell just pushes MORE of that same loss into the dwell, not past it, unless the total
+  capture is long enough that the target content has several genuine seconds of real
+  capture-time buffer after it (confirmed across 5 live attempts: 0s/4s/6s/8s dwells all lost
+  the same ~5s window; only shortening everything BEFORE the target content and using a
+  moderate dwell reliably worked for `story-vird`). For `story-circle`, the settled
+  "halka detayı" screen (members + progress) still didn't survive in the video even after
+  that fix — so the spec grabs it as a **plain `simctl io booted screenshot`** instead (fully
+  decoupled from `recordVideo`'s finalization behaviour) and `RichVideoGeneric.tsx`'s new
+  `staticImage` scene type renders it, the same static-frame trick `RichVideo01` already uses
+  for its own relaunch payoff (`SettledImage`).
+- Minor additive testIDs needed across vird/circle screens that had none (template picking,
+  template start, reminder settings scroll target, circle session start/close/counter) — see
+  `src/test-ids.ts` comments for the full list; all additive, mobile typecheck clean.
+
+### Render + QA (2026-09-27, second pass — both passed)
+
+```
+npx remotion render RichVideo-02 out/video-02-vird-sesli.mp4 --codec=h264
+npx remotion render RichVideo-03 out/video-03-halka-sesli.mp4 --codec=h264
+```
+
+A coordinator review of the first-pass renders found three real issues, all fixed and
+re-verified live (not just theorized):
+
+1. **A genuine blank phone frame** in video-03 scene 2, inside a `rate: 0.75` "fixed" payoff
+   segment — confirmed via a systematic 0.25s brightness sweep (not the earlier, too-coarse
+   1.5s check). Root cause: the same `OffthreadVideo` blank-frame bug `RichVideo01` already
+   works around (see "Bilinen pürüz" above) — **any non-1.0 rate is a risk**, not just very
+   slow ones. Fix: every "fixed" payoff segment in both `pilots/rich-0N.json` now uses
+   `rate: 1.0` (verified against the actual footage that a clean real-speed window exists at
+   each payoff point); ramps stay sped-up (rate > 1, which never showed this bug in any test).
+2. **Wrong dhikr** in video-03 ("Camiden çıkarken İblis'ten Sığınma", picked by blind
+   `atIndex(0)`) — `story-circle.e2e.js` now uses the picker's search field (added a
+   `pickerSearch` testID, `vird-dhikr-picker-modal.tsx`) to filter to a Salavat item
+   ("salli" — the word "salavat" itself never appears in salavat.mjs's transliterations, so
+   that would have matched nothing) before picking. Getting this reliable took several live
+   iterations: `typeText`'s keystroke simulation raced with the sheet's mount/keyboard
+   animation and sometimes typed nothing or a truncated string — switched to `replaceText`
+   (atomic, no keystroke race); the modal auto-closes on a successful pick (no separate
+   "Bitti" tap needed — added one once, it fired on an already-closed sheet and made things
+   worse); and on this machine, under concurrent Docker/API/Xcode load, plain
+   `waitFor(...).toBeVisible()` calls sometimes timed out even though the screen was already
+   correct (confirmed from the recording) — replaced with a retry-the-tap loop
+   (`tapAtIndexWhenHittable`, same pattern as `story-counter.e2e.js`) instead of trusting a
+   single visibility assertion.
+3. **Video-02 scene 4 cropped** — `story-vird.e2e.js`'s `scrollTo()` stopped as soon as the
+   reminder card cleared Detox's 75% visibility default, which (since the card is taller than
+   one screen) left its bottom half off-frame. Added one explicit follow-up `.scroll(220,
+   'down')` and an extended hold (3800ms — an earlier 2500ms attempt left only ~1.4s of
+   fully-settled card before the clip's natural end, not enough for the scene's ~2.16s output
+   budget at real speed).
+
+("Video-02 outro is 7.2s" from the first-pass report was **not a real bug** — a transcription
+error in that report's own timeline table. Frame-accurate re-verification (0.1s steps around
+the scene boundary) confirms scene 4→5 lands within a few frames of `buildTimelineFor`'s own
+math for both videos; see the corrected timelines below.)
+
+**Corrected per-scene timelines** (composition time; both re-recorded, so absolute source
+timestamps shifted slightly from the first pass — see `pilots/rich-02.json` / `rich-03.json`
+for the exact values used):
+
+Video 2 ("Vird"), 22.912s total:
+| Scene | Composition | Source (story-vird.mp4) |
+|---|---|---|
+| 1 hook | 0–3.13s | kinetic text |
+| 2 | 3.13–8.64s | ramp [0.30,7.30] → fixed [7.30,9.30]@1.0 (template-start payoff) |
+| 3 | 8.64–13.49s | ramp [10.85,27.0] → fixed [27.0,29.0]@1.0 (real "Sonraki", badge) |
+| 4 | 13.49–15.65s | fixed [43.9,46.05]@1.0 (full reminder card, settled) |
+| 5 outro | 15.65–22.91s | static brand card |
+
+Video 3 ("Halka"), 22.357s total:
+| Scene | Composition | Source (story-circle.mp4) |
+|---|---|---|
+| 1 hook | 0–3.92s | kinetic text |
+| 2 | 3.92–8.64s | ramp [0.30,22.5] → fixed [22.5,24.5]@1.0 (invite-code payoff) |
+| 3 | 8.64–13.44s | fixed [26.8,31.608]@1.0 (near-real-speed rising total) |
+| 4 | 13.44–15.60s | static image `circle-detail-settled.png` |
+| 5 outro | 15.60–22.36s | static brand card |
+
+QA (2026-09-27, this pass):
+- ffprobe: both have an audio (aac) + video (h264, 1080x1920) stream.
+- `ffmpeg -af volumedetect`: video-02 mean -22.3dB / max -1.5dB; video-03 mean -22.0dB / max
+  -0.3dB — both on target, no clipping.
+- **0.25s blank-frame sweep across the FULL length of both videos** (`fps=4` extraction,
+  91 + 89 frames, mean-brightness check on the phone region): zero flagged frames in either
+  video.
+- Spot-checked every scene's payoff frame in both videos: no "E2E" text anywhere (header
+  reads "Ahmet" throughout), captions match the VO sentence per scene, all payoffs read
+  clearly at real speed (template-start toast, real "Sonraki" transition, invite code + 2
+  members "Ahmet"/"Fatma", rising total, full reminder card, brand outro).
+- Known, pre-existing limitation (unchanged from the "Bilinen pürüz" note above): mild
+  `minterpolate` ghosting/double-exposure on fast ramp segments and on residual scroll
+  settling — cosmetic only, not a blank frame.
+
 Scripted-vs-manual comparison renders (same `ShortVideo` component, baked `defaultProps` per
 composition — `--props` CLI overrides break this bundle's static-file route, see the comment in
 `src/Root.tsx`):

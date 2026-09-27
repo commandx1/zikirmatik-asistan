@@ -235,6 +235,7 @@ export function VirdDhikrPickerModal({
         placeholder={t("vird:editor.searchPlaceholder")}
         className="mb-3 rounded-xl bg-bg px-3"
         autoFocus
+        testID={TEST_IDS.vird.pickerSearch}
       />
 
       {isLoading ? (

@@ -382,7 +382,7 @@ function SessionBody({
               </>
             ) : null}
             {current && current.count < current.target && nextIndex != null ? (
-              <Pressable onPress={goNext} className="mb-4 items-center self-center px-4 py-1">
+              <Pressable onPress={goNext} testID={TEST_IDS.vird.sessionSkip} className="mb-4 items-center self-center px-4 py-1">
                 <Text className="text-sm font-semibold text-text-muted">{t('vird:session.skip')}</Text>
               </Pressable>
             ) : null}

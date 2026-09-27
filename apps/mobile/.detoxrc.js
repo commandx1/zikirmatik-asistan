@@ -20,6 +20,19 @@ module.exports = {
         'EXPO_PUBLIC_DEV_GOOGLE_NAME="E2E Kullanıcı" EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:3000 EXPO_PUBLIC_REVENUECAT_API_KEY_IOS= ' +
         'xcodebuild -workspace ios/ZikirmatikRehber.xcworkspace -scheme ZikirmatikRehber -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet',
     },
+    // Promo-video kayıtları için (apps/promo-video/scripts/record.mjs, flows
+    // story-vird / story-circle): ios.release'in AYNISI, tek fark mock-Google
+    // görünen adı/e-postası — üstbilgide "E2E Kullanıcı" görünmemesi gerekiyor
+    // (bkz. apps/promo-video/README-short.md "Sesli sürüm"). Ayrı derivedDataPath
+    // ile normal e2e-release binary'sini ezmez, ikisi yan yana kalabilir.
+    'ios.record': {
+      type: 'ios.app',
+      binaryPath: 'ios/build-record/Build/Products/Release-iphonesimulator/ZikirmatikRehber.app',
+      build:
+        'EXPO_PUBLIC_E2E_MOCK_AUTH=1 EXPO_PUBLIC_DEV_GOOGLE_SUB=e2e-user EXPO_PUBLIC_DEV_GOOGLE_EMAIL=ahmet@example.com ' +
+        'EXPO_PUBLIC_DEV_GOOGLE_NAME="Ahmet" EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:3000 EXPO_PUBLIC_REVENUECAT_API_KEY_IOS= ' +
+        'xcodebuild -workspace ios/ZikirmatikRehber.xcworkspace -scheme ZikirmatikRehber -configuration Release -sdk iphonesimulator -derivedDataPath ios/build-record -quiet',
+    },
     'android.release': {
       type: 'android.apk',
       binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
@@ -43,6 +56,7 @@ module.exports = {
   },
   configurations: {
     'ios.sim.release': { device: 'simulator', app: 'ios.release' },
+    'ios.sim.record': { device: 'simulator', app: 'ios.record' },
     'android.emu.release': { device: 'emulator', app: 'android.release' },
   },
 };

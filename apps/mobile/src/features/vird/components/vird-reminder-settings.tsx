@@ -10,6 +10,7 @@ import { useVirdStore } from "../../../store/vird-store";
 import { requestNotificationPermissionForToggle } from "../../notifications/services/request-notification-permission";
 import { resolvePrayerTimes, type PrayerTimesResult } from "../services/prayer-times";
 import { withAlpha } from "@zikirmatik/shared";
+import { TEST_IDS } from "../../../test-ids";
 
 type ReminderSlotKey = "morning" | "prayer" | "evening" | "night";
 
@@ -110,7 +111,7 @@ export function VirdReminderSettings({ onRequirePremium }: VirdReminderSettingsP
   }
 
   return (
-    <ThemedCard className="mb-4 rounded-2xl p-4">
+    <ThemedCard testID={TEST_IDS.vird.reminderSettings} className="mb-4 rounded-2xl p-4">
       <View className="mb-1 flex-row items-center justify-between">
         <Text className="text-sm font-semibold text-text-primary">{t("vird:reminders.settingsTitle")}</Text>
         <TogglePill checked={reminderPrefs.enabled} onToggle={(next) => void handleToggleEnabled(next)} size="compact" />

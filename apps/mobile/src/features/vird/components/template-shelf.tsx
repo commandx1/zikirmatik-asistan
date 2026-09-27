@@ -8,6 +8,7 @@ import type { VirdTemplateSummary } from "@zikirmatik/shared";
 import { resolveLocalizedText } from "@zikirmatik/shared";
 import { fetchVirdTemplates } from "../services/vird-api-client";
 import { useAppLocale } from "../../../i18n";
+import { TEST_IDS } from "../../../test-ids";
 
 type TemplateRowProps = {
   item: VirdTemplateSummary;
@@ -21,6 +22,7 @@ const TemplateRow = memo(function TemplateRow({ item, vertical, locale, t, route
   return (
     <Pressable
       onPress={() => router.push({ pathname: "/vird/template/[key]", params: { key: item.key } })}
+      testID={`${TEST_IDS.vird.templateCard}-${item.key}`}
       className={vertical ? "mb-3 flex-1 rounded-2xl border border-white/8 bg-card p-3" : "w-40 rounded-2xl border border-white/8 bg-card p-3"}
       style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
     >

@@ -41,6 +41,15 @@ export const TEST_IDS = {
   theme: { swatch: "e2e-theme-swatch", scroll: "e2e-theme-scroll" },
   vird: {
     hub: "e2e-vird-hub",
+    // apps/mobile/e2e/recordings/story-vird.e2e.js için eklendi (bkz. rapor):
+    // hub'daki "şablonlardan seç" satırı, template-shelf.tsx'in kart Pressable'ı
+    // (id `${templateCard}-${item.key}`, ör. e2e-vird-template-card-klasik-sabah)
+    // ve template-detail-screen.tsx'in "Programı başlat" düğmesi hiçbirinin
+    // testID'si yoktu — additive only, davranış değişmedi.
+    templatesEntry: "e2e-vird-templates-entry",
+    templateCard: "e2e-vird-template-card",
+    templateStart: "e2e-vird-template-start",
+    reminderSettings: "e2e-vird-reminder-settings",
     newManual: "e2e-vird-new-manual",
     emptyCta: "e2e-vird-empty-cta",
     editorScroll: "e2e-vird-editor-scroll",
@@ -58,8 +67,15 @@ export const TEST_IDS = {
     itemTarget: "e2e-vird-item-target",
     pickerRow: "e2e-vird-picker-row",
     pickerDone: "e2e-vird-picker-done",
+    // vird-dhikr-picker-modal.tsx'in arama alanı testID'siz idi — story-circle.e2e.js'in
+    // ilk satır yerine evrensel bir zikir (Sübhanallah/Salavat) seçebilmesi için eklendi.
+    pickerSearch: "e2e-vird-picker-search",
     sessionCounter: "e2e-vird-session-counter",
     sessionFinish: "e2e-vird-session-finish",
+    // "Atla" bağlantısı (hedefe ulaşmadan sıradaki zikre geç) testID'siz —
+    // story-vird.e2e.js'in tüm gerçek dataset'i (klasik-sabah ~20 zikir, biri 100
+    // hedefli) tek tek saymadan "gün tamamlandı" durumuna ulaşması için eklendi.
+    sessionSkip: "e2e-vird-session-skip",
   },
   circle: {
     hub: "e2e-circle-hub",
@@ -73,6 +89,15 @@ export const TEST_IDS = {
     goalInput: "e2e-circle-goal-input",
     submit: "e2e-circle-submit",
     code: "e2e-circle-code",
+    // apps/mobile/e2e/recordings/story-circle.e2e.js için eklendi (bkz. rapor):
+    // circle-session-screen.tsx AppleWatchView/TesbihCounterView'a testIDs prop'u
+    // hiç geçmiyordu (bileşen destekliyor ama opsiyonel) — additive only.
+    sessionCounter: "e2e-circle-session-counter",
+    sessionCountLabel: "e2e-circle-session-count-label",
+    // circle-detail-screen.tsx'in "Başlat" düğmesi ve circle-session-screen.tsx'in
+    // kapatma ikonu testID'siz idi — story-circle.e2e.js için eklendi (bkz. rapor).
+    sessionStart: "e2e-circle-session-start",
+    sessionClose: "e2e-circle-session-close",
   },
   premium: { sheet: "e2e-premium-sheet", scroll: "e2e-premium-scroll", close: "e2e-premium-close" },
   aiGuide: {

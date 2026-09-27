@@ -27,6 +27,7 @@ import { VIRD_ERROR_CODE, resolveVirdErrorMessage } from "../services/vird-error
 import { toLocalVirdProgram } from "../services/vird-sync";
 import type { VirdProgramLocal } from "../types";
 import { useAppLocale } from "../../../i18n";
+import { TEST_IDS } from "../../../test-ids";
 
 type Props = { templateKey: string };
 
@@ -257,6 +258,7 @@ export function TemplateDetailScreen({ templateKey }: Props) {
           {startError ? <Text className="mt-4 text-xs text-[#F97373]">{startError}</Text> : null}
 
           <PrimaryCtaButton
+            testID={TEST_IDS.vird.templateStart}
             label={isStarting ? t("vird:templates.detail.startingButton") : t("vird:templates.detail.startButton")}
             onPress={() => void handleStart()}
             disabled={isStarting}

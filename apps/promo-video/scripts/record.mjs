@@ -51,7 +51,13 @@ const FLOWS = {
   // run them with `--config ios.record` (see CONFIGS below) so the header shows "Ahmet",
   // never "E2E Kullanıcı".
   "story-vird": { markers: true, headMargin: 0.3, tailMargin: 0.5 },
-  "story-circle": { markers: true, headMargin: 0.3, tailMargin: 0.5 },
+  // tailMargin raised after a live capture: recordVideo's actual frame timeline can drift
+  // ~4-5s behind wall-clock over a ~100s capture (worse than story-counter/-vird saw), so a
+  // wall-clock-based trimEnd got clamped to the raw file's true end and lost the settled
+  // "halka detayı" tail (verified via frame extraction — the clip ended mid-transition,
+  // double-exposed). A bigger tailMargin alone doesn't fully fix it (see the spec's own
+  // longer post-mark('C') dwell for the real fix) but gives more slack against the clamp.
+  "story-circle": { markers: true, headMargin: 0.3, tailMargin: 3.0 },
 };
 
 // Detox configuration to build/run against. Defaults to the existing e2e-release config

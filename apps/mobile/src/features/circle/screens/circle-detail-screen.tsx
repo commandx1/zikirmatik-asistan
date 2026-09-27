@@ -157,6 +157,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
           </ThemedCard>
         ) : storedCircle.status === "active" ? (
           <PrimaryCtaButton
+            testID={TEST_IDS.circle.sessionStart}
             label={t("circle:detail.start")}
             onPress={() => router.push({ pathname: "/circle/session", params: { id } })}
             className="mb-4 w-full"

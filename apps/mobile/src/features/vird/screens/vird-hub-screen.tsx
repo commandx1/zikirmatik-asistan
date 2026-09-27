@@ -133,6 +133,7 @@ export function VirdHubScreen() {
           <Pressable
             // TODO(B1): typed routes yenilenince (.expo/types/router.d.ts) cast'i kaldır.
             onPress={() => router.push("/vird/templates")}
+            testID={TEST_IDS.vird.templatesEntry}
             className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-card px-4 py-3.5"
           >
             <View className="flex-row items-center gap-2.5">
