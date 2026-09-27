@@ -1,0 +1,33 @@
+{
+  "hookText": "Zikir çekerken kaç kere sayıyı şaşırdın?",
+  "segments": [
+    { "from": 0.3, "to": 19.53, "rate": 2.0 },
+    { "from": 19.53, "to": 22.5, "rate": 1.0 },
+    { "from": 22.5, "to": 40.0, "rate": 3.5 },
+    { "from": 40.0, "to": 43.72, "rate": 1.0 },
+    { "from": 43.72, "to": 48.2, "rate": 1.0 }
+  ],
+  "captions": [
+    {
+      "text": "Zikrini seç",
+      "from": 0,
+      "to": 9.615
+    },
+    {
+      "text": "Tek dokunuşla say, 33'te haber verir",
+      "from": 9.615,
+      "to": 21.305
+    },
+    {
+      "text": "Kaldığın yerden devam",
+      "from": 21.305,
+      "to": 25.785
+    }
+  ],
+  "recordingDurationSec": 48.2,
+  "loop": false,
+  "outroSec": 4,
+  "sourceLine": "Kaynak: —",
+  "ctaText": "Google Play'de ücretsiz",
+  "appName": "Zikirmatik Asistan"
+}

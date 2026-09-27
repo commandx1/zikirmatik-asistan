@@ -1,0 +1,13 @@
+{
+  "hookText": "Örnek kanca metni",
+  "captions": [
+    { "text": "Kütüphaneden seç", "startSec": 0.5, "durationSec": 3 },
+    { "text": "Arapça, okunuş, anlam", "startSec": 6.5, "durationSec": 4 }
+  ],
+  "recordingSrc": "/recordings/library.mp4",
+  "recordingLoopFrames": 463,
+  "loop": true,
+  "sourceLine": "Kaynak: —",
+  "ctaText": "Google Play'de ücretsiz",
+  "appName": "Zikirmatik Asistan"
+}

@@ -1,0 +1,138 @@
+import React from "react";
+import { Composition, staticFile } from "remotion";
+import { ZikirmatikPromo } from "./ZikirmatikPromo";
+import { ShortVideo, SHORT_VIDEO_TOTAL_FRAMES, shortVideoDurationInFrames } from "./ShortVideo";
+import { FPS, TOTAL_FRAMES, WIDTH, HEIGHT } from "./constants";
+import pilot04Props from "../pilots/pilot-04-kutuphane.json";
+import pilot05Props from "../pilots/pilot-05-temalar.json";
+import storyCounterProps from "../pilots/story-counter.json";
+import { RichVideo01, richVideoDurationInFrames } from "./RichVideo";
+
+export const RemotionRoot: React.FC = () => {
+  return (
+    <>
+      <Composition
+        id="ZikirmatikPromo"
+        component={ZikirmatikPromo}
+        durationInFrames={TOTAL_FRAMES}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      <Composition
+        id="ShortVideo"
+        component={ShortVideo}
+        durationInFrames={SHORT_VIDEO_TOTAL_FRAMES}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          hookText: "Örnek kanca metni",
+          captions: [
+            { text: "Tek dokunuşla say", startSec: 1, durationSec: 4 },
+            { text: "Kaldığın yerden devam et", startSec: 14, durationSec: 4 },
+          ],
+          recordingSrc: staticFile("recordings/counter-pilot.mp4"),
+          sourceLine: "Kaynak: —",
+          ctaText: "Google Play'de ücretsiz",
+          loop: true,
+        }}
+      />
+      {/*
+        Scripted counter clip (apps/promo-video/scripts/record.mjs counter) writes to
+        recordings/counter.mp4, distinct from the manual pilot-03 clip baked into the
+        "ShortVideo" default above (recordings/counter-pilot.mp4) — kept separate so the
+        two are directly comparable; render with
+        `npx remotion render ShortVideo-counter-scripted out/short-pilot-03-scripted.mp4 --codec=h264`.
+      */}
+      <Composition
+        id="ShortVideo-counter-scripted"
+        component={ShortVideo}
+        durationInFrames={SHORT_VIDEO_TOTAL_FRAMES}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          hookText: "Örnek kanca metni",
+          captions: [
+            { text: "Tek dokunuşla say", startSec: 1, durationSec: 4 },
+            { text: "Kaldığın yerden devam et", startSec: 14, durationSec: 4 },
+          ],
+          recordingSrc: staticFile("recordings/counter.mp4"),
+          sourceLine: "Kaynak: —",
+          ctaText: "Google Play'de ücretsiz",
+          loop: true,
+        }}
+      />
+      {/*
+        Pilots 04/05: `remotion render ShortVideo out.mp4 --props=pilots/x.json` 404s on the
+        recording (see README-short.md "Scripted recording pipeline" — a reproducible
+        @remotion/bundler bug in this project where any `--props` override, file or inline,
+        breaks the bundle's /public static route, independent of which asset is referenced).
+        Baking the same pilots/*.json as defaultProps on their own composition id is the
+        verified-working substitute; render with
+        `npx remotion render ShortVideo-pilot-04 out/short-pilot-04.mp4 --codec=h264`.
+      */}
+      <Composition
+        id="ShortVideo-pilot-04"
+        component={ShortVideo}
+        durationInFrames={SHORT_VIDEO_TOTAL_FRAMES}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          ...pilot04Props,
+          // staticFile() (not a plain "/recordings/..." string, even though it resolves to
+          // the same value) is what registers the asset with the bundler's public-file
+          // server — see the comment above.
+          recordingSrc: staticFile("recordings/library.mp4"),
+        }}
+      />
+      <Composition
+        id="ShortVideo-pilot-05"
+        component={ShortVideo}
+        durationInFrames={SHORT_VIDEO_TOTAL_FRAMES}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          ...pilot05Props,
+          recordingSrc: staticFile("recordings/themes.mp4"),
+        }}
+      />
+      {/*
+        Video 1 ("Sayarken şaşırma"): ONE continuous recording (loop: false), played once at
+        its real length. apps/promo-video/scripts/record.mjs story-counter writes both
+        public/recordings/story-counter.mp4 and pilots/story-counter.json (recordingDurationSec
+        + caption from/to windows, derived from the spec's wall-clock beat markers) — re-run
+        that script to refresh both, then re-render this composition; render with
+        `npx remotion render ShortVideo-story-counter out/video-01-sayarken-sasirma.mp4 --codec=h264`.
+      */}
+      <Composition
+        id="ShortVideo-story-counter"
+        component={ShortVideo}
+        durationInFrames={shortVideoDurationInFrames(storyCounterProps, FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{
+          ...storyCounterProps,
+          recordingSrc: staticFile("recordings/story-counter.mp4"),
+        }}
+      />
+      {/*
+        Video 1, voiced version: the 5 VO sentences (public/audio/vo-01.json) drive the
+        timeline instead of caption-driven beat markers — see src/RichVideo.tsx. Render with
+        `npx remotion render RichVideo-01 out/video-01-sesli.mp4 --codec=h264`.
+      */}
+      <Composition
+        id="RichVideo-01"
+        component={RichVideo01}
+        durationInFrames={richVideoDurationInFrames(FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+    </>
+  );
+};

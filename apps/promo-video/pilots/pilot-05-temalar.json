@@ -1,0 +1,13 @@
+{
+  "hookText": "Örnek kanca metni",
+  "captions": [
+    { "text": "Temanı seç", "startSec": 0.5, "durationSec": 3 },
+    { "text": "Sana uyanı bul", "startSec": 6, "durationSec": 4 }
+  ],
+  "recordingSrc": "/recordings/themes.mp4",
+  "recordingLoopFrames": 418,
+  "loop": true,
+  "sourceLine": "Kaynak: —",
+  "ctaText": "Google Play'de ücretsiz",
+  "appName": "Zikirmatik Asistan"
+}

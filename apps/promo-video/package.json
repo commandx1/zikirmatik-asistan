@@ -1,0 +1,19 @@
+{
+  "name": "promo-video",
+  "version": "1.0.0",
+  "description": "Zikirmatik Rehber - Play Store promo video",
+  "private": true,
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render ZikirmatikPromo out/promo.mp4",
+    "render": "remotion render ZikirmatikPromo out/promo.mp4 --codec=h264"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.290",
+    "remotion": "4.0.290"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.8.3"
+  }
+}

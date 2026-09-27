@@ -26,7 +26,13 @@ docs/**/*.pptx
 .superpowers
 apps/mobile/android/local.properties
 apps/mobile/android/keystore.properties
-apps/promo-video
+# promo-video: kod takip edilir, ağır medya ve sırlar dışarıda
+apps/promo-video/node_modules/
+apps/promo-video/out/
+apps/promo-video/.tmp-recordings/
+apps/promo-video/public/recordings/
+apps/promo-video/public/audio/
+apps/promo-video/.env
 .claude
 store-assets
 
