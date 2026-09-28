@@ -4,14 +4,14 @@ import { buildCircleLogPayload, buildCircleShareMessage, computeDisplayTotal, pa
 describe("buildCircleShareMessage", () => {
   it("uses the unprefixed /halka link and Turkish text for a tr locale", () => {
     const message = buildCircleShareMessage({ name: "Ailem", code: "ABCD2345", locale: "tr" });
-    expect(message).toContain("https://zikirmatikasistan.app/halka/ABCD2345");
+    expect(message).toContain("https://zikirmatik-asistan.vercel.app/halka/ABCD2345");
     expect(message).toContain("Kod: ABCD2345");
     expect(message).toContain("Ailem");
   });
 
   it("uses no locale prefix and English text for an en locale", () => {
     const message = buildCircleShareMessage({ name: "Family", code: "ABCD2345", locale: "en" });
-    expect(message).toContain("https://zikirmatikasistan.app/halka/ABCD2345");
+    expect(message).toContain("https://zikirmatik-asistan.vercel.app/halka/ABCD2345");
     expect(message).toContain("Code: ABCD2345");
     expect(message).toContain("Family");
   });
@@ -41,7 +41,7 @@ describe("buildCircleShareMessage", () => {
 
   it("falls back to the English message for an unknown locale (real behavior: only 'tr'-prefixed locales get Turkish text)", () => {
     const message = buildCircleShareMessage({ name: "Family", code: "ABCD2345", locale: "de" });
-    expect(message).toContain("https://zikirmatikasistan.app/halka/ABCD2345");
+    expect(message).toContain("https://zikirmatik-asistan.vercel.app/halka/ABCD2345");
     expect(message).toContain("Code: ABCD2345");
   });
 
@@ -62,11 +62,11 @@ describe("parseCircleCode", () => {
   });
 
   it("extracts the code from a /halka/ link", () => {
-    expect(parseCircleCode("https://zikirmatikasistan.app/tr/halka/ABCD2345")).toBe("ABCD2345");
+    expect(parseCircleCode("https://zikirmatik-asistan.vercel.app/tr/halka/ABCD2345")).toBe("ABCD2345");
   });
 
   it("extracts the code from a circle/join?code= link", () => {
-    expect(parseCircleCode("https://zikirmatikasistan.app/circle/join?code=ABCD2345")).toBe("ABCD2345");
+    expect(parseCircleCode("https://zikirmatik-asistan.vercel.app/circle/join?code=ABCD2345")).toBe("ABCD2345");
   });
 
   it("returns null for an invalid code (contains disallowed characters like O/0/1/I)", () => {
@@ -86,14 +86,14 @@ describe("parseCircleCode", () => {
     ["lowercase raw uppercased", "abcd2345", "ABCD2345"],
     ["dashes", "ABCD-EFGH", "ABCDEFGH"],
     ["inner spaces", "ABCD EFGH", "ABCDEFGH"],
-    ["full https tr link", "https://zikirmatikasistan.app/tr/halka/ABCDEFGH", "ABCDEFGH"],
-    ["en link without /tr prefix", "https://zikirmatikasistan.app/halka/ABCDEFGH", "ABCDEFGH"],
-    ["link with trailing slash", "https://zikirmatikasistan.app/tr/halka/ABCDEFGH/", "ABCDEFGH"],
-    ["link with query string after code", "https://zikirmatikasistan.app/tr/halka/ABCDEFGH?utm=x", "ABCDEFGH"],
+    ["full https tr link", "https://zikirmatik-asistan.vercel.app/tr/halka/ABCDEFGH", "ABCDEFGH"],
+    ["en link without /tr prefix", "https://zikirmatik-asistan.vercel.app/halka/ABCDEFGH", "ABCDEFGH"],
+    ["link with trailing slash", "https://zikirmatik-asistan.vercel.app/tr/halka/ABCDEFGH/", "ABCDEFGH"],
+    ["link with query string after code", "https://zikirmatik-asistan.vercel.app/tr/halka/ABCDEFGH?utm=x", "ABCDEFGH"],
     ["scheme link", "zikirmatik://circle/join?code=abcdefgh", "ABCDEFGH"],
     ["scheme link with extra params", "zikirmatik://circle/join?code=ABCDEFGH&x=1", "ABCDEFGH"],
     ["code= with empty value", "zikirmatik://circle/join?code=", null],
-    ["URL whose path has no code", "https://zikirmatikasistan.app/tr/about", null]
+    ["URL whose path has no code", "https://zikirmatik-asistan.vercel.app/tr/about", null]
   ])("%s", (_label, input, expected) => {
     expect(parseCircleCode(input)).toBe(expected);
   });

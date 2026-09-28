@@ -4,7 +4,7 @@
 import { CIRCLE_CODE_RE, type CircleSummary } from "@zikirmatik/shared";
 import type { CreateDhikrLogPayload } from "../../dhikrs/services/dhikr-logs-api-client";
 
-const SHARE_BASE_URL = "https://zikirmatikasistan.app";
+const SHARE_BASE_URL = "https://zikirmatik-asistan.vercel.app";
 
 /** Halka davet mesajı (TR/EN). Link + kod ayrı satırda. */
 export function buildCircleShareMessage({
