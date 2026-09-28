@@ -3,7 +3,7 @@ import { AppState, type AppStateStatus } from "react-native";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useReviewStore } from "../../../store/review-store";
-import { deriveLocalActivityStats } from "../../stats/services/local-badges";
+import { deriveLocalActivityStats, withServerStreak, type ServerStreak } from "../../stats/services/local-badges";
 import { shouldShowDay7Offer } from "../services/day7-offer";
 
 const OFFER_DELAY_MS = 1500;
@@ -13,13 +13,16 @@ const OFFER_DELAY_MS = 1500;
  * screen has nothing else covering it (canShow), the user isn't premium,
  * and the local streak used by the "steady-streak" badge (local-badges.ts)
  * has reached 7, opens the premium sheet with the annual plan preselected.
- * Streak math is never reimplemented here — deriveLocalActivityStats is the
- * single source, same as the badge.
+ * Streak math is never reimplemented here — deriveLocalActivityStats (+ the
+ * server streak for signed-in users, via withServerStreak) is the single
+ * source, same as the badge.
  */
-export function useDay7Offer(canShow: boolean, onOffer: () => void): void {
+export function useDay7Offer(canShow: boolean, onOffer: () => void, serverStreak: ServerStreak | null = null): void {
   const isPremium = useProfileStore((s) => s.isPremium);
   const items = useDhikrStore((s) => s.items);
   const freeModeCount = useDhikrStore((s) => s.freeModeCount);
+  const freeModeActivityAt = useDhikrStore((s) => s.freeModeActivityAt);
+  const activeDayKeys = useDhikrStore((s) => s.activeDayKeys);
   const shownAt = useReviewStore((s) => s.day7OfferShownAt);
   const markShown = useReviewStore((s) => s.markDay7OfferShown);
 
@@ -34,7 +37,10 @@ export function useDay7Offer(canShow: boolean, onOffer: () => void): void {
       if (!canShow) {
         return;
       }
-      const { currentStreak } = deriveLocalActivityStats(items, freeModeCount);
+      const { currentStreak } = withServerStreak(
+        deriveLocalActivityStats({ items, freeModeCount, freeModeActivityAt, activeDayKeys }),
+        serverStreak
+      );
       if (!shouldShowDay7Offer({ isPremium, streak: currentStreak, shownAt })) {
         return;
       }
@@ -53,5 +59,5 @@ export function useDay7Offer(canShow: boolean, onOffer: () => void): void {
       clearTimeout(timer);
       subscription.remove();
     };
-  }, [canShow, isPremium, items, freeModeCount, shownAt, markShown]);
+  }, [canShow, isPremium, items, freeModeCount, freeModeActivityAt, activeDayKeys, serverStreak, shownAt, markShown]);
 }

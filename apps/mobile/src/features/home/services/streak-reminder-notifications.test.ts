@@ -44,7 +44,7 @@ const evening = new Date(2026, 0, 15, 22, 0, 0);
 
 describe("deriveStreakReminderStatus", () => {
   it("reports no streak when there is no activity", () => {
-    expect(deriveStreakReminderStatus([], 0, morning)).toEqual({
+    expect(deriveStreakReminderStatus({ items: [], freeModeCount: 0 }, morning)).toEqual({
       currentStreak: 0,
       hasCompletedToday: false
     });
@@ -52,11 +52,13 @@ describe("deriveStreakReminderStatus", () => {
 
   it("counts label-based activity the same way as the stats summary", () => {
     const status = deriveStreakReminderStatus(
-      [
-        { current: 33, lastActivityLabel: "Dün 21:12" },
-        { current: 10, lastActivityLabel: "Bugün 09:30" }
-      ],
-      0,
+      {
+        items: [
+          { current: 33, lastActivityLabel: "Dün 21:12" },
+          { current: 10, lastActivityLabel: "Bugün 09:30" }
+        ],
+        freeModeCount: 0
+      },
       morning
     );
 
@@ -65,8 +67,7 @@ describe("deriveStreakReminderStatus", () => {
 
   it("keeps yesterday's streak alive without marking today complete", () => {
     const status = deriveStreakReminderStatus(
-      [{ current: 33, lastActivityLabel: "Dün 21:12" }],
-      0,
+      { items: [{ current: 33, lastActivityLabel: "Dün 21:12" }], freeModeCount: 0 },
       morning
     );
 
@@ -74,20 +75,35 @@ describe("deriveStreakReminderStatus", () => {
   });
 
   it("treats free-mode counts and unlabeled progress as today", () => {
-    expect(deriveStreakReminderStatus([], 5, morning)).toEqual({
+    expect(deriveStreakReminderStatus({ items: [], freeModeCount: 5 }, morning)).toEqual({
       currentStreak: 1,
       hasCompletedToday: true
     });
-    expect(deriveStreakReminderStatus([{ current: 3 }], 0, morning)).toEqual({
+    expect(deriveStreakReminderStatus({ items: [{ current: 3 }], freeModeCount: 0 }, morning)).toEqual({
       currentStreak: 1,
       hasCompletedToday: true
     });
   });
 
+  it("uses activeDayKeys so counting the same dhikr daily still forms a streak", () => {
+    // The item only remembers yesterday's lastActivityAt (today's tap
+    // overwrote it in the same field), so items alone would show a broken
+    // streak; activeDayKeys carries the day history instead.
+    const status = deriveStreakReminderStatus(
+      {
+        items: [{ current: 10, lastActivityLabel: "Bugün 09:00" }],
+        freeModeCount: 0,
+        activeDayKeys: ["2026-01-13", "2026-01-14", "2026-01-15"]
+      },
+      morning
+    );
+
+    expect(status).toEqual({ currentStreak: 3, hasCompletedToday: true });
+  });
+
   it("parses absolute date labels", () => {
     const status = deriveStreakReminderStatus(
-      [{ current: 33, lastActivityLabel: "14.1.2026 08:00" }],
-      0,
+      { items: [{ current: 33, lastActivityLabel: "14.1.2026 08:00" }], freeModeCount: 0 },
       morning
     );
 

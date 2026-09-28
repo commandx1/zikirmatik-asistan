@@ -173,6 +173,19 @@ function collectLocalCompletedDays(
 ): Set<string> {
   const days = new Set<string>();
 
+  // dhikr-store.activeDayKeys — same persisted day history local-badges.ts
+  // uses (deriveLocalActivityStats): an item only remembers its LAST
+  // activity, so counting the same dhikr every day would otherwise never
+  // form a streak from items alone. Can't import local-badges.ts here (it
+  // pulls in i18n, forbidden in this headless-safe module — see the header
+  // comment), so the merge is inlined.
+  const activeDayKeys = Array.isArray(dhikrState?.activeDayKeys) ? (dhikrState!.activeDayKeys as unknown[]) : [];
+  for (const key of activeDayKeys) {
+    if (typeof key === "string" && DATE_KEY_RE.test(key)) {
+      days.add(key);
+    }
+  }
+
   const items = Array.isArray(dhikrState?.items) ? (dhikrState!.items as DhikrItemLike[]) : [];
   for (const item of items) {
     if (typeof item !== "object" || item === null) {

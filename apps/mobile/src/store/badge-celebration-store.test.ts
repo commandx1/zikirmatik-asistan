@@ -6,7 +6,7 @@ describe("badge-celebration-store", () => {
     useBadgeCelebrationStore.setState({
       celebratedBadgeKeys: [],
       hasHydrated: false,
-      hasSeeded: false
+      seededForOwner: null
     });
   });
 
@@ -33,9 +33,9 @@ describe("badge-celebration-store", () => {
     ]);
   });
 
-  it("starts with hasHydrated and hasSeeded false", () => {
+  it("starts not hydrated and not seeded for anyone", () => {
     expect(useBadgeCelebrationStore.getState().hasHydrated).toBe(false);
-    expect(useBadgeCelebrationStore.getState().hasSeeded).toBe(false);
+    expect(useBadgeCelebrationStore.getState().seededForOwner).toBeNull();
   });
 
   it("markHydrated flips hasHydrated to true", () => {
@@ -44,9 +44,9 @@ describe("badge-celebration-store", () => {
     expect(useBadgeCelebrationStore.getState().hasHydrated).toBe(true);
   });
 
-  it("markSeeded flips hasSeeded to true", () => {
-    useBadgeCelebrationStore.getState().markSeeded();
+  it("markSeeded records the data owner it seeded for", () => {
+    useBadgeCelebrationStore.getState().markSeeded("user-a");
 
-    expect(useBadgeCelebrationStore.getState().hasSeeded).toBe(true);
+    expect(useBadgeCelebrationStore.getState().seededForOwner).toBe("user-a");
   });
 });

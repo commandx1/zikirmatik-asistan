@@ -13,7 +13,8 @@ export function buildLocalStatsSummary(
   items: ZikirItem[],
   freeModeCount: number,
   isPremium: boolean,
-  freeModeActivityAt?: string
+  freeModeActivityAt?: string,
+  activeDayKeys: readonly string[] = []
 ): StatsSummary {
   const today = new Date();
   const todayKey = toDateKey(today);
@@ -57,7 +58,9 @@ export function buildLocalStatsSummary(
     activityByDay.set(freeModeDayKey, { count: prev.count + freeModeCount, completed: prev.completed });
   }
 
-  const activeDays = Array.from(activityByDay.keys()).sort();
+  // Items only carry their last activity day; the persisted day history
+  // (dhikr-store.activeDayKeys) supplies the earlier days a streak needs.
+  const activeDays = Array.from(new Set([...activityByDay.keys(), ...activeDayKeys])).sort();
   const streak = calculateLocalCompletionStreak(activeDays, today);
   const dailySeries = buildDailySeries(activityByDay, today, 30);
   const heatmap = buildHeatmap(activityByDay, today, 365);

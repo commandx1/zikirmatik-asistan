@@ -127,6 +127,21 @@ describe("buildWidgetSnapshot", () => {
     expect(buildWidgetSnapshot(raw, now).streak).toBe(2);
   });
 
+  it("uses activeDayKeys so counting the same dhikr daily still forms a local streak", () => {
+    // Same item every day only keeps its LAST lastActivityAt, so items
+    // alone would show a streak of 1; activeDayKeys carries the day history.
+    const now = new Date(2026, 8, 21);
+    const raw: WidgetRawInput = {
+      ...EMPTY_RAW,
+      dhikrStore: dhikrStore(
+        [{ current: 10, target: 33, lastActivityAt: new Date(2026, 8, 21, 9, 0, 0).toISOString() }],
+        { activeDayKeys: ["2026-09-19", "2026-09-20", "2026-09-21"] }
+      )
+    };
+
+    expect(buildWidgetSnapshot(raw, now).streak).toBe(3);
+  });
+
   it("reads locale 'en' from profile store", () => {
     const raw: WidgetRawInput = {
       ...EMPTY_RAW,

@@ -44,7 +44,7 @@ export function BadgeCelebrationModal({ badge, onDismiss }: BadgeCelebrationModa
             {badge?.label}
           </Text>
           <Text className="mt-2 text-center text-sm leading-5" style={{ color: tokens.textMuted }}>
-            {t("stats:badgeCelebration.description")}
+            {badge ? t(`stats:badgeCelebration.criteria.${badge.key}`, { defaultValue: "" }) : ""}
           </Text>
 
           <Pressable

@@ -22,14 +22,14 @@ import { useStreakReminderStore } from "./streak-reminder-store";
 describe("resetSessionScopedStores", () => {
   beforeEach(() => {
     removeItemMock.mockClear();
-    useBadgeCelebrationStore.setState({ hasSeeded: true, celebratedBadgeKeys: ["first-steps"] });
+    useBadgeCelebrationStore.setState({ seededForOwner: "user-a", celebratedBadgeKeys: ["first-steps"] });
     useStreakReminderStore.setState({ streakReminderEnabled: true });
   });
 
   it("resets badge-celebration-store and streak-reminder-store to their initial state", () => {
     resetSessionScopedStores();
 
-    expect(useBadgeCelebrationStore.getState().hasSeeded).toBe(false);
+    expect(useBadgeCelebrationStore.getState().seededForOwner).toBeNull();
     expect(useBadgeCelebrationStore.getState().celebratedBadgeKeys).toEqual([]);
     expect(useStreakReminderStore.getState().streakReminderEnabled).toBe(false);
   });

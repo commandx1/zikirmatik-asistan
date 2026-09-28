@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { StatsBadge } from "@zikirmatik/shared";
-import { evaluateBadgeCelebration, selectNewlyAchievedBadges } from "./badge-celebration";
+import {
+  canShowBadgeCelebration,
+  enqueueBadges,
+  evaluateBadgeCelebration,
+  isBadgeDataSettled,
+  resolveBadgeDataOwner,
+  selectNewlyAchievedBadges,
+  shouldSkipReviewForDay7Offer
+} from "./badge-celebration";
 
 function makeBadge(overrides: Partial<StatsBadge>): StatsBadge {
   return { key: "k", label: "L", achieved: false, progress: 0, ...overrides };
@@ -44,96 +52,127 @@ describe("selectNewlyAchievedBadges", () => {
 });
 
 describe("evaluateBadgeCelebration", () => {
-  it("waits (does not evaluate) before the celebration store has rehydrated", () => {
-    const badges = [makeBadge({ key: "first-steps", achieved: true })];
+  const achieved = [makeBadge({ key: "first-steps", achieved: true }), makeBadge({ key: "steady-streak", achieved: false })];
 
-    const result = evaluateBadgeCelebration({
-      badges,
-      celebratedBadgeKeys: [],
-      hasHydrated: false,
-      hasSeeded: false,
-      isDhikrDataSettled: true
-    });
-
-    expect(result).toEqual({ action: "wait" });
+  it("waits while data is not settled", () => {
+    expect(
+      evaluateBadgeCelebration({ badges: achieved, celebratedBadgeKeys: [], owner: "guest", seededForOwner: null, isDataSettled: false })
+    ).toEqual({ action: "wait" });
   });
 
-  it("waits before dhikr data has settled (e.g. authenticated backend hydration pending)", () => {
-    const badges = [makeBadge({ key: "first-steps", achieved: true })];
-
-    const result = evaluateBadgeCelebration({
-      badges,
-      celebratedBadgeKeys: [],
-      hasHydrated: true,
-      hasSeeded: false,
-      isDhikrDataSettled: false
-    });
-
-    expect(result).toEqual({ action: "wait" });
+  it("waits while the owner is unknown (sign-in in flight)", () => {
+    expect(
+      evaluateBadgeCelebration({ badges: achieved, celebratedBadgeKeys: [], owner: null, seededForOwner: "guest", isDataSettled: true })
+    ).toEqual({ action: "wait" });
   });
 
-  it("silently seeds already-achieved badges on a fresh store, without queuing a popup", () => {
-    const badges = [
-      makeBadge({ key: "first-steps", achieved: true }),
-      makeBadge({ key: "steady-streak", achieved: false })
-    ];
-
-    const result = evaluateBadgeCelebration({
-      badges,
-      celebratedBadgeKeys: [],
-      hasHydrated: true,
-      hasSeeded: false,
-      isDhikrDataSettled: true
-    });
-
-    expect(result).toEqual({ action: "seed", keysToMarkCelebrated: ["first-steps"] });
+  it("silently seeds already-achieved badges for a never-seeded store (fresh install / upgrade)", () => {
+    expect(
+      evaluateBadgeCelebration({ badges: achieved, celebratedBadgeKeys: [], owner: "guest", seededForOwner: null, isDataSettled: true })
+    ).toEqual({ action: "seed", owner: "guest", keysToMarkCelebrated: ["first-steps"] });
   });
 
-  it("seeds nothing for a genuinely new user (no badges achieved yet)", () => {
-    const badges = [makeBadge({ key: "first-steps", achieved: false })];
-
-    const result = evaluateBadgeCelebration({
-      badges,
-      celebratedBadgeKeys: [],
-      hasHydrated: true,
-      hasSeeded: false,
-      isDhikrDataSettled: true
-    });
-
-    expect(result).toEqual({ action: "seed", keysToMarkCelebrated: [] });
+  it("re-seeds silently when the owner changes (guest -> signed-in user), so old badges never pop", () => {
+    expect(
+      evaluateBadgeCelebration({ badges: achieved, celebratedBadgeKeys: [], owner: "user-a", seededForOwner: "guest", isDataSettled: true })
+    ).toEqual({ action: "seed", owner: "user-a", keysToMarkCelebrated: ["first-steps"] });
   });
 
-  it("celebrates a badge that newly crosses its threshold after seeding has happened", () => {
-    const badges = [
-      makeBadge({ key: "first-steps", achieved: true }),
-      makeBadge({ key: "steady-streak", achieved: true })
-    ];
-
-    const result = evaluateBadgeCelebration({
-      badges,
-      celebratedBadgeKeys: ["first-steps"],
-      hasHydrated: true,
-      hasSeeded: true,
-      isDhikrDataSettled: true
-    });
-
-    expect(result).toEqual({
-      action: "celebrate",
-      badges: [badges[1]]
-    });
+  it("seeds nothing for a genuinely new guest, so their first real badge still fires later", () => {
+    const none = [makeBadge({ key: "first-steps", achieved: false })];
+    expect(
+      evaluateBadgeCelebration({ badges: none, celebratedBadgeKeys: [], owner: "guest", seededForOwner: null, isDataSettled: true })
+    ).toEqual({ action: "seed", owner: "guest", keysToMarkCelebrated: [] });
+    expect(
+      evaluateBadgeCelebration({ badges: achieved, celebratedBadgeKeys: [], owner: "guest", seededForOwner: "guest", isDataSettled: true })
+    ).toEqual({ action: "celebrate", badges: [achieved[0]] });
   });
 
-  it("never re-celebrates a previously celebrated badge", () => {
-    const badges = [makeBadge({ key: "first-steps", achieved: true })];
+  it("celebrates only badges not celebrated yet once seeded for the same owner", () => {
+    const both = [makeBadge({ key: "first-steps", achieved: true }), makeBadge({ key: "steady-streak", achieved: true })];
+    expect(
+      evaluateBadgeCelebration({ badges: both, celebratedBadgeKeys: ["first-steps"], owner: "user-a", seededForOwner: "user-a", isDataSettled: true })
+    ).toEqual({ action: "celebrate", badges: [both[1]] });
+  });
+});
 
-    const result = evaluateBadgeCelebration({
-      badges,
-      celebratedBadgeKeys: ["first-steps"],
-      hasHydrated: true,
-      hasSeeded: true,
-      isDhikrDataSettled: true
-    });
+describe("resolveBadgeDataOwner", () => {
+  it("maps auth state to the data owner", () => {
+    expect(resolveBadgeDataOwner("signed_out", undefined)).toBe("guest");
+    expect(resolveBadgeDataOwner("authenticated", "user-a")).toBe("user-a");
+    expect(resolveBadgeDataOwner("authenticating", "user-a")).toBeNull();
+    expect(resolveBadgeDataOwner("authenticated", undefined)).toBeNull();
+  });
+});
 
-    expect(result).toEqual({ action: "celebrate", badges: [] });
+describe("isBadgeDataSettled", () => {
+  const base = { storesHydrated: true, isDhikrHydratedFromBackend: false, hasServerStreak: false };
+
+  it("is settled for a guest once the persisted stores are restored", () => {
+    expect(isBadgeDataSettled({ ...base, authStatus: "signed_out" })).toBe(true);
+    expect(isBadgeDataSettled({ ...base, authStatus: "signed_out", storesHydrated: false })).toBe(false);
+  });
+
+  it("never settles mid sign-in", () => {
+    expect(isBadgeDataSettled({ ...base, authStatus: "authenticating", isDhikrHydratedFromBackend: true, hasServerStreak: true })).toBe(false);
+  });
+
+  it("needs both backend dhikr hydration and the server streak for a signed-in user", () => {
+    expect(isBadgeDataSettled({ ...base, authStatus: "authenticated", isDhikrHydratedFromBackend: true })).toBe(false);
+    expect(isBadgeDataSettled({ ...base, authStatus: "authenticated", hasServerStreak: true })).toBe(false);
+    expect(isBadgeDataSettled({ ...base, authStatus: "authenticated", isDhikrHydratedFromBackend: true, hasServerStreak: true })).toBe(true);
+  });
+});
+
+describe("canShowBadgeCelebration", () => {
+  const ok = { isCounterIdle: true, pathname: "/home", isHomeOverlayOpen: false };
+
+  it("shows on an idle home or stats tab with no home overlay", () => {
+    expect(canShowBadgeCelebration(ok)).toBe(true);
+    expect(canShowBadgeCelebration({ ...ok, pathname: "/stats" })).toBe(true);
+  });
+
+  it("holds while the counter is still being tapped", () => {
+    expect(canShowBadgeCelebration({ ...ok, isCounterIdle: false })).toBe(false);
+  });
+
+  it("holds on any other route", () => {
+    expect(canShowBadgeCelebration({ ...ok, pathname: "/vird/session" })).toBe(false);
+    expect(canShowBadgeCelebration({ ...ok, pathname: "/circle/session" })).toBe(false);
+  });
+
+  it("holds while a home overlay is open", () => {
+    expect(canShowBadgeCelebration({ ...ok, isHomeOverlayOpen: true })).toBe(false);
+  });
+});
+
+describe("shouldSkipReviewForDay7Offer", () => {
+  it("skips when the day-7 offer is still due (non-premium, streak >= 7, never shown)", () => {
+    expect(shouldSkipReviewForDay7Offer({ isPremium: false, streak: 7, day7OfferShownAt: null })).toBe(true);
+  });
+
+  it("does not skip once the offer was already shown", () => {
+    expect(
+      shouldSkipReviewForDay7Offer({ isPremium: false, streak: 7, day7OfferShownAt: "2026-01-01T00:00:00.000Z" })
+    ).toBe(false);
+  });
+
+  it("does not skip for a premium user", () => {
+    expect(shouldSkipReviewForDay7Offer({ isPremium: true, streak: 7, day7OfferShownAt: null })).toBe(false);
+  });
+
+  it("does not skip when the streak has not reached 7", () => {
+    expect(shouldSkipReviewForDay7Offer({ isPremium: false, streak: 6, day7OfferShownAt: null })).toBe(false);
+  });
+});
+
+describe("enqueueBadges", () => {
+  it("dedupes by key and keeps the same reference when nothing is new", () => {
+    const queue = [makeBadge({ key: "first-steps", achieved: true })];
+    expect(enqueueBadges(queue, [makeBadge({ key: "first-steps", achieved: true })])).toBe(queue);
+    expect(enqueueBadges(queue, [makeBadge({ key: "active-days", achieved: true })]).map((b) => b.key)).toEqual([
+      "first-steps",
+      "active-days"
+    ]);
   });
 });

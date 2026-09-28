@@ -14,11 +14,13 @@ import {
 export function useStreakReminderSync() {
   const items = useDhikrStore((state) => state.items);
   const freeModeCount = useDhikrStore((state) => state.freeModeCount);
+  const freeModeActivityAt = useDhikrStore((state) => state.freeModeActivityAt);
+  const activeDayKeys = useDhikrStore((state) => state.activeDayKeys);
   const enabled = useStreakReminderStore((state) => state.streakReminderEnabled);
 
   const { currentStreak, hasCompletedToday } = useMemo(
-    () => deriveStreakReminderStatus(items, freeModeCount),
-    [items, freeModeCount]
+    () => deriveStreakReminderStatus({ items, freeModeCount, freeModeActivityAt, activeDayKeys }),
+    [items, freeModeCount, freeModeActivityAt, activeDayKeys]
   );
 
   useEffect(() => {

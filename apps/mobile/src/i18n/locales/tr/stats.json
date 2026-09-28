@@ -60,7 +60,11 @@
   },
   "badgeCelebration": {
     "title": "Yeni rozet kazandın!",
-    "description": "Bu başarını istatistikler bölümünden her zaman görebilirsin.",
+    "criteria": {
+      "first-steps": "Toplam 33 kez zikir çektin.",
+      "steady-streak": "7 gün üst üste zikir çektin.",
+      "active-days": "30 farklı günde zikir çektin."
+    },
     "close": "Kapat",
     "great": "Harika!"
   },

@@ -37,6 +37,7 @@ export function useStats(): UseStatsResult {
   const dhikrItems = useDhikrStore((s) => s.items);
   const freeModeCount = useDhikrStore((s) => s.freeModeCount);
   const freeModeActivityAt = useDhikrStore((s) => s.freeModeActivityAt);
+  const activeDayKeys = useDhikrStore((s) => s.activeDayKeys);
 
   // Misafir yolu (yerel özet) değişmedi — yalnızca kimlikli yol RQ'ya taşındı.
   const [data, setData] = useState<StatsSummary | null>(null);
@@ -48,9 +49,9 @@ export function useStats(): UseStatsResult {
       return;
     }
 
-    setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt));
+    setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt, activeDayKeys));
     setIsLoading(false);
-  }, [dhikrItems, freeModeCount, freeModeActivityAt, isGuest, isPremium]);
+  }, [dhikrItems, freeModeCount, freeModeActivityAt, activeDayKeys, isGuest, isPremium]);
 
   const isAuthedFetch = !isGuest && authStatus === "authenticated";
   // `isPremium` sorgu anahtarında YOK ama queryFn çağrısı isPremium
@@ -81,7 +82,7 @@ export function useStats(): UseStatsResult {
 
   const refresh = useCallback(async () => {
     if (isGuest) {
-      setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt));
+      setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt, activeDayKeys));
       return;
     }
 
@@ -94,7 +95,7 @@ export function useStats(): UseStatsResult {
     } finally {
       setIsRefreshing(false);
     }
-  }, [authStatus, dhikrItems, freeModeCount, freeModeActivityAt, isGuest, isPremium, statsQuery]);
+  }, [authStatus, dhikrItems, freeModeCount, freeModeActivityAt, activeDayKeys, isGuest, isPremium, statsQuery]);
 
   const resolvedData = isGuest ? data : isAuthedFetch ? (statsQuery.data ?? null) : null;
   const resolvedIsLoading = isGuest ? isLoading : isAuthedFetch ? statsQuery.isLoading : false;

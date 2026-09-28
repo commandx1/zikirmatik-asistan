@@ -116,3 +116,17 @@ function parseDateKey(key: string) {
   const day = Number.parseInt(match[3]!, 10);
   return new Date(year, month - 1, day);
 }
+
+// Persisted day history (dhikr-store.activeDayKeys): an item only remembers
+// its LAST activity, so counting the same dhikr every day could never form a
+// streak from items alone. ~13 months is enough for every local badge and
+// the 365-day heatmap window.
+export const MAX_ACTIVE_DAY_KEYS = 400;
+
+/** Returns `keys` unchanged (same reference) when `dayKey` is already recorded. */
+export function appendActiveDayKey(keys: readonly string[], dayKey: string): string[] {
+  if (keys.includes(dayKey)) {
+    return keys as string[];
+  }
+  return [...keys, dayKey].slice(-MAX_ACTIVE_DAY_KEYS);
+}

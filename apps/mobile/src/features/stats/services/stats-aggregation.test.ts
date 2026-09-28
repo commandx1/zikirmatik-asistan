@@ -82,3 +82,20 @@ describe("buildLocalStatsSummary", () => {
     expect(withFreeMode.periods.today).toBe(22); // 15 + 7
   });
 });
+
+describe("buildLocalStatsSummary with the persisted day history", () => {
+  it("counts a daily streak of the same dhikr from activeDayKeys", () => {
+    const history = Array.from({ length: 7 }, (_, i) => toDateKey(new Date(daysAgo(6 - i))));
+    const summary = buildLocalStatsSummary(
+      [makeItem({ id: "item1", current: 33, lastActivityAt: daysAgo(0) })],
+      0,
+      false,
+      undefined,
+      history
+    );
+
+    expect(summary.streak.currentStreak).toBe(7);
+    expect(summary.streak.longestStreak).toBe(7);
+    expect(summary.streak.totalDaysActive).toBe(7);
+  });
+});

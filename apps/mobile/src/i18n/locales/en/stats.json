@@ -60,7 +60,11 @@
   },
   "badgeCelebration": {
     "title": "You earned a new badge!",
-    "description": "You can always view this achievement in the statistics section.",
+    "criteria": {
+      "first-steps": "You did dhikr 33 times in total.",
+      "steady-streak": "You did dhikr 7 days in a row.",
+      "active-days": "You did dhikr on 30 different days."
+    },
     "close": "Close",
     "great": "Great!"
   },

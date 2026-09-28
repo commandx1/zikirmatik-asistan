@@ -2,7 +2,8 @@ import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { toDateKey } from "@zikirmatik/shared";
 import { i18n } from "../../../i18n";
-import { calculateLocalCompletionStreak, resolveActivityDateKey } from "./local-streak";
+import { calculateLocalCompletionStreak } from "./local-streak";
+import { resolveActiveDays, type LocalActivitySource } from "../../stats/services/local-badges";
 
 // Local "your streak is about to break" reminder. Fully device-local:
 // derives streak + today's activity from the persisted dhikr store state,
@@ -18,36 +19,17 @@ export type StreakReminderStatus = {
   hasCompletedToday: boolean;
 };
 
-type ActivityItem = {
-  current: number;
-  lastActivityLabel?: string;
-  lastActivityAt?: string;
-};
-
-// Mirrors buildLocalStatsSummary (use-stats.ts): items map to day keys via
-// their activity label; an item with progress but no parsable label counts
-// as today, and free-mode counts count as today. Keeping the same semantics
-// means the reminder never disagrees with the stats screen about the streak.
+// Uses resolveActiveDays (local-badges.ts) — the same "active day" derivation
+// the stats screen and badges use, including the persisted activeDayKeys
+// history — so a user counting the same dhikr every day still forms a
+// streak here instead of appearing broken (an item only remembers its last
+// activity, so items alone can't tell two different days apart).
 export function deriveStreakReminderStatus(
-  items: ActivityItem[],
-  freeModeCount: number,
+  source: LocalActivitySource,
   today: Date = new Date()
 ): StreakReminderStatus {
   const todayKey = toDateKey(today);
-  const activeDays = new Set<string>();
-
-  for (const item of items) {
-    const safeCount = Math.max(0, Math.floor(item.current));
-    const dayKey = resolveActivityDateKey(item, today) ?? (safeCount > 0 ? todayKey : null);
-    if (dayKey) {
-      activeDays.add(dayKey);
-    }
-  }
-
-  if (freeModeCount > 0) {
-    activeDays.add(todayKey);
-  }
-
+  const activeDays = resolveActiveDays(source, today);
   const { currentStreak } = calculateLocalCompletionStreak(Array.from(activeDays), today);
   return { currentStreak, hasCompletedToday: activeDays.has(todayKey) };
 }

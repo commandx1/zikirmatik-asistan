@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { computeLocalBadges, deriveLocalActivityStats } from "./local-badges";
+import { computeLocalBadges, deriveLocalActivityStats, withServerStreak } from "./local-badges";
 
 describe("deriveLocalActivityStats", () => {
   it("counts free-mode taps toward all-time count and today's active day", () => {
     const today = new Date(2026, 6, 11);
-    const stats = deriveLocalActivityStats([], 12, today);
+    const stats = deriveLocalActivityStats({ items: [], freeModeCount: 12 }, today);
 
     expect(stats.allTimeCount).toBe(12);
     expect(stats.totalDaysActive).toBe(1);
@@ -13,11 +13,13 @@ describe("deriveLocalActivityStats", () => {
   it("sums per-item counts and derives active days from activity labels", () => {
     const today = new Date(2026, 6, 11);
     const stats = deriveLocalActivityStats(
-      [
-        { current: 33, lastActivityLabel: "Bugün 14:30" },
-        { current: 10, lastActivityLabel: "Dün 09:00" }
-      ],
-      0,
+      {
+        items: [
+          { current: 33, lastActivityLabel: "Bugün 14:30" },
+          { current: 10, lastActivityLabel: "Dün 09:00" }
+        ],
+        freeModeCount: 0
+      },
       today
     );
 
@@ -28,10 +30,55 @@ describe("deriveLocalActivityStats", () => {
 
   it("ignores items with zero progress and no activity label", () => {
     const today = new Date(2026, 6, 11);
-    const stats = deriveLocalActivityStats([{ current: 0 }], 0, today);
+    const stats = deriveLocalActivityStats({ items: [{ current: 0 }], freeModeCount: 0 }, today);
 
     expect(stats.allTimeCount).toBe(0);
     expect(stats.totalDaysActive).toBe(0);
+  });
+});
+
+describe("deriveLocalActivityStats with the persisted day history", () => {
+  it("forms a 7-day streak from counting the same dhikr daily", () => {
+    const today = new Date(2026, 6, 11);
+    const activeDayKeys = ["2026-07-05", "2026-07-06", "2026-07-07", "2026-07-08", "2026-07-09", "2026-07-10", "2026-07-11"];
+    // The one item only remembers today, as it does in dhikr-store.
+    const stats = deriveLocalActivityStats(
+      { items: [{ current: 99, lastActivityAt: new Date(2026, 6, 11, 9).toISOString() }], freeModeCount: 0, activeDayKeys },
+      today
+    );
+
+    expect(stats.longestStreak).toBe(7);
+    expect(stats.currentStreak).toBe(7);
+    expect(stats.totalDaysActive).toBe(7);
+    expect(computeLocalBadges(stats).find((b) => b.key === "steady-streak")?.achieved).toBe(true);
+  });
+
+  it("dates free-mode activity by freeModeActivityAt, not today", () => {
+    const today = new Date(2026, 6, 11);
+    const stats = deriveLocalActivityStats(
+      { items: [], freeModeCount: 5, freeModeActivityAt: new Date(2026, 6, 9, 20).toISOString() },
+      today
+    );
+
+    expect(stats.totalDaysActive).toBe(1);
+    expect(stats.currentStreak).toBe(0);
+  });
+});
+
+describe("withServerStreak", () => {
+  const local = { allTimeCount: 40, currentStreak: 1, longestStreak: 1, totalDaysActive: 1 };
+
+  it("keeps local stats when no server streak is available", () => {
+    expect(withServerStreak(local, null)).toBe(local);
+  });
+
+  it("prefers the server streak and keeps the local all-time count", () => {
+    expect(withServerStreak(local, { currentStreak: 8, longestStreak: 12, totalDaysActive: 30 })).toEqual({
+      allTimeCount: 40,
+      currentStreak: 8,
+      longestStreak: 12,
+      totalDaysActive: 30
+    });
   });
 });
 

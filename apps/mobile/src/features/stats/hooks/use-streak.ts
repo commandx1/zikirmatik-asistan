@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useAuthStore } from '../../../store/auth-store'
 import { useDhikrStore } from '../../../store/dhikr-store'
+import type { BackendStreak } from '../../home/services/streaks-api-client'
 import { cacheServerStreak } from '../../widget/widget-sync'
 import { fetchUserStreak } from '../services/streak-queries'
 
@@ -9,19 +10,19 @@ export function useStreak() {
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
   const lastSavedBackendLog = useDhikrStore(state => state.lastSavedBackendLog)
-  const [streakDays, setStreakDays] = useState(0)
+  const [streak, setStreak] = useState<{ forUserId: string; value: BackendStreak } | null>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   const fetchStreakDays = useCallback(async () => {
     if (authStatus !== 'authenticated' || !sessionUserId) {
-      setStreakDays(0)
+      setStreak(null)
       return
     }
 
     try {
-      const streak = await fetchUserStreak(sessionUserId)
-      setStreakDays(streak.currentStreak)
-      void cacheServerStreak(streak.currentStreak, streak.lastActiveDate)
+      const fetched = await fetchUserStreak(sessionUserId)
+      setStreak({ forUserId: sessionUserId, value: fetched })
+      void cacheServerStreak(fetched.currentStreak, fetched.lastActiveDate)
     } catch {
       // Keep the existing streak value when network is unavailable.
     }
@@ -52,5 +53,9 @@ export function useStreak() {
     }
   }, [fetchStreakDays])
 
-  return { streakDays, isRefreshing, refresh }
+  // null until fetched for THIS user — never a previous account's streak
+  // (account switch) and never a "0" that only means "not loaded yet".
+  const serverStreak = authStatus === 'authenticated' && streak && streak.forUserId === sessionUserId ? streak.value : null
+
+  return { streakDays: serverStreak?.currentStreak ?? 0, serverStreak, isRefreshing, refresh }
 }

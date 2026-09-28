@@ -1,97 +1,164 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "expo-router";
 import type { StatsBadge } from "@zikirmatik/shared";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import { useAuthStore } from "../../../store/auth-store";
+import { useProfileStore } from "../../../store/profile-store";
+import { useReviewStore } from "../../../store/review-store";
 import { useBadgeCelebrationStore } from "../../../store/badge-celebration-store";
-import { computeLocalBadges, deriveLocalActivityStats } from "../services/local-badges";
-import { evaluateBadgeCelebration } from "../services/badge-celebration";
+import { computeLocalBadges, deriveLocalActivityStats, withServerStreak } from "../services/local-badges";
+import {
+  BADGE_CELEBRATION_IDLE_MS,
+  canShowBadgeCelebration,
+  enqueueBadges,
+  evaluateBadgeCelebration,
+  isBadgeDataSettled,
+  resolveBadgeDataOwner,
+  shouldSkipReviewForDay7Offer
+} from "../services/badge-celebration";
 import { maybeRequestStoreReview } from "../../review/request-store-review";
+import { useStreak } from "./use-streak";
 
 // Badge key for the 7-day streak (see local-badges.ts): dismissing its
 // celebration is the "success UI already shown" moment for the store review
 // prompt.
 const STREAK_7_BADGE_KEY = "steady-streak";
+// Lets the badge modal's fade-out finish before the system review sheet.
+const REVIEW_AFTER_DISMISS_MS = 400;
 
 // Root-mounted (see app/_layout.tsx), mirroring useStreakReminderSync:
 // reacting to dhikr-store gives badge celebration for free wherever the user
-// is in the app, for both guest and authenticated sessions (dhikr-store is
-// the single local source of truth either way).
+// counts, for both guest and authenticated sessions. Showing is gated
+// separately (canShowBadgeCelebration): queued badges wait for an idle
+// counter, the home/stats tab and no open home modal.
 export function useBadgeCelebration() {
   const items = useDhikrStore((state) => state.items);
   const freeModeCount = useDhikrStore((state) => state.freeModeCount);
+  const freeModeActivityAt = useDhikrStore((state) => state.freeModeActivityAt);
+  const activeDayKeys = useDhikrStore((state) => state.activeDayKeys);
   const isDhikrHydratedFromBackend = useDhikrStore((state) => state.isHydratedFromBackend);
   const authStatus = useAuthStore((state) => state.status);
+  const sessionUserId = useAuthStore((state) => state.session?.userId);
+  const isAuthHydrated = useAuthStore((state) => state.hasHydrated);
   const hasHydrated = useBadgeCelebrationStore((state) => state.hasHydrated);
-  const hasSeeded = useBadgeCelebrationStore((state) => state.hasSeeded);
+  const seededForOwner = useBadgeCelebrationStore((state) => state.seededForOwner);
   const celebratedBadgeKeys = useBadgeCelebrationStore((state) => state.celebratedBadgeKeys);
+  const isHomeOverlayOpen = useBadgeCelebrationStore((state) => state.isHomeOverlayOpen);
   const markCelebrated = useBadgeCelebrationStore((state) => state.markCelebrated);
   const markSeeded = useBadgeCelebrationStore((state) => state.markSeeded);
+  const setCelebrationVisible = useBadgeCelebrationStore((state) => state.setCelebrationVisible);
+  const { serverStreak } = useStreak();
+  const pathname = usePathname();
 
   const [queue, setQueue] = useState<StatsBadge[]>([]);
+  const [isDhikrRestored, setIsDhikrRestored] = useState(() => useDhikrStore.persist.hasHydrated());
+  const [isCounterIdle, setIsCounterIdle] = useState(false);
 
-  const badges = useMemo(() => {
-    const stats = deriveLocalActivityStats(items, freeModeCount);
-    return computeLocalBadges(stats);
-  }, [items, freeModeCount]);
+  useEffect(() => {
+    if (useDhikrStore.persist.hasHydrated()) {
+      setIsDhikrRestored(true);
+      return;
+    }
+    return useDhikrStore.persist.onFinishHydration(() => setIsDhikrRestored(true));
+  }, []);
 
-  // For authenticated sessions, dhikr counts get re-hydrated from the
-  // backend after mount (see dhikr-store's isHydratedFromBackend); until
-  // that lands, `badges` can understate what the user has actually earned.
-  // Guests have no backend fetch to wait for, so their local data is ready
-  // as soon as the stores themselves are.
-  const isDhikrDataSettled =
-    authStatus === "authenticated" ? isDhikrHydratedFromBackend : authStatus !== "authenticating";
+  // Idle = no count change for BADGE_CELEBRATION_IDLE_MS. Subscribing (vs.
+  // an effect on items) keeps this off the render path of every tap.
+  useEffect(() => {
+    let timer = setTimeout(() => setIsCounterIdle(true), BADGE_CELEBRATION_IDLE_MS);
+    const unsubscribe = useDhikrStore.subscribe((state, prev) => {
+      if (state.items === prev.items && state.freeModeCount === prev.freeModeCount) {
+        return;
+      }
+      setIsCounterIdle(false);
+      clearTimeout(timer);
+      timer = setTimeout(() => setIsCounterIdle(true), BADGE_CELEBRATION_IDLE_MS);
+    });
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, []);
+
+  const stats = useMemo(() => {
+    const local = deriveLocalActivityStats({ items, freeModeCount, freeModeActivityAt, activeDayKeys });
+    return withServerStreak(local, serverStreak);
+  }, [items, freeModeCount, freeModeActivityAt, activeDayKeys, serverStreak]);
+  const badges = useMemo(() => computeLocalBadges(stats), [stats]);
+
+  const isPremium = useProfileStore((state) => state.isPremium);
+  const day7OfferShownAt = useReviewStore((state) => state.day7OfferShownAt);
+
+  const owner = resolveBadgeDataOwner(authStatus, sessionUserId);
+  const isDataSettled = isBadgeDataSettled({
+    storesHydrated: hasHydrated && isAuthHydrated && isDhikrRestored,
+    authStatus,
+    isDhikrHydratedFromBackend,
+    hasServerStreak: serverStreak !== null
+  });
 
   useEffect(() => {
     const evaluation = evaluateBadgeCelebration({
       badges,
       celebratedBadgeKeys,
-      hasHydrated,
-      hasSeeded,
-      isDhikrDataSettled
+      owner,
+      seededForOwner,
+      isDataSettled
     });
 
     if (evaluation.action === "wait") {
-      // Celebration store still rehydrating, or (for authenticated
-      // sessions) dhikr counts haven't come back from the backend yet —
-      // evaluating now would risk reading stale/empty data as "not
-      // achieved" and re-queuing a popup once the real data lands.
       return;
     }
 
     if (evaluation.action === "seed") {
-      // One-time silent seed for a fresh celebration store: this happens
-      // both for brand-new installs and after the user clears app data,
-      // where dhikr counts are re-hydrated from the backend while
-      // celebratedBadgeKeys was wiped locally. Without this, already-earned
-      // badges would be misread as newly achieved and pop the modal
-      // unprompted. A genuine new user has no achieved badges yet at this
-      // point, so their real first celebration still fires normally once
-      // they reach a threshold in-session.
+      // Silent (re)seed for a new data owner: fresh install, sign-in,
+      // account switch, or reinstall + sign-in — already-earned badges are
+      // marked without a popup, and anything queued for the previous owner
+      // is dropped. A genuinely new guest has nothing achieved yet, so their
+      // first real badge still fires later.
       for (const key of evaluation.keysToMarkCelebrated) {
         markCelebrated(key);
       }
-      markSeeded();
+      markSeeded(evaluation.owner);
+      setQueue([]);
       return;
     }
 
-    if (evaluation.badges.length === 0) {
-      return;
-    }
+    // Marked celebrated only once actually shown (effect below), so an app
+    // kill before it's seen re-queues it; enqueueBadges dedupes meanwhile.
+    setQueue((prev) => enqueueBadges(prev, evaluation.badges));
+  }, [badges, owner, seededForOwner, isDataSettled, celebratedBadgeKeys, markCelebrated, markSeeded]);
 
-    // Mark celebrated immediately so re-renders (or an app restart before the
-    // modal is dismissed) never re-queue the same badge.
-    for (const badge of evaluation.badges) {
-      markCelebrated(badge.key);
-    }
-    setQueue((prev) => [...prev, ...evaluation.badges]);
-  }, [badges, hasHydrated, hasSeeded, isDhikrDataSettled, celebratedBadgeKeys, markCelebrated, markSeeded]);
+  const current =
+    queue[0] && canShowBadgeCelebration({ isCounterIdle, pathname, isHomeOverlayOpen }) ? queue[0] : null;
+  const currentKey = current?.key;
 
-  const current = queue[0] ?? null;
+  useEffect(() => {
+    if (currentKey) {
+      markCelebrated(currentKey);
+    }
+    setCelebrationVisible(Boolean(currentKey));
+  }, [currentKey, markCelebrated, setCelebrationVisible]);
+
+  const reviewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (reviewTimerRef.current) {
+      clearTimeout(reviewTimerRef.current);
+    }
+  }, []);
 
   const dismiss = () => {
-    if (current?.key === STREAK_7_BADGE_KEY) {
-      void maybeRequestStoreReview("streak_7");
+    if (
+      current?.key === STREAK_7_BADGE_KEY &&
+      !shouldSkipReviewForDay7Offer({ isPremium, streak: stats.currentStreak, day7OfferShownAt })
+    ) {
+      reviewTimerRef.current = setTimeout(() => {
+        // Never stack the system review sheet on the premium sheet (e.g. the
+        // day-7 offer), which counts as a home overlay.
+        if (!useBadgeCelebrationStore.getState().isHomeOverlayOpen) {
+          void maybeRequestStoreReview("streak_7");
+        }
+      }, REVIEW_AFTER_DISMISS_MS);
     }
     setQueue((prev) => prev.slice(1));
   };

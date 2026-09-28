@@ -24,7 +24,7 @@ export function resetSessionScopedStores(previousUserId?: string) {
   // Rozet kutlamaları ve seri hatırlatma tercihi de kullanıcıya özel: bir
   // sonraki kullanıcı öncekinin "zaten kutlandı" listesini ya da hatırlatma
   // tercihini görmemeli.
-  useBadgeCelebrationStore.setState({ hasSeeded: false, celebratedBadgeKeys: [] });
+  useBadgeCelebrationStore.setState({ seededForOwner: null, celebratedBadgeKeys: [] });
   useStreakReminderStore.setState({ streakReminderEnabled: false });
 
   // AI Rehber'in "son cevap" önbelleği kullanıcıya özel bir AsyncStorage

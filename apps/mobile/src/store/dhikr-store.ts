@@ -5,7 +5,8 @@ import { getDhikrStoreText } from "./dhikr-store-text";
 import { ZIKIR_ITEMS } from "./dhikr-catalog-seed";
 import type { BackendDhikrLog } from "../features/dhikrs/services/dhikr-logs-api-client";
 import type { AiDhikrContext, ZikirItem } from "../features/focus/types";
-import type { LocalizedText } from "@zikirmatik/shared";
+import { toDateKey, type LocalizedText } from "@zikirmatik/shared";
+import { appendActiveDayKey, MAX_ACTIVE_DAY_KEYS, resolveActivityDateKey } from "../features/home/services/local-streak";
 
 function toLocalizedText(value: string): LocalizedText {
   return { tr: value, en: value };
@@ -41,6 +42,11 @@ type DhikrStore = {
   // Serbest mod için tur ("lap") boyu — 33/99/özel. Seçili zikirlerde
   // eşdeğeri ZikirItem.lapSize'dır (bkz. setSelectedLapSize).
   freeModeLapSize: number;
+  /** Local-time YYYY-MM-DD keys of days with at least one counted tap (or a
+   * saved backend log), oldest first, capped at MAX_ACTIVE_DAY_KEYS. The
+   * local streak / active-day badges derive from this, not from items'
+   * single lastActivityAt (see local-badges.ts). */
+  activeDayKeys: string[];
   unsavedProgressDhikrIds: string[];
   unsavedProgressSnapshots: Record<string, UnsavedProgressSnapshot>;
   isHydratedFromBackend: boolean;
@@ -223,6 +229,7 @@ export const useDhikrStore = create<DhikrStore>()(
     freeModeCount: 0,
     freeModeTarget: 0,
     freeModeLapSize: 33,
+    activeDayKeys: [],
     unsavedProgressDhikrIds: [],
     unsavedProgressSnapshots: {},
     isHydratedFromBackend: false,
@@ -428,6 +435,7 @@ export const useDhikrStore = create<DhikrStore>()(
 
       return {
         items,
+        activeDayKeys: changedItem ? appendActiveDayKey(state.activeDayKeys, toDateKey(new Date())) : state.activeDayKeys,
         ...markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, changedItem)
       };
     }),
@@ -539,9 +547,11 @@ export const useDhikrStore = create<DhikrStore>()(
         return {};
       }
 
+      const now = new Date();
       return {
         freeModeCount: nextCount,
-        freeModeActivityAt: new Date().toISOString()
+        freeModeActivityAt: now.toISOString(),
+        activeDayKeys: appendActiveDayKey(state.activeDayKeys, toDateKey(now))
       };
     }),
   resetFreeMode: () => set({ freeModeCount: 0, freeModeActivityAt: undefined }),
@@ -669,6 +679,10 @@ export const useDhikrStore = create<DhikrStore>()(
 
     return {
       items,
+      // A saved log is an active day for the server streak too (vird
+      // sessions reach the backend only through here, never through the
+      // counter), so the local fallback streak agrees with it.
+      activeDayKeys: log.count > 0 ? appendActiveDayKey(state.activeDayKeys, toDateKey(new Date())) : state.activeDayKeys,
       lastSavedBackendLog: log,
       ...clearUnsavedSnapshot(
         state.unsavedProgressDhikrIds,
@@ -687,6 +701,7 @@ export const useDhikrStore = create<DhikrStore>()(
         freeModeActivityAt: undefined,
         freeModeTarget: 0,
         freeModeLapSize: 33,
+        activeDayKeys: [],
         unsavedProgressDhikrIds: [],
         unsavedProgressSnapshots: {},
         isHydratedFromBackend: false,
@@ -697,10 +712,13 @@ export const useDhikrStore = create<DhikrStore>()(
   {
     name: "dhikr-store-v1",
     storage: createJSONStorage(() => safeAsyncStorage),
-    version: 2,
+    version: 3,
     migrate: (persistedState, version) => {
-      if (version >= 2) {
+      if (version >= 3) {
         return persistedState as DhikrStore;
+      }
+      if (version >= 2) {
+        return seedActiveDayKeys(persistedState) as unknown as DhikrStore;
       }
 
       // Sürüm 0 (nameTurkish/plain-string alanlar) VEYA sürüm 1 (LocalizedText,
@@ -752,7 +770,7 @@ export const useDhikrStore = create<DhikrStore>()(
             return item;
           });
 
-        return { ...state, items } as DhikrStore;
+        return seedActiveDayKeys({ ...state, items }) as unknown as DhikrStore;
       } catch {
         // Migrasyon her ne sebeple olursa olsun başarısız olursa, boş bir
         // items listesiyle devam et — kullanıcı verisi kaybı yerine crash'i
@@ -769,8 +787,39 @@ export const useDhikrStore = create<DhikrStore>()(
       freeModeActivityAt: state.freeModeActivityAt,
       freeModeTarget: state.freeModeTarget,
       freeModeLapSize: state.freeModeLapSize,
+      activeDayKeys: state.activeDayKeys,
       unsavedProgressDhikrIds: state.unsavedProgressDhikrIds,
       unsavedProgressSnapshots: state.unsavedProgressSnapshots
     })
   })
 );
+
+// v2 -> v3: activeDayKeys did not exist. Seed it from the only day evidence
+// older installs have — each item's lastActivityAt and the free-mode stamp —
+// i.e. exactly the days the old derivation counted, so no one's current
+// streak shrinks on upgrade. Defensive like the v0/v1 step: bad shapes are
+// skipped, never thrown.
+function seedActiveDayKeys(persistedState: unknown) {
+  const state = (persistedState ?? {}) as Record<string, unknown>;
+  const now = new Date();
+  const days = new Set<string>();
+  const addIso = (value: unknown) => {
+    const key = typeof value === "string" ? resolveActivityDateKey({ lastActivityAt: value }, now) : null;
+    if (key) {
+      days.add(key);
+    }
+  };
+
+  if (Array.isArray(state.items)) {
+    for (const item of state.items) {
+      if (item && typeof item === "object") {
+        addIso((item as { lastActivityAt?: unknown }).lastActivityAt);
+      }
+    }
+  }
+  if (typeof state.freeModeCount === "number" && state.freeModeCount > 0) {
+    addIso(state.freeModeActivityAt);
+  }
+
+  return { ...state, activeDayKeys: Array.from(days).sort().slice(-MAX_ACTIVE_DAY_KEYS) };
+}

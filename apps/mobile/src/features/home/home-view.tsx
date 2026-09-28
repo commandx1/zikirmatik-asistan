@@ -36,6 +36,7 @@ import { usePremiumSheet } from '../../hooks/use-premium-sheet'
 import { useCounterStyleStore } from '../../store/counter-style-store'
 import { useProfileStore } from '../../store/profile-store'
 import { useAuthStore } from '../../store/auth-store'
+import { useBadgeCelebrationStore } from '../../store/badge-celebration-store'
 import { ProfilePremiumSheet } from '../profile/components/profile-premium-sheet'
 import { WidgetDiscoveryCard } from '../widget/widget-discovery'
 import { TEST_IDS } from '../../test-ids'
@@ -550,27 +551,35 @@ export function HomeView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingPaywallSource])
 
-  // "canShow" is the simplest acceptable stand-in for "no other modal is
-  // covering the home screen" (tour, target editor, esma welcome/resume
-  // guard, free-save, unsaved-transition, and the premium sheet itself).
-  // ponytail: doesn't see the badge-celebration modal (its visible state
-  // lives in a separate hook instance mounted at the root layout) — accept
-  // the rare overlap; wire a shared "any modal visible" signal if it starts
-  // to matter.
-  const canShowDay7Offer =
-    isTourCompleted &&
-    !premiumSheet.isOpen &&
-    !home.isEditingTarget &&
-    !home.isDailyEsmaWelcomeOpen &&
-    !home.isFreeSaveNameModalOpen &&
-    !home.isTargetDowngradeWarningOpen &&
-    !home.isUnsavedTransitionModalOpen &&
-    !home.isEsmaResumeGuardOpen
-  useDay7Offer(canShowDay7Offer, () => {
-    setPaywallSource('day7_offer')
-    premiumSheet.setPlan('annual')
-    premiumSheet.open()
-  })
+  // Any home modal covering the screen (tour, target editor, esma
+  // welcome/resume guard, free-save, downgrade, unsaved-transition, premium
+  // sheet). Published to the badge store so the root-mounted badge modal
+  // waits for it; the day-7 offer in turn waits for the badge modal.
+  const isHomeOverlayOpen =
+    !isTourCompleted ||
+    premiumSheet.isOpen ||
+    home.isEditingTarget ||
+    home.isDailyEsmaWelcomeOpen ||
+    home.isFreeSaveNameModalOpen ||
+    home.isTargetDowngradeWarningOpen ||
+    home.isUnsavedTransitionModalOpen ||
+    home.isEsmaResumeGuardOpen
+  const setHomeOverlayOpen = useBadgeCelebrationStore((s) => s.setHomeOverlayOpen)
+  const isBadgeCelebrationVisible = useBadgeCelebrationStore((s) => s.isCelebrationVisible)
+  useEffect(() => {
+    setHomeOverlayOpen(isHomeOverlayOpen)
+    return () => setHomeOverlayOpen(false)
+  }, [isHomeOverlayOpen, setHomeOverlayOpen])
+  const canShowDay7Offer = !isHomeOverlayOpen && !isBadgeCelebrationVisible
+  useDay7Offer(
+    canShowDay7Offer,
+    () => {
+      setPaywallSource('day7_offer')
+      premiumSheet.setPlan('annual')
+      premiumSheet.open()
+    },
+    home.serverStreak
+  )
 
   const guestMode = useAuthStore((s) => s.guestMode)
   const authStatus = useAuthStore((s) => s.status)

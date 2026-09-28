@@ -50,7 +50,7 @@ function useHomeValues() {
   const selectedDhikr = useMemo(() => items.find(item => item.id === selectedDhikrId), [items, selectedDhikrId])
 
   const { tapAnywhereEnabled, toggleTapAnywhere } = useTapAnywherePref()
-  const { streakDays, isRefreshing, refresh } = useStreak()
+  const { streakDays, serverStreak, isRefreshing, refresh } = useStreak()
   const freeSave = useFreeSaveForm()
   const save = useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave: freeSave.open })
   const engine = useCounterEngine({ selectedDhikr, onAutoSave: save.autoSaveSelected, openFreeSave: freeSave.open })
@@ -111,6 +111,7 @@ function useHomeValues() {
       greeting,
       streakLabel,
       streakDays,
+      serverStreak,
       isRefreshing,
       refresh,
       tapAnywhereEnabled,
@@ -124,7 +125,7 @@ function useHomeValues() {
       ...esma
     }),
     [
-      greeting, streakLabel, streakDays, isRefreshing, refresh, tapAnywhereEnabled, toggleTapAnywhere, mainDhikr,
+      greeting, streakLabel, streakDays, serverStreak, isRefreshing, refresh, tapAnywhereEnabled, toggleTapAnywhere, mainDhikr,
       selectedDhikrId, save.ui, engine.ui, editors.ui, transition.ui, esma
     ]
   )

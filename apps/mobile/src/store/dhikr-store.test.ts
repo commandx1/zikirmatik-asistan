@@ -18,6 +18,7 @@ describe("dhikr-store", () => {
       freeModeCount: 0,
       freeModeTarget: 0,
       freeModeLapSize: 33,
+      activeDayKeys: [],
       unsavedProgressDhikrIds: [],
       unsavedProgressSnapshots: {},
       isHydratedFromBackend: false,
@@ -238,7 +239,7 @@ describe("dhikr-store", () => {
 
     it("is a no-op once the persisted version is already current", () => {
       const persisted = { items: [{ id: "a", name: { tr: "X", en: "X" } }] };
-      const result = migrate(persisted, 2);
+      const result = migrate(persisted, 3);
       expect(result).toBe(persisted);
     });
 
@@ -373,6 +374,93 @@ describe("dhikr-store", () => {
       expect(() => migrate(null, 1)).not.toThrow();
       expect(() => migrate({ items: "not-an-array" }, 1)).not.toThrow();
       expect((migrate({ items: "not-an-array" }, 1) as { items: unknown }).items).toEqual([]);
+    });
+  });
+
+  describe("persisted state migration (v2 -> v3, activeDayKeys)", () => {
+    function migrate(persistedState: unknown, version: number) {
+      const options = useDhikrStore.persist.getOptions() as {
+        migrate?: (state: unknown, version: number) => unknown;
+      };
+      return options.migrate!(persistedState, version) as { activeDayKeys: string[]; items: unknown[] };
+    }
+
+    it("seeds the day history from items' lastActivityAt and the free-mode stamp (deduped, sorted)", () => {
+      const result = migrate(
+        {
+          items: [
+            { id: "a", name: "A", current: 5, lastActivityAt: new Date(2026, 6, 10, 9).toISOString() },
+            { id: "b", name: "B", current: 3, lastActivityAt: new Date(2026, 6, 8, 22).toISOString() },
+            { id: "c", name: "C", current: 1, lastActivityAt: new Date(2026, 6, 10, 23).toISOString() },
+            { id: "d", name: "D", current: 0, lastActivityLabel: "Henüz başlanmadı" },
+            { id: "e", name: "E", current: 2, lastActivityAt: "not-a-date" }
+          ],
+          freeModeCount: 4,
+          freeModeActivityAt: new Date(2026, 6, 9, 12).toISOString()
+        },
+        2
+      );
+
+      expect(result.activeDayKeys).toEqual(["2026-07-08", "2026-07-09", "2026-07-10"]);
+      expect(result.items).toHaveLength(5);
+    });
+
+    it("ignores a stale free-mode stamp once the free count was reset", () => {
+      const result = migrate({ items: [], freeModeCount: 0, freeModeActivityAt: new Date(2026, 6, 9).toISOString() }, 2);
+      expect(result.activeDayKeys).toEqual([]);
+    });
+
+    it("also seeds when migrating straight from v0/v1, and never crashes on bad state", () => {
+      const result = migrate({ items: [{ id: "a", nameTurkish: "A", current: 1, lastActivityAt: new Date(2026, 6, 10).toISOString() }] }, 1);
+      expect(result.activeDayKeys).toEqual(["2026-07-10"]);
+      expect(migrate(null, 2).activeDayKeys).toEqual([]);
+      expect(migrate({ items: "x" }, 2).activeDayKeys).toEqual([]);
+    });
+  });
+
+  describe("activeDayKeys", () => {
+    it("records today once per day on counting, in both selected and free mode", () => {
+      useDhikrStore.setState({
+        items: [
+          {
+            id: "personal-a",
+            source: "personal",
+            name: "Test zikri",
+            transliteration: "Test zikri",
+            current: 0,
+            target: 0,
+            lastActivityLabel: "Henüz başlanmadı",
+            streakDays: 0,
+            isFavorite: false
+          }
+        ],
+        selectedDhikrId: "personal-a"
+      });
+
+      useDhikrStore.getState().incrementSelected();
+      const afterFirst = useDhikrStore.getState().activeDayKeys;
+      useDhikrStore.getState().incrementSelected();
+      useDhikrStore.getState().incrementFreeMode();
+
+      expect(afterFirst).toHaveLength(1);
+      expect(useDhikrStore.getState().activeDayKeys).toBe(afterFirst);
+    });
+
+    it("caps the history, dropping the oldest days", () => {
+      const keys = Array.from({ length: 400 }, (_, i) => `2025-01-${String(i).padStart(3, "0")}`);
+      useDhikrStore.setState({ activeDayKeys: keys });
+
+      useDhikrStore.getState().incrementFreeMode();
+
+      const next = useDhikrStore.getState().activeDayKeys;
+      expect(next).toHaveLength(400);
+      expect(next[0]).toBe(keys[1]);
+    });
+
+    it("is cleared by the session-scoped reset", () => {
+      useDhikrStore.setState({ activeDayKeys: ["2026-07-10"] });
+      useDhikrStore.getState().resetSessionScoped();
+      expect(useDhikrStore.getState().activeDayKeys).toEqual([]);
     });
   });
 
