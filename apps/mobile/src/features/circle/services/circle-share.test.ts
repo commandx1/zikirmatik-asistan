@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { buildCircleLogPayload, buildCircleShareMessage, computeDisplayTotal, parseCircleCode } from "./circle-share";
 
 describe("buildCircleShareMessage", () => {
-  it("uses the /tr prefix and Turkish text for a tr locale", () => {
+  it("uses the unprefixed /halka link and Turkish text for a tr locale", () => {
     const message = buildCircleShareMessage({ name: "Ailem", code: "ABCD2345", locale: "tr" });
-    expect(message).toContain("https://zikirmatikasistan.app/tr/halka/ABCD2345");
+    expect(message).toContain("https://zikirmatikasistan.app/halka/ABCD2345");
     expect(message).toContain("Kod: ABCD2345");
     expect(message).toContain("Ailem");
   });
@@ -32,9 +32,11 @@ describe("buildCircleShareMessage", () => {
     expect(message.split("\n").some((line) => line.includes("ABCD2345"))).toBe(true);
   });
 
-  it("en locale has no /tr prefix", () => {
-    const message = buildCircleShareMessage({ name: "Family", code: "ABCD2345", locale: "en" });
-    expect(message).not.toContain("/tr");
+  it("no locale gets a /tr prefix", () => {
+    for (const locale of ["tr", "en"]) {
+      const message = buildCircleShareMessage({ name: "Family", code: "ABCD2345", locale });
+      expect(message).not.toContain("/tr");
+    }
   });
 
   it("falls back to the English message for an unknown locale (real behavior: only 'tr'-prefixed locales get Turkish text)", () => {

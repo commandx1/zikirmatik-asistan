@@ -14,7 +14,7 @@ export function HowItWorks() {
           <p className="mt-4 text-lg text-ink/70">{t("subtitle")}</p>
         </div>
 
-        <ol className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
           {steps.map((step, index) => (
             <li
               key={step.title}

@@ -1,31 +1,18 @@
 import { test, expect } from "@playwright/test";
 
-const EN_HERO_TITLE = "A calm, focused companion for your daily dhikr";
-const TR_HERO_TITLE = "Günlük zikirleriniz için sakin ve odaklı bir yardımcı";
-
-test("home page (en) renders hero and html lang", async ({ page }) => {
+test("home page renders hero in Turkish at the root", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(EN_HERO_TITLE);
-  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByRole("heading", { level: 1 })).not.toBeEmpty();
+  await expect(page.locator("html")).toHaveAttribute("lang", "tr");
 });
 
-test("tr home page renders hero and language switcher navigates en <-> tr", async ({ page }) => {
-  await page.goto("/tr");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(TR_HERO_TITLE);
-  await expect(page.locator("html")).toHaveAttribute("lang", "tr");
-
-  const switcher = page.getByRole("contentinfo").getByRole("group");
-  await switcher.getByRole("button", { name: "EN" }).click();
-  await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(EN_HERO_TITLE);
-
-  await page
-    .getByRole("contentinfo")
-    .getByRole("group")
-    .getByRole("button", { name: "TR" })
-    .click();
-  await expect(page).toHaveURL(/\/tr$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(TR_HERO_TITLE);
+test("legacy /tr and /en prefixes redirect permanently to the root", async ({ request }) => {
+  for (const path of ["/tr", "/en", "/tr/privacy", "/en/privacy", "/tr/halka/ABCD2345"]) {
+    const response = await request.get(path, { maxRedirects: 0 });
+    expect(response.status(), path).toBe(308);
+    const location = response.headers()["location"] ?? "";
+    expect(location, path).toBe(path.replace(/^\/(tr|en)/, "") || "/");
+  }
 });
 
 test("legal pages return 200 with a populated h1", async ({ page }) => {
@@ -37,7 +24,7 @@ test("legal pages return 200 with a populated h1", async ({ page }) => {
 });
 
 test("halka invite page validates code and is noindex; invalid code 404s", async ({ page, request }) => {
-  const response = await page.goto("/tr/halka/abcdefgh");
+  const response = await page.goto("/halka/abcdefgh");
   expect(response?.status()).toBe(200);
   await expect(page.getByText("ABCDEFGH")).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);

@@ -16,8 +16,8 @@ export function buildCircleShareMessage({
   code: string;
   locale: string;
 }): string {
-  const path = locale.startsWith("tr") ? `/tr/halka/${code}` : `/halka/${code}`;
-  const link = `${SHARE_BASE_URL}${path}`;
+  // Site tek dilli (kökte TR); eski /tr/halka linkleri sitede 301 ile köke döner.
+  const link = `${SHARE_BASE_URL}/halka/${code}`;
 
   if (locale.startsWith("tr")) {
     return `${name} zikir halkasına katıl!\n${link}\nKod: ${code}`;

@@ -28,14 +28,14 @@ export function Header() {
           <a href="#features" className="hover:text-ink">
             {t("features")}
           </a>
+          <a href="#vird" className="hover:text-ink">
+            {t("vird")}
+          </a>
+          <a href="#halka" className="hover:text-ink">
+            {t("halka")}
+          </a>
           <a href="#ai-guide" className="hover:text-ink">
             {t("aiGuide")}
-          </a>
-          <a href="#how-it-works" className="hover:text-ink">
-            {t("howItWorks")}
-          </a>
-          <a href="#screenshots" className="hover:text-ink">
-            {t("screenshots")}
           </a>
           <a href="#premium" className="hover:text-ink">
             {t("premium")}
