@@ -69,11 +69,53 @@ const RELAUNCH_HOME_FRAMES = 27; // ~0.9s, near real speed on the icon tap
 const RELAUNCH_OVERLAY_FRAMES = 36; // ~1.2s
 const RELAUNCH_CROSSFADE_FRAMES = 9; // ~0.3s
 
-// public/recordings/ai-rehber.mp4 doesn't exist yet (user will record it on-device).
-// Flip to true once that file lands in the repo, then re-render — no other change needed,
-// AiRehberSlot below already fits/letterboxes whatever aspect ratio it turns out to be.
-const AI_REHBER_AVAILABLE = false;
+// public/recordings/ai-rehber.mp4: Android emulator, prod app, 1080x2400 (see
+// scripts/record-ai-android.sh + README-short.md "AI Rehber klibi"). Two source windows,
+// both real-speed (rate 1.0 — never ramp this clip, non-1x rates blank frames, see the
+// RELAUNCH comment above), joined by a 0.25s dark-overlay crossfade (same DarkOverlay/
+// SettledImage pattern as Scene4's relaunch): (A) typing "sabah yolda huzur bulmak" + the
+// send tap, ends right before the post-send screen (history list) becomes visible; (B) the
+// scrolled "Yâ Mü'min" result card (Arapça/Okunuş/Anlam/Fazilet), taken from the clip's last
+// ~4s once the personal "Son Asistan Aramaları" history has scrolled off-screen. Frame-
+// checked with ffprobe/ffmpeg (0.05-0.1s steps) against the real (sparse, ~6-15fps native)
+// frames of the capture — see AiRehberSplit below for how these fill the scene's time budget.
+const AI_REHBER_AVAILABLE = true;
 const AI_REHBER_SRC = "recordings/ai-rehber.mp4";
+const AI_REHBER_A_FROM = 3.15; // "sabah yo|" mid-typing
+const AI_REHBER_A_TO = 4.75; // last clean frame before the post-send/history screen appears
+const AI_REHBER_B_FROM = 27.7; // history fully scrolled away, "Yâ Mü'min" card legible
+const AI_REHBER_CROSSFADE_SEC = 0.25;
+
+// Real-speed A -> dark-overlay crossfade -> real-speed B, filling `bFrames` (scene 2b's own
+// time budget) exactly so there's no trailing blank gap: B's source window stretches to
+// whatever frames are left after A + the crossfade rather than a fixed 3.1s, since bFrames
+// varies slightly with vo-01.json's own duration.
+function AiRehberSplit({ bFrames }: { bFrames: number }) {
+  const fps = FPS;
+  const aClipFrames = secToFrames(AI_REHBER_A_TO - AI_REHBER_A_FROM, fps);
+  const crossfadeFrames = secToFrames(AI_REHBER_CROSSFADE_SEC, fps);
+  const bClipFrames = Math.max(1, bFrames - aClipFrames);
+  const bTo = AI_REHBER_B_FROM + bClipFrames / fps;
+  return (
+    <>
+      <Sequence from={0} durationInFrames={aClipFrames} layout="none">
+        <PhoneStage>
+          <RampedClipFrom src={AI_REHBER_SRC} from={AI_REHBER_A_FROM} to={AI_REHBER_A_TO} rate={1.0} />
+        </PhoneStage>
+      </Sequence>
+      <Sequence from={aClipFrames} durationInFrames={bClipFrames} layout="none">
+        <PhoneStage>
+          <RampedClipFrom src={AI_REHBER_SRC} from={AI_REHBER_B_FROM} to={bTo} rate={1.0} />
+        </PhoneStage>
+      </Sequence>
+      <Sequence from={aClipFrames} durationInFrames={crossfadeFrames} layout="none">
+        <PhoneStage zIndex={2}>
+          <DarkOverlay durationInFrames={crossfadeFrames} crossfadeFrames={crossfadeFrames} />
+        </PhoneStage>
+      </Sequence>
+    </>
+  );
+}
 
 export interface SentenceInfo {
   index: number;
@@ -249,19 +291,10 @@ function PillRow({ pills }: { pills: { text: string; delay: number }[] }) {
   );
 }
 
-// AI Rehber slot (scene 2b). Shows the real recording once public/recordings/ai-rehber.mp4
-// exists (AI_REHBER_AVAILABLE flipped to true); until then, a placeholder that reads as the
-// real feature rather than a blank screen.
-function AiRehberSlot({ available, src }: { available: boolean; src: string }) {
-  if (available) {
-    return (
-      <OffthreadVideo
-        src={staticFile(src)}
-        style={{ width: "100%", height: "100%", objectFit: "contain" }}
-        muted
-      />
-    );
-  }
+// AI Rehber placeholder (scene 2b) — used only when AI_REHBER_AVAILABLE is false (recording
+// missing), so the scene still reads as the real feature rather than a blank screen. The real
+// recording path is AiRehberSplit above.
+function AiRehberSlot() {
   const frame = useCurrentFrame();
   const iconOpacity = fadeIn(frame, 0, 16);
   const iconScale = scaleIn(frame, 0, 20, 0.8);
@@ -467,9 +500,13 @@ function Scene2({ scene }: { scene: Scene }) {
         />
       </Sequence>
       <Sequence from={aFrames} durationInFrames={bFrames} layout="none">
-        <PhoneStage>
-          <AiRehberSlot available={AI_REHBER_AVAILABLE} src={AI_REHBER_SRC} />
-        </PhoneStage>
+        {AI_REHBER_AVAILABLE ? (
+          <AiRehberSplit bFrames={bFrames} />
+        ) : (
+          <PhoneStage>
+            <AiRehberSlot />
+          </PhoneStage>
+        )}
         <PillRow
           pills={[
             { text: "Arapça", delay: 0 },

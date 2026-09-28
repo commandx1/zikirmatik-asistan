@@ -132,14 +132,51 @@ ffmpeg -i out/video-01-sesli.mp4 -af volumedetect -f null -    # mean_volume, ai
 If the VO reads quiet, raise the `volume` prop on the five `<Audio>` tags in `RichVideo.tsx`
 (currently `1.8`) — don't push past where `max_volume` approaches 0dB (clipping).
 
-### Dropping in the AI Rehber clip
+### AI Rehber klibi (2026-09-28, landed)
 
-Scene 2b (the "asistana sor" half of sentence 2) shows a placeholder (`AiRehberSlot` in
-`RichVideo.tsx`) until `public/recordings/ai-rehber.mp4` exists. Once you've recorded it:
-1. Save it to `public/recordings/ai-rehber.mp4`.
-2. In `src/RichVideo.tsx`, flip `const AI_REHBER_AVAILABLE = false;` to `true`.
-3. Re-render. `AiRehberSlot` already fits/letterboxes (`objectFit: "contain"`) whatever aspect
-   ratio the clip turns out to be, no other change needed.
+Scene 2b (the "asistana sor" half of sentence 2) now plays the real recording,
+`public/recordings/ai-rehber.mp4` (Android emulator, prod app, 1080x2400, 60fps container /
+sparse real frames, 31.8s). `AI_REHBER_AVAILABLE = true` in `src/RichVideo.tsx`; the old
+placeholder (`AiRehberSlot`, no video) stays as the fallback path for `false`.
+
+**How it was recorded:** `scripts/record-ai-android.sh` (adb `input tap`/`input text` beats +
+`screenrecord`, prints wall-clock beat markers). Prerequisites: a booted emulator on the
+`android.emu.prod` Detox build (real prod API, real signed-in Google account — not an
+e2e/guest session, so credit balances etc. read real), Turkish locale, and `sysui` demo mode
+for a clean status bar (steps + exact `adb`/broadcast commands are in the script's header
+comment). Tap coordinates are calibrated for the 1080x2400 skin used here — recalibrate for a
+different emulator resolution.
+
+**Content timeline of the raw clip** (verified frame-by-frame with `ffprobe`/`ffmpeg`, not
+just the nominal 60fps — the capture's real distinct frames are much sparser, ~6-15fps,
+duplicated up to 60fps by the container): 0–1.5s idle (personal "Son Asistan Aramaları"
+history visible — never used in the cut); ~2–4.75s the intention "sabah yolda huzur bulmak"
+typed + sent (transition to the loading skeleton happens abruptly, between real frames at
+~4.72s and ~4.79s — the history reappears above the skeleton the instant it does); ~4.75–25s
+"Asistan çalışıyor" skeleton (history still on screen); ~25s results land; two slow swipes
+from ~25–27s scroll the history out of view and settle on the primary recommendation card
+("Yâ Mü'min", Arapça/Okunuş/Anlam/Fazilet) by ~27.7s, which then stays legible (with a little
+continued drift — KAYNAK/"Başla" scroll into view) through the clip's end at 31.8s.
+
+**Scene 2b's two source windows** (`AI_REHBER_A_FROM/A_TO`, `AI_REHBER_B_FROM` in
+`RichVideo.tsx`, both `rate: 1.0` — never ramp this clip, non-1x rates on `OffthreadVideo`
+reproducibly blank frames, see the `RELAUNCH_*` comment above it), joined by a 0.25s
+dark-overlay crossfade (`AiRehberSplit`, reusing `DarkOverlay` from Scene4's relaunch):
+- **A** 3.15s→4.75s (~1.6s): typing mid-sentence through the send tap, cut right before the
+  post-send/history screen becomes visible.
+- **B** 27.7s→~31.2s (real window stretches to fill whatever of scene 2b's own time budget is
+  left after A + the crossfade, since that budget shifts slightly with `vo-01.json`'s audio
+  duration): the settled "Yâ Mü'min" card, history-free.
+
+If `vo-01.json`'s sentence 2 changes enough that `AI_REHBER_A_TO - AI_REHBER_A_FROM` no longer
+fits inside the new scene-2b budget, shorten `AI_REHBER_A_TO` first (per the brief) rather than
+touching B's start.
+
+QA on the 2026-09-28 render (`out/video-01-sesli.mp4`, 721 frames / 24.085s, regression-clean):
+0.25s brightness sweep across all of scene 2 (3.57–10.77s) found no blank/near-black frames;
+spot-checked frames confirm the typed intention is readable in A, the crossfade lands cleanly,
+and the Yâ Mü'min card's Arapça/Okunuş/Anlam/Fazilet are all readable in B with no history text
+anywhere; `ffprobe` confirms an audio stream.
 
 ### Switching the VO voice
 
