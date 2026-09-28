@@ -99,7 +99,7 @@ android {
         applicationId 'com.zikirmatik_asistan.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 11
+        versionCode 97
         versionName "0.2.0"
 
         // Detox e2e: `-DtestBuildType=release` ile androidTest APK'sı release'e karşı derlenir.

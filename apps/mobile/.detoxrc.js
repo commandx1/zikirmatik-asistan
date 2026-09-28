@@ -33,6 +33,16 @@ module.exports = {
         'EXPO_PUBLIC_DEV_GOOGLE_NAME="Ahmet" EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:3000 EXPO_PUBLIC_REVENUECAT_API_KEY_IOS= ' +
         'xcodebuild -workspace ios/ZikirmatikRehber.xcworkspace -scheme ZikirmatikRehber -configuration Release -sdk iphonesimulator -derivedDataPath ios/build-record -quiet',
     },
+    // AI Rehber promo kaydı: PROD API + gerçek giriş (Apple ile giriş simülatörde
+    // çalışır; Google iOS istemcisi henüz yok). Mock auth KAPALI, RevenueCat anahtarı
+    // boş (Release'te test_ anahtarı alert veriyor; AI Rehber ücretsiz günlük hakla çalışır).
+    'ios.prod': {
+      type: 'ios.app',
+      binaryPath: 'ios/build-prod/Build/Products/Release-iphonesimulator/ZikirmatikRehber.app',
+      build:
+        'EXPO_PUBLIC_E2E_MOCK_AUTH= EXPO_PUBLIC_API_BASE_URL=https://zikirmatik-asistan.onrender.com EXPO_PUBLIC_REVENUECAT_API_KEY_IOS= ' +
+        'xcodebuild -workspace ios/ZikirmatikRehber.xcworkspace -scheme ZikirmatikRehber -configuration Release -sdk iphonesimulator -derivedDataPath ios/build-prod -quiet',
+    },
     'android.release': {
       type: 'android.apk',
       binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
@@ -57,6 +67,7 @@ module.exports = {
   configurations: {
     'ios.sim.release': { device: 'simulator', app: 'ios.release' },
     'ios.sim.record': { device: 'simulator', app: 'ios.record' },
+    'ios.sim.prod': { device: 'simulator', app: 'ios.prod' },
     'android.emu.release': { device: 'emulator', app: 'android.release' },
   },
 };
