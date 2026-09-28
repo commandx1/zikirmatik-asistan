@@ -5,11 +5,17 @@ import { Modal, Platform, Pressable, Text, View, useWindowDimensions } from "rea
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTourContext } from "./tour-context";
-import type { SpotlightBounds } from "./types";
+import { computeTabBarSpotlightBounds, type SpotlightBounds } from "./types";
 import { TEST_IDS } from "../../test-ids";
+import {
+  GLASS_TAB_BAR_HEIGHT,
+  GLASS_TAB_BAR_BOTTOM_GAP,
+  GLASS_TAB_BAR_SIDE_MARGIN,
+} from "../../components/ui/glass-tab-bar";
 
 const OVERLAY_COLOR = "rgba(0,0,0,0.78)";
 const TOOLTIP_WIDTH = 288;
+const VISIBLE_TAB_COUNT = 5;
 
 export function TourOverlay() {
   const { isActive, currentStep, currentStepIndex, totalSteps, nextStep, prevStep, skipTour, getRef } =
@@ -20,7 +26,11 @@ export function TourOverlay() {
   const insets = useSafeAreaInsets();
   const [bounds, setBounds] = useState<SpotlightBounds | null>(null);
 
-  const TAB_BAR_CONTENT_HEIGHT = 74;
+  // Modal uses statusBarTranslucent, so its coordinate space starts at the
+  // physical screen top. Both measureInWindow and useWindowDimensions()
+  // report values relative to the main window, which excludes the status
+  // bar on Android. Compensate so spotlight rects line up with the Modal.
+  const statusBarOffset = Platform.OS === "android" ? insets.top : 0;
 
   useEffect(() => {
     if (!currentStep) {
@@ -29,13 +39,21 @@ export function TourOverlay() {
     }
 
     if (currentStep.tabIndex !== undefined) {
-      const tabWidth = screenWidth / 5;
-      setBounds({
-        x: currentStep.tabIndex * tabWidth,
-        y: screenHeight - insets.bottom - TAB_BAR_CONTENT_HEIGHT,
-        width: tabWidth,
-        height: TAB_BAR_CONTENT_HEIGHT,
-      });
+      // Mirror the real floating tab bar geometry from glass-tab-bar.tsx
+      // instead of re-deriving it, so this stays correct if that changes.
+      setBounds(
+        computeTabBarSpotlightBounds({
+          screenWidth,
+          screenHeight,
+          insetBottom: insets.bottom,
+          statusBarOffset,
+          tabIndex: currentStep.tabIndex,
+          tabCount: VISIBLE_TAB_COUNT,
+          barHeight: GLASS_TAB_BAR_HEIGHT,
+          bottomGap: GLASS_TAB_BAR_BOTTOM_GAP,
+          sideMargin: GLASS_TAB_BAR_SIDE_MARGIN,
+        })
+      );
       return;
     }
 
@@ -48,16 +66,12 @@ export function TourOverlay() {
       requestAnimationFrame(() => {
         ref.current?.measureInWindow((x, y, width, height) => {
           if (width > 0 && height > 0) {
-            // Modal uses statusBarTranslucent, so its coordinate space starts at the
-            // physical screen top; measureInWindow reports position relative to the
-            // main window, which excludes the status bar on Android. Compensate.
-            const statusBarOffset = Platform.OS === "android" ? insets.top : 0;
             setBounds({ x, y: y + statusBarOffset, width, height });
           }
         });
       });
     });
-  }, [currentStep, getRef, screenWidth, screenHeight, insets.top, insets.bottom]);
+  }, [currentStep, getRef, screenWidth, screenHeight, insets.bottom, statusBarOffset]);
 
   if (!isActive || !currentStep || !bounds) return null;
 

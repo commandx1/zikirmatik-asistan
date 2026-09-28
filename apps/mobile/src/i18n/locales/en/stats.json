@@ -49,9 +49,18 @@
     "defaultDhikrLabel": "Dhikr"
   },
   "badges": {
-    "firstSteps": "First Steps",
-    "steadyStreak": "Steady Streak",
-    "activeDays": "Active Days",
+    "labels": {
+      "count-100": "First 100 dhikr",
+      "count-1k": "First 1,000 dhikr",
+      "count-10k": "10,000 dhikr",
+      "count-100k": "100,000 dhikr",
+      "streak-7": "7-day streak",
+      "streak-30": "30-day streak",
+      "streak-100": "100-day streak",
+      "vird-7": "7-day vird streak",
+      "vird-30": "30-day vird streak",
+      "vird-100": "100-day vird streak"
+    },
     "achieved": "Achieved"
   },
   "activityHeatmap": {
@@ -61,9 +70,16 @@
   "badgeCelebration": {
     "title": "You earned a new badge!",
     "criteria": {
-      "first-steps": "You did dhikr 33 times in total.",
-      "steady-streak": "You did dhikr 7 days in a row.",
-      "active-days": "You did dhikr on 30 different days."
+      "count-100": "You did 100 dhikr in total.",
+      "count-1k": "You did 1,000 dhikr in total.",
+      "count-10k": "You did 10,000 dhikr in total.",
+      "count-100k": "You did 100,000 dhikr in total.",
+      "streak-7": "You did dhikr 7 days in a row.",
+      "streak-30": "You did dhikr 30 days in a row.",
+      "streak-100": "You did dhikr 100 days in a row.",
+      "vird-7": "You completed your vird 7 days in a row.",
+      "vird-30": "You completed your vird 30 days in a row.",
+      "vird-100": "You completed your vird 100 days in a row."
     },
     "close": "Close",
     "great": "Great!"

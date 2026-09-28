@@ -15,8 +15,8 @@ export function selectNewlyAchievedBadges(
 
 export type BadgeCelebrationEvaluation =
   // Data isn't trustworthy yet (a store still rehydrating, auth in flight,
-  // or — for authenticated sessions — dhikr counts / the server streak
-  // haven't come back from the backend). Do nothing this pass.
+  // or — for authenticated sessions — the server badges haven't loaded).
+  // Do nothing this pass.
   | { action: "wait" }
   // The data owner changed since the last seed (fresh install, sign-in,
   // account switch, upgrade from the pre-owner store). Mark whatever is
@@ -70,7 +70,7 @@ export function evaluateBadgeCelebration(params: {
   };
 }
 
-// The steady-streak (7-day) badge dismissal fires the store review prompt
+// The streak-7 badge dismissal fires the store review prompt
 // (400ms) — but for a non-premium user still eligible for the day-7
 // yearly-plan offer (1.5s, same dismissal), both would fire back to back.
 // Reuses shouldShowDay7Offer (day7-offer.ts) with the same inputs the offer
@@ -108,18 +108,23 @@ export function enqueueBadges(queue: StatsBadge[], badges: StatsBadge[]): StatsB
   return fresh.length > 0 ? [...queue, ...fresh] : queue;
 }
 
-// Badges must be evaluated only against data that is final for the current
-// owner: every persisted store restored, and — for a signed-in user — dhikr
-// counts AND the server streak fetched, else a later-arriving value would
-// read as "newly achieved" right after the silent seed.
-export function isBadgeDataSettled(params: {
+// The one badge list both the popup and the stats screen show, or null while
+// it isn't final for the current owner (then the hook waits). Members: the
+// server's badges from GET /v1/stats/summary — the same query cache the stats
+// screen reads — so offline / not-yet-loaded means "wait", never a local
+// guess that could pop and then disagree. Guests: the local computation
+// (computeLocalBadges), which buildLocalStatsSummary also uses.
+export function resolveCelebrationBadges(params: {
   storesHydrated: boolean;
   authStatus: "signed_out" | "authenticating" | "authenticated";
-  isDhikrHydratedFromBackend: boolean;
-  hasServerStreak: boolean;
-}): boolean {
+  localBadges: StatsBadge[];
+  serverBadges: StatsBadge[] | undefined;
+}): StatsBadge[] | null {
   if (!params.storesHydrated || params.authStatus === "authenticating") {
-    return false;
+    return null;
   }
-  return params.authStatus === "signed_out" || (params.isDhikrHydratedFromBackend && params.hasServerStreak);
+  if (params.authStatus === "authenticated") {
+    return params.serverBadges ?? null;
+  }
+  return params.localBadges;
 }

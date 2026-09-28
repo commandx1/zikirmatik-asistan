@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { BADGE_DEFINITIONS } from "@zikirmatik/shared";
+import trStats from "../../../i18n/locales/tr/stats.json";
+import enStats from "../../../i18n/locales/en/stats.json";
 import { computeLocalBadges, deriveLocalActivityStats, withServerStreak } from "./local-badges";
 
 describe("deriveLocalActivityStats", () => {
@@ -50,7 +53,7 @@ describe("deriveLocalActivityStats with the persisted day history", () => {
     expect(stats.longestStreak).toBe(7);
     expect(stats.currentStreak).toBe(7);
     expect(stats.totalDaysActive).toBe(7);
-    expect(computeLocalBadges(stats).find((b) => b.key === "steady-streak")?.achieved).toBe(true);
+    expect(computeLocalBadges({ lifetimeCount: 99, longestStreak: stats.longestStreak }).find((b) => b.key === "streak-7")?.achieved).toBe(true);
   });
 
   it("dates free-mode activity by freeModeActivityAt, not today", () => {
@@ -83,30 +86,33 @@ describe("withServerStreak", () => {
 });
 
 describe("computeLocalBadges", () => {
-  it("marks a badge achieved once its threshold is reached", () => {
-    const badges = computeLocalBadges({ currentStreak: 0, allTimeCount: 33, longestStreak: 0, totalDaysActive: 0 });
-    const firstSteps = badges.find((b) => b.key === "first-steps");
+  it("uses the shared list: lifetime count + local longest streak, vird always 0", () => {
+    const badges = computeLocalBadges({ lifetimeCount: 1000, longestStreak: 7 });
+    const achieved = badges.filter((b) => b.achieved).map((b) => b.key);
 
-    expect(firstSteps?.achieved).toBe(true);
-    expect(firstSteps?.progress).toBe(1);
+    expect(badges).toHaveLength(10);
+    expect(achieved).toEqual(["count-100", "count-1k", "streak-7"]);
+    expect(badges.find((b) => b.key === "vird-7")?.progress).toBe(0);
   });
 
   it("reports fractional progress below threshold, clamped to [0,1]", () => {
-    const badges = computeLocalBadges({ currentStreak: 0, allTimeCount: 10, longestStreak: 3, totalDaysActive: 0 });
-    const firstSteps = badges.find((b) => b.key === "first-steps");
-    const streak = badges.find((b) => b.key === "steady-streak");
+    const badges = computeLocalBadges({ lifetimeCount: 10, longestStreak: 3 });
 
-    expect(firstSteps?.achieved).toBe(false);
-    expect(firstSteps?.progress).toBeCloseTo(10 / 33);
-    expect(streak?.progress).toBeCloseTo(3 / 7);
+    expect(badges.find((b) => b.key === "count-100")?.progress).toBeCloseTo(0.1);
+    expect(badges.find((b) => b.key === "streak-7")?.progress).toBeCloseTo(3 / 7);
+    expect(computeLocalBadges({ lifetimeCount: -5, longestStreak: 999 }).find((b) => b.key === "streak-100")?.progress).toBe(1);
   });
+});
 
-  it("never returns a negative or above-1 progress", () => {
-    const badges = computeLocalBadges({ currentStreak: 0, allTimeCount: -5, longestStreak: 999, totalDaysActive: 0 });
-    const firstSteps = badges.find((b) => b.key === "first-steps");
-    const streak = badges.find((b) => b.key === "steady-streak");
-
-    expect(firstSteps?.progress).toBe(0);
-    expect(streak?.progress).toBe(1);
+describe("badge i18n", () => {
+  it("has a label and a celebration criterion for every shared badge, in tr and en", () => {
+    for (const locale of [trStats, enStats]) {
+      for (const { key } of BADGE_DEFINITIONS) {
+        expect((locale.badges.labels as Record<string, string>)[key]).toBeTruthy();
+        expect((locale.badgeCelebration.criteria as Record<string, string>)[key]).toBeTruthy();
+      }
+      expect(Object.keys(locale.badges.labels)).toHaveLength(BADGE_DEFINITIONS.length);
+      expect(Object.keys(locale.badgeCelebration.criteria)).toHaveLength(BADGE_DEFINITIONS.length);
+    }
   });
 });

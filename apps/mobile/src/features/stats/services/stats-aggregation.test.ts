@@ -99,3 +99,27 @@ describe("buildLocalStatsSummary with the persisted day history", () => {
     expect(summary.streak.totalDaysActive).toBe(7);
   });
 });
+
+describe("buildLocalStatsSummary allTimeCount after a counter reset", () => {
+  it("falls back to lifetimeCount when the current counters were reset below it", () => {
+    const items = [makeItem({ id: "item1", current: 50, lastActivityAt: daysAgo(0) })];
+    const summary = buildLocalStatsSummary(items, 0, false, undefined, [], 120);
+
+    expect(summary.totals.allTimeCount).toBe(120);
+    expect(summary.badges.find((b) => b.key === "count-100")?.achieved).toBe(true);
+  });
+});
+
+describe("buildLocalStatsSummary badges (guest)", () => {
+  it("uses lifetimeCount (not current counters) and equals the celebration hook's local badges", async () => {
+    const { computeLocalBadges, deriveLocalActivityStats } = await import("./local-badges");
+    const history = Array.from({ length: 7 }, (_, i) => toDateKey(new Date(daysAgo(6 - i))));
+    const items = [makeItem({ id: "item1", current: 3, lastActivityAt: daysAgo(0) })];
+    const summary = buildLocalStatsSummary(items, 2, false, undefined, history, 150);
+
+    expect(summary.badges.filter((b) => b.achieved).map((b) => b.key)).toEqual(["count-100", "streak-7"]);
+    // Same inputs the root hook uses (use-badge-celebration.ts).
+    const { longestStreak } = deriveLocalActivityStats({ items, freeModeCount: 2, activeDayKeys: history });
+    expect(summary.badges).toEqual(computeLocalBadges({ lifetimeCount: 150, longestStreak }));
+  });
+});

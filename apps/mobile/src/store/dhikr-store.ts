@@ -47,6 +47,10 @@ type DhikrStore = {
    * local streak / active-day badges derive from this, not from items'
    * single lastActivityAt (see local-badges.ts). */
   activeDayKeys: string[];
+  /** Taps ever counted on this device (selected + free mode). Guests' badge
+   * "lifetime count" — item counts get reset, this never goes down. Not fed
+   * by backend logs: members' lifetime count comes from the server. */
+  lifetimeCount: number;
   unsavedProgressDhikrIds: string[];
   unsavedProgressSnapshots: Record<string, UnsavedProgressSnapshot>;
   isHydratedFromBackend: boolean;
@@ -230,6 +234,7 @@ export const useDhikrStore = create<DhikrStore>()(
     freeModeTarget: 0,
     freeModeLapSize: 33,
     activeDayKeys: [],
+    lifetimeCount: 0,
     unsavedProgressDhikrIds: [],
     unsavedProgressSnapshots: {},
     isHydratedFromBackend: false,
@@ -436,6 +441,7 @@ export const useDhikrStore = create<DhikrStore>()(
       return {
         items,
         activeDayKeys: changedItem ? appendActiveDayKey(state.activeDayKeys, toDateKey(new Date())) : state.activeDayKeys,
+        lifetimeCount: changedItem ? state.lifetimeCount + 1 : state.lifetimeCount,
         ...markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, changedItem)
       };
     }),
@@ -551,7 +557,8 @@ export const useDhikrStore = create<DhikrStore>()(
       return {
         freeModeCount: nextCount,
         freeModeActivityAt: now.toISOString(),
-        activeDayKeys: appendActiveDayKey(state.activeDayKeys, toDateKey(now))
+        activeDayKeys: appendActiveDayKey(state.activeDayKeys, toDateKey(now)),
+        lifetimeCount: state.lifetimeCount + 1
       };
     }),
   resetFreeMode: () => set({ freeModeCount: 0, freeModeActivityAt: undefined }),
@@ -702,6 +709,7 @@ export const useDhikrStore = create<DhikrStore>()(
         freeModeTarget: 0,
         freeModeLapSize: 33,
         activeDayKeys: [],
+        lifetimeCount: 0,
         unsavedProgressDhikrIds: [],
         unsavedProgressSnapshots: {},
         isHydratedFromBackend: false,
@@ -712,13 +720,16 @@ export const useDhikrStore = create<DhikrStore>()(
   {
     name: "dhikr-store-v1",
     storage: createJSONStorage(() => safeAsyncStorage),
-    version: 3,
+    version: 4,
     migrate: (persistedState, version) => {
-      if (version >= 3) {
+      if (version >= 4) {
         return persistedState as DhikrStore;
       }
+      if (version >= 3) {
+        return seedLifetimeCount(persistedState) as unknown as DhikrStore;
+      }
       if (version >= 2) {
-        return seedActiveDayKeys(persistedState) as unknown as DhikrStore;
+        return seedLifetimeCount(seedActiveDayKeys(persistedState)) as unknown as DhikrStore;
       }
 
       // Sürüm 0 (nameTurkish/plain-string alanlar) VEYA sürüm 1 (LocalizedText,
@@ -770,7 +781,7 @@ export const useDhikrStore = create<DhikrStore>()(
             return item;
           });
 
-        return seedActiveDayKeys({ ...state, items }) as unknown as DhikrStore;
+        return seedLifetimeCount(seedActiveDayKeys({ ...state, items })) as unknown as DhikrStore;
       } catch {
         // Migrasyon her ne sebeple olursa olsun başarısız olursa, boş bir
         // items listesiyle devam et — kullanıcı verisi kaybı yerine crash'i
@@ -788,6 +799,7 @@ export const useDhikrStore = create<DhikrStore>()(
       freeModeTarget: state.freeModeTarget,
       freeModeLapSize: state.freeModeLapSize,
       activeDayKeys: state.activeDayKeys,
+      lifetimeCount: state.lifetimeCount,
       unsavedProgressDhikrIds: state.unsavedProgressDhikrIds,
       unsavedProgressSnapshots: state.unsavedProgressSnapshots
     })
@@ -822,4 +834,21 @@ function seedActiveDayKeys(persistedState: unknown) {
   }
 
   return { ...state, activeDayKeys: Array.from(days).sort().slice(-MAX_ACTIVE_DAY_KEYS) };
+}
+
+// v3 -> v4: lifetimeCount did not exist. The best evidence left is what is on
+// the counters now (items' current + free mode) — exactly the total the old
+// first-steps badge used, so no guest's count badge regresses on upgrade.
+function seedLifetimeCount(persistedState: unknown) {
+  const state = (persistedState ?? {}) as Record<string, unknown>;
+  const safe = (value: unknown) => (typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0);
+  let lifetimeCount = safe(state.freeModeCount);
+  if (Array.isArray(state.items)) {
+    for (const item of state.items) {
+      if (item && typeof item === "object") {
+        lifetimeCount += safe((item as { current?: unknown }).current);
+      }
+    }
+  }
+  return { ...state, lifetimeCount };
 }

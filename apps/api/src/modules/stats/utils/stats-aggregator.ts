@@ -238,49 +238,110 @@ function mapTopDhikrs(docs: RawTopDhikrDoc[]): StatsTopDhikr[] {
   });
 }
 
-const COUNT_BADGES: { key: string; label: string; threshold: number }[] = [
-  { key: 'count-1k', label: 'İlk 1.000 zikir', threshold: 1000 },
-  { key: 'count-10k', label: '10.000 zikir', threshold: 10000 },
-  { key: 'count-100k', label: '100.000 zikir', threshold: 100000 },
+// Mirror of BADGE_DEFINITIONS in packages/shared/src/utils/badges.ts — the
+// API cannot import the shared workspace package at runtime (see NOTE at the
+// top). stats-aggregator.spec.ts asserts both lists stay identical; change
+// them together.
+export const BADGE_DEFINITIONS: {
+  key: string;
+  metric: 'count' | 'streak' | 'virdStreak';
+  threshold: number;
+  order: number;
+  label: string;
+}[] = [
+  {
+    key: 'count-100',
+    metric: 'count',
+    threshold: 100,
+    order: 1,
+    label: 'İlk 100 zikir',
+  },
+  {
+    key: 'count-1k',
+    metric: 'count',
+    threshold: 1000,
+    order: 2,
+    label: 'İlk 1.000 zikir',
+  },
+  {
+    key: 'count-10k',
+    metric: 'count',
+    threshold: 10000,
+    order: 3,
+    label: '10.000 zikir',
+  },
+  {
+    key: 'count-100k',
+    metric: 'count',
+    threshold: 100000,
+    order: 4,
+    label: '100.000 zikir',
+  },
+  {
+    key: 'streak-7',
+    metric: 'streak',
+    threshold: 7,
+    order: 5,
+    label: '7 günlük seri',
+  },
+  {
+    key: 'streak-30',
+    metric: 'streak',
+    threshold: 30,
+    order: 6,
+    label: '30 günlük seri',
+  },
+  {
+    key: 'streak-100',
+    metric: 'streak',
+    threshold: 100,
+    order: 7,
+    label: '100 günlük seri',
+  },
+  {
+    key: 'vird-7',
+    metric: 'virdStreak',
+    threshold: 7,
+    order: 8,
+    label: '7 günlük vird serisi',
+  },
+  {
+    key: 'vird-30',
+    metric: 'virdStreak',
+    threshold: 30,
+    order: 9,
+    label: '30 günlük vird serisi',
+  },
+  {
+    key: 'vird-100',
+    metric: 'virdStreak',
+    threshold: 100,
+    order: 10,
+    label: '100 günlük vird serisi',
+  },
 ];
-
-const STREAK_BADGES: { key: string; label: string; threshold: number }[] = [
-  { key: 'streak-7', label: '7 günlük seri', threshold: 7 },
-  { key: 'streak-30', label: '30 günlük seri', threshold: 30 },
-  { key: 'streak-100', label: '100 günlük seri', threshold: 100 },
-];
-
-const VIRD_STREAK_BADGES: { key: string; label: string; threshold: number }[] =
-  [
-    { key: 'vird-7', label: '7 günlük vird serisi', threshold: 7 },
-    { key: 'vird-30', label: '30 günlük vird serisi', threshold: 30 },
-    { key: 'vird-100', label: '100 günlük vird serisi', threshold: 100 },
-  ];
 
 export function computeBadges(
   allTimeCount: number,
   longestStreak: number,
   virdLongestStreak = 0,
 ): StatsBadge[] {
-  const countBadges = COUNT_BADGES.map((badge) => ({
-    key: badge.key,
-    label: badge.label,
-    achieved: allTimeCount >= badge.threshold,
-    progress: Math.min(1, allTimeCount / badge.threshold),
-  }));
-  const streakBadges = STREAK_BADGES.map((badge) => ({
-    key: badge.key,
-    label: badge.label,
-    achieved: longestStreak >= badge.threshold,
-    progress: Math.min(1, longestStreak / badge.threshold),
-  }));
-  const virdStreakBadges = VIRD_STREAK_BADGES.map((badge) => ({
-    key: badge.key,
-    label: badge.label,
-    achieved: virdLongestStreak >= badge.threshold,
-    progress: Math.min(1, virdLongestStreak / badge.threshold),
-  }));
-  return [...countBadges, ...streakBadges, ...virdStreakBadges];
+  const values = {
+    count: allTimeCount,
+    streak: longestStreak,
+    virdStreak: virdLongestStreak,
+  };
+  return [...BADGE_DEFINITIONS]
+    .sort((a, b) => a.order - b.order)
+    .map((badge) => {
+      const value = Math.max(0, values[badge.metric] || 0);
+      return {
+        key: badge.key,
+        label: badge.label,
+        achieved: value >= badge.threshold,
+        progress: Math.min(1, value / badge.threshold),
+      };
+    });
 }
 
 const EMPTY_SOURCE_BREAKDOWN: StatsSourceBreakdown = {

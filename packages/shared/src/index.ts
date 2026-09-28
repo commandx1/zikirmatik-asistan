@@ -8,4 +8,5 @@ export * from "./utils/format";
 export * from "./utils/date";
 export * from "./utils/color";
 export * from "./utils/localized-text";
+export * from "./utils/badges";
 export * from "./mocks/data";

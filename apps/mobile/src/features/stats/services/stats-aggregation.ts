@@ -14,7 +14,9 @@ export function buildLocalStatsSummary(
   freeModeCount: number,
   isPremium: boolean,
   freeModeActivityAt?: string,
-  activeDayKeys: readonly string[] = []
+  activeDayKeys: readonly string[] = [],
+  /** dhikr-store.lifetimeCount — the guest's badge count (item counts get reset). */
+  lifetimeCount = 0
 ): StatsSummary {
   const today = new Date();
   const todayKey = toDateKey(today);
@@ -66,9 +68,12 @@ export function buildLocalStatsSummary(
   const heatmap = buildHeatmap(activityByDay, today, 365);
   const weekdayDistribution = buildWeekdayDistribution(activityByDay);
 
+  // Guard against a reset counter undercutting the badge-earning lifetime total (e.g. "Toplam 50" next to an earned 100 badge).
+  const displayAllTimeCount = Math.max(allTimeCount, Math.max(0, Math.floor(lifetimeCount)));
+
   return {
     totals: {
-      allTimeCount,
+      allTimeCount: displayAllTimeCount,
       totalSessions,
       totalDurationSeconds: 0,
       completedCount,
@@ -103,12 +108,7 @@ export function buildLocalStatsSummary(
       week: localPeriodComparison(activityByDay, today, "week"),
       month: localPeriodComparison(activityByDay, today, "month")
     },
-    badges: computeLocalBadges({
-      allTimeCount,
-      currentStreak: streak.currentStreak,
-      longestStreak: streak.longestStreak,
-      totalDaysActive: activeDays.length
-    })
+    badges: computeLocalBadges({ lifetimeCount, longestStreak: streak.longestStreak })
   };
 }
 

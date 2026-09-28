@@ -4,7 +4,7 @@ import {
   canShowBadgeCelebration,
   enqueueBadges,
   evaluateBadgeCelebration,
-  isBadgeDataSettled,
+  resolveCelebrationBadges,
   resolveBadgeDataOwner,
   selectNewlyAchievedBadges,
   shouldSkipReviewForDay7Offer
@@ -17,42 +17,42 @@ function makeBadge(overrides: Partial<StatsBadge>): StatsBadge {
 describe("selectNewlyAchievedBadges", () => {
   it("returns achieved badges that have not been celebrated yet", () => {
     const badges = [
-      makeBadge({ key: "first-steps", achieved: true }),
-      makeBadge({ key: "steady-streak", achieved: false })
+      makeBadge({ key: "count-100", achieved: true }),
+      makeBadge({ key: "streak-7", achieved: false })
     ];
 
     expect(selectNewlyAchievedBadges(badges, [])).toEqual([badges[0]]);
   });
 
   it("excludes badges already in the celebrated set", () => {
-    const badges = [makeBadge({ key: "first-steps", achieved: true })];
+    const badges = [makeBadge({ key: "count-100", achieved: true })];
 
-    expect(selectNewlyAchievedBadges(badges, ["first-steps"])).toEqual([]);
+    expect(selectNewlyAchievedBadges(badges, ["count-100"])).toEqual([]);
   });
 
   it("is idempotent: calling twice with the same celebrated set yields the same result", () => {
     const badges = [
-      makeBadge({ key: "first-steps", achieved: true }),
-      makeBadge({ key: "active-days", achieved: true })
+      makeBadge({ key: "count-100", achieved: true }),
+      makeBadge({ key: "count-1k", achieved: true })
     ];
-    const celebrated = ["first-steps"];
+    const celebrated = ["count-100"];
 
     const first = selectNewlyAchievedBadges(badges, celebrated);
     const second = selectNewlyAchievedBadges(badges, celebrated);
 
     expect(first).toEqual(second);
-    expect(first.map((b) => b.key)).toEqual(["active-days"]);
+    expect(first.map((b) => b.key)).toEqual(["count-1k"]);
   });
 
   it("returns an empty array when nothing is achieved", () => {
-    const badges = [makeBadge({ key: "first-steps", achieved: false })];
+    const badges = [makeBadge({ key: "count-100", achieved: false })];
 
     expect(selectNewlyAchievedBadges(badges, [])).toEqual([]);
   });
 });
 
 describe("evaluateBadgeCelebration", () => {
-  const achieved = [makeBadge({ key: "first-steps", achieved: true }), makeBadge({ key: "steady-streak", achieved: false })];
+  const achieved = [makeBadge({ key: "count-100", achieved: true }), makeBadge({ key: "streak-7", achieved: false })];
 
   it("waits while data is not settled", () => {
     expect(
@@ -69,17 +69,17 @@ describe("evaluateBadgeCelebration", () => {
   it("silently seeds already-achieved badges for a never-seeded store (fresh install / upgrade)", () => {
     expect(
       evaluateBadgeCelebration({ badges: achieved, celebratedBadgeKeys: [], owner: "guest", seededForOwner: null, isDataSettled: true })
-    ).toEqual({ action: "seed", owner: "guest", keysToMarkCelebrated: ["first-steps"] });
+    ).toEqual({ action: "seed", owner: "guest", keysToMarkCelebrated: ["count-100"] });
   });
 
   it("re-seeds silently when the owner changes (guest -> signed-in user), so old badges never pop", () => {
     expect(
       evaluateBadgeCelebration({ badges: achieved, celebratedBadgeKeys: [], owner: "user-a", seededForOwner: "guest", isDataSettled: true })
-    ).toEqual({ action: "seed", owner: "user-a", keysToMarkCelebrated: ["first-steps"] });
+    ).toEqual({ action: "seed", owner: "user-a", keysToMarkCelebrated: ["count-100"] });
   });
 
   it("seeds nothing for a genuinely new guest, so their first real badge still fires later", () => {
-    const none = [makeBadge({ key: "first-steps", achieved: false })];
+    const none = [makeBadge({ key: "count-100", achieved: false })];
     expect(
       evaluateBadgeCelebration({ badges: none, celebratedBadgeKeys: [], owner: "guest", seededForOwner: null, isDataSettled: true })
     ).toEqual({ action: "seed", owner: "guest", keysToMarkCelebrated: [] });
@@ -89,9 +89,9 @@ describe("evaluateBadgeCelebration", () => {
   });
 
   it("celebrates only badges not celebrated yet once seeded for the same owner", () => {
-    const both = [makeBadge({ key: "first-steps", achieved: true }), makeBadge({ key: "steady-streak", achieved: true })];
+    const both = [makeBadge({ key: "count-100", achieved: true }), makeBadge({ key: "streak-7", achieved: true })];
     expect(
-      evaluateBadgeCelebration({ badges: both, celebratedBadgeKeys: ["first-steps"], owner: "user-a", seededForOwner: "user-a", isDataSettled: true })
+      evaluateBadgeCelebration({ badges: both, celebratedBadgeKeys: ["count-100"], owner: "user-a", seededForOwner: "user-a", isDataSettled: true })
     ).toEqual({ action: "celebrate", badges: [both[1]] });
   });
 });
@@ -105,22 +105,23 @@ describe("resolveBadgeDataOwner", () => {
   });
 });
 
-describe("isBadgeDataSettled", () => {
-  const base = { storesHydrated: true, isDhikrHydratedFromBackend: false, hasServerStreak: false };
+describe("resolveCelebrationBadges", () => {
+  const local = [makeBadge({ key: "count-100", achieved: true })];
+  const server = [makeBadge({ key: "count-1k", achieved: true })];
+  const base = { storesHydrated: true, localBadges: local, serverBadges: undefined };
 
-  it("is settled for a guest once the persisted stores are restored", () => {
-    expect(isBadgeDataSettled({ ...base, authStatus: "signed_out" })).toBe(true);
-    expect(isBadgeDataSettled({ ...base, authStatus: "signed_out", storesHydrated: false })).toBe(false);
+  it("guest uses the local badges once the persisted stores are restored", () => {
+    expect(resolveCelebrationBadges({ ...base, authStatus: "signed_out", serverBadges: server })).toBe(local);
+    expect(resolveCelebrationBadges({ ...base, authStatus: "signed_out", storesHydrated: false })).toBeNull();
   });
 
   it("never settles mid sign-in", () => {
-    expect(isBadgeDataSettled({ ...base, authStatus: "authenticating", isDhikrHydratedFromBackend: true, hasServerStreak: true })).toBe(false);
+    expect(resolveCelebrationBadges({ ...base, authStatus: "authenticating", serverBadges: server })).toBeNull();
   });
 
-  it("needs both backend dhikr hydration and the server streak for a signed-in user", () => {
-    expect(isBadgeDataSettled({ ...base, authStatus: "authenticated", isDhikrHydratedFromBackend: true })).toBe(false);
-    expect(isBadgeDataSettled({ ...base, authStatus: "authenticated", hasServerStreak: true })).toBe(false);
-    expect(isBadgeDataSettled({ ...base, authStatus: "authenticated", isDhikrHydratedFromBackend: true, hasServerStreak: true })).toBe(true);
+  it("member uses the server badges and waits (never falls back to local) until they load", () => {
+    expect(resolveCelebrationBadges({ ...base, authStatus: "authenticated" })).toBeNull();
+    expect(resolveCelebrationBadges({ ...base, authStatus: "authenticated", serverBadges: server })).toBe(server);
   });
 });
 
@@ -168,11 +169,11 @@ describe("shouldSkipReviewForDay7Offer", () => {
 
 describe("enqueueBadges", () => {
   it("dedupes by key and keeps the same reference when nothing is new", () => {
-    const queue = [makeBadge({ key: "first-steps", achieved: true })];
-    expect(enqueueBadges(queue, [makeBadge({ key: "first-steps", achieved: true })])).toBe(queue);
-    expect(enqueueBadges(queue, [makeBadge({ key: "active-days", achieved: true })]).map((b) => b.key)).toEqual([
-      "first-steps",
-      "active-days"
+    const queue = [makeBadge({ key: "count-100", achieved: true })];
+    expect(enqueueBadges(queue, [makeBadge({ key: "count-100", achieved: true })])).toBe(queue);
+    expect(enqueueBadges(queue, [makeBadge({ key: "count-1k", achieved: true })]).map((b) => b.key)).toEqual([
+      "count-100",
+      "count-1k"
     ]);
   });
 });

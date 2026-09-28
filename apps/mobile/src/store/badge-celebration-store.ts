@@ -59,6 +59,15 @@ export const useBadgeCelebrationStore = create<BadgeCelebrationState>()(
     {
       name: "badge-celebration-store-v1",
       storage: createJSONStorage(() => safeAsyncStorage),
+      // v0 -> v1: the badge list changed (first-steps/steady-streak/
+      // active-days -> the shared count/streak/vird list, members now on
+      // server badges). Forget the seed so every already-earned badge of the
+      // new list is marked silently instead of popping as "new" on upgrade.
+      version: 1,
+      migrate: (persistedState) => ({
+        ...((persistedState ?? {}) as Partial<BadgeCelebrationState>),
+        seededForOwner: null
+      }) as BadgeCelebrationState,
       partialize: (state) => ({
         celebratedBadgeKeys: state.celebratedBadgeKeys,
         seededForOwner: state.seededForOwner

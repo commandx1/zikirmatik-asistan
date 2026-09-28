@@ -49,9 +49,18 @@
     "defaultDhikrLabel": "Zikir"
   },
   "badges": {
-    "firstSteps": "İlk Adımlar",
-    "steadyStreak": "İstikrarlı Seri",
-    "activeDays": "Aktif Günler",
+    "labels": {
+      "count-100": "İlk 100 zikir",
+      "count-1k": "İlk 1.000 zikir",
+      "count-10k": "10.000 zikir",
+      "count-100k": "100.000 zikir",
+      "streak-7": "7 günlük seri",
+      "streak-30": "30 günlük seri",
+      "streak-100": "100 günlük seri",
+      "vird-7": "7 günlük vird serisi",
+      "vird-30": "30 günlük vird serisi",
+      "vird-100": "100 günlük vird serisi"
+    },
     "achieved": "Kazanıldı"
   },
   "activityHeatmap": {
@@ -61,9 +70,16 @@
   "badgeCelebration": {
     "title": "Yeni rozet kazandın!",
     "criteria": {
-      "first-steps": "Toplam 33 kez zikir çektin.",
-      "steady-streak": "7 gün üst üste zikir çektin.",
-      "active-days": "30 farklı günde zikir çektin."
+      "count-100": "Toplam 100 zikir çektin.",
+      "count-1k": "Toplam 1.000 zikir çektin.",
+      "count-10k": "Toplam 10.000 zikir çektin.",
+      "count-100k": "Toplam 100.000 zikir çektin.",
+      "streak-7": "7 gün üst üste zikir çektin.",
+      "streak-30": "30 gün üst üste zikir çektin.",
+      "streak-100": "100 gün üst üste zikir çektin.",
+      "vird-7": "7 gün üst üste virdini tamamladın.",
+      "vird-30": "30 gün üst üste virdini tamamladın.",
+      "vird-100": "100 gün üst üste virdini tamamladın."
     },
     "close": "Kapat",
     "great": "Harika!"

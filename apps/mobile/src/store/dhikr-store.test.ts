@@ -239,7 +239,7 @@ describe("dhikr-store", () => {
 
     it("is a no-op once the persisted version is already current", () => {
       const persisted = { items: [{ id: "a", name: { tr: "X", en: "X" } }] };
-      const result = migrate(persisted, 3);
+      const result = migrate(persisted, 4);
       expect(result).toBe(persisted);
     });
 
@@ -415,6 +415,73 @@ describe("dhikr-store", () => {
       expect(result.activeDayKeys).toEqual(["2026-07-10"]);
       expect(migrate(null, 2).activeDayKeys).toEqual([]);
       expect(migrate({ items: "x" }, 2).activeDayKeys).toEqual([]);
+    });
+  });
+
+  describe("persisted state migration (v3 -> v4, lifetimeCount)", () => {
+    function migrate(persistedState: unknown, version: number) {
+      const options = useDhikrStore.persist.getOptions() as {
+        migrate?: (state: unknown, version: number) => unknown;
+      };
+      return options.migrate!(persistedState, version) as { lifetimeCount: number; activeDayKeys: string[] };
+    }
+
+    it("seeds lifetimeCount from items' current + free mode (the old first-steps total)", () => {
+      const result = migrate(
+        { items: [{ id: "a", current: 40 }, { id: "b", current: 70.9 }, { id: "c", current: -3 }, null], freeModeCount: 5, activeDayKeys: ["2026-07-10"] },
+        3
+      );
+      expect(result.lifetimeCount).toBe(115);
+      expect(result.activeDayKeys).toEqual(["2026-07-10"]);
+    });
+
+    it("also seeds from older versions and survives bad state", () => {
+      expect(migrate({ items: [{ id: "a", nameTurkish: "A", current: 12 }] }, 0).lifetimeCount).toBe(12);
+      expect(migrate(null, 3).lifetimeCount).toBe(0);
+      expect(migrate({ items: "x", freeModeCount: "7" }, 2).lifetimeCount).toBe(0);
+    });
+  });
+
+  describe("lifetimeCount", () => {
+    it("grows with every real tap (selected + free mode), not with capped taps or saved backend logs, and resets with the session", () => {
+      useDhikrStore.setState({
+        items: [
+          {
+            id: "personal-a",
+            source: "personal",
+            name: "Test zikri",
+            transliteration: "Test zikri",
+            current: 0,
+            target: 1,
+            lastActivityLabel: "Henüz başlanmadı",
+            streakDays: 0,
+            isFavorite: false
+          }
+        ],
+        selectedDhikrId: "personal-a",
+        freeModeCount: 0,
+        freeModeTarget: 0,
+        lifetimeCount: 10
+      });
+
+      useDhikrStore.getState().incrementSelected();
+      useDhikrStore.getState().incrementSelected(); // target reached — no change
+      useDhikrStore.getState().incrementFreeMode();
+      expect(useDhikrStore.getState().lifetimeCount).toBe(12);
+
+      useDhikrStore.getState().applySavedBackendLog({
+        _id: "log-a",
+        userId: "user-a",
+        customDhikrId: "personal-a",
+        count: 50,
+        targetCount: 1,
+        date: "2026-06-03",
+        isCompleted: true
+      });
+      expect(useDhikrStore.getState().lifetimeCount).toBe(12);
+
+      useDhikrStore.getState().resetSessionScoped();
+      expect(useDhikrStore.getState().lifetimeCount).toBe(0);
     });
   });
 

@@ -2,7 +2,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { ScrollView, Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
-import type { StatsBadge } from "@zikirmatik/shared";
+import { badgeOrder, type StatsBadge } from "@zikirmatik/shared";
 import { withAlpha } from "./chart-utils";
 
 function BadgeCard({ badge }: { badge: StatsBadge }) {
@@ -23,7 +23,7 @@ function BadgeCard({ badge }: { badge: StatsBadge }) {
         <FontAwesome6 name={badge.achieved ? "medal" : "lock"} iconStyle="solid" size={18} color={tint} />
       </View>
       <Text className="mt-2 text-center text-xs font-medium text-text-primary" numberOfLines={2}>
-        {badge.label}
+        {t(`stats:badges.labels.${badge.key}`, { defaultValue: badge.label })}
       </Text>
       <Text className="mt-1 text-[11px] font-semibold" style={{ color: badge.achieved ? tokens.accent : tokens.textMuted }}>
         {badge.achieved ? t("stats:badges.achieved") : `%${Math.round(badge.progress * 100)}`}
@@ -35,7 +35,7 @@ function BadgeCard({ badge }: { badge: StatsBadge }) {
 export function BadgesRow({ badges }: { badges: StatsBadge[] }) {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
-      {badges.map((badge) => (
+      {[...badges].sort((a, b) => badgeOrder(a.key) - badgeOrder(b.key)).map((badge) => (
         <BadgeCard key={badge.key} badge={badge} />
       ))}
     </ScrollView>

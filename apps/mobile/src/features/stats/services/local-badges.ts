@@ -1,7 +1,6 @@
-import { toDateKey } from "@zikirmatik/shared";
+import { computeBadges, toDateKey } from "@zikirmatik/shared";
 import type { StatsBadge } from "@zikirmatik/shared";
 import { calculateLocalCompletionStreak, resolveActivityDateKey } from "../../home/services/local-streak";
-import { i18n } from "../../../i18n";
 
 // Same shape as the dhikr-store items consumed by streak-reminder-notifications.ts
 // (see deriveStreakReminderStatus) — kept minimal so this module has no
@@ -18,24 +17,6 @@ export type LocalActivityStats = {
   currentStreak: number;
   totalDaysActive: number;
 };
-
-type BadgeDefinition = {
-  key: string;
-  labelKey: string;
-  metric: keyof LocalActivityStats;
-  threshold: number;
-};
-
-// Single source of truth for the local (guest-mode / device-derived) badge
-// set. Mirrors the count/streak badges the backend computes in
-// stats-aggregator.ts (computeBadges) so guest and authenticated users see
-// the same milestones. Kept intentionally small — the backend has a richer
-// set once account-level history exists.
-const BADGE_DEFINITIONS: BadgeDefinition[] = [
-  { key: "first-steps", labelKey: "firstSteps", metric: "allTimeCount", threshold: 33 },
-  { key: "steady-streak", labelKey: "steadyStreak", metric: "longestStreak", threshold: 7 },
-  { key: "active-days", labelKey: "activeDays", metric: "totalDaysActive", threshold: 30 }
-];
 
 export type LocalActivitySource = {
   items: ActivityItem[];
@@ -111,14 +92,10 @@ export function withServerStreak(local: LocalActivityStats, server: ServerStreak
   };
 }
 
-export function computeLocalBadges(stats: LocalActivityStats): StatsBadge[] {
-  return BADGE_DEFINITIONS.map((definition) => {
-    const value = stats[definition.metric];
-    return {
-      key: definition.key,
-      label: i18n.t(`stats:badges.${definition.labelKey}`),
-      achieved: value >= definition.threshold,
-      progress: Math.max(0, Math.min(1, value / definition.threshold))
-    };
-  });
+// Guests' badges: the shared list (packages/shared BADGE_DEFINITIONS), fed
+// with the device's lifetime tap count and local longest streak. Vird streaks
+// only exist server-side, so a guest's vird badges stay at 0. Members use the
+// server's badges instead (see use-badge-celebration / use-stats).
+export function computeLocalBadges(input: { lifetimeCount: number; longestStreak: number }): StatsBadge[] {
+  return computeBadges({ lifetimeCount: input.lifetimeCount, longestStreak: input.longestStreak, virdLongestStreak: 0 });
 }

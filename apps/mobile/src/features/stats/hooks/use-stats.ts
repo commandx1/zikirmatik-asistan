@@ -14,6 +14,17 @@ import { getStatsSummary } from "../services/stats-api-client";
 // qk.stats(userId, period) imzasını (diğer okuyucularla) paylaşır.
 const STATS_SUMMARY_PERIOD = "summary";
 
+// Shared with useBadgeCelebration: one cache entry per user, so a member's
+// popup and stats screen read the very same server badges.
+export function statsSummaryQueryOptions(userId: string | undefined) {
+  return {
+    queryKey: qk.stats(userId, STATS_SUMMARY_PERIOD),
+    queryFn: getStatsSummary,
+    staleTime: 0,
+    retry: false
+  } as const;
+}
+
 export type UseStatsResult = {
   data: StatsSummary | null;
   isLoading: boolean;
@@ -38,6 +49,7 @@ export function useStats(): UseStatsResult {
   const freeModeCount = useDhikrStore((s) => s.freeModeCount);
   const freeModeActivityAt = useDhikrStore((s) => s.freeModeActivityAt);
   const activeDayKeys = useDhikrStore((s) => s.activeDayKeys);
+  const lifetimeCount = useDhikrStore((s) => s.lifetimeCount);
 
   // Misafir yolu (yerel özet) değişmedi — yalnızca kimlikli yol RQ'ya taşındı.
   const [data, setData] = useState<StatsSummary | null>(null);
@@ -49,9 +61,9 @@ export function useStats(): UseStatsResult {
       return;
     }
 
-    setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt, activeDayKeys));
+    setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt, activeDayKeys, lifetimeCount));
     setIsLoading(false);
-  }, [dhikrItems, freeModeCount, freeModeActivityAt, activeDayKeys, isGuest, isPremium]);
+  }, [dhikrItems, freeModeCount, freeModeActivityAt, activeDayKeys, lifetimeCount, isGuest, isPremium]);
 
   const isAuthedFetch = !isGuest && authStatus === "authenticated";
   // `isPremium` sorgu anahtarında YOK ama queryFn çağrısı isPremium
@@ -59,13 +71,7 @@ export function useStats(): UseStatsResult {
   // açılsın) — bu yüzden isPremium'u da bağımlı tutan bir efektle
   // invalidate ediyoruz.
   const statsQuery = useQuery(
-    {
-      queryKey: qk.stats(userId, STATS_SUMMARY_PERIOD),
-      queryFn: getStatsSummary,
-      enabled: isAuthedFetch,
-      staleTime: 0,
-      retry: false
-    },
+    { ...statsSummaryQueryOptions(userId), enabled: isAuthedFetch },
     queryClient
   );
 
@@ -75,14 +81,14 @@ export function useStats(): UseStatsResult {
       return;
     }
     isPremiumMountedRef.current = isPremium;
-    void queryClient.invalidateQueries({ queryKey: qk.stats(userId, STATS_SUMMARY_PERIOD) });
+    void queryClient.invalidateQueries({ queryKey: statsSummaryQueryOptions(userId).queryKey });
   }, [isPremium, isAuthedFetch, userId]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const refresh = useCallback(async () => {
     if (isGuest) {
-      setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt, activeDayKeys));
+      setData(buildLocalStatsSummary(dhikrItems, freeModeCount, isPremium, freeModeActivityAt, activeDayKeys, lifetimeCount));
       return;
     }
 
@@ -95,7 +101,7 @@ export function useStats(): UseStatsResult {
     } finally {
       setIsRefreshing(false);
     }
-  }, [authStatus, dhikrItems, freeModeCount, freeModeActivityAt, activeDayKeys, isGuest, isPremium, statsQuery]);
+  }, [authStatus, dhikrItems, freeModeCount, freeModeActivityAt, activeDayKeys, lifetimeCount, isGuest, isPremium, statsQuery]);
 
   const resolvedData = isGuest ? data : isAuthedFetch ? (statsQuery.data ?? null) : null;
   const resolvedIsLoading = isGuest ? isLoading : isAuthedFetch ? statsQuery.isLoading : false;

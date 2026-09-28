@@ -1,28 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "expo-router";
-import type { StatsBadge } from "@zikirmatik/shared";
+import { useQuery } from "@tanstack/react-query";
+import type { BadgeKey, StatsBadge } from "@zikirmatik/shared";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useReviewStore } from "../../../store/review-store";
 import { useBadgeCelebrationStore } from "../../../store/badge-celebration-store";
+import { queryClient } from "../../../lib/query-client";
 import { computeLocalBadges, deriveLocalActivityStats, withServerStreak } from "../services/local-badges";
 import {
   BADGE_CELEBRATION_IDLE_MS,
   canShowBadgeCelebration,
   enqueueBadges,
   evaluateBadgeCelebration,
-  isBadgeDataSettled,
   resolveBadgeDataOwner,
+  resolveCelebrationBadges,
   shouldSkipReviewForDay7Offer
 } from "../services/badge-celebration";
 import { maybeRequestStoreReview } from "../../review/request-store-review";
 import { useStreak } from "./use-streak";
+import { statsSummaryQueryOptions } from "./use-stats";
 
-// Badge key for the 7-day streak (see local-badges.ts): dismissing its
+// Badge key for the 7-day streak (shared BADGE_DEFINITIONS): dismissing its
 // celebration is the "success UI already shown" moment for the store review
 // prompt.
-const STREAK_7_BADGE_KEY = "steady-streak";
+const STREAK_7_BADGE_KEY: BadgeKey = "streak-7";
 // Lets the badge modal's fade-out finish before the system review sheet.
 const REVIEW_AFTER_DISMISS_MS = 400;
 
@@ -36,7 +39,8 @@ export function useBadgeCelebration() {
   const freeModeCount = useDhikrStore((state) => state.freeModeCount);
   const freeModeActivityAt = useDhikrStore((state) => state.freeModeActivityAt);
   const activeDayKeys = useDhikrStore((state) => state.activeDayKeys);
-  const isDhikrHydratedFromBackend = useDhikrStore((state) => state.isHydratedFromBackend);
+  const lifetimeCount = useDhikrStore((state) => state.lifetimeCount);
+  const lastSavedBackendLog = useDhikrStore((state) => state.lastSavedBackendLog);
   const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
   const isAuthHydrated = useAuthStore((state) => state.hasHydrated);
@@ -80,30 +84,46 @@ export function useBadgeCelebration() {
     };
   }, []);
 
-  const stats = useMemo(() => {
-    const local = deriveLocalActivityStats({ items, freeModeCount, freeModeActivityAt, activeDayKeys });
-    return withServerStreak(local, serverStreak);
-  }, [items, freeModeCount, freeModeActivityAt, activeDayKeys, serverStreak]);
-  const badges = useMemo(() => computeLocalBadges(stats), [stats]);
+  const localStats = useMemo(
+    () => deriveLocalActivityStats({ items, freeModeCount, freeModeActivityAt, activeDayKeys }),
+    [items, freeModeCount, freeModeActivityAt, activeDayKeys]
+  );
+  // Only the day-7 review skip uses this — same streak the offer hook checks.
+  const stats = useMemo(() => withServerStreak(localStats, serverStreak), [localStats, serverStreak]);
+  const localBadges = useMemo(
+    () => computeLocalBadges({ lifetimeCount, longestStreak: localStats.longestStreak }),
+    [lifetimeCount, localStats.longestStreak]
+  );
+
+  // Members: the stats screen's own query (same key/options), so both show
+  // one array. Refetched after every saved log, like useStreak.
+  const isAuthenticated = authStatus === "authenticated" && Boolean(sessionUserId);
+  const summaryQuery = useQuery({ ...statsSummaryQueryOptions(sessionUserId), enabled: isAuthenticated }, queryClient);
+  useEffect(() => {
+    if (!isAuthenticated || !lastSavedBackendLog || lastSavedBackendLog.userId !== sessionUserId) {
+      return;
+    }
+    void queryClient.invalidateQueries({ queryKey: statsSummaryQueryOptions(sessionUserId).queryKey });
+  }, [isAuthenticated, lastSavedBackendLog, sessionUserId]);
 
   const isPremium = useProfileStore((state) => state.isPremium);
   const day7OfferShownAt = useReviewStore((state) => state.day7OfferShownAt);
 
   const owner = resolveBadgeDataOwner(authStatus, sessionUserId);
-  const isDataSettled = isBadgeDataSettled({
+  const badges = resolveCelebrationBadges({
     storesHydrated: hasHydrated && isAuthHydrated && isDhikrRestored,
     authStatus,
-    isDhikrHydratedFromBackend,
-    hasServerStreak: serverStreak !== null
+    localBadges,
+    serverBadges: summaryQuery.data?.badges
   });
 
   useEffect(() => {
     const evaluation = evaluateBadgeCelebration({
-      badges,
+      badges: badges ?? [],
       celebratedBadgeKeys,
       owner,
       seededForOwner,
-      isDataSettled
+      isDataSettled: badges !== null
     });
 
     if (evaluation.action === "wait") {
@@ -127,7 +147,7 @@ export function useBadgeCelebration() {
     // Marked celebrated only once actually shown (effect below), so an app
     // kill before it's seen re-queues it; enqueueBadges dedupes meanwhile.
     setQueue((prev) => enqueueBadges(prev, evaluation.badges));
-  }, [badges, owner, seededForOwner, isDataSettled, celebratedBadgeKeys, markCelebrated, markSeeded]);
+  }, [badges, owner, seededForOwner, celebratedBadgeKeys, markCelebrated, markSeeded]);
 
   const current =
     queue[0] && canShowBadgeCelebration({ isCounterIdle, pathname, isHomeOverlayOpen }) ? queue[0] : null;

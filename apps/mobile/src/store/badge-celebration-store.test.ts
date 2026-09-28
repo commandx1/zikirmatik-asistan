@@ -49,4 +49,16 @@ describe("badge-celebration-store", () => {
 
     expect(useBadgeCelebrationStore.getState().seededForOwner).toBe("user-a");
   });
+
+  it("v0 -> v1 forgets the seed so the new badge list re-seeds silently (no upgrade popups)", () => {
+    const options = useBadgeCelebrationStore.persist.getOptions() as {
+      version?: number;
+      migrate?: (state: unknown, version: number) => { seededForOwner: string | null; celebratedBadgeKeys: string[] };
+    };
+    const migrated = options.migrate!({ seededForOwner: "user-a", celebratedBadgeKeys: ["steady-streak"] }, 0);
+
+    expect(options.version).toBe(1);
+    expect(migrated.seededForOwner).toBeNull();
+    expect(migrated.celebratedBadgeKeys).toEqual(["steady-streak"]);
+  });
 });

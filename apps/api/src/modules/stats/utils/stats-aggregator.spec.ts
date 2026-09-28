@@ -41,6 +41,7 @@ describe('computeBadges', () => {
   it('marks achieved badges and clamps progress', () => {
     const badges = computeBadges(12000, 8);
     const byKey = Object.fromEntries(badges.map((b) => [b.key, b]));
+    expect(byKey['count-100'].achieved).toBe(true);
     expect(byKey['count-1k'].achieved).toBe(true);
     expect(byKey['count-1k'].progress).toBe(1);
     expect(byKey['count-10k'].achieved).toBe(true);
