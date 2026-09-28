@@ -15,6 +15,10 @@ export function LanguageSwitcher() {
   const router = useRouter();
   const t = useTranslations("footer");
 
+  if (routing.locales.length < 2) {
+    return null;
+  }
+
   return (
     <div
       className="inline-flex items-center gap-1 rounded-full border border-white/20 p-1"

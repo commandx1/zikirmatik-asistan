@@ -1,8 +1,8 @@
 {
   "meta": {
     "siteName": "Zikirmatik Asistan",
-    "titleDefault": "Zikirmatik Asistan — Zikirlerinizin Sadık Yardımcısı",
-    "description": "Zikirmatik Asistan; sakin, dikkat dağıtmayan bir sayaç ve akıllı hatırlatıcılarla zikirlerinizi takip etmenize ve kalıcı alışkanlıklar oluşturmanıza yardımcı olur.",
+    "titleDefault": "Zikirmatik Asistan — Zikir Sayacı, Vird ve Zikir Halkası",
+    "description": "Reklamsız zikir sayacı, günlük vird programı, sevdiklerinizle zikir halkası ve kaynak referanslı AI rehber — hepsi Zikirmatik Asistan'da.",
     "titlePrivacy": "Gizlilik Politikası — Zikirmatik Asistan",
     "titleTerms": "Kullanım Şartları — Zikirmatik Asistan",
     "titleRefund": "İade Politikası — Zikirmatik Asistan",
@@ -12,6 +12,8 @@
   "nav": {
     "features": "Özellikler",
     "aiGuide": "AI Rehber",
+    "vird": "Vird",
+    "halka": "Zikir Halkası",
     "howItWorks": "Nasıl Çalışır",
     "screenshots": "Ekran Görüntüleri",
     "premium": "Premium",
@@ -21,65 +23,89 @@
   },
   "hero": {
     "eyebrow": "Zikirmatik Asistan",
-    "title": "Günlük zikirleriniz için sakin ve odaklı bir yardımcı",
-    "subtitle": "Şık ve sade bir sayaçla zikirlerinizi sayın, nazik hatırlatıcılarla düzenli bir alışkanlık oluşturun; isterseniz AI Rehber'e danışarak o anınıza uygun zikri, fazilet hadisi ve açık amacıyla birlikte keşfedin — hepsi tek, dikkat dağıtmayan bir uygulamada.",
+    "title": "Zikir sayacı, günlük vird ve zikir halkası tek uygulamada",
+    "subtitle": "Zikirlerinizi sayın, günlük virdinizi oluşturun ve sevdiklerinizle zikir halkasında buluşun; AI Rehber'e sorduğunuzda her öneri kaynak ve sayfa referanslı gelir.",
     "ctaPrimary": "Google Play'den İndirin",
     "ctaSecondary": "Nasıl çalıştığını görün",
-    "badge": "Android · Ücretsiz başlayın"
+    "badge": "Android · Reklamsız · Ücretsiz başlayın"
   },
   "features": {
     "title": "Düzenli bir zikir pratiği için ihtiyacınız olan her şey",
     "subtitle": "Odağınızı uygulamada değil, zikirde tutacak şekilde özenle tasarlandı.",
     "items": [
       {
+        "title": "Zikir Sayacı",
+        "description": "Parmak izi simgesine ya da \"her yere dokun\" moduyla ekranın herhangi bir yerine dokunarak sayın; titreşim, hedef belirleme ve serbest mod ücretsiz, tesbih görünümü ve tık sesi Premium'da."
+      },
+      {
+        "title": "Günlük Vird",
+        "description": "Kendi zikir programınızı vakit dilimlerine göre kurun ya da hazır şablon ve AI ile oluşturun; rehberli seansta sırayı siz belirlersiniz, sayıyı uygulama tutar."
+      },
+      {
+        "title": "Zikir Halkası",
+        "description": "Sevdiklerinizle davet kodu veya linkle bir halka kurun; herkesin çektiği zikir tek toplamda birleşir ve hedefe ulaşınca herkese bildirim gider."
+      },
+      {
         "title": "AI Rehber",
-        "description": "Anınıza ve ruh halinize uygun zikri, fazilet hadisi ve açık kullanım amacıyla birlikte öneren kişisel yapay zekâ rehberiniz."
+        "description": "Niyetinize göre zikir önerisi alın, kaynak ve sayfa referanslı sohbet edin; isterseniz AI ile günlük vird programınızı da oluşturun."
       },
       {
-        "title": "Şık Zikir Sayacı",
-        "description": "Titreşimli geri bildirimli, sade ve dokunsal bir sayaç ile ekrana değil zikrinize odaklanın."
+        "title": "Kandil, Özel Günler ve Ramazan Modu",
+        "description": "Kandiller ve dini günler için geri sayım ve bildirim alın; Ramazan'da sahur ve iftar vakitlerine göre özel bir mod sizi karşılar."
       },
       {
-        "title": "Özel Koleksiyonlar",
-        "description": "Kendi zikir setlerinizi ve favori koleksiyonlarınızı oluşturun; en çok çektikleriniz her zaman elinizin altında olsun."
-      },
-      {
-        "title": "Günlük ve Özel Gün Hatırlatıcıları",
-        "description": "Günlük hedefleriniz ve kandil geceleri gibi özel günler için nazik bildirimlerle rutininizi sürdürün."
-      },
-      {
-        "title": "Seri ve İstatistikler",
-        "description": "Serilerinizi, toplamlarınızı ve zaman içindeki ilerlemenizi takip ederek düzeninizin nasıl geliştiğini görün."
-      },
-      {
-        "title": "Kişiselleştirme ve Temalar",
-        "description": "Rutininize uygun görünüm, ses ve hedef sayıları seçin; uygulamayı tamamen kendinize ait hissettirin."
-      },
-      {
-        "title": "Güvenli Bulut Senkronizasyonu (Google ile Giriş)",
-        "description": "Google ile giriş yaparak koleksiyonlarınızı, serilerinizi ve ayarlarınızı güvenle yedekleyin ve cihazlar arasında senkronize edin."
-      }
-    ]
-  },
-  "aiGuide": {
-    "eyebrow": "AI Rehber",
-    "title": "Anınıza uygun zikri, kaynağıyla birlikte öneren akıllı rehberiniz",
-    "subtitle": "AI Rehber; ihtiyacınıza, ruh halinize ve günün vaktine göre size uygun zikri güvenilir İslami kaynaklardan seçerek önerir.",
-    "pillars": [
-      {
-        "title": "Fazilet hadisi + açık amaç",
-        "description": "Önerilen her zikir; faziletine dair bir hadis ve o zikri neden, ne zaman okuyabileceğinize dair açık bir açıklamayla birlikte gelir."
-      },
-      {
-        "title": "Güvenilir İslami kaynaklar",
-        "description": "Öneriler; Hısnu'l-Müslim ve İmam Nevevî'nin El-Ezkar'ı gibi klasik kaynaklara dayanan özenle derlenmiş bir havuzdan seçilir."
+        "title": "Seri, Rozet ve İstatistik",
+        "description": "Serinizi takip edin, rozet kazanın ve ana ekran widget'ıyla ilerlemenizi görün; Premium'da ısı haritası ve dönem karşılaştırma gibi detaylı istatistikler açılır."
       },
       {
         "title": "Kişiselleştirme",
-        "description": "Öneriler; o anki ihtiyacınıza, ruh halinize ve günün vaktine göre size özel şekilde uyarlanır."
+        "description": "22 temadan 8'i ücretsiz kullanılır; yazı tipini, haptik deseni ve uygulama dilini seçin, Premium'da tesbih görünümü ve tık sesinin kilidini açın."
+      },
+      {
+        "title": "Bulut Senkron (Google veya Apple)",
+        "description": "Hesap oluşturmadan misafir olarak kullanabilirsiniz; isterseniz Google veya Apple ile giriş yapıp verilerinizi cihazlar arasında senkronize edin."
+      }
+    ]
+  },
+  "vird": {
+    "eyebrow": "Günlük Vird",
+    "title": "Kendi zikir programınızı kurun",
+    "subtitle": "Vakit dilimlerine göre kendi programınızı oluşturun, hazır şablon veya AI'dan yararlanın; rehberli seansta ilerlemeyi uygulama takip eder.",
+    "pillars": [
+      {
+        "title": "Kendi programınız",
+        "description": "Vakit dilimlerine göre istediğiniz zikirleri ekleyip günlük virdinizi oluşturun."
+      },
+      {
+        "title": "Hazır şablon ya da AI ile",
+        "description": "Hazır şablonlardan seçin ya da AI'a 3 kredi karşılığında programınızı oluşturtun."
+      },
+      {
+        "title": "Rehberli seans",
+        "description": "Seansta sıradaki zikre siz geçersiniz, sayıyı uygulama tutar."
       }
     ],
-    "note": "Her gün 1 ücretsiz krediniz yenilenir (ilk gün 3 kredi karşılama bonusuyla) — ek krediler için Premium bölümüne bakın."
+    "note": "Ücretsiz sürümde 1 aktif program ve manuel programda en fazla 3 farklı zikir yer alır; Premium'da 10 aktif program, sınırsız zikir, şablonlar, namaz vaktine bağlı hatırlatmalar ve AI ile program açılır."
+  },
+  "aiGuide": {
+    "eyebrow": "AI Rehber",
+    "title": "Niyetinize uygun zikri, kaynağıyla birlikte öneren rehberiniz",
+    "subtitle": "AI Rehber; ihtiyacınıza ve ruh halinize göre zikir önerir, sorularınızı kaynak ve sayfa referanslı yanıtlar; fetva vermez, sizi kaynağa yönlendirir.",
+    "pillars": [
+      {
+        "title": "Niyetinize göre öneri",
+        "description": "O anki ihtiyacınıza ve ruh halinize uygun zikri önerir."
+      },
+      {
+        "title": "Kaynaklı sohbet",
+        "description": "Sorularınızı Hısnu'l-Müslim ve İmam Nevevî'nin El-Ezkar'ı gibi kaynaklardan kitap ve sayfa referansıyla yanıtlar."
+      },
+      {
+        "title": "Fetva vermez",
+        "description": "Dini hüküm vermez; sizi ilgili kaynağa yönlendirir."
+      }
+    ],
+    "note": "Ücretsiz sürümde her gün 1 kredi yenilenir (ilk gün 3 kredi karşılama bonusuyla); Premium'da ayda 50 kredi tanımlanır, kullanılmayan krediler sonraki aya devretmez."
   },
   "howItWorks": {
     "title": "Zikirmatik Asistan nasıl çalışır",
@@ -87,35 +113,45 @@
     "steps": [
       {
         "title": "İndirin ve açın",
-        "description": "Zikirmatik Asistan'yı Google Play'den yükleyin ve uygulamayı açın — karmaşık bir kurulum gerekmez."
+        "description": "Zikirmatik Asistan'ı Google Play'den yükleyin; hesap oluşturmadan hemen kullanmaya başlayın."
       },
       {
-        "title": "Zikrinizi seçin",
-        "description": "Hazır zikir ve koleksiyonlardan seçin veya hedef sayısı belirleyerek kendi zikrinizi oluşturun."
+        "title": "Zikrinizi seçin ya da virdinizi kurun",
+        "description": "Kütüphaneden bir zikir seçin veya vakit dilimlerine göre günlük virdinizi oluşturun."
       },
       {
-        "title": "AI Rehber'e danışın",
-        "description": "İsterseniz o anınıza ve ruh halinize uygun bir öneri için AI Rehber'e danışın; önerilen zikri fazilet hadisi ve açık kullanım amacıyla birlikte alın."
+        "title": "Bilinçli sayın",
+        "description": "Parmak izi simgesine ya da ekrana dokunarak sayın, titreşimle geri bildirim alın."
       },
       {
-        "title": "Bilinçli şekilde sayın",
-        "description": "Yumuşak titreşim geri bildirimiyle dokunarak sayın ve nazik hatırlatıcılarla her gün düzenli kalın."
+        "title": "Sevdiklerinizle halka kurun",
+        "description": "Davet kodu veya linkle bir zikir halkası oluşturun, herkesin katkısı tek toplamda birleşsin."
       },
       {
         "title": "İlerlemenizi takip edin",
-        "description": "Serilerinizin ve istatistiklerinizin gelişimini izleyin; her şeyin güvenle senkronize kalması için istediğiniz zaman Google ile giriş yapın."
+        "description": "Rozetlerinizi kazanın, ana ekran widget'ından serinizi görün ve isterseniz verilerinizi senkronize edin."
       }
     ]
   },
   "screenshots": {
     "title": "Uygulamaya yakından bakış",
     "subtitle": "Dikkatinizi zikrinizde tutmak için tasarlanmış sade ve sakin ekranlar.",
+    "items": [
+      "Sade ve odaklı zikir sayacı",
+      "Kendi günlük vird programınız",
+      "Rehberli seansta sırayı siz seçin",
+      "Sevdiklerinizle zikir halkası",
+      "AI Rehber'den zikir önerisi",
+      "Kaynak ve sayfa referanslı sohbet",
+      "Kandil ve özel gün takvimi",
+      "İstatistikler ve rozetler"
+    ],
     "alt": "Zikirmatik Asistan uygulama ekran görüntüsü"
   },
   "premium": {
     "title": "Zikirmatik Asistan Premium",
-    "subtitle": "AI Rehber için aylık 50 kredi, detaylı istatistikler ve tüm temaların kilidini açın. Güncel fiyat için Google Play sayfasına bakın.",
-    "note": "Güncel fiyat bilgisi için lütfen uygulamanın Google Play sayfasını kontrol edin.",
+    "subtitle": "Google Play üzerinden aylık veya yıllık abonelikle; 10 aktif vird programı, 10 aktif zikir halkası, aylık AI Rehber kredisi, detaylı istatistikler ve tüm temaların kilidini açar.",
+    "note": "Premium, aylık veya yıllık abonelik olarak Google Play üzerinden satın alınır; güncel fiyat için uygulamanın Google Play sayfasına bakın.",
     "table": {
       "headers": [
         "Özellik",
@@ -124,40 +160,55 @@
       ],
       "rows": [
         [
-          "Zikir sayacı ve koleksiyonlar",
+          "Zikir sayacı ve 541 zikirlik kütüphane",
           "Dahil",
           "Dahil"
         ],
         [
-          "Günlük ve özel gün hatırlatıcıları",
+          "Kandil, özel gün ve Ramazan bildirimleri",
           "Dahil",
           "Dahil"
         ],
         [
-          "Seri ve istatistikler",
-          "Temel",
-          "Detaylı"
+          "Günlük Vird",
+          "1 aktif program, 3 zikir",
+          "10 program, sınırsız zikir, şablonlar, hatırlatmalar, AI ile program"
         ],
         [
-          "Google ile giriş bulut senkronizasyonu",
-          "Dahil",
-          "Dahil"
+          "Zikir Halkası",
+          "1 aktif halka, 5 üye",
+          "10 aktif halka, 200 üye"
+        ],
+        [
+          "Ana ekran widget'ı",
+          "Seri",
+          "Seri + Vird"
+        ],
+        [
+          "İstatistikler",
+          "Özet, günlük grafik, rozetler",
+          "Isı haritası, dönem karşılaştırma, saat ve kaynak dağılımı"
+        ],
+        [
+          "Temalar ve tesbih modu",
+          "8 tema",
+          "22 tema, tesbih görünümü, tık sesi"
         ],
         [
           "AI Rehber kredisi",
-          "Günde 1 kredi (ilk gün +3 bonus)",
-          "Ayda 50 kredi + 10, 30 veya 75 kredilik paketler"
+          "Günde 1 (ilk gün +3)",
+          "Ayda 50 (devretmez)"
         ],
         [
-          "Temalar",
-          "Sınırlı",
-          "Tüm temalar"
+          "Bulut senkronizasyonu (Google / Apple)",
+          "Dahil",
+          "Dahil"
         ]
       ]
     },
     "credits": {
       "title": "AI Rehber kredi paketleri",
-      "description": "İhtiyacınıza uygun kredi paketini doğrudan uygulama içinden satın alabilirsiniz.",
+      "description": "İhtiyacınıza uygun kredi paketini doğrudan uygulama içinden satın alabilirsiniz. Satın alınan krediler silinmez.",
       "items": [
         "10 kredi",
         "30 kredi",
@@ -172,35 +223,51 @@
     "items": [
       {
         "question": "Zikirmatik Asistan nedir?",
-        "answer": "Zikirmatik Asistan; günlük zikir pratiğinizi takip etmenize, düzenlemenize ve sürdürmenize yardımcı olan bilinçli bir zikir sayacı ve alışkanlık yardımcısıdır."
+        "answer": "Zikirmatik Asistan; zikir sayacı, günlük vird programı, sevdiklerinizle kurabileceğiniz zikir halkası ve kaynak referanslı AI Rehber'i tek bir reklamsız uygulamada bir araya getirir."
       },
       {
-        "question": "Zikirmatik Asistan ücretsiz mi?",
-        "answer": "Evet. Zikir sayacı, 541 zikirlik kütüphanenin tamamı, tüm koleksiyonlar, hatırlatıcılar, seriler ve Google ile giriş senkronizasyonu tamamen ücretsizdir. Premium abonelik; AI Rehber için aylık 50 kredi, detaylı istatistikler ve tüm temaların kilidini açar."
+        "question": "Ücretsiz mi?",
+        "answer": "Zikir sayacı, 541 zikirlik kütüphane, kendi zikrinizi ekleme, kandil ve özel gün bildirimleri, seri/rozet takibi ve 1 aktif vird programı ile 1 aktif zikir halkası ücretsizdir. Premium; daha fazla vird programı ve halka, AI Rehber kredisi, detaylı istatistikler ve ek temaların kilidini açar."
+      },
+      {
+        "question": "Reklam var mı?",
+        "answer": "Hayır, Zikirmatik Asistan'da reklam bulunmaz."
+      },
+      {
+        "question": "Vird programı nedir?",
+        "answer": "Günlük Vird; vakit dilimlerine göre kendi programınızı kurmanızı, hazır şablon ya da AI ile program oluşturmanızı ve rehberli seansta sıradaki zikre kendi hızınızda geçmenizi sağlar; sayıyı uygulama tutar."
+      },
+      {
+        "question": "Zikir Halkası nasıl çalışır?",
+        "answer": "Bir Zikir Halkası oluşturup davet kodu veya linkle sevdiklerinizi davet edersiniz; herkesin çektiği zikir tek ortak toplamda birleşir ve hedefe ulaşıldığında tüm üyelere bildirim gider."
       },
       {
         "question": "AI Rehber nedir?",
-        "answer": "AI Rehber, isteğe bağlı yapay zekâ destekli bir rehberlik özelliğidir. Her gün 1 ücretsiz krediniz yenilenir (ilk gün 3 kredi karşılama bonusuyla); Premium abonelikte ayda 50 kredi kazanırsınız ve dilediğinizde 10, 30 veya 75 kredilik ek paketleri Google Play üzerinden satın alabilirsiniz."
+        "answer": "AI Rehber; niyetinize göre zikir önerir ve sorularınızı kaynak ve sayfa referanslı olarak yanıtlar. Dini hüküm (fetva) vermez, sizi ilgili kaynağa yönlendirir. Ücretsiz sürümde her gün 1 kredi yenilenir, Premium'da ayda 50 kredi tanımlanır."
       },
       {
-        "question": "Uygulamayı kullanmak için hesap gerekli mi?",
-        "answer": "Temel özellikleri kullanmak için hesap gerekmez. Google ile giriş yapmak isteğe bağlıdır ve koleksiyonlarınızı, serilerinizi ve ayarlarınızı cihazlar arasında güvenle yedekleyip senkronize etmenizi sağlar."
+        "question": "Hesap gerekli mi?",
+        "answer": "Hayır, uygulamayı misafir olarak kullanabilirsiniz. İsterseniz Google veya Apple ile giriş yaparak verilerinizi bulutta yedekleyip cihazlar arasında senkronize edebilirsiniz."
       },
       {
-        "question": "Zikirmatik Asistan hangi verileri toplar?",
-        "answer": "Yalnızca uygulamanın özelliklerini sağlamak için gerekli verileri toplarız: zikir koleksiyonlarınız, serileriniz ve giriş yapmayı tercih ederseniz hesap bilgileriniz. Ayrıntılar için Gizlilik Politikamıza bakın."
+        "question": "Aboneliği nasıl iptal ederim?",
+        "answer": "Premium aboneliğinizi Google Play uygulamasındaki \"Abonelikler\" bölümünden iptal edebilirsiniz. İptal sonrasında Premium erişiminiz, ödemesi yapılmış dönemin sonuna kadar devam eder."
       },
       {
-        "question": "Hesabımı ve verilerimi silebilir miyim?",
-        "answer": "Evet. serhatbelen7.developer@gmail.com adresinden bize ulaşarak istediğiniz zaman hesabınızın ve ilişkili verilerinizin silinmesini talep edebilirsiniz."
+        "question": "Hangi veriler toplanıyor?",
+        "answer": "Yalnızca uygulamanın özelliklerini sağlamak için gerekli verileri topluyoruz: zikir ve vird verileriniz, seri ve rozetleriniz, Google veya Apple ile giriş yaparsanız temel hesap bilgileriniz. Ayrıntılar için Gizlilik Politikamıza bakın."
       },
       {
-        "question": "Hatırlatıcılar ve özel gün bildirimleri nasıl çalışır?",
-        "answer": "Zikir hedefleriniz için günlük hatırlatma saatleri belirleyebilirsiniz; uygulama ayrıca kandil geceleri gibi özel günler için de sizi bilgilendirebilir, böylece anlamlı bir günü kaçırmazsınız."
+        "question": "Hesabımı silebilir miyim?",
+        "answer": "Evet. Hesabınızı uygulama içinden \"Hesabı sil\" seçeneğiyle veya serhatbelen7.developer@gmail.com adresine e-posta göndererek silebilirsiniz."
       },
       {
-        "question": "Kredi paketleri için iade politikanız nedir?",
-        "answer": "Kredi paketi satın alımları Google Play üzerinden işlenir ve Google Play'in faturalandırma politikalarına tabidir. İade talebinde nasıl bulunacağınıza dair ayrıntılar için İade Politikası sayfamıza bakın."
+        "question": "Hatırlatıcılar nasıl çalışır?",
+        "answer": "Kandil geceleri, Cuma günleri ve Ramazan'da sahur/iftar vakitleri için bildirim alabilir, günlük vird programınız için de hatırlatma ayarlayabilirsiniz."
+      },
+      {
+        "question": "İade politikası nedir?",
+        "answer": "Abonelik ve kredi paketi satın alımları Google Play üzerinden işlenir; abonelik iptalleri Play'in \"Abonelikler\" bölümünden yapılır ve iadeler Google Play'in abonelik politikasına tabidir. Ayrıntılar için İade Politikası sayfamıza bakın."
       },
       {
         "question": "Destek ekibine nasıl ulaşabilirim?",
@@ -217,7 +284,7 @@
     "mailtoLabel": "Bize e-posta gönderin"
   },
   "footer": {
-    "tagline": "Günlük zikirleriniz için sakin ve odaklı bir yardımcı.",
+    "tagline": "Zikir sayacı, günlük vird ve zikir halkası — tek uygulamada.",
     "product": "Ürün",
     "legal": "Yasal",
     "privacy": "Gizlilik Politikası",
@@ -228,7 +295,7 @@
     "getOnPlay": "Google Play'den İndirin"
   },
   "legal": {
-    "lastUpdated": "Son güncelleme: 22 Temmuz 2026",
+    "lastUpdated": "Son güncelleme: 28 Eylül 2026",
     "backHome": "Ana sayfaya dön"
   },
   "privacy": {
@@ -237,15 +304,15 @@
     "sections": [
       {
         "heading": "1. Topladığımız Bilgiler",
-        "body": "Zikir koleksiyonlarınız, özel hedefleriniz, tercihleriniz gibi doğrudan sağladığınız bilgileri ve Google ile giriş yapmayı tercih ederseniz Google Sign-In tarafından sağlanan temel hesap bilgilerini (ad, e-posta adresi ve profil tanımlayıcısı) toplarız. Ayrıca uygulamanın özelliklerini sunmak için gerekli olan seriler, sayımlar ve uygulama ayarları gibi kullanım bilgilerini, uygulamayı güvenilir tutmak için cihaz türü, işletim sistemi sürümü ve çökme teşhisleri gibi teknik bilgileri de topluyoruz."
+        "body": "Zikir koleksiyonlarınız, vird programlarınız, özel hedefleriniz, tercihleriniz gibi doğrudan sağladığınız bilgileri ve Google veya Apple ile giriş yapmayı tercih ederseniz ilgili sağlayıcı tarafından paylaşılan temel hesap bilgilerini (ad, e-posta adresi ve profil tanımlayıcısı) toplarız. Ayrıca uygulamanın özelliklerini sunmak için gerekli olan seriler, sayımlar ve uygulama ayarları gibi kullanım bilgilerini, uygulamayı güvenilir tutmak için cihaz türü, işletim sistemi sürümü ve çökme teşhisleri gibi teknik bilgileri de topluyoruz."
       },
       {
         "heading": "2. Bilgilerinizi Nasıl Kullanıyoruz",
         "body": "Topladığımız bilgileri uygulamayı işletmek ve geliştirmek, Google ile giriş yaptığınızda koleksiyonlarınızı, serilerinizi ve ayarlarınızı cihazlarınız arasında güvenle yedeklemek ve senkronize etmek, yapılandırdığınız hatırlatıcı ve bildirimleri (günlük hedefler ve özel gün/kandil bildirimleri dahil) göndermek, isteğe bağlı Premium kredi satın alımlarını Google Play üzerinden işlemek ve bizimle iletişime geçtiğinizde müşteri desteği sağlamak için kullanırız."
       },
       {
-        "heading": "3. Google ile Giriş",
-        "body": "Google ile giriş yapmayı tercih ederseniz, hesabınızı oluşturmak, güvence altına almak ve verilerinizi cihazlar arasında senkronize etmek amacıyla Google'dan sınırlı profil bilgisi (ad, e-posta adresi ve profil tanımlayıcısı gibi) alırız. Google şifrenize erişimimiz yoktur ve bu erişimi istediğiniz zaman Google hesap ayarlarınızdan iptal edebilirsiniz."
+        "heading": "3. Google veya Apple ile Giriş",
+        "body": "Google veya Apple ile giriş yapmayı tercih ederseniz, hesabınızı oluşturmak, güvence altına almak ve verilerinizi cihazlar arasında senkronize etmek amacıyla ilgili sağlayıcıdan sınırlı profil bilgisi (ad, e-posta adresi ve profil tanımlayıcısı gibi) alırız. Şifrenize erişimimiz yoktur ve bu erişimi istediğiniz zaman Google veya Apple hesap ayarlarınızdan iptal edebilirsiniz."
       },
       {
         "heading": "4. Veri Depolama ve Güvenlik",
@@ -253,7 +320,7 @@
       },
       {
         "heading": "5. Veri Paylaşımı",
-        "body": "Kişisel bilgilerinizi satmayız. Uygulamayı işletmemize yardımcı olan güvenilir hizmet sağlayıcılarla (bulut barındırma, kimlik doğrulama ve Google Play üzerinden ödeme işleme gibi) yalnızca hizmetlerini yerine getirmeleri için gerekli ölçüde veya yasalarca gerekli kılındığında sınırlı bilgi paylaşabiliriz."
+        "body": "Kişisel bilgilerinizi satmayız. Uygulamayı işletmemize yardımcı olan güvenilir hizmet sağlayıcılarla (bulut barındırma, kimlik doğrulama ve Google Play üzerinden ödeme işleme gibi) yalnızca hizmetlerini yerine getirmeleri için gerekli ölçüde veya yasalarca gerekli kılındığında sınırlı bilgi paylaşabiliriz. Bir Zikir Halkası'na katıldığınızda görünen adınız ve halkaya katkınız, o halkanın diğer üyelerine ve kurucusuna gösterilir."
       },
       {
         "heading": "6. Bildirimler",
@@ -287,15 +354,15 @@
       },
       {
         "heading": "2. Hizmetin Tanımı",
-        "body": "Zikirmatik Asistan; bir zikir sayacı, özel koleksiyonlar, günlük ve özel gün hatırlatıcıları, seri ve istatistikler, isteğe bağlı Google ile giriş bulut senkronizasyonu ve satın alınabilir kredi paketleri kullanan isteğe bağlı bir AI Rehber özelliği sunar."
+        "body": "Zikirmatik Asistan; bir zikir sayacı ve kütüphanesi, günlük vird programı, zikir halkası, AI Rehber ve kaynaklı sohbet, özel gün bildirimleri, istatistik ve rozetler, ana ekran widget'ları, isteğe bağlı Google veya Apple senkronizasyonu ile Premium abonelik ve kredi paketleri sunar."
       },
       {
         "heading": "3. Hesaplar",
-        "body": "Google ile giriş yapmak isteğe bağlıdır. Giriş yapmayı tercih ederseniz, Google hesabınızın gizliliğini korumaktan ve hesabınız üzerinden gerçekleşen tüm etkinliklerden siz sorumlusunuz. İstediğiniz zaman çıkış yapabilir veya erişimi iptal edebilirsiniz."
+        "body": "Google veya Apple ile giriş yapmak isteğe bağlıdır. Giriş yapmayı tercih ederseniz, ilgili hesabınızın gizliliğini korumaktan ve hesabınız üzerinden gerçekleşen tüm etkinliklerden siz sorumlusunuz. İstediğiniz zaman çıkış yapabilir veya erişimi iptal edebilirsiniz."
       },
       {
-        "heading": "4. Premium Krediler ve Satın Alımlar",
-        "body": "Uygulama, AI Rehber özelliği için ücretsiz kullanıcılara günde 1 kredi (ilk gün 3 kredi karşılama bonusuyla), Premium abonelere ise ayda 50 kredi sağlar; ayrıca isteğe bağlı olarak 10, 30 veya 75 kredilik tek seferlik paketler satın alınabilir. Tüm satın alımlar Google Play üzerinden işlenir ve Google Play'in ödeme şartlarına ve politikalarına tabidir. İade talebinde bulunma hakkında ayrıntılar için İade Politikamıza bakın."
+        "heading": "4. Premium Abonelik, Krediler ve Satın Alımlar",
+        "body": "Premium, Google Play üzerinden aylık veya yıllık abonelik olarak satın alınır, otomatik olarak yenilenir ve Google Play uygulamasındaki \"Abonelikler\" bölümünden istediğiniz zaman iptal edilebilir. Uygulama ayrıca AI Rehber özelliği için ücretsiz kullanıcılara günde 1 kredi (ilk gün 3 kredi karşılama bonusuyla), Premium abonelere ise ayda 50 kredi sağlar; ayrıca isteğe bağlı olarak 10, 30 veya 75 kredilik tek seferlik paketler satın alınabilir. Tüm satın alımlar Google Play üzerinden işlenir ve Google Play'in ödeme şartlarına ve politikalarına tabidir. İade talebinde bulunma hakkında ayrıntılar için İade Politikamıza bakın."
       },
       {
         "heading": "5. Kabul Edilebilir Kullanım",
@@ -333,11 +400,11 @@
   },
   "refund": {
     "title": "İade Politikası",
-    "intro": "Bu İade Politikası, Zikirmatik Asistan içinde yapılan isteğe bağlı Premium kredi satın alımları için iade taleplerinin nasıl ele alındığını açıklar.",
+    "intro": "Bu İade Politikası, Zikirmatik Asistan içinde yapılan Premium abonelik ve isteğe bağlı kredi satın alımları için iade taleplerinin nasıl ele alındığını açıklar.",
     "sections": [
       {
         "heading": "1. Google Play Üzerinden Satın Alımlar",
-        "body": "Tüm Premium kredi paketi satın alımları (10, 30 veya 75 kredi) Google Play üzerinden işlenir ve faturalandırılır. Bu nedenle iadeler, aşağıdaki rehberliğe ek olarak Google Play'in kendi iade politikalarına ve zaman çizelgelerine tabidir."
+        "body": "Premium abonelikler ve Premium kredi paketleri (10, 30 veya 75 kredi) dahil tüm satın alımlar Google Play üzerinden işlenir ve faturalandırılır. Abonelik iptalleri Google Play uygulamasındaki \"Abonelikler\" bölümünden yapılır ve iadeler Google Play'in abonelik iade politikasına tabidir."
       },
       {
         "heading": "2. İade Talebinde Nasıl Bulunulur",
@@ -362,11 +429,27 @@
     ]
   },
   "halka": {
-    "title": "Zikir Halkasına Katıl",
-    "subtitle": "Bu davet koduyla arkadaşlarınızla birlikte zikir çekmeye başlayın.",
+    "eyebrow": "Zikir Halkası",
+    "title": "Sevdiklerinizle birlikte zikir, tek toplamda",
+    "subtitle": "Davet koduyla katılın; herkesin çektiği zikir tek toplamda birleşir.",
     "codeLabel": "Halka Kodu",
     "openApp": "Uygulamada aç",
     "getOnPlay": "Google Play'den İndirin",
-    "hint": "Uygulamada \"Kodla katıl\" bölümüne kodu yapıştır."
+    "hint": "Uygulamada \"Kodla katıl\" bölümüne kodu yapıştır.",
+    "pillars": [
+      {
+        "title": "Tek toplam",
+        "description": "Halkadaki herkesin çektiği zikir tek ortak toplamda birleşir."
+      },
+      {
+        "title": "Kod ya da linkle davet",
+        "description": "Sevdiklerinizi davet kodu veya linkle halkaya davet edin."
+      },
+      {
+        "title": "Hedefe birlikte ulaşın",
+        "description": "Hedefe ulaşıldığında tüm üyelere bildirim gider."
+      }
+    ],
+    "note": "Ücretsiz sürümde aynı anda 1 aktif halka ve halka başına 5 üye yer alır; Premium'da 10 aktif halka ve halka başına 200 üyeye çıkar. Bir halkaya katılmak herkes için ücretsizdir."
   }
 }

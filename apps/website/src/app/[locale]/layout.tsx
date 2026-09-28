@@ -36,26 +36,22 @@ export async function generateMetadata({
     },
     description: t("description"),
     alternates: {
-      canonical: locale === routing.defaultLocale ? "/" : `/${locale}`,
-      languages: {
-        en: "/",
-        tr: "/tr"
-      }
+      canonical: locale === routing.defaultLocale ? "/" : `/${locale}`
     },
     openGraph: {
       title: t("titleDefault"),
       description: t("description"),
       url: locale === routing.defaultLocale ? "/" : `/${locale}`,
       siteName: t("siteName"),
-      images: ["/logo.png"],
+      images: ["/og.png"],
       locale: locale === "tr" ? "tr_TR" : "en_US",
       type: "website"
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: t("titleDefault"),
       description: t("description"),
-      images: ["/logo.png"]
+      images: ["/og.png"]
     }
   };
 }

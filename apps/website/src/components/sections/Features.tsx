@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 
-const ICONS = ["◎", "✦", "🔔", "📈", "🎨", "☁"];
+const ICONS = ["◎", "📅", "👥", "🧭", "🌙", "📈", "🎨", "☁"];
 
 export function Features() {
   const t = useTranslations("features");

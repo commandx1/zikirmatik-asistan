@@ -1,10 +1,9 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { SCREENSHOT_COUNT } from "../../lib/constants";
 
 export function Screenshots() {
   const t = useTranslations("screenshots");
-  const items = Array.from({ length: SCREENSHOT_COUNT }, (_, i) => i + 1);
+  const captions = t.raw("items") as string[];
 
   return (
     <section id="screenshots" className="bg-white py-20 sm:py-28">
@@ -17,20 +16,26 @@ export function Screenshots() {
         </div>
 
         <div className="mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {items.map((n) => (
-            <div
-              key={n}
-              className="w-56 shrink-0 snap-center overflow-hidden rounded-3xl border border-ink/10 bg-white shadow-sm sm:w-64"
-            >
-              <Image
-                src={`/screenshots/${n}.png`}
-                alt={`${t("alt")} ${n}`}
-                width={520}
-                height={1120}
-                className="h-auto w-full"
-              />
-            </div>
-          ))}
+          {captions.map((caption, index) => {
+            const n = index + 1;
+            return (
+              <div
+                key={n}
+                className="w-56 shrink-0 snap-center overflow-hidden rounded-3xl border border-ink/10 bg-white shadow-sm sm:w-64"
+              >
+                <Image
+                  src={`/screenshots/${n}.png`}
+                  alt={`${t("alt")} ${n}`}
+                  width={520}
+                  height={1120}
+                  className="h-auto w-full"
+                />
+                <p className="px-4 py-3 text-center text-sm font-medium text-ink">
+                  {caption}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
