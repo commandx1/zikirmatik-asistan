@@ -59,6 +59,20 @@ module.exports = {
         '-Pandroid.injected.signing.store.file=$PWD/app/debug.keystore -Pandroid.injected.signing.store.password=android ' +
         '-Pandroid.injected.signing.key.alias=androiddebugkey -Pandroid.injected.signing.key.password=android\'',
     },
+    // AI Rehber promo kaydı (Android): PROD API + gerçek Google girişi (Android
+    // OAuth istemcisi .env'den). Mock auth KAPALI; debug keystore ile imzalanır —
+    // Google Console'da debug SHA-1 kayıtlı değilse giriş DEVELOPER_ERROR verir.
+    'android.prod': {
+      type: 'android.apk',
+      binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
+      testBinaryPath: 'android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk',
+      build:
+        'EXPO_PUBLIC_E2E_MOCK_AUTH= EXPO_PUBLIC_API_BASE_URL=https://zikirmatik-asistan.onrender.com EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID= ' +
+        'bash -c \'cd android && rm -rf app/build/generated/assets/createBundleReleaseJsAndAssets && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release -PdetoxE2E ' +
+        '-PreactNativeArchitectures=arm64-v8a -Pandroid.enableMinifyInReleaseBuilds=false -Pandroid.enableShrinkResourcesInReleaseBuilds=false ' +
+        '-Pandroid.injected.signing.store.file=$PWD/app/debug.keystore -Pandroid.injected.signing.store.password=android ' +
+        '-Pandroid.injected.signing.key.alias=androiddebugkey -Pandroid.injected.signing.key.password=android\'',
+    },
   },
   devices: {
     simulator: { type: 'ios.simulator', device: { type: 'iPhone 17' } },
@@ -69,5 +83,6 @@ module.exports = {
     'ios.sim.record': { device: 'simulator', app: 'ios.record' },
     'ios.sim.prod': { device: 'simulator', app: 'ios.prod' },
     'android.emu.release': { device: 'emulator', app: 'android.release' },
+    'android.emu.prod': { device: 'emulator', app: 'android.prod' },
   },
 };
