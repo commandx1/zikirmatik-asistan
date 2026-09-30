@@ -6,13 +6,38 @@ test("home page renders hero in Turkish at the root", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "tr");
 });
 
-test("legacy /tr and /en prefixes redirect permanently to the root", async ({ request }) => {
-  for (const path of ["/tr", "/en", "/tr/privacy", "/en/privacy", "/tr/halka/ABCD2345"]) {
+test("English locale is served at /en with lang=en", async ({ page }) => {
+  for (const path of ["/en", "/en/privacy", "/en/delete-account"]) {
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(200);
+    await expect(page.locator("html"), path).toHaveAttribute("lang", "en");
+  }
+});
+
+test("English footer links to the delete-account page", async ({ page }) => {
+  await page.goto("/en");
+  await expect(page.locator("footer a[href='/en/delete-account']")).toHaveCount(1);
+});
+
+test("delete-account page returns 200 in Turkish at the root", async ({ page }) => {
+  const response = await page.goto("/delete-account");
+  expect(response?.status()).toBe(200);
+  await expect(page.locator("html")).toHaveAttribute("lang", "tr");
+});
+
+test("legacy /tr prefix redirects permanently to the root", async ({ request }) => {
+  for (const path of ["/tr", "/tr/privacy", "/tr/halka/ABCD2345"]) {
     const response = await request.get(path, { maxRedirects: 0 });
     expect(response.status(), path).toBe(308);
-    const location = response.headers()["location"] ?? "";
-    expect(location, path).toBe(path.replace(/^\/(tr|en)/, "") || "/");
+    expect(response.headers()["location"] ?? "", path).toBe(path.replace(/^\/tr/, "") || "/");
   }
+});
+
+test("English halka invite page renders", async ({ page }) => {
+  const response = await page.goto("/en/halka/abcdefgh");
+  expect(response?.status()).toBe(200);
+  await expect(page.getByText("ABCDEFGH")).toBeVisible();
+  await expect(page.getByText("Circle Code")).toBeVisible();
 });
 
 test("legal pages return 200 with a populated h1", async ({ page }) => {

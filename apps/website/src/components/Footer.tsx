@@ -59,6 +59,11 @@ export function Footer() {
                   {t("refund")}
                 </Link>
               </li>
+              <li>
+                <Link href="/delete-account" className="hover:text-white">
+                  {t("deleteAccount")}
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

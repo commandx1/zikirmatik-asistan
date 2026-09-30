@@ -7,7 +7,8 @@
     "titleTerms": "Kullanım Şartları — Zikirmatik Asistan",
     "titleRefund": "İade Politikası — Zikirmatik Asistan",
     "halkaTitle": "Zikir Halkasına Katıl — Zikirmatik Asistan",
-    "halkaDescription": "Bu davet koduyla Zikirmatik Asistan uygulamasında bir zikir halkasına katılın."
+    "halkaDescription": "Bu davet koduyla Zikirmatik Asistan uygulamasında bir zikir halkasına katılın.",
+    "titleDelete": "Hesabı Sil — Zikirmatik Asistan"
   },
   "nav": {
     "features": "Özellikler",
@@ -290,6 +291,7 @@
     "privacy": "Gizlilik Politikası",
     "terms": "Kullanım Şartları",
     "refund": "İade Politikası",
+    "deleteAccount": "Hesap Silme",
     "language": "Dil",
     "rights": "Tüm hakları saklıdır.",
     "getOnPlay": "Google Play'den İndirin"
@@ -451,5 +453,35 @@
       }
     ],
     "note": "Ücretsiz sürümde aynı anda 1 aktif halka ve halka başına 5 üye yer alır; Premium'da 10 aktif halka ve halka başına 200 üyeye çıkar. Bir halkaya katılmak herkes için ücretsizdir."
+  },
+  "deleteAccount": {
+    "title": "Hesabını sil",
+    "intro": "Zikirmatik Asistan hesabını ve hesabına bağlı verileri istediğin zaman silebilirsin. Silme kalıcıdır ve geri alınamaz.",
+    "sections": [
+      {
+        "heading": "Seçenek 1: Uygulama içinden sil",
+        "body": "1. Uygulamayı aç ve Profil'e git. 2. \"Hesabı sil\"e dokun. 3. Sorulduğunda onayla. Hesabın ve aşağıda listelenen veriler hemen silinir."
+      },
+      {
+        "heading": "Seçenek 2: E-posta ile silme talebi",
+        "body": "Hesabın sana ait olduğunu doğrulayabilmemiz için, giriş yaptığın (Google veya Apple) e-posta adresinden {email} adresine \"Hesap silme\" konulu bir e-posta gönder. Talepleri 30 gün içinde işleme alırız."
+      },
+      {
+        "heading": "Neler silinir",
+        "body": "Hesabın ve giriş kimliğin; kendi eklediğin zikirler ve koleksiyonlar; zikir kayıtların, serin ve istatistiklerin; vird programların ve ilerlemen; AI Rehber önerilerin, sohbet geçmişin ve kredi bakiyen; bizde tutulan abonelik kayıtların; kayıtlı cihazların ve bildirim jetonların; zikir halkalarındaki üyeliğin. Not: Bir halkanın ortak toplamı tek bir kişiye bağlı değildir; sen halkadan çıkarıldıktan sonra da diğer üyeler için görünür kalır."
+      },
+      {
+        "heading": "Neler saklanır",
+        "body": "Satın alma ve fatura kayıtları Google Play tarafından Google'ın kendi politikalarına göre tutulur; bunlar bizim kontrolümüzde değildir. Seni tanımlayamayan anonim teknik loglar ve çökme kayıtları sınırlı bir süre saklanabilir. Yasal olarak saklamak zorunda olduğumuz veriler yalnızca yasanın gerektirdiği süre boyunca tutulur."
+      },
+      {
+        "heading": "Abonelikler",
+        "body": "Hesabını silmek aktif bir Google Play aboneliğini iptal etmez. Yeni ücret oluşmaması için önce Google Play uygulamasındaki \"Abonelikler\" bölümünden aboneliği iptal et."
+      },
+      {
+        "heading": "Cihazındaki veriler",
+        "body": "Yalnız cihazında tutulan sayımlar ve ayarlar, uygulamayı kaldırdığında silinir."
+      }
+    ]
   }
 }

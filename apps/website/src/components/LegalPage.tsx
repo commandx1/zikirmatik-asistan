@@ -1,9 +1,10 @@
 import { useTranslations } from "next-intl";
 import { Link } from "../i18n/navigation";
+import { CONTACT_EMAIL } from "../lib/constants";
 
 type LegalSection = { heading: string; body: string };
 
-export function LegalPage({ namespace }: { namespace: "privacy" | "terms" | "refund" }) {
+export function LegalPage({ namespace }: { namespace: "privacy" | "terms" | "refund" | "deleteAccount" }) {
   const t = useTranslations(namespace);
   const legal = useTranslations("legal");
   const sections = t.raw("sections") as LegalSection[];
@@ -31,7 +32,7 @@ export function LegalPage({ namespace }: { namespace: "privacy" | "terms" | "ref
         {sections.map((section) => (
           <section key={section.heading}>
             <h2>{section.heading}</h2>
-            <p>{section.body}</p>
+            <p>{section.body.replace("{email}", CONTACT_EMAIL)}</p>
           </section>
         ))}
       </div>

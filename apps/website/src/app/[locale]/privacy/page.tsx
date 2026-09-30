@@ -22,8 +22,8 @@ export async function generateMetadata({
     alternates: {
       canonical: locale === routing.defaultLocale ? "/privacy" : `/${locale}/privacy`,
       languages: {
-        en: "/privacy",
-        tr: "/tr/privacy"
+        tr: "/privacy",
+        en: "/en/privacy"
       }
     }
   };

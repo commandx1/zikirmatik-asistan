@@ -1,17 +1,20 @@
 {
   "meta": {
     "siteName": "Zikirmatik Asistan",
-    "titleDefault": "Zikirmatik Asistan — Your Mindful Dhikr Companion",
-    "description": "Zikirmatik Asistan helps you track dhikr, build lasting habits, and stay connected to your daily worship with a calm, distraction-free counter and smart reminders.",
+    "titleDefault": "Zikirmatik Asistan — Dhikr Counter, Daily Vird and Dhikr Circle",
+    "description": "An ad-free dhikr counter, a daily vird program, a dhikr circle with your loved ones and a source-referenced AI guide — all in Zikirmatik Asistan.",
     "titlePrivacy": "Privacy Policy — Zikirmatik Asistan",
     "titleTerms": "Terms of Service — Zikirmatik Asistan",
     "titleRefund": "Refund Policy — Zikirmatik Asistan",
     "halkaTitle": "Join a Dhikr Circle — Zikirmatik Asistan",
-    "halkaDescription": "Join a dhikr circle in Zikirmatik Asistan with this invite code."
+    "halkaDescription": "Join a dhikr circle in Zikirmatik Asistan with this invite code.",
+    "titleDelete": "Delete Account — Zikirmatik Asistan"
   },
   "nav": {
     "features": "Features",
     "aiGuide": "AI Guide",
+    "vird": "Vird",
+    "halka": "Dhikr Circle",
     "howItWorks": "How It Works",
     "screenshots": "Screenshots",
     "premium": "Premium",
@@ -21,101 +24,135 @@
   },
   "hero": {
     "eyebrow": "Zikirmatik Asistan",
-    "title": "A calm, focused companion for your daily dhikr",
-    "subtitle": "Count your dhikr with a beautifully simple counter, build consistent habits with gentle reminders, and, whenever you like, ask AI Guide for a dhikr suited to your moment, complete with its virtue and purpose — all in one distraction-free app.",
+    "title": "A dhikr counter, daily vird and dhikr circle in one app",
+    "subtitle": "Count your dhikr, build your daily vird and gather with your loved ones in a dhikr circle; whenever you ask AI Guide, every suggestion comes with a source and page reference.",
     "ctaPrimary": "Get it on Google Play",
     "ctaSecondary": "See how it works",
-    "badge": "Android · Free to start"
+    "badge": "Android · Ad-free · Free to start"
   },
   "features": {
     "title": "Everything you need for a consistent dhikr practice",
-    "subtitle": "Thoughtfully designed tools that keep your focus on remembrance, not on the app itself.",
+    "subtitle": "Carefully designed to keep your focus on the dhikr, not on the app.",
     "items": [
       {
+        "title": "Dhikr Counter",
+        "description": "Count with the fingerprint icon or in \"tap anywhere\" mode; vibration, targets and free mode are free, while the tasbih view and click sound are in Premium."
+      },
+      {
+        "title": "Daily Vird",
+        "description": "Build your own dhikr program by time of day, or create one from a ready-made template or with AI; in a guided session you decide the order and the app keeps the count."
+      },
+      {
+        "title": "Dhikr Circle",
+        "description": "Start a circle with your loved ones using an invite code or link; everyone's dhikr adds up to a single total, and everyone is notified when the goal is reached."
+      },
+      {
         "title": "AI Guide",
-        "description": "Your personal AI companion that recommends a dhikr suited to your moment and mood, complete with its sourced virtue hadith and a clear purpose."
+        "description": "Get a dhikr suggestion based on your intention and chat with source and page references; you can also have AI create your daily vird program."
       },
       {
-        "title": "Elegant Dhikr Counter",
-        "description": "A clean, tactile counter with haptic feedback that lets you focus on your dhikr, not on the screen."
+        "title": "Kandil, Special Days and Ramadan Mode",
+        "description": "Get countdowns and notifications for Kandil nights and religious days; in Ramadan a dedicated mode follows the suhoor and iftar times."
       },
       {
-        "title": "Custom Collections",
-        "description": "Organize your own dhikr sets and favorite collections so the ones you recite most are always within reach."
-      },
-      {
-        "title": "Daily & Special-Day Reminders",
-        "description": "Gentle notifications for daily targets and special occasions such as Kandil nights and blessed days keep your routine on track."
-      },
-      {
-        "title": "Streaks & Statistics",
-        "description": "Track streaks, totals and progress over time so you can see your consistency grow, day after day."
-      },
-      {
-        "title": "Personalization & Themes",
-        "description": "Choose the look, sounds and target counts that fit your routine, and make the app feel like your own."
-      },
-      {
-        "title": "Secure Cloud Sync (Google Sign-In)",
-        "description": "Sign in with Google to keep your collections, streaks and settings safely backed up and in sync across devices."
-      }
-    ]
-  },
-  "aiGuide": {
-    "eyebrow": "AI Guide",
-    "title": "Your intelligent guide to the right dhikr, sourced and explained",
-    "subtitle": "AI Guide recommends a dhikr suited to your need, mood and time of day, drawing on trusted Islamic sources.",
-    "pillars": [
-      {
-        "title": "Virtue hadith + clear purpose",
-        "description": "Every recommended dhikr comes with a hadith on its virtue and a clear explanation of why and when to recite it."
-      },
-      {
-        "title": "Trusted Islamic sources",
-        "description": "Recommendations are drawn from a carefully curated pool grounded in classical sources such as Hisnul Muslim and Imam Nawawi's Al-Adhkar."
+        "title": "Streaks, Badges and Statistics",
+        "description": "Follow your streak, earn badges and see your progress with the home-screen widget; Premium unlocks detailed statistics such as a heat map and period comparison."
       },
       {
         "title": "Personalization",
-        "description": "Suggestions are tailored to your current need, mood and the time of day."
+        "description": "8 of 22 themes are free; choose your font, haptic pattern and app language, and unlock the tasbih view and click sound in Premium."
+      },
+      {
+        "title": "Cloud Sync (Google or Apple)",
+        "description": "You can use the app as a guest without creating an account; if you like, sign in with Google or Apple and sync your data across devices."
+      }
+    ]
+  },
+  "vird": {
+    "eyebrow": "Daily Vird",
+    "title": "Build your own dhikr program",
+    "subtitle": "Create your own program by time of day, using a ready-made template or AI; in a guided session the app tracks your progress.",
+    "pillars": [
+      {
+        "title": "Your own program",
+        "description": "Add the dhikr you want by time of day and build your daily vird."
+      },
+      {
+        "title": "Ready-made template or AI",
+        "description": "Pick from ready-made templates, or have AI create your program for 3 credits."
+      },
+      {
+        "title": "Guided session",
+        "description": "In a session you move on to the next dhikr yourself, and the app keeps the count."
       }
     ],
-    "note": "You get 1 free credit every day (plus a 3-credit welcome bonus on your first day) — see the Premium section for additional credits."
+    "note": "The free version includes 1 active program and up to 3 different dhikr in a manual program; Premium unlocks 10 active programs, unlimited dhikr, templates, prayer-time reminders and AI program creation."
+  },
+  "aiGuide": {
+    "eyebrow": "AI Guide",
+    "title": "A guide that suggests a dhikr for your intention, with its source",
+    "subtitle": "AI Guide suggests a dhikr based on your need and mood and answers your questions with source and page references; it does not issue fatwas, it points you to the source.",
+    "pillars": [
+      {
+        "title": "Suggestions by intention",
+        "description": "Suggests a dhikr that fits your need and mood in the moment."
+      },
+      {
+        "title": "Sourced chat",
+        "description": "Answers your questions from sources such as Hisnul Muslim and Imam Nawawi's Al-Adhkar, with book and page references."
+      },
+      {
+        "title": "No fatwas",
+        "description": "It does not issue religious rulings; it points you to the relevant source."
+      }
+    ],
+    "note": "In the free version 1 credit renews every day (with a 3-credit welcome bonus on the first day); Premium grants 50 credits a month, and unused credits do not roll over to the next month."
   },
   "howItWorks": {
     "title": "How Zikirmatik Asistan works",
-    "subtitle": "Get started in minutes and build a habit that lasts.",
+    "subtitle": "Get started in minutes and build a lasting habit.",
     "steps": [
       {
-        "title": "Download & open",
-        "description": "Install Zikirmatik Asistan from Google Play and open the app — no complicated setup required."
+        "title": "Download and open",
+        "description": "Install Zikirmatik Asistan from Google Play and start using it right away, without creating an account."
       },
       {
-        "title": "Pick your dhikr",
-        "description": "Choose from ready-made dhikr and collections, or create your own with a target count."
-      },
-      {
-        "title": "Ask AI Guide",
-        "description": "Optionally ask AI Guide for a recommendation suited to your moment and mood, and receive the suggested dhikr along with its virtue hadith and clear purpose."
+        "title": "Pick a dhikr or build your vird",
+        "description": "Choose a dhikr from the library or build your daily vird by time of day."
       },
       {
         "title": "Count mindfully",
-        "description": "Tap to count with smooth haptic feedback, and let gentle reminders help you stay consistent every day."
+        "description": "Count with the fingerprint icon or by tapping the screen, and get haptic feedback."
+      },
+      {
+        "title": "Start a circle with loved ones",
+        "description": "Create a dhikr circle with an invite code or link so everyone's contribution adds up to a single total."
       },
       {
         "title": "Track your progress",
-        "description": "Watch your streaks and statistics grow, and sign in with Google any time to keep everything safely synced."
+        "description": "Earn your badges, see your streak on the home-screen widget and sync your data if you like."
       }
     ]
   },
   "screenshots": {
     "title": "A closer look at the app",
     "subtitle": "Simple, calm screens designed to keep your attention on your dhikr.",
+    "items": [
+      "A simple, focused dhikr counter",
+      "Your own daily vird program",
+      "Choose the order in a guided session",
+      "A dhikr circle with your loved ones",
+      "A dhikr suggestion from AI Guide",
+      "Chat with source and page references",
+      "Kandil and special-day calendar",
+      "Statistics and badges"
+    ],
     "alt": "Zikirmatik Asistan app screenshot"
   },
   "premium": {
     "title": "Zikirmatik Asistan Premium",
-    "subtitle": "Unlock 50 monthly AI Rehber credits, detailed statistics and all themes. See the Google Play listing for current pricing.",
-    "note": "For up-to-date pricing, please check the app's Google Play listing.",
+    "subtitle": "With a monthly or annual subscription through Google Play; unlocks 10 active vird programs, 10 active dhikr circles, monthly AI Guide credits, detailed statistics and all themes.",
+    "note": "Premium is purchased through Google Play as a monthly or annual subscription; see the app's Google Play listing for current pricing.",
     "table": {
       "headers": [
         "Feature",
@@ -124,40 +161,55 @@
       ],
       "rows": [
         [
-          "Dhikr counter & collections",
+          "Dhikr counter and a library of 541 dhikr",
           "Included",
           "Included"
         ],
         [
-          "Daily & special-day reminders",
+          "Kandil, special-day and Ramadan notifications",
           "Included",
           "Included"
         ],
         [
-          "Streaks & statistics",
-          "Basic",
-          "Detailed"
+          "Daily Vird",
+          "1 active program, 3 dhikr",
+          "10 programs, unlimited dhikr, templates, reminders, AI program creation"
         ],
         [
-          "Google Sign-In cloud sync",
+          "Dhikr Circle",
+          "1 active circle, 5 members",
+          "10 active circles, 200 members"
+        ],
+        [
+          "Home-screen widget",
+          "Streak",
+          "Streak + Vird"
+        ],
+        [
+          "Statistics",
+          "Summary, daily chart, badges",
+          "Heat map, period comparison, time and source breakdown"
+        ],
+        [
+          "Themes and tasbih mode",
+          "8 themes",
+          "22 themes, tasbih view, click sound"
+        ],
+        [
+          "AI Guide credits",
+          "1 per day (+3 on day 1)",
+          "50 per month (no rollover)"
+        ],
+        [
+          "Cloud sync (Google / Apple)",
           "Included",
           "Included"
-        ],
-        [
-          "AI Rehber credits",
-          "1 credit/day (+3 on day 1)",
-          "50 credits/month + 10, 30 or 75-credit packs"
-        ],
-        [
-          "Themes",
-          "Limited",
-          "All themes"
         ]
       ]
     },
     "credits": {
-      "title": "AI Rehber credit packages",
-      "description": "Purchase the credit package that fits your needs directly from within the app.",
+      "title": "AI Guide credit packs",
+      "description": "You can buy the credit pack that suits you directly from within the app. Purchased credits do not expire.",
       "items": [
         "10 credits",
         "30 credits",
@@ -172,39 +224,55 @@
     "items": [
       {
         "question": "What is Zikirmatik Asistan?",
-        "answer": "Zikirmatik Asistan is a mindful dhikr counter and habit-building companion that helps you track, organize and stay consistent with your daily dhikr practice."
+        "answer": "Zikirmatik Asistan brings a dhikr counter, a daily vird program, a dhikr circle you can start with your loved ones and a source-referenced AI Guide together in a single ad-free app."
       },
       {
-        "question": "Is Zikirmatik Asistan free to use?",
-        "answer": "Yes. The dhikr counter, the entire library of 541 dhikr, all collections, reminders, streaks and Google Sign-In sync are completely free. Premium unlocks 50 monthly AI Rehber credits, detailed statistics and all themes."
+        "question": "Is it free?",
+        "answer": "The dhikr counter, the library of 541 dhikr, adding your own dhikr, Kandil and special-day notifications, streak/badge tracking, 1 active vird program and 1 active dhikr circle are free. Premium unlocks more vird programs and circles, AI Guide credits, detailed statistics and additional themes."
       },
       {
-        "question": "What is AI Rehber?",
-        "answer": "AI Rehber is an optional AI-assisted guidance feature. You get 1 free credit every day (plus a 3-credit welcome bonus on your first day). Premium gives you 50 credits a month, and you can also purchase 10, 30 or 75-credit top-up packs from within the app on Google Play."
+        "question": "Are there ads?",
+        "answer": "No, Zikirmatik Asistan has no ads."
       },
       {
-        "question": "Do I need an account to use the app?",
-        "answer": "No account is required to use the core features. Signing in with Google is optional and lets you securely back up and sync your collections, streaks and settings across devices."
+        "question": "What is the vird program?",
+        "answer": "Daily Vird lets you build your own program by time of day, create one from a ready-made template or with AI, and move on to the next dhikr at your own pace in a guided session; the app keeps the count."
       },
       {
-        "question": "What data does Zikirmatik Asistan collect?",
-        "answer": "We collect only the data necessary to provide the app's features, such as your dhikr collections, streaks and account information if you choose to sign in. See our Privacy Policy for full details."
+        "question": "How does the Dhikr Circle work?",
+        "answer": "You create a Dhikr Circle and invite your loved ones with an invite code or link; everyone's dhikr adds up to a single shared total, and all members are notified when the goal is reached."
       },
       {
-        "question": "Can I delete my account and data?",
-        "answer": "Yes. You can request deletion of your account and associated data at any time by contacting us at serhatbelen7.developer@gmail.com."
+        "question": "What is AI Guide?",
+        "answer": "AI Guide suggests a dhikr based on your intention and answers your questions with source and page references. It does not issue religious rulings (fatwas); it points you to the relevant source. In the free version 1 credit renews every day; Premium grants 50 credits a month."
       },
       {
-        "question": "How do reminders and special-day notifications work?",
-        "answer": "You can set daily reminder times for your dhikr goals, and the app can also notify you about special days and Kandil nights so you never miss a meaningful occasion."
+        "question": "Do I need an account?",
+        "answer": "No, you can use the app as a guest. If you like, you can sign in with Google or Apple to back up your data in the cloud and sync it across devices."
       },
       {
-        "question": "What is your refund policy for credit packages?",
-        "answer": "Credit package purchases are handled through Google Play and are subject to Google Play's billing policies. Please see our Refund Policy page for full details on how to request a refund."
+        "question": "How do I cancel my subscription?",
+        "answer": "You can cancel your Premium subscription from the \"Subscriptions\" section of the Google Play app. After cancelling, your Premium access continues until the end of the period you have paid for."
       },
       {
-        "question": "How can I contact support?",
-        "answer": "You can reach our team any time at serhatbelen7.developer@gmail.com — we're happy to help with questions, feedback or issues."
+        "question": "What data is collected?",
+        "answer": "We collect only the data needed to provide the app's features: your dhikr and vird data, your streaks and badges, and basic account information if you sign in with Google or Apple. See our Privacy Policy for details."
+      },
+      {
+        "question": "Can I delete my account?",
+        "answer": "Yes. You can delete your account from within the app using the \"Delete account\" option, or by sending an email to serhatbelen7.developer@gmail.com."
+      },
+      {
+        "question": "How do reminders work?",
+        "answer": "You can receive notifications for Kandil nights, Fridays and the suhoor/iftar times in Ramadan, and set reminders for your daily vird program."
+      },
+      {
+        "question": "What is the refund policy?",
+        "answer": "Subscription and credit pack purchases are processed through Google Play; subscriptions are cancelled from Play's \"Subscriptions\" section and refunds are subject to Google Play's subscription policy. See our Refund Policy page for details."
+      },
+      {
+        "question": "How can I reach support?",
+        "answer": "You can always reach us at serhatbelen7.developer@gmail.com — we are happy to help with your questions, feedback or issues."
       }
     ]
   },
@@ -217,156 +285,203 @@
     "mailtoLabel": "Email us"
   },
   "footer": {
-    "tagline": "A calm, focused companion for your daily dhikr.",
+    "tagline": "A dhikr counter, daily vird and dhikr circle — in one app.",
     "product": "Product",
     "legal": "Legal",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "refund": "Refund Policy",
+    "deleteAccount": "Delete Account",
     "language": "Language",
     "rights": "All rights reserved.",
     "getOnPlay": "Get it on Google Play"
   },
   "legal": {
-    "lastUpdated": "Last updated: July 22, 2026",
+    "lastUpdated": "Last updated: September 28, 2026",
     "backHome": "Back to home"
   },
   "privacy": {
     "title": "Privacy Policy",
-    "intro": "This Privacy Policy explains how Zikirmatik Asistan (\"we\", \"us\", \"our app\") collects, uses, discloses and protects your information when you use our mobile application.",
+    "intro": "This Privacy Policy explains how Zikirmatik Asistan (\"we\", \"our app\") collects, uses, discloses and protects your information when you use the mobile application.",
     "sections": [
       {
         "heading": "1. Information We Collect",
-        "body": "We collect information you provide directly, such as your dhikr collections, custom targets, preferences and, if you choose to sign in with Google, basic account information (name, email address and profile identifier) provided by Google Sign-In. We also collect usage information such as streaks, counts and app settings needed to provide the app's features, and technical information such as device type, operating system version and crash diagnostics to keep the app reliable."
+        "body": "We collect information you provide directly, such as your dhikr collections, wird programs, custom targets and preferences, and, if you choose to sign in with Google or Apple, the basic account information (name, email address and profile identifier) shared by the relevant provider. We also collect usage information such as streaks, counts and app settings that are needed to provide the app's features, and technical information such as device type, operating system version and crash diagnostics to keep the app reliable."
       },
       {
         "heading": "2. How We Use Your Information",
-        "body": "We use the information we collect to operate and improve the app, to securely back up and sync your collections, streaks and settings across your devices when you sign in with Google, to send you the reminders and notifications you configure (including daily targets and special-day/Kandil notifications), to process optional Premium credit purchases through Google Play, and to provide customer support when you contact us."
+        "body": "We use the information we collect to operate and improve the app, to securely back up and sync your collections, streaks and settings across your devices when you sign in with Google, to send the reminders and notifications you configure (including daily targets and special-day/Kandil notifications), to process optional Premium credit purchases through Google Play, and to provide customer support when you contact us."
       },
       {
-        "heading": "3. Google Sign-In",
-        "body": "If you choose to sign in with Google, we receive limited profile information from Google (such as your name, email address and profile identifier) solely to create and secure your account and to sync your data across devices. We do not access your Google password, and you may revoke this access at any time from your Google account settings."
+        "heading": "3. Signing In with Google or Apple",
+        "body": "If you choose to sign in with Google or Apple, we receive limited profile information from the relevant provider (such as your name, email address and profile identifier) in order to create and secure your account and to sync your data across devices. We do not have access to your password, and you can revoke this access at any time from your Google or Apple account settings."
       },
       {
         "heading": "4. Data Storage and Security",
-        "body": "Your data is stored using industry-standard security practices, including encrypted connections in transit. We retain your account data for as long as your account is active or as needed to provide the app's features, and we take reasonable technical and organizational measures to protect it against unauthorized access, alteration or loss."
+        "body": "Your data is stored using industry-standard security practices, including encryption in transit. We keep your account data for as long as your account is active or as long as it is needed to provide the app's features, and we take reasonable technical and organizational measures to protect it against unauthorized access, alteration or loss."
       },
       {
         "heading": "5. Data Sharing",
-        "body": "We do not sell your personal information. We may share limited information with trusted service providers who help us operate the app (such as cloud hosting, authentication and payment processing through Google Play), and only to the extent necessary for them to perform those services, or where required by law."
+        "body": "We do not sell your personal information. We may share limited information with trusted service providers that help us operate the app (such as cloud hosting, authentication and payment processing through Google Play), only to the extent necessary for them to perform their services or where required by law. When you join a Dhikr Circle, your display name and your contribution to the circle are shown to the other members of that circle and to its creator."
       },
       {
         "heading": "6. Notifications",
-        "body": "The app may send local and push notifications for daily dhikr reminders and special-day/Kandil occasions that you configure. You can manage or disable notifications at any time from your device settings."
+        "body": "The app may send local and push notifications for the daily dhikr reminders you configure and for special-day/Kandil occasions. You can manage or turn off notifications at any time from your device settings."
       },
       {
         "heading": "7. Your Rights and Choices",
-        "body": "You may access, update or delete the dhikr collections and settings stored in the app at any time. You may request deletion of your account and associated data, or ask us questions about how your information is handled, by contacting us at serhatbelen7.developer@gmail.com. We will respond to and process such requests within a reasonable time."
+        "body": "You can access, update or delete the dhikr collections and settings stored in the app at any time. You can contact us at {email} to request deletion of your account and associated data, or to ask questions about how your data is handled. We will respond to and process such requests within a reasonable time."
       },
       {
         "heading": "8. Children's Privacy",
-        "body": "Zikirmatik Asistan is not directed at children under the age of 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us so we can remove it."
+        "body": "Zikirmatik Asistan is not directed at children under the age of 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us so that we can remove it."
       },
       {
         "heading": "9. Changes to This Policy",
-        "body": "We may update this Privacy Policy from time to time to reflect changes to the app or applicable law. We will update the \"Last updated\" date above when we do, and encourage you to review this page periodically."
+        "body": "We may update this Privacy Policy from time to time to reflect changes in the app or in applicable law. When we make changes, we update the \"Last updated\" date above, and we recommend that you review this page periodically."
       },
       {
         "heading": "10. Contact Us",
-        "body": "If you have any questions about this Privacy Policy or how your data is handled, please contact us at serhatbelen7.developer@gmail.com."
+        "body": "If you have questions about this Privacy Policy or about how your data is handled, please contact us at {email}."
       }
     ]
   },
   "terms": {
-    "title": "Terms of Service",
-    "intro": "These Terms of Service (\"Terms\") govern your access to and use of the Zikirmatik Asistan mobile application (the \"App\"). By downloading, accessing or using the App, you agree to be bound by these Terms.",
+    "title": "Terms of Use",
+    "intro": "These Terms of Use (\"Terms\") govern your access to and use of the Zikirmatik Asistan mobile application (the \"App\"). By downloading, accessing or using the App, you agree to be bound by these Terms.",
     "sections": [
       {
-        "heading": "1. Acceptance of Terms",
-        "body": "By installing or using Zikirmatik Asistan, you confirm that you have read, understood and agree to these Terms. If you do not agree, please do not use the App."
+        "heading": "1. Acceptance of the Terms",
+        "body": "By installing or using Zikirmatik Asistan, you confirm that you have read, understood and accepted these Terms. If you do not accept them, please do not use the App."
       },
       {
-        "heading": "2. Description of Service",
-        "body": "Zikirmatik Asistan provides a dhikr counter, custom collections, daily and special-day reminders, streaks and statistics, optional Google Sign-In cloud sync, and an optional AI Rehber feature that uses purchasable credit packages."
+        "heading": "2. Description of the Service",
+        "body": "Zikirmatik Asistan offers a dhikr counter and library, a daily wird program, dhikr circles, AI Guide and sourced chat, special-day notifications, statistics and badges, home screen widgets, optional Google or Apple sync, and Premium subscriptions and credit packs."
       },
       {
         "heading": "3. Accounts",
-        "body": "Signing in with Google is optional. If you choose to sign in, you are responsible for maintaining the confidentiality of your Google account and for all activity that occurs through your account. You may sign out or revoke access at any time."
+        "body": "Signing in with Google or Apple is optional. If you choose to sign in, you are responsible for keeping your account private and for all activity that takes place through your account. You can sign out or revoke access at any time."
       },
       {
-        "heading": "4. Premium Credits and Purchases",
-        "body": "The App gives free users 1 credit per day (plus a 3-credit welcome bonus on the first day), and Premium subscribers 50 credits per month, to use the AI Rehber feature. Optional one-time top-up packs of 10, 30 or 75 credits can also be purchased. All purchases are processed through Google Play and are subject to Google Play's payment terms and policies. Please see our Refund Policy for details on requesting refunds."
+        "heading": "4. Premium Subscription, Credits and Purchases",
+        "body": "Premium is purchased through Google Play as a monthly or annual subscription, renews automatically, and can be cancelled at any time from the \"Subscriptions\" section of the Google Play app. For the AI Guide feature, the App also provides free users with 1 credit per day (with a welcome bonus of 3 credits on the first day) and Premium subscribers with 50 credits per month; in addition, one-time packs of 10, 30 or 75 credits can optionally be purchased. All purchases are processed through Google Play and are subject to Google Play's payment terms and policies. For details on requesting a refund, see our Refund Policy."
       },
       {
         "heading": "5. Acceptable Use",
-        "body": "You agree to use the App only for lawful purposes and in accordance with these Terms. You may not reverse engineer, decompile, or attempt to extract the source code of the App, except where permitted by applicable law, and you may not use the App in any way that could disable, overburden or impair its functioning."
+        "body": "You agree to use the App only for lawful purposes and in accordance with these Terms. Except where permitted by applicable law, you may not reverse engineer, decompile or extract the source code of the App, and you may not use the App in a way that could disable, overload or impair its functionality."
       },
       {
         "heading": "6. Intellectual Property",
-        "body": "The App, including its design, content, branding and features, is owned by us or our licensors and is protected by applicable intellectual property laws. These Terms do not grant you any ownership rights in the App."
+        "body": "The App, including its design, content, brand and features, belongs to us or our licensors and is protected by applicable intellectual property laws. These Terms do not give you any ownership rights in the App."
       },
       {
         "heading": "7. Reminders and Notifications",
-        "body": "Notifications and reminders provided by the App (including daily targets and special-day/Kandil notifications) are provided as a convenience. We do not guarantee delivery at any specific time, as this may depend on your device settings, operating system and network conditions."
+        "body": "Notifications and reminders provided by the App (including daily targets and special-day/Kandil notifications) are offered as a convenience. We do not guarantee that they will be delivered at a particular time, because delivery may depend on your device settings, operating system and network conditions."
       },
       {
         "heading": "8. Disclaimer of Warranties",
-        "body": "The App is provided \"as is\" and \"as available\" without warranties of any kind, whether express or implied. We do not warrant that the App will be uninterrupted, error-free, or fully accurate at all times."
+        "body": "The App is provided \"as is\" and \"as available\", without any express or implied warranty. We do not guarantee that the App will be uninterrupted, error-free or completely accurate at all times."
       },
       {
         "heading": "9. Limitation of Liability",
-        "body": "To the maximum extent permitted by law, we shall not be liable for any indirect, incidental or consequential damages arising from your use of, or inability to use, the App."
+        "body": "To the maximum extent permitted by law, we will not be liable for any indirect, incidental or consequential damages arising from your use of, or inability to use, the App."
       },
       {
         "heading": "10. Changes to the Terms",
-        "body": "We may update these Terms from time to time. Continued use of the App after changes take effect constitutes acceptance of the revised Terms. We will update the \"Last updated\" date whenever changes are made."
+        "body": "We may update these Terms from time to time. Continuing to use the App after changes take effect means that you accept the updated Terms. We update the \"Last updated\" date when changes are made."
       },
       {
         "heading": "11. Termination",
-        "body": "We may suspend or terminate your access to the App if you violate these Terms. You may stop using the App and delete your account at any time by contacting us."
+        "body": "If you breach these Terms, we may suspend or terminate your access to the App. You can stop using the App and delete your account at any time by contacting us."
       },
       {
         "heading": "12. Contact Us",
-        "body": "If you have any questions about these Terms, please contact us at serhatbelen7.developer@gmail.com."
+        "body": "If you have questions about these Terms, please contact us at {email}."
       }
     ]
   },
   "refund": {
     "title": "Refund Policy",
-    "intro": "This Refund Policy explains how refund requests for optional Premium credit purchases made within Zikirmatik Asistan are handled.",
+    "intro": "This Refund Policy explains how refund requests are handled for Premium subscriptions and optional credit purchases made within Zikirmatik Asistan.",
     "sections": [
       {
         "heading": "1. Purchases Through Google Play",
-        "body": "All Premium credit package purchases (10, 30 or 75 credits) are processed and billed through Google Play. As a result, refunds are subject to Google Play's own refund policies and timeframes, in addition to the guidance below."
+        "body": "All purchases, including Premium subscriptions and Premium credit packs (10, 30 or 75 credits), are processed and billed through Google Play. Subscription cancellations are made from the \"Subscriptions\" section of the Google Play app, and refunds are subject to Google Play's subscription refund policy."
       },
       {
         "heading": "2. How to Request a Refund",
-        "body": "To request a refund, you may (a) use Google Play's own refund request process from your Google Play purchase history, which is the fastest method for eligible recent purchases, or (b) contact us directly at serhatbelen7.developer@gmail.com with your purchase details (order ID, purchase date and the credit package purchased) so we can assist you or forward your request to Google Play as needed."
+        "body": "To request a refund, you can (a) use Google Play's own refund request process from your Google Play purchase history, which is the fastest method for eligible recent purchases, or (b) contact us directly at {email} with your purchase details (order ID, purchase date and the credit pack purchased) so that we can help you or forward your request to Google Play when necessary."
       },
       {
         "heading": "3. Eligibility",
-        "body": "Refund eligibility generally depends on how recently the purchase was made and whether the purchased credits have already been used. We reserve the right to evaluate refund requests on a case-by-case basis, consistent with Google Play's policies and applicable consumer protection laws."
+        "body": "Refund eligibility generally depends on how recently the purchase was made and on whether the purchased credits have been used before. We reserve the right to evaluate refund requests case by case, consistent with Google Play's policies and applicable consumer protection laws."
       },
       {
         "heading": "4. Unused Credits",
-        "body": "Purchased AI Rehber credits that have not yet been used are generally more likely to be eligible for a refund than credits that have already been consumed. Please contact us as soon as possible if you believe a purchase was made in error."
+        "body": "Purchased AI Guide credits that have not yet been used are generally considered more suitable for a refund than credits that have already been consumed. If you believe a purchase was made by mistake, please contact us as soon as possible."
       },
       {
         "heading": "5. Processing Time",
-        "body": "Refunds processed directly through Google Play typically follow Google's standard processing timeframes. Refund requests sent to us directly will be acknowledged promptly and, where applicable, forwarded for processing as soon as possible."
+        "body": "Refunds processed directly through Google Play generally follow Google's standard processing times. Refund requests sent directly to us are answered promptly and, when eligible, forwarded as soon as possible to be processed."
       },
       {
         "heading": "6. Contact Us",
-        "body": "For any questions about this Refund Policy or to start a refund request, please contact us at serhatbelen7.developer@gmail.com."
+        "body": "If you have questions about this Refund Policy or want to start a refund request, please contact us at {email}."
       }
     ]
   },
   "halka": {
-    "title": "Join a Dhikr Circle",
-    "subtitle": "Use this invite code to start doing dhikr together with friends.",
+    "eyebrow": "Dhikr Circle",
+    "title": "Dhikr with your loved ones, in a single total",
+    "subtitle": "Join with an invite code; everyone's dhikr adds up to a single total.",
     "codeLabel": "Circle Code",
     "openApp": "Open in app",
     "getOnPlay": "Get it on Google Play",
-    "hint": "In the app, paste the code under \"Join with code\"."
+    "hint": "In the app, paste the code under \"Join with code\".",
+    "pillars": [
+      {
+        "title": "A single total",
+        "description": "Everyone's dhikr in the circle adds up to one shared total."
+      },
+      {
+        "title": "Invite by code or link",
+        "description": "Invite your loved ones to the circle with an invite code or link."
+      },
+      {
+        "title": "Reach the goal together",
+        "description": "All members are notified when the goal is reached."
+      }
+    ],
+    "note": "The free version includes 1 active circle at a time with 5 members per circle; Premium raises this to 10 active circles and 200 members per circle. Joining a circle is free for everyone."
+  },
+  "deleteAccount": {
+    "title": "Delete your account",
+    "intro": "You can delete your Zikirmatik Asistan account and the data linked to it at any time. Deletion is permanent and cannot be undone.",
+    "sections": [
+      {
+        "heading": "Option 1: Delete it inside the app",
+        "body": "1. Open the app and go to Profile. 2. Tap \"Delete account\". 3. Confirm when asked. Your account and the data listed below are deleted immediately."
+      },
+      {
+        "heading": "Option 2: Request deletion by email",
+        "body": "Send an email to {email} with the subject \"Account deletion\" from the email address you use to sign in (Google or Apple), so that we can verify it is your account. We process such requests within 30 days."
+      },
+      {
+        "heading": "What is deleted",
+        "body": "Your account and sign-in identity; your custom dhikrs and collections; your dhikr logs, streaks and statistics; your wird programs and progress; your AI Guide recommendations, chat conversations and credit balance; subscription records held by us; your registered devices and notification tokens; your membership in dhikr circles. Note: a circle's shared total is not linked to any one person and remains visible to the other members after you are removed from it."
+      },
+      {
+        "heading": "What is retained",
+        "body": "Purchase and billing records are held by Google Play under Google's own policies; we do not control them. Anonymized technical logs and crash diagnostics that cannot identify you may be kept for a limited time. Data we are legally required to keep is retained only for as long as the law requires."
+      },
+      {
+        "heading": "Subscriptions",
+        "body": "Deleting your account does not cancel an active Google Play subscription. Cancel it first from the \"Subscriptions\" section of the Google Play app to avoid further charges."
+      },
+      {
+        "heading": "Data on your device",
+        "body": "Counts and settings stored only on your device are removed when you uninstall the app."
+      }
+    ]
   }
 }

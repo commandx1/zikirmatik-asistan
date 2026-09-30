@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { setRequestLocale, getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { hasLocale, routing } from "../../../i18n/routing";
 import { LegalPage } from "../../../components/LegalPage";
@@ -17,18 +18,18 @@ export async function generateMetadata({
   const meta = await getTranslations({ locale, namespace: "meta" });
 
   return {
-    title: meta("titleTerms"),
+    title: meta("titleDelete"),
     alternates: {
-      canonical: locale === routing.defaultLocale ? "/terms" : `/${locale}/terms`,
+      canonical: locale === routing.defaultLocale ? "/delete-account" : `/${locale}/delete-account`,
       languages: {
-        tr: "/terms",
-        en: "/en/terms"
+        tr: "/delete-account",
+        en: "/en/delete-account"
       }
     }
   };
 }
 
-export default async function TermsPage({
+export default async function DeleteAccountPage({
   params
 }: {
   params: Promise<{ locale: string }>;
@@ -41,5 +42,5 @@ export default async function TermsPage({
 
   setRequestLocale(locale);
 
-  return <LegalPage namespace="terms" />;
+  return <LegalPage namespace="deleteAccount" />;
 }

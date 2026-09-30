@@ -22,8 +22,8 @@ export async function generateMetadata({
       canonical:
         locale === routing.defaultLocale ? "/refund-policy" : `/${locale}/refund-policy`,
       languages: {
-        en: "/refund-policy",
-        tr: "/tr/refund-policy"
+        tr: "/refund-policy",
+        en: "/en/refund-policy"
       }
     }
   };

@@ -8,14 +8,12 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  // Site geçici olarak yalnız TR: eski /tr/* ve /en/* adresleri köke.
-  // EN uygulama lansmanında routing.locales'e "en" eklenince /en satırı kalkar.
+  // TR varsayılan dil ve köktedir: eski /tr/* adresleri köke yönlenir.
+  // /en/* artık gerçek İngilizce sayfalardır, yönlendirilmez.
   async redirects() {
     return [
       { source: "/tr", destination: "/", permanent: true },
-      { source: "/tr/:path*", destination: "/:path*", permanent: true },
-      { source: "/en", destination: "/", permanent: true },
-      { source: "/en/:path*", destination: "/:path*", permanent: true }
+      { source: "/tr/:path*", destination: "/:path*", permanent: true }
     ];
   }
 };
