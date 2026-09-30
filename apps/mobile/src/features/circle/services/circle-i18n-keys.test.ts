@@ -13,7 +13,8 @@ const CIRCLE_ERROR_MESSAGE_KEY: Record<string, string> = {
   [CIRCLE_ERROR_CODE.MAX_ACTIVE]: "maxActive",
   [CIRCLE_ERROR_CODE.NOT_MEMBER]: "notMember",
   [CIRCLE_ERROR_CODE.DHIKR_MISMATCH]: "dhikrMismatch",
-  [CIRCLE_ERROR_CODE.CREATOR_ONLY]: "creatorOnly"
+  [CIRCLE_ERROR_CODE.CREATOR_ONLY]: "creatorOnly",
+  [CIRCLE_ERROR_CODE.END_DATE_PAST]: "endDatePast"
 };
 
 describe("circle error code i18n key coverage", () => {

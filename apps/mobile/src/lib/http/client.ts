@@ -1,5 +1,26 @@
+import { getCalendars } from "expo-localization";
+import { i18n } from "../../i18n";
 import { API_BASE_URL } from "../env";
 import { getAuthBridge } from "./auth-bridge";
+
+/**
+ * Device IANA zone (e.g. "America/Los_Angeles") or undefined. Read on every
+ * call, so a timezone change (travel, emulator setting) applies to the very
+ * next request. Never throws; unknown/oversized zones are dropped because the
+ * API's device DTO rejects them (@IsTimeZone, max 64).
+ */
+export function getDeviceTimeZone(): string | undefined {
+  try {
+    const zone = getCalendars()[0]?.timeZone;
+    if (!zone || zone.length > 64) {
+      return undefined;
+    }
+    new Intl.DateTimeFormat("en-US", { timeZone: zone });
+    return zone;
+  } catch {
+    return undefined;
+  }
+}
 
 // Same positional shape as every legacy XxxApiError, so per-feature aliases
 // (`export const DhikrsApiError = ApiError`) keep call sites and instanceof working.
@@ -57,7 +78,13 @@ export async function request<T>(path: string, options: RequestOptions<T>): Prom
 
 async function send<T>(path: string, options: RequestOptions<T>, token: string | undefined): Promise<unknown> {
   const { method = "GET", body, timeoutMs, errors } = options;
-  const headers: Record<string, string> = { "content-type": "application/json", ...options.headers };
+  const timeZone = getDeviceTimeZone();
+  // The API derives "today" from this header (Europe/Istanbul when absent).
+  const headers: Record<string, string> = {
+    "content-type": "application/json",
+    ...(timeZone ? { "x-client-timezone": timeZone } : {}),
+    ...options.headers
+  };
   if (token) {
     headers.authorization = `Bearer ${token}`;
   }
@@ -122,6 +149,12 @@ function unwrapDataEnvelope(payload: unknown) {
 }
 
 function extractErrorMessage(payload: unknown, fallback: string) {
+  // Server messages are Turkish; other locales get the per-endpoint i18n
+  // fallback (the `code` still drives specific code -> i18n messages).
+  if (i18n.language !== "tr") {
+    return fallback;
+  }
+
   if (typeof payload === "string" && payload.trim()) {
     return payload;
   }

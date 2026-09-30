@@ -43,8 +43,8 @@ export type ZikirItem = {
 
 export type EsmaulHusnaItem = {
   nameArabic: string // الرَّحْمَنُ
-  transliteration: string // Er-Rahmân
-  meaning: string // Tüm isim ve sıfatları kendinde toplayan, eşi benzeri bulunmayan tek ilah. 
+  transliteration: LocalizedText // tr: Er-Rahmân, en: Ar-Rahman
+  meaning: LocalizedText // tr: Tüm isim ve sıfatları kendinde toplayan, eşi benzeri bulunmayan tek ilah.
   virtue: string // Derecenin hem Allah hem insanlar katında artması; sevilen, sayılan, sözü geçen biri olmak; her türlü şeytan ve nefis şerrinden korunmak; uykuda meleklerin yardımına nail olmak. 
   dhikrDay: string // Pazar
 }

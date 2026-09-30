@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
-import { i18n } from "../../../i18n";
+import { getAppLocale, i18n } from "../../../i18n";
+import { resolveLocalizedText } from "@zikirmatik/shared";
 import { ESMAUL_HUSNA } from "../../focus/data";
 
 const DAILY_REMINDER_KIND = "daily-dhikr-reminder";
@@ -37,6 +38,9 @@ async function runSync(input: {
   reminderTime: string;
   requestPermission?: boolean;
 }) {
+  // Refresh the localized channel name on every sync (also when disabled / no permission).
+  await ensureAndroidChannel();
+
   if (!input.enabled) {
     await cancelDailyReminderNotifications();
     return { permissionGranted: true, scheduled: false };
@@ -52,7 +56,6 @@ async function runSync(input: {
   }
 
   const time = parseReminderTime(input.reminderTime) ?? parseReminderTime(DEFAULT_REMINDER_TIME)!;
-  await ensureAndroidChannel();
   await cancelDailyReminderNotifications();
 
   const weekdayEsmas = buildWeekdayEsmaNames();
@@ -95,7 +98,7 @@ function buildWeekdayEsmaNames(): Map<number, string[]> {
 
     const list = map.get(weekday) ?? [];
     if (list.length < ESMA_PER_DAY) {
-      list.push(esma.transliteration);
+      list.push(resolveLocalizedText(esma.transliteration, getAppLocale()));
       map.set(weekday, list);
     }
   }

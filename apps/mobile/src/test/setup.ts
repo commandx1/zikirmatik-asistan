@@ -30,6 +30,13 @@ vi.mock("react-native", () => ({
   }
 }));
 
+// lib/http/client.ts reads the device zone via expo-localization (native);
+// no zone by default -> no x-client-timezone header. Tests override locally.
+vi.mock("expo-localization", () => ({
+  getCalendars: () => [],
+  getLocales: () => []
+}));
+
 vi.mock("../i18n", () => ({
   i18n: {
     t: (key: string) => key,

@@ -87,7 +87,7 @@ export function FontSelectorScreen() {
                     </View>
                   ) : null}
 
-                  <Text className="text-base font-semibold text-text-primary">{item.title}</Text>
+                  <Text className="text-base font-semibold text-text-primary">{t(item.title)}</Text>
                   <Text
                     className="mt-2 text-sm text-text-muted"
                     style={

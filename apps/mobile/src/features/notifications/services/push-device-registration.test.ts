@@ -34,6 +34,9 @@ vi.mock("expo-notifications", () => ({
   getExpoPushTokenAsync: (...args: unknown[]) => getExpoPushTokenAsync(...args)
 }));
 
+const calendars = vi.hoisted(() => ({ value: [] as { timeZone: string }[] }));
+vi.mock("expo-localization", () => ({ getCalendars: () => calendars.value }));
+
 const registerDevice = vi.fn();
 const unlinkDevice = vi.fn();
 
@@ -51,6 +54,56 @@ describe("push-device-registration", () => {
     getExpoPushTokenAsync.mockReset();
     registerDevice.mockReset();
     unlinkDevice.mockReset();
+    calendars.value = [];
+  });
+
+  it("sends locale and timezone, and re-registers only when one of them (or auth) changed", async () => {
+    getPermissionsAsync.mockResolvedValue({ granted: false, canAskAgain: false });
+    registerDevice.mockResolvedValue(undefined);
+    calendars.value = [{ timeZone: "America/Los_Angeles" }];
+
+    const { syncPushDeviceRegistration } = await import("./push-device-registration");
+
+    await syncPushDeviceRegistration(false, "en");
+    await syncPushDeviceRegistration(false, "en");
+    expect(registerDevice).toHaveBeenCalledTimes(1);
+    expect(registerDevice).toHaveBeenLastCalledWith(
+      {
+        deviceId: "generated-uuid-1234",
+        expoPushToken: undefined,
+        platform: "ios",
+        locale: "en",
+        timezone: "America/Los_Angeles"
+      },
+      false
+    );
+
+    await syncPushDeviceRegistration(false, "tr");
+    expect(registerDevice).toHaveBeenCalledTimes(2);
+    expect(registerDevice.mock.calls[1]![0]).toMatchObject({ locale: "tr" });
+
+    calendars.value = [{ timeZone: "Europe/Istanbul" }];
+    await syncPushDeviceRegistration(false, "tr");
+    expect(registerDevice).toHaveBeenCalledTimes(3);
+    expect(registerDevice.mock.calls[2]![0]).toMatchObject({ timezone: "Europe/Istanbul" });
+
+    await syncPushDeviceRegistration(true, "tr");
+    await syncPushDeviceRegistration(true, "tr");
+    expect(registerDevice).toHaveBeenCalledTimes(4);
+  });
+
+  it("retries a failed sync on the next call and omits timezone when unavailable", async () => {
+    getPermissionsAsync.mockResolvedValue({ granted: false, canAskAgain: false });
+    registerDevice.mockRejectedValueOnce(new Error("offline")).mockResolvedValue(undefined);
+
+    const { syncPushDeviceRegistration } = await import("./push-device-registration");
+
+    await expect(syncPushDeviceRegistration(false, "en")).rejects.toThrow("offline");
+    await syncPushDeviceRegistration(false, "en");
+    await syncPushDeviceRegistration(false, "en");
+
+    expect(registerDevice).toHaveBeenCalledTimes(2);
+    expect(registerDevice.mock.calls[1]![0]).not.toHaveProperty("timezone");
   });
 
   it("generates a device id once and persists it across calls", async () => {

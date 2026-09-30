@@ -8,8 +8,8 @@ import {
 
 const esmaItems: EsmaulHusnaItem[] = Array.from({ length: 10 }, (_, index) => ({
   nameArabic: `اسم ${index + 1}`,
-  transliteration: `Esma ${index + 1}`,
-  meaning: `Meaning ${index + 1}`,
+  transliteration: { tr: `Esma ${index + 1}`, en: `Esma ${index + 1}` },
+  meaning: { tr: `Anlam ${index + 1}`, en: `Meaning ${index + 1}` },
   virtue: `Virtue ${index + 1}`,
   dhikrDay: "Pazartesi"
 }));
@@ -30,8 +30,8 @@ describe("daily-esma-suggestion-service", () => {
     const second = resolveDailyEsmaSuggestions(esmaItems, evening);
 
     expect(first).toHaveLength(3);
-    expect(first.map((item) => item.transliteration)).toEqual(
-      second.map((item) => item.transliteration)
+    expect(first.map((item) => item.transliteration.tr)).toEqual(
+      second.map((item) => item.transliteration.tr)
     );
   });
 
@@ -39,9 +39,9 @@ describe("daily-esma-suggestion-service", () => {
     const today = resolveDailyEsmaSuggestions(esmaItems, new Date(2026, 5, 3));
     const tomorrow = resolveDailyEsmaSuggestions(esmaItems, new Date(2026, 5, 4));
 
-    expect(new Set(today.map((item) => item.transliteration)).size).toBe(3);
-    expect(tomorrow.map((item) => item.transliteration)).not.toEqual(
-      today.map((item) => item.transliteration)
+    expect(new Set(today.map((item) => item.transliteration.tr)).size).toBe(3);
+    expect(tomorrow.map((item) => item.transliteration.tr)).not.toEqual(
+      today.map((item) => item.transliteration.tr)
     );
   });
 });

@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
+import { getAppLocale } from "../../../i18n";
 import { createFlowId } from "../../../lib/ids";
 import type { AiGuideRecommendationRaw } from "../types";
 import { useAuthStore } from "../../../store/auth-store";
@@ -170,7 +171,11 @@ export function useAiGuideRequest({ credits, history, onOpenPremiumSheet }: Opti
             // 503: kredi düşülmedi, bakiyeye ya da premium sheet'e dokunma —
             // yalnızca aynı flowId ile tekrar denemeyi teklif et.
             aiUnavailableRequestRef.current = request;
-            setAiUnavailable({ message: error.message || t("ai-guide:errors.aiUnavailable") });
+            // Non-TR: the client already replaced the (Turkish) server text with a
+            // generic fallback, so use the specific "credit not charged" copy.
+            setAiUnavailable({
+              message: getAppLocale() === "tr" ? error.message || t("ai-guide:errors.aiUnavailable") : t("ai-guide:errors.aiUnavailable")
+            });
           } else if (error instanceof AiApiError) {
             setError(error.message);
           } else {

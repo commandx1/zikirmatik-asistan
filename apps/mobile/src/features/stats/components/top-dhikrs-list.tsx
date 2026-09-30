@@ -1,13 +1,15 @@
 import { Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
-import { formatCounter } from "@zikirmatik/shared";
+import { useAppLocale } from "../../../i18n";
+import { formatInteger } from "../../../lib/locale-format";
 import type { StatsTopDhikr } from "@zikirmatik/shared";
 import { maxOf, withAlpha } from "./chart-utils";
 
 export function TopDhikrsList({ items }: { items: StatsTopDhikr[] }) {
   const { tokens } = useThemeTokens();
   const { t } = useTranslation("stats");
+  const locale = useAppLocale();
   const max = maxOf(items.map((item) => item.totalCount)) || 1;
 
   if (items.length === 0) {
@@ -27,7 +29,7 @@ export function TopDhikrsList({ items }: { items: StatsTopDhikr[] }) {
             <Text className="flex-1 text-sm font-medium text-text-primary" numberOfLines={1}>
               {item.label}
             </Text>
-            <Text className="text-sm font-semibold text-text-muted">{formatCounter(item.totalCount)}</Text>
+            <Text className="text-sm font-semibold text-text-muted">{formatInteger(item.totalCount, locale)}</Text>
           </View>
           <View className="ml-6 h-1.5 overflow-hidden rounded-full" style={{ backgroundColor: withAlpha(tokens.textPrimary, 0.08) }}>
             <View

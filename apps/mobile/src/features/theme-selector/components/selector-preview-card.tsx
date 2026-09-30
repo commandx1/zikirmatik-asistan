@@ -24,8 +24,6 @@ const PREVIEW_TARGET = 100;
 const PREVIEW_PROGRESS = PREVIEW_COUNT / PREVIEW_TARGET;
 const RING_SIZE = 104;
 const RING_STROKE = 7;
-const PREVIEW_TRANSLITERATION = "Subhanallahi ve bihamdihi";
-const PREVIEW_MEANING = "Allah'ı tüm noksan sıfatlardan tenzih eder ve O'na hamd ederim.";
 const PREVIEW_ARABIC = "سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ";
 
 export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "default" }: SelectorPreviewCardProps) {
@@ -140,8 +138,8 @@ export function SelectorPreviewCard({ themeName, tokens, previewFontFamily = "de
             {upper(t("theme-selector:previewCard.dhikrDetail"))}
           </Text>
           <View className="mt-3 gap-2">
-            <PreviewDhikrBlock title={t("components:dhikrContentStack.transliteration")} value={PREVIEW_TRANSLITERATION} tokens={tokens} regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
-            <PreviewDhikrBlock title={t("components:dhikrContentStack.meaning")} value={PREVIEW_MEANING} tokens={tokens} muted regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
+            <PreviewDhikrBlock title={t("components:dhikrContentStack.transliteration")} value={t("previewCard.transliteration")} tokens={tokens} regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
+            <PreviewDhikrBlock title={t("components:dhikrContentStack.meaning")} value={t("previewCard.meaning")} tokens={tokens} muted regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
             <PreviewDhikrBlock title={t("components:dhikrContentStack.arabic")} value={PREVIEW_ARABIC} tokens={tokens} arabic regularTextStyle={regularTextStyle} strongTextStyle={strongTextStyle} />
           </View>
         </View>

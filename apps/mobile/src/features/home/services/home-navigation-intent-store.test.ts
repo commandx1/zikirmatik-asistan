@@ -4,8 +4,8 @@ import { useHomeNavigationIntentStore } from "./home-navigation-intent-store";
 
 const item: EsmaulHusnaItem = {
   nameArabic: "الرَّحْمٰنُ",
-  transliteration: "Er-Rahmân",
-  meaning: "Merhamet eden.",
+  transliteration: { tr: "Er-Rahmân", en: "Ar-Rahman" },
+  meaning: { tr: "Merhamet eden.", en: "The Most Merciful." },
   virtue: "Kalbi yumuşatır.",
   dhikrDay: "Pazar"
 };

@@ -31,3 +31,27 @@ export function formatLongDate(isoDate: string, locale: SupportedLocale): string
     year: "numeric",
   }).format(date);
 }
+
+/**
+ * Kısa tarih + saat etiketi, verilen saat diliminde (varsayılan: cihaz).
+ * Örn. tr: "5 Eki 23:59", en: "Oct 5, 11:59 PM".
+ */
+export function formatDateTime(date: Date, locale: SupportedLocale, timeZone?: string): string {
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone,
+  }).format(date);
+}
+
+/** Locale'e göre binlik ayraçlı tam sayı. tr: "7.328", en: "7,328". */
+export function formatInteger(value: number, locale: SupportedLocale): string {
+  return new Intl.NumberFormat(toIntlLocale(locale)).format(value);
+}
+
+/** Yüzde etiketi. tr: "%94", en: "94%". */
+export function formatPercent(value: number, locale: SupportedLocale): string {
+  return locale === "en" ? `${value}%` : `%${value}`;
+}

@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "../../../lib/query-client";
 import { qk } from "../../../lib/query-keys";
 import { i18n, type SupportedLocale } from "../../../i18n";
-import { HERO_CARD, UPCOMING_DAYS } from "../data/special-days-content";
 import type {
   HeroCardViewModel,
   TodayActionViewModel,
@@ -36,9 +35,9 @@ export function useSpecialDays() {
 
   const response = query.data;
 
-  const heroCard = useMemo<HeroCardViewModel>(() => {
+  const heroCard = useMemo<HeroCardViewModel | null>(() => {
     if (!response?.hero) {
-      return HERO_CARD;
+      return null;
     }
     const days = daysUntil(response.hero.date);
     return {
@@ -70,7 +69,7 @@ export function useSpecialDays() {
 
   const upcomingDays = useMemo<UpcomingDayViewModel[]>(() => {
     if (!response) {
-      return UPCOMING_DAYS;
+      return [];
     }
     return response.upcoming.map((item) => mapUpcomingDay(item, locale));
   }, [response, locale]);

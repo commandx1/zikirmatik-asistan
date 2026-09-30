@@ -355,7 +355,9 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
       >
         <View className='flex-row items-center gap-1'>
           <FontAwesome6 name='clock' iconStyle='regular' size={12} color='#9AA5BD' />
-          <Text className='text-xs text-text-muted'>{item.lastActivityLabel}</Text>
+          <Text className='text-xs text-text-muted'>{item.lastActivityLabel && item.lastActivityLabel !== 'Henüz başlanmadı'
+              ? item.lastActivityLabel
+              : t('relativeDate.notStarted')}</Text>
         </View>
         <View className='flex-row items-center gap-1'>
           <FontAwesome6 name='fire' size={12} color='#4CAF7D' />

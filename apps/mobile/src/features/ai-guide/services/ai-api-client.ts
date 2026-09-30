@@ -203,7 +203,7 @@ export type CreateAiVirdProgramPayload = {
 
 export type AiVirdProgramPreviewItem = {
   dhikrId: string;
-  /** Sunucu her zaman dhikr.name.tr döner (bkz. AiVirdService.buildPreview) — tek locale'lik düz metin, LocalizedText DEĞİL. */
+  /** Sunucu, isteğin diline göre dhikr.name[locale] döner (bkz. AiVirdService.buildPreview) — tek locale'lik düz metin, LocalizedText DEĞİL. */
   name: string;
   target: number;
 };

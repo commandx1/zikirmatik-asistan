@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useDhikrStore } from "./dhikr-store";
+import { ZIKIR_ITEMS } from "./dhikr-catalog-seed";
 import { registerDhikrStoreText } from "./dhikr-store-text";
 
 registerDhikrStoreText({
@@ -239,7 +240,7 @@ describe("dhikr-store", () => {
 
     it("is a no-op once the persisted version is already current", () => {
       const persisted = { items: [{ id: "a", name: { tr: "X", en: "X" } }] };
-      const result = migrate(persisted, 4);
+      const result = migrate(persisted, 5);
       expect(result).toBe(persisted);
     });
 
@@ -694,5 +695,64 @@ describe("dhikr-store", () => {
       const item = useDhikrStore.getState().items.find((value) => value.id === "personal-a");
       expect(item?.lastActivityAt).toBe("2026-09-21T09:00:00.000Z");
     });
+  });
+});
+
+describe("dhikr-store persist migration v4 -> v5", () => {
+  const migrate = (state: unknown, version: number) =>
+    useDhikrStore.persist.getOptions().migrate!(state, version) as unknown as { items: Array<Record<string, unknown>>; selectedDhikrId: string };
+  const SEEDS = ZIKIR_ITEMS as unknown as Array<{
+    id: string;
+    name: { tr: string; en: string };
+    transliteration: { en: string };
+    meaning: { en: string };
+  }>;
+  const oldSeed = (seed: (typeof SEEDS)[number]) => ({
+    ...seed,
+    name: { tr: seed.name.tr, en: "ESKI-TR" },
+    transliteration: { tr: "tr-x", en: "ESKI-TR" },
+    meaning: { tr: "tr-m", en: "ESKI-TR" },
+    current: 42,
+    lastActivityLabel: "Dün"
+  });
+  const userItem = {
+    id: "personal-a", source: "personal", name: "Benim", transliteration: "Benim",
+    current: 3, target: 33, lastActivityLabel: "", streakDays: 0, isFavorite: false
+  };
+
+  it("refreshes only seed en fields and keeps progress and user items", () => {
+    const state = { items: [...SEEDS.map(oldSeed), userItem], selectedDhikrId: "x" };
+    const out = migrate(state, 4);
+    SEEDS.forEach((seed, i) => {
+      expect(out.items[i]).toEqual({
+        ...oldSeed(seed),
+        name: { tr: seed.name.tr, en: seed.name.en },
+        transliteration: { tr: "tr-x", en: seed.transliteration.en },
+        meaning: { tr: "tr-m", en: seed.meaning.en }
+      });
+    });
+    expect(out.items[SEEDS.length]).toEqual(userItem);
+    expect(out.selectedDhikrId).toBe("x");
+  });
+
+  it("does not re-add deleted seed items", () => {
+    const out = migrate({ items: SEEDS.slice(1).map(oldSeed) }, 4);
+    expect(out.items).toHaveLength(SEEDS.length - 1);
+    expect(out.items.some((item) => item.id === ZIKIR_ITEMS[0]!.id)).toBe(false);
+  });
+
+  it("is a no-op at version 5", () => {
+    const state = { items: SEEDS.map(oldSeed) };
+    expect(migrate(state, 5)).toBe(state);
+  });
+
+  it("does not throw on malformed items", () => {
+    const seed = ZIKIR_ITEMS[0]!;
+    const state = {
+      items: [{ ...seed, name: undefined }, { ...seed, meaning: "str" }, null, "x", { id: seed.id }]
+    };
+    expect(() => migrate(state, 4)).not.toThrow();
+    expect(() => migrate({ items: "nope" }, 4)).not.toThrow();
+    expect(() => migrate(null, 4)).not.toThrow();
   });
 });

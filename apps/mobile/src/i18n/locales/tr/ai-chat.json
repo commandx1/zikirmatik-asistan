@@ -6,7 +6,8 @@
   "input": {
     "placeholder": "Mesajını yaz...",
     "creditBalanceLabel": "Kalan kredi: {{count}}",
-    "creditBalance": "{{count}} kredi"
+    "creditBalance_one": "{{count}} kredi",
+    "creditBalance_other": "{{count}} kredi"
   },
   "emptyState": {
     "title": "Asistanla sohbet et",

@@ -148,8 +148,8 @@ export function useProfile() {
   const sendFeedback = async () => {
     const subject = encodeURIComponent(t("profile:feedbackEmail.subject"));
     const body = encodeURIComponent(t("profile:feedbackEmail.body"));
-    const mailUrl = `mailto:support@zikirmatik.app?subject=${subject}&body=${body}`;
-    const webComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=support@zikirmatik.app&su=${subject}&body=${body}`;
+    const mailUrl = `mailto:serhatbelen7.developer@gmail.com?subject=${subject}&body=${body}`;
+    const webComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=serhatbelen7.developer@gmail.com&su=${subject}&body=${body}`;
 
     try {
       const canOpen = await Linking.canOpenURL(mailUrl);
@@ -240,7 +240,7 @@ export function useProfile() {
   );
 
   return {
-    displayName: backendUser?.displayName ?? authDisplayName ?? fallbackDisplayName,
+    displayName: (backendUser?.displayName ?? authDisplayName ?? fallbackDisplayName) || t("profile:userCard.guestName"),
     profileImageUrl: backendUser?.profileImageUrl,
     memberSinceLabel:
       backendUser?.createdAt

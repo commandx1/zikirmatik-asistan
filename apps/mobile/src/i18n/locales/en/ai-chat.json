@@ -6,7 +6,8 @@
   "input": {
     "placeholder": "Type your message...",
     "creditBalanceLabel": "Remaining credit: {{count}}",
-    "creditBalance": "{{count}} credits"
+    "creditBalance_one": "{{count}} credit",
+    "creditBalance_other": "{{count}} credits"
   },
   "emptyState": {
     "title": "Chat with the guide",

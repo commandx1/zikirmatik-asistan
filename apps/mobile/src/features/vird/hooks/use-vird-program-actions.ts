@@ -18,7 +18,7 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useVirdStore } from "../../../store/vird-store";
 import { activateVirdProgram, deleteVirdProgram, updateVirdProgram, VirdApiError } from "../services/vird-api-client";
-import { VIRD_ERROR_CODE } from "../services/vird-error-codes";
+import { VIRD_ERROR_CODE, resolveVirdErrorMessage } from "../services/vird-error-codes";
 import { toLocalVirdProgram } from "../services/vird-sync";
 import type { VirdProgramLocal } from "../types";
 
@@ -103,7 +103,7 @@ export function useVirdProgramActions() {
           return { ok: true, program: merged };
         } catch (error) {
           if (error instanceof VirdApiError && error.code) {
-            return { ok: false, code: error.code, message: error.message };
+            return { ok: false, code: error.code, message: resolveVirdErrorMessage(error.code, error.message) };
           }
           return { ok: false, message: error instanceof Error ? error.message : String(error) };
         }

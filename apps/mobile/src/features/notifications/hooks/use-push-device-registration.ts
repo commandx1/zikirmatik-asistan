@@ -1,43 +1,53 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { AppState } from "react-native";
 import { useAuthStore } from "../../../store/auth-store";
-import { registerPushDevice } from "../services/push-device-registration";
+import { useProfileStore } from "../../../store/profile-store";
+import { syncPushDeviceRegistration } from "../services/push-device-registration";
 
-// Registers (or refreshes) this device for remote push on every app start,
-// for guests and signed-in users alike, and re-registers when auth status
-// changes (login links the device server-side via the same deviceId sent
-// with /auth/provider/verify; this hook keeps the /devices record itself
-// fresh: token, platform, and — when authenticated — the userId link). The
-// bearer token itself is resolved deep in devices-api-client's `auth: true`
-// (via the auth bridge) rather than threaded through here, so this hook
-// only needs authStatus, not a re-render on every token refresh.
+// Registers (or refreshes) this device for remote push on app start, for
+// guests and signed-in users alike, and re-registers when auth status or the
+// in-app language changes (login links the device server-side via the same
+// deviceId sent with /auth/provider/verify; this hook keeps the /devices
+// record itself fresh: token, platform, locale, timezone and — when
+// authenticated — the userId link). Every foreground also calls the sync,
+// which is a no-op unless auth/locale/timezone changed or the last attempt
+// failed (see syncPushDeviceRegistration). The bearer token itself is
+// resolved deep in devices-api-client's `auth: true` (via the auth bridge).
 export function usePushDeviceRegistration() {
-  const authStatus = useAuthStore((s) => s.status);
-  const lastRegisteredKeyRef = useRef<string | null>(null);
+  const authenticated = useAuthStore((s) => s.status) === "authenticated";
+  const locale = useProfileStore((s) => s.locale);
+  // Wait for the persisted in-app language, otherwise a user whose choice
+  // differs from the device language would register twice on every start.
+  const [profileHydrated, setProfileHydrated] = useState(() => useProfileStore.persist.hasHydrated());
 
   useEffect(() => {
-    const registrationKey = authStatus;
+    if (profileHydrated) {
+      return;
+    }
+    if (useProfileStore.persist.hasHydrated()) {
+      setProfileHydrated(true);
+      return;
+    }
+    return useProfileStore.persist.onFinishHydration(() => setProfileHydrated(true));
+  }, [profileHydrated]);
 
-    const run = async () => {
-      try {
-        await registerPushDevice(authStatus === "authenticated");
-        lastRegisteredKeyRef.current = registrationKey;
-      } catch {
-        // Best effort: push registration should never block app usage.
-        // A later AppState "active" event or auth change will retry.
-      }
-    };
+  useEffect(() => {
+    if (!profileHydrated) {
+      return;
+    }
 
-    void run();
+    // Best effort: push registration should never block app usage.
+    const run = () => void syncPushDeviceRegistration(authenticated, locale).catch(() => {});
+    run();
 
     const subscription = AppState.addEventListener("change", (nextState) => {
-      if (nextState === "active" && lastRegisteredKeyRef.current !== registrationKey) {
-        void run();
+      if (nextState === "active") {
+        run();
       }
     });
 
     return () => {
       subscription.remove();
     };
-  }, [authStatus]);
+  }, [authenticated, locale, profileHydrated]);
 }

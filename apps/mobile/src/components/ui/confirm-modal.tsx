@@ -1,5 +1,6 @@
 import { useThemeTokens } from '@zikirmatik/ui'
 import { Modal, Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { withAlpha } from "@zikirmatik/shared";
 
 const DANGER_COLOR = '#EF4444'
@@ -19,13 +20,15 @@ export function ConfirmModal({
   visible,
   title,
   message,
-  confirmLabel = 'Tamam',
+  confirmLabel,
   cancelLabel,
   destructive = false,
   onConfirm,
   onCancel
 }: ConfirmModalProps) {
+  const { t } = useTranslation()
   const { tokens } = useThemeTokens()
+  const okLabel = confirmLabel ?? t('common:actions.ok')
   const confirmColor = destructive ? DANGER_COLOR : tokens.accent
   const confirmBg = withAlpha(confirmColor, 0.16)
   const confirmBorder = withAlpha(confirmColor, 0.42)
@@ -52,12 +55,12 @@ export function ConfirmModal({
             <Pressable
               onPress={onConfirm}
               accessibilityRole='button'
-              accessibilityLabel={confirmLabel}
+              accessibilityLabel={okLabel}
               className='h-11 items-center justify-center rounded-full border px-4'
               style={{ borderColor: confirmBorder, backgroundColor: confirmBg }}
             >
               <Text className='text-sm font-semibold' style={{ color: confirmColor }}>
-                {confirmLabel}
+                {okLabel}
               </Text>
             </Pressable>
             {cancelLabel ? (

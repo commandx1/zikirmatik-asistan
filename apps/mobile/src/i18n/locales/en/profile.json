@@ -3,6 +3,7 @@
     "title": "Profile"
   },
   "userCard": {
+    "guestName": "Guest",
     "premiumBadge": "Premium",
     "upgradeButton": "Go Premium"
   },
@@ -53,7 +54,7 @@
     "since": "Member since {{date}}"
   },
   "feedbackEmail": {
-    "subject": "Zikirmatik Rehber Feedback",
+    "subject": "Zikirmatik Asistan Feedback",
     "body": "Hello,\n\nMy feedback:\n\n\n---\nDevice:\nApp version:\n"
   },
   "reminderTimeModal": {
@@ -130,7 +131,8 @@
     "activating": "Activating...",
     "orBuyCredits": "or buy a credit pack",
     "creditsKeptNote": "Credits you purchase are yours to keep, they never expire.",
-    "creditsLabel": "{{count}} Credits",
+    "creditsLabel_one": "{{count}} Credit",
+    "creditsLabel_other": "{{count}} Credits",
     "purchasing": "Purchasing...",
     "dailyFreeCreditNote": "Your 1 free daily credit renews every day.",
     "maybeLater": "Maybe Later"

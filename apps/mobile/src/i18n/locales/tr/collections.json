@@ -13,7 +13,8 @@
     "ibadet": "İbadet"
   },
   "card": {
-    "dhikrCount": "{{count}} zikir"
+    "dhikrCount_one": "{{count}} zikir",
+    "dhikrCount_other": "{{count}} zikir"
   },
   "detail": {
     "defaultTitle": "Koleksiyon",

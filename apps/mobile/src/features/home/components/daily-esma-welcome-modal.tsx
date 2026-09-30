@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useThemeTokens } from '@zikirmatik/ui'
 import type { EsmaulHusnaItem } from '../../focus/types'
 import { TEST_IDS } from '../../../test-ids'
-import { withAlpha } from "@zikirmatik/shared";
+import { resolveLocalizedText, withAlpha } from "@zikirmatik/shared";
+import { useAppLocale } from "../../../i18n";
 
 type DailyEsmaWelcomeModalProps = {
   visible: boolean
@@ -23,6 +24,7 @@ export function DailyEsmaWelcomeModal({
   onStart
 }: DailyEsmaWelcomeModalProps) {
   const { t } = useTranslation('home')
+  const locale = useAppLocale()
   const { tokens } = useThemeTokens()
   const insets = useSafeAreaInsets()
 
@@ -62,7 +64,7 @@ export function DailyEsmaWelcomeModal({
           <View className='gap-3'>
             {items.map(item => (
               <View
-                key={item.transliteration}
+                key={item.transliteration.tr}
                 className='rounded-2xl border px-4 py-3'
                 style={{
                   borderColor: withAlpha(tokens.textPrimary, 0.1),
@@ -72,7 +74,7 @@ export function DailyEsmaWelcomeModal({
                 <View className='mb-2 flex-row items-start justify-between gap-3'>
                   <View className='flex-1'>
                     <Text className='text-base font-semibold' style={{ color: tokens.textPrimary }} numberOfLines={1}>
-                      {item.transliteration}
+                      {resolveLocalizedText(item.transliteration, locale)}
                     </Text>
                     <Text className='mt-1 text-lg leading-6' style={{ color: tokens.accent }} numberOfLines={1}>
                       {item.nameArabic}
@@ -89,7 +91,7 @@ export function DailyEsmaWelcomeModal({
                   </Pressable>
                 </View>
                 <Text className='text-xs leading-5' style={{ color: tokens.textMuted }} numberOfLines={2}>
-                  {item.meaning}
+                  {resolveLocalizedText(item.meaning, locale)}
                 </Text>
               </View>
             ))}

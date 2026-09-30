@@ -5,7 +5,8 @@
   "input": {
     "placeholder": "Write your intention and need...",
     "creditBalanceLabel": "Remaining credit: {{count}}",
-    "creditBalance": "{{count}} credits"
+    "creditBalance_one": "{{count}} credit",
+    "creditBalance_other": "{{count}} credits"
   },
   "promptChips": {
     "sad": "I feel down",
@@ -79,7 +80,8 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "noRecommendations": "No recommendations found",
-    "recommendationCount": "{{count}} recommendations",
+    "recommendationCount_one": "{{count}} recommendation",
+    "recommendationCount_other": "{{count}} recommendations",
     "active": "On screen",
     "show": "Show"
   },
@@ -111,7 +113,8 @@
       "freeTextLabel": "Your intention (optional)",
       "freeTextPlaceholder": "What do you want a vird for? (e.g. patience, gratitude, repentance)",
       "durationLabel": "Duration",
-      "durationOption": "{{count}} days",
+      "durationOption_one": "{{count}} day",
+      "durationOption_other": "{{count}} days",
       "slotsLabel": "Slots",
       "prayerSelectionLabel": "Which prayer times?",
       "creditCost": "3 credits",

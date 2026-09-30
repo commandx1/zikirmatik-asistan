@@ -108,7 +108,7 @@ export function useDhikrTransition({
     if (isSelectingEsmaDhikr) return
     setIsSelectingEsmaDhikr(true)
     setSyncError(undefined)
-    void findVerifiedActiveDhikrByTransliteration(item.transliteration)
+    void findVerifiedActiveDhikrByTransliteration(item.transliteration.tr)
       .then(dhikr => {
         if (dhikr._id === selectedDhikrId) {
           applyEsma(dhikr, false)

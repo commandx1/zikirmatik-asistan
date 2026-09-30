@@ -21,7 +21,9 @@ const VIRD_ERROR_MESSAGE_KEY: Record<VirdErrorCode, string> = {
   [VIRD_ERROR_CODE.FREE_LIMIT_DHIKRS]: "vird:errors.freeLimitDhikrs",
   [VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE]: "vird:errors.freeLimitActive",
   [VIRD_ERROR_CODE.PREMIUM_REQUIRED]: "vird:errors.premiumRequired",
-  [VIRD_ERROR_CODE.PREMIUM_MAX_ACTIVE_PROGRAMS]: "vird:errors.premiumMaxActivePrograms"
+  [VIRD_ERROR_CODE.PREMIUM_MAX_ACTIVE_PROGRAMS]: "vird:errors.premiumMaxActivePrograms",
+  [VIRD_ERROR_CODE.NOT_ACTIVATABLE]: "vird:errors.notActivatable",
+  [VIRD_ERROR_CODE.PHASES_REQUIRED]: "vird:errors.phasesRequired"
 };
 
 /**

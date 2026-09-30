@@ -2,7 +2,8 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
-import { formatCounter } from "@zikirmatik/shared";
+import { useAppLocale } from "../../../i18n";
+import { formatInteger, formatPercent } from "../../../lib/locale-format";
 import type { StatsPeriodComparison } from "@zikirmatik/shared";
 
 const NEGATIVE_COLOR = "#E5675C";
@@ -10,6 +11,7 @@ const NEGATIVE_COLOR = "#E5675C";
 function ComparisonRow({ label, data }: { label: string; data: StatsPeriodComparison }) {
   const { tokens } = useThemeTokens();
   const { t } = useTranslation("stats");
+  const locale = useAppLocale();
   const isUp = data.changePercent >= 0;
   const color = data.changePercent === 0 ? tokens.textMuted : isUp ? tokens.success : NEGATIVE_COLOR;
 
@@ -18,10 +20,10 @@ function ComparisonRow({ label, data }: { label: string; data: StatsPeriodCompar
       <View className="flex-1">
         <Text className="text-sm font-medium text-text-primary">{label}</Text>
         <Text className="mt-0.5 text-xs text-text-muted">
-          {t("stats:periodComparison.previousPeriod", { count: formatCounter(data.previous) })}
+          {t("stats:periodComparison.previousPeriod", { count: formatInteger(data.previous, locale) })}
         </Text>
       </View>
-      <Text className="mr-3 text-lg font-bold text-text-primary">{formatCounter(data.current)}</Text>
+      <Text className="mr-3 text-lg font-bold text-text-primary">{formatInteger(data.current, locale)}</Text>
       <View className="w-20 flex-row items-center justify-end">
         <FontAwesome6
           name={data.changePercent === 0 ? "minus" : isUp ? "arrow-trend-up" : "arrow-trend-down"}
@@ -30,7 +32,7 @@ function ComparisonRow({ label, data }: { label: string; data: StatsPeriodCompar
           color={color}
         />
         <Text className="ml-1.5 text-sm font-semibold" style={{ color }}>
-          %{Math.abs(data.changePercent)}
+          {formatPercent(Math.abs(data.changePercent), locale)}
         </Text>
       </View>
     </View>

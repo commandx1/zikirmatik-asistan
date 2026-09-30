@@ -79,7 +79,7 @@ export function CircleCreateScreen() {
       const endDate = duration === "unlimited" ? undefined : shiftDateKey(toDateKey(new Date()), Number.parseInt(duration, 10));
 
       const circle = await createCircle({
-        name: name.trim() || undefined,
+        name: name.trim() || resolveLocalizedText(selected.snapshot.name, locale),
         dhikrId: selected.ref,
         goalCount: goal,
         endDate

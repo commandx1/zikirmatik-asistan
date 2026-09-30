@@ -2,7 +2,8 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Text, View } from "react-native";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
-import { formatCounter } from "@zikirmatik/shared";
+import { useAppLocale } from "../../../i18n";
+import { formatInteger, formatPercent } from "../../../lib/locale-format";
 import type { StatsSummary } from "@zikirmatik/shared";
 
 type IconName = "infinity" | "fire" | "trophy" | "calendar-check" | "circle-check" | "sun" | "calendar-week" | "calendar-days" | "chart-line";
@@ -34,18 +35,19 @@ function StatCard({ item }: { item: StatItem }) {
 export function SummaryCards({ summary }: { summary: StatsSummary }) {
   const { totals, periods, streak } = summary;
   const { t } = useTranslation("stats");
+  const locale = useAppLocale();
   const dayUnit = t("stats:summary.dayUnit");
 
   const items: StatItem[] = [
-    { icon: "infinity", labelKey: "totalDhikr", value: formatCounter(totals.allTimeCount) },
+    { icon: "infinity", labelKey: "totalDhikr", value: formatInteger(totals.allTimeCount, locale) },
     { icon: "fire", labelKey: "currentStreak", value: String(streak.currentStreak), unit: dayUnit },
     { icon: "trophy", labelKey: "longestStreak", value: String(streak.longestStreak), unit: dayUnit },
-    { icon: "calendar-check", labelKey: "activeDays", value: formatCounter(streak.totalDaysActive) },
-    { icon: "sun", labelKey: "today", value: formatCounter(periods.today) },
-    { icon: "calendar-week", labelKey: "thisWeek", value: formatCounter(periods.thisWeek) },
-    { icon: "calendar-days", labelKey: "thisMonth", value: formatCounter(periods.thisMonth) },
-    { icon: "chart-line", labelKey: "dailyAverage", value: formatCounter(totals.averagePerActiveDay) },
-    { icon: "circle-check", labelKey: "completion", value: `%${totals.completionRate}` }
+    { icon: "calendar-check", labelKey: "activeDays", value: formatInteger(streak.totalDaysActive, locale) },
+    { icon: "sun", labelKey: "today", value: formatInteger(periods.today, locale) },
+    { icon: "calendar-week", labelKey: "thisWeek", value: formatInteger(periods.thisWeek, locale) },
+    { icon: "calendar-days", labelKey: "thisMonth", value: formatInteger(periods.thisMonth, locale) },
+    { icon: "chart-line", labelKey: "dailyAverage", value: formatInteger(totals.averagePerActiveDay, locale) },
+    { icon: "circle-check", labelKey: "completion", value: formatPercent(totals.completionRate, locale) }
   ];
 
   return (

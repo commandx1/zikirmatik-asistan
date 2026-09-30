@@ -47,7 +47,7 @@ import enCircle from "./locales/en/circle.json";
 export type SupportedLocale = "tr" | "en";
 
 export const SUPPORTED_LOCALES: SupportedLocale[] = ["tr", "en"];
-export const DEFAULT_LOCALE: SupportedLocale = "tr";
+export const DEFAULT_LOCALE: SupportedLocale = "en";
 
 const resources = {
   tr: {
@@ -101,7 +101,7 @@ const resources = {
 export function detectDeviceLocale(): SupportedLocale {
   const [primaryLocale] = Localization.getLocales();
   const languageCode = primaryLocale?.languageCode;
-  return languageCode === "en" ? "en" : languageCode === "tr" ? "tr" : DEFAULT_LOCALE;
+  return languageCode === "tr" ? "tr" : DEFAULT_LOCALE;
 }
 
 void i18n.use(initReactI18next).init({
@@ -138,13 +138,13 @@ void i18n.use(initReactI18next).init({
 
 /** Current UI locale for non-hook code (services, contexts outside render). Not reactive. */
 export function getAppLocale(): "tr" | "en" {
-  return i18n.language === "en" ? "en" : "tr";
+  return i18n.language === "tr" ? "tr" : "en";
 }
 
 /** Current UI locale, re-rendering the caller when the language changes. */
 export function useAppLocale(): "tr" | "en" {
   const { i18n: i18next } = useTranslation();
-  return i18next.language === "en" ? "en" : "tr";
+  return i18next.language === "tr" ? "tr" : "en";
 }
 
 export { i18n };

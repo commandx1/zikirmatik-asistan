@@ -4,7 +4,8 @@ import Svg, { Rect } from "react-native-svg";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { AppChip } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
-import { formatCounter } from "@zikirmatik/shared";
+import { useAppLocale } from "../../../i18n";
+import { formatInteger } from "../../../lib/locale-format";
 import type { StatsDailyPoint } from "@zikirmatik/shared";
 import { maxOf, withAlpha } from "./chart-utils";
 
@@ -18,6 +19,7 @@ function shortDate(key: string): string {
 export function DailyBarChart({ series }: { series: StatsDailyPoint[] }) {
   const { tokens } = useThemeTokens();
   const { t } = useTranslation("stats");
+  const locale = useAppLocale();
   const [range, setRange] = useState<7 | 30>(7);
   const [width, setWidth] = useState(0);
 
@@ -32,7 +34,7 @@ export function DailyBarChart({ series }: { series: StatsDailyPoint[] }) {
   return (
     <View className="rounded-2xl border border-border bg-card p-4">
       <View className="mb-3 flex-row items-center justify-between">
-        <Text className="text-sm text-text-muted">{t("stats:dailyBarChart.totalLabel", { count: formatCounter(total) })}</Text>
+        <Text className="text-sm text-text-muted">{t("stats:dailyBarChart.totalLabel", { count: formatInteger(total, locale) })}</Text>
         <View className="flex-row gap-2">
           <AppChip label={t("stats:dailyBarChart.range7")} active={range === 7} onPress={() => setRange(7)} />
           <AppChip label={t("stats:dailyBarChart.range30")} active={range === 30} onPress={() => setRange(30)} />

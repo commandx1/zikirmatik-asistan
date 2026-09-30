@@ -38,7 +38,7 @@ type ProfileState = {
 export const useProfileStore = create<ProfileState>()(
   persist(
     (set) => ({
-      displayName: "Misafir",
+      displayName: "",
       memberSinceLabel: "",
       isPremium: false,
       locale: detectDeviceLocale(),
@@ -75,7 +75,7 @@ export const useProfileStore = create<ProfileState>()(
       },
       resetSessionScoped: () => {
         set({
-          displayName: "Misafir",
+          displayName: "",
           memberSinceLabel: "",
           isPremium: false,
           reminderTime: "08:00",

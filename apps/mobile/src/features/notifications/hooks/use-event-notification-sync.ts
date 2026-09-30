@@ -3,6 +3,7 @@ import { AppState } from "react-native";
 import { resolveServerPushActive, syncEventNotifications } from "../services/event-notifications";
 import { usePushRegistrationStore } from "../../../store/push-registration-store";
 import { useAppConfigStore } from "../../../store/app-config-store";
+import { useProfileStore } from "../../../store/profile-store";
 
 // Root-mounted (see app/_layout.tsx). Cuma + özel gün bildirimleri tamamen
 // lokaldir ve tercihe bağlı DEĞİLDİR; bu yüzden zamanlamayı belirli bir ekrana
@@ -30,6 +31,8 @@ export function useEventNotificationSync() {
   const registered = usePushRegistrationStore((state) => state.serverPushActive);
   const serverPushEnabled = useAppConfigStore((state) => state.serverPushEnabled);
   const serverPushActive = resolveServerPushActive(registered, serverPushEnabled);
+  // Notification texts come from i18n.t at schedule time: resync on language change.
+  const locale = useProfileStore((s) => s.locale);
 
   useEffect(() => {
     void syncEventNotifications({ requestPermission: false, serverPushActive }).catch(() => {});
@@ -45,5 +48,5 @@ export function useEventNotificationSync() {
     return () => subscription.remove();
     // serverPushActive salt registered + serverPushEnabled'dan türetilir
     // (resolveServerPushActive); bunlar zaten bağımlılıkta.
-  }, [registered, serverPushEnabled, serverPushActive]);
+  }, [registered, serverPushEnabled, serverPushActive, locale]);
 }

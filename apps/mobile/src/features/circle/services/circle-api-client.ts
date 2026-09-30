@@ -71,7 +71,8 @@ const CIRCLE_ERROR_MESSAGE_KEY: Record<CircleErrorCode, string> = {
   [CIRCLE_ERROR_CODE.MAX_ACTIVE]: "circle:errors.maxActive",
   [CIRCLE_ERROR_CODE.NOT_MEMBER]: "circle:errors.notMember",
   [CIRCLE_ERROR_CODE.DHIKR_MISMATCH]: "circle:errors.dhikrMismatch",
-  [CIRCLE_ERROR_CODE.CREATOR_ONLY]: "circle:errors.creatorOnly"
+  [CIRCLE_ERROR_CODE.CREATOR_ONLY]: "circle:errors.creatorOnly",
+  [CIRCLE_ERROR_CODE.END_DATE_PAST]: "circle:errors.endDatePast"
 };
 
 function isCircleErrorCode(code: unknown): code is CircleErrorCode {

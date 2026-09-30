@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import { useStreakReminderStore } from "../../../store/streak-reminder-store";
+import { useProfileStore } from "../../../store/profile-store";
 import {
   deriveStreakReminderStatus,
   syncStreakReminderNotification
@@ -17,6 +18,8 @@ export function useStreakReminderSync() {
   const freeModeActivityAt = useDhikrStore((state) => state.freeModeActivityAt);
   const activeDayKeys = useDhikrStore((state) => state.activeDayKeys);
   const enabled = useStreakReminderStore((state) => state.streakReminderEnabled);
+  // Notification texts come from i18n.t at schedule time: resync on language change.
+  const locale = useProfileStore((s) => s.locale);
 
   const { currentStreak, hasCompletedToday } = useMemo(
     () => deriveStreakReminderStatus({ items, freeModeCount, freeModeActivityAt, activeDayKeys }),
@@ -28,5 +31,5 @@ export function useStreakReminderSync() {
       enabled,
       status: { currentStreak, hasCompletedToday }
     });
-  }, [enabled, currentStreak, hasCompletedToday]);
+  }, [enabled, currentStreak, hasCompletedToday, locale]);
 }

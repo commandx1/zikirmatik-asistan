@@ -1,6 +1,6 @@
 {
   "topBar": {
-    "title": "Zikirmatik Guide",
+    "title": "Zikirmatik Asistan",
     "subtitle": "{{greeting}} • Streak {{streak}}"
   },
   "a11y": {
@@ -8,7 +8,8 @@
   },
   "greeting": "Hi, {{name}}",
   "defaultName": "friend",
-  "streakLabel": "{{count}} days",
+  "streakLabel_one": "{{count}} day",
+  "streakLabel_other": "{{count}} days",
   "lastActivity": {
     "notStarted": "Not started yet"
   },

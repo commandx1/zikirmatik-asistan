@@ -1,5 +1,6 @@
 import { resolveThemeTokens, type ThemeTokens, type ThemeName } from "@zikirmatik/shared";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useProfileStore } from "../../../store/profile-store";
 import { THEME_LABELS } from "../../../theme/labels";
@@ -203,6 +204,7 @@ const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
 };
 
 export function useThemeSelector() {
+  const { t } = useTranslation();
   const { themeName, setThemeName } = useThemePreferences();
   const isPremium = useProfileStore((s) => s.isPremium);
   const [draftThemeName, setDraftThemeName] = useState<ThemeName>(themeName);
@@ -215,7 +217,7 @@ export function useThemeSelector() {
     const base = SWATCH_COLORS[id];
     return {
       id,
-      label: THEME_LABELS[id],
+      label: t(THEME_LABELS[id]),
       ...base,
       isPremiumLocked: !isPremium && base.isPremiumLocked
     };

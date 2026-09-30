@@ -3,7 +3,7 @@
 // schemas/vird-program.schema.ts, vird-templates.service.ts). Paylaşılan
 // istemci tipleri @zikirmatik/shared'de (packages/shared/src/types/vird.ts) —
 // burada onlardan türetilir, birebir kopyalanmaz.
-import type { LocalizedText, VirdPrayerIndex, VirdProgram } from "@zikirmatik/shared";
+import type { LocalizedText, VirdProgram } from "@zikirmatik/shared";
 
 export type {
   LocalizedText,
@@ -17,15 +17,6 @@ export type {
   VirdReminders,
   VirdSlotKey
 } from "@zikirmatik/shared";
-
-/** Beş vakit indeksi -> Türkçe kısa ad (bkz. vird.types.ts VirdPrayerIndex). */
-export const VIRD_PRAYER_INDEX_LABEL_TR: Record<VirdPrayerIndex, string> = {
-  1: "Sabah",
-  2: "Öğle",
-  3: "İkindi",
-  4: "Akşam",
-  5: "Yatsı"
-};
 
 export type VirdProgramOrigin = "local" | "server";
 

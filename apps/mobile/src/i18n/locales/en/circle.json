@@ -17,7 +17,8 @@
     "codePlaceholder": "Enter invite code",
     "join": "Join",
     "invalidCode": "Invalid invite code.",
-    "membersCount": "{{count}} members",
+    "membersCount_one": "{{count}} member",
+    "membersCount_other": "{{count}} members",
     "membersCountWithLimit": "{{count}}/{{limit}} members"
   },
   "create": {
@@ -37,6 +38,7 @@
     "goalInvalid": "Goal must be a number between 1 and 10,000,000."
   },
   "detail": {
+    "guestMember": "Guest",
     "share": "Share",
     "start": "Start dhikr",
     "leave": "Leave",
@@ -54,6 +56,7 @@
     "closedTitle": "Circle closed",
     "myContribution": "My total: {{total}} · Today: {{today}}",
     "endDate": "Ends: {{date}}",
+    "endsAt": "Ends: {{date}}",
     "cancel": "Cancel"
   },
   "session": {
@@ -85,6 +88,7 @@
     "creatorOnly": "Only the circle's creator can do this.",
     "serviceUnavailable": "The circle service is unreachable right now. Please try again later.",
     "serviceUnreachable": "Check your internet connection and try again.",
-    "invalidCode": "Invalid invite code."
+    "invalidCode": "Invalid invite code.",
+    "endDatePast": "The end date can't be in the past."
   }
 }

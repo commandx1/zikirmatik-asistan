@@ -4,6 +4,7 @@ import * as Crypto from "expo-crypto";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { registerDevice, unlinkDevice } from "./devices-api-client";
+import { getDeviceTimeZone } from "../../../lib/http/client";
 import { usePushRegistrationStore } from "../../../store/push-registration-store";
 import { PUSH_DEVICE_ID_KEY, PUSH_PERMISSION_PROMPTED_KEY } from "../../../lib/storage/keys";
 
@@ -83,7 +84,11 @@ async function getExpoPushToken(): Promise<string | undefined> {
 // "Bildirimler" master-toggle flow (sync-notification-settings.ts →
 // updateDevicePrefs); new devices get the backend's opt-in-friendly
 // $setOnInsert defaults (`true`).
-export async function registerPushDevice(authenticated?: boolean): Promise<void> {
+export async function registerPushDevice(
+  authenticated?: boolean,
+  locale?: "tr" | "en",
+  timezone: string | undefined = getDeviceTimeZone()
+): Promise<void> {
   const deviceId = await getOrCreateDeviceId();
   const granted = await ensurePushPermission();
   const expoPushToken = granted ? await getExpoPushToken() : undefined;
@@ -93,7 +98,9 @@ export async function registerPushDevice(authenticated?: boolean): Promise<void>
       {
         deviceId,
         expoPushToken,
-        platform: resolvePlatform()
+        platform: resolvePlatform(),
+        ...(locale ? { locale } : {}),
+        ...(timezone ? { timezone } : {})
       },
       authenticated
     );
@@ -104,6 +111,27 @@ export async function registerPushDevice(authenticated?: boolean): Promise<void>
     usePushRegistrationStore.getState().setServerPushActive(false);
     throw error;
   }
+}
+
+let lastSyncedKey: string | null = null;
+let syncQueue: Promise<unknown> = Promise.resolve();
+
+// Hook entry point (app start, auth/locale change, every foreground): only
+// hits the network when auth, locale or device timezone changed since the
+// last SUCCESSFUL registration in this process (a failure retries on the next
+// call). Serialized so a locale switch can't be overtaken by an older call.
+export function syncPushDeviceRegistration(authenticated: boolean, locale: "tr" | "en"): Promise<void> {
+  const next = syncQueue.then(async () => {
+    const timezone = getDeviceTimeZone();
+    const key = `${authenticated}|${locale}|${timezone ?? ""}`;
+    if (key === lastSyncedKey) {
+      return;
+    }
+    await registerPushDevice(authenticated, locale, timezone);
+    lastSyncedKey = key;
+  });
+  syncQueue = next.catch(() => {});
+  return next;
 }
 
 // Called on logout: unlinks the device from the signed-out user without

@@ -8,6 +8,8 @@
   },
   "previewCard": {
     "preview": "Preview",
+    "transliteration": "Subhanallahi wa bihamdihi",
+    "meaning": "Glory be to Allah and praise be to Him.",
     "dhikrDetail": "Dhikr Detail"
   },
   "gridSection": {
@@ -33,5 +35,28 @@
         "ahsap": "Wood"
       }
     }
+  },
+  "themes": {
+    "gece-koyu": "Dark Night",
+    "gece-lacivert": "Navy Night",
+    "cami-yesili": "Mosque Green",
+    "col-kumulu": "Desert Dune",
+    "kum-tasi-minimal": "Sandstone Minimal",
+    "zumrut-mermer": "Emerald Marble",
+    "saf-gece-amoled": "Pure Night AMOLED",
+    "ay-isigi": "Moonlight",
+    "klasik-bej": "Classic Beige",
+    "derin-mavi": "Deep Blue",
+    "gul-bahcesi": "Rose Garden",
+    "saf-siyah": "Pure Black",
+    "galaksi-girdabi": "Galaxy Vortex",
+    "karadeniz": "Black Sea",
+    "safran": "Saffron",
+    "tekke": "Tekke",
+    "peygamber-mavisi": "Prophet's Blue",
+    "hilal-gecesi": "Crescent Night",
+    "su-dalgasi": "Water Wave",
+    "lacivert-indigo": "Navy Indigo",
+    "altin-varak": "Gold Leaf"
   }
 }

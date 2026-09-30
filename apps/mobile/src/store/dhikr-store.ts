@@ -720,75 +720,10 @@ export const useDhikrStore = create<DhikrStore>()(
   {
     name: "dhikr-store-v1",
     storage: createJSONStorage(() => safeAsyncStorage),
-    version: 4,
+    version: 5,
     migrate: (persistedState, version) => {
-      if (version >= 4) {
-        return persistedState as DhikrStore;
-      }
-      if (version >= 3) {
-        return seedLifetimeCount(persistedState) as unknown as DhikrStore;
-      }
-      if (version >= 2) {
-        return seedLifetimeCount(seedActiveDayKeys(persistedState)) as unknown as DhikrStore;
-      }
-
-      // Sürüm 0 (nameTurkish/plain-string alanlar) VEYA sürüm 1 (LocalizedText,
-      // henüz ZikirItem.lapSize'sız) durumundan sürüm 2'ye (opsiyonel lapSize)
-      // geçiş. v1 verisi zaten LocalizedText kullandığından aşağıdaki dönüşüm
-      // bloğu onun için idempotenttir (değerler değişmez, yalnızca yeni bir
-      // obje referansı döner). lapSize alanına burada kasıtlı olarak
-      // dokunulmaz — eksikse okuma tarafı 33'e düşer (bkz. resolveLapSize,
-      // features/home/services/lap-counter.ts). Bozuk/eksik/beklenmeyen
-      // şekilde persist edilmiş eski state (örn. null, dizi olmayan items,
-      // obje olmayan öğeler) burada crash etmemeli — her adım defensive
-      // olmalı, en kötü ihtimalle öğe atlanır.
-      try {
-        const state = (persistedState ?? {}) as { items?: unknown };
-        const rawItems = Array.isArray(state.items) ? state.items : [];
-
-        const items = rawItems
-          .filter((rawItem): rawItem is Record<string, unknown> => typeof rawItem === "object" && rawItem !== null)
-          .map((rawItem) => {
-            const item = { ...rawItem };
-            const isPersonal = item.source === "personal";
-
-            if (typeof item.nameTurkish === "string") {
-              item.name = isPersonal ? item.nameTurkish : toLocalizedText(item.nameTurkish);
-              delete item.nameTurkish;
-            }
-
-            if (typeof item.name !== "string" && !(item.name && typeof item.name === "object" && "tr" in item.name)) {
-              // nameTurkish yoktu ve name de tanımsız/geçersiz — render'ı
-              // crash ettirmemek için güvenli bir varsayılana düş.
-              item.name = isPersonal ? "" : toLocalizedText("");
-            }
-
-            if (!isPersonal) {
-              if (typeof item.transliteration === "string") {
-                item.transliteration = toLocalizedText(item.transliteration);
-              }
-              if (typeof item.meaning === "string") {
-                item.meaning = toLocalizedText(item.meaning);
-              }
-              if (typeof item.virtue === "string") {
-                item.virtue = toLocalizedText(item.virtue);
-              }
-              if (typeof item.contentSource === "string") {
-                item.contentSource = toLocalizedText(item.contentSource);
-              }
-            }
-
-            return item;
-          });
-
-        return seedLifetimeCount(seedActiveDayKeys({ ...state, items })) as unknown as DhikrStore;
-      } catch {
-        // Migrasyon her ne sebeple olursa olsun başarısız olursa, boş bir
-        // items listesiyle devam et — kullanıcı verisi kaybı yerine crash'i
-        // engellemek önceliklidir; kalan alanlar zustand varsayılanlarından gelir.
-        const state = (persistedState ?? {}) as Record<string, unknown>;
-        return { ...state, items: [] } as unknown as DhikrStore;
-      }
+      const migrated = migrateToV4(persistedState, version);
+      return version >= 5 ? migrated : refreshSeedEnglish(migrated);
     },
     partialize: (state) => ({
       items: state.items,
@@ -851,4 +786,103 @@ function seedLifetimeCount(persistedState: unknown) {
     }
   }
   return { ...state, lifetimeCount };
+}
+
+function migrateToV4(persistedState: unknown, version: number): DhikrStore {
+  if (version >= 4) {
+    return persistedState as DhikrStore;
+  }
+  if (version >= 3) {
+    return seedLifetimeCount(persistedState) as unknown as DhikrStore;
+  }
+  if (version >= 2) {
+    return seedLifetimeCount(seedActiveDayKeys(persistedState)) as unknown as DhikrStore;
+  }
+
+  // Sürüm 0 (nameTurkish/plain-string alanlar) VEYA sürüm 1 (LocalizedText,
+  // henüz ZikirItem.lapSize'sız) durumundan sürüm 2'ye (opsiyonel lapSize)
+  // geçiş. v1 verisi zaten LocalizedText kullandığından aşağıdaki dönüşüm
+  // bloğu onun için idempotenttir (değerler değişmez, yalnızca yeni bir
+  // obje referansı döner). lapSize alanına burada kasıtlı olarak
+  // dokunulmaz — eksikse okuma tarafı 33'e düşer (bkz. resolveLapSize,
+  // features/home/services/lap-counter.ts). Bozuk/eksik/beklenmeyen
+  // şekilde persist edilmiş eski state (örn. null, dizi olmayan items,
+  // obje olmayan öğeler) burada crash etmemeli — her adım defensive
+  // olmalı, en kötü ihtimalle öğe atlanır.
+  try {
+    const state = (persistedState ?? {}) as { items?: unknown };
+    const rawItems = Array.isArray(state.items) ? state.items : [];
+
+    const items = rawItems
+      .filter((rawItem): rawItem is Record<string, unknown> => typeof rawItem === "object" && rawItem !== null)
+      .map((rawItem) => {
+        const item = { ...rawItem };
+        const isPersonal = item.source === "personal";
+
+        if (typeof item.nameTurkish === "string") {
+          item.name = isPersonal ? item.nameTurkish : toLocalizedText(item.nameTurkish);
+          delete item.nameTurkish;
+        }
+
+        if (typeof item.name !== "string" && !(item.name && typeof item.name === "object" && "tr" in item.name)) {
+          // nameTurkish yoktu ve name de tanımsız/geçersiz — render'ı
+          // crash ettirmemek için güvenli bir varsayılana düş.
+          item.name = isPersonal ? "" : toLocalizedText("");
+        }
+
+        if (!isPersonal) {
+          if (typeof item.transliteration === "string") {
+            item.transliteration = toLocalizedText(item.transliteration);
+          }
+          if (typeof item.meaning === "string") {
+            item.meaning = toLocalizedText(item.meaning);
+          }
+          if (typeof item.virtue === "string") {
+            item.virtue = toLocalizedText(item.virtue);
+          }
+          if (typeof item.contentSource === "string") {
+            item.contentSource = toLocalizedText(item.contentSource);
+          }
+        }
+
+        return item;
+      });
+
+    return seedLifetimeCount(seedActiveDayKeys({ ...state, items })) as unknown as DhikrStore;
+  } catch {
+    // Migrasyon her ne sebeple olursa olsun başarısız olursa, boş bir
+    // items listesiyle devam et — kullanıcı verisi kaybı yerine crash'i
+    // engellemek önceliklidir; kalan alanlar zustand varsayılanlarından gelir.
+    const state = (persistedState ?? {}) as Record<string, unknown>;
+    return { ...state, items: [] } as unknown as DhikrStore;
+  }
+}
+
+// v4 -> v5: seed items' `en` strings used to hold Turkish text. Overwrite only
+// name/transliteration/meaning `en` on persisted built-in items from the current
+// seed. Never re-adds deleted seed items, never touches user items or other fields.
+// Must not throw — a throw during rehydration wipes the user's store.
+export function refreshSeedEnglish(state: DhikrStore): DhikrStore {
+  try {
+    const items = (state as { items?: unknown }).items;
+    if (!Array.isArray(items)) return state;
+    const seedById = new Map(ZIKIR_ITEMS.map((seed) => [seed.id, seed]));
+    const patch = (current: unknown, en: string | undefined) =>
+      en !== undefined && current && typeof current === "object" ? { ...current, en } : current;
+    const next = items.map((item: unknown) => {
+      const raw = item as Record<string, unknown> | null;
+      const seed = raw && typeof raw === "object" && raw.source === "ready" ? seedById.get(String(raw.id)) : undefined;
+      if (!raw || !seed) return item;
+      const en = (value: unknown) => (value && typeof value === "object" ? (value as LocalizedText).en : undefined);
+      return {
+        ...raw,
+        name: patch(raw.name, en(seed.name)),
+        transliteration: patch(raw.transliteration, en(seed.transliteration)),
+        meaning: patch(raw.meaning, en(seed.meaning))
+      };
+    });
+    return { ...state, items: next } as DhikrStore;
+  } catch {
+    return state;
+  }
 }

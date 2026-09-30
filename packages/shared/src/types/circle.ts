@@ -31,13 +31,17 @@ export type CircleSummary = CirclePreview & {
   dhikrId: string;
   /** YYYY-MM-DD; yoksa süresiz. */
   endDate?: string;
+  /** ISO 8601 an; yalnız bitiş tarihli ve yeni halkalarda (eskilerde yalnız endDate). */
+  expiresAt?: string;
   myTotal: number;
   creatorId: string;
   isCreator: boolean;
 };
 
 export type CircleDetail = CircleSummary & {
-  members: { displayName: string; activeToday?: boolean }[];
+  /** defaultName: sunucu, kayıtlı ad varsayılan misafir adıysa true gönderir
+   * (eski API göndermez; istemci düz metin karşılaştırmasına düşer). */
+  members: { displayName: string; activeToday?: boolean; defaultName?: true }[];
   activeTodayCount?: number;
   myTodayCount: number;
 };
@@ -58,6 +62,7 @@ export const CIRCLE_ERROR_CODE = {
   NOT_MEMBER: "CIRCLE_NOT_MEMBER",
   DHIKR_MISMATCH: "CIRCLE_DHIKR_MISMATCH",
   CREATOR_ONLY: "CIRCLE_CREATOR_ONLY",
+  END_DATE_PAST: "CIRCLE_END_DATE_PAST",
 } as const;
 
 export type CircleErrorCode =

@@ -44,12 +44,6 @@ const CREDIT_TOPUP_CREDITS: Record<string, number> = {
   topuplarge: 75
 };
 
-export const CREDIT_TOPUP_FALLBACK: CreditTopupProduct[] = [
-  { productId: "topupsmall", credits: 10, priceString: "₺29,99" },
-  { productId: "topupmedium", credits: 30, priceString: "₺59,99" },
-  { productId: "topuplarge", credits: 75, priceString: "₺99,99" }
-];
-
 let isConfigured = false;
 let configuredAppUserId: string | null = null;
 
@@ -99,7 +93,7 @@ export async function getCreditTopupProducts(userId: string): Promise<CreditTopu
     .filter((item) => item.credits > 0)
     .sort((a, b) => a.credits - b.credits);
 
-  return mapped.length > 0 ? mapped : CREDIT_TOPUP_FALLBACK;
+  return mapped;
 }
 
 export type SubscriptionPrices = {

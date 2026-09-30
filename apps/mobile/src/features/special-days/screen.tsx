@@ -29,10 +29,12 @@ export function SpecialDaysScreen() {
               <SpecialDaysSkeleton />
             ) : (
               <>
-                <HeroCountdownCard
-                  data={specialDays.heroCard}
-                  onPressDetail={(id) => router.push(`/special-days/${id}`)}
-                />
+                {specialDays.heroCard ? (
+                  <HeroCountdownCard
+                    data={specialDays.heroCard}
+                    onPressDetail={(id) => router.push(`/special-days/${id}`)}
+                  />
+                ) : null}
                 {specialDays.todayAction ? (
                   <TodayActionsCard
                     action={specialDays.todayAction}

@@ -8,7 +8,8 @@
   },
   "greeting": "Selam, {{name}}",
   "defaultName": "Dostum",
-  "streakLabel": "{{count}} gün",
+  "streakLabel_one": "{{count}} gün",
+  "streakLabel_other": "{{count}} gün",
   "lastActivity": {
     "notStarted": "Henüz başlanmadı"
   },

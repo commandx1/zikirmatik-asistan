@@ -2,8 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../env", () => ({ API_BASE_URL: "http://api.test" }));
 
+const calendars = vi.hoisted(() => ({ value: [] as { timeZone?: string | null }[] }));
+vi.mock("expo-localization", () => ({ getCalendars: () => calendars.value }));
+
 const { ApiError, request } = await import("./client");
 const { registerAuthBridge } = await import("./auth-bridge");
+const { i18n } = await import("../../i18n");
 
 const errors = { failed: "failed-msg", unreachable: "unreachable-msg" };
 const fetchMock = vi.fn();
@@ -35,7 +39,13 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
+  calendars.value = [];
+  (i18n as { language: string }).language = "tr";
 });
+
+function headersOf(call: number) {
+  return (fetchMock.mock.calls[call]![1] as RequestInit & { headers: Record<string, string> }).headers;
+}
 
 describe("request", () => {
   it("unwraps a {data} envelope and passes bare bodies through", async () => {
@@ -186,5 +196,41 @@ describe("request", () => {
     const parse = vi.fn((raw: unknown) => Number((raw as { n: string }).n));
     await expect(request("/x", { errors, parse })).resolves.toBe(2);
     expect(parse).toHaveBeenCalledWith({ n: "2" });
+  });
+
+  it("sends x-client-timezone when the device reports a valid zone, omits it otherwise", async () => {
+    fetchMock.mockResolvedValue(reply(200, {}));
+
+    calendars.value = [{ timeZone: "America/Los_Angeles" }];
+    await request("/x", { errors });
+    calendars.value = [];
+    await request("/x", { errors });
+    calendars.value = [{ timeZone: null }];
+    await request("/x", { errors });
+    calendars.value = [{ timeZone: "Not/AZone" }];
+    await request("/x", { errors });
+
+    expect(headersOf(0)["x-client-timezone"]).toBe("America/Los_Angeles");
+    for (const call of [1, 2, 3]) {
+      expect(headersOf(call)).not.toHaveProperty("x-client-timezone");
+    }
+  });
+});
+
+describe("error message localization", () => {
+  it("in tr returns the raw server message", async () => {
+    fetchMock.mockResolvedValueOnce(reply(403, { code: "VIRD_NOT_ACTIVATABLE", message: "Yalnızca taslak..." }));
+    const error = await rejection(request("/x", { errors }));
+    expect([error.message, error.code]).toEqual(["Yalnızca taslak...", "VIRD_NOT_ACTIVATABLE"]);
+  });
+
+  it("in en returns the localized fallback and keeps the code", async () => {
+    (i18n as { language: string }).language = "en";
+    fetchMock.mockResolvedValueOnce(reply(403, { code: "VIRD_NOT_ACTIVATABLE", message: "Yalnızca taslak..." }));
+    const error = await rejection(request("/x", { errors }));
+    expect([error.message, error.code, error.status]).toEqual(["failed-msg", "VIRD_NOT_ACTIVATABLE", 403]);
+
+    fetchMock.mockResolvedValueOnce(reply(400, "raw failure"));
+    expect((await rejection(request("/x", { errors }))).message).toBe("failed-msg");
   });
 });

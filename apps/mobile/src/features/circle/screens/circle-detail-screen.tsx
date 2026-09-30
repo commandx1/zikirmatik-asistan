@@ -20,6 +20,7 @@ import { useCircleStore } from "../../../store/circle-store";
 import { trackEvent } from "../../../lib/analytics";
 import { closeCircle, fetchCircle, leaveCircle } from "../services/circle-api-client";
 import { buildCircleShareMessage } from "../services/circle-share";
+import { circleEndLabel } from "../services/circle-end-label";
 import { TEST_IDS } from "../../../test-ids";
 import { useAppLocale } from "../../../i18n";
 
@@ -146,7 +147,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
             })}
           </Text>
           {storedCircle.endDate ? (
-            <Text className="mt-0.5 text-xs text-text-muted">{t("circle:detail.endDate", { date: storedCircle.endDate })}</Text>
+            <Text className="mt-0.5 text-xs text-text-muted">{circleEndLabel(storedCircle, locale, t)}</Text>
           ) : null}
         </ThemedCard>
 
@@ -176,7 +177,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
             </View>
             {detail.members.map((member, index) => (
               <View key={`${member.displayName}-${index}`} className="mb-1 flex-row items-center justify-between">
-                <Text className="text-sm text-text-primary">{member.displayName}</Text>
+                <Text className="text-sm text-text-primary">{member.defaultName === true || member.displayName === "Misafir Kullanıcı" ? t("circle:detail.guestMember") : member.displayName}</Text>
                 {member.activeToday === true ? (
                   <FontAwesome6
                     name="check"

@@ -4,7 +4,6 @@ import { useProfileStore } from "../store/profile-store";
 import { useRequireAuth } from "../features/auth/hooks/use-require-auth";
 import { trackEvent } from "../lib/analytics";
 import {
-  CREDIT_TOPUP_FALLBACK,
   fetchSubscriptionPrices,
   getCreditTopupProducts,
   purchaseCreditTopup,
@@ -33,7 +32,7 @@ export function usePremiumSheet(options?: UsePremiumSheetOptions) {
   const [plan, setPlan] = useState<PremiumPlan>("annual");
   const [isActivating, setIsActivating] = useState(false);
   const [error, setError] = useState<string | undefined>();
-  const [topupProducts, setTopupProducts] = useState<CreditTopupProduct[]>(CREDIT_TOPUP_FALLBACK);
+  const [topupProducts, setTopupProducts] = useState<CreditTopupProduct[]>([]);
   const [purchasingTopupId, setPurchasingTopupId] = useState<string | undefined>();
   const [topupError, setTopupError] = useState<string | undefined>();
   const [subscriptionPrices, setSubscriptionPrices] = useState<SubscriptionPrices>({});
@@ -48,7 +47,7 @@ export function usePremiumSheet(options?: UsePremiumSheetOptions) {
     try {
       setTopupProducts(await getCreditTopupProducts(userId));
     } catch {
-      // Mağaza fiyatları alınamazsa fallback fiyatlar gösterilir.
+      // Mağaza fiyatları alınamazsa kredi paketleri gizlenir (yanlış para birimi göstermeyiz).
     }
   }, [userId]);
 

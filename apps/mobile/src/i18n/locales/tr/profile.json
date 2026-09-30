@@ -3,6 +3,7 @@
     "title": "Profil"
   },
   "userCard": {
+    "guestName": "Misafir",
     "premiumBadge": "Premium",
     "upgradeButton": "Premium'a Geç"
   },
@@ -130,7 +131,8 @@
     "activating": "Aktifleştiriliyor...",
     "orBuyCredits": "veya kredi paketi al",
     "creditsKeptNote": "Satın aldığın krediler sana kalır, hiçbir zaman silinmez.",
-    "creditsLabel": "{{count}} Kredi",
+    "creditsLabel_one": "{{count}} Kredi",
+    "creditsLabel_other": "{{count}} Kredi",
     "purchasing": "Alınıyor...",
     "dailyFreeCreditNote": "Günlük 1 ücretsiz kredin her gün yenilenir.",
     "maybeLater": "Belki Daha Sonra"

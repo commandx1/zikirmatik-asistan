@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { ESMAUL_HUSNA } from '../../focus/data'
 import type { EsmaulHusnaItem } from '../../focus/types'
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
-import { withAlpha } from "@zikirmatik/shared";
+import { resolveLocalizedText, withAlpha } from "@zikirmatik/shared";
+import { useAppLocale } from '../../../i18n'
 
 type EsmaulHusnaTableEntry = {
   number: number
@@ -22,6 +23,7 @@ export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, 
   const { t } = useTranslation('home')
   const { tokens } = useThemeTokens()
   const upper = useLocaleUpper()
+  const locale = useAppLocale()
 
   const rows = useMemo(() =>
     ESMAUL_HUSNA.reduce<EsmaulHusnaTableEntry[][]>((acc, item, index) => {
@@ -65,11 +67,13 @@ export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, 
                 }}
               >
                 {row.map(({ number, item }, cellIndex) => {
-                  const isSelected = selectedTransliteration === item.transliteration
+                  const name = resolveLocalizedText(item.transliteration, locale)
+                  // Selected dhikr comes from the server (locale-resolved); match either language, key stays tr.
+                  const isSelected = selectedTransliteration === name || selectedTransliteration === item.transliteration.tr
 
                   return (
                     <Pressable
-                      key={item.transliteration}
+                      key={item.transliteration.tr}
                       disabled={disabled || isSelected}
                       onPress={() => onSelect(item)}
                       className='flex-1 flex-row items-center px-3 py-2'
@@ -84,7 +88,7 @@ export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, 
                         {number}
                       </Text>
                       <Text className='flex-1 text-sm leading-5' style={{ color: tokens.textPrimary }}>
-                        {item.transliteration}
+                        {name}
                       </Text>
                     </Pressable>
                   )

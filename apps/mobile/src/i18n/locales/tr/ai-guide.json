@@ -5,7 +5,8 @@
   "input": {
     "placeholder": "Niyetini ve ihtiyacını yaz...",
     "creditBalanceLabel": "Kalan kredi: {{count}}",
-    "creditBalance": "{{count}} kredi"
+    "creditBalance_one": "{{count}} kredi",
+    "creditBalance_other": "{{count}} kredi"
   },
   "promptChips": {
     "sad": "İçim sıkıldı",
@@ -79,7 +80,8 @@
     "today": "Bugün",
     "yesterday": "Dün",
     "noRecommendations": "Öneri bulunamadı",
-    "recommendationCount": "{{count}} öneri",
+    "recommendationCount_one": "{{count}} öneri",
+    "recommendationCount_other": "{{count}} öneri",
     "active": "Ekranda",
     "show": "Göster"
   },
@@ -111,7 +113,8 @@
       "freeTextLabel": "Niyetin (opsiyonel)",
       "freeTextPlaceholder": "Ne için bir vird istiyorsun? (ör. sabır, şükür, tövbe)",
       "durationLabel": "Süre",
-      "durationOption": "{{count}} gün",
+      "durationOption_one": "{{count}} gün",
+      "durationOption_other": "{{count}} gün",
       "slotsLabel": "Dilimler",
       "prayerSelectionLabel": "Hangi vakitlerde?",
       "creditCost": "3 kredi",

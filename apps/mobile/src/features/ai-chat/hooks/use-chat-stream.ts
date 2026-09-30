@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
+import { getAppLocale } from "../../../i18n";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import type { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
@@ -174,7 +175,11 @@ export function useChatStream({
             // geri koy ve "Tekrar dene" seçeneği sun.
             aiUnavailableMessageRef.current = text;
             setInputValue(text);
-            setAiUnavailable({ message: err.message || t("ai-chat:errors.aiUnavailable") });
+            // Non-TR: the client already replaced the (Turkish) server text with a
+            // generic fallback, so use the specific "credit not charged" copy.
+            setAiUnavailable({
+              message: getAppLocale() === "tr" ? err.message || t("ai-chat:errors.aiUnavailable") : t("ai-chat:errors.aiUnavailable")
+            });
           } else if (err instanceof AiChatApiError) {
             setError(err.message);
           } else {

@@ -17,7 +17,8 @@
     "codePlaceholder": "Davet kodunu gir",
     "join": "Katıl",
     "invalidCode": "Geçersiz davet kodu.",
-    "membersCount": "{{count}} üye",
+    "membersCount_one": "{{count}} üye",
+    "membersCount_other": "{{count}} üye",
     "membersCountWithLimit": "{{count}}/{{limit}} üye"
   },
   "create": {
@@ -37,6 +38,7 @@
     "goalInvalid": "Hedef 1 ile 10.000.000 arasında bir sayı olmalı."
   },
   "detail": {
+    "guestMember": "Misafir",
     "share": "Paylaş",
     "start": "Zikre başla",
     "leave": "Ayrıl",
@@ -54,6 +56,7 @@
     "closedTitle": "Halka kapatıldı",
     "myContribution": "Toplam katkım: {{total}} · Bugün: {{today}}",
     "endDate": "Bitiş: {{date}}",
+    "endsAt": "Bitiş: {{date}}",
     "cancel": "Vazgeç"
   },
   "session": {
@@ -85,6 +88,7 @@
     "creatorOnly": "Bu işlemi yalnızca halkayı kuran yapabilir.",
     "serviceUnavailable": "Halka servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar dene.",
     "serviceUnreachable": "İnternet bağlantını kontrol edip tekrar dene.",
-    "invalidCode": "Geçersiz davet kodu."
+    "invalidCode": "Geçersiz davet kodu.",
+    "endDatePast": "Bitiş tarihi geçmiş bir gün olamaz."
   }
 }

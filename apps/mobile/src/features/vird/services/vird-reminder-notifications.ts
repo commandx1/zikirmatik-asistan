@@ -7,7 +7,7 @@
 //  - morning: fajr + 30 dk
 //  - prayer : prayerSelection'daki HER vakit için AYRI bir tetik, o vaktin
 //             saati + 15 dk (1=fajr, 2=dhuhr, 3=asr, 4=maghrib, 5=isha —
-//             bkz. ../types.ts VIRD_PRAYER_INDEX_LABEL_TR / vird.types.ts)
+//             bkz. VirdPrayerIndex, vird.types.ts)
 //  - evening: maghrib + 30 dk
 //  - night  : isha + 60 dk
 // (`free` dilimi için hatırlatma YOK — VirdProgramReminders.slots'ta zaten

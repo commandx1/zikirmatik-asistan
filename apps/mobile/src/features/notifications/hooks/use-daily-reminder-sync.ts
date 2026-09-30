@@ -14,6 +14,8 @@ import { syncDailyReminderNotification } from "../../profile/services/daily-remi
 export function useDailyReminderSync() {
   const enabled = useProfileStore((s) => s.dailyReminderEnabled);
   const reminderTime = useProfileStore((s) => s.reminderTime);
+  // Notification texts come from i18n.t at schedule time: resync on language change.
+  const locale = useProfileStore((s) => s.locale);
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
@@ -35,5 +37,5 @@ export function useDailyReminderSync() {
     });
 
     return () => subscription.remove();
-  }, [enabled, reminderTime]);
+  }, [enabled, reminderTime, locale]);
 }

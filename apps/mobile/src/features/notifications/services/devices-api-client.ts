@@ -13,6 +13,10 @@ export type RegisterDevicePayload = {
   expoPushToken?: string;
   platform: "ios" | "android";
   prefs?: DevicePrefs;
+  /** Push campaign language. Optional: older APIs drop unknown fields (whitelist). */
+  locale?: "tr" | "en";
+  /** IANA zone for server-side "today" in push campaigns. */
+  timezone?: string;
 };
 
 export const DevicesApiError = ApiError;

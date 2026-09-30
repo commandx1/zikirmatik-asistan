@@ -19,7 +19,8 @@
     "title": "{{slot}} vird",
     "prayerTitle": "After prayer · {{prayer}}",
     "position": "{{index}}/{{total}}",
-    "remaining": "{{count}} reps left",
+    "remaining_one": "{{count}} rep left",
+    "remaining_other": "{{count}} reps left",
     "skip": "Skip",
     "next": "Next",
     "nextName": "Up next: {{name}}",
@@ -138,7 +139,8 @@
     "loadError": "Couldn't load templates.",
     "premiumBadge": "Premium",
     "untitledFallback": "Vird Program",
-    "dayCountLabel": "{{count}} days",
+    "dayCountLabel_one": "{{count}} day",
+    "dayCountLabel_other": "{{count}} days",
     "detail": {
       "phasesHeading": "Phases",
       "dayRangeLabel": "Days {{from}}-{{to}}",
@@ -184,6 +186,8 @@
     "premiumRequired": "This feature (reminders, templates, or creating a program with AI) requires premium membership.",
     "premiumMaxActivePrograms": "You can have up to 10 active vird programs.",
     "serviceUnavailable": "The vird service is unavailable right now. Please try again later.",
-    "serviceUnreachable": "Check your internet connection and try again."
+    "serviceUnreachable": "Check your internet connection and try again.",
+    "notActivatable": "Only a draft or paused program can be activated.",
+    "phasesRequired": "A manual vird program needs at least one dhikr."
   }
 }

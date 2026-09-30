@@ -27,6 +27,7 @@ import { useVirdAiCreate } from "../hooks/use-vird-ai-create";
 import { VIRD_SLOT_KEYS } from "../services/vird-day";
 import { resolveLocalizedText } from "@zikirmatik/shared";
 import { useAppLocale } from "../../../i18n";
+import { useLocaleUpper } from "../../../hooks/use-locale-upper";
 
 const DURATION_OPTIONS = [7, 14, 30] as const;
 const PRAYER_INDEXES = [1, 2, 3, 4, 5] as const;
@@ -198,13 +199,14 @@ function VirdAiFormView({
   onSubmit
 }: VirdAiFormViewProps) {
   const { t } = useTranslation("ai-guide");
+  const upper = useLocaleUpper();
   const { tokens } = useThemeTokens();
   const canSubmit = !isGenerating && slots.length > 0;
 
   return (
     <View>
       <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-text-muted">
-        {t("ai-guide:virdProgram.form.freeTextLabel").toLocaleUpperCase()}
+        {upper(t("ai-guide:virdProgram.form.freeTextLabel"))}
       </Text>
       <ThemedInput
         value={freeText}
@@ -219,7 +221,7 @@ function VirdAiFormView({
       />
 
       <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-text-muted">
-        {t("ai-guide:virdProgram.form.durationLabel").toLocaleUpperCase()}
+        {upper(t("ai-guide:virdProgram.form.durationLabel"))}
       </Text>
       <View className="mb-6 flex-row flex-wrap gap-2">
         {DURATION_OPTIONS.map((option) => (
@@ -233,7 +235,7 @@ function VirdAiFormView({
       </View>
 
       <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-text-muted">
-        {t("ai-guide:virdProgram.form.slotsLabel").toLocaleUpperCase()}
+        {upper(t("ai-guide:virdProgram.form.slotsLabel"))}
       </Text>
       <View className="mb-2 flex-row flex-wrap gap-2">
         {VIRD_SLOT_KEYS.map((slot) => (
@@ -254,7 +256,7 @@ function VirdAiFormView({
       {slots.includes("prayer") ? (
         <ThemedCard className="mb-6 rounded-2xl px-4 py-3">
           <Text className="mb-1 text-xs font-semibold tracking-[1.1px] text-text-muted">
-            {t("ai-guide:virdProgram.form.prayerSelectionLabel").toLocaleUpperCase()}
+            {upper(t("ai-guide:virdProgram.form.prayerSelectionLabel"))}
           </Text>
           {PRAYER_INDEXES.map((index) => (
             <View key={index} className="flex-row items-center justify-between py-2">
@@ -362,6 +364,7 @@ function VirdAiPreviewView({
   onDiscard
 }: VirdAiPreviewViewProps) {
   const { t } = useTranslation("ai-guide");
+  const upper = useLocaleUpper();
   const { tokens } = useThemeTokens();
 
   return (
@@ -374,7 +377,7 @@ function VirdAiPreviewView({
       )}
 
       <Text className="mb-2 text-xs font-semibold tracking-[1.1px] text-text-muted">
-        {t("ai-guide:virdProgram.preview.phasesTitle").toLocaleUpperCase()}
+        {upper(t("ai-guide:virdProgram.preview.phasesTitle"))}
       </Text>
       <View className="mb-6 gap-3">
         {preview.phases.map((phase, index) => (

@@ -1,7 +1,7 @@
 import type { AppFontFamily } from "../store/theme-store";
 
 export const FONT_LABELS: Record<AppFontFamily, string> = {
-  default: "Varsayılan",
+  default: "font-selector:fonts.default",
   merriweather: "Merriweather",
   "intel-one-mono": "Intel One Mono",
   "finlandica-headline": "Finlandica Headline",

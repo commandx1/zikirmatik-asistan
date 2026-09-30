@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AppState } from "react-native";
 import * as Location from "expo-location";
 import { useVirdStore } from "../../../store/vird-store";
+import { useProfileStore } from "../../../store/profile-store";
 import { syncVirdReminders } from "../services/vird-reminder-notifications";
 import type { VirdDayProgramLike } from "../services/vird-day";
 
@@ -30,6 +31,8 @@ export function useVirdReminderSync(): void {
   const reminderPrefs = useVirdStore((state) => state.reminderPrefs);
   const dayProgress = useVirdStore((state) => state.dayProgress);
   const setReminderPrefs = useVirdStore((state) => state.setReminderPrefs);
+  // Notification texts come from i18n.t at schedule time: resync on language change.
+  const locale = useProfileStore((s) => s.locale);
 
   // activeProgram referansı yalnızca store'daki ilgili program gerçekten
   // değiştiğinde değişir (bkz. vird-store.ts upsertProgram/replaceFromServer);
@@ -98,5 +101,5 @@ export function useVirdReminderSync(): void {
     });
 
     return () => subscription.remove();
-  }, [programForScheduling, reminderPrefs, dayProgress, refreshCoords]);
+  }, [programForScheduling, reminderPrefs, dayProgress, refreshCoords, locale]);
 }

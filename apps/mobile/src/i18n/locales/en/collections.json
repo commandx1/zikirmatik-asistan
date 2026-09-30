@@ -13,7 +13,8 @@
     "ibadet": "Worship"
   },
   "card": {
-    "dhikrCount": "{{count}} dhikr"
+    "dhikrCount_one": "{{count}} dhikr",
+    "dhikrCount_other": "{{count}} dhikr"
   },
   "detail": {
     "defaultTitle": "Collection",
