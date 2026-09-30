@@ -140,4 +140,55 @@ describe('Users (e2e)', () => {
       await deviceModel.countDocuments({ deviceId: 'e2e-users-6-device' }),
     ).toBe(0);
   });
+
+  it('DELETE: AI, kredi, halka üyeliği ve cihaz verisi temizlenir; halka kalır', async () => {
+    await request(t.http)
+      .post('/v1/devices/register')
+      .send({ deviceId: 'e2e-users-7-device', platform: 'ios' })
+      .expect(200);
+    const me = await signIn(t.http, {
+      sub: 'e2e-users-7',
+      deviceId: 'e2e-users-7-device',
+    });
+    const other = new Types.ObjectId();
+    const uid = new Types.ObjectId(me.userId);
+
+    const conversationModel = t.model<{ userId: Types.ObjectId }>(
+      'AiConversation',
+    );
+    const walletModel = t.model<{ userId: Types.ObjectId }>('AiCreditWallet');
+    const pushModel = t.model<{ deviceId: string }>('PushDispatch');
+    const circleModel = t.model<{
+      memberIds: Types.ObjectId[];
+      creatorId: Types.ObjectId;
+    }>('Circle');
+
+    await conversationModel.collection.insertOne({ userId: uid });
+    await walletModel.collection.insertOne({ userId: uid });
+    await pushModel.collection.insertOne({
+      campaignKey: 'winback',
+      deviceId: 'e2e-users-7-device',
+      dayKey: '2026-09-24',
+      sentAt: new Date(),
+    });
+    const circleId = (
+      await circleModel.collection.insertOne({
+        creatorId: other,
+        memberIds: [other, uid],
+      })
+    ).insertedId;
+
+    await request(t.http)
+      .delete(`/v1/users/${me.userId}`)
+      .set(bearer(me.accessToken))
+      .expect(200);
+
+    expect(await conversationModel.countDocuments({ userId: uid })).toBe(0);
+    expect(await walletModel.countDocuments({ userId: uid })).toBe(0);
+    expect(
+      await pushModel.countDocuments({ deviceId: 'e2e-users-7-device' }),
+    ).toBe(0);
+    const circle = await circleModel.findById(circleId).lean();
+    expect(circle?.memberIds.map(String)).toEqual([String(other)]);
+  });
 });

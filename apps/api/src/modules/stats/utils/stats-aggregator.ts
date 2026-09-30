@@ -66,6 +66,7 @@ import {
   STATS_TIMEZONE,
   istanbulDateKey,
   shiftDateKey,
+  todayKey as requestTodayKey,
 } from '../../../common/utils/date-keys';
 
 // Re-exported so existing imports from this module keep working.
@@ -93,7 +94,7 @@ export type StatsDateWindows = {
 };
 
 export function buildDateWindows(now: Date): StatsDateWindows {
-  const todayKey = istanbulDateKey(now);
+  const todayKey = requestTodayKey(now);
   return {
     todayKey,
     weekStartKey: shiftDateKey(todayKey, -6),

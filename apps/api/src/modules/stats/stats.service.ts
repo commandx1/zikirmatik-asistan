@@ -7,8 +7,8 @@ import {
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { StreaksService } from '../streaks/streaks.service';
+import { requestTimezone } from '../../common/utils/date-keys';
 import {
-  STATS_TIMEZONE,
   buildDateWindows,
   buildStatsSummary,
   type StatsFacetResult,
@@ -83,7 +83,10 @@ export class StatsService {
                 {
                   $group: {
                     _id: {
-                      $hour: { date: '$createdAt', timezone: STATS_TIMEZONE },
+                      $hour: {
+                        date: '$createdAt',
+                        timezone: requestTimezone(),
+                      },
                     },
                     count: { $sum: '$count' },
                   },

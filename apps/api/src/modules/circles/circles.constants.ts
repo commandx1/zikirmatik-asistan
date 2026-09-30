@@ -1,4 +1,5 @@
 import { randomInt } from 'node:crypto';
+import type { PushLocale } from '../push-campaigns/templates';
 
 /**
  * Zikir Halkası limitleri, hata kodları ve push metinleri. vird.constants.ts
@@ -36,6 +37,7 @@ export const CIRCLE_ERROR_CODE = {
   NOT_MEMBER: 'CIRCLE_NOT_MEMBER',
   DHIKR_MISMATCH: 'CIRCLE_DHIKR_MISMATCH',
   CREATOR_ONLY: 'CIRCLE_CREATOR_ONLY',
+  END_DATE_PAST: 'CIRCLE_END_DATE_PAST',
 } as const;
 
 export type CircleErrorCode =
@@ -52,6 +54,7 @@ export const CIRCLE_ERROR_MESSAGE: Record<CircleErrorCode, string> = {
   [CIRCLE_ERROR_CODE.DHIKR_MISMATCH]: 'Bu kayıt halkanın zikriyle eşleşmiyor.',
   [CIRCLE_ERROR_CODE.CREATOR_ONLY]:
     'Halkanın kurucusu ayrılamaz; halkayı kapatabilirsin.',
+  [CIRCLE_ERROR_CODE.END_DATE_PAST]: 'Bitiş tarihi geçmiş bir gün olamaz.',
 };
 
 /** Davet kodu üretir. Kriptografik rastgelelik (node:crypto randomInt) —
@@ -64,12 +67,22 @@ export function generateCircleCode(): string {
   return code;
 }
 
-// --- Push metinleri (yalnız TR; bkz. push-campaigns/templates.ts) ---
+// --- Push metinleri (TR + EN; cihaz dili, yoksa 'tr') ---
 
-export function circleCompletedPush(name: string): {
+export function circleCompletedPush(
+  name: string,
+  locale: PushLocale = 'tr',
+): {
   title: string;
   body: string;
 } {
+  if (locale === 'en') {
+    // TR'deki "Emeğin kabul olsun" bilinçli olarak çevrilmedi (vaat yok).
+    return {
+      title: 'Circle reached its goal',
+      body: `The "${name}" circle has reached its goal. Thank you for taking part.`,
+    };
+  }
   return {
     title: 'Halka hedefini tamamladı',
     body: `"${name}" halkası hedefe ulaştı. Emeğin kabul olsun.`,
@@ -77,11 +90,18 @@ export function circleCompletedPush(name: string): {
 }
 
 export function circleMemberJoinedPush(
-  displayName: string,
+  displayName: string | undefined,
   name: string,
+  locale: PushLocale = 'tr',
 ): { title: string; body: string } {
+  if (locale === 'en') {
+    return {
+      title: 'New member in your circle',
+      body: `${displayName ?? 'Someone'} joined your "${name}" circle.`,
+    };
+  }
   return {
     title: 'Halkana yeni katılım',
-    body: `${displayName}, "${name}" halkana katıldı.`,
+    body: `${displayName ?? 'Bir kardeşin'}, "${name}" halkana katıldı.`,
   };
 }

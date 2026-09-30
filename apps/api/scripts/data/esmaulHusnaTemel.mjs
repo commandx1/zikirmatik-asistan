@@ -13,8 +13,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-allah',
       nameArabic: 'اللَّهُ',
-      name: { tr: 'Allah (C.C.)', en: 'Allah (SWT)' },
-      transliteration: { tr: 'ALLAH (C.C.)', en: 'ALLAH (SWT)' },
+      name: { tr: 'Allah (C.C.)', en: 'Allah' },
+      transliteration: { tr: 'ALLAH (C.C.)', en: 'Allah' },
       dhikrDay: { tr: 'Pazar', en: 'Sunday' },
       meaning: {
         tr: 'Tüm isim ve sıfatları kendinde toplayan, eşi benzeri bulunmayan tek ilah.',
@@ -590,8 +590,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-alim',
       nameArabic: 'الْعَلِيمُ',
-      name: { tr: 'El-Alîm', en: "Al-'Alim" },
-      transliteration: { tr: 'El-Alîm', en: "Al-'Alim" },
+      name: { tr: 'El-Alîm', en: 'Al-Alim' },
+      transliteration: { tr: 'El-Alîm', en: 'Al-Alim' },
       dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
       meaning: {
         tr: 'Her şeyi en küçük detayına kadar ezeli ve ebedi ilmi ile en iyi bilen.',
@@ -814,8 +814,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-es-semi',
       nameArabic: 'السَّمِيعُ',
-      name: { tr: 'Es-Semî', en: "As-Sami'" },
-      transliteration: { tr: 'Es-Semî', en: "As-Sami'" },
+      name: { tr: 'Es-Semî', en: 'As-Sami' },
+      transliteration: { tr: 'Es-Semî', en: 'As-Sami' },
       dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
       meaning: {
         tr: 'Her şeyi en iyi işiten, duaları kabul eden.',
@@ -903,8 +903,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-adl',
       nameArabic: 'الْعَدْلُ',
-      name: { tr: 'El-Adl', en: "Al-'Adl" },
-      transliteration: { tr: 'El-Adl', en: "Al-'Adl" },
+      name: { tr: 'El-Adl', en: 'Al-Adl' },
+      transliteration: { tr: 'El-Adl', en: 'Al-Adl' },
       dhikrDay: { tr: 'Pazar', en: 'Sunday' },
       meaning: {
         tr: 'Mutlak adil olan, her şeyi yerli yerinde yapan.',
@@ -1029,8 +1029,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-azim',
       nameArabic: 'الْعَظِيمُ',
-      name: { tr: 'El-Azîm', en: "Al-'Azim" },
-      transliteration: { tr: 'El-Azîm', en: "Al-'Azim" },
+      name: { tr: 'El-Azîm', en: 'Al-Azim' },
+      transliteration: { tr: 'El-Azîm', en: 'Al-Azim' },
       dhikrDay: { tr: 'Çarşamba', en: 'Wednesday' },
       meaning: {
         tr: 'Pek yüce, büyüklükte benzeri ve ortağı olmayan.',
@@ -1119,8 +1119,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-aliyy',
       nameArabic: 'الْعَلِيُّ',
-      name: { tr: 'El-Aliyy', en: "Al-'Aliyy" },
-      transliteration: { tr: 'El-Aliyy', en: "Al-'Aliyy" },
+      name: { tr: 'El-Aliyy', en: 'Al-Aliyy' },
+      transliteration: { tr: 'El-Aliyy', en: 'Al-Aliyy' },
       dhikrDay: { tr: 'Pazar', en: 'Sunday' },
       meaning: {
         tr: 'Yüceler yücesi, çok yüksek ve ulaşılamaz olan.',
@@ -1389,8 +1389,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-vasi',
       nameArabic: 'الْوَاسِعُ',
-      name: { tr: 'El-Vâsi', en: "Al-Wasi'" },
-      transliteration: { tr: 'El-Vâsi', en: "Al-Wasi'" },
+      name: { tr: 'El-Vâsi', en: 'Al-Wasi' },
+      transliteration: { tr: 'El-Vâsi', en: 'Al-Wasi' },
       dhikrDay: { tr: 'Pazartesi', en: 'Monday' },
       meaning: {
         tr: 'İlmi, rahmeti ve kudreti ile her şeyi kuşatan, lütfu bol olan.',
@@ -1484,8 +1484,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mecid',
       nameArabic: 'الْمَجِيدُ',
-      name: { tr: 'El-Mecîd', en: 'Al-Majid' },
-      transliteration: { tr: 'El-Mecîd', en: 'Al-Majid' },
+      name: { tr: 'El-Mecîd', en: 'Al-Majeed' },
+      transliteration: { tr: 'El-Mecîd', en: 'Al-Majeed' },
       dhikrDay: { tr: 'Cuma', en: 'Friday' },
       meaning: {
         tr: 'Nimeti ve ihsanı sonsuz, şanı ve şerefi çok yüksek olan.',
@@ -1994,8 +1994,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-macid',
       nameArabic: 'الْمَاجِدُ',
-      name: { tr: 'El-Mâcid', en: 'Al-Maajid' },
-      transliteration: { tr: 'El-Mâcid', en: 'Al-Maajid' },
+      name: { tr: 'El-Mâcid', en: 'Al-Majid' },
+      transliteration: { tr: 'El-Mâcid', en: 'Al-Majid' },
       dhikrDay: { tr: 'Cuma', en: 'Friday' },
       meaning: {
         tr: 'Kadri büyük, şanı yüce, keremi ve cömertliği bol olan.',
@@ -2512,8 +2512,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-malik-ul-mulk',
       nameArabic: 'مَالِكُ الْمُلْكِ',
-      name: { tr: 'Mâlik-ül Mülk', en: 'Malik al-Mulk' },
-      transliteration: { tr: 'Mâlik-ül Mülk', en: 'Malik al-Mulk' },
+      name: { tr: 'Mâlik-ül Mülk', en: 'Malik-ul-Mulk' },
+      transliteration: { tr: 'Mâlik-ül Mülk', en: 'Malik-ul-Mulk' },
       dhikrDay: { tr: 'Çarşamba', en: 'Wednesday' },
       meaning: {
         tr: 'Her varlığın, mülkün tek ve mutlak sahibi olan.',
@@ -2594,8 +2594,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-cami',
       nameArabic: 'الْجَامِعُ',
-      name: { tr: 'El-Câmi', en: "Al-Jami'" },
-      transliteration: { tr: 'El-Câmi', en: "Al-Jami'" },
+      name: { tr: 'El-Câmi', en: 'Al-Jami' },
+      transliteration: { tr: 'El-Câmi', en: 'Al-Jami' },
       dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
       meaning: {
         tr: 'Mahşerde mahlukatı bir araya toplayan, birleştiren.',
@@ -2623,8 +2623,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-ganiyy',
       nameArabic: 'الْغَنِيُّ',
-      name: { tr: 'El-Ganiyy', en: 'Al-Ghani' },
-      transliteration: { tr: 'El-Ganiyy', en: 'Al-Ghani' },
+      name: { tr: 'El-Ganiyy', en: 'Al-Ghaniyy' },
+      transliteration: { tr: 'El-Ganiyy', en: 'Al-Ghaniyy' },
       dhikrDay: { tr: 'Pazar', en: 'Sunday' },
       meaning: {
         tr: 'Hiçbir şeye ihtiyacı olmayan, mutlak zengin olan.',
@@ -2681,8 +2681,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-mani',
       nameArabic: 'الْمَانِعُ',
-      name: { tr: 'El-Mâni', en: "Al-Mani'" },
-      transliteration: { tr: 'El-Mâni', en: "Al-Mani'" },
+      name: { tr: 'El-Mâni', en: 'Al-Mani' },
+      transliteration: { tr: 'El-Mâni', en: 'Al-Mani' },
       dhikrDay: { tr: 'Pazar', en: 'Sunday' },
       meaning: {
         tr: 'Dilemediği şeylerin gerçekleşmesini engelleyen, koruyan.',
@@ -2739,8 +2739,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-en-nafi',
       nameArabic: 'النَّافِعُ',
-      name: { tr: 'En-Nâfi', en: "An-Nafi'" },
-      transliteration: { tr: 'En-Nâfi', en: "An-Nafi'" },
+      name: { tr: 'En-Nâfi', en: 'An-Nafi' },
+      transliteration: { tr: 'En-Nâfi', en: 'An-Nafi' },
       dhikrDay: { tr: 'Cuma', en: 'Friday' },
       meaning: {
         tr: 'Fayda verenleri yaratan, dilediğine fayda sağlayan.',
@@ -2826,8 +2826,8 @@ export const esmaulHusnaTemel = {
     {
       key: 'esmaul-husna-el-bedi',
       nameArabic: 'الْبَدِيعُ',
-      name: { tr: 'El-Bedî', en: "Al-Badi'" },
-      transliteration: { tr: 'El-Bedî', en: "Al-Badi'" },
+      name: { tr: 'El-Bedî', en: 'Al-Badi' },
+      transliteration: { tr: 'El-Bedî', en: 'Al-Badi' },
       dhikrDay: { tr: 'Perşembe', en: 'Thursday' },
       meaning: {
         tr: 'Örneksiz, benzersiz ve eşsiz yaratan.',

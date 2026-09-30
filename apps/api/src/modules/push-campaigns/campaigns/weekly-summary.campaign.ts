@@ -14,6 +14,7 @@ import { istanbulDateKey, shiftDateKey } from '../../../common/utils/date-keys';
 import {
   weeklySummaryFreeTemplate,
   weeklySummaryPremiumTemplate,
+  type PushLocale,
 } from '../templates';
 import type {
   CampaignBuildResult,
@@ -33,6 +34,8 @@ export type WeeklySummaryDeviceInput = {
   deviceId: string;
   expoPushToken?: string;
   userId: string;
+  locale?: PushLocale;
+  timezone?: string;
 };
 
 /**
@@ -60,18 +63,22 @@ export function selectWeeklySummaryCandidates(
       continue;
     }
 
-    const text = stat.isPremium
-      ? weeklySummaryPremiumTemplate(stat.totalCount, stat.activeDays)
-      : weeklySummaryFreeTemplate(stat.totalCount);
-
     const userDevices = devicesByUser.get(stat.userId) ?? [];
     for (const device of userDevices) {
+      const text = stat.isPremium
+        ? weeklySummaryPremiumTemplate(
+            stat.totalCount,
+            stat.activeDays,
+            device.locale,
+          )
+        : weeklySummaryFreeTemplate(stat.totalCount, device.locale);
       candidates.push({
         deviceId: device.deviceId,
         expoPushToken: device.expoPushToken ?? '',
         title: text.title,
         body: text.body,
         data: { route: STATS_ROUTE },
+        timezone: device.timezone,
         meta: {
           userId: stat.userId,
           totalCount: stat.totalCount,
@@ -169,7 +176,7 @@ export class WeeklySummaryCampaign {
           isActive: true,
           expoPushToken: { $exists: true, $nin: [null, ''] },
         })
-        .select('deviceId expoPushToken userId')
+        .select('deviceId expoPushToken userId locale timezone')
         .lean()
         .exec(),
     ]);
@@ -191,6 +198,8 @@ export class WeeklySummaryCampaign {
         deviceId: device.deviceId,
         expoPushToken: device.expoPushToken,
         userId: String(device.userId),
+        locale: device.locale,
+        timezone: device.timezone,
       }));
 
     return selectWeeklySummaryCandidates(userStats, deviceInputs);

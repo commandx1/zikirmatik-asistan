@@ -29,6 +29,17 @@ export class Circle {
   @Prop({ type: String })
   endDate?: string;
 
+  // Kurucunun IANA saat dilimi (x-client-timezone; başlıksız istekte
+  // İstanbul). Varsayılanı YOK: eski belgelerde alan yoktur.
+  @Prop({ type: String })
+  timezone?: string;
+
+  // Süre sonu anı: endDate'ten sonraki günün timezone'daki gece yarısı.
+  // Kuruluşta bir kez hesaplanır (endDate'i değiştiren bir yol yok). Yoksa
+  // (eski belge) süre sonu endDate'in İstanbul günü sonudur.
+  @Prop({ type: Date })
+  expiresAt?: Date;
+
   @Prop({ type: Types.ObjectId, ref: User.name, required: true })
   creatorId!: Types.ObjectId;
 

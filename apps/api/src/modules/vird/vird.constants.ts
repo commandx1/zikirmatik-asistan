@@ -30,6 +30,8 @@ export const VIRD_ERROR_CODE = {
   FREE_LIMIT_ACTIVE: 'VIRD_FREE_LIMIT_ACTIVE',
   PREMIUM_REQUIRED: 'VIRD_PREMIUM_REQUIRED',
   PREMIUM_MAX_ACTIVE_PROGRAMS: 'PREMIUM_MAX_ACTIVE_PROGRAMS',
+  NOT_ACTIVATABLE: 'VIRD_NOT_ACTIVATABLE',
+  PHASES_REQUIRED: 'VIRD_PHASES_REQUIRED',
 } as const;
 
 export type VirdErrorCode =
@@ -41,4 +43,8 @@ export const VIRD_ERROR_MESSAGE: Record<VirdErrorCode, string> = {
   [VIRD_ERROR_CODE.PREMIUM_REQUIRED]:
     'Bu özellik (hatırlatıcı, şablon veya AI ile program oluşturma) premium üyelik gerektirir.',
   [VIRD_ERROR_CODE.PREMIUM_MAX_ACTIVE_PROGRAMS]: `En fazla ${PREMIUM_MAX_ACTIVE_PROGRAMS} aktif vird programın olabilir.`,
+  [VIRD_ERROR_CODE.NOT_ACTIVATABLE]:
+    'Yalnızca taslak veya duraklatılmış bir program aktifleştirilebilir.',
+  [VIRD_ERROR_CODE.PHASES_REQUIRED]:
+    'Manuel vird programı için en az bir faz gereklidir.',
 };

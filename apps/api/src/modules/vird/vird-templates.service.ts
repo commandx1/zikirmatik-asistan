@@ -1,7 +1,10 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
-import { istanbulDateKey, shiftDateKey } from '../../common/utils/date-keys';
+import {
+  shiftDateKey,
+  todayKey as requestTodayKey,
+} from '../../common/utils/date-keys';
 import type { LocalizedText } from '../../common/types/localized-text';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
 import {
@@ -141,7 +144,7 @@ export class VirdTemplatesService {
       .lean()
       .exec();
 
-    const todayKey = istanbulDateKey(new Date());
+    const todayKey = requestTodayKey();
     const visible: VirdTemplateSummary[] = [];
     for (const template of templates) {
       const anchorDate = await this.resolveAnchorDate(template, todayKey);
@@ -256,7 +259,7 @@ export class VirdTemplatesService {
       return null;
     }
 
-    const todayKey = istanbulDateKey(new Date());
+    const todayKey = requestTodayKey();
     const anchorDate = await this.resolveAnchorDate(template, todayKey);
     if (template.sourceEventKey && !anchorDate) {
       return null;

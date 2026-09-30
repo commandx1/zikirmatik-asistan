@@ -29,6 +29,9 @@ export type CampaignCandidate = {
   title: string;
   body: string;
   data?: Record<string, unknown>;
+  // Cihazın IANA bölgesi (devices.timezone); yoksa sessiz saat İstanbul'a
+  // göre hesaplanır.
+  timezone?: string;
   // push_dispatches.meta içine aynen yazılır (ör. winback penceresi, kandil id'si).
   meta?: Record<string, unknown>;
 };
@@ -67,7 +70,7 @@ export type CampaignTriggerOptions = {
   // true ise hiçbir push gönderilmez ve push_dispatches'a yazılmaz; sadece
   // (salt-okunur) dedupe kontrolüyle "kaç tanesi gönderilirdi" önizlenir.
   dryRun?: boolean;
-  // true ise sessiz saat (22:00-08:00 İstanbul) kontrolü atlanır.
+  // true ise sessiz saat (cihaz yerel saatiyle 22:00-08:00) kontrolü atlanır.
   force?: boolean;
 };
 

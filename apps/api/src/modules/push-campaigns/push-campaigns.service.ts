@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
-import { istanbulDateKey } from '../../common/utils/date-keys';
+import { istanbulDateKey, validTimezone } from '../../common/utils/date-keys';
 import { PushSenderService } from '../push/push-sender.service';
 import {
   PushDispatch,
@@ -19,8 +19,10 @@ import type {
   CampaignTriggerOptions,
 } from './push-campaigns.types';
 
-const CAMPAIGN_TIMEZONE = 'Europe/Istanbul';
-// 22:00-08:00 İstanbul arası "sessiz saat" — force olmadan hiç gönderim yapılmaz.
+// Cihaz yerel saatiyle 22:00-08:00 arası "sessiz saat" — force olmadan o
+// cihaza gönderim yapılmaz. Bölgesi olmayan cihaz (eski sürüm) İstanbul'dur.
+// Sessiz saatte atlanan cihaz rezerve edilmez; günün sonraki tetiklemesinde
+// (bkz. .github/workflows/campaign-triggers.yml) alabilir.
 const QUIET_HOURS_START_HOUR = 22;
 const QUIET_HOURS_END_HOUR = 8;
 
@@ -59,21 +61,14 @@ export class PushCampaignsService {
       error: 0,
     };
 
-    if (!force && this.isQuietHours(now)) {
-      skipped.quietHours = candidates.length;
-      return {
-        campaign,
-        dayKey,
-        candidates: candidates.length,
-        sent: 0,
-        skipped,
-        dryRun,
-      };
-    }
+    const eligible = force
+      ? candidates
+      : candidates.filter((c) => !isQuietHours(now, c.timezone));
+    skipped.quietHours = candidates.length - eligible.length;
 
     const sent = dryRun
-      ? await this.previewDispatch(dayKey, candidates, skipped)
-      : await this.dispatch(campaign, dayKey, candidates, skipped);
+      ? await this.previewDispatch(dayKey, eligible, skipped)
+      : await this.dispatch(campaign, dayKey, eligible, skipped);
 
     return {
       campaign,
@@ -251,16 +246,16 @@ export class PushCampaignsService {
 
     return new Set(rows.map((row) => row.deviceId));
   }
-
-  private isQuietHours(now: Date): boolean {
-    const hour = istanbulHour(now);
-    return hour >= QUIET_HOURS_START_HOUR || hour < QUIET_HOURS_END_HOUR;
-  }
 }
 
-function istanbulHour(date: Date): number {
+function isQuietHours(now: Date, timezone?: string): boolean {
+  const hour = localHour(now, validTimezone(timezone));
+  return hour >= QUIET_HOURS_START_HOUR || hour < QUIET_HOURS_END_HOUR;
+}
+
+function localHour(date: Date, timeZone: string): number {
   const formatted = new Intl.DateTimeFormat('en-GB', {
-    timeZone: CAMPAIGN_TIMEZONE,
+    timeZone,
     hourCycle: 'h23',
     hour: '2-digit',
   }).format(date);

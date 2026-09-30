@@ -8,7 +8,11 @@ import { Types, type Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateOnboardingDto } from './dto/update-onboarding.dto';
 import { UpdateUserPreferencesDto } from './dto/update-user-preferences.dto';
-import { User, type UserDocument } from './schemas/user.schema';
+import {
+  GUEST_DISPLAY_NAME,
+  User,
+  type UserDocument,
+} from './schemas/user.schema';
 import { AiRecommendation } from '../ai/schemas/ai-recommendation.schema';
 import { DhikrLog } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Streak } from '../streaks/schemas/streak.schema';
@@ -18,6 +22,14 @@ import { AuthIdentity } from '../auth/schemas/auth-identity.schema';
 import { VirdDayProgress } from '../vird/schemas/vird-day-progress.schema';
 import { VirdProgram } from '../vird/schemas/vird-program.schema';
 import { Device } from '../devices/schemas/device.schema';
+import { AiChatMessage } from '../ai-chat/schemas/ai-chat-message.schema';
+import { AiConversation } from '../ai-chat/schemas/ai-conversation.schema';
+import { AiCreditLedger } from '../ai/schemas/ai-credit-ledger.schema';
+import { AiCreditWallet } from '../ai/schemas/ai-credit-wallet.schema';
+import { AiUsageLog } from '../ai/schemas/ai-usage-log.schema';
+import { AppEvent } from '../events/schemas/app-event.schema';
+import { Circle } from '../circles/schemas/circle.schema';
+import { PushDispatch } from '../push-campaigns/schemas/push-dispatch.schema';
 
 @Injectable()
 export class UsersService {
@@ -40,6 +52,21 @@ export class UsersService {
     private readonly virdDayProgressModel: Model<VirdDayProgress>,
     @InjectModel(Device.name)
     private readonly deviceModel: Model<Device>,
+    @InjectModel(AiChatMessage.name)
+    private readonly aiChatMessageModel: Model<AiChatMessage>,
+    @InjectModel(AiConversation.name)
+    private readonly aiConversationModel: Model<AiConversation>,
+    @InjectModel(AiCreditLedger.name)
+    private readonly aiCreditLedgerModel: Model<AiCreditLedger>,
+    @InjectModel(AiCreditWallet.name)
+    private readonly aiCreditWalletModel: Model<AiCreditWallet>,
+    @InjectModel(AiUsageLog.name)
+    private readonly aiUsageLogModel: Model<AiUsageLog>,
+    @InjectModel(AppEvent.name)
+    private readonly appEventModel: Model<AppEvent>,
+    @InjectModel(Circle.name) private readonly circleModel: Model<Circle>,
+    @InjectModel(PushDispatch.name)
+    private readonly pushDispatchModel: Model<PushDispatch>,
   ) {}
 
   async createUser(payload: CreateUserDto) {
@@ -177,7 +204,7 @@ export class UsersService {
 
     return this.userModel.create({
       email: normalizedEmail,
-      displayName: input.displayName ?? 'Misafir Kullanıcı',
+      displayName: input.displayName ?? GUEST_DISPLAY_NAME,
       profileImageUrl: input.profileImageUrl,
       authProvider: input.provider,
       isPremium: false,
@@ -225,6 +252,11 @@ export class UsersService {
 
   async deleteUserAllData(userId: string): Promise<void> {
     const objectId = this.asObjectId(userId);
+    // Push rezervasyonları yalnız deviceId taşır; cihazlar silinmeden ÖNCE
+    // kullanıcının cihazlarının kimlikleri alınır (idempotent: ikinci çağrıda boş).
+    const deviceIds = await this.deviceModel.distinct('deviceId', {
+      userId: objectId,
+    });
     await Promise.all([
       this.userDhikrModel.deleteMany({ userId: objectId }),
       this.dhikrLogModel.deleteMany({ userId: objectId }),
@@ -236,6 +268,24 @@ export class UsersService {
       this.virdDayProgressModel.deleteMany({ userId: objectId }),
       // Cihaz bir sonraki açılışta /v1/devices/register ile yeniden kaydolur.
       this.deviceModel.deleteMany({ userId: objectId }),
+      this.aiChatMessageModel.deleteMany({ userId: objectId }),
+      this.aiConversationModel.deleteMany({ userId: objectId }),
+      this.aiCreditLedgerModel.deleteMany({ userId: objectId }),
+      this.aiCreditWalletModel.deleteMany({ userId: objectId }),
+      this.aiUsageLogModel.deleteMany({ userId: objectId }),
+      // Giriş öncesi (userId'siz) olaylar da cihaz kimliğiyle bu hesaba bağlıdır.
+      this.appEventModel.deleteMany({
+        $or: [
+          { userId: objectId },
+          { deviceId: { $in: deviceIds }, userId: { $exists: false } },
+        ],
+      }),
+      this.pushDispatchModel.deleteMany({ deviceId: { $in: deviceIds } }),
+      // Halka silinmez, totalCount/creatorId dokunulmaz; yalnız üyelik kalkar.
+      this.circleModel.updateMany(
+        { memberIds: objectId },
+        { $pull: { memberIds: objectId } },
+      ),
     ]);
     await this.userModel.findByIdAndDelete(objectId);
   }

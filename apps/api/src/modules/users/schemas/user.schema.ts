@@ -3,6 +3,10 @@ import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
+// Varsayılan (kullanıcının seçmediği) görünen ad. Başkalarına gösterilen
+// yerlerde (halka üyeleri, katılım push'u) "ad yok" sayılır.
+export const GUEST_DISPLAY_NAME = 'Misafir Kullanıcı';
+
 @Schema({ collection: 'users', timestamps: true, versionKey: false })
 export class User {
   @Prop({
@@ -14,7 +18,7 @@ export class User {
   })
   email?: string;
 
-  @Prop({ type: String, trim: true, default: 'Misafir Kullanıcı' })
+  @Prop({ type: String, trim: true, default: GUEST_DISPLAY_NAME })
   displayName!: string;
 
   @Prop({ type: String, trim: true })

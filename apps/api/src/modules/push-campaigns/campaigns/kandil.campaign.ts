@@ -10,7 +10,11 @@ import {
   type SpecialDayDocument,
 } from '../../special-days/schemas/special-day.schema';
 import { istanbulDateKey, shiftDateKey } from '../../../common/utils/date-keys';
-import { kandilDayTemplate, kandilEveTemplate } from '../templates';
+import {
+  kandilDayTemplate,
+  kandilEveTemplate,
+  type PushLocale,
+} from '../templates';
 import type {
   CampaignBuildResult,
   CampaignCandidate,
@@ -21,12 +25,16 @@ export type KandilMode = 'eve' | 'day';
 export type KandilSpecialDayInput = {
   id: string;
   nameTr: string;
+  // EN cihazlar için; boşsa TR ad kullanılır.
+  nameEn?: string;
 };
 
 export type KandilDeviceInput = {
   deviceId: string;
   expoPushToken?: string;
   prefs?: { specialDays?: boolean };
+  locale?: PushLocale;
+  timezone?: string;
 };
 
 /**
@@ -62,13 +70,16 @@ export function selectKandilCandidates(
   const buildText = mode === 'eve' ? kandilEveTemplate : kandilDayTemplate;
 
   for (const specialDay of specialDays) {
-    const text = buildText(specialDay.nameTr);
-
     for (const device of devices) {
       if (device.prefs?.specialDays === false) {
         skippedPrefs += 1;
         continue;
       }
+
+      const text =
+        device.locale === 'en'
+          ? buildText(specialDay.nameEn || specialDay.nameTr, 'en')
+          : buildText(specialDay.nameTr);
 
       candidates.push({
         deviceId: device.deviceId,
@@ -76,6 +87,7 @@ export function selectKandilCandidates(
         title: text.title,
         body: text.body,
         data: { route: `/special-days/${specialDay.id}` },
+        timezone: device.timezone,
         meta: { specialDayId: specialDay.id, mode },
       });
     }
@@ -114,7 +126,7 @@ export class KandilCampaign {
         isActive: true,
         expoPushToken: { $exists: true, $nin: [null, ''] },
       })
-      .select('deviceId expoPushToken prefs')
+      .select('deviceId expoPushToken prefs locale timezone')
       .lean()
       .exec();
 
@@ -122,11 +134,14 @@ export class KandilCampaign {
       specialDayDocs.map((doc) => ({
         id: String(doc._id),
         nameTr: doc.name.tr,
+        nameEn: doc.name.en,
       })),
       devices.map((device) => ({
         deviceId: device.deviceId,
         expoPushToken: device.expoPushToken,
         prefs: device.prefs,
+        locale: device.locale,
+        timezone: device.timezone,
       })),
       mode,
     );

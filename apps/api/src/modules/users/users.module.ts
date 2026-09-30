@@ -34,6 +34,32 @@ import {
 } from '../vird/schemas/vird-program.schema';
 
 import { Device, DeviceSchema } from '../devices/schemas/device.schema';
+import {
+  AiChatMessage,
+  AiChatMessageSchema,
+} from '../ai-chat/schemas/ai-chat-message.schema';
+import {
+  AiConversation,
+  AiConversationSchema,
+} from '../ai-chat/schemas/ai-conversation.schema';
+import {
+  AiCreditLedger,
+  AiCreditLedgerSchema,
+} from '../ai/schemas/ai-credit-ledger.schema';
+import {
+  AiCreditWallet,
+  AiCreditWalletSchema,
+} from '../ai/schemas/ai-credit-wallet.schema';
+import {
+  AiUsageLog,
+  AiUsageLogSchema,
+} from '../ai/schemas/ai-usage-log.schema';
+import { AppEvent, AppEventSchema } from '../events/schemas/app-event.schema';
+import { Circle, CircleSchema } from '../circles/schemas/circle.schema';
+import {
+  PushDispatch,
+  PushDispatchSchema,
+} from '../push-campaigns/schemas/push-dispatch.schema';
 
 @Module({
   imports: [
@@ -50,6 +76,14 @@ import { Device, DeviceSchema } from '../devices/schemas/device.schema';
       { name: VirdProgram.name, schema: VirdProgramSchema },
       { name: VirdDayProgress.name, schema: VirdDayProgressSchema },
       { name: Device.name, schema: DeviceSchema },
+      { name: AiChatMessage.name, schema: AiChatMessageSchema },
+      { name: AiConversation.name, schema: AiConversationSchema },
+      { name: AiCreditLedger.name, schema: AiCreditLedgerSchema },
+      { name: AiCreditWallet.name, schema: AiCreditWalletSchema },
+      { name: AiUsageLog.name, schema: AiUsageLogSchema },
+      { name: AppEvent.name, schema: AppEventSchema },
+      { name: Circle.name, schema: CircleSchema },
+      { name: PushDispatch.name, schema: PushDispatchSchema },
     ]),
   ],
   controllers: [UsersController],

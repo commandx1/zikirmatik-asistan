@@ -128,7 +128,7 @@ export class AiVirdService {
       return {
         kind: 'program',
         programId: existingDraft._id.toString(),
-        program: await this.buildPreview(existingDraft),
+        program: await this.buildPreview(existingDraft, locale),
         remainingCredits: credits.balance,
       };
     }
@@ -179,7 +179,7 @@ export class AiVirdService {
     return {
       kind: 'program',
       programId: draft._id.toString(),
-      program: await this.buildPreview(draft),
+      program: await this.buildPreview(draft, locale),
       remainingCredits: wallet.balance,
     };
   }
@@ -214,13 +214,16 @@ export class AiVirdService {
    * `title.tr`/`title.en` createAiDraft tarafından aynı string ile
    * dolduruldu (bkz. o metodun yorumu) — hangisi okunursa okunsun aynıdır.
    */
-  private async buildPreview(draft: {
-    _id: Types.ObjectId;
-    title: { tr: string; en: string };
-    dayCount?: number;
-    ai?: { summary?: string; durationDays?: number };
-    phases: VirdProgramPhase[];
-  }): Promise<VirdProgramPreview> {
+  private async buildPreview(
+    draft: {
+      _id: Types.ObjectId;
+      title: { tr: string; en: string };
+      dayCount?: number;
+      ai?: { summary?: string; durationDays?: number };
+      phases: VirdProgramPhase[];
+    },
+    locale: SupportedAiLocale,
+  ): Promise<VirdProgramPreview> {
     const ids = Array.from(
       new Set(
         draft.phases.flatMap((phase) =>
@@ -245,7 +248,7 @@ export class AiVirdService {
         fromDay: phase.fromDay,
         toDay: phase.toDay,
         note: phase.note,
-        slots: this.previewSlots(phase.slots, byId),
+        slots: this.previewSlots(phase.slots, byId, locale),
       })),
     };
   }
@@ -253,6 +256,7 @@ export class AiVirdService {
   private previewSlots(
     slots: VirdProgramPhaseSlots | undefined,
     byId: Map<string, DhikrLean>,
+    locale: SupportedAiLocale,
   ): Partial<Record<VirdSlotKey, VirdProgramPreviewItem[]>> {
     const result: Partial<Record<VirdSlotKey, VirdProgramPreviewItem[]>> = {};
     for (const slotKey of VIRD_SLOT_KEYS) {
@@ -263,7 +267,10 @@ export class AiVirdService {
         const dhikr = byId.get(id);
         return {
           dhikrId: id,
-          name: dhikr ? dhikr.name.tr : (item.customDhikrId ?? '—'),
+          // Önizleme adı istemcinin diline göre; en boşsa tr'ye düşer.
+          name: dhikr
+            ? dhikr.name[locale] || dhikr.name.tr
+            : (item.customDhikrId ?? '—'),
           target: item.target,
         };
       });

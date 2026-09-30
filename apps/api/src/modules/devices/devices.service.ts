@@ -25,6 +25,15 @@ export class DevicesService {
       set.expoPushToken = payload.expoPushToken;
     }
 
+    // Yalnız gönderildiyse yaz: alanları göndermeyen eski sürüm kayıtlı
+    // değeri silmez.
+    if (payload.locale) {
+      set.locale = payload.locale;
+    }
+    if (payload.timezone) {
+      set.timezone = payload.timezone;
+    }
+
     if (userId && Types.ObjectId.isValid(userId)) {
       set.userId = new Types.ObjectId(userId);
     }

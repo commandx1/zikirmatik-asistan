@@ -24,6 +24,23 @@ on:
     # bu durumda İKİ ayrı run tetikler ve github.event.schedule ile aşağıda
     # ayrıştırılır — bu bir çakışma değildir.
     - cron: '0 6 * * 1'
+    # 16:00 UTC — Amerika kıtası için ikinci tur (06:00 UTC orada gece yarısı;
+    # sessiz saat artık cihazın yerel saatine göre). push_dispatches'ın
+    # {deviceId, dayKey} unique index'i sabah alan cihaza ikinci push'u
+    # engeller; dayKey İstanbul günü ve 16:00 UTC hâlâ aynı İstanbul günüdür.
+    # Winback BİLEREK yok: pencere cihazın son görülmesine göre kaydığı için
+    # ikinci tur, ertesi sabahki turla aynı cihaza iki gün üst üste
+    # gönderebilirdi (günlük dedupe bunu engellemez).
+    - cron: '0 16 * * *'
+    - cron: '0 16 * * 1'
+    # 02:00 UTC (05:00 İstanbul) — kandil arifesi için Asya-Pasifik turu:
+    # 15:00 UTC, UTC+7 ve doğusundaki cihazlarda sessiz saate (22:00-08:00)
+    # denk gelir. 05:00 İstanbul hâlâ İstanbul sessiz saatidir, yani İstanbul
+    # cihazları bu turda gönderim almaz (sabah 08:00'de sessiz saat biter);
+    # yalnızca yerel saati 08:00'i geçmiş doğudaki cihazlar alır. dayKey aynı
+    # İstanbul günüdür, hedef tarih (yarın) 15:00 UTC turuyla aynıdır ve
+    # {deviceId, dayKey} unique index'i 15:00 UTC'de ikinci push'u engeller.
+    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       campaign:
@@ -52,6 +69,10 @@ jobs:
             echo "campaign=kandil-eve" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event.schedule }}" = "0 6 * * *" ]; then
             echo "campaign=kandil-day" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 16 * * *" ]; then
+            echo "campaign=kandil-day" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 2 * * *" ]; then
+            echo "campaign=kandil-eve" >> "$GITHUB_OUTPUT"
           else
             echo "campaign=weekly-summary" >> "$GITHUB_OUTPUT"
           fi

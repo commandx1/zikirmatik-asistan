@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
-import { istanbulDateKey, shiftDateKey } from '../../common/utils/date-keys';
+import {
+  shiftDateKey,
+  todayKey as requestTodayKey,
+} from '../../common/utils/date-keys';
 import {
   DhikrLog,
   type DhikrLogDocument,
@@ -143,13 +146,13 @@ export class VirdProgressService {
    */
   async getToday(userId: string, date?: string, programId?: string) {
     const objectId = this.asObjectId(userId);
-    const dateKey = date ?? istanbulDateKey(new Date());
+    const dateKey = date ?? requestTodayKey();
     const virdStreak = await this.getVirdStreakSnapshot(userId);
 
     await completeExpiredJourneys(
       this.virdProgramModel,
       objectId,
-      istanbulDateKey(new Date()),
+      requestTodayKey(),
     );
 
     const filter: Record<string, unknown> = {
@@ -221,7 +224,7 @@ export class VirdProgressService {
    */
   async getHistory(userId: string, from?: string, to?: string) {
     const objectId = this.asObjectId(userId);
-    const todayKey = istanbulDateKey(new Date());
+    const todayKey = requestTodayKey();
     const toKey = to ?? todayKey;
     let fromKey = from ?? shiftDateKey(toKey, -(HISTORY_DEFAULT_DAYS - 1));
     if (daysBetween(fromKey, toKey) > HISTORY_MAX_DAYS) {

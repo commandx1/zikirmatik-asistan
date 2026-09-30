@@ -36,6 +36,14 @@ describe('UsersService', () => {
       noopModel,
       noopModel,
       noopModel,
+      noopModel,
+      noopModel,
+      noopModel,
+      noopModel,
+      noopModel,
+      noopModel,
+      noopModel,
+      noopModel,
     );
   });
 
@@ -151,7 +159,10 @@ describe('UsersService', () => {
       };
       const virdProgramModel = deleteMany();
       const virdDayProgressModel = deleteMany();
-      const deviceModel = deleteMany();
+      const deviceModel = {
+        ...deleteMany(),
+        distinct: jest.fn().mockResolvedValue([]),
+      };
 
       const deletionService = new UsersService(
         userModelForDeletion as never,
@@ -164,6 +175,14 @@ describe('UsersService', () => {
         virdProgramModel as never,
         virdDayProgressModel as never,
         deviceModel as never,
+        deleteMany() as never,
+        deleteMany() as never,
+        deleteMany() as never,
+        deleteMany() as never,
+        deleteMany() as never,
+        deleteMany() as never,
+        { updateMany: jest.fn().mockResolvedValue({}) } as never,
+        deleteMany() as never,
       );
 
       await deletionService.deleteUserAllData(userIdToDelete);
@@ -180,6 +199,79 @@ describe('UsersService', () => {
       expect(userModelForDeletion.findByIdAndDelete).toHaveBeenCalledWith(
         new Types.ObjectId(userIdToDelete),
       );
+    });
+
+    it('deletes AI, event and push data, pulls circle membership and deletes the user last', async () => {
+      const id = '507f1f77bcf86cd799439011';
+      const oid = new Types.ObjectId(id);
+      const order: string[] = [];
+      const dm = (name: string) => ({
+        deleteMany: jest.fn().mockImplementation(() => {
+          order.push(name);
+          return Promise.resolve({});
+        }),
+      });
+      const userM = {
+        findByIdAndDelete: jest.fn().mockImplementation(() => {
+          order.push('user');
+          return Promise.resolve({});
+        }),
+      };
+      const deviceM = {
+        ...dm('device'),
+        distinct: jest.fn().mockResolvedValue(['dev-1']),
+      };
+      const [msg, conv, ledger, wallet, usage, event, push] = [
+        'msg',
+        'conv',
+        'ledger',
+        'wallet',
+        'usage',
+        'event',
+        'push',
+      ].map(dm);
+      const circle = { updateMany: jest.fn().mockResolvedValue({}) };
+
+      const svc = new UsersService(
+        userM as never,
+        dm('a') as never,
+        dm('b') as never,
+        dm('c') as never,
+        dm('d') as never,
+        dm('e') as never,
+        dm('f') as never,
+        dm('g') as never,
+        dm('h') as never,
+        deviceM as never,
+        msg as never,
+        conv as never,
+        ledger as never,
+        wallet as never,
+        usage as never,
+        event as never,
+        circle as never,
+        push as never,
+      );
+
+      await svc.deleteUserAllData(id);
+
+      for (const m of [msg, conv, ledger, wallet, usage]) {
+        expect(m.deleteMany).toHaveBeenCalledWith({ userId: oid });
+      }
+      expect(event.deleteMany).toHaveBeenCalledWith({
+        $or: [
+          { userId: oid },
+          { deviceId: { $in: ['dev-1'] }, userId: { $exists: false } },
+        ],
+      });
+      expect(push.deleteMany).toHaveBeenCalledWith({
+        deviceId: { $in: ['dev-1'] },
+      });
+      expect(circle.updateMany).toHaveBeenCalledWith(
+        { memberIds: oid },
+        { $pull: { memberIds: oid } },
+      );
+      expect(order[order.length - 1]).toBe('user');
     });
   });
 });

@@ -9,15 +9,27 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
 import type { LocalizedText } from '../../common/types/localized-text';
-import { istanbulDateKey } from '../../common/utils/date-keys';
+import {
+  STATS_TIMEZONE,
+  dateKeyInZone,
+  requestTimezone,
+  shiftDateKey,
+  startOfDayInZone,
+  todayKey,
+} from '../../common/utils/date-keys';
 import { DevicesService } from '../devices/devices.service';
 import {
   DhikrLog,
   type DhikrLogDocument,
 } from '../dhikr-logs/schemas/dhikr-log.schema';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
+import type { PushLocale } from '../push-campaigns/templates';
 import { PushSenderService } from '../push/push-sender.service';
-import { User, type UserDocument } from '../users/schemas/user.schema';
+import {
+  GUEST_DISPLAY_NAME,
+  User,
+  type UserDocument,
+} from '../users/schemas/user.schema';
 import {
   CIRCLE_ERROR_CODE,
   CIRCLE_ERROR_MESSAGE,
@@ -61,13 +73,21 @@ export type CircleSummary = CirclePreview & {
   code: string;
   dhikrId: string;
   endDate?: string;
+  expiresAt?: string;
   myTotal: number;
   creatorId: string;
   isCreator: boolean;
 };
 
 export type CircleDetail = CircleSummary & {
-  members: { displayName: string; activeToday: boolean }[];
+  // defaultName: displayName kullanıcının seçmediği varsayılan ad; istemci
+  // kendi dilinde genel bir ad gösterir. displayName eski sürümler için
+  // aynen döner.
+  members: {
+    displayName: string;
+    activeToday: boolean;
+    defaultName?: true;
+  }[];
   activeTodayCount: number;
   myTodayCount: number;
 };
@@ -78,6 +98,7 @@ type CircleLean = {
   dhikrId: Types.ObjectId;
   goalCount: number;
   endDate?: string;
+  expiresAt?: Date;
   creatorId: Types.ObjectId;
   code: string;
   memberIds: Types.ObjectId[];
@@ -97,6 +118,27 @@ type DhikrSnapshotLean = {
 const DHIKR_SNAPSHOT_FIELDS = 'name nameArabic transliteration meaning';
 const CODE_ATTEMPTS = 3;
 const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+// Süre sonu halka başına TEK bir andır (tüm üyeler için ortak): endDate
+// gününün kurucunun saat dilimindeki sonu, kuruluşta expiresAt olarak
+// saklanır. expiresAt'i olmayan eski belgeler İstanbul günüyle kapanır.
+const LEGACY_CIRCLE_EXPIRY_TIMEZONE = STATS_TIMEZONE;
+
+function circleExpiresAt(endDate: string, timeZone: string): Date {
+  return startOfDayInZone(shiftDateKey(endDate, 1), timeZone);
+}
+
+function isCircleExpired(
+  circle: { endDate?: string; expiresAt?: Date },
+  now: Date,
+): boolean {
+  if (circle.expiresAt) {
+    return circle.expiresAt <= now;
+  }
+  return Boolean(
+    circle.endDate &&
+    circle.endDate < dateKeyInZone(now, LEGACY_CIRCLE_EXPIRY_TIMEZONE),
+  );
+}
 
 @Injectable()
 export class CirclesService {
@@ -149,11 +191,15 @@ export class CirclesService {
     }
     const memberLimit = premium ? CIRCLE_MAX_MEMBERS : CIRCLE_FREE_MAX_MEMBERS;
 
-    if (dto.endDate && dto.endDate < istanbulDateKey(new Date())) {
-      throw new BadRequestException('Bitiş tarihi geçmiş bir gün olamaz.');
+    if (dto.endDate && dto.endDate < todayKey()) {
+      throw new BadRequestException({
+        code: CIRCLE_ERROR_CODE.END_DATE_PAST,
+        message: CIRCLE_ERROR_MESSAGE[CIRCLE_ERROR_CODE.END_DATE_PAST],
+      });
     }
 
     const name = dto.name?.trim() || localizedTr(dhikr.name);
+    const timezone = requestTimezone();
 
     for (let attempt = 0; attempt < CODE_ATTEMPTS; attempt += 1) {
       try {
@@ -162,6 +208,10 @@ export class CirclesService {
           dhikrId: dhikr._id,
           goalCount: dto.goalCount,
           endDate: dto.endDate,
+          timezone,
+          ...(dto.endDate && {
+            expiresAt: circleExpiresAt(dto.endDate, timezone),
+          }),
           creatorId: userObjectId,
           code: generateCircleCode(),
           memberIds: [userObjectId],
@@ -183,13 +233,27 @@ export class CirclesService {
 
   async findMine(userId: string): Promise<CircleSummary[]> {
     const userObjectId = this.asObjectId(userId);
-    const today = istanbulDateKey(new Date());
+    const now = new Date();
 
-    // Tembel süre sonu: bitiş tarihi geçmiş aktif halkaları kapatır. Tek
-    // atomik updateMany + koruyucu filtre — okuma/yazma ayrımı yok.
+    // Tembel süre sonu: süresi geçmiş aktif halkaları kapatır. Tek atomik
+    // updateMany + koruyucu filtre — okuma/yazma ayrımı yok. İki kol
+    // isCircleExpired ile birebir: expiresAt'li yeni belgeler kendi anında,
+    // eski belgeler endDate'in İstanbul gününe göre.
     await this.circleModel
       .updateMany(
-        { memberIds: userObjectId, status: 'active', endDate: { $lt: today } },
+        {
+          memberIds: userObjectId,
+          status: 'active',
+          $or: [
+            { expiresAt: { $lte: now } },
+            {
+              expiresAt: { $exists: false },
+              endDate: {
+                $lt: dateKeyInZone(now, LEGACY_CIRCLE_EXPIRY_TIMEZONE),
+              },
+            },
+          ],
+        },
         { $set: { status: 'closed' } },
       )
       .exec();
@@ -248,7 +312,20 @@ export class CirclesService {
       throw this.notFound();
     }
 
-    const dayKey = date ?? istanbulDateKey(new Date());
+    // findMine'daki tembel kapanışın tek halka karşılığı: süresi geçmiş aktif
+    // halka burada da kapalı görünür. status: 'active' filtresi sayesinde
+    // tamamlanmış halkanın üzerine asla yazılmaz.
+    if (circle.status === 'active' && isCircleExpired(circle, new Date())) {
+      await this.circleModel
+        .updateOne(
+          { _id: circle._id, status: 'active' },
+          { $set: { status: 'closed' } },
+        )
+        .exec();
+      circle.status = 'closed';
+    }
+
+    const dayKey = date ?? todayKey();
     const [summary, members, todayLog, activeTodayIds] = await Promise.all([
       this.buildSummary(userObjectId, circle),
       this.userModel
@@ -279,6 +356,7 @@ export class CirclesService {
     const memberFlags = members.map((member) => ({
       displayName: member.displayName,
       activeToday: activeTodaySet.has(String(member._id)),
+      ...(isDefaultName(member.displayName) && { defaultName: true as const }),
     }));
 
     return {
@@ -376,10 +454,14 @@ export class CirclesService {
         .exec();
       await this.notify(
         [String(before.creatorId)],
-        circleMemberJoinedPush(
-          joiner?.displayName ?? 'Bir kardeşin',
-          before.name,
-        ),
+        (locale) =>
+          circleMemberJoinedPush(
+            isDefaultName(joiner?.displayName)
+              ? undefined
+              : joiner?.displayName,
+            before.name,
+            locale,
+          ),
         String(before._id),
       );
     }
@@ -451,16 +533,13 @@ export class CirclesService {
     const userObjectId = this.asObjectId(userId);
     const circle = await this.circleModel
       .findOne({ _id: this.asObjectId(circleId), memberIds: userObjectId })
-      .select('status dhikrId endDate')
+      .select('status dhikrId endDate expiresAt')
       .lean()
       .exec();
     if (!circle) {
       throw this.forbidden(CIRCLE_ERROR_CODE.NOT_MEMBER);
     }
-    if (
-      circle.status !== 'active' ||
-      (circle.endDate && circle.endDate < istanbulDateKey(new Date()))
-    ) {
+    if (circle.status !== 'active' || isCircleExpired(circle, new Date())) {
       throw this.forbidden(CIRCLE_ERROR_CODE.NOT_ACTIVE);
     }
     if (!dhikrId || !circle.dhikrId.equals(dhikrId)) {
@@ -527,7 +606,7 @@ export class CirclesService {
 
     await this.notify(
       circle.memberIds.map(String),
-      circleCompletedPush(circle.name),
+      (locale) => circleCompletedPush(circle.name, locale),
       String(circleObjectId),
     );
     return total;
@@ -606,6 +685,8 @@ export class CirclesService {
       memberLimit: circle.memberLimit ?? CIRCLE_MAX_MEMBERS,
       status: circle.status,
       endDate: circle.endDate,
+      // Eklemeli: süre sonu anı (ISO). Yalnız yeni halkalarda vardır.
+      ...(circle.expiresAt && { expiresAt: circle.expiresAt.toISOString() }),
       myTotal,
       creatorId: String(circle.creatorId),
       isCreator: circle.creatorId.equals(userObjectId),
@@ -615,24 +696,34 @@ export class CirclesService {
   /** Push gönderimi asla akışı bozmaz (bkz. safeApplyVirdProgress deseni). */
   private async notify(
     userIds: string[],
-    message: { title: string; body: string },
+    buildMessage: (locale: PushLocale) => { title: string; body: string },
     circleId: string,
   ) {
     try {
       const devices = await this.devicesService.findActiveByUserIds(userIds);
-      const targets = devices
-        .filter((device) => Boolean(device.expoPushToken))
-        .map((device) => ({
+      // Dil başına tek gönderim; locale'i olmayan cihaz (eski sürüm) 'tr'.
+      const targetsByLocale = new Map<
+        PushLocale,
+        { deviceId: string; expoPushToken: string }[]
+      >();
+      for (const device of devices) {
+        if (!device.expoPushToken) {
+          continue;
+        }
+        const locale = device.locale ?? 'tr';
+        const list = targetsByLocale.get(locale) ?? [];
+        list.push({
           deviceId: device.deviceId,
-          expoPushToken: device.expoPushToken as string,
-        }));
-      if (targets.length === 0) {
-        return;
+          expoPushToken: device.expoPushToken,
+        });
+        targetsByLocale.set(locale, list);
       }
-      await this.pushSender.sendToDevices(targets, {
-        ...message,
-        data: { route: `/circle/${circleId}` },
-      });
+      for (const [locale, targets] of targetsByLocale) {
+        await this.pushSender.sendToDevices(targets, {
+          ...buildMessage(locale),
+          data: { route: `/circle/${circleId}` },
+        });
+      }
     } catch (error) {
       this.logger.warn(
         `circle push failed: ${error instanceof Error ? error.message : error}`,
@@ -666,6 +757,10 @@ function normalizeCode(code: string) {
   // Tire/boşluk gibi ayraçlar atılır ("ABCD-EFGH", "abcd efgh"): istemci de
   // aynı toleransı uygular (parseCircleCode), sunucu ham girdiyi de kabul eder.
   return code.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+}
+
+function isDefaultName(displayName: string | undefined): boolean {
+  return displayName === GUEST_DISPLAY_NAME;
 }
 
 function localizedTr(value: LocalizedText | string | undefined): string {

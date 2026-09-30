@@ -36,6 +36,9 @@ gh run view <run-id> --log
   - `0 15 * * *` → 18:00 TR → **kandil-eve**
   - `0 6 * * *`  → 09:00 TR → **kandil-day**
   - `0 6 * * 1`  → Pazartesi 09:00 TR → **weekly-summary**
+  - `0 16 * * *` → 19:00 TR → **kandil-day** (Amerika kıtası ikinci turu)
+  - `0 16 * * 1` → Pazartesi 19:00 TR → **weekly-summary** (Amerika ikinci turu)
+  - `0 2 * * *`  → 05:00 TR → **kandil-eve** (Asya-Pasifik turu, bkz. Bilinen kısıtlar 4)
   - Pazartesi günleri `kandil-day` ve `weekly-summary` aynı UTC dakikasında
     tetiklenir; bu iki AYRI workflow run'ıdır (çakışma değil).
 - Cron hiç tetiklenmediyse: repo 60+ gün inaktifse GitHub scheduled
@@ -56,7 +59,7 @@ curl -X POST "$API_URL/internal/campaigns/winback" \
 curl -X POST "$API_URL/internal/campaigns/kandil-eve" \
   -H "x-campaign-secret: $CAMPAIGN_TRIGGER_SECRET" -i
 
-# Sessiz saat (22:00-08:00 İstanbul) içinde test etmek için force gerekir:
+# Sessiz saat (cihaz yerel saatiyle 22:00-08:00) içinde test etmek için force gerekir:
 curl -X POST "$API_URL/internal/campaigns/kandil-day" \
   -H "x-campaign-secret: $CAMPAIGN_TRIGGER_SECRET" \
   -H "Content-Type: application/json" \
@@ -73,7 +76,7 @@ curl -X POST "$API_URL/internal/campaigns/kandil-day" \
 
 | Alan | Anlamı | Aksiyon |
 | --- | --- | --- |
-| `quietHours` | 22:00–08:00 İstanbul arasında tetiklendi, `force` verilmedi → hiç gönderim yapılmadı | Beklenen davranış; gerekiyorsa `force: true` ile tekrar tetikle |
+| `quietHours` | Cihazın yerel saati 22:00–08:00 arasındaydı (`devices.timezone`, yoksa İstanbul), `force` verilmedi → o cihaza gönderim yapılmadı, rezervasyon da yazılmadı | Beklenen davranış; günün sonraki tetiklemesi (16:00 UTC) alabilir, gerekiyorsa `force: true` |
 | `dedupe` | Cihaz o gün (İstanbul günü) zaten bir push aldı (bu kampanyadan veya başka bir kampanyadan) | `push_dispatches` sorgusuna bak (adım 4) |
 | `prefs` | Cihaz/kullanıcı bu kampanya türünü kapatmış (`prefs.streak` / `prefs.specialDays`) | Beklenen davranış |
 | `noToken` | Aday sorgusu zaten yalnız token'lı cihazları döndürür; bu alan yalnızca savunma amaçlıdır, normalde 0 | 0'dan büyükse bir aday-seçim sorgusu regresyonuna işaret eder |
@@ -143,9 +146,11 @@ db.special_days.find({ type: 'kandil', date: '2026-05-26' })
 
 ## 8. Bilinen kısıtlar
 
-1. **Dil yok, yalnız TR.** `Device` şemasında bir dil alanı bulunmuyor; tüm
-   kampanya metinleri (`push-campaigns/templates.ts`) sabit Türkçe. Cihaz
-   bazlı dil desteği eklenirse şema + template seçimi birlikte güncellenmeli.
+1. **Dil cihaz başına (TR/EN).** `devices.locale` (`'tr' | 'en'`, opsiyonel,
+   varsayılanı yok) `POST /v1/devices` ile gelir; alanı olmayan cihaz (eski
+   sürüm) Türkçe alır. Metinler `push-campaigns/templates.ts` ve halka push'ları
+   `circles/circles.constants.ts` içinde; EN metinlerde fazilet/sevap/kabul
+   vaadi yoktur. Kandil adı EN cihazda `specialDays.name.en`, boşsa TR ad.
 2. **Mobil yerel bildirimlerle çift bildirim riski — mobil tarafta ele
    alındı.** Mobil uygulama kandil/özel gün için kendi yerel (on-device)
    bildirimini de zamanlar (`features/notifications/services/event-notifications.ts`).
@@ -160,9 +165,21 @@ db.special_days.find({ type: 'kandil', date: '2026-05-26' })
    cihaz [3,4) ve [7,8) pencerelerine pratikte birer kez denk gelir; cron
    saati kayarsa (GH gecikmesi) bir pencere teorik olarak hiç yakalanmadan
    atlanabilir — kritik değil, sonraki pencerede (gün 7) tekrar denenir.
-4. **Sessiz saat kontrolü tüm-veya-hiç.** `quietHours` kapısı tüm adayları
-   birlikte es geçer (kısmi gönderim yapılmaz); `force: true` ile atlanabilir
-   (yalnızca manuel/test tetiklemede kullanılmalı).
+4. **Sessiz saat cihaz başına.** `quietHours` kapısı her adayı kendi
+   `devices.timezone` değerine (yoksa İstanbul) göre eler; atlanan cihaz
+   rezerve edilmez. Amerika kıtası için kandil-day ve haftalık özet 16:00 UTC'de
+   ikinci kez tetiklenir (dedupe `{deviceId, dayKey}` ikinci push'u engeller).
+   Asya-Pasifik için kandil-eve ayrıca 02:00 UTC'de (05:00 İstanbul) çalışır:
+   15:00 UTC, UTC+7 ve doğusunda sessiz saate denk gelir. 05:00 İstanbul hâlâ
+   İstanbul sessiz saatidir (bitiş 08:00), bu yüzden İstanbul/TR cihazları bu
+   turda gönderim almaz, deneyimleri değişmez; yalnızca yerel saati 08:00'i
+   geçmiş doğudaki cihazlar (yaklaşık UTC+6 ve doğusu) alır. Hedef tarih ve
+   dayKey aynı İstanbul gününe düşer, sessiz saatte atlanan cihaz rezerve
+   edilmez, alan cihaza 15:00 UTC'de ikinci push gitmez. Yan etki: bu cihazlar
+   o gün rezerve olduğundan aynı günkü winback/haftalık özet onlara gitmez.
+   Winback ikinci tura alınmadı: penceresi `lastSeenAt`'e göre kaydığı için
+   aynı cihaza iki gün üst üste gidebilirdi. `force: true` sessiz saati
+   atlar (yalnızca manuel/test tetiklemede kullanılmalı).
 
 ## 9. Test / doğrulama
 

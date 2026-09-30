@@ -391,7 +391,11 @@ describe('CirclesService', () => {
         {
           memberIds: userObjectId,
           status: 'active',
-          endDate: { $lt: today },
+          $or: [
+            { expiresAt: { $lte: expect.any(Date) as Date } },
+            // Eski belgeler (expiresAt yok) İstanbul gününe göre kapanır.
+            { expiresAt: { $exists: false }, endDate: { $lt: today } },
+          ],
         },
         { $set: { status: 'closed' } },
       );

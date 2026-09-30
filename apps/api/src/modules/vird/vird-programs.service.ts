@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
-import { istanbulDateKey, shiftDateKey } from '../../common/utils/date-keys';
+import { shiftDateKey, todayKey } from '../../common/utils/date-keys';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import {
   CreateVirdProgramDto,
@@ -176,7 +176,7 @@ export class VirdProgramsService {
 
     const startDate = hasNonEmptyString(payload.startDate)
       ? payload.startDate
-      : (resolved.template.anchorDate ?? istanbulDateKey(new Date()));
+      : (resolved.template.anchorDate ?? todayKey());
     const { dayCount, endDate } = this.deriveDayCountAndEndDate(
       resolved.template.kind,
       startDate,
@@ -262,7 +262,7 @@ export class VirdProgramsService {
     // ajan/çözümleme yoluyla çağırırsa bile bu kapı geçerli kalır.
     this.assertPhasesOnlyUseSlots(input.phases, input.slots);
 
-    const startDate = istanbulDateKey(new Date());
+    const startDate = todayKey();
     const endDate = shiftDateKey(startDate, input.durationDays - 1);
 
     try {
@@ -436,11 +436,7 @@ export class VirdProgramsService {
     const programObjectId = this.asObjectId(id);
     const isPremium = await this.isPremiumUser(objectId);
 
-    await completeExpiredJourneys(
-      this.virdProgramModel,
-      objectId,
-      istanbulDateKey(new Date()),
-    );
+    await completeExpiredJourneys(this.virdProgramModel, objectId, todayKey());
 
     const program = await this.virdProgramModel
       .findOne({ _id: programObjectId, userId: objectId })
@@ -450,9 +446,10 @@ export class VirdProgramsService {
       throw new NotFoundException('Vird programı bulunamadı.');
     }
     if (program.status !== 'draft' && program.status !== 'paused') {
-      throw new BadRequestException(
-        'Yalnızca taslak veya duraklatılmış bir program aktifleştirilebilir.',
-      );
+      throw new BadRequestException({
+        code: VIRD_ERROR_CODE.NOT_ACTIVATABLE,
+        message: VIRD_ERROR_MESSAGE[VIRD_ERROR_CODE.NOT_ACTIVATABLE],
+      });
     }
 
     const limit = isPremium
@@ -496,9 +493,10 @@ export class VirdProgramsService {
       if (current) {
         return current;
       }
-      throw new BadRequestException(
-        'Yalnızca taslak veya duraklatılmış bir program aktifleştirilebilir.',
-      );
+      throw new BadRequestException({
+        code: VIRD_ERROR_CODE.NOT_ACTIVATABLE,
+        message: VIRD_ERROR_MESSAGE[VIRD_ERROR_CODE.NOT_ACTIVATABLE],
+      });
     }
 
     if ((await countOtherActive()) >= limit) {
@@ -581,9 +579,10 @@ export class VirdProgramsService {
   ): VirdProgramPhase[] {
     if (!phases || phases.length === 0) {
       if (source === 'manual') {
-        throw new BadRequestException(
-          'Manuel vird programı için en az bir faz gereklidir.',
-        );
+        throw new BadRequestException({
+          code: VIRD_ERROR_CODE.PHASES_REQUIRED,
+          message: VIRD_ERROR_MESSAGE[VIRD_ERROR_CODE.PHASES_REQUIRED],
+        });
       }
       return [];
     }

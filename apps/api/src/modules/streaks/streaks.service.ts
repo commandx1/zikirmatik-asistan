@@ -10,7 +10,7 @@ import {
   VirdDayProgress,
   type VirdDayProgressDocument,
 } from '../vird/schemas/vird-day-progress.schema';
-import { istanbulDateKey } from '../../common/utils/date-keys';
+import { todayKey } from '../../common/utils/date-keys';
 import { Streak, type StreakDocument } from './schemas/streak.schema';
 import { calculateCompletionStreak } from './utils/streak-calculator';
 
@@ -67,10 +67,9 @@ export class StreaksService {
       }),
     ]);
 
-    const todayKey = istanbulDateKey(new Date());
     const { currentStreak, longestStreak } = calculateCompletionStreak(
       completedDates,
-      todayKey,
+      todayKey(),
     );
     const sortedActive = allDates.slice().sort();
     const totalDaysActive = sortedActive.length;
@@ -115,10 +114,9 @@ export class StreaksService {
       isDayComplete: true,
     });
 
-    const todayKey = istanbulDateKey(new Date());
     const { currentStreak, longestStreak } = calculateCompletionStreak(
       completedDates,
-      todayKey,
+      todayKey(),
     );
     const sortedCompleted = completedDates.slice().sort();
     const virdLastCompleteDate =

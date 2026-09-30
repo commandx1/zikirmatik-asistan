@@ -2,7 +2,10 @@ import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsOptional,
+  IsIn,
   IsString,
+  IsTimeZone,
+  MaxLength,
   MinLength,
   ValidateNested,
 } from 'class-validator';
@@ -32,4 +35,14 @@ export class RegisterDeviceDto {
   @ValidateNested()
   @Type(() => DevicePrefsDto)
   prefs?: DevicePrefsDto;
+
+  @IsOptional()
+  @IsIn(['tr', 'en'])
+  locale?: 'tr' | 'en';
+
+  // IANA bölge adı, örn. "America/Los_Angeles".
+  @IsOptional()
+  @IsTimeZone()
+  @MaxLength(64)
+  timezone?: string;
 }

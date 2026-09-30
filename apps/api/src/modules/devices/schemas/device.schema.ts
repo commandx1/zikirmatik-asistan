@@ -38,6 +38,14 @@ export class Device {
   )
   prefs!: DevicePrefs;
 
+  // Push dili ve sessiz saat bölgesi. Varsayılan YOK: eski sürümler
+  // göndermez → okuyan taraf 'tr' / 'Europe/Istanbul' varsayar.
+  @Prop({ type: String, enum: ['tr', 'en'] })
+  locale?: 'tr' | 'en';
+
+  @Prop({ type: String, trim: true })
+  timezone?: string;
+
   // Flipped to false once Expo reports DeviceNotRegistered for this token,
   // so the sender stops targeting it without losing the device history.
   @Prop({ type: Boolean, default: true, index: true })

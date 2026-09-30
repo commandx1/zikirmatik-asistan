@@ -5,7 +5,7 @@ import {
   Device,
   type DeviceDocument,
 } from '../../devices/schemas/device.schema';
-import { WINBACK_TEMPLATES } from '../templates';
+import { winbackTemplate, type PushLocale } from '../templates';
 import type {
   CampaignBuildResult,
   CampaignCandidate,
@@ -19,6 +19,8 @@ export type WinbackDeviceInput = {
   expoPushToken?: string;
   lastSeenAt: Date;
   prefs?: { streak?: boolean };
+  locale?: PushLocale;
+  timezone?: string;
 };
 
 /**
@@ -49,9 +51,10 @@ export function selectWinbackCandidates(
       continue;
     }
 
-    const template = isDay3Window
-      ? WINBACK_TEMPLATES.day3
-      : WINBACK_TEMPLATES.day7;
+    const template = winbackTemplate(
+      isDay3Window ? 'day3' : 'day7',
+      device.locale,
+    );
 
     candidates.push({
       deviceId: device.deviceId,
@@ -59,6 +62,7 @@ export function selectWinbackCandidates(
       title: template.title,
       body: template.body,
       data: { route: HOME_ROUTE },
+      timezone: device.timezone,
       meta: { window: isDay3Window ? 'day3' : 'day7' },
     });
   }
@@ -85,7 +89,7 @@ export class WinbackCampaign {
         expoPushToken: { $exists: true, $nin: [null, ''] },
         lastSeenAt: { $gt: lowerBoundExclusive, $lte: upperBoundInclusive },
       })
-      .select('deviceId expoPushToken lastSeenAt prefs')
+      .select('deviceId expoPushToken lastSeenAt prefs locale timezone')
       .lean()
       .exec();
 
@@ -95,6 +99,8 @@ export class WinbackCampaign {
         expoPushToken: device.expoPushToken,
         lastSeenAt: device.lastSeenAt,
         prefs: device.prefs,
+        locale: device.locale,
+        timezone: device.timezone,
       })),
       now,
     );
