@@ -36,7 +36,7 @@ Onay: kabul (Opus, 2026-09-30, kullanıcı yetkisiyle)
 
 Last updated: {{DATE}}
 
-This Privacy Policy explains how Zikirmatik Asistan ("we", "our app") collects, uses, discloses and protects your information when you use the mobile application.
+This Privacy Policy explains how Zikirmatik ("we", "our app") collects, uses, discloses and protects your information when you use the mobile application.
 
 **1. Information We Collect**
 We collect information you provide directly, such as your dhikr collections, wird programs, custom targets and preferences, and, if you choose to sign in with Google or Apple, the basic account information (name, email address and profile identifier) shared by the relevant provider. We also collect usage information such as streaks, counts and app settings that are needed to provide the app's features, and technical information such as device type, operating system version and crash diagnostics to keep the app reliable.
@@ -60,7 +60,7 @@ The app may send local and push notifications for the daily dhikr reminders you 
 You can access, update or delete the dhikr collections and settings stored in the app at any time. You can contact us at {{SUPPORT_EMAIL}} to request deletion of your account and associated data, or to ask questions about how your data is handled. We will respond to and process such requests within a reasonable time.
 
 **8. Children's Privacy**
-Zikirmatik Asistan is not directed at children under the age of 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us so that we can remove it.
+Zikirmatik is not directed at children under the age of 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us so that we can remove it.
 
 **9. Changes to This Policy**
 We may update this Privacy Policy from time to time to reflect changes in the app or in applicable law. When we make changes, we update the "Last updated" date above, and we recommend that you review this page periodically.
@@ -76,13 +76,13 @@ Onay: kabul (Opus, 2026-09-30, kullanıcı yetkisiyle)
 
 Last updated: {{DATE}}
 
-These Terms of Use ("Terms") govern your access to and use of the Zikirmatik Asistan mobile application (the "App"). By downloading, accessing or using the App, you agree to be bound by these Terms.
+These Terms of Use ("Terms") govern your access to and use of the Zikirmatik mobile application (the "App"). By downloading, accessing or using the App, you agree to be bound by these Terms.
 
 **1. Acceptance of the Terms**
-By installing or using Zikirmatik Asistan, you confirm that you have read, understood and accepted these Terms. If you do not accept them, please do not use the App.
+By installing or using Zikirmatik, you confirm that you have read, understood and accepted these Terms. If you do not accept them, please do not use the App.
 
 **2. Description of the Service**
-Zikirmatik Asistan offers a dhikr counter and library, a daily wird program, dhikr circles, AI Rehber and sourced chat, special-day notifications, statistics and badges, home screen widgets, optional Google or Apple sync, and Premium subscriptions and credit packs.
+Zikirmatik offers a dhikr counter and library, a daily wird program, dhikr circles, AI Rehber and sourced chat, special-day notifications, statistics and badges, home screen widgets, optional Google or Apple sync, and Premium subscriptions and credit packs.
 
 **3. Accounts**
 Signing in with Google or Apple is optional. If you choose to sign in, you are responsible for keeping your account private and for all activity that takes place through your account. You can sign out or revoke access at any time.
@@ -122,7 +122,7 @@ Onay: kabul (Opus, 2026-09-30, kullanıcı yetkisiyle)
 
 Last updated: {{DATE}}
 
-This Refund Policy explains how refund requests are handled for Premium subscriptions and optional credit purchases made within Zikirmatik Asistan.
+This Refund Policy explains how refund requests are handled for Premium subscriptions and optional credit purchases made within Zikirmatik.
 
 **1. Purchases Through Google Play**
 All purchases, including Premium subscriptions and Premium credit packs (10, 30 or 75 credits), are processed and billed through Google Play. Subscription cancellations are made from the "Subscriptions" section of the Google Play app, and refunds are subject to Google Play's subscription refund policy.
@@ -148,7 +148,7 @@ Onay: kabul (Opus, 2026-09-30, kullanıcı yetkisiyle)
 
 **Delete your account**
 
-You can delete your Zikirmatik Asistan account and the data linked to it at any time. Deletion is permanent and cannot be undone.
+You can delete your Zikirmatik account and the data linked to it at any time. Deletion is permanent and cannot be undone.
 
 **Option 1: Delete it inside the app**
 1. Open the app and go to Profile. 2. Tap "Delete account". 3. Confirm when asked. Your account and the data listed below are deleted immediately.

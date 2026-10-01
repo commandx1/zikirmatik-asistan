@@ -1,6 +1,6 @@
 {
   "topBar": {
-    "title": "Zikirmatik Asistan",
+    "title": "Zikirmatik",
     "subtitle": "{{greeting}} • Streak {{streak}}"
   },
   "a11y": {

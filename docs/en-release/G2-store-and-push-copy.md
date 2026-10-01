@@ -24,7 +24,7 @@ Not: TR başlığı "Zikirmatik: Zikir Sayacı, Vird" (aranan kelimeler). "Wird"
 Karakter: 2676/4000. Onay: kabul (Opus, 2026-09-30, kullanıcı yetkisiyle)
 
 ```text
-Zikirmatik Asistan is a dhikr app designed to help you keep a regular dhikr and dua practice. It counts your dhikr, sets up your daily wird (your dhikr routine), lets you reach a shared goal with your loved ones, and offers sourced suggestions when you decide what to recite.
+Zikirmatik is a dhikr app designed to help you keep a regular dhikr and dua practice. It counts your dhikr, sets up your daily wird (your dhikr routine), lets you reach a shared goal with your loved ones, and offers sourced suggestions when you decide what to recite.
 
 DHIKR COUNTER
 • Count with a single tap; use goal mode or free mode
@@ -72,7 +72,7 @@ PERSONALIZATION
 MEMBERSHIP AND PURCHASES
 The counter and the dhikr library are free. You can create your first dhikr circle for free (up to 5 people); advanced features such as multiple circles at the same time, larger circles and the Wird widget require a Premium membership; AI features work with credits, and extra credits can be purchased in the app.
 
-Bring your dhikr practice into a more regular and sustainable routine with Zikirmatik Asistan.
+Bring your dhikr practice into a more regular and sustainable routine with Zikirmatik.
 ```
 
 Terim notu: "Vird" İngilizce metinde "wird" olarak bırakıldı (TR'deki "vird" terimiyle aynı yapı). İstersen ilk geçtiği yerde parantezle açıklama eklenebilir; sana ait karar.
@@ -129,7 +129,7 @@ Not (satır 6): TR'deki "Mübarek günleri" ifadesi EN'de "special days" olarak 
 Karakter: 192/500. Onay: (boş)
 
 ```text
-Zikirmatik Asistan is now available in English. The counter, daily wird, dhikr circles, sourced AI guide, special-day countdowns, statistics and streaks all work in English as well as Turkish.
+Zikirmatik is now available in English. The counter, daily wird, dhikr circles, sourced AI guide, special-day countdowns, statistics and streaks all work in English as well as Turkish.
 ```
 
 Not: Sürüme özel düzeltme veya yenilik satırlarını sen ekle (KULLANICI DOLDURACAK).
@@ -157,6 +157,8 @@ Play Console alan sınırları (ürün adı ve açıklama uzunluğu) sürüm gü
 | `apps/mobile/src/i18n/locales/en/profile.json` | `feedbackEmail.subject` | Zikirmatik Rehber Feedback | Zikirmatik Asistan Feedback | Zikirmatik Asistan Feedback |
 
 Öneri: her yerde "Zikirmatik Asistan" (Play listing, site ve TR ile aynı).
+
+> Güncel karar (2026-10-01): İngilizce marka her yerde "Zikirmatik"; Türkçe değişmez ("Zikirmatik Asistan"); Play başlığı henüz belirlenmedi.
 
 Uygulanacak: mobil string değişikliği ayrı dalgada (emülatör turu bitince).
 

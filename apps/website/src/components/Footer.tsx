@@ -2,18 +2,18 @@ import { useTranslations } from "next-intl";
 import { Link } from "../i18n/navigation";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { PlayStoreButton } from "./PlayStoreButton";
-import { APP_NAME } from "../lib/constants";
 
 export function Footer() {
   const t = useTranslations("footer");
   const nav = useTranslations("nav");
+  const brand = useTranslations("meta")("siteName");
 
   return (
     <footer className="bg-ink text-white">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <p className="text-lg font-semibold">{APP_NAME}</p>
+            <p className="text-lg font-semibold">{brand}</p>
             <p className="mt-3 max-w-sm text-sm text-white/70">{t("tagline")}</p>
             <div className="mt-6">
               <PlayStoreButton label={nav("getOnPlay")} />
@@ -70,7 +70,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-white/60 sm:flex-row">
           <p>
-            © {new Date().getFullYear()} {APP_NAME}. {t("rights")}
+            © {new Date().getFullYear()} {brand}. {t("rights")}
           </p>
           <LanguageSwitcher />
         </div>

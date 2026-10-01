@@ -1,14 +1,14 @@
 {
   "meta": {
-    "siteName": "Zikirmatik Asistan",
-    "titleDefault": "Zikirmatik Asistan — Dhikr Counter, Daily Vird and Dhikr Circle",
-    "description": "An ad-free dhikr counter, a daily vird program, a dhikr circle with your loved ones and a source-referenced AI guide — all in Zikirmatik Asistan.",
-    "titlePrivacy": "Privacy Policy — Zikirmatik Asistan",
-    "titleTerms": "Terms of Service — Zikirmatik Asistan",
-    "titleRefund": "Refund Policy — Zikirmatik Asistan",
-    "halkaTitle": "Join a Dhikr Circle — Zikirmatik Asistan",
-    "halkaDescription": "Join a dhikr circle in Zikirmatik Asistan with this invite code.",
-    "titleDelete": "Delete Account — Zikirmatik Asistan"
+    "siteName": "Zikirmatik",
+    "titleDefault": "Zikirmatik — Dhikr Counter, Daily Vird and Dhikr Circle",
+    "description": "An ad-free dhikr counter, a daily vird program, a dhikr circle with your loved ones and a source-referenced AI guide — all in Zikirmatik.",
+    "titlePrivacy": "Privacy Policy — Zikirmatik",
+    "titleTerms": "Terms of Service — Zikirmatik",
+    "titleRefund": "Refund Policy — Zikirmatik",
+    "halkaTitle": "Join a Dhikr Circle — Zikirmatik",
+    "halkaDescription": "Join a dhikr circle in Zikirmatik with this invite code.",
+    "titleDelete": "Delete Account — Zikirmatik"
   },
   "nav": {
     "features": "Features",
@@ -23,7 +23,7 @@
     "getOnPlay": "Get it on Google Play"
   },
   "hero": {
-    "eyebrow": "Zikirmatik Asistan",
+    "eyebrow": "Zikirmatik",
     "title": "A dhikr counter, daily vird and dhikr circle in one app",
     "subtitle": "Count your dhikr, build your daily vird and gather with your loved ones in a dhikr circle; whenever you ask AI Guide, every suggestion comes with a source and page reference.",
     "ctaPrimary": "Get it on Google Play",
@@ -109,12 +109,12 @@
     "note": "In the free version 1 credit renews every day (with a 3-credit welcome bonus on the first day); Premium grants 50 credits a month, and unused credits do not roll over to the next month."
   },
   "howItWorks": {
-    "title": "How Zikirmatik Asistan works",
+    "title": "How Zikirmatik works",
     "subtitle": "Get started in minutes and build a lasting habit.",
     "steps": [
       {
         "title": "Download and open",
-        "description": "Install Zikirmatik Asistan from Google Play and start using it right away, without creating an account."
+        "description": "Install Zikirmatik from Google Play and start using it right away, without creating an account."
       },
       {
         "title": "Pick a dhikr or build your vird",
@@ -147,10 +147,10 @@
       "Kandil and special-day calendar",
       "Statistics and badges"
     ],
-    "alt": "Zikirmatik Asistan app screenshot"
+    "alt": "Zikirmatik app screenshot"
   },
   "premium": {
-    "title": "Zikirmatik Asistan Premium",
+    "title": "Zikirmatik Premium",
     "subtitle": "With a monthly or annual subscription through Google Play; unlocks 10 active vird programs, 10 active dhikr circles, monthly AI Guide credits, detailed statistics and all themes.",
     "note": "Premium is purchased through Google Play as a monthly or annual subscription; see the app's Google Play listing for current pricing.",
     "table": {
@@ -220,11 +220,11 @@
   },
   "faq": {
     "title": "Frequently asked questions",
-    "subtitle": "Answers to the most common questions about Zikirmatik Asistan.",
+    "subtitle": "Answers to the most common questions about Zikirmatik.",
     "items": [
       {
-        "question": "What is Zikirmatik Asistan?",
-        "answer": "Zikirmatik Asistan brings a dhikr counter, a daily vird program, a dhikr circle you can start with your loved ones and a source-referenced AI Guide together in a single ad-free app."
+        "question": "What is Zikirmatik?",
+        "answer": "Zikirmatik brings a dhikr counter, a daily vird program, a dhikr circle you can start with your loved ones and a source-referenced AI Guide together in a single ad-free app."
       },
       {
         "question": "Is it free?",
@@ -232,7 +232,7 @@
       },
       {
         "question": "Are there ads?",
-        "answer": "No, Zikirmatik Asistan has no ads."
+        "answer": "No, Zikirmatik has no ads."
       },
       {
         "question": "What is the vird program?",
@@ -302,7 +302,7 @@
   },
   "privacy": {
     "title": "Privacy Policy",
-    "intro": "This Privacy Policy explains how Zikirmatik Asistan (\"we\", \"our app\") collects, uses, discloses and protects your information when you use the mobile application.",
+    "intro": "This Privacy Policy explains how Zikirmatik (\"we\", \"our app\") collects, uses, discloses and protects your information when you use the mobile application.",
     "sections": [
       {
         "heading": "1. Information We Collect",
@@ -334,7 +334,7 @@
       },
       {
         "heading": "8. Children's Privacy",
-        "body": "Zikirmatik Asistan is not directed at children under the age of 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us so that we can remove it."
+        "body": "Zikirmatik is not directed at children under the age of 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us so that we can remove it."
       },
       {
         "heading": "9. Changes to This Policy",
@@ -348,15 +348,15 @@
   },
   "terms": {
     "title": "Terms of Use",
-    "intro": "These Terms of Use (\"Terms\") govern your access to and use of the Zikirmatik Asistan mobile application (the \"App\"). By downloading, accessing or using the App, you agree to be bound by these Terms.",
+    "intro": "These Terms of Use (\"Terms\") govern your access to and use of the Zikirmatik mobile application (the \"App\"). By downloading, accessing or using the App, you agree to be bound by these Terms.",
     "sections": [
       {
         "heading": "1. Acceptance of the Terms",
-        "body": "By installing or using Zikirmatik Asistan, you confirm that you have read, understood and accepted these Terms. If you do not accept them, please do not use the App."
+        "body": "By installing or using Zikirmatik, you confirm that you have read, understood and accepted these Terms. If you do not accept them, please do not use the App."
       },
       {
         "heading": "2. Description of the Service",
-        "body": "Zikirmatik Asistan offers a dhikr counter and library, a daily wird program, dhikr circles, AI Guide and sourced chat, special-day notifications, statistics and badges, home screen widgets, optional Google or Apple sync, and Premium subscriptions and credit packs."
+        "body": "Zikirmatik offers a dhikr counter and library, a daily wird program, dhikr circles, AI Guide and sourced chat, special-day notifications, statistics and badges, home screen widgets, optional Google or Apple sync, and Premium subscriptions and credit packs."
       },
       {
         "heading": "3. Accounts",
@@ -402,7 +402,7 @@
   },
   "refund": {
     "title": "Refund Policy",
-    "intro": "This Refund Policy explains how refund requests are handled for Premium subscriptions and optional credit purchases made within Zikirmatik Asistan.",
+    "intro": "This Refund Policy explains how refund requests are handled for Premium subscriptions and optional credit purchases made within Zikirmatik.",
     "sections": [
       {
         "heading": "1. Purchases Through Google Play",
@@ -456,7 +456,7 @@
   },
   "deleteAccount": {
     "title": "Delete your account",
-    "intro": "You can delete your Zikirmatik Asistan account and the data linked to it at any time. Deletion is permanent and cannot be undone.",
+    "intro": "You can delete your Zikirmatik account and the data linked to it at any time. Deletion is permanent and cannot be undone.",
     "sections": [
       {
         "heading": "Option 1: Delete it inside the app",

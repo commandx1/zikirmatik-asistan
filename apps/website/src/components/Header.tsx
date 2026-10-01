@@ -2,10 +2,10 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Link } from "../i18n/navigation";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { APP_NAME } from "../lib/constants";
 
 export function Header() {
   const t = useTranslations("nav");
+  const brand = useTranslations("meta")("siteName");
 
   return (
     <header className="sticky top-0 z-50 border-b border-black/5 bg-white/90 backdrop-blur">
@@ -13,12 +13,12 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2 font-semibold text-ink">
           <Image
             src="/logo.png"
-            alt={APP_NAME}
+            alt={brand}
             width={32}
             height={32}
             className="h-8 w-8 rounded-lg"
           />
-          <span className="text-sm sm:text-base">{APP_NAME}</span>
+          <span className="text-sm sm:text-base">{brand}</span>
         </Link>
 
         <nav

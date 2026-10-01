@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">Zikirmatik Asistan</string>
+  <string name="app_name">Zikirmatik</string>
   <string name="widget_streak_label">Dhikr Streak</string>
   <string name="widget_streak_description">Your streak and today\'s dhikr total</string>
   <string name="widget_vird_label">Vird Program</string>

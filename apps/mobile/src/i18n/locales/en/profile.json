@@ -54,7 +54,7 @@
     "since": "Member since {{date}}"
   },
   "feedbackEmail": {
-    "subject": "Zikirmatik Asistan Feedback",
+    "subject": "Zikirmatik Feedback",
     "body": "Hello,\n\nMy feedback:\n\n\n---\nDevice:\nApp version:\n"
   },
   "reminderTimeModal": {
