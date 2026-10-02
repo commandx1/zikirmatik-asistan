@@ -80,6 +80,12 @@ export type ServerStreak = Pick<LocalActivityStats, "currentStreak" | "longestSt
 // Signed-in users: the server streak (GET /v1/streaks) is the record — it
 // sees every device and every saved log — so it replaces the device-local
 // day math whenever it has been fetched. allTimeCount stays local.
+// Home header number: members see the server streak (0 until fetched, never
+// a local guess); guests have no server, so the local day math is the record.
+export function resolveHeaderStreak(isAuthenticated: boolean, server: ServerStreak | null, local: LocalActivityStats): number {
+  return server?.currentStreak ?? (isAuthenticated ? 0 : local.currentStreak);
+}
+
 export function withServerStreak(local: LocalActivityStats, server: ServerStreak | null | undefined): LocalActivityStats {
   if (!server) {
     return local;

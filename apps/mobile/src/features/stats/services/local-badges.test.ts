@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { BADGE_DEFINITIONS } from "@zikirmatik/shared";
 import trStats from "../../../i18n/locales/tr/stats.json";
 import enStats from "../../../i18n/locales/en/stats.json";
-import { computeLocalBadges, deriveLocalActivityStats, withServerStreak } from "./local-badges";
+import { computeLocalBadges, deriveLocalActivityStats, resolveHeaderStreak, withServerStreak } from "./local-badges";
 
 describe("deriveLocalActivityStats", () => {
   it("counts free-mode taps toward all-time count and today's active day", () => {
@@ -82,6 +82,25 @@ describe("withServerStreak", () => {
       longestStreak: 12,
       totalDaysActive: 30
     });
+  });
+});
+
+describe("resolveHeaderStreak", () => {
+  const server = { currentStreak: 8, longestStreak: 12, totalDaysActive: 30 };
+
+  it("guest: shows the local activeDayKeys streak", () => {
+    const today = new Date(2026, 6, 11);
+    const local = deriveLocalActivityStats(
+      { items: [], freeModeCount: 0, activeDayKeys: ["2026-07-09", "2026-07-10", "2026-07-11"] },
+      today
+    );
+    expect(resolveHeaderStreak(false, null, local)).toBe(3);
+  });
+
+  it("member: shows the server streak, 0 until fetched (never the local guess)", () => {
+    const local = { allTimeCount: 0, currentStreak: 3, longestStreak: 3, totalDaysActive: 3 };
+    expect(resolveHeaderStreak(true, server, local)).toBe(8);
+    expect(resolveHeaderStreak(true, null, local)).toBe(0);
   });
 });
 
