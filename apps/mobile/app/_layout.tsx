@@ -8,7 +8,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../src/lib/query-client";
 import { I18nextProvider } from "react-i18next";
 import { ThemeProvider } from "@zikirmatik/ui";
-import { DEFAULT_BG_FALLBACK } from "@zikirmatik/shared";
+import { DEFAULT_BG_FALLBACK, resolveThemeTokens } from "@zikirmatik/shared";
+import * as SystemUI from "expo-system-ui";
 import { i18n } from "../src/i18n";
 import "../src/store/register-dhikr-store-text";
 import { Merriweather_400Regular, Merriweather_700Bold, useFonts } from "@expo-google-fonts/merriweather";
@@ -70,6 +71,11 @@ function RootProviders({ children }: { children: ReactNode }) {
     Finlandica_700Bold,
     IndieFlower_400Regular
   });
+  // Native window/root-view background follows the theme: iOS push transitions reveal it at
+  // the sliding screen's rounded corners (default is white), light themes need their own color.
+  useEffect(() => {
+    void SystemUI.setBackgroundColorAsync(resolveThemeTokens(themeName).bg).catch(() => {});
+  }, [themeName]);
   useAuthSessionSync();
   // Fresh installs never see the auth wall: a signed-out, non-guest user
   // becomes a guest automatically, no matter which route the app cold-opens

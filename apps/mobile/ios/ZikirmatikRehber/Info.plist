@@ -78,6 +78,8 @@
     </array>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Namaz vakitlerine göre vird hatırlatmaları için konumun yalnızca uygulama açıkken kullanılır.</string>
+    <key>RCTRootViewBackgroundColor</key>
+    <integer>4278916131</integer>
     <key>UIUserInterfaceStyle</key>
     <string>Light</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
