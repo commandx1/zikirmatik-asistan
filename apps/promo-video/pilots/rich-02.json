@@ -9,13 +9,13 @@
     },
     {
       "segments": [
-        { "kind": "ramp", "from": 10.85, "to": 27.0 },
-        { "kind": "fixed", "from": 27.0, "to": 29.0, "rate": 1.0 }
+        { "kind": "ramp", "from": 10.85, "to": 28.7 },
+        { "kind": "fixed", "from": 28.7, "to": 30.7, "rate": 1.0 }
       ],
       "badge": { "text": "Sonraki", "segmentIndex": 1, "atFrame": 4, "durationFrames": 24 }
     },
     {
-      "segments": [{ "kind": "fixed", "from": 43.9, "to": 46.05, "rate": 1.0 }]
+      "segments": [{ "kind": "fixed", "from": 46.0, "to": 48.15, "rate": 1.0 }]
     }
   ]
 }

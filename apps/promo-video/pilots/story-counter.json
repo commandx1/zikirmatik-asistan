@@ -1,30 +1,23 @@
 {
   "hookText": "Zikir çekerken kaç kere sayıyı şaşırdın?",
-  "segments": [
-    { "from": 0.3, "to": 19.53, "rate": 2.0 },
-    { "from": 19.53, "to": 22.5, "rate": 1.0 },
-    { "from": 22.5, "to": 40.0, "rate": 3.5 },
-    { "from": 40.0, "to": 43.72, "rate": 1.0 },
-    { "from": 43.72, "to": 48.2, "rate": 1.0 }
-  ],
   "captions": [
     {
       "text": "Zikrini seç",
-      "from": 0,
-      "to": 9.615
+      "from": 0.29999999999999716,
+      "to": 20.90299999999999
     },
     {
       "text": "Tek dokunuşla say, 33'te haber verir",
-      "from": 9.615,
-      "to": 21.305
+      "from": 20.90299999999999,
+      "to": 45.262
     },
     {
       "text": "Kaldığın yerden devam",
-      "from": 21.305,
-      "to": 25.785
+      "from": 45.262,
+      "to": 49.65
     }
   ],
-  "recordingDurationSec": 48.2,
+  "recordingDurationSec": 49.65,
   "loop": false,
   "outroSec": 4,
   "sourceLine": "Kaynak: —",

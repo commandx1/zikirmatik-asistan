@@ -3,12 +3,12 @@
   "scenes": [
     {
       "segments": [
-        { "kind": "ramp", "from": 0.3, "to": 22.5 },
-        { "kind": "fixed", "from": 22.5, "to": 24.5, "rate": 1.0 }
+        { "kind": "ramp", "from": 0.3, "to": 23.7 },
+        { "kind": "fixed", "from": 23.7, "to": 25.7, "rate": 1.0 }
       ]
     },
     {
-      "segments": [{ "kind": "fixed", "from": 26.8, "to": 31.608, "rate": 1.0 }]
+      "segments": [{ "kind": "fixed", "from": 29.7, "to": 34.508, "rate": 1.0 }]
     },
     {
       "staticImage": "recordings/circle-detail-settled.png"

@@ -9,6 +9,9 @@
 // Kullanıcı") — bu video taze bir MİSAFİR oturumu göstermeli (üst bilgide test hesabı adı
 // görünmemeli).
 const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { execFileSync } = require('node:child_process');
 const { waitForHome, skipTourIfShown, openTab } = require('../helpers');
 
 // testID değerleri src/test-ids.ts ile aynı olmalı.
@@ -48,6 +51,40 @@ async function tapAtIndexWhenHittable(id, index, { retries = 6, delayMs = 300 } 
   }
 }
 
+// Demo durumu (yalnız bu kayıt betiği; uygulama kodu DEĞİŞMEZ): misafir için 5 günlük seri
+// (bugün dahil) + düşük lifetimeCount → 33. dokunuşta count-100 rozeti tetiklenmez, üst bilgide
+// "Seri 5 gün" görünür. dhikr-store-v1 (zustand persist v5) AsyncStorage manifest'ine yazılır.
+const BUNDLE_ID = 'com.zikirmatik_asistan.app';
+function localDayKey(offsetDays) {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+async function seedDemoStreak() {
+  await PAUSE(1500); // persist yazımları diske insin
+  await device.terminateApp();
+  const dataDir = execFileSync('xcrun', ['simctl', 'get_app_container', device.id, BUNDLE_ID, 'data']).toString().trim();
+  const storeDir = path.join(dataDir, 'Library/Application Support', BUNDLE_ID, 'RCTAsyncLocalStorage_V1');
+  const manifestPath = path.join(storeDir, 'manifest.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const key = 'dhikr-store-v1';
+  const filePath = path.join(storeDir, crypto.createHash('md5').update(key).digest('hex'));
+  let raw = manifest[key];
+  if (raw == null && fs.existsSync(filePath)) raw = fs.readFileSync(filePath, 'utf8');
+  const prev = raw ? JSON.parse(raw) : { state: {}, version: 5 };
+  prev.state = {
+    ...prev.state,
+    activeDayKeys: [-4, -3, -2, -1, 0].map(localDayKey),
+    lifetimeCount: 20,
+  };
+  manifest[key] = JSON.stringify(prev);
+  if (fs.existsSync(filePath)) fs.rmSync(filePath);
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest));
+  await device.launchApp({ newInstance: true });
+  await waitForHome();
+}
+
 const markers = {};
 function mark(name) {
   markers[name] = Date.now();
@@ -63,6 +100,8 @@ describe('recording: story-counter', () => {
     await device.launchApp({ newInstance: true, delete: true, permissions: { notifications: 'YES' } });
     await waitForHome();
     await skipTourIfShown();
+    await PAUSE(600);
+    await seedDemoStreak();
     await PAUSE(600);
 
     // --- Beat A: "Zikrini seç" (bu, klibin de başlangıcı — record.mjs trimStart = A - 0.3s) ---

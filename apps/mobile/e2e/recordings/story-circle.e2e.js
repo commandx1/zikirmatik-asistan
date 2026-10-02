@@ -38,6 +38,11 @@ const IDS = {
 };
 
 const API_URL = process.env.E2E_API_URL || 'http://127.0.0.1:3000';
+// Video 3 zikri: "Salavat-ı Şerife (Salli Sellim Barik)" (apps/api/scripts/data/salavat.mjs,
+// keyMap.SELLIM_BARIK). Picker satır etiketi = transliterasyon ("Allâhümme salli ve sellim ve
+// bârik alâ seyyidinâ ..."), arama o etikette alt dize arar; bu ifade yalnız o zikirde geçer.
+// NOT: "salli ve sellim ve bârik" 4 salavatta geçer (Fatih dahil) — kuyruk yalnız SELLIM_BARIK'te.
+const SEARCH_TERM = 've alâ âli seyyidinâ muhammed';
 const PAUSE = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Bu makinede (paralel Docker/API/xcodebuild yükü altında, canlı denemede doğrulandı) düz
@@ -132,11 +137,11 @@ describe('recording: story-circle', () => {
     await visible(IDS.pickerSearch, 5000);
     await element(by.id(IDS.pickerSearch)).tap();
     await PAUSE(400);
-    await element(by.id(IDS.pickerSearch)).replaceText('salli');
+    await element(by.id(IDS.pickerSearch)).replaceText(SEARCH_TERM);
     await PAUSE(1200);
     const searchText = await readText(IDS.pickerSearch);
-    if (!searchText.includes('salli')) {
-      await element(by.id(IDS.pickerSearch)).replaceText('salli');
+    if (!searchText.includes(SEARCH_TERM)) {
+      await element(by.id(IDS.pickerSearch)).replaceText(SEARCH_TERM);
       await PAUSE(1200);
     }
     // Bu makinede (paralel Docker/API/xcodebuild yükü altında, canlı denemede doğrulandı) düz
@@ -144,6 +149,13 @@ describe('recording: story-circle', () => {
     // ekranın aslında doğru/filtrelenmiş olduğu doğrulandı. Görünürlük onayı yerine dokunuşun
     // KENDİSİNİ tekrar dene.
     await PAUSE(1000);
+    // Körlemesine index 0'a dokunma: seçilecek satır gerçekten Sellim Barik olmalı, değilse
+    // kaydı yüksek sesle başarısız kıl.
+    const rowAttrs = await element(by.id(IDS.pickerRow)).atIndex(0).getAttributes();
+    const rowLabel = String(rowAttrs.label ?? rowAttrs.text ?? '');
+    if (!/sellim/i.test(rowLabel) || !/âli seyyidinâ/i.test(rowLabel)) {
+      throw new Error(`story-circle: picker ilk satırı Sellim Barik değil: "${rowLabel}"`);
+    }
     await tapAtIndexWhenHittable(IDS.pickerRow, 0);
     // Seçim başarılıysa modal kapanır (picker testID'leri artık yok); başarısızsa (kaydolmadı)
     // kısa bir yeniden deneme yapılır.

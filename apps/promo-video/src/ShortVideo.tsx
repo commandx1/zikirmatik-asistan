@@ -166,10 +166,17 @@ function HookBeat({ hookText }: { hookText: string }) {
 // contains the real iOS status bar.
 const FRAME_HEIGHT = Math.round(HEIGHT * 0.82);
 const FRAME_BEZEL = 14;
-const FRAME_RADIUS = 48;
 const RECORDING_ASPECT = 1206 / 2622;
 const SCREEN_HEIGHT = FRAME_HEIGHT - FRAME_BEZEL * 2;
 const SCREEN_WIDTH = Math.round(SCREEN_HEIGHT * RECORDING_ASPECT);
+// The simulator capture is the full rectangle: outside the real display's rounded corners
+// (~186px = 62pt radius at 1206px wide) it holds black, or the white UIWindow during iOS push
+// transitions. Clip the screen with that same radius so the wedge never shows.
+const SCREEN_RADIUS = Math.round((186 * SCREEN_WIDTH) / 1206);
+const FRAME_RADIUS = FRAME_BEZEL + SCREEN_RADIUS;
+// Inset the screen clip a few px so the antialiased edge of the capture's corner wedge
+// (a thin white sliver in some iOS transition frames) hides behind the bezel.
+const SCREEN_INSET = 3;
 const FRAME_WIDTH = SCREEN_WIDTH + FRAME_BEZEL * 2;
 export const FRAME_TOP = 56;
 
@@ -194,11 +201,11 @@ export function ScreenRecordingFrame({ children }: { children: React.ReactNode }
       <div
         style={{
           position: "absolute",
-          top: FRAME_BEZEL,
-          left: FRAME_BEZEL,
-          right: FRAME_BEZEL,
-          bottom: FRAME_BEZEL,
-          borderRadius: FRAME_RADIUS - FRAME_BEZEL,
+          top: FRAME_BEZEL + SCREEN_INSET,
+          left: FRAME_BEZEL + SCREEN_INSET,
+          right: FRAME_BEZEL + SCREEN_INSET,
+          bottom: FRAME_BEZEL + SCREEN_INSET,
+          borderRadius: SCREEN_RADIUS,
           overflow: "hidden",
           background: COLORS.bg,
         }}

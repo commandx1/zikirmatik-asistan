@@ -11,7 +11,7 @@ import {
 } from "remotion";
 import { COLORS, FPS } from "./constants";
 import { Background } from "./components/Background";
-import { fadeIn, fadeOut, scaleIn, slideUp, pulse } from "./helpers";
+import { fadeIn, fadeOut, scaleIn, slideUp } from "./helpers";
 import { FRAME_TOP, ScreenRecordingFrame } from "./ShortVideo";
 import voManifest from "../public/audio/vo-01.json";
 
@@ -34,13 +34,13 @@ export const HOLD_SEC = 1.2;
 // silent video's caption-driven ones.
 const RECORDING_SRC = "recordings/story-counter.mp4";
 const SELECT_FROM = 0.3;
-const SELECT_TO = 19.53;
-const TAP_FROM = 19.53;
+const SELECT_TO = 20.9;
+const TAP_FROM = 20.9;
 // Brief calls for "the last ~2.2s of source (the 33/33 completion) at 1.0x"; the pilot's own
 // completion window (40.0 -> 43.72) is 3.72s, so we take its final 2.2s here and ramp
 // everything before it (19.53 -> 41.52) to fill the rest of scene 3.
-const TAP_COMPLETE_FROM = 41.52;
-const TAP_TO = 43.72;
+const TAP_COMPLETE_FROM = 41.5;
+const TAP_TO = 43.7;
 // Relaunch (scene 4) has three real phases in the source, verified frame-by-frame:
 //   1. home screen tap (43.72 -> 44.6)
 //   2. a genuinely blank/white iOS loading gap (44.6 -> 47.3, ~2.7s of nothing)
@@ -58,8 +58,8 @@ const TAP_TO = 43.72;
 // see Scene3's 66-frame completion clip, and phase 1 here) never failed in any test, only
 // sped-up/slowed-down/frozen ones did, unpredictably. Given that, phases 2-3 use no video
 // decode at all instead of chasing the exact failure condition further.
-const RELAUNCH_FROM = 43.72;
-const RELAUNCH_HOME_TO = 44.6;
+const RELAUNCH_FROM = 44.7;
+const RELAUNCH_HOME_TO = 45.6;
 const RELAUNCH_SETTLED_IMAGE = "recordings/relaunch-settled.png";
 // Fixed output-time budget for the home-tap phase (real speed).
 const RELAUNCH_HOME_FRAMES = 27; // ~0.9s, near real speed on the icon tap
@@ -540,46 +540,9 @@ function Scene3({ scene }: { scene: Scene }) {
         <PhoneStage>
           <RampedClip from={TAP_COMPLETE_FROM} to={TAP_TO} rate={1.0} />
         </PhoneStage>
-        <CompletionBadge />
       </Sequence>
       <CaptionPill text={scene.text} />
     </>
-  );
-}
-
-// Roughly where the counter ring sits inside the phone screen (see ScreenRecordingFrame /
-// FRAME_TOP) — the badge overlays it, not the phone's header/status-bar area.
-const COMPLETION_BADGE_TOP = 470;
-
-function CompletionBadge() {
-  const frame = useCurrentFrame();
-  const opacity = fadeIn(frame, 0, 8);
-  const scale = scaleIn(frame, 0, 14, 0.5) * pulse(frame, 0.25, 0.97, 1.05);
-  return (
-    <AbsoluteFill
-      style={{ alignItems: "center", justifyContent: "flex-start", paddingTop: COMPLETION_BADGE_TOP }}
-    >
-      <div
-        style={{
-          opacity,
-          transform: `scale(${scale})`,
-          width: 130,
-          height: 130,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${COLORS.goldLight} 0%, ${COLORS.gold} 100%)`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 52,
-          fontWeight: 800,
-          color: "#000",
-          fontFamily: "sans-serif",
-          boxShadow: "0 12px 40px rgba(212,168,48,0.5)",
-        }}
-      >
-        33
-      </div>
-    </AbsoluteFill>
   );
 }
 
