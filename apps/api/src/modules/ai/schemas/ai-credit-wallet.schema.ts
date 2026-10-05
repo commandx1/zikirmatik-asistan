@@ -11,7 +11,7 @@ export type AiCreditWalletDocument = HydratedDocument<AiCreditWallet>;
   versionKey: false,
 })
 export class AiCreditWallet {
-  @Prop({ type: Types.ObjectId, ref: User.name, required: true, unique: true })
+  @Prop({ type: Types.ObjectId, ref: User.name, required: true })
   userId!: Types.ObjectId;
 
   @Prop({ type: Number, required: true, default: 0, min: 0 })

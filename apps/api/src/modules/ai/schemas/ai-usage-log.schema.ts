@@ -32,7 +32,7 @@ export class AiUsageLog {
   @Prop({ type: Types.ObjectId, ref: User.name, required: false, index: true })
   userId?: Types.ObjectId;
 
-  @Prop({ type: String, required: false, index: true })
+  @Prop({ type: String, required: false })
   flowId?: string;
 
   @Prop({ type: String, required: true, enum: AI_USAGE_KINDS })
