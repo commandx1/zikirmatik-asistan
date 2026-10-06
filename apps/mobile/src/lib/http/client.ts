@@ -36,12 +36,15 @@ export class ApiError extends Error {
   }
 }
 
+const DEFAULT_TIMEOUT_MS = 30_000;
+
 export type RequestOptions<T> = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   /** true: session token via the auth bridge (+ one refresh/retry on 401). string: explicit token, no retry. */
   auth?: boolean | string;
   headers?: Record<string, string>;
+  /** Abort after this long (default 30s). RN/OkHttp has no default timeout, so a half-open connection would hang forever. */
   timeoutMs?: number;
   parse?: (raw: unknown) => T;
   /** Returned for an empty/`null` success body. Defaults to `{}`; pass `undefined` explicitly to get it back raw. */
@@ -77,7 +80,7 @@ export async function request<T>(path: string, options: RequestOptions<T>): Prom
 }
 
 async function send<T>(path: string, options: RequestOptions<T>, token: string | undefined): Promise<unknown> {
-  const { method = "GET", body, timeoutMs, errors } = options;
+  const { method = "GET", body, timeoutMs = DEFAULT_TIMEOUT_MS, errors } = options;
   const timeZone = getDeviceTimeZone();
   // The API derives "today" from this header (Europe/Istanbul when absent).
   const headers: Record<string, string> = {
@@ -89,22 +92,17 @@ async function send<T>(path: string, options: RequestOptions<T>, token: string |
     headers.authorization = `Bearer ${token}`;
   }
 
+  // The timer also covers the body read: abort() rejects a pending response.text() too.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
   try {
-    const controller = timeoutMs === undefined ? undefined : new AbortController();
-    const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : undefined;
-
-    let response: Response;
-    try {
-      response = await fetch(`${API_BASE_URL}${path}`, {
-        method,
-        headers,
-        ...(controller ? { signal: controller.signal } : {}),
-        ...(body !== undefined ? { body: JSON.stringify(body) } : {})
-      });
-    } finally {
-      clearTimeout(timeoutId);
-    }
-
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method,
+      headers,
+      signal: controller.signal,
+      ...(body !== undefined ? { body: JSON.stringify(body) } : {})
+    });
     const rawBody = await response.text();
 
     if (!response.ok) {
@@ -119,6 +117,8 @@ async function send<T>(path: string, options: RequestOptions<T>, token: string |
     }
 
     throw new ApiError("transient", errors.unreachable);
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

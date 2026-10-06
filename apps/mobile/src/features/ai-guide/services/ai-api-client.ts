@@ -136,6 +136,8 @@ function options(method: "GET" | "POST" | "PATCH", body?: unknown) {
     method,
     body,
     auth: true as const,
+    // Server worst case: classify/expand 8s + select 30s + retries.
+    timeoutMs: 120_000,
     headers: { "accept-language": i18n.language },
     errors: errors()
   };

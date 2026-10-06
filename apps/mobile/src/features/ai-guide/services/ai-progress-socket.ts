@@ -1,6 +1,8 @@
 import { io, type Socket } from 'socket.io-client';
 import { API_BASE_URL } from '../../../lib/env';
 
+const CONNECT_TIMEOUT_MS = 6000;
+
 export type AiStepEvent = { key: string; message: string };
 
 export function createAiProgressSocket() {
@@ -10,8 +12,20 @@ export function createAiProgressSocket() {
     return new Promise((resolve, reject) => {
       const url = `${API_BASE_URL}/ai-progress`;
       socket = io(url, { transports: ['websocket'], timeout: 5000 });
-      socket.once('connect', () => resolve(socket!.id!));
-      socket.once('connect_error', (err) => reject(err));
+      // socket.io's own `timeout` only covers the manager's connect_error path;
+      // a never-acknowledged namespace connect would hang, so cap it ourselves.
+      const timer = setTimeout(() => {
+        disconnect();
+        reject(new Error('ai-progress connect timeout'));
+      }, CONNECT_TIMEOUT_MS);
+      socket.once('connect', () => {
+        clearTimeout(timer);
+        resolve(socket!.id!);
+      });
+      socket.once('connect_error', (err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
     });
   }
 

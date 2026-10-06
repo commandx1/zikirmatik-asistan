@@ -136,10 +136,63 @@ describe("request", () => {
     expect((await pending).message).toBe("unreachable-msg");
   });
 
-  it("does not attach a signal without timeoutMs", async () => {
-    fetchMock.mockResolvedValueOnce(reply(200, {}));
-    await request("/x", { errors });
-    expect(fetchMock.mock.calls[0]![1]).not.toHaveProperty("signal");
+  function hangUntilAborted() {
+    fetchMock.mockImplementationOnce(
+      (_url: string, init: RequestInit) =>
+        new Promise((_resolve, reject) => {
+          init.signal?.addEventListener("abort", () => reject(new Error("AbortError")));
+        })
+    );
+  }
+
+  it("aborts after the 30s default when timeoutMs is not given, as a transient error", async () => {
+    vi.useFakeTimers();
+    hangUntilAborted();
+    let settled = false;
+    const pending = rejection(request("/x", { errors })).then((error) => {
+      settled = true;
+      return error;
+    });
+
+    await vi.advanceTimersByTimeAsync(29_999);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+
+    const error = await pending;
+    expect([error.kind, error.message, error.status]).toEqual(["transient", "unreachable-msg", undefined]);
+  });
+
+  it("an explicit timeoutMs overrides the default (longer than 30s)", async () => {
+    vi.useFakeTimers();
+    hangUntilAborted();
+    let settled = false;
+    const pending = rejection(request("/x", { errors, timeoutMs: 120_000 })).then((error) => {
+      settled = true;
+      return error;
+    });
+
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect((await pending).kind).toBe("transient");
+  });
+
+  it("also times out when the response body never finishes", async () => {
+    vi.useFakeTimers();
+    fetchMock.mockImplementationOnce(
+      (_url: string, init: RequestInit) =>
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          text: () =>
+            new Promise((_resolve, reject) => {
+              init.signal?.addEventListener("abort", () => reject(new Error("AbortError")));
+            })
+        } as Response)
+    );
+    const pending = rejection(request("/x", { errors }));
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect((await pending).kind).toBe("transient");
   });
 
   it("on 401 with auth: true refreshes once and retries once with the new token", async () => {

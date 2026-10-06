@@ -176,6 +176,11 @@ export function useAiGuideRequest({ credits, history, onOpenPremiumSheet }: Opti
             setAiUnavailable({
               message: getAppLocale() === "tr" ? error.message || t("ai-guide:errors.aiUnavailable") : t("ai-guide:errors.aiUnavailable")
             });
+          } else if (error instanceof AiApiError && error.kind === "transient" && error.status === undefined) {
+            // Timeout / no response: the credit state is unknown, so no "credit not
+            // charged" copy — offer the same-flowId retry (server dedupes by flowId).
+            aiUnavailableRequestRef.current = request;
+            setAiUnavailable({ message: error.message });
           } else if (error instanceof AiApiError) {
             setError(error.message);
           } else {
