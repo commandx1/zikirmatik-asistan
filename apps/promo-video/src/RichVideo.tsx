@@ -200,7 +200,9 @@ function RampedClip({ from, to, rate }: { from: number; to: number; rate: number
   return <RampedClipFrom src={RECORDING_SRC} from={from} to={to} rate={rate} />;
 }
 
-export function CaptionPill({ text }: { text: string }) {
+// `bottom` / `maxWidth` default to the original look (110 / 900); RichVideo-04 raises them
+// to clear the Instagram Reels UI zones (see RichVideoManifest.captionBottom).
+export function CaptionPill({ text, bottom = 110, maxWidth = 900 }: { text: string; bottom?: number; maxWidth?: number }) {
   const frame = useCurrentFrame();
   const opacity = fadeIn(frame, 0, 10);
   const y = slideUp(frame, 0, 14, 20);
@@ -210,8 +212,8 @@ export function CaptionPill({ text }: { text: string }) {
         style={{
           opacity,
           transform: `translateY(${y}px)`,
-          marginBottom: 110,
-          maxWidth: 900,
+          marginBottom: bottom,
+          maxWidth,
           background: COLORS.bgCard,
           border: `1px solid ${COLORS.goldAlpha30}`,
           borderRadius: 20,
@@ -232,7 +234,22 @@ export function CaptionPill({ text }: { text: string }) {
 
 // Full-size phone frame, matching scenes 3/4 exactly — no shrinking (a scaled-down phone
 // made the collections list / AI placeholder text unreadable at 1080x1920).
-export function PhoneStage({ children, zIndex = 0 }: { children: React.ReactNode; zIndex?: number }) {
+// Optional (RichVideo-04 only): `scale` / `top` re-size and re-position the phone, `fadeBottom`
+// = [opaqueUntilPx, transparentFromPx] (phone-local, unscaled px) fades the lower part of the
+// phone into the background so only the top of the screen is shown.
+export function PhoneStage({
+  children,
+  zIndex = 0,
+  scale = 1,
+  top = FRAME_TOP,
+  fadeBottom,
+}: {
+  children: React.ReactNode;
+  zIndex?: number;
+  scale?: number;
+  top?: number;
+  fadeBottom?: [number, number];
+}) {
   const frame = useCurrentFrame();
   const introSlide = slideUp(frame, 0, 20, 30);
   return (
@@ -241,9 +258,16 @@ export function PhoneStage({ children, zIndex = 0 }: { children: React.ReactNode
       <div
         style={{
           position: "absolute",
-          top: FRAME_TOP,
+          top,
           left: "50%",
-          transform: `translate(-50%, ${introSlide}px)`,
+          transform: `translate(-50%, ${introSlide}px) scale(${scale})`,
+          transformOrigin: "top center",
+          ...(fadeBottom
+            ? {
+                WebkitMaskImage: `linear-gradient(to bottom, #000 ${fadeBottom[0]}px, transparent ${fadeBottom[1]}px)`,
+                maskImage: `linear-gradient(to bottom, #000 ${fadeBottom[0]}px, transparent ${fadeBottom[1]}px)`,
+              }
+            : {}),
         }}
       >
         <ScreenRecordingFrame>{children}</ScreenRecordingFrame>

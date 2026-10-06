@@ -4,12 +4,13 @@
 //   node scripts/tts.mjs           # video 1 (vo-01) — auto-picks + pins the voice
 //   node scripts/tts.mjs 02        # video 2 (vo-02) — reuses vo-01's voice, no re-pick
 //   node scripts/tts.mjs 03        # video 3 (vo-03) — same
+//   node scripts/tts.mjs 04        # video 4 (vo-04) — same
 //
 // Reads ELEVENLABS_API_KEY from apps/promo-video/.env (never printed/logged; only
 // character counts are logged, per the approved brief).
 // video 1: writes public/audio/samples/voice-<name>.mp3 (2 candidates, sentence 1 only),
 //          public/audio/vo-01-s<N>.mp3, public/audio/vo-01.json.
-// video 2/3: writes public/audio/vo-0{2,3}-s<N>.mp3 + vo-0{2,3}.json, same voice/settings
+// video 2/3/4: writes public/audio/vo-0{2,3,4}-s<N>.mp3 + vo-0{2,3,4}.json, same voice/settings
 //          as vo-01 (read from vo-01.json — no new voice pick, no split marker).
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -63,6 +64,13 @@ const SENTENCES_BY_ID = {
     "Herkesin çektiği tek bir toplamda birleşir; hedefe birlikte ulaşırsınız.",
     "Halkanın ilerlemesini ve üyelerini tek ekranda görürsün.",
     "Reklamsız ve ücretsiz. Google Play'de Zikirmatik Asistan.",
+  ],
+  "04": [
+    "Yarın sınavın var ve içini kaygı mı sardı?",
+    "AI Rehber'e niyetini yaz.",
+    "Sana bir zikir önerir; faziletini ve kaynağını da gösterir.",
+    "Başla'ya dokun, sayıyı uygulama tutsun.",
+    "Her gün ücretsiz hakkın var. Google Play'de Zikirmatik Asistan.",
   ],
 };
 

@@ -29,8 +29,10 @@ import { COLORS } from "./constants";
 //     (at most one per scene — the fast-forward part).
 //   - "fixed": a fixed real-seconds window played at an explicit `rate` (>= 0.56, the
 //     OffthreadVideo blank-frame floor — see README-short.md) — the payoff moment.
+//   `share` (optional, default 1): relative weight when a scene has several ramps — the time
+//   left after the fixed segments is split between ramps in proportion to their shares.
 export type SegmentSpec =
-  | { kind: "ramp"; from: number; to: number }
+  | { kind: "ramp"; from: number; to: number; share?: number }
   | { kind: "fixed"; from: number; to: number; rate: number };
 
 export interface BadgeSpec {
@@ -42,7 +44,20 @@ export interface BadgeSpec {
   durationFrames: number;
 }
 
+// Optional phone placement (RichVideo-04): see PhoneStage in RichVideo.tsx.
+export interface PhoneSpec {
+  scale?: number;
+  top?: number;
+  fadeBottom?: [number, number];
+}
+
 export interface MiddleSceneSpec {
+  // Per-scene recording (falls back to manifest.recordingSrc).
+  recordingSrc?: string;
+  phone?: PhoneSpec;
+  // Extra rectangles (source-video px) painted with maskColor over this scene's video, e.g. a
+  // line of personal text. Default: none.
+  maskRects?: { x: number; y: number; w: number; h: number }[];
   // Either a video (segments, speed-ramped) OR a single static image filling the whole
   // scene — the same "static frame" trick RichVideo01 uses for its own unreliable relaunch
   // tail (RELAUNCH_SETTLED_IMAGE/SettledImage): `simctl io recordVideo` can lose the last
@@ -58,7 +73,21 @@ export interface RichVideoManifest {
   recordingSrc: string;
   voManifest: { sentences: SentenceInfo[] };
   scenes: [MiddleSceneSpec, MiddleSceneSpec, MiddleSceneSpec]; // scene2, scene3, scene4
+  // All optional; omitted = the original look (RichVideo-02/03 unchanged).
+  // Paint the app background over the phone's status bar / Android nav bar (source-video px).
+  maskTopPx?: number;
+  maskBottomPx?: number;
+  maskColor?: string;
+  // Caption pill bottom margin (default 110) and max width (default 900).
+  captionBottom?: number;
+  captionMaxWidth?: number;
+  // Defaults for every scene's `phone`.
+  phone?: PhoneSpec;
 }
+
+// Source recordings are 1080x2340 Android captures (RichVideo-04); mask px -> % of height.
+const SOURCE_HEIGHT_PX = 2340;
+const SOURCE_WIDTH_PX = 1080;
 
 export function richVideoGenericDurationInFrames(manifest: RichVideoManifest, fps: number = FPS): number {
   const timeline = buildTimelineFor(manifest.voManifest.sentences, fps);
@@ -95,8 +124,12 @@ function PulseBadge({ text }: { text: string }) {
   );
 }
 
-function MiddleScene({ scene, spec, recordingSrc }: { scene: Scene; spec: MiddleSceneSpec; recordingSrc: string }) {
+function MiddleScene({ scene, spec, manifest }: { scene: Scene; spec: MiddleSceneSpec; manifest: RichVideoManifest }) {
   const fps = FPS;
+  const recordingSrc = spec.recordingSrc ?? manifest.recordingSrc;
+  const phone = { ...manifest.phone, ...spec.phone };
+  const maskColor = manifest.maskColor ?? "#030107";
+  const caption = <CaptionPill text={scene.text} bottom={manifest.captionBottom} maxWidth={manifest.captionMaxWidth} />;
 
   if (spec.staticImage) {
     return (
@@ -104,10 +137,10 @@ function MiddleScene({ scene, spec, recordingSrc }: { scene: Scene; spec: Middle
         <Sequence from={0} durationInFrames={scene.audioFrames} layout="none">
           <Audio src={staticFile(`audio/${scene.file}`)} volume={1.8} />
         </Sequence>
-        <PhoneStage>
+        <PhoneStage {...phone}>
           <Img src={staticFile(spec.staticImage)} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
         </PhoneStage>
-        <CaptionPill text={scene.text} />
+        {caption}
       </>
     );
   }
@@ -117,13 +150,19 @@ function MiddleScene({ scene, spec, recordingSrc }: { scene: Scene; spec: Middle
     .filter((s): s is { kind: "fixed"; from: number; to: number; rate: number } => s.kind === "fixed")
     .reduce((sum, s) => sum + secToFrames((s.to - s.from) / s.rate, fps), 0);
   const rampOutputFrames = Math.max(0, scene.sceneFrames - fixedFramesTotal);
+  const rampShareTotal = segments.reduce((sum, s) => sum + (s.kind === "ramp" ? (s.share ?? 1) : 0), 0);
 
+  // ONE PhoneStage per scene (its intro slide must play once, not at every segment
+  // boundary); the per-segment clips are Sequences inside it, the masks sit on top for the
+  // whole scene.
   let cursor = 0;
-  const rendered = segments.map((seg, i) => {
+  const clips: React.ReactNode[] = [];
+  const badges: React.ReactNode[] = [];
+  segments.forEach((seg, i) => {
     let outputFrames: number;
     let rate: number;
     if (seg.kind === "ramp") {
-      outputFrames = rampOutputFrames;
+      outputFrames = Math.round((rampOutputFrames * (seg.share ?? 1)) / rampShareTotal);
       rate = outputFrames > 0 ? (seg.to - seg.from) / (outputFrames / fps) : 1;
     } else {
       outputFrames = secToFrames((seg.to - seg.from) / seg.rate, fps);
@@ -131,20 +170,46 @@ function MiddleScene({ scene, spec, recordingSrc }: { scene: Scene; spec: Middle
     }
     const from = cursor;
     cursor += outputFrames;
-    const badge = spec.badge && spec.badge.segmentIndex === i ? spec.badge : null;
-    return (
+    clips.push(
       <Sequence key={i} from={from} durationInFrames={Math.max(1, outputFrames)} layout="none">
-        <PhoneStage>
-          <RampedClipFrom src={recordingSrc} from={seg.from} to={seg.to} rate={rate} />
-        </PhoneStage>
-        {badge ? (
-          <Sequence from={badge.atFrame} durationInFrames={badge.durationFrames} layout="none">
-            <PulseBadge text={badge.text} />
-          </Sequence>
-        ) : null}
-      </Sequence>
+        <RampedClipFrom src={recordingSrc} from={seg.from} to={seg.to} rate={rate} />
+      </Sequence>,
     );
+    if (spec.badge && spec.badge.segmentIndex === i) {
+      badges.push(
+        <Sequence key={`b${i}`} from={from + spec.badge.atFrame} durationInFrames={spec.badge.durationFrames} layout="none">
+          <PulseBadge text={spec.badge.text} />
+        </Sequence>,
+      );
+    }
   });
+  const rendered = (
+    <>
+      <PhoneStage {...phone}>
+        {clips}
+        {manifest.maskTopPx ? (
+          <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: `${(manifest.maskTopPx / SOURCE_HEIGHT_PX) * 100}%`, background: maskColor }} />
+        ) : null}
+        {(spec.maskRects ?? []).map((r, k) => (
+          <div
+            key={k}
+            style={{
+              position: "absolute",
+              left: `${(r.x / SOURCE_WIDTH_PX) * 100}%`,
+              top: `${(r.y / SOURCE_HEIGHT_PX) * 100}%`,
+              width: `${(r.w / SOURCE_WIDTH_PX) * 100}%`,
+              height: `${(r.h / SOURCE_HEIGHT_PX) * 100}%`,
+              background: maskColor,
+            }}
+          />
+        ))}
+        {manifest.maskBottomPx ? (
+          <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: `${(manifest.maskBottomPx / SOURCE_HEIGHT_PX) * 100}%`, background: maskColor }} />
+        ) : null}
+      </PhoneStage>
+      {badges}
+    </>
+  );
 
   return (
     <>
@@ -153,7 +218,7 @@ function MiddleScene({ scene, spec, recordingSrc }: { scene: Scene; spec: Middle
       </Sequence>
       {rendered}
       {/* Captions under the phone for scenes 2-4, per the brief. */}
-      <CaptionPill text={scene.text} />
+      {caption}
     </>
   );
 }
@@ -168,13 +233,13 @@ export function createRichVideo(manifest: RichVideoManifest): React.FC {
           <HookScene scene={s1} />
         </Sequence>
         <Sequence from={s2.start} durationInFrames={s2.sceneFrames} layout="none">
-          <MiddleScene scene={s2} spec={manifest.scenes[0]} recordingSrc={manifest.recordingSrc} />
+          <MiddleScene scene={s2} spec={manifest.scenes[0]} manifest={manifest} />
         </Sequence>
         <Sequence from={s3.start} durationInFrames={s3.sceneFrames} layout="none">
-          <MiddleScene scene={s3} spec={manifest.scenes[1]} recordingSrc={manifest.recordingSrc} />
+          <MiddleScene scene={s3} spec={manifest.scenes[1]} manifest={manifest} />
         </Sequence>
         <Sequence from={s4.start} durationInFrames={s4.sceneFrames} layout="none">
-          <MiddleScene scene={s4} spec={manifest.scenes[2]} recordingSrc={manifest.recordingSrc} />
+          <MiddleScene scene={s4} spec={manifest.scenes[2]} manifest={manifest} />
         </Sequence>
         <Sequence from={s5.start} durationInFrames={s5.sceneFrames} layout="none">
           <BrandOutroScene scene={s5} />

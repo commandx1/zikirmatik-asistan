@@ -477,3 +477,27 @@ enough to pick up new footage. Counter is different: the base `ShortVideo` compo
 `recordingSrc` is the manual `recordings/counter-pilot.mp4` pilot, kept as-is on purpose so the
 two remain independently comparable — `ShortVideo-counter-scripted` is a new composition id with
 the same props pointed at the scripted `recordings/counter.mp4` instead.
+
+## Sesli sürüm, Video 4 ("AI Rehber", Instagram Reels) — `RichVideo-04` (2026-10-06)
+
+Mesaj: "yarın sınavım var, çok kaygılıyım" niyeti → AI Rehber kaynaklı öneri kartı → Başla → sayaç.
+VO `node scripts/tts.mjs 04` (vo-04, George). Render:
+`npx remotion render RichVideo-04 out/video-04-ai-rehber-sesli.mp4 --codec=h264`, kapak
+`npx remotion still RichVideo-04-cover out/video-04-kapak.png`, paylaşım metni `out/video-04-instagram.txt`.
+
+**Kayıt (gerçek Android telefon, prod Play sürümü):** gerçek AI cevabı yalnız prod'dan gelir.
+- `export ANDROID_SERIAL=<adb devices>`; ADBKeyBoard IME (Türkçe harf: `adb input text` ı/ç yazamaz),
+  DND açık. One UI sysui demo mode'u yok sayar → durum çubuğu/nav bar kompozisyonda maskelenir
+  (`maskTopPx`/`maskBottomPx`), kişisel satırlar `maskRects` ile.
+- `scripts/record-ai-rehber-04.sh`: yazma → gönder → cevap (60 sn üst sınır) → kart → KAYNAK. 1 kredi.
+- `scripts/record-ai-rehber-04-counter.sh`: sahne 4 ayrı kısa kayıt — sonucu "Son Asistan
+  Aramaları"ndan aç (AI çağırmaz, kart birebir aynı) → Başla → sayaç. Önce ana sayacı nötr yap
+  ("Serbest Mod" etiketine dokun: seçili zikir yok, sayaç 0); aksi hâlde "Kaydedilmemiş zikir var"
+  (0 çekimde bile) ya da "Nasıl devam etmek istersin?" diyaloğu çıkar.
+- Telefon kayıtları değişken kare hızlı (~120 Hz) → kompozisyon `-cfr.mp4` (60 fps) kopyalarını kullanır.
+
+**Tuzaklar:** AI çıktısı aynı niyette bile çekimden çekime değişir — her çekimin kartı yeniden
+onaylanır. "Son Asistan Aramaları" yazma ekranında görünür (kişisel) → sahne 2 niyet kutusuna
+yakınlaştırılıp altı soldurulur. Reels güvenli alanı: altyazı `captionBottom: 400` (alt ~380 px
+ve sağ ~120 px IG arayüzü). Generic sahnede tek `PhoneStage` (segment başına değil) — aksi
+hâlde intro slide her segment sınırında yeniden oynar.

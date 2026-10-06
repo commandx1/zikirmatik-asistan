@@ -1,5 +1,5 @@
 import React from "react";
-import { Composition, staticFile } from "remotion";
+import { Composition, Still, staticFile } from "remotion";
 import { ZikirmatikPromo } from "./ZikirmatikPromo";
 import { ShortVideo, SHORT_VIDEO_TOTAL_FRAMES, shortVideoDurationInFrames } from "./ShortVideo";
 import { FPS, TOTAL_FRAMES, WIDTH, HEIGHT } from "./constants";
@@ -10,13 +10,18 @@ import { RichVideo01, richVideoDurationInFrames } from "./RichVideo";
 import { createRichVideo, richVideoGenericDurationInFrames, type RichVideoManifest } from "./RichVideoGeneric";
 import rich02Config from "../pilots/rich-02.json";
 import rich03Config from "../pilots/rich-03.json";
+import rich04Config from "../pilots/rich-04.json";
+import { RichVideoCover04 } from "./RichVideoCover04";
 import vo02 from "../public/audio/vo-02.json";
 import vo03 from "../public/audio/vo-03.json";
+import vo04 from "../public/audio/vo-04.json";
 
 const richVideo02Manifest = { ...rich02Config, voManifest: vo02 } as unknown as RichVideoManifest;
 const richVideo03Manifest = { ...rich03Config, voManifest: vo03 } as unknown as RichVideoManifest;
+const richVideo04Manifest = { ...rich04Config, voManifest: vo04 } as unknown as RichVideoManifest;
 const RichVideo02 = createRichVideo(richVideo02Manifest);
 const RichVideo03 = createRichVideo(richVideo03Manifest);
+const RichVideo04 = createRichVideo(richVideo04Manifest);
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -166,6 +171,22 @@ export const RemotionRoot: React.FC = () => {
         width={WIDTH}
         height={HEIGHT}
       />
+      {/*
+        Video 4 ("AI Rehber", Instagram Reels): same generic pipeline, CFR-normalized Samsung
+        recordings (public/recordings/ai-rehber-04-*-cfr.mp4), status/nav bar masks and IG
+        safe-zone caption (pilots/rich-04.json). Render with
+        `npx remotion render RichVideo-04 out/video-04-ai-rehber.mp4 --codec=h264`; cover with
+        `npx remotion still RichVideo-04-cover out/video-04-kapak.png`.
+      */}
+      <Composition
+        id="RichVideo-04"
+        component={RichVideo04}
+        durationInFrames={richVideoGenericDurationInFrames(richVideo04Manifest, FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      <Still id="RichVideo-04-cover" component={RichVideoCover04} width={WIDTH} height={HEIGHT} />
     </>
   );
 };

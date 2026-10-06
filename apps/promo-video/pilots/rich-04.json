@@ -1,0 +1,92 @@
+{
+  "recordingSrc": "recordings/ai-rehber-04-cfr.mp4",
+  "maskTopPx": 100,
+  "maskBottomPx": 150,
+  "captionBottom": 400,
+  "captionMaxWidth": 840,
+  "phone": {
+    "scale": 1.15,
+    "top": -45,
+    "fadeBottom": [
+      1215,
+      1290
+    ]
+  },
+  "scenes": [
+    {
+      "phone": {
+        "scale": 1.35,
+        "top": 40,
+        "fadeBottom": [
+          764,
+          865
+        ]
+      },
+      "segments": [
+        {
+          "kind": "ramp",
+          "from": 2.6,
+          "to": 8.9
+        }
+      ]
+    },
+    {
+      "segments": [
+        {
+          "kind": "ramp",
+          "from": 9.6,
+          "to": 23.7,
+          "share": 2
+        },
+        {
+          "kind": "fixed",
+          "from": 23.7,
+          "to": 25.2,
+          "rate": 1.0
+        },
+        {
+          "kind": "ramp",
+          "from": 25.2,
+          "to": 28.45,
+          "share": 1
+        },
+        {
+          "kind": "fixed",
+          "from": 28.45,
+          "to": 29.95,
+          "rate": 1.0
+        }
+      ]
+    },
+    {
+      "recordingSrc": "recordings/ai-rehber-04-counter-cfr.mp4",
+      "segments": [
+        {
+          "kind": "fixed",
+          "from": 2.0,
+          "to": 2.7,
+          "rate": 1.0
+        },
+        {
+          "kind": "ramp",
+          "from": 2.7,
+          "to": 6.65
+        },
+        {
+          "kind": "fixed",
+          "from": 6.65,
+          "to": 7.4,
+          "rate": 1.0
+        }
+      ],
+      "maskRects": [
+        {
+          "x": 200,
+          "y": 200,
+          "w": 680,
+          "h": 64
+        }
+      ]
+    }
+  ]
+}
