@@ -1,4 +1,8 @@
-import { formatCandidateLine } from './prompts';
+import {
+  buildRecommendationSystemPrompt,
+  buildRecommendationUserPrompt,
+  formatCandidateLine,
+} from './prompts';
 import type { DhikrCandidate } from './retrieval.service';
 
 /**
@@ -61,5 +65,29 @@ describe('formatCandidateLine', () => {
       const bogus = candidate({ timeOfDay: bad as string[] });
       expect(() => formatCandidateLine(bogus)).not.toThrow();
     }
+  });
+});
+
+describe('AI Rehber recommendation prompts — no first-person prayer claims', () => {
+  const system = buildRecommendationSystemPrompt({
+    locale: 'tr',
+    maxRecommendations: 3,
+    sources: [],
+  });
+  const user = buildRecommendationUserPrompt({
+    freeText: 'yarın sınavım var',
+    timeOfDay: 'morning',
+    candidates: [candidate()],
+  });
+
+  it('forbids prayer claims in the system prompt but allows well-wishing formulas', () => {
+    expect(system).toContain('dua ediyorum"');
+    expect(system).toContain('"Allah kolaylık versin"');
+  });
+
+  it('repeats the rule in the trailing SON HATIRLATMA block after the candidates', () => {
+    const reminderAt = user.indexOf('SON HATIRLATMA');
+    expect(reminderAt).toBeGreaterThan(user.indexOf('C1 | Test Zikri'));
+    expect(user.slice(reminderAt)).toContain('dua ediyorum"');
   });
 });

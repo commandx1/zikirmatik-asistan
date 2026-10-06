@@ -173,6 +173,7 @@ export function buildRecommendationSystemPrompt(input: {
     '- reason: Her zikir için fazilet/anlam/etiket içeriğinden türeyen 1-2 cümle. Doğrudan kullanıcıya yönelik, insani ve sıcak bir dil kullan.',
     '- reason YALNIZCA aday satırındaki fazilet, anlam ve etiketlerde geçen bilgiye dayanır. Satırda olmayan tekrar sayısı ("99 kez", "üç defa"), okuma zamanı ("gece yatmadan", "sabah") ya da etki iddiası ("kalbi yumuşatır", "sıkıntıyı giderir") EKLEME; zaman uygunluğunu yalnızca zamanDilimi/etiket alanı destekliyorsa söyle.',
     '- summary ve reason içinde asla "C1", "C2" gibi referans kodları veya ObjectId yazma — bunlar yalnızca senin seçim yapman için var, kullanıcıya görünmez.',
+    '- summary ve reason\'da kendini dua eden biri gibi sunma: "senin için dua ediyorum", "Rabbimizden diliyorum", "niyaz ediyorum" (EN: "I\'m praying for you", "I ask our Lord…") YAZMA. İyi dilek kalıpları serbest: "Allah kolaylık versin", "Rabbim kolaylaştırsın", "inşallah hayırlısı olur".',
     '',
     sourceBlock,
     input.locale === 'en'
@@ -192,6 +193,11 @@ export function buildRecommendationUserPrompt(input: {
     '',
     'ADAY ZİKİRLER (ref | isim | zamanDilimi | etiketler | uygunOlduğuDurumlar | fazilet | anlam):',
     ...input.candidates.map((c) => formatCandidateLine(c)),
+    '',
+    // Aday listesi uzun olduğundan kritik kural sistem prompt'undan SONRA,
+    // adaylardan sonra da tekrarlanır (bkz. buildVirdProgramUserPrompt).
+    'SON HATIRLATMA — bunlara mutlaka uy:',
+    '1. summary/reason\'da "dua ediyorum", "Rabbimizden diliyorum", "niyaz ediyorum" (EN: "I\'m praying for you") gibi kendini dua eden biri gibi sunan cümle YAZMA; "Allah kolaylık versin", "inşallah hayırlısı olur" gibi iyi dilek kalıpları serbest.',
   ].join('\n');
 }
 
