@@ -18,6 +18,7 @@
     "db:test": "docker compose up -d --wait mongo-test",
     "db:test:down": "docker compose down -v",
     "typecheck": "turbo run typecheck",
+    "test:full": "pnpm test && pnpm test:e2e && pnpm test:web && pnpm --filter @zikirmatik/mobile test:detox:android",
     "test:web": "pnpm --filter @zikirmatik/website test:web",
     "test:detox": "pnpm --filter @zikirmatik/mobile test:detox:ios",
     "seed:e2e": "pnpm --filter api seed:e2e",

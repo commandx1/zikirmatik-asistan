@@ -78,15 +78,11 @@ describe('AI (e2e)', () => {
         .set(bearer(user.accessToken))
         .expect(200)
         .then((res) => data<{ balance: number }>(res).balance);
-    const recommend = () =>
+    const recommend = (freeText = 'içim daralıyor') =>
       request(t.http)
         .post('/v1/ai/recommendations')
         .set(bearer(user.accessToken))
-        .send({
-          userId: user.userId,
-          freeText: 'içim daralıyor',
-          flowId: randomUUID(),
-        });
+        .send({ userId: user.userId, freeText, flowId: randomUUID() });
     const debits = () =>
       t.model('AiCreditLedger').countDocuments({
         userId: new Types.ObjectId(user.userId),
@@ -122,6 +118,16 @@ describe('AI (e2e)', () => {
     expect(await debits()).toBe(0);
     // non-retryable → withAiRetry tekrar denemez.
     expect(ai.calls).toEqual(['expand']);
+  });
+
+  it('istek metnindeki [mock:error503] işareti (canlı sunucu yolu) → 503, kredi düşmez', async () => {
+    const { credits, recommend, debits } = await setup();
+    const before = await credits();
+
+    const res = await recommend('içim daralıyor [mock:error503]').expect(503);
+    expect(res.body).toMatchObject({ code: 'AI_UNAVAILABLE' });
+    expect(await credits()).toBe(before);
+    expect(await debits()).toBe(0);
   });
 
   it('aynı flowId tekrar → idempotent, kredi tekrar düşmez', async () => {

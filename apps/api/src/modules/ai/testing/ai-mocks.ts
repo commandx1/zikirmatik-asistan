@@ -33,6 +33,32 @@ export type MockAiMode =
   | 'noOutcome'
   | 'clarify';
 
+const MOCK_MODES: readonly string[] = [
+  'success',
+  'error503',
+  'timeout',
+  'toolLoop',
+  'noOutcome',
+  'clarify',
+] satisfies MockAiMode[];
+
+/** Mock bilgi sorgusu işareti: classify bu işaretle 'bilgi' döner, retrieval pasaj üretir. */
+const BILGI_MARKER = '[mock:bilgi]';
+
+/**
+ * Son kullanıcı mesajındaki `[mock:<ad>]` işareti (istek başına davranış seçimi).
+ * classify prompt'u konuşma kuyruğunu tek user mesajına gömer → son "Kullanıcı:" satırı.
+ */
+function markerOf(options: LanguageModelV3CallOptions): string | undefined {
+  const last = options.prompt.filter((m) => m.role === 'user').at(-1);
+  const text = (last?.content ?? [])
+    .map((part) => (part.type === 'text' ? part.text : ''))
+    .join('\n');
+  // Etiket yoksa (AI Rehber "Kullanıcı niyeti:", EN prompt'lar) tüm metin taranır.
+  const tail = text.slice(Math.max(0, text.lastIndexOf('Kullanıcı:')));
+  return /\[mock:(\w+)\]/.exec(tail)?.[1];
+}
+
 function assertNotProduction(): true {
   if (process.env.NODE_ENV === 'production') {
     throw new Error("AI mock prod'da açılamaz");
@@ -56,6 +82,10 @@ export const MOCK_EMBEDDING_DIMENSIONS = 3072;
  * - noOutcome : select → her adımda geçersiz ref → outcome yok → invalid_output
  * - error503  : her çağrı non-retryable APICallError(400) → provider_error
  * - timeout   : her çağrı TimeoutError → timeout (withAiRetry 2 dener)
+ * İstek başına seçim (canlı sunucu dahil): son kullanıcı mesajına `[mock:<mod>]`
+ * (mod: yukarıdaki altı değer) eklenirse `this.mode` yerine o kullanılır;
+ * `[mock:bilgi]` classify'ı 'bilgi'ye çevirir (retrieval 1 pasaj döner,
+ * chat modeli coverage=full + usedPassages=[P1] üretir).
  * program → her modda (hata modları hariç) 1. adımda buildProgram: tek faz
  *   1..süre, istenen her dilime ilk 2 aday, target = tekrarHedefi ?? 33.
  * expand/classify/chat JSON veya düz metin üretir (responseFormat'a göre).
@@ -92,12 +122,12 @@ export class MockAiRuntimeService extends AiRuntimeService {
       modelId: `mock-${kind}`,
       doGenerate: (options) => {
         this.calls.push(kind);
-        this.throwIfFailing();
+        this.throwIfFailing(options);
         return Promise.resolve(this.generate(kind, options));
       },
       doStream: (options) => {
         this.calls.push(kind);
-        this.throwIfFailing();
+        this.throwIfFailing(options);
         const result = this.generate(kind, options);
         const text = result.content
           .map((part) => (part.type === 'text' ? part.text : ''))
@@ -123,8 +153,16 @@ export class MockAiRuntimeService extends AiRuntimeService {
     });
   }
 
-  private throwIfFailing() {
-    if (this.mode === 'error503') {
+  private modeFor(options: LanguageModelV3CallOptions): MockAiMode {
+    const marker = markerOf(options);
+    return marker && MOCK_MODES.includes(marker)
+      ? (marker as MockAiMode)
+      : this.mode;
+  }
+
+  private throwIfFailing(options: LanguageModelV3CallOptions) {
+    const mode = this.modeFor(options);
+    if (mode === 'error503') {
       throw new APICallError({
         message: 'mock provider error',
         url: 'mock://ai',
@@ -133,7 +171,7 @@ export class MockAiRuntimeService extends AiRuntimeService {
         isRetryable: false,
       });
     }
-    if (this.mode === 'timeout') {
+    if (mode === 'timeout') {
       const error = new Error('mock timeout');
       error.name = 'TimeoutError';
       throw error;
@@ -151,12 +189,26 @@ export class MockAiRuntimeService extends AiRuntimeService {
       return toolCallResult(programToolCall(options));
     }
     if (options.responseFormat?.type === 'json') {
+      const bilgi = markerOf(options) === 'bilgi';
+      // Bilgi modu chat çağrısı: MockRetrievalService pasajı prompt'a "#P1 [" ile gömer.
+      const hasPassage = JSON.stringify(options.prompt).includes('#P1 [');
       const json =
         kind === 'expand'
           ? { offTopic: false, expandedQuery: 'mock huzur ve şükür zikri' }
           : kind === 'classify'
-            ? { mode: 'chat', searchQuery: 'mock sorgu' }
-            : { coverage: 'none', usedPassages: [], answer: 'Mock yanıt.' };
+            ? bilgi
+              ? {
+                  mode: 'bilgi',
+                  searchQuery: `mock bilgi sorgusu ${BILGI_MARKER}`,
+                }
+              : { mode: 'chat', searchQuery: 'mock sorgu' }
+            : hasPassage
+              ? {
+                  coverage: 'full',
+                  usedPassages: ['P1'],
+                  answer: 'Mock bilgi yanıtı.',
+                }
+              : { coverage: 'none', usedPassages: [], answer: 'Mock yanıt.' };
       return textResult(JSON.stringify(json));
     }
     return textResult('Mock yanıt.');
@@ -184,7 +236,7 @@ export class MockAiRuntimeService extends AiRuntimeService {
       input: { query: 'mock yeniden arama', why: 'mock' },
     };
 
-    switch (this.mode) {
+    switch (this.modeFor(options)) {
       case 'toolLoop':
         return canSearch ? search : select;
       case 'clarify':
@@ -279,7 +331,7 @@ function splitInto(text: string, parts: number): string[] {
 
 /**
  * $vectorSearch yerine deterministik `find` (\_id artan, isVerified+isActive,
- * excludeIds hariç). Kaynak pasajı araması boş döner. Diğer metotlar
+ * excludeIds hariç). Kaynak pasajı araması `[mock:bilgi]` sorgusu dışında boş döner. Diğer metotlar
  * (searchDhikrsByTimeOfDay, loadDhikrsByIds, getRecentDhikrIds, embedQuery)
  * gerçek — yerel Mongo'da çalışırlar.
  */
@@ -306,9 +358,19 @@ export class MockRetrievalService extends RetrievalService {
     return docs.map((doc) => toDhikrCandidate(doc, params.locale));
   }
 
-  searchSourcePassages(): Promise<SourcePassageResult[]> {
-    // ponytail: pasaj yok; chat 'bilgi' / RAG senaryoları gerekirse find ile doldur.
-    return Promise.resolve([]);
+  searchSourcePassages(query?: string): Promise<SourcePassageResult[]> {
+    // Yalnız `[mock:bilgi]` sorgusunda tek sabit pasaj; aksi halde boş (varsayılan değişmez).
+    if (!query?.includes(BILGI_MARKER)) return Promise.resolve([]);
+    return Promise.resolve([
+      {
+        sourceId: 'mock-source',
+        sourceTitle: 'Mock Kaynak',
+        pageStart: 12,
+        pageEnd: 13,
+        type: 'book',
+        text: 'Mock kaynak pasajı.',
+      },
+    ]);
   }
 }
 

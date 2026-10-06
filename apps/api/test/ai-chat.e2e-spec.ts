@@ -142,12 +142,38 @@ describe('AI Sohbet (e2e)', () => {
     expect(messageCount).toBe(4);
   });
 
-  // BULGU/gözlem: MockAiRuntimeService.classify() modu SABİT 'chat' döner
-  // (bkz. ai-mocks.ts generate()) — mock ile 'bilgi' modu (pasaj araması,
-  // knowledgeAnswerSchema) HTTP üzerinden hiçbir zaman tetiklenemez. Bu test
-  // yalnızca gözlenen davranışı belgeler: varsayılan mock her zaman sohbet
-  // (mode:'chat') moduna düşer, coverage/sourceCitations boş kalır.
-  it("BULGU: mock her zaman mode='chat' döner, coverage boş — 'bilgi' modu mock ile tetiklenemez", async () => {
+  it('bilgi modu: kaynak pasajı atıfı ve coverage HTTP yanıtında döner', async () => {
+    const { user } = await setup();
+    const res = await request(t.http)
+      .post('/v1/ai/chat/conversations')
+      .set(bearer(user.accessToken))
+      .send({ firstMessage: 'Sabah duası nedir? [mock:bilgi]' })
+      .expect(201);
+    const assistant = data<{
+      messages: {
+        mode?: string;
+        coverage?: string;
+        content: string;
+        sourceCitations?: {
+          sourceTitle: string;
+          pageStart: number;
+          pageEnd: number;
+        }[];
+      }[];
+    }>(res).messages[1];
+    expect(assistant.mode).toBe('bilgi');
+    expect(assistant.coverage).toBe('full');
+    expect(assistant.content).toBe('Mock bilgi yanıtı.');
+    expect(assistant.sourceCitations).toEqual([
+      expect.objectContaining({
+        sourceTitle: 'Mock Kaynak',
+        pageStart: 12,
+        pageEnd: 13,
+      }),
+    ]);
+  });
+
+  it("varsayılan mesaj: mode='chat', coverage boş, atıf yok", async () => {
     const { user } = await setup();
     const res = await request(t.http)
       .post('/v1/ai/chat/conversations')
@@ -155,10 +181,15 @@ describe('AI Sohbet (e2e)', () => {
       .send({ firstMessage: 'Efendimizin sünnetiyle ilgili bir hadis var mı?' })
       .expect(201);
     const assistant = data<{
-      messages: { mode?: string; coverage?: unknown }[];
+      messages: {
+        mode?: string;
+        coverage?: unknown;
+        sourceCitations?: unknown[];
+      }[];
     }>(res).messages[1];
     expect(assistant.mode).toBe('chat');
     expect(assistant.coverage).toBeFalsy();
+    expect(assistant.sourceCitations ?? []).toEqual([]);
   });
 
   it('GET /v1/ai/chat/conversations ve /messages listeleri', async () => {

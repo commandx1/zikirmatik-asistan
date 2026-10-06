@@ -2,3 +2,16 @@
 pnpm lint
 pnpm typecheck
 pnpm test
+
+# API e2e: Docker Mongo (mongo-test) gerekli — yoksa sessizce atlamak yok, push durur.
+if ! command -v docker >/dev/null 2>&1 || ! docker info >/dev/null 2>&1; then
+  echo "Docker çalışmıyor; API e2e için mongo-test gerekli" >&2
+  exit 1
+fi
+# `db:test` = docker compose up -d --wait mongo-test: çalışıyorsa no-op, değilse başlatır ve
+# healthcheck (replica set initiate dahil, en fazla ~70sn) sağlıklı olana dek bekler.
+if ! pnpm db:test; then
+  echo "mongo-test hazır olmadı" >&2
+  exit 1
+fi
+pnpm test:e2e
