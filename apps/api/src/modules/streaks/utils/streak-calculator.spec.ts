@@ -1,4 +1,9 @@
-import { calculateCompletionStreak } from './streak-calculator';
+import fc from 'fast-check';
+import { dateKeyInZone, shiftDateKey } from '../../../common/utils/date-keys';
+import {
+  calculateCompletionStreak,
+  effectiveStreak,
+} from './streak-calculator';
 
 const TODAY = '2026-06-26';
 
@@ -59,5 +64,106 @@ describe('calculateCompletionStreak', () => {
     );
     expect(result.currentStreak).toBe(2);
     expect(result.longestStreak).toBe(2);
+  });
+});
+
+describe('effectiveStreak (okuma anı değerlendirmesi, API-STR-10)', () => {
+  // Gerçek gün anahtarları: rastgele bir an + rastgele bir IANA bölgesi.
+  const zones = [
+    'Europe/Istanbul',
+    'America/Los_Angeles',
+    'Pacific/Kiritimati',
+    'Pacific/Niue',
+    'Asia/Tokyo',
+  ];
+  const dayKey = fc
+    .tuple(
+      fc.date({
+        min: new Date('2020-01-01T00:00:00Z'),
+        max: new Date('2030-12-31T00:00:00Z'),
+        noInvalidDate: true,
+      }),
+      fc.constantFrom(...zones),
+    )
+    .map(([d, tz]) => dateKeyInZone(d, tz));
+  const stored = fc
+    .record({
+      currentStreak: fc.nat(500),
+      extraLongest: fc.nat(500),
+      totalDaysActive: fc.nat(2000),
+      lastCompletedDate: dayKey,
+      virdCurrentStreak: fc.nat(500),
+      virdLongestStreak: fc.nat(1000),
+      virdLastCompleteDate: dayKey,
+    })
+    .map(({ extraLongest, ...s }) => ({
+      ...s,
+      longestStreak: s.currentStreak + extraLongest,
+    }));
+
+  it('son tamamlanan gün dünden eskiyse (bugün ≥ son + 2) seri 0', () => {
+    fc.assert(
+      fc.property(stored, fc.integer({ min: 2, max: 3000 }), (s, gap) => {
+        const today = shiftDateKey(s.lastCompletedDate, gap);
+        expect(effectiveStreak(s, today).currentStreak).toBe(0);
+      }),
+    );
+  });
+
+  it('bugün veya dün (ve saat kayması: gelecek) tamamlandıysa seri aynen kalır', () => {
+    fc.assert(
+      fc.property(stored, fc.integer({ min: -30, max: 1 }), (s, gap) => {
+        const today = shiftDateKey(s.lastCompletedDate, gap);
+        expect(effectiveStreak(s, today).currentStreak).toBe(s.currentStreak);
+      }),
+    );
+  });
+
+  it('saklıyı asla aşmaz; longest/total/tarihler değişmez; vird bağımsız', () => {
+    fc.assert(
+      fc.property(stored, dayKey, (s, today) => {
+        const r = effectiveStreak(s, today);
+        expect(r.currentStreak).toBeLessThanOrEqual(s.currentStreak);
+        expect(r.virdCurrentStreak).toBeLessThanOrEqual(s.virdCurrentStreak);
+        expect(r.longestStreak).toBe(s.longestStreak);
+        expect(r.virdLongestStreak).toBe(s.virdLongestStreak);
+        expect(r.totalDaysActive).toBe(s.totalDaysActive);
+        expect(r.lastCompletedDate).toBe(s.lastCompletedDate);
+        // vird yalnız kendi tarihine bakar
+        const virdAlive = s.virdLastCompleteDate >= shiftDateKey(today, -1);
+        expect(r.virdCurrentStreak).toBe(virdAlive ? s.virdCurrentStreak : 0);
+      }),
+    );
+  });
+
+  it('calculateCompletionStreak ile tutarlı: yazımda hesaplanan seri sonraki günlerde okunur', () => {
+    // Yazım anı W'de hesaplanan seri, okuma anı T'de T'ye göre yeniden
+    // hesaplananla aynı olmalı (W ≤ T, aradaki günlerde yeni tamamlanma yok).
+    fc.assert(
+      fc.property(
+        dayKey,
+        fc.array(fc.integer({ min: 0, max: 20 }), { maxLength: 15 }),
+        fc.nat(4),
+        fc.nat(6),
+        (writeDay, offsets, writeLag, readLag) => {
+          const completed = offsets.map((o) =>
+            shiftDateKey(writeDay, -(o + writeLag)),
+          );
+          const atWrite = calculateCompletionStreak(completed, writeDay);
+          const readDay = shiftDateKey(writeDay, readLag);
+          const lastCompletedDate = completed.slice().sort().at(-1);
+          const r = effectiveStreak({ ...atWrite, lastCompletedDate }, readDay);
+          expect(r.currentStreak).toBe(
+            calculateCompletionStreak(completed, readDay).currentStreak,
+          );
+        },
+      ),
+    );
+  });
+
+  it('tarih yoksa (hiç tamamlanmamış) seri 0', () => {
+    expect(
+      effectiveStreak({ currentStreak: 0, longestStreak: 0 }, TODAY),
+    ).toEqual({ currentStreak: 0, longestStreak: 0, virdCurrentStreak: 0 });
   });
 });

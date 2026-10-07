@@ -58,3 +58,32 @@ export function calculateCompletionStreak(
 
   return { currentStreak: current, longestStreak: longest };
 }
+
+export type StoredStreak = {
+  currentStreak: number;
+  lastCompletedDate?: string;
+  virdCurrentStreak?: number;
+  virdLastCompleteDate?: string;
+};
+
+/**
+ * Saklı seri belgesini okuma anındaki `todayKey`'e göre değerlendirir. Seri
+ * yalnız yazımda hesaplanır; sonra yazım olmazsa saklı değer bayatlar.
+ * calculateCompletionStreak ile aynı kural: son tamamlanan gün bugün ya da
+ * dün (grace) değilse mevcut seri 0. Gelecek tarih (saat/TZ kayması) seriyi
+ * korur. longest/totalDaysActive ve tarihler değişmez; vird bağımsızdır.
+ */
+export function effectiveStreak<T extends StoredStreak>(
+  stored: T,
+  todayKey: string,
+): T {
+  const yesterday = shiftDateKey(todayKey, -1);
+  const alive = (last?: string) => last !== undefined && last >= yesterday;
+  return {
+    ...stored,
+    currentStreak: alive(stored.lastCompletedDate) ? stored.currentStreak : 0,
+    virdCurrentStreak: alive(stored.virdLastCompleteDate)
+      ? (stored.virdCurrentStreak ?? 0)
+      : 0,
+  };
+}

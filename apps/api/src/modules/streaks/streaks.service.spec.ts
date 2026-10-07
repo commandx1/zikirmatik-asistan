@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
+import { shiftDateKey, todayKey } from '../../common/utils/date-keys';
 import { StreaksService } from './streaks.service';
 
 describe('StreaksService', () => {
@@ -37,14 +38,55 @@ describe('StreaksService', () => {
       );
     });
 
-    it('mevcut streak dokümanı varsa doğrudan döner', async () => {
+    it('mevcut streak dokümanı canlıysa (son tamamlanan gün bugün) aynen döner', async () => {
+      const doc = { userId, currentStreak: 4, lastCompletedDate: todayKey() };
+      streakModel.findOne.mockReturnValue(leanExec(doc));
+
+      const result = await service.getByUser(userId);
+
+      expect(result).toEqual({ ...doc, virdCurrentStreak: 0 });
+      expect(streakModel.findOneAndUpdate).not.toHaveBeenCalled();
+    });
+
+    it('son tamamlanan gün dünden eskiyse saklı seri bayat → 0 (yazmadan)', async () => {
       streakModel.findOne.mockReturnValue(
-        leanExec({ userId, currentStreak: 4 }),
+        leanExec({
+          userId,
+          currentStreak: 5,
+          longestStreak: 5,
+          lastCompletedDate: shiftDateKey(todayKey(), -3),
+          virdCurrentStreak: 2,
+          virdLastCompleteDate: todayKey(),
+        }),
       );
 
       const result = await service.getByUser(userId);
 
-      expect(result).toEqual({ userId, currentStreak: 4 });
+      expect(result).toEqual(
+        expect.objectContaining({
+          currentStreak: 0,
+          longestStreak: 5,
+          virdCurrentStreak: 2,
+        }),
+      );
+      expect(streakModel.findOneAndUpdate).not.toHaveBeenCalled();
+    });
+
+    it('lastCompletedDate olmayan eski canlı belge bir kez yeniden hesaplanır', async () => {
+      streakModel.findOne.mockReturnValue(
+        leanExec({ userId, currentStreak: 4 }),
+      );
+      userModel.exists.mockResolvedValue(true);
+      dhikrLogModel.distinct.mockResolvedValue([]);
+      streakModel.findOneAndUpdate.mockReturnValue(
+        leanExec({ userId, currentStreak: 0 }),
+      );
+
+      const result = await service.getByUser(userId);
+
+      expect(dhikrLogModel.exists).not.toHaveBeenCalled();
+      expect(streakModel.findOneAndUpdate).toHaveBeenCalled();
+      expect(result).toEqual(expect.objectContaining({ currentStreak: 0 }));
     });
 
     it('doküman yok ama log varsa lazy backfill (recalculateForUser) tetiklenir', async () => {
@@ -116,7 +158,9 @@ describe('StreaksService', () => {
       expect(filter.userId).toBeInstanceOf(Types.ObjectId);
       expect(update.$set.totalDaysActive).toBe(2);
       expect(options).toEqual({ upsert: true, returnDocument: 'after' });
-      expect(result).toEqual({ userId, totalDaysActive: 2 });
+      expect(result).toEqual(
+        expect.objectContaining({ userId, totalDaysActive: 2 }),
+      );
     });
   });
 
@@ -125,7 +169,11 @@ describe('StreaksService', () => {
       userModel.exists.mockResolvedValue(true);
       virdDayProgressModel.distinct.mockResolvedValue(['2026-01-01']);
       streakModel.findOneAndUpdate.mockReturnValue(
-        leanExec({ userId, virdCurrentStreak: 1 }),
+        leanExec({
+          userId,
+          virdCurrentStreak: 1,
+          virdLastCompleteDate: todayKey(),
+        }),
       );
 
       const result = await service.recalculateVirdForUser(userId);
@@ -134,7 +182,9 @@ describe('StreaksService', () => {
         userId: expect.any(Types.ObjectId) as Types.ObjectId,
         isDayComplete: true,
       });
-      expect(result).toEqual({ userId, virdCurrentStreak: 1 });
+      expect(result).toEqual(
+        expect.objectContaining({ userId, virdCurrentStreak: 1 }),
+      );
     });
   });
 

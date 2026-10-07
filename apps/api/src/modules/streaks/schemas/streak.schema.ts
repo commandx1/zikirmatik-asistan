@@ -22,6 +22,11 @@ export class Streak {
   @Prop({ type: String })
   lastActiveDate?: string;
 
+  // currentStreak'in bittiği gün (son tamamlanan gün); okuma anında serinin
+  // hâlâ canlı olup olmadığı buna göre değerlendirilir (effectiveStreak).
+  @Prop({ type: String })
+  lastCompletedDate?: string;
+
   @Prop({ type: Number, required: true, default: 0 })
   totalDaysActive!: number;
 

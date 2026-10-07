@@ -12,7 +12,11 @@ import {
 } from '../vird/schemas/vird-day-progress.schema';
 import { todayKey } from '../../common/utils/date-keys';
 import { Streak, type StreakDocument } from './schemas/streak.schema';
-import { calculateCompletionStreak } from './utils/streak-calculator';
+import {
+  calculateCompletionStreak,
+  effectiveStreak,
+  type StoredStreak,
+} from './utils/streak-calculator';
 
 @Injectable()
 export class StreaksService {
@@ -34,13 +38,18 @@ export class StreaksService {
       .lean()
       .exec();
 
-    if (streak) {
-      return streak;
+    // lastCompletedDate alanından önce yazılmış canlı seri: neyle biteceğini
+    // bilmiyoruz → aşağıdaki gibi bir kez yeniden hesapla (alanı da yazar).
+    const legacy =
+      streak && streak.currentStreak > 0 && !streak.lastCompletedDate;
+    if (streak && !legacy) {
+      return this.present(streak);
     }
 
     // Lazy backfill: a user can have logs but no streak document yet (the
     // collection was previously never written). Compute & persist on first read.
-    const hasLogs = await this.dhikrLogModel.exists({ userId: objectId });
+    const hasLogs =
+      legacy || (await this.dhikrLogModel.exists({ userId: objectId }));
     if (hasLogs) {
       return this.recalculateForUser(userId);
     }
@@ -71,6 +80,7 @@ export class StreaksService {
       completedDates,
       todayKey(),
     );
+    const lastCompletedDate = completedDates.slice().sort().at(-1);
     const sortedActive = allDates.slice().sort();
     const totalDaysActive = sortedActive.length;
     const lastActiveDate =
@@ -88,6 +98,7 @@ export class StreaksService {
             longestStreak,
             totalDaysActive,
             lastActiveDate,
+            lastCompletedDate,
           },
         },
         { upsert: true, returnDocument: 'after' },
@@ -95,7 +106,7 @@ export class StreaksService {
       .lean()
       .exec();
 
-    return this.toPlain(updated);
+    return this.present(updated);
   }
 
   /**
@@ -140,7 +151,7 @@ export class StreaksService {
       .lean()
       .exec();
 
-    return this.toPlain(updated);
+    return this.present(updated);
   }
 
   async recalculateAll() {
@@ -172,6 +183,12 @@ export class StreaksService {
     }
 
     return new Types.ObjectId(rawId);
+  }
+
+  /** Dışarı verilen her seri, isteğin "bugün"üne göre değerlendirilir. */
+  private present<T extends StoredStreak | null>(value: T): T {
+    const plain = this.toPlain(value);
+    return plain && effectiveStreak(plain, todayKey());
   }
 
   private toPlain<T>(value: T): T {
