@@ -34,3 +34,15 @@ Android'e özgü:
 - `toExist` çoklu eşleşmede hata verir → `exists()` `atIndex(0)` kullanır.
 - Emülatör dili EN olabilir; metin kontrolleri dilden bağımsız (RegExp).
 - Soğuk açılışta "System UI isn't responding" diyaloğu odağı çalarsa (tüm testler "window focus" hatası): `adb root && adb shell pkill -f com.android.systemui`, sonra tekrar koş.
+
+## Akış dosyaları (Android tam süit, 01–14)
+
+01 giriş, 02 sayaç+log+seri, 03 vird seansı, 04 halka+premium+AI, 05 misafir sayaç kuralları, 06 üye geçiş modalları,
+07 halka iki üye (2. hesap API ile), 08 vird ücretsiz (çakışma, M-22, süresi dolmuş, şablon), 09 AI hata modları + çift dokunuş + kredi 0,
+10 profil/premium/ayarlar, 11 çevrimdışı + gün dönümü (yalnız Android; `adb root` + emülatör saati), 12 bildirim/özel gün/derin bağlantı/zorunlu güncelleme,
+13 vird premium + AI ile oluşturma, 14 istatistik kaynak dağılımı.
+
+- iOS yalnız `@smoke`: `pnpm test:detox:ios:smoke`.
+- 12'deki zorunlu güncelleme testi API'yi yeniden başlatır: `E2E_API_RESTART_CMD=<API'yi APP_MIN_VERSION env'iyle başlatan betik>` verilmezse atlanır.
+- Durum hazırlama: `helpers.mongo()` (yalnız zikir_e2e* DB), `apiSignInAs()` (2. hesap), `setAirplane()`.
+- Floating sekme çubuğu hedefi örtebilir: kaydırma sonrası `scrollToCentered`.

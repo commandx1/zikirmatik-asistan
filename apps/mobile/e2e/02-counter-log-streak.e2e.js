@@ -7,7 +7,7 @@ describe('02 sayaç + kayıt + seri', () => {
     await freshSignIn();
   });
 
-  it('5 kez sayar, serbest modda adla kaydeder, seri 1 olur ve log API\'de görünür', async () => {
+  it('@smoke KAY-01 5 kez sayar, serbest modda adla kaydeder, seri 1 olur ve log API\'de görünür', async () => {
     await visible('e2e-home-counter');
     for (let i = 0; i < 5; i += 1) {
       await element(by.id('e2e-home-counter')).tap();

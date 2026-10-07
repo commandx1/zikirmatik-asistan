@@ -28,6 +28,7 @@ import { VIRD_SLOT_KEYS } from "../services/vird-day";
 import { resolveLocalizedText } from "@zikirmatik/shared";
 import { useAppLocale } from "../../../i18n";
 import { useLocaleUpper } from "../../../hooks/use-locale-upper";
+import { TEST_IDS } from "../../../test-ids";
 
 const DURATION_OPTIONS = [7, 14, 30] as const;
 const PRAYER_INDEXES = [1, 2, 3, 4, 5] as const;
@@ -211,6 +212,7 @@ function VirdAiFormView({
       <ThemedInput
         value={freeText}
         onChangeText={onChangeFreeText}
+        testID={TEST_IDS.vird.aiFreeText}
         placeholder={t("ai-guide:virdProgram.form.freeTextPlaceholder")}
         shape="xl"
         multiline
@@ -336,6 +338,7 @@ function VirdAiFormView({
         <PrimaryCtaButton
           label={t("ai-guide:virdProgram.form.submit")}
           disabled={!canSubmit}
+          testID={TEST_IDS.vird.aiSubmit}
           onPress={onSubmit}
           style={!canSubmit ? { opacity: 0.5 } : undefined}
         />
@@ -398,12 +401,13 @@ function VirdAiPreviewView({
           <PrimaryCtaButton
             label={t("ai-guide:virdProgram.actions.start")}
             onPress={onActivate}
+            testID={TEST_IDS.vird.aiStart}
             className="mb-3"
           />
         )
       ) : null}
 
-      <Pressable onPress={onDiscard} disabled={isActivating} className="items-center py-3" accessibilityRole="button">
+      <Pressable onPress={onDiscard} disabled={isActivating} testID={TEST_IDS.vird.aiDiscard} className="items-center py-3" accessibilityRole="button">
         <Text className="text-sm font-semibold text-text-muted">{t("ai-guide:virdProgram.actions.discard")}</Text>
       </Pressable>
     </View>

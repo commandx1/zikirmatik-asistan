@@ -160,6 +160,7 @@ const FreeModeButton = memo(function FreeModeButton() {
     <View className='mb-3 items-center'>
       <Pressable
         onPress={home.onStartFreeMode}
+        testID={TEST_IDS.home.freeMode}
         className='flex-row items-center gap-2 rounded-full border px-4 py-2'
         style={{ borderColor: withAlpha(tokens.textPrimary, 0.2), backgroundColor: withAlpha(tokens.card, 0.72) }}
       >

@@ -121,6 +121,7 @@ export function ProfileScreen() {
           confirmLabel={t("profile:sections.other.logout")}
           cancelLabel={t("common:actions.cancel")}
           destructive
+          confirmTestID={TEST_IDS.profile.logoutConfirm}
           onConfirm={() => void profile.onLogout()}
           onCancel={profile.closeLogoutConfirm}
         />

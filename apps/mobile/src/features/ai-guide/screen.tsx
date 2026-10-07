@@ -268,7 +268,7 @@ export function AiGuideScreen() {
             <LoadingSection visible={guide.isLoading} stepMessage={guide.loadingStep} />
           </View>
           {guide.isLoading ? null : guide.offTopicMessage ? (
-            <View className="mb-4 rounded-xl border border-red-900/60 bg-red-950/40 px-4 py-4">
+            <View testID={TEST_IDS.aiGuide.offTopic} className="mb-4 rounded-xl border border-red-900/60 bg-red-950/40 px-4 py-4">
               <View className="mb-2 flex-row items-center gap-2">
                 <FontAwesome6 name="circle-exclamation" size={14} color="#f87171" />
                 <Text className="text-sm font-semibold text-red-400">
@@ -280,7 +280,7 @@ export function AiGuideScreen() {
               </Text>
             </View>
           ) : guide.clarification ? (
-            <View className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-4">
+            <View testID={TEST_IDS.aiGuide.clarify} className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-4">
               <View className="mb-2 flex-row items-center gap-2">
                 <FontAwesome6 name="circle-question" size={14} color="#fbbf24" />
                 <Text className="text-sm font-semibold text-amber-400">
@@ -295,7 +295,7 @@ export function AiGuideScreen() {
               </Text>
             </View>
           ) : guide.aiUnavailable ? (
-            <View className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-4">
+            <View testID={TEST_IDS.aiGuide.unavailable} className="mb-4 rounded-xl border border-amber-900/60 bg-amber-950/30 px-4 py-4">
               <View className="mb-2 flex-row items-center gap-2">
                 <FontAwesome6 name="triangle-exclamation" size={14} color="#fbbf24" />
                 <Text className="text-sm font-semibold text-amber-400">

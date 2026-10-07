@@ -7,6 +7,7 @@ import type { EsmaulHusnaItem } from '../../focus/types'
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 import { resolveLocalizedText, withAlpha } from "@zikirmatik/shared";
 import { useAppLocale } from '../../../i18n'
+import { TEST_IDS } from '../../../test-ids'
 
 type EsmaulHusnaTableEntry = {
   number: number
@@ -76,6 +77,7 @@ export function EsmaulHusnaSection({ disabled = false, selectedTransliteration, 
                       key={item.transliteration.tr}
                       disabled={disabled || isSelected}
                       onPress={() => onSelect(item)}
+                      testID={`${TEST_IDS.home.esmaItem}-${number}`}
                       className='flex-1 flex-row items-center px-3 py-2'
                       style={{
                         borderRightWidth: cellIndex === 0 ? 1 : 0,

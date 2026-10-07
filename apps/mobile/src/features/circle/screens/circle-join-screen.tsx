@@ -16,6 +16,7 @@ import { trackEvent } from "../../../lib/analytics";
 import { CircleApiError, fetchCirclePreview, joinCircle, resolveCircleErrorMessage } from "../services/circle-api-client";
 import { parseCircleCode, resolveCircleTitle } from "../services/circle-share";
 import { useAppLocale } from "../../../i18n";
+import { TEST_IDS } from "../../../test-ids";
 
 export function CircleJoinScreen({ code: rawCode }: { code: string }) {
   const router = useRouter();
@@ -118,6 +119,7 @@ export function CircleJoinScreen({ code: rawCode }: { code: string }) {
             <PrimaryCtaButton
               label={t("circle:join.joinCta")}
               onPress={handleJoin}
+              testID={TEST_IDS.circle.joinCta}
               disabled={preview.status !== "active" || isJoining}
               className="w-full"
             />

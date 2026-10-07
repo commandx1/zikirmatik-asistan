@@ -5,6 +5,7 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
 import type { StatsBadge } from "@zikirmatik/shared";
 import { withAlpha } from "@zikirmatik/shared";
+import { TEST_IDS } from "../../../test-ids";
 
 type BadgeCelebrationModalProps = {
   badge: StatsBadge | null;
@@ -49,6 +50,7 @@ export function BadgeCelebrationModal({ badge, onDismiss }: BadgeCelebrationModa
 
           <Pressable
             onPress={onDismiss}
+            testID={TEST_IDS.stats.badgeClose}
             className="mt-6 w-full rounded-full px-4 py-3"
             style={{ backgroundColor: tokens.accent }}
             accessibilityRole="button"

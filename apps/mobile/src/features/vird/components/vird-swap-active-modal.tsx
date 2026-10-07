@@ -2,6 +2,7 @@ import { Modal, Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { withAlpha } from "@zikirmatik/shared";
+import { TEST_IDS } from "../../../test-ids";
 
 type VirdSwapActiveModalProps = {
   visible: boolean;
@@ -50,6 +51,7 @@ export function VirdSwapActiveModal({
           <View className="mt-5 gap-2">
             <Pressable
               onPress={onPauseAndStart}
+              testID={TEST_IDS.vird.swapPauseAndStart}
               disabled={isSubmitting}
               className={`h-11 items-center justify-center rounded-full ${isSubmitting ? "opacity-60" : ""}`}
               style={{ backgroundColor: tokens.accent }}

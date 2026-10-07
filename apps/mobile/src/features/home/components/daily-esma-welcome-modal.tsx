@@ -82,6 +82,7 @@ export function DailyEsmaWelcomeModal({
                   </View>
                   <Pressable
                     onPress={() => onStart(item)}
+                    testID={TEST_IDS.home.welcomeStart}
                     className='rounded-full px-3 py-2'
                     style={{ backgroundColor: tokens.accent }}
                   >

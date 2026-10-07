@@ -54,6 +54,10 @@ export const TEST_IDS = {
     // Gün dönümü "dünkü N'i kaydet / at" (M-01).
     dayRolloverSave: "e2e-home-day-rollover-save",
     dayRolloverDiscard: "e2e-home-day-rollover-discard",
+    // Serbest mod düğmesi, Esma tablosu hücreleri (`${esmaItem}-${sıra 1..99}`) ve "Hoş geldin" modalındaki "Başla" düğmeleri.
+    freeMode: "e2e-home-free-mode",
+    esmaItem: "e2e-home-esma-item",
+    welcomeStart: "e2e-home-welcome-start",
   },
   profile: {
     name: "e2e-profile-name",
@@ -63,6 +67,9 @@ export const TEST_IDS = {
     deleteAccount: "e2e-profile-delete-account",
     deleteConfirm: "e2e-profile-delete-confirm",
     deleteError: "e2e-profile-delete-error",
+    language: "e2e-profile-language",
+    logoutConfirm: "e2e-profile-logout-confirm",
+    premiumFeatures: "e2e-profile-premium-features",
   },
   collections: {
     card: "e2e-collection-card",
@@ -115,6 +122,13 @@ export const TEST_IDS = {
     // "Kopyala ve yeniden başlat" (M-22, A-23 Detox TODO).
     programToggle: "e2e-vird-program-toggle",
     programCloneRestart: "e2e-vird-program-clone-restart",
+    // Çakışma modalı "Duraklat ve başlat" düğmesi.
+    swapPauseAndStart: "e2e-vird-swap-pause-and-start",
+    // AI ile vird oluşturma: serbest metin, oluştur, önizlemede başlat / vazgeç.
+    aiFreeText: "e2e-vird-ai-free-text",
+    aiSubmit: "e2e-vird-ai-submit",
+    aiStart: "e2e-vird-ai-start",
+    aiDiscard: "e2e-vird-ai-discard",
   },
   circle: {
     hub: "e2e-circle-hub",
@@ -141,7 +155,15 @@ export const TEST_IDS = {
     sessionClose: "e2e-circle-session-close",
     // Hedefe ulaşınca / kapatılınca sayaç yerine görünen kilit kartı (M-11, MOB-HAL-24/25).
     sessionLocked: "e2e-circle-session-locked",
+    // Katılma önizlemesindeki "Katıl" düğmesi; detaydaki ayrıl/kapat düğmeleri ve onay butonları.
+    joinCta: "e2e-circle-join-cta",
+    leave: "e2e-circle-leave",
+    leaveConfirm: "e2e-circle-leave-confirm",
+    close: "e2e-circle-close",
+    closeConfirm: "e2e-circle-close-confirm",
   },
+  // Rozet kutlama modalı (kayıt/seri başarılarında açılır, diğer modalları bekletir).
+  stats: { badgeClose: "e2e-stats-badge-close" },
   premium: { sheet: "e2e-premium-sheet", scroll: "e2e-premium-scroll", close: "e2e-premium-close" },
   aiGuide: {
     scroll: "e2e-ai-guide-scroll",
@@ -149,6 +171,10 @@ export const TEST_IDS = {
     send: "e2e-ai-guide-send",
     sendDisabled: "e2e-ai-guide-send-disabled",
     recommendation: "e2e-ai-guide-recommendation",
+    // Sonuç alanındaki hata/konu dışı/netleştirme blokları.
+    unavailable: "e2e-ai-guide-unavailable",
+    offTopic: "e2e-ai-guide-off-topic",
+    clarify: "e2e-ai-guide-clarify",
   },
   aiChat: {
     entry: "e2e-ai-chat-entry",

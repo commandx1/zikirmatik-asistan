@@ -72,6 +72,7 @@ export function ProfileSettingsSections({
             iconName="language"
             value={languageLabel}
             onPress={toggleLocale}
+            testID={TEST_IDS.profile.language}
             bottomBorder
           />
           <ProfileHapticsPatternRow
@@ -117,6 +118,7 @@ export function ProfileSettingsSections({
             iconColor="#0F1B2D"
             bottomBorder
             onPress={onPressPremium}
+            testID={TEST_IDS.profile.premiumFeatures}
           />
           <ProfileLinkRow
             label={t("profile:sections.premium.manageSubscription")}

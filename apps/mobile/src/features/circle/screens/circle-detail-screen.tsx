@@ -218,6 +218,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
 
         {!storedCircle.isCreator ? (
           <PrimaryCtaButton
+            testID={TEST_IDS.circle.leave}
             label={t("circle:detail.leave")}
             onPress={() => setLeaveConfirmVisible(true)}
             disabled={isBusy}
@@ -227,6 +228,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
           />
         ) : storedCircle.status === "active" ? (
           <PrimaryCtaButton
+            testID={TEST_IDS.circle.close}
             label={t("circle:detail.close")}
             onPress={() => setCloseConfirmVisible(true)}
             disabled={isBusy}
@@ -244,6 +246,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
         confirmLabel={t("circle:detail.leave")}
         cancelLabel={t("circle:detail.cancel")}
         destructive
+        confirmTestID={TEST_IDS.circle.leaveConfirm}
         onConfirm={() => void handleLeave()}
         onCancel={() => setLeaveConfirmVisible(false)}
       />
@@ -254,6 +257,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
         confirmLabel={t("circle:detail.close")}
         cancelLabel={t("circle:detail.cancel")}
         destructive
+        confirmTestID={TEST_IDS.circle.closeConfirm}
         onConfirm={() => void handleClose()}
         onCancel={() => setCloseConfirmVisible(false)}
       />

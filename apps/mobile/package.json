@@ -12,6 +12,7 @@
     "test:cov": "vitest run --coverage",
     "test:detox:build:ios": "detox build -c ios.sim.release",
     "test:detox:ios": "detox test -c ios.sim.release",
+    "test:detox:ios:smoke": "detox test -c ios.sim.release --testNamePattern @smoke",
     "test:detox:build:android": "detox build -c android.emu.release",
     "test:detox:android": "detox test -c android.emu.release",
     "android": "expo run:android",

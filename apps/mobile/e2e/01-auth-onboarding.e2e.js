@@ -6,11 +6,13 @@ const {
   skipTourIfShown,
   openTab,
   relaunch,
+  resetUserData,
   TAB_IDS,
 } = require('./helpers');
 
 describe('01 giriş + onboarding', () => {
   beforeAll(async () => {
+    resetUserData();
     await device.launchApp({ newInstance: true, delete: true, permissions: { notifications: 'YES' } });
   });
 
@@ -21,7 +23,9 @@ describe('01 giriş + onboarding', () => {
     await expect(element(by.id('e2e-auth-google'))).not.toExist();
   });
 
-  it('profilden Google (mock) ile giriş yapar, adı gösterir', async () => {
+  it('@smoke GIR-02 profilden Google (mock) ile giriş yapar, adı gösterir', async () => {
+    await waitForHome();
+    await skipTourIfShown();
     await signInWithGoogle();
     await skipTourIfShown();
     await openTab('profile');
@@ -38,7 +42,7 @@ describe('01 giriş + onboarding', () => {
     await expect(element(by.id('e2e-auth-google'))).not.toExist();
   });
 
-  it('yeni bir kurulum yine misafir olarak açılır', async () => {
+  it('@smoke GIR-04 yeni bir kurulum (sil-kur) yine misafir olarak açılır', async () => {
     await device.launchApp({ newInstance: true, delete: true, permissions: { notifications: 'YES' } });
     await waitForHome();
     await skipTourIfShown();

@@ -48,7 +48,7 @@ describe('04 halka + premium + AI sohbet', () => {
     await freshSignIn();
   });
 
-  it('ücretsiz kullanıcı yeni halkada premium sayfasını görür', async () => {
+  it('@smoke PRM-01 ücretsiz kullanıcı yeni halkada premium sayfasını görür', async () => {
     // İlk halka artık ücretsiz kullanıcıya da açık (memberLimit 5) — dhikr picker'a
     // doğrudan gidilir, premium sheet görünmez.
     await openCircleHub();

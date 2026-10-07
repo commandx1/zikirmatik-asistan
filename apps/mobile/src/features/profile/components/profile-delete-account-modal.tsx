@@ -1,3 +1,5 @@
+import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs";
+import { useContext } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { TEST_IDS } from "../../../test-ids";
@@ -28,6 +30,8 @@ export function ProfileDeleteAccountModal({
   onCancel
 }: ProfileDeleteAccountModalProps) {
   const { t } = useTranslation("profile");
+  // Sekme çubuğu bu sayfa içi sayfanın üstünde yüzer; butonlar altında kalmasın.
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
 
   if (!visible) {
     return null;
@@ -36,7 +40,7 @@ export function ProfileDeleteAccountModal({
   return (
     <View className="absolute inset-0 z-50 justify-end">
       <Pressable className="absolute inset-0 bg-black/60" onPress={isDeleting ? undefined : onCancel} />
-      <View className="rounded-t-[28px] border-t border-white/10 bg-card p-5">
+      <View className="rounded-t-[28px] border-t border-white/10 bg-card p-5" style={{ paddingBottom: 20 + tabBarHeight }}>
         <View className="mb-5 h-1.5 w-12 self-center rounded-full bg-white/20" />
 
         <View

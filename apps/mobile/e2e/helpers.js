@@ -1,6 +1,9 @@
 /* global element, by, waitFor, device */
-const { execSync } = require('node:child_process');
+const { execSync, execFileSync } = require('node:child_process');
 const path = require('node:path');
+
+// Başka bir adb cihazı (fiziksel telefon) takılıysa komutlar yalnız emülatöre gitsin.
+const ADB_SERIAL = process.env.ANDROID_SERIAL || 'emulator-5554';
 
 // testID değerleri src/test-ids.ts ile aynı olmalı.
 const IDS = {
@@ -112,6 +115,11 @@ async function dismissNativeReviewPromptIfShown(ms = 4000) {
   }
 }
 
+// Rozet kutlaması (ilk kayıt/seri) native Modal; sonraki modalları ve dokunuşları bekletir.
+async function dismissBadgeIfShown(ms = 3000) {
+  await dismissIfShown('e2e-stats-badge-close', ms);
+}
+
 // İlk açılışta ana sayfada sırayla: tur (Modal, ~600 ms sonra) → "Hoş geldin"
 // Esma sayfası (Modal). İkisi de tap'ları yutar.
 async function skipTourIfShown(ms = 3000) {
@@ -122,6 +130,7 @@ async function skipTourIfShown(ms = 3000) {
 // Temiz kurulum (artık misafir olarak açılır) + onboarding modallarını kapat +
 // profilden mock Google girişi.
 async function freshSignIn() {
+  resetUserData();
   await device.launchApp({ newInstance: true, delete: true, permissions: { notifications: 'YES' } });
   await waitForHome();
   await skipTourIfShown();
@@ -164,16 +173,24 @@ function relaunch(opts = {}) {
 
 // Görünene kadar verilen ScrollView'u kaydır.
 // startY: kaydırma başlangıcı (0-1); ScrollView'un bir kısmı örtülüyse (klavye) aşağıdan başla.
-async function scrollTo(id, scrollId, { dy = 250, direction = 'down', startY = 0.5 } = {}) {
+async function scrollTo(id, scrollId, { dy = 250, direction = 'down', startY = 0.5, atIndex } = {}) {
   // Varsayılan (NaN) başlangıç noktası container'ın en alt kenarına çok yakın seçiliyor;
   // bu cihaz/derlemede o kenar kesirli-pt (sub-pixel) genişlikte olduğundan Detox'un jest
   // için istediği TAM (%100) görünürlük eşiğini hep başarısız kılıyor ("not visible (100)").
   // Ortadan (0.5) başlamak aynı sonucu (hedef görünene kadar kaydırma) o kenara değmeden verir.
   await visible(scrollId, 10000);
-  await waitFor(element(by.id(id)))
+  const target = atIndex === undefined ? element(by.id(id)) : element(by.id(id)).atIndex(atIndex);
+  await waitFor(target)
     .toBeVisible()
     .whileElement(by.id(scrollId))
     .scroll(dy, direction, NaN, startY);
+}
+
+// scrollTo hedefi ekranın alt kenarında bırakabilir; yüzen sekme çubuğu orada dokunuşu yutar
+// (özel günler sekmesine düşer). Hedefi ekran ortasına çek.
+async function scrollToCentered(id, scrollId, opts = {}) {
+  await scrollTo(id, scrollId, opts);
+  await element(by.id(scrollId)).scroll(300, opts.direction ?? 'down', NaN, 0.5);
 }
 
 async function readText(id) {
@@ -227,6 +244,59 @@ function apiSignIn() {
 const apiGet = (urlPath, token) => apiRequest('GET', urlPath, { token });
 const apiPost = (urlPath, token, body) => apiRequest('POST', urlPath, { token, body });
 
+// Belirli bir kullanıcı olarak API'ye giriş (ikinci/altıncı hesap, halka katılımı için).
+// Uygulamanın E2E_USER'ından farklı sub → ayrı kullanıcı kaydı.
+function apiSignInAs(sub, name = 'Ikinci Kullanici') {
+  return apiRequest('POST', '/v1/auth/provider/verify', {
+    body: {
+      provider: 'google',
+      platform: 'ios',
+      idToken: JSON.stringify({ sub, email: `${sub}@example.com`, name }),
+      deviceId: `e2e-detox-${sub}`,
+    },
+  });
+}
+
+const MONGO_CONTAINER = process.env.E2E_MONGO_CONTAINER || 'zikirmatik-asistan-mongo-test-1';
+// Test DB'sinde doğrudan mongosh (durum hazırlama: süresi dolmuş halka, kredi 0 vb.).
+// Yalnız zikir_e2e* DB'sine bağlanır; kapsayıcı yoksa hata verir.
+function mongo(js) {
+  const dbName = new URL(MONGODB_URI).pathname.slice(1);
+  if (!dbName.startsWith('zikir_e2e')) throw new Error(`Güvenlik: ${dbName} zikir_e2e değil`);
+  return execFileSync('docker', ['exec', MONGO_CONTAINER, 'mongosh', '--quiet', dbName, '--eval', js], {
+    encoding: 'utf8',
+  }).trim();
+}
+
+// Kullanıcıya ait tüm verileri siler (katalog: zikir/koleksiyon/şablon/özel gün kalır):
+// dosyalar arası sızıntıyı (premium, kredi, program, halka) önler. Her dosya yeni kullanıcıyla başlar.
+function resetUserData() {
+  const names = [
+    'users', 'auth_identities', 'auth_refresh_tokens', 'subscriptions', 'ai_credit_wallets', 'ai_credit_ledger',
+    'ai_usage_log', 'ai_conversations', 'ai_messages', 'ai_recommendations', 'dhikr_logs', 'user_dhikrs', 'streaks',
+    'vird_programs', 'vird_day_progress', 'circles', 'devices', 'app_events', 'push_dispatches',
+  ];
+  mongo(`${JSON.stringify(names)}.forEach(n => db.getCollection(n).deleteMany({}))`);
+}
+
+// Emülatör komutları (yalnız Android; iOS'ta çağrılmaz).
+function adb(args) {
+  return execSync(`adb -s ${ADB_SERIAL} shell ${args}`, { encoding: 'utf8' }).trim();
+}
+function adbRoot() {
+  execSync(`adb -s ${ADB_SERIAL} root`, { encoding: 'utf8' });
+}
+async function setAirplane(on) {
+  adb(`cmd connectivity airplane-mode ${on ? 'enable' : 'disable'}`);
+  await new Promise((r) => setTimeout(r, 2500));
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function tapN(id, n) {
+  for (let i = 0; i < n; i += 1) await element(by.id(id)).tap();
+}
+
 // apps/api/scripts/e2e-seed.mjs'i test DB'sine karşı çalıştır.
 function seed(args) {
   execSync(`node scripts/e2e-seed.mjs ${args}`, {
@@ -250,16 +320,27 @@ module.exports = {
   signInWithGoogle,
   continueAsGuest,
   skipTourIfShown,
+  dismissBadgeIfShown,
   freshSignIn,
   openTab,
   tapWhenHittable,
   dismissNativeReviewPromptIfShown,
   relaunch,
   scrollTo,
+  scrollToCentered,
   readText,
   waitForTextContaining,
   apiSignIn,
+  apiSignInAs,
   apiGet,
   apiPost,
   seed,
+  mongo,
+  resetUserData,
+  adb,
+  adbRoot,
+  setAirplane,
+  sleep,
+  tapN,
+  apiRequest,
 };
