@@ -160,6 +160,14 @@ export class AiService {
       locale,
     );
 
+    // B9: önce kredi düşülür, sonra içerik kalıcılaşır (eşzamanlı kredi
+    // tükenmesinde düşüşsüz içerik kalmaz; chat ile aynı sıra).
+    const wallet = await this.aiCreditsService.debitCreditForFlow(
+      userId,
+      flowId,
+      user.isPremium,
+      promptHash,
+    );
     this.emitStep(socketId, 'finalizing', 'Öneriler hazırlanıyor...');
     const result = await this.finalizeRecommendation({
       userId,
@@ -170,12 +178,6 @@ export class AiService {
       locale,
     });
 
-    const wallet = await this.aiCreditsService.debitCreditForFlow(
-      userId,
-      flowId,
-      user.isPremium,
-      promptHash,
-    );
     log.log(
       `[done] count=${result.recommendedIds.length} — ${Date.now() - startedAt}ms`,
     );

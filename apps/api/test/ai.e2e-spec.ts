@@ -353,6 +353,64 @@ describe('AI (e2e)', () => {
     spy.mockRestore();
   });
 
+  it('B9: bakiye 1, iki eşzamanlı öneri (farklı flowId) → biri 201, diğeri 403, tek öneri belgesi', async () => {
+    const { credits, recommend } = await setup();
+    await credits(); // cüzdan oluşsun
+    const me = await t.model('User').findOne().lean();
+    const userId = me!._id;
+    await t
+      .model('AiCreditWallet')
+      .updateOne({ userId }, { $set: { grantCredits: 1, balance: 1 } });
+
+    const results = await Promise.all([
+      recommend('birinci istek'),
+      recommend('ikinci istek'),
+    ]);
+    expect(results.map((r) => r.status).sort()).toEqual([201, 403]);
+    expect(await t.model('AiRecommendation').countDocuments({ userId })).toBe(
+      1,
+    );
+    expect(await credits()).toBe(0);
+  });
+
+  it('B9: bakiye 3, iki eşzamanlı AI vird programı → biri 201, diğeri 403, tek program belgesi', async () => {
+    const user = await signIn(t.http, { sub: `e2e-ai-${randomUUID()}` });
+    const dhikrModel = t.model<DhikrDocument>('Dhikr');
+    for (const nameArabic of ['سبحان الله', 'الحمد لله', 'الله أكبر'])
+      await seedDhikr(dhikrModel, { nameArabic });
+    const userId = new Types.ObjectId(user.userId);
+    await request(t.http)
+      .get('/v1/ai/credits')
+      .set(bearer(user.accessToken))
+      .expect(200);
+    await t.model('AiCreditWallet').updateOne(
+      { userId },
+      {
+        $set: {
+          grantCredits: VIRD_PROGRAM_CREDIT_COST,
+          balance: VIRD_PROGRAM_CREDIT_COST,
+        },
+      },
+    );
+    const create = (freeText: string) =>
+      request(t.http)
+        .post('/v1/ai/vird-programs')
+        .set(bearer(user.accessToken))
+        .send({
+          flowId: randomUUID(),
+          freeText,
+          durationDays: 7,
+          slots: ['morning', 'evening'],
+        });
+
+    const results = await Promise.all([
+      create('sabah zikirleri'),
+      create('akşam zikirleri'),
+    ]);
+    expect(results.map((r) => r.status).sort()).toEqual([201, 403]);
+    expect(await t.model('VirdProgram').countDocuments({ userId })).toBe(1);
+  });
+
   it('POST /v1/ai/vird-programs: ücretsiz kullanıcı 3 kredisiyle program üretir, 3 kredi düşer, activate çalışır (ürün kuralı: premium kapısı yok)', async () => {
     const user = await signIn(t.http, { sub: `e2e-ai-${randomUUID()}` });
     const dhikrModel = t.model<DhikrDocument>('Dhikr');

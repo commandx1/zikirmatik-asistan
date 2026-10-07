@@ -151,6 +151,16 @@ export class AiVirdService {
       return { kind: 'offTopic', message: OFF_TOPIC_MESSAGE[locale] };
     }
 
+    // B9: önce kredi düşülür, sonra taslak yazılır.
+    const wallet = await this.aiCreditsService.debitCreditForFlow(
+      userId,
+      flowId,
+      user.isPremium,
+      promptHash,
+      AI_CREDIT_REASONS.VIRD_PROGRAM_DEBIT,
+      VIRD_PROGRAM_CREDIT_COST,
+    );
+
     const draft = await this.virdProgramsService.createAiDraft({
       userId,
       flowId,
@@ -162,15 +172,6 @@ export class AiVirdService {
       prayerSelection: payload.prayerSelection,
       slots: payload.slots,
     });
-
-    const wallet = await this.aiCreditsService.debitCreditForFlow(
-      userId,
-      flowId,
-      user.isPremium,
-      promptHash,
-      AI_CREDIT_REASONS.VIRD_PROGRAM_DEBIT,
-      VIRD_PROGRAM_CREDIT_COST,
-    );
 
     log.log(
       `[vird-done] programId=${draft._id.toString()} — ${Date.now() - startedAt}ms`,

@@ -238,6 +238,7 @@ export class DhikrLogsService {
         payload.userId,
         circleObjectId.toHexString(),
         dhikrId,
+        payload.date,
       );
     }
 

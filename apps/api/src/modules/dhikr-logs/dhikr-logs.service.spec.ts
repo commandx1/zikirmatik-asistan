@@ -495,6 +495,7 @@ describe('DhikrLogsService.create', () => {
         userId,
         circleId,
         undefined,
+        '2026-09-17',
       );
     });
 

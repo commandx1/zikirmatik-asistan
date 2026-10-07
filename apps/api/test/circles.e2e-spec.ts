@@ -321,6 +321,29 @@ describe('Zikir Halkası (e2e)', () => {
       expect(data<{ totalCount: number }>(after3).totalCount).toBe(42);
     });
 
+    it('A-03: halka kuruluş gününden önceki tarih → 400; bugün ve yarın → 201', async () => {
+      const creator = await premiumUser();
+      const { dhikrId, circle } = await seedActiveCircle(creator);
+      const today = istanbulDateKey(new Date());
+      const send = (date: string) =>
+        request(t.http)
+          .post('/v1/dhikr-logs')
+          .set(bearer(creator.accessToken))
+          .send({
+            userId: creator.userId,
+            dhikrId,
+            count: 3,
+            targetCount: 3,
+            date,
+            source: 'circle',
+            circleId: circle.id,
+          });
+
+      await send(shiftDateKey(today, -1)).expect(400);
+      await send(today).expect(201);
+      await send(shiftDateKey(today, 1)).expect(201);
+    });
+
     it('A-01: hedef dolunca completed; sonraki katkı KABUL edilir, toplam hedefi aşar, completed kalır', async () => {
       const creator = await premiumUser();
       const { dhikrId, circle } = await seedActiveCircle(creator, {
