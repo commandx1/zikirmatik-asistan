@@ -234,7 +234,7 @@ export class AiChatService {
       return;
     }
 
-    const { clientAborted, abortSignal, finish } = this.beginSse(req, res);
+    const { clientAborted, abortSignal, finish } = this.beginSse(res);
     this.emitStep(socketId, 'creating', 'Sohbet başlatılıyor...');
 
     try {
@@ -409,7 +409,7 @@ export class AiChatService {
     const locale: SupportedAiLocale =
       (conversation?.locale as SupportedAiLocale) ?? 'tr';
 
-    const { clientAborted, abortSignal, finish } = this.beginSse(req, res);
+    const { clientAborted, abortSignal, finish } = this.beginSse(res);
     this.emitStep(socketId, 'thinking', 'Mesajın değerlendiriliyor...');
 
     try {
@@ -1412,10 +1412,7 @@ export class AiChatService {
    * `clientAborted()` true ise persist/debit adımları atlanmalıdır (bkz.
    * streamCreateConversation/streamSendMessage).
    */
-  private beginSse(
-    req: Request,
-    res: Response,
-  ): {
+  private beginSse(res: Response): {
     abortSignal: AbortSignal;
     clientAborted: () => boolean;
     finish: () => void;
@@ -1436,14 +1433,16 @@ export class AiChatService {
         abortController.abort();
       }
     };
-    req.on('close', onClose);
+    // `req` 'close'u gövde okunup bitince (body-parser) bir kez ateşlenir ve sonradan
+    // eklenen dinleyici istemci kopmasında ÇALIŞMAZ; kopmayı `res` 'close'u bildirir.
+    res.on('close', onClose);
 
     return {
       abortSignal: abortController.signal,
       clientAborted: () => aborted,
       finish: () => {
         finished = true;
-        req.off('close', onClose);
+        res.off('close', onClose);
         if (!res.writableEnded) {
           res.end();
         }

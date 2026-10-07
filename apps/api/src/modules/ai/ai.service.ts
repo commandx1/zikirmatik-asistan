@@ -91,8 +91,9 @@ export class AiService {
     const log = this.runtime.flowLog(flowId);
 
     this.emitStep(socketId, 'analyzing', 'Niyetin analiz ediliyor...');
+    // PII: kullanıcı metni asla loglanmaz — yalnız uzunluk.
     log.log(
-      `[start] userId=${userId.toString()} freeText=${freeText ? `"${freeText.slice(0, 60)}"` : '(yok)'}`,
+      `[start] userId=${userId.toString()} freeTextLen=${freeText?.length ?? 0}`,
     );
 
     const user = await this.ensureUserExists(userId);
@@ -103,6 +104,16 @@ export class AiService {
       user.isPremium,
       promptHash,
     );
+
+    // B7: aynı flowId tekrarı → kayıtlı öneri (ajan/LLM yeniden çalışmaz).
+    const stored = await this.aiRecommendationModel
+      .findOne({ userId, flowId })
+      .lean()
+      .exec();
+    if (stored) {
+      log.log('[replay] kayıtlı öneri döndü');
+      return this.replayRecommendation(stored, userId);
+    }
 
     const maxRecommendations = payload.maxRecommendations ?? 5;
     const timeContext = payload.timeContext ?? this.defaultTimeContext();
@@ -171,6 +182,7 @@ export class AiService {
     this.emitStep(socketId, 'finalizing', 'Öneriler hazırlanıyor...');
     const result = await this.finalizeRecommendation({
       userId,
+      flowId,
       freeText,
       timeContext,
       reasoning,
@@ -190,6 +202,7 @@ export class AiService {
    */
   private async finalizeRecommendation(input: {
     userId: Types.ObjectId;
+    flowId: string;
     freeText?: string;
     timeContext: TimeContext;
     reasoning: string;
@@ -202,16 +215,42 @@ export class AiService {
 
     const recommendedIds = input.items.map(({ dhikr }) => dhikr._id.toString());
 
-    const created = await this.aiRecommendationModel.create({
-      userId: input.userId,
-      freeText: input.freeText,
-      assistantNote: input.reasoning,
-      locale: input.locale,
-      timeContext: input.timeContext,
-      recommendedDhikrIds: recommendedIds.map((id) => new Types.ObjectId(id)),
-    });
+    let created: AiRecommendationDocument;
+    try {
+      created = await this.aiRecommendationModel.create({
+        userId: input.userId,
+        flowId: input.flowId,
+        freeText: input.freeText,
+        assistantNote: input.reasoning,
+        locale: input.locale,
+        timeContext: input.timeContext,
+        recommendedDhikrIds: recommendedIds.map((id) => new Types.ObjectId(id)),
+      });
+    } catch (error) {
+      // Aynı flowId'li eşzamanlı istek önce yazdı (unique userId+flowId):
+      // onun kaydını döndür, ikinci belge oluşmaz.
+      if ((error as { code?: number }).code !== 11000) throw error;
+      const stored = await this.aiRecommendationModel
+        .findOne({ userId: input.userId, flowId: input.flowId })
+        .lean()
+        .exec();
+      if (!stored) throw error;
+      return this.replayRecommendation(stored, input.userId);
+    }
 
-    const recommendedItems = input.items.map(({ dhikr }) => ({
+    return {
+      kind: 'recommendations' as const,
+      recommendationId: created._id.toString(),
+      recommendedIds,
+      reasoning: input.reasoning,
+      items: input.items.map(({ dhikr }) => this.toRecommendedItem(dhikr)),
+      usedModel: 'openai' as const,
+      locale: input.locale,
+    };
+  }
+
+  private toRecommendedItem(dhikr: SelectedItem['dhikr']) {
+    return {
       id: dhikr._id.toString(),
       name: dhikr.name,
       nameArabic: dhikr.nameArabic,
@@ -220,16 +259,38 @@ export class AiService {
       virtue: dhikr.virtue,
       source: dhikr.source,
       recommendedCount: dhikr.recommendedCount,
-    }));
+    };
+  }
 
+  /** Kayıtlı öneriyi, ilk yanıtla aynı şekilde yeniden kurar (ajan çalışmaz). */
+  private async replayRecommendation(
+    stored: {
+      _id: Types.ObjectId;
+      assistantNote?: string;
+      locale?: string;
+      recommendedDhikrIds: Types.ObjectId[];
+    },
+    userId: Types.ObjectId,
+  ) {
+    const dhikrs = await this.dhikrModel
+      .find({ _id: { $in: stored.recommendedDhikrIds } })
+      .lean()
+      .exec();
+    const byId = new Map(dhikrs.map((d) => [d._id.toString(), d]));
+    const items = stored.recommendedDhikrIds.flatMap((id) => {
+      const dhikr = byId.get(id.toString());
+      return dhikr ? [this.toRecommendedItem(dhikr)] : [];
+    });
+    const credits = await this.aiCreditsService.getCredits(userId.toString());
     return {
       kind: 'recommendations' as const,
-      recommendationId: created._id.toString(),
-      recommendedIds,
-      reasoning: input.reasoning,
-      items: recommendedItems,
+      recommendationId: stored._id.toString(),
+      recommendedIds: items.map((i) => i.id),
+      reasoning: stored.assistantNote ?? '',
+      items,
       usedModel: 'openai' as const,
-      locale: input.locale,
+      locale: (stored.locale ?? 'tr') as SupportedAiLocale,
+      remainingCredits: credits.balance,
     };
   }
 

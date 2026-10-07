@@ -14,6 +14,11 @@ export class AiRecommendation {
   @Prop({ type: Types.ObjectId, ref: User.name, required: true, index: true })
   userId!: Types.ObjectId;
 
+  // İstemci/sunucu akış kimliği: aynı flowId tekrarı kayıtlı öneriyi döndürür
+  // (ajan yeniden çalışmaz). Eski kayıtlarda yok.
+  @Prop({ type: String })
+  flowId?: string;
+
   @Prop({ type: String })
   freeText?: string;
 
@@ -53,6 +58,10 @@ export const AiRecommendationSchema =
   SchemaFactory.createForClass(AiRecommendation);
 
 AiRecommendationSchema.index({ userId: 1, createdAt: -1 });
+AiRecommendationSchema.index(
+  { userId: 1, flowId: 1 },
+  { unique: true, partialFilterExpression: { flowId: { $type: 'string' } } },
+);
 AiRecommendationSchema.index(
   { createdAt: 1 },
   { expireAfterSeconds: 7_776_000 },

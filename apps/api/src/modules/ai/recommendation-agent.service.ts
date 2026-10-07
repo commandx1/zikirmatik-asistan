@@ -105,7 +105,7 @@ export class RecommendationAgentService {
       }
       searchQuery = expansion.expandedQuery;
       log.log(
-        `[expand] "${trimmedFreeText.slice(0, 40)}" → "${searchQuery.slice(0, 80)}"`,
+        `[expand] freeTextLen=${trimmedFreeText.length} queryLen=${searchQuery.length}`,
       );
     }
 

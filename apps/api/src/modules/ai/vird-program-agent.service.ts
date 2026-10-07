@@ -120,7 +120,7 @@ export class VirdProgramAgentService {
     }
     const expandedQuery = expansion.expandedQuery;
     log.log(
-      `[expand] "${freeText.slice(0, 40)}" → "${expandedQuery.slice(0, 80)}"`,
+      `[expand] freeTextLen=${freeText.length} queryLen=${expandedQuery.length}`,
     );
 
     this.emitStep(input.socketId, 'retrieve', 'Zikirler taranıyor...');

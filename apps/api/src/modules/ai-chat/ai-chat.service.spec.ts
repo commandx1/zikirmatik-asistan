@@ -287,6 +287,8 @@ function createFakeRes() {
     end: jest.Mock;
     status: jest.Mock;
     json: jest.Mock;
+    on: jest.Mock;
+    off: jest.Mock;
   } = {
     headersSent: false,
     writableEnded: false,
@@ -296,6 +298,8 @@ function createFakeRes() {
     end: jest.fn(),
     status: jest.fn(),
     json: jest.fn(),
+    on: jest.fn(),
+    off: jest.fn(),
   };
   res.status.mockImplementation(() => res);
   res.json.mockImplementation(() => res);

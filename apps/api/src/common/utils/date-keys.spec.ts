@@ -1,3 +1,4 @@
+import fc from 'fast-check';
 import { als } from '../logging/request-context';
 import {
   dateKeyInZone,
@@ -90,6 +91,38 @@ describe('date-keys timezone helpers', () => {
   it('canonicalises the zone name (Mongo $hour is case-sensitive)', () => {
     expect(withTimezone('america/los_angeles', () => requestTimezone())).toBe(
       'America/Los_Angeles',
+    );
+  });
+
+  // API-TZ-03: rastgele an × bölge değişmezleri.
+  it('property: dateKey(startOfDay(k)) = k ve startOfDay(k+1) > startOfDay(k)', () => {
+    const zones = [
+      'Europe/Istanbul',
+      'Europe/Berlin',
+      'America/New_York',
+      'Pacific/Auckland',
+      'Pacific/Kiritimati',
+    ];
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...zones),
+        fc.date({
+          min: new Date('2020-01-01T00:00:00Z'),
+          max: new Date('2035-12-31T00:00:00Z'),
+          noInvalidDate: true,
+        }),
+        (zone, instant) => {
+          const key = dateKeyInZone(instant, zone);
+          const start = startOfDayInZone(key, zone);
+          const next = startOfDayInZone(shiftDateKey(key, 1), zone);
+          expect(dateKeyInZone(start, zone)).toBe(key);
+          expect(next.getTime()).toBeGreaterThan(start.getTime());
+          // an kendi günü içinde: start <= instant < next
+          expect(start.getTime()).toBeLessThanOrEqual(instant.getTime());
+          expect(instant.getTime()).toBeLessThan(next.getTime());
+        },
+      ),
+      { numRuns: 300 },
     );
   });
 });

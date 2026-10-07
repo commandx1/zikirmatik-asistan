@@ -97,4 +97,125 @@ describe('Devices (e2e)', () => {
       .expect(200);
     expect(data<{ userId: unknown }>(res).userId).toBeNull();
   });
+
+  // ── QA: DEV-07/08/09/10/11, dil + saat dilimi ────────────────────────────
+  type DeviceBody = {
+    userId: unknown;
+    locale?: string;
+    timezone?: string;
+    expoPushToken?: string;
+    prefs?: Record<string, boolean>;
+  };
+  const register = (body: Record<string, unknown>, token?: string) => {
+    const req = request(t.http).post('/v1/devices/register');
+    if (token) req.set('Authorization', `Bearer ${token}`);
+    return req.send({ deviceId: 'tz-device-1', platform: 'ios', ...body });
+  };
+
+  it('DEV-08: geçerli locale + IANA timezone kaydedilir', async () => {
+    const res = await register({
+      locale: 'en',
+      timezone: 'America/Los_Angeles',
+    }).expect(200);
+    expect(data<DeviceBody>(res)).toMatchObject({
+      locale: 'en',
+      timezone: 'America/Los_Angeles',
+    });
+  });
+
+  it.each([
+    ['locale de', { locale: 'de' }],
+    ['locale büyük harf', { locale: 'TR' }],
+    ['locale sayı', { locale: 1 }],
+    ['timezone IANA dışı', { timezone: 'Mars/Olympus' }],
+    ['timezone boş olmayan saçma', { timezone: 'istanbul saati' }],
+    ['timezone > 64', { timezone: `Europe/${'A'.repeat(70)}` }],
+    ['timezone sayı', { timezone: 3 }],
+  ])('DEV-08: %s → 400 ve cihaz yazılmaz', async (_name, body) => {
+    await register(body).expect(400);
+    expect(await t.model('Device').countDocuments({})).toBe(0);
+  });
+
+  it('DEV-08: locale/timezone yoksa 200; alanlar boş kalır (okuyan taraf tr/İstanbul varsayar)', async () => {
+    const res = await register({}).expect(200);
+    const body = data<DeviceBody>(res);
+    expect(body.locale).toBeUndefined();
+    expect(body.timezone).toBeUndefined();
+  });
+
+  it('DEV-08/09: ikinci register locale/timezone günceller; göndermeyen sürüm değeri silmez', async () => {
+    await register({ locale: 'tr', timezone: 'Europe/Istanbul' }).expect(200);
+    const updated = await register({
+      locale: 'en',
+      timezone: 'Pacific/Kiritimati',
+    }).expect(200);
+    expect(data<DeviceBody>(updated)).toMatchObject({
+      locale: 'en',
+      timezone: 'Pacific/Kiritimati',
+    });
+
+    const legacy = await register({ expoPushToken: 'ExponentPushToken[abcd]' });
+    expect(data<DeviceBody>(legacy)).toMatchObject({
+      locale: 'en',
+      timezone: 'Pacific/Kiritimati',
+      expoPushToken: 'ExponentPushToken[abcd]',
+    });
+    expect(await t.model('Device').countDocuments({})).toBe(1);
+  });
+
+  it('DEV-10: prefs — verilenler yazılır, verilmeyenler ilk kayıtta true; sonraki register ezmez', async () => {
+    const first = await register({ prefs: { friday: false } }).expect(200);
+    expect(data<DeviceBody>(first).prefs).toEqual({
+      specialDays: true,
+      friday: false,
+      streak: true,
+      badges: true,
+    });
+    const second = await register({ prefs: { streak: false } }).expect(200);
+    expect(data<DeviceBody>(second).prefs).toEqual({
+      specialDays: true,
+      friday: false,
+      streak: false,
+      badges: true,
+    });
+    await register({ prefs: { friday: 'yes' } }).expect(400);
+  });
+
+  it('DEV-07: misafir register bağlı cihazın userId’sini silmez', async () => {
+    const me = await signIn(t.http, { sub: 'e2e-devices-guest' });
+    await register({}, me.accessToken).expect(200);
+    const guest = await register({ locale: 'en' }).expect(200);
+    expect(String(data<DeviceBody>(guest).userId)).toBe(me.userId);
+  });
+
+  it('unlink: userId null olur, cihaz ve locale/timezone silinmez', async () => {
+    const me = await signIn(t.http, { sub: 'e2e-devices-unlink' });
+    await register(
+      { locale: 'en', timezone: 'Europe/Berlin' },
+      me.accessToken,
+    ).expect(200);
+    const res = await request(t.http)
+      .post('/v1/devices/unlink')
+      .send({ deviceId: 'tz-device-1' })
+      .expect(200);
+    expect(data<DeviceBody>(res)).toMatchObject({
+      userId: null,
+      locale: 'en',
+      timezone: 'Europe/Berlin',
+    });
+    expect(await t.model('Device').countDocuments({})).toBe(1);
+  });
+
+  it('DEV-11: bilinmeyen deviceId unlink → 200, data null; kısa deviceId → 400', async () => {
+    const res = await request(t.http)
+      .post('/v1/devices/unlink')
+      .send({ deviceId: 'never-registered-1' })
+      .expect(200);
+    expect(data(res)).toBeNull();
+    expect(await t.model('Device').countDocuments({})).toBe(0);
+    await request(t.http)
+      .post('/v1/devices/unlink')
+      .send({ deviceId: 'short' })
+      .expect(400);
+  });
 });

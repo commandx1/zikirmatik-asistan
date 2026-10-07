@@ -1,10 +1,14 @@
+import { Types } from 'mongoose';
+import fc from 'fast-check';
 import request from 'supertest';
+import type { DhikrLogDocument } from '../src/modules/dhikr-logs/schemas/dhikr-log.schema';
 import type { SpecialDayDocument } from '../src/modules/special-days/schemas/special-day.schema';
 import type { DeviceDocument } from '../src/modules/devices/schemas/device.schema';
 import { PushSenderService } from '../src/modules/push/push-sender.service';
 import { createTestApp, type TestApp } from './helpers/create-test-app';
 import { clearCollections, syncIndexes } from './helpers/db';
-import { data } from './helpers/fixtures';
+import { data, signIn } from './helpers/fixtures';
+import { atInstant } from './helpers/clock';
 
 const SECRET = 'test-campaign-secret'; // setup-env.ts CAMPAIGN_TRIGGER_SECRET
 
@@ -244,5 +248,333 @@ describe('PushCampaigns (e2e)', () => {
     const body = data<{ sent: number; skipped: { error: number } }>(res);
     expect(body.sent).toBe(0);
     expect(body.skipped.error).toBe(1);
+  });
+
+  // ── QA: PSH-01/02/04/05/07/08/09/15/17/19, TZ-13 ─────────────────────────
+  describe('kampanya başına yollar, dil, sessiz saat, günlük tavan', () => {
+    const ALL = ['winback', 'kandil-eve', 'kandil-day', 'weekly-summary'];
+    const trigger = (
+      campaign: string,
+      at: Date,
+      body: Record<string, unknown> = {},
+    ) =>
+      atInstant(at, async () => {
+        const res = await request(t.http)
+          .post(`/internal/campaigns/${campaign}`)
+          .set('x-campaign-secret', SECRET)
+          .send(body)
+          .expect(200);
+        return data<{
+          candidates: number;
+          sent: number;
+          dryRun: boolean;
+          skipped: {
+            dedupe: number;
+            quietHours: number;
+            noToken: number;
+            prefs: number;
+            error: number;
+          };
+        }>(res);
+      });
+    const dispatchCount = () => t.model('PushDispatch').countDocuments({});
+    const sentPayloads = () =>
+      pushSendMock().mock.calls.map(([targets, msg]) => ({
+        deviceId: targets[0].deviceId,
+        title: msg.title,
+        body: msg.body,
+      }));
+    const device = (deviceId: string, extra: Record<string, unknown> = {}) =>
+      t.model<DeviceDocument>('Device').create({
+        deviceId,
+        expoPushToken: `ExponentPushToken[${deviceId}]`,
+        platform: 'ios',
+        isActive: true,
+        ...extra,
+      });
+    const kandil = (date: string) =>
+      t.model<SpecialDayDocument>('SpecialDay').create({
+        name: { tr: 'Regaib Kandili', en: 'Regaib Night' },
+        type: 'kandil',
+        date,
+        hijriDate: '1448-01-01',
+        priority: 50,
+        isActive: true,
+      });
+
+    // İstanbul 12:00 (sessiz saat dışı)
+    const NOON = new Date('2026-10-10T09:00:00Z');
+
+    beforeEach(() => pushSendMock().mockClear());
+
+    it.each(ALL)('PSH-01: %s secret yok/yanlış → 401', async (campaign) => {
+      await request(t.http)
+        .post(`/internal/campaigns/${campaign}`)
+        .send({})
+        .expect(401);
+      await request(t.http)
+        .post(`/internal/campaigns/${campaign}`)
+        .set('x-campaign-secret', 'yanlis')
+        .send({})
+        .expect(401);
+    });
+
+    it('PSH-02: bilinmeyen kampanya + yanlış secret → 401 (secret önce), doğru secret → 400', async () => {
+      await request(t.http)
+        .post('/internal/campaigns/nope')
+        .set('x-campaign-secret', 'yanlis')
+        .send({})
+        .expect(401);
+      await request(t.http)
+        .post('/internal/campaigns/nope')
+        .set('x-campaign-secret', SECRET)
+        .send({})
+        .expect(400);
+    });
+
+    it.each(['kandil-eve', 'kandil-day', 'weekly-summary'])(
+      'PSH-04: %s dryRun → sayı döner, gönderim ve rezervasyon yok',
+      async (campaign) => {
+        await kandil('2026-10-11'); // eve: yarın, day: bugün için ayrı gün
+        await kandil('2026-10-10');
+        await device('dev-dry-1');
+        const res = await trigger(campaign, NOON, { dryRun: true });
+        expect(res.dryRun).toBe(true);
+        expect(pushSendMock()).not.toHaveBeenCalled();
+        expect(await dispatchCount()).toBe(0);
+        if (campaign !== 'weekly-summary') expect(res.sent).toBe(1);
+      },
+    );
+
+    it('PSH-15/19: kandil-eve/day metni cihaz diline göre (en → name.en, locale yok → tr)', async () => {
+      await kandil('2026-10-11');
+      await kandil('2026-10-10');
+      await device('dev-en', { locale: 'en' });
+      await device('dev-tr', { locale: 'tr' });
+      await device('dev-old'); // locale alanı yok → tr
+
+      await trigger('kandil-eve', NOON);
+      const eve = Object.fromEntries(
+        sentPayloads().map((p) => [p.deviceId, p]),
+      );
+      expect(eve['dev-en']).toMatchObject({
+        title: 'Regaib Night',
+        body: expect.stringContaining('is tomorrow') as string,
+      });
+      expect(eve['dev-tr'].body).toBe(
+        'Yarın Regaib Kandili. Hazırlık için özel gün rehberine göz at.',
+      );
+      expect(eve['dev-old'].body).toBe(eve['dev-tr'].body);
+
+      pushSendMock().mockClear();
+      await t.model('PushDispatch').deleteMany({});
+      await trigger('kandil-day', NOON);
+      const day = Object.fromEntries(
+        sentPayloads().map((p) => [p.deviceId, p]),
+      );
+      expect(day['dev-en'].body).toContain('is today');
+      expect(day['dev-en'].body).not.toMatch(/virtue|reward|blessing/i);
+      expect(day['dev-tr'].body).toContain('Bugün Regaib Kandili');
+    });
+
+    it('PSH-17/19: weekly-summary geçen İstanbul haftası; premium sayı+gün, ücretsiz yalnız sayı; EN/TR; 0 aktivite atlanır', async () => {
+      // 2026-10-12 Pazartesi 12:00 İstanbul → geçen hafta 5–11 Ekim
+      const monday = new Date('2026-10-12T09:00:00Z');
+      const [premium, free, idle] = await Promise.all(
+        ['ws-prem', 'ws-free', 'ws-idle'].map((sub) => signIn(t.http, { sub })),
+      );
+      await t
+        .model('User')
+        .updateOne({ _id: premium.userId }, { $set: { isPremium: true } });
+      const log = (userId: string, date: string, count: number) =>
+        t.model<DhikrLogDocument>('DhikrLog').create({
+          userId: new Types.ObjectId(userId),
+          customDhikrId: 'c1',
+          count,
+          targetCount: 33,
+          date,
+        });
+      await log(premium.userId, '2026-10-05', 100); // geçen hafta
+      await log(premium.userId, '2026-10-11', 50); // geçen hafta (son gün)
+      await log(premium.userId, '2026-10-12', 999); // bu hafta → sayılmaz
+      await log(premium.userId, '2026-10-04', 999); // önceki hafta → sayılmaz
+      await log(free.userId, '2026-10-07', 1); // tekil
+      await device('dev-prem-en', {
+        userId: new Types.ObjectId(premium.userId),
+        locale: 'en',
+      });
+      await device('dev-prem-tr', {
+        userId: new Types.ObjectId(premium.userId),
+      });
+      await device('dev-free-en', {
+        userId: new Types.ObjectId(free.userId),
+        locale: 'en',
+      });
+      await device('dev-idle', { userId: new Types.ObjectId(idle.userId) });
+
+      const res = await trigger('weekly-summary', monday);
+      expect(res.sent).toBe(3);
+      const byDevice = Object.fromEntries(
+        sentPayloads().map((p) => [p.deviceId, p]),
+      );
+      expect(Object.keys(byDevice).sort()).toEqual([
+        'dev-free-en',
+        'dev-prem-en',
+        'dev-prem-tr',
+      ]);
+      expect(byDevice['dev-prem-en'].body).toBe(
+        'Last week: 150 dhikrs, 2 active days. Keep it up!',
+      );
+      expect(byDevice['dev-prem-tr'].body).toBe(
+        'Geçen hafta 150 zikir, 2 aktif gün. Böyle devam!',
+      );
+      // tekil çoğul + ücretsiz: yalnız sayı
+      expect(byDevice['dev-free-en'].body).toBe(
+        'Last week: 1 dhikr. Your detailed weekly report is in Premium.',
+      );
+    });
+
+    it('PSH-05/TZ-13: sessiz saat cihazın kendi saat dilimine göre; force yok sayar', async () => {
+      // 20:30Z → İstanbul 23:30 (sessiz), Berlin 22:30 (sessiz), New York 16:30,
+      // Kiritimati 10:30 (ertesi gün)
+      const at = new Date('2026-10-10T20:30:00Z');
+      const lastSeen = new Date(at.getTime() - 3.5 * 24 * 3600e3);
+      for (const [id, tz] of [
+        ['q-ist', 'Europe/Istanbul'],
+        ['q-ber', 'Europe/Berlin'],
+        ['q-ny', 'America/New_York'],
+        ['q-kir', 'Pacific/Kiritimati'],
+      ] as const) {
+        await device(id, { timezone: tz, lastSeenAt: lastSeen });
+      }
+      const res = await trigger('winback', at);
+      expect(res.candidates).toBe(4);
+      expect(res.skipped.quietHours).toBe(2);
+      expect(
+        sentPayloads()
+          .map((p) => p.deviceId)
+          .sort(),
+      ).toEqual(['q-kir', 'q-ny']);
+
+      // force: sessiz saat yok sayılır; bugün gönderilenler dedupe olur
+      const forced = await trigger('winback', at, { force: true });
+      expect(forced.skipped.quietHours).toBe(0);
+      expect(forced.sent).toBe(2);
+      expect(forced.skipped.dedupe).toBe(2);
+    });
+
+    it('PSH-05: sınır — yerel 22:00 sessiz, 21:59 değil; 08:00 değil, 07:59 sessiz', async () => {
+      const winbackAt = async (iso: string, id: string) => {
+        const at = new Date(iso);
+        await device(id, {
+          timezone: 'America/New_York',
+          lastSeenAt: new Date(at.getTime() - 3.5 * 24 * 3600e3),
+        });
+        return trigger('winback', at);
+      };
+      // New York Ekim = UTC-4
+      expect((await winbackAt('2026-10-11T02:00:00Z', 'b-2200')).sent).toBe(0);
+      await t.model('Device').deleteMany({});
+      expect((await winbackAt('2026-10-11T01:59:00Z', 'b-2159')).sent).toBe(1);
+      await t.model('Device').deleteMany({});
+      expect((await winbackAt('2026-10-11T12:00:00Z', 'b-0800')).sent).toBe(1);
+      await t.model('Device').deleteMany({});
+      expect((await winbackAt('2026-10-11T11:59:00Z', 'b-0759')).sent).toBe(0);
+    });
+
+    it('PSH-07: bölgesi yok veya geçersiz cihaz İstanbul saatiyle değerlendirilir', async () => {
+      // 20:30Z = İstanbul 23:30 → sessiz
+      const at = new Date('2026-10-10T20:30:00Z');
+      const lastSeen = new Date(at.getTime() - 3.5 * 24 * 3600e3);
+      await device('tz-none', { lastSeenAt: lastSeen });
+      await device('tz-bad', {
+        timezone: 'Mars/Olympus',
+        lastSeenAt: lastSeen,
+      });
+      const res = await trigger('winback', at);
+      expect(res.candidates).toBe(2);
+      expect(res.skipped.quietHours).toBe(2);
+      expect(res.sent).toBe(0);
+    });
+
+    it('PSH-08: cihaz başına günde tek kampanya push’u (kampanyalar arası)', async () => {
+      await kandil('2026-10-10');
+      await device('cap-1', {
+        lastSeenAt: new Date(NOON.getTime() - 3.5 * 24 * 3600e3),
+      });
+      const first = await trigger('winback', NOON);
+      expect(first.sent).toBe(1);
+      const second = await trigger('kandil-day', NOON);
+      expect(second.sent).toBe(0);
+      expect(second.skipped.dedupe).toBe(1);
+      expect(await dispatchCount()).toBe(1);
+    });
+
+    it('PSH-09: aynı kampanya aynı gün ikinci tetik → 0 gönderim; dryRun dedupe gösterir', async () => {
+      await kandil('2026-10-10');
+      await device('again-1');
+      const a = await trigger('kandil-day', NOON);
+      const b = await trigger('kandil-day', NOON);
+      expect(a.sent).toBe(1);
+      expect(b.sent).toBe(0);
+      expect(b.skipped.dedupe).toBe(1);
+      expect(pushSendMock()).toHaveBeenCalledTimes(1);
+      const dry = await trigger('kandil-day', NOON, { dryRun: true });
+      expect(dry.sent).toBe(0);
+      expect(dry.skipped.dedupe).toBe(1);
+    });
+
+    it('PSH-14: prefs.specialDays:false kandil cihazı atlanır', async () => {
+      await kandil('2026-10-10');
+      await device('pref-off', { prefs: { specialDays: false } });
+      await device('pref-on');
+      const res = await trigger('kandil-day', NOON);
+      expect(res.sent).toBe(1);
+      expect(res.skipped.prefs).toBe(1);
+      expect(sentPayloads().map((p) => p.deviceId)).toEqual(['pref-on']);
+    });
+
+    it('PSH-06: özellik — rastgele an × bölge (DST dahil): sessiz ⇔ yerel saat ∈ [22,24) ∪ [0,8)', async () => {
+      const zones = [
+        'Europe/Istanbul',
+        'Europe/Berlin',
+        'America/New_York',
+        'Pacific/Kiritimati',
+        'Pacific/Auckland',
+      ];
+      let n = 0;
+      await fc.assert(
+        fc.asyncProperty(
+          fc.constantFrom(...zones),
+          fc.date({
+            min: new Date('2025-01-01T00:00:00Z'),
+            max: new Date('2026-12-31T00:00:00Z'),
+            noInvalidDate: true,
+          }),
+          async (zone, instant) => {
+            const hour =
+              Number(
+                new Intl.DateTimeFormat('en-GB', {
+                  timeZone: zone,
+                  hourCycle: 'h23',
+                  hour: '2-digit',
+                }).format(instant),
+              ) % 24;
+            const quiet = hour >= 22 || hour < 8;
+            await device(`prop-${(n += 1)}`, {
+              timezone: zone,
+              lastSeenAt: new Date(instant.getTime() - 3.5 * 24 * 3600e3),
+            });
+            const res = await trigger('winback', instant);
+            expect(res.candidates).toBe(1);
+            expect(res.skipped.quietHours).toBe(quiet ? 1 : 0);
+            expect(res.sent).toBe(quiet ? 0 : 1);
+            await t.model('Device').deleteMany({});
+            await t.model('PushDispatch').deleteMany({});
+          },
+        ),
+        { numRuns: 25 },
+      );
+    });
   });
 });

@@ -5,6 +5,7 @@
  * Önkoşul: pnpm db:test
  */
 import { randomUUID } from 'node:crypto';
+import { Logger } from '@nestjs/common';
 import { Types } from 'mongoose';
 import request from 'supertest';
 import { AiProgressGateway } from '../src/modules/ai/ai-progress.gateway';
@@ -583,6 +584,58 @@ describe('AI (e2e)', () => {
       await t
         .model('AiCreditLedger')
         .countDocuments({ userId, reason: 'PREMIUM_MONTHLY_GRANT' }),
+    ).toBe(1);
+  });
+
+  it('B13: freeText (PII) hiçbir log satırına yazılmaz', async () => {
+    const { recommend } = await setup();
+    const spies = (['log', 'warn', 'error', 'debug', 'verbose'] as const).map(
+      (level) => jest.spyOn(Logger.prototype, level),
+    );
+    const secret = 'GIZLI-KISISEL-METIN kanser teşhisi aldım ve çok korkuyorum';
+    await recommend(secret).expect(201);
+    const logged = spies
+      .flatMap((spy) => spy.mock.calls)
+      .map((args) => String(args[0]))
+      .join('\n');
+    jest.restoreAllMocks();
+    expect(logged).toContain('[start]'); // log akışı gerçekten çalıştı
+    expect(logged).not.toContain('GIZLI-KISISEL');
+    expect(logged).not.toContain('kanser');
+  });
+
+  it('B7: aynı flowId tekrarı → kayıtlı öneri döner, ajan çalışmaz, ikinci belge yok', async () => {
+    const user = await signIn(t.http, { sub: `e2e-ai-${randomUUID()}` });
+    for (let i = 0; i < 3; i++)
+      await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+    const flowId = randomUUID();
+    const send = () =>
+      request(t.http)
+        .post('/v1/ai/recommendations')
+        .set(bearer(user.accessToken))
+        .send({ userId: user.userId, freeText: 'huzur istiyorum', flowId })
+        .expect(201);
+    type Body = {
+      recommendationId: string;
+      recommendedIds: string[];
+      reasoning: string;
+      items: { id: string }[];
+      remainingCredits: number;
+    };
+    const first = data<Body>(await send());
+    const callsAfterFirst = ai.calls.length;
+    const second = data<Body>(await send());
+
+    expect(ai.calls.length).toBe(callsAfterFirst);
+    expect(second.recommendationId).toBe(first.recommendationId);
+    expect(second.recommendedIds).toEqual(first.recommendedIds);
+    expect(second.items.map((i) => i.id)).toEqual(first.items.map((i) => i.id));
+    expect(second.reasoning).toBe(first.reasoning);
+    expect(second.remainingCredits).toBe(first.remainingCredits);
+    expect(
+      await t
+        .model('AiRecommendation')
+        .countDocuments({ userId: new Types.ObjectId(user.userId) }),
     ).toBe(1);
   });
 });
