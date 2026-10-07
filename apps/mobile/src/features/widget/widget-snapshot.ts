@@ -8,6 +8,7 @@ import {
   slotProgress,
   type VirdJourneyProgramLike
 } from "../vird/services/vird-day";
+import { resolveActiveDays } from "../stats/services/local-badges";
 import { resolveNowSlot } from "../vird/services/vird-now";
 import { calculateVirdStreak } from "../vird/services/vird-streak";
 import { getPrayerTimes } from "../vird/services/prayer-times";
@@ -173,32 +174,25 @@ function collectLocalCompletedDays(
 ): Set<string> {
   const days = new Set<string>();
 
-  // dhikr-store.activeDayKeys — same persisted day history local-badges.ts
-  // uses (deriveLocalActivityStats): an item only remembers its LAST
-  // activity, so counting the same dhikr every day would otherwise never
-  // form a streak from items alone. Can't import local-badges.ts here (it
-  // pulls in i18n, forbidden in this headless-safe module — see the header
-  // comment), so the merge is inlined.
-  const activeDayKeys = Array.isArray(dhikrState?.activeDayKeys) ? (dhikrState!.activeDayKeys as unknown[]) : [];
-  for (const key of activeDayKeys) {
-    if (typeof key === "string" && DATE_KEY_RE.test(key)) {
-      days.add(key);
-    }
-  }
-
-  const items = Array.isArray(dhikrState?.items) ? (dhikrState!.items as DhikrItemLike[]) : [];
-  for (const item of items) {
-    if (typeof item !== "object" || item === null) {
-      continue;
-    }
-    const safeCount = Math.max(0, Math.floor(item.current ?? 0));
-    const target = Math.max(0, Math.floor(item.target ?? 0));
-    if (target > 0 && safeCount >= target) {
-      const dayKey = resolveActivityDateKey(item, today);
-      if (dayKey) {
-        days.add(dayKey);
-      }
-    }
+  // M-21: same "active day" rule as local-badges / stats (count > 0), one shared helper.
+  const activeDayKeys = Array.isArray(dhikrState?.activeDayKeys)
+    ? (dhikrState!.activeDayKeys as unknown[]).filter((k): k is string => typeof k === "string" && DATE_KEY_RE.test(k))
+    : [];
+  const rawItems = Array.isArray(dhikrState?.items) ? (dhikrState!.items as DhikrItemLike[]) : [];
+  const freeModeActivityAt = typeof dhikrState?.freeModeActivityAt === "string" ? dhikrState.freeModeActivityAt : undefined;
+  const activeDays = resolveActiveDays(
+    {
+      items: rawItems
+        .filter((item) => typeof item === "object" && item !== null)
+        .map((item) => ({ ...item, current: safeNonNegativeInt(item.current) })),
+      freeModeCount: safeNonNegativeInt(dhikrState?.freeModeCount),
+      freeModeActivityAt,
+      activeDayKeys
+    },
+    today
+  );
+  for (const key of activeDays) {
+    days.add(key);
   }
 
   const dayProgress = virdState?.dayProgress;

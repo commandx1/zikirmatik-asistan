@@ -20,6 +20,8 @@ export function DayRolloverModal() {
       cancelTestID={TEST_IDS.home.dayRolloverDiscard}
       onConfirm={home.onDayRolloverSave}
       onCancel={home.onDayRolloverDiscard}
+      // Android back must not discard yesterday's count: the question stays open until answered.
+      onRequestClose={() => {}}
     />
   )
 }

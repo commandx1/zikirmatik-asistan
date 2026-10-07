@@ -23,7 +23,7 @@ import { trackEvent } from "../../../lib/analytics";
 import { maybeRequestStoreReview } from "../../review/request-store-review";
 import { AppleWatchView, type CounterVisualModel } from "../../home/components/apple-watch";
 import { TesbihCounterView } from "../../home/components/tesbih-counter";
-import { CIRCLE_ERROR_CODE, CircleApiError, fetchCircle } from "../services/circle-api-client";
+import { CIRCLE_ERROR_CODE, CircleApiError, fetchCircle, resolveCircleActionError } from "../services/circle-api-client";
 import { buildCircleLogPayload, computeDisplayTotal, resolveCircleTitle } from "../services/circle-share";
 import {
   canTapCircle,
@@ -249,9 +249,15 @@ export function CircleSessionScreen({ id }: { id: string }) {
   }
 
   if (!storedCircle) {
+    // B-36: show why instead of an endless blank page.
     return (
       <PageLayout>
         <PageHeader title="" leftIconName="arrow-left" onPressLeft={() => router.back()} />
+        {detailQuery.error ? (
+          <Text testID={TEST_IDS.circle.notFound} className="px-5 text-sm text-text-muted">
+            {resolveCircleActionError(detailQuery.error, t("circle:errors.notFound"))}
+          </Text>
+        ) : null}
       </PageLayout>
     );
   }

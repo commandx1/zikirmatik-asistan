@@ -11,7 +11,12 @@ type UnsavedTransitionInput = {
 };
 
 export function shouldConfirmUnsavedDhikrTransition(input: UnsavedTransitionInput) {
-  if (input.isMember === false || (input.currentCount !== undefined && input.currentCount <= 0)) {
+  if (input.currentCount !== undefined && input.currentCount <= 0) {
+    return false;
+  }
+
+  // M-03: a guest's local save counts as saved for a dhikr, but a free-mode count is not a saved dhikr.
+  if (input.isMember === false && input.selectedDhikrId) {
     return false;
   }
 

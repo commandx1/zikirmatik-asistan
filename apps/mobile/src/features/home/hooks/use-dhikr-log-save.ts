@@ -7,6 +7,8 @@ import { useDhikrStore } from '../../../store/dhikr-store'
 import { buildDhikrLogPayload, resolveDhikrLogSource } from '../../dhikrs/services/dhikr-log-payload'
 import { createDhikrLog } from '../../dhikrs/services/dhikr-logs-api-client'
 import type { ZikirItem } from '../../focus/types'
+import { offerDailyReminderAfterSave } from '../../notifications/services/reminder-offer'
+import { useTourNotificationOptIn } from '../../tour/hooks/use-tour-notification-opt-in'
 import { resolveSavePress } from '../services/save-press'
 
 type Options = {
@@ -28,6 +30,7 @@ export function useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave 
   const openAuthPrompt = useAuthPromptStore(state => state.open)
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
+  const optInDailyReminder = useTourNotificationOptIn()
   const [isSavingLog, setIsSavingLog] = useState(false)
   // Mirrors save failures into the unsaved-transition modal (which clears it
   // whenever it opens), so it lives next to the save that sets it.
@@ -63,7 +66,7 @@ export function useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave 
         // M-02: a guest's progress stays on the device; the sign-up prompt is
         // the visible feedback (an auto-save stays silent).
         if (!silent) {
-          openAuthPrompt()
+          openAuthPrompt('save')
         }
         return false
       }
@@ -82,6 +85,8 @@ export function useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave 
         const savedLog = await createDhikrLog(payload)
         applySavedBackendLog(savedLog)
         setSelectedSource(undefined)
+        // B-11: first saved dhikr = first meaningful moment to explain reminders.
+        void offerDailyReminderAfterSave(optInDailyReminder)
         return true
       } catch (error: unknown) {
         console.warn('[dhikr-log] kayıt başarısız', error)

@@ -92,6 +92,22 @@ describe("push-device-registration", () => {
     expect(registerDevice).toHaveBeenCalledTimes(4);
   });
 
+  it("re-registers with a push token once permission is granted later (B-11 reminder card)", async () => {
+    getPermissionsAsync.mockResolvedValue({ granted: false, canAskAgain: true });
+    getExpoPushTokenAsync.mockResolvedValue({ data: "ExponentPushToken[late]" });
+    registerDevice.mockResolvedValue(undefined);
+
+    const { syncPushDeviceRegistration } = await import("./push-device-registration");
+
+    await syncPushDeviceRegistration(true, "tr");
+    expect(registerDevice.mock.calls[0]![0]).toMatchObject({ expoPushToken: undefined });
+
+    getPermissionsAsync.mockResolvedValue({ granted: true, canAskAgain: true });
+    await syncPushDeviceRegistration(true, "tr");
+    expect(registerDevice).toHaveBeenCalledTimes(2);
+    expect(registerDevice.mock.calls[1]![0]).toMatchObject({ expoPushToken: "ExponentPushToken[late]" });
+  });
+
   it("retries a failed sync on the next call and omits timezone when unavailable", async () => {
     getPermissionsAsync.mockResolvedValue({ granted: false, canAskAgain: false });
     registerDevice.mockRejectedValueOnce(new Error("offline")).mockResolvedValue(undefined);
@@ -168,7 +184,7 @@ describe("push-device-registration", () => {
     expect(usePushRegistrationStore.getState().serverPushActive).toBe(false);
   });
 
-  it("prompts for permission at most once when previously undetermined", async () => {
+  it("never opens the OS permission dialog (B-11), registers without a token", async () => {
     getPermissionsAsync.mockResolvedValue({ granted: false, canAskAgain: true });
     requestPermissionsAsync.mockResolvedValue({ granted: false });
     registerDevice.mockResolvedValue(undefined);
@@ -178,7 +194,7 @@ describe("push-device-registration", () => {
     await registerPushDevice();
     await registerPushDevice();
 
-    expect(requestPermissionsAsync).toHaveBeenCalledTimes(1);
+    expect(requestPermissionsAsync).not.toHaveBeenCalled();
     expect(getExpoPushTokenAsync).not.toHaveBeenCalled();
     expect(registerDevice).toHaveBeenNthCalledWith(
       1,

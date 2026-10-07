@@ -53,19 +53,9 @@ describe("unsaved-transition-guard — QA kararları", () => {
     expect(shouldConfirmUnsavedDhikrTransition({ ...base, currentCount: 4 })).toBe(true);
   });
 
-  it("MOB-KAY-18 / M-03: guests never get the unsaved warning, members do", () => {
+  it("MOB-KAY-18 / M-03: guests get no warning for a dhikr (free mode: see below), members do", () => {
     expect(shouldConfirmUnsavedDhikrTransition({ ...base, currentCount: 4, isMember: false })).toBe(false);
     expect(shouldConfirmUnsavedDhikrTransition({ ...base, currentCount: 4, isMember: true })).toBe(true);
-    expect(
-      shouldConfirmUnsavedDhikrTransition({
-        selectedDhikrId: "",
-        unsavedProgressDhikrIds: [],
-        hasUnsavedFreeMode: true,
-        isLeavingFreeMode: true,
-        currentCount: 3,
-        isMember: false
-      })
-    ).toBe(false);
   });
 });
 
@@ -81,5 +71,17 @@ describe("hasUnsavedActiveProgress", () => {
     expect(hasUnsavedActiveProgress(input)).toBe(true);
     expect(hasUnsavedActiveProgress({ ...input, currentCount: 0 })).toBe(false);
     expect(hasUnsavedActiveProgress({ ...input, selectedDhikrId: "", unsavedProgressDhikrIds: [] })).toBe(true);
+  });
+});
+
+describe("unsaved-transition-guard — misafir serbest mod", () => {
+  const free = { selectedDhikrId: "", unsavedProgressDhikrIds: [], hasUnsavedFreeMode: true, isLeavingFreeMode: true };
+
+  it("warns a guest leaving a free-mode count > 0 (not a saved dhikr)", () => {
+    expect(shouldConfirmUnsavedDhikrTransition({ ...free, currentCount: 5, isMember: false })).toBe(true);
+  });
+
+  it("does not warn a guest at free-mode count 0", () => {
+    expect(shouldConfirmUnsavedDhikrTransition({ ...free, currentCount: 0, isMember: false })).toBe(false);
   });
 });

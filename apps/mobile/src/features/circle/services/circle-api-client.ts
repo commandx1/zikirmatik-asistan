@@ -87,3 +87,8 @@ export function resolveCircleErrorMessage(code: string | undefined, fallback: st
   }
   return fallback;
 }
+
+/** B-35/B-36: user-facing text for any circle request failure (API code -> translation, else fallback). */
+export function resolveCircleActionError(error: unknown, fallback: string): string {
+  return resolveCircleErrorMessage(error instanceof CircleApiError ? error.code : undefined, fallback);
+}

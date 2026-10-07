@@ -200,7 +200,7 @@ export function useAiGuideRequest({ credits, history, onOpenPremiumSheet }: Opti
   const inFlight = useRef(createInFlightGuard()).current;
 
   const submitIntent = async () => {
-    if (isLoading) {
+    if (isLoading || !intentInput.trim()) {
       return;
     }
 

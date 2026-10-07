@@ -16,6 +16,8 @@ type ConfirmModalProps = {
   cancelTestID?: string
   onConfirm: () => void
   onCancel: () => void
+  /** Android back. Defaults to onCancel; pass a no-op when cancel is destructive (data loss). */
+  onRequestClose?: () => void
 }
 
 export function ConfirmModal({
@@ -28,7 +30,8 @@ export function ConfirmModal({
   confirmTestID,
   cancelTestID,
   onConfirm,
-  onCancel
+  onCancel,
+  onRequestClose
 }: ConfirmModalProps) {
   const { t } = useTranslation()
   const { tokens } = useThemeTokens()
@@ -38,7 +41,7 @@ export function ConfirmModal({
   const confirmBorder = withAlpha(confirmColor, 0.42)
 
   return (
-    <Modal visible={visible} transparent animationType='fade' onRequestClose={onCancel}>
+    <Modal visible={visible} transparent animationType='fade' onRequestClose={onRequestClose ?? onCancel}>
       <View className='flex-1 items-center justify-center bg-black/55 px-6'>
         <View
           className='w-full max-w-[360px] rounded-2xl p-5'

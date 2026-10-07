@@ -20,6 +20,11 @@ export const TEST_IDS = {
     collections: "e2e-tab-collections",
     profile: "e2e-tab-profile",
   },
+  notifications: {
+    // "Günlük hatırlatma ister misin?" kartı (notification-permission-modal.tsx).
+    offerConfirm: "e2e-notif-offer-confirm",
+    offerDismiss: "e2e-notif-offer-dismiss"
+  },
   tour: { skip: "e2e-tour-skip", next: "e2e-tour-next" },
   home: {
     scroll: "e2e-home-scroll",
@@ -113,6 +118,8 @@ export const TEST_IDS = {
   },
   circle: {
     hub: "e2e-circle-hub",
+    notFound: "e2e-circle-not-found",
+    actionError: "e2e-circle-action-error",
     newCircle: "e2e-circle-new",
     codeInput: "e2e-circle-code-input",
     joinButton: "e2e-circle-join",
@@ -140,6 +147,7 @@ export const TEST_IDS = {
     scroll: "e2e-ai-guide-scroll",
     input: "e2e-ai-guide-input",
     send: "e2e-ai-guide-send",
+    sendDisabled: "e2e-ai-guide-send-disabled",
     recommendation: "e2e-ai-guide-recommendation",
   },
   aiChat: {

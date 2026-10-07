@@ -4,6 +4,7 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import { useTranslation } from "react-i18next";
 import { ThemedInput } from "../../../components/ui/themed-input";
 import { ThemedTag } from "../../../components/ui/themed-tag";
+import { canSendIntent } from "../services/intent-input";
 import { TEST_IDS } from "../../../test-ids";
 
 type IntentInputSectionProps = {
@@ -27,6 +28,7 @@ export function IntentInputSection({
 }: IntentInputSectionProps) {
   const { tokens } = useThemeTokens();
   const { t } = useTranslation("ai-guide");
+  const canSend = canSendIntent(value, isLoading);
   const promptChips = [
     t("ai-guide:promptChips.sad"),
     t("ai-guide:promptChips.anxious"),
@@ -48,9 +50,9 @@ export function IntentInputSection({
         trailing={
           <Pressable
             onPress={onSend}
-            testID={TEST_IDS.aiGuide.send}
-            disabled={isLoading}
-            className={`h-10 w-10 items-center justify-center rounded-full bg-bg ${isLoading ? "opacity-60" : ""}`}
+            testID={canSend ? TEST_IDS.aiGuide.send : TEST_IDS.aiGuide.sendDisabled}
+            disabled={!canSend}
+            className={`h-10 w-10 items-center justify-center rounded-full bg-bg ${canSend ? "" : "opacity-60"}`}
           >
             <FontAwesome6 name="paper-plane" size={14} color={tokens.accent} />
           </Pressable>

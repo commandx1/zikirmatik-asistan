@@ -142,6 +142,30 @@ describe("buildWidgetSnapshot", () => {
     expect(buildWidgetSnapshot(raw, now).streak).toBe(3);
   });
 
+  it("M-21: a day with only a 0 count (reset) does not extend the streak", () => {
+    const now = new Date(2026, 8, 21);
+    const raw: WidgetRawInput = {
+      ...EMPTY_RAW,
+      dhikrStore: dhikrStore([{ current: 0, target: 33, lastActivityAt: new Date(2026, 8, 21, 9, 0, 0).toISOString() }], {
+        activeDayKeys: ["2026-09-20"]
+      })
+    };
+
+    expect(buildWidgetSnapshot(raw, now).streak).toBe(1);
+  });
+
+  it("M-21: any count > 0 counts as an active day even if the target is not reached", () => {
+    const now = new Date(2026, 8, 21);
+    const raw: WidgetRawInput = {
+      ...EMPTY_RAW,
+      dhikrStore: dhikrStore([{ current: 3, target: 33, lastActivityAt: new Date(2026, 8, 21, 9, 0, 0).toISOString() }], {
+        activeDayKeys: ["2026-09-20"]
+      })
+    };
+
+    expect(buildWidgetSnapshot(raw, now).streak).toBe(2);
+  });
+
   it("reads locale 'en' from profile store", () => {
     const raw: WidgetRawInput = {
       ...EMPTY_RAW,

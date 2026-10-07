@@ -51,3 +51,6 @@ Katalogdaki ❓ soruların cevapları. Testler bu kararlara göre yazılır.
 - **M-17** Girişten sonra tetikleyen eylemin (AI gönder, halkaya katıl) devam etmesi.
 - **M-18** Misafir verisi aktarılamazsa uyarı bandı.
 - **M-20** Çevrimdışı kayıt kuyruğu (veri kaybını önler — ayrı işler içinde öncelikli).
+- **A-01 ek** Kurucunun elle kapattığı halka geç katkıyı reddeder; süre dolumu/hedef sonrası kabul (A-01).
+- **B-11** Bildirim izni ilk anlamlı anda (ilk zikir kaydı ya da vird hatırlatıcısı açılınca) önce uygulama içi açıklama kartı, "Evet" → sistem diyaloğu; ilk açılışta doğrudan sistem diyaloğu yok.
+- **MOB-AIR-04** AI Rehber metin kutusu boş/yalnız boşlukken Gönder pasif; "genel öneri" yok. (Sunucu boş freeText'i özel gün/bildirim kaynaklı öneriler için kabul etmeye devam eder.)

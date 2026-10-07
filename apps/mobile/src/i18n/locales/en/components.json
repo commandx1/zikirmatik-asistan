@@ -41,6 +41,12 @@
     "allow": "Allow",
     "notNow": "Not Now"
   },
+  "dailyReminderOffer": {
+    "title": "Want a daily reminder?",
+    "message": "We can send a daily reminder to help you keep up your dhikr. Notification permission is asked in the next step.",
+    "allow": "Yes",
+    "notNow": "Not now"
+  },
   "unsavedDhikrTransitionModal": {
     "title": "You have an unsaved dhikr",
     "message": "{{count}} counts for {{title}} were not saved. Would you like to save before continuing?",

@@ -18,7 +18,7 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useCircleStore } from "../../../store/circle-store";
 
 import { trackEvent } from "../../../lib/analytics";
-import { closeCircle, fetchCircle, leaveCircle } from "../services/circle-api-client";
+import { closeCircle, fetchCircle, leaveCircle, resolveCircleActionError } from "../services/circle-api-client";
 import { buildCircleShareMessage, circleProgressPercent, resolveCircleTitle } from "../services/circle-share";
 import { circleEndLabel } from "../services/circle-end-label";
 import { TEST_IDS } from "../../../test-ids";
@@ -44,6 +44,7 @@ export function CircleDetailScreen({ id }: { id: string }) {
   const [leaveConfirmVisible, setLeaveConfirmVisible] = useState(false);
   const [closeConfirmVisible, setCloseConfirmVisible] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const detailQuery = useQuery(
     {
@@ -68,9 +69,18 @@ export function CircleDetailScreen({ id }: { id: string }) {
   }, [detailQuery.error]);
 
   if (!storedCircle) {
+    // B-36: unknown / non-member circle (or signed out) must not be an endless blank page.
+    const notFoundText = detailQuery.error
+      ? resolveCircleActionError(detailQuery.error, t("circle:errors.notFound"))
+      : authStatus === "signed_out"
+        ? t("circle:errors.notFound")
+        : null;
     return (
       <PageLayout>
         <PageHeader title="" leftIconName="arrow-left" onPressLeft={() => router.back()} />
+        {notFoundText ? (
+          <Text testID={TEST_IDS.circle.notFound} className="px-5 text-sm text-text-muted">{notFoundText}</Text>
+        ) : null}
       </PageLayout>
     );
   }
@@ -90,12 +100,14 @@ export function CircleDetailScreen({ id }: { id: string }) {
   const handleLeave = async () => {
     if (authStatus !== "authenticated") return;
     setIsBusy(true);
+    setActionError(null);
     try {
       await leaveCircle(id);
       removeCircle(id);
       router.back();
     } catch (error) {
       console.warn("[circle-detail] ayrılma başarısız", error);
+      setActionError(resolveCircleActionError(error, t("circle:errors.serviceUnavailable")));
     } finally {
       setIsBusy(false);
       setLeaveConfirmVisible(false);
@@ -105,11 +117,13 @@ export function CircleDetailScreen({ id }: { id: string }) {
   const handleClose = async () => {
     if (authStatus !== "authenticated") return;
     setIsBusy(true);
+    setActionError(null);
     try {
       await closeCircle(id);
       upsertCircle({ ...storedCircle, status: "closed" });
     } catch (error) {
       console.warn("[circle-detail] kapatma başarısız", error);
+      setActionError(resolveCircleActionError(error, t("circle:errors.serviceUnavailable")));
     } finally {
       setIsBusy(false);
       setCloseConfirmVisible(false);
@@ -121,6 +135,9 @@ export function CircleDetailScreen({ id }: { id: string }) {
       <PageHeader title={title} leftIconName="arrow-left" onPressLeft={() => router.back()} />
 
       <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
+        {actionError ? (
+          <Text testID={TEST_IDS.circle.actionError} className="mb-3 text-xs" style={{ color: "#ef4444" }}>{actionError}</Text>
+        ) : null}
         <ThemedCard className="mb-4 rounded-2xl p-4">
           <View className="mb-2 flex-row items-center justify-between">
             <Text className="text-xs font-semibold" style={{ color: storedCircle.status === "active" ? tokens.success : tokens.textMuted }}>

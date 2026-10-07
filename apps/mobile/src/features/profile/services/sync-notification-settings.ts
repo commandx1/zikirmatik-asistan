@@ -1,5 +1,6 @@
 import { requestNotificationPermissionForToggle } from "../../notifications/services/request-notification-permission";
 import { updateDevicePrefs } from "../../notifications/services/update-device-prefs";
+import { syncPushDeviceRegistration } from "../../notifications/services/push-device-registration";
 import { saveUserPreferences } from "../../users/services/users-api-client";
 import { i18n } from "../../../i18n";
 import { syncDailyReminderNotification } from "./daily-reminder-notifications";
@@ -52,6 +53,8 @@ export async function runNotificationSettingsToggle({
   }
 
   setAll(true);
+  // İzin yeni verildiyse push token'ı sunucuya hemen kaydet (sonraki açılışı bekleme).
+  void syncPushDeviceRegistration(Boolean(userId), i18n.language === "en" ? "en" : "tr").catch(() => {});
   try {
     await applyNotificationSettings(true, { reminderTime, userId });
   } catch {

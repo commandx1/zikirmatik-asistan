@@ -6,6 +6,7 @@ export const TAP_ANYWHERE_ENABLED_KEY = "tap-anywhere-enabled";
 export const WIDGET_DISCOVERY_KEY = "widget-discovery-v1";
 export const PUSH_DEVICE_ID_KEY = "push-device-id-v1";
 export const PUSH_PERMISSION_PROMPTED_KEY = "push-permission-prompted-v1";
+export const REMINDER_OFFER_SHOWN_KEY = "reminder-offer-shown-v1";
 export const ANALYTICS_QUEUE_KEY = "analytics-queue-v1";
 
 export const dailyEsmaWelcomeKey = (dateKey: string) => `daily-esma-welcome:${dateKey}`;

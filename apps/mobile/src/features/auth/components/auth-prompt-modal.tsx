@@ -8,13 +8,14 @@ export function AuthPromptModal() {
   const { t } = useTranslation('auth')
   const router = useRouter()
   const visible = useAuthPromptStore((s) => s.visible)
+  const reason = useAuthPromptStore((s) => s.reason)
   const close = useAuthPromptStore((s) => s.close)
 
   return (
     <ConfirmModal
       visible={visible}
       title={t('auth:promptModal.title')}
-      message={t('auth:promptModal.message')}
+      message={reason === 'save' ? t('auth:promptModal.saveMessage') : t('auth:promptModal.message')}
       confirmLabel={t('auth:promptModal.confirm')}
       cancelLabel={t('auth:promptModal.cancel')}
       confirmTestID={TEST_IDS.auth.promptConfirm}

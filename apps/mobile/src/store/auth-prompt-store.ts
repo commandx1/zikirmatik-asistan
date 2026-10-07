@@ -1,13 +1,18 @@
 import { create } from "zustand";
 
+/** "save" = opened from a Kaydet press (M-02): copy says why sign-in is needed to save. */
+export type AuthPromptReason = "default" | "save";
+
 type AuthPromptState = {
   visible: boolean;
-  open: () => void;
+  reason: AuthPromptReason;
+  open: (reason?: AuthPromptReason) => void;
   close: () => void;
 };
 
 export const useAuthPromptStore = create<AuthPromptState>((set) => ({
   visible: false,
-  open: () => set({ visible: true }),
+  reason: "default",
+  open: (reason = "default") => set({ visible: true, reason }),
   close: () => set({ visible: false })
 }));

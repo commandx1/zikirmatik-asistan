@@ -6,7 +6,7 @@ import { Platform } from "react-native";
 import { registerDevice, unlinkDevice } from "./devices-api-client";
 import { getDeviceTimeZone } from "../../../lib/http/client";
 import { usePushRegistrationStore } from "../../../store/push-registration-store";
-import { PUSH_DEVICE_ID_KEY, PUSH_PERMISSION_PROMPTED_KEY } from "../../../lib/storage/keys";
+import { PUSH_DEVICE_ID_KEY } from "../../../lib/storage/keys";
 
 
 let cachedDeviceId: string | null = null;
@@ -37,27 +37,12 @@ export function resolvePlatform(): "ios" | "android" {
   return Platform.OS === "ios" ? "ios" : "android";
 }
 
-// Best-effort: never throws. If permission was already asked once (granted
-// or denied), we never trigger the native prompt again automatically — the
-// user can still grant it later via the explicit reminder opt-in flow.
-async function ensurePushPermission(): Promise<boolean> {
+// B-11: registration never opens the OS permission dialog. The explanation
+// card (reminder-offer.ts) or an explicit reminder toggle asks; here we only
+// register silently with a push token when permission is already granted.
+async function hasPushPermission(): Promise<boolean> {
   const current = await Notifications.getPermissionsAsync();
-  if (current.granted) {
-    return true;
-  }
-
-  if (!current.canAskAgain) {
-    return false;
-  }
-
-  const alreadyPrompted = await safeGetItem(PUSH_PERMISSION_PROMPTED_KEY);
-  if (alreadyPrompted) {
-    return false;
-  }
-
-  await safeSetItem(PUSH_PERMISSION_PROMPTED_KEY, "1");
-  const requested = await Notifications.requestPermissionsAsync();
-  return requested.granted;
+  return current.granted;
 }
 
 async function getExpoPushToken(): Promise<string | undefined> {
@@ -90,7 +75,7 @@ export async function registerPushDevice(
   timezone: string | undefined = getDeviceTimeZone()
 ): Promise<void> {
   const deviceId = await getOrCreateDeviceId();
-  const granted = await ensurePushPermission();
+  const granted = await hasPushPermission();
   const expoPushToken = granted ? await getExpoPushToken() : undefined;
 
   try {
@@ -117,13 +102,15 @@ let lastSyncedKey: string | null = null;
 let syncQueue: Promise<unknown> = Promise.resolve();
 
 // Hook entry point (app start, auth/locale change, every foreground): only
-// hits the network when auth, locale or device timezone changed since the
+// hits the network when auth, locale, device timezone or push permission changed since the
 // last SUCCESSFUL registration in this process (a failure retries on the next
 // call). Serialized so a locale switch can't be overtaken by an older call.
 export function syncPushDeviceRegistration(authenticated: boolean, locale: "tr" | "en"): Promise<void> {
   const next = syncQueue.then(async () => {
     const timezone = getDeviceTimeZone();
-    const key = `${authenticated}|${locale}|${timezone ?? ""}`;
+    // İzin sonradan (hatırlatma kartı / ayar) verilirse token'lı kayıt da gitsin.
+    const granted = await hasPushPermission();
+    const key = `${authenticated}|${locale}|${timezone ?? ""}|${granted}`;
     if (key === lastSyncedKey) {
       return;
     }

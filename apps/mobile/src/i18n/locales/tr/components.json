@@ -41,6 +41,12 @@
     "allow": "İzin ver",
     "notNow": "Şimdi değil"
   },
+  "dailyReminderOffer": {
+    "title": "Günlük hatırlatma ister misin?",
+    "message": "Zikrini sürdürebilmen için günlük bir hatırlatma gönderelim. Bildirim izni bir sonraki adımda istenecek.",
+    "allow": "Evet",
+    "notNow": "Şimdi değil"
+  },
   "unsavedDhikrTransitionModal": {
     "title": "Kaydedilmemiş zikir var",
     "message": "{{title}} için {{count}} çekim kaydedilmedi. Devam etmeden önce kaydetmek ister misin?",

@@ -4,6 +4,7 @@ const requestNotificationPermissionForToggle = vi.fn();
 const updateDevicePrefs = vi.fn();
 const saveUserPreferences = vi.fn();
 const syncDailyReminderNotification = vi.fn();
+const syncPushDeviceRegistration = vi.fn(() => Promise.resolve());
 
 vi.mock("../../notifications/services/request-notification-permission", () => ({
   requestNotificationPermissionForToggle: (...args: unknown[]) =>
@@ -12,6 +13,10 @@ vi.mock("../../notifications/services/request-notification-permission", () => ({
 
 vi.mock("../../notifications/services/update-device-prefs", () => ({
   updateDevicePrefs: (...args: unknown[]) => updateDevicePrefs(...args)
+}));
+
+vi.mock("../../notifications/services/push-device-registration", () => ({
+  syncPushDeviceRegistration: (...args: unknown[]) => syncPushDeviceRegistration(...(args as []))
 }));
 
 vi.mock("../../users/services/users-api-client", () => ({
@@ -23,11 +28,12 @@ vi.mock("./daily-reminder-notifications", () => ({
 }));
 
 vi.mock("../../../i18n", () => ({
-  i18n: { t: (key: string) => (key === "profile:errors.pushPrefsUpdateFailed" ? "Bildirim tercihi güncellenemedi. Lütfen tekrar dene." : key) }
+  i18n: { language: "tr", t: (key: string) => (key === "profile:errors.pushPrefsUpdateFailed" ? "Bildirim tercihi güncellenemedi. Lütfen tekrar dene." : key) }
 }));
 
 describe("runNotificationSettingsToggle", () => {
   beforeEach(() => {
+    syncPushDeviceRegistration.mockClear();
     vi.resetModules();
     requestNotificationPermissionForToggle.mockReset();
     updateDevicePrefs.mockReset();
@@ -56,6 +62,8 @@ describe("runNotificationSettingsToggle", () => {
     expect(requestNotificationPermissionForToggle).toHaveBeenCalledTimes(1);
     expect(setAll).toHaveBeenCalledWith(true);
     expect(setAll).toHaveBeenCalledTimes(1);
+    // İzin verilir verilmez push token'ı sunucuya kaydedilir (B-11 kartı sonrası).
+    expect(syncPushDeviceRegistration).toHaveBeenCalledTimes(1);
     expect(syncDailyReminderNotification).toHaveBeenCalledWith({
       enabled: true,
       reminderTime: "08:00",

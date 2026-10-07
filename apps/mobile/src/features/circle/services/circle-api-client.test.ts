@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-const { resolveCircleErrorMessage, CIRCLE_ERROR_CODE, fetchCircle } = await import("./circle-api-client");
+const { resolveCircleErrorMessage, resolveCircleActionError, CircleApiError, CIRCLE_ERROR_CODE, fetchCircle } = await import("./circle-api-client");
 
 describe("fetchCircle", () => {
   it("appends ?date= to the URL when a date is given", async () => {
@@ -42,5 +42,14 @@ describe("resolveCircleErrorMessage", () => {
 
   it("returns the fallback when no code is given", () => {
     expect(resolveCircleErrorMessage(undefined, "fallback")).toBe("fallback");
+  });
+});
+
+describe("resolveCircleActionError (B-35/B-36)", () => {
+  it("maps a CircleApiError code, falls back for anything else", () => {
+    const apiError = new CircleApiError("terminal", "x", 404, CIRCLE_ERROR_CODE.NOT_FOUND);
+    expect(resolveCircleActionError(apiError, "fallback")).toBe("circle:errors.notFound");
+    expect(resolveCircleActionError(new Error("boom"), "fallback")).toBe("fallback");
+    expect(resolveCircleActionError(undefined, "fallback")).toBe("fallback");
   });
 });

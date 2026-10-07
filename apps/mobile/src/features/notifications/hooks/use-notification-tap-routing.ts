@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
-import { router } from "expo-router";
+import { router, useRootNavigationState } from "expo-router";
 import * as Notifications from "expo-notifications";
+import { createDeferredRoute } from "../services/deferred-route";
 import { extractNotificationRoute } from "../services/notification-tap-routing";
 
 // Routes campaign push taps to the screen named in the payload's
@@ -9,15 +10,25 @@ import { extractNotificationRoute } from "../services/notification-tap-routing";
 // is only available via the last notification response.
 export function useNotificationTapRouting() {
   const handledColdStartRef = useRef(false);
-
-  useEffect(() => {
-    const navigate = (route: string) => {
+  // B-18: the root navigator has a key only once it is mounted.
+  const isNavigationReady = Boolean(useRootNavigationState()?.key);
+  const deferredRef = useRef<ReturnType<typeof createDeferredRoute> | null>(null);
+  if (!deferredRef.current) {
+    deferredRef.current = createDeferredRoute((route) => {
       try {
         router.push(route as never);
       } catch {
         // Best effort: a bad route must never crash the app shell.
       }
-    };
+    });
+  }
+
+  useEffect(() => {
+    deferredRef.current?.setReady(isNavigationReady);
+  }, [isNavigationReady]);
+
+  useEffect(() => {
+    const navigate = (route: string) => deferredRef.current?.go(route);
 
     if (!handledColdStartRef.current) {
       handledColdStartRef.current = true;

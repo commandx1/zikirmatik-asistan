@@ -272,7 +272,7 @@ export function useDhikrTransition({
     }
     if (!isMember || !sessionUserId) {
       // M-02: the local dhikr is created; the sign-up prompt explains why it is device-only.
-      openAuthPrompt()
+      openAuthPrompt('save')
       return
     }
 
