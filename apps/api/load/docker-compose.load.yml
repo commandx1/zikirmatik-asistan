@@ -1,0 +1,49 @@
+# Render Starter (0.5 CPU / 512 MB) taklidi. Kullanım: apps/api/load/README.md
+# Önce `pnpm --filter api build` ve `pnpm db:test`. Mongo host.docker.internal:27018.
+# node_modules kalıcı volume'de (linux binary'leri; host'un darwin'inden bağımsız).
+services:
+  api-install: # bir kerelik, limitsiz: docker compose -f ... run --rm api-install
+    image: node:22
+    profiles: ["install"]
+    working_dir: /app
+    volumes:
+      - ../package.json:/app/package.json:ro
+      - load_node_modules:/app/node_modules
+    command: npm install --omit=dev --no-package-lock --no-audit --no-fund
+
+  api-load:
+    image: node:22
+    working_dir: /app
+    cpus: 0.5
+    mem_limit: 512m
+    memswap_limit: 512m
+    ports:
+      - "3010:3010"
+    volumes:
+      - ../dist:/app/dist:ro
+      - ../package.json:/app/package.json:ro
+      - load_node_modules:/app/node_modules:ro
+    environment:
+      NODE_ENV: development # production'da AI mock fırlatır
+      LOG_LEVEL: info # prod varsayılanı ('log') ile aynı
+      TZ: Europe/Istanbul
+      PORT: "3010"
+      MONGODB_URI: mongodb://host.docker.internal:27018/zikir_load?directConnection=true
+      AUTH_ALLOW_INSECURE_TEST_TOKENS: "1"
+      AUTH_ACCESS_TOKEN_SECRET: load-access
+      AUTH_REFRESH_TOKEN_SECRET: load-refresh
+      REVENUECAT_WEBHOOK_SECRET: test-rc-secret
+      CAMPAIGN_TRIGGER_SECRET: test-campaign-secret
+      ADMIN_API_SECRET: test-admin-secret
+      REVENUECAT_SECRET_API_KEY: test-rc-api-key
+      SERVER_PUSH_ENABLED: "0"
+      OPENAI_API_KEY: test-key
+      AI_RUNTIME_MOCK: "1"
+      APP_MIN_VERSION: "0"
+      LOG_DRAIN_URL: ""
+      LOG_DRAIN_TOKEN: ""
+      SLACK_ALERT_WEBHOOK_URL: ""
+    command: node dist/main
+
+volumes:
+  load_node_modules:

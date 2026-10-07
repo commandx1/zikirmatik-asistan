@@ -54,3 +54,6 @@ Katalogdaki ❓ soruların cevapları. Testler bu kararlara göre yazılır.
 - **A-01 ek** Kurucunun elle kapattığı halka geç katkıyı reddeder; süre dolumu/hedef sonrası kabul (A-01).
 - **B-11** Bildirim izni ilk anlamlı anda (ilk zikir kaydı ya da vird hatırlatıcısı açılınca) önce uygulama içi açıklama kartı, "Evet" → sistem diyaloğu; ilk açılışta doğrudan sistem diyaloğu yok.
 - **MOB-AIR-04** AI Rehber metin kutusu boş/yalnız boşlukken Gönder pasif; "genel öneri" yok. (Sunucu boş freeText'i özel gün/bildirim kaynaklı öneriler için kabul etmeye devam eder.)
+- **MOB-SAY-32** Misafirde elle girilen sayı (setSelectedCount) ömür boyu toplam zikre ve toplam sayı rozetlerine sayılır (üye ile aynı kural).
+- **MOB-VRD-25** Vird şablonları şablon bazında: klasik şablonlar ücretsiz ve rozetsiz, Ramazan/Esma/Kandil yolculukları "Premium" rozetli (kod doğru; eski doc güncellenecek).
+- **B-41 / B-50 / B-58 (teknik)** Vird seansında sıfırlama ön plan senkronunda geri gelmez; 7. gün teklifi yalnız ana sekmede açılır; web halka sayfası canonical'ı ana sayfaya işaret etmez (noindex ile tutarlı).

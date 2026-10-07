@@ -4,7 +4,8 @@ import { Counter } from 'k6/metrics';
 import { SharedArray } from 'k6/data';
 import { BASE_URL, bearer, uuidv4 } from './lib/api.js';
 import { signIn, refresh } from './lib/auth.js';
-import { executorFor, THRESHOLDS } from './lib/config.js';
+import { executorFor, THRESHOLDS, stagedExecutor, endpointThresholds } from './lib/config.js';
+import { mixScenario as mixImpl, circleHeavyScenario as circleHeavyImpl, presign } from './lib/scenarios.js';
 
 const PROFILE = __ENV.PROFILE ?? 'smoke';
 const SCENARIO = __ENV.SCENARIO ?? 'all';
@@ -12,7 +13,7 @@ const SCENARIO = __ENV.SCENARIO ?? 'all';
 // load/seed.mjs çıktısı — circle/vird senaryoları bunu gerektirir.
 const seed = new SharedArray('seed', () => {
   try {
-    return [JSON.parse(open('./out/seed.json'))];
+    return [JSON.parse(open(__ENV.SEED_FILE ?? './out/seed.json'))];
   } catch (_err) {
     return [];
   }
@@ -141,21 +142,44 @@ const SCENARIO_EXEC = {
   ai: aiScenario,
 };
 
+// Gerçekçi senaryolar yalnız adıyla seçilir ('all' bunları içermez).
+const STAGED = ['mix', 'circle-heavy'];
+
+// PRESIGN=N: N oturum setup()'ta önceden açılır (mevcut kullanıcıların aynı anda
+// uygulamayı açtığı ani yük; kayıt fırtınası değil).
+export function setup() {
+  const sessions = presign(Number(__ENV.PRESIGN ?? 0));
+  console.log(`SETUP_DONE ${Date.now()}`); // run.sh analiz penceresini buradan başlatır
+  return sessions;
+}
+
+export function mixScenario(pre) {
+  mixImpl(seed, pre);
+}
+export function circleHeavyScenario() {
+  circleHeavyImpl(seed);
+}
+
 function buildScenarios() {
   const names = SCENARIO === 'all' ? Object.keys(SCENARIO_EXEC) : [SCENARIO];
   const scenarios = {};
   for (const name of names) {
-    if (!SCENARIO_EXEC[name]) {
+    if (!SCENARIO_EXEC[name] && !STAGED.includes(name)) {
       throw new Error(`Bilinmeyen SCENARIO='${name}'`);
     }
-    scenarios[name] = { ...executorFor(PROFILE), exec: `${name}Scenario` };
+    const staged = STAGED.includes(name);
+    scenarios[name] = {
+      ...(staged ? stagedExecutor() : executorFor(PROFILE)),
+      exec: name === 'circle-heavy' ? 'circleHeavyScenario' : `${name}Scenario`,
+    };
   }
   return scenarios;
 }
 
 export const options = {
   scenarios: buildScenarios(),
-  thresholds: THRESHOLDS,
+  thresholds: STAGED.includes(SCENARIO) ? endpointThresholds() : THRESHOLDS,
+  summaryTrendStats: ['avg', 'min', 'med', 'p(90)', 'p(95)', 'p(99)', 'max'],
 };
 
 export function handleSummary(summary) {
@@ -168,6 +192,6 @@ export function handleSummary(summary) {
     `[load] PROFILE=${PROFILE} SCENARIO=${SCENARIO} reqs=${reqs} rps=${rps?.toFixed(1)} p95=${p95?.toFixed(1)}ms fail=${((failRate ?? 0) * 100).toFixed(2)}%`,
   );
   return {
-    'load/out/summary.json': JSON.stringify(summary, null, 2),
+    [__ENV.SUMMARY_OUT ?? 'load/out/summary.json']: JSON.stringify(summary, null, 2),
   };
 }

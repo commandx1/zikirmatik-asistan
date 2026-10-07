@@ -164,7 +164,7 @@ async function main() {
     },
   };
   mkdirSync(join(__dirname, 'out'), { recursive: true });
-  writeFileSync(join(__dirname, 'out/seed.json'), JSON.stringify(out, null, 2));
+  writeFileSync(process.env.SEED_FILE ?? join(__dirname, 'out/seed.json'), JSON.stringify(out, null, 2));
   console.log(
     `[load] seed tamam: ${dhikrIds.length} zikir, halka ${circle.code}, ${members.length} üye, vird ${virdProgram._id}`,
   );

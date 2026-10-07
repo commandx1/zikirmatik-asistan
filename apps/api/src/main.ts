@@ -1,3 +1,4 @@
+import type { Server } from 'node:http';
 import { LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppLogger } from './common/logging/app-logger';
@@ -32,6 +33,12 @@ async function bootstrap() {
   registerProcessHandlers(logger);
 
   await app.listen(process.env.PORT ?? 3000);
+  const server = app.getHttpServer() as Server;
+  // Node varsayılanı keepAliveTimeout=5 sn: istemci/ara proxy boşta kalmış bir
+  // bağlantıyı tam kapanırken yeniden kullanınca POST'lar "EOF"/502 ile düşer
+  // (k6 yük testinde ~%0.1–0.4 hata, yalnız POST). Proxy zaman aşımından uzun tut.
+  server.keepAliveTimeout = 65_000;
+  server.headersTimeout = 66_000;
 }
 
 void bootstrap();

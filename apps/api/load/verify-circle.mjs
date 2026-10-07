@@ -8,22 +8,10 @@
 // gereksiz).
 import mongoose from 'mongoose';
 import { readFileSync } from 'node:fs';
+import { assertLoadDbUri } from './lib/guard.mjs';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-function assertLoadDbUri(uri) {
-  if (!uri) throw new Error('[load] MONGODB_URI tanımsız.');
-  const url = new URL(uri);
-  const dbName = url.pathname.replace(/^\//, '');
-  if (
-    (url.hostname !== '127.0.0.1' && url.hostname !== 'localhost') ||
-    !(dbName.startsWith('zikir_load') || dbName.startsWith('zikir_e2e'))
-  ) {
-    throw new Error(
-      `[load] Güvenlik: ${url.hostname}/${dbName} yerel zikir_load*/zikir_e2e* DB değil — reddedildi.`,
-    );
-  }
-}
 
 async function main() {
   assertLoadDbUri(MONGODB_URI);
@@ -31,7 +19,7 @@ async function main() {
   const db = mongoose.connection.db;
 
   const seed = JSON.parse(
-    readFileSync(new URL('./out/seed.json', import.meta.url), 'utf8'),
+    readFileSync(process.env.SEED_FILE ?? new URL('./out/seed.json', import.meta.url), 'utf8'),
   );
   const circleId = new mongoose.Types.ObjectId(seed.circle.id);
 
@@ -43,7 +31,11 @@ async function main() {
     .find({ circleId })
     .toArray();
   const sum = logs.reduce((acc, log) => acc + log.count, 0);
-  const expectedMembers = seed.members.length;
+  // Her üye için tek belge (yinelenen yok) ve yalnız halka üyeleri log yazmış olmalı;
+  // üye sayısı sabit değil (circle-heavy N üye ile koşar).
+  const memberSet = new Set(circle.memberIds.map(String));
+  const distinct = new Set(logs.map((l) => String(l.userId)));
+  const expectedMembers = distinct.size;
 
   const errors = [];
   if (circle.totalCount !== sum) {
@@ -53,8 +45,12 @@ async function main() {
   }
   if (logs.length !== expectedMembers) {
     errors.push(
-      `dhikr_logs belge sayısı (${logs.length}) !== üye sayısı (${expectedMembers})`,
+      `dhikr_logs belge sayısı (${logs.length}) !== katkı veren üye sayısı (${expectedMembers})`,
     );
+  }
+  const outsiders = [...distinct].filter((u) => !memberSet.has(u));
+  if (outsiders.length > 0) {
+    errors.push(`halka üyesi olmayan ${outsiders.length} kullanıcı log yazmış`);
   }
 
   await mongoose.disconnect();
@@ -65,7 +61,7 @@ async function main() {
   }
 
   console.log(
-    `[load] verify-circle OK: totalCount=${circle.totalCount} Σ=${sum} belge=${logs.length}/${expectedMembers}`,
+    `[load] verify-circle OK: totalCount=${circle.totalCount} Σ=${sum} katkı veren üye=${expectedMembers}/${circle.memberIds.length} üye (halka ${circle.code})`,
   );
 }
 
