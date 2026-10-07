@@ -185,6 +185,22 @@ describe('Auth (e2e)', () => {
     await next(t2);
   });
 
+  it('A-20: kayıp-yanıt tekrarı yalnız kısa pencerede; pencere dışında tekrar → 401 ve aile iptal', async () => {
+    const signed = await signIn(t.http, { sub: 'e2e-auth-lost-late' });
+    const t1 = await next(signed.refreshToken); // t0 kullanıldı, t1 hiç kullanılmadı
+    // t0 iki dakika önce kullanılmış gibi: sızan eski token geç tekrar ediliyor.
+    await t
+      .model('RefreshToken')
+      .updateMany(
+        { usedAt: { $ne: null } },
+        { $set: { usedAt: new Date(Date.now() - 120_000) } },
+      )
+      .exec();
+
+    await refresh(signed.refreshToken).expect(401);
+    await refresh(t1).expect(401); // aile iptal: saldırgan da meşru istemci de dışarıda
+  });
+
   it('A-20: POST /v1/auth/logout token ailesini iptal eder, idempotent 204', async () => {
     const signed = await signIn(t.http, { sub: 'e2e-auth-logout' });
     const t1 = await next(signed.refreshToken);

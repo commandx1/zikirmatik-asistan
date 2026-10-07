@@ -54,6 +54,9 @@ type AppleJwk = {
   e: string;
 };
 
+/** A-20: kullanılmış token'ın kayıp-yanıt tekrarı için izin verilen süre. */
+const LOST_ROTATION_GRACE_MS = 60_000;
+
 @Injectable()
 export class AuthService {
   private appleKeyCache?: { expiresAt: number; keys: AppleJwk[] };
@@ -294,7 +297,14 @@ export class AuthService {
       .exec();
     if (!record) return null;
 
-    if (!record.revokedAt && record.usedAt && record.replacedByHash) {
+    // Kayıp yanıt tekrarı yalnız kısa pencerede: sızan eski bir token'ın günler
+    // sonra meşru istemcinin çocuğunu iptal edip oturumu ele geçirmesini önler.
+    const withinGrace =
+      record.usedAt !== null &&
+      record.usedAt !== undefined &&
+      now.getTime() - new Date(record.usedAt).getTime() <=
+        LOST_ROTATION_GRACE_MS;
+    if (!record.revokedAt && withinGrace && record.replacedByHash) {
       const child = await this.refreshTokenModel
         .findOneAndUpdate(
           { tokenHash: record.replacedByHash, usedAt: null, revokedAt: null },
