@@ -1,24 +1,10 @@
-import { Controller, Get, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Controller, Get } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { ConnectionStates, type Connection } from 'mongoose';
 
 @Controller()
 export class AppController {
-  private readonly logger = new Logger(AppController.name);
-
   constructor(@InjectConnection() private readonly connection: Connection) {}
-
-  // Render free 15 dk boşta uyur (localhost sayılmaz → public URL); GH Actions cron güvenilmez.
-  @Cron('*/10 * * * *')
-  async keepAlive() {
-    const url = process.env.RENDER_EXTERNAL_URL; // Render otomatik set eder; lokalde yok → no-op
-    if (!url) return;
-    await fetch(`${url}/health`, { signal: AbortSignal.timeout(30_000) }).catch(
-      (err: unknown) =>
-        this.logger.warn(`keep-alive ping başarısız: ${String(err)}`),
-    );
-  }
 
   @Get('health')
   getHealth() {

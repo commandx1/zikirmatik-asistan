@@ -31,29 +31,6 @@ describe('AppController', () => {
     });
   });
 
-  describe('keepAlive', () => {
-    afterEach(() => {
-      delete process.env.RENDER_EXTERNAL_URL;
-      jest.restoreAllMocks();
-    });
-
-    it('is a no-op without RENDER_EXTERNAL_URL and pings /health when set', async () => {
-      const fetchSpy = jest
-        .spyOn(global, 'fetch')
-        .mockResolvedValue({} as Response);
-      delete process.env.RENDER_EXTERNAL_URL;
-      await appController.keepAlive();
-      expect(fetchSpy).not.toHaveBeenCalled();
-
-      process.env.RENDER_EXTERNAL_URL = 'https://x.onrender.com';
-      await appController.keepAlive();
-      expect(fetchSpy).toHaveBeenCalledWith(
-        'https://x.onrender.com/health',
-        expect.anything(),
-      );
-    });
-  });
-
   describe('app-config', () => {
     it('returns serverPushEnabled=true when SERVER_PUSH_ENABLED=1', () => {
       process.env.SERVER_PUSH_ENABLED = '1';
