@@ -34,6 +34,8 @@ export type WeeklySummaryDeviceInput = {
   deviceId: string;
   expoPushToken?: string;
   userId: string;
+  // Haftalık özet "seri hatırlatma" tercihine bağlı (prefs.streak === false → atla).
+  prefs?: { streak?: boolean };
   locale?: PushLocale;
   timezone?: string;
 };
@@ -57,6 +59,7 @@ export function selectWeeklySummaryCandidates(
   }
 
   const candidates: CampaignCandidate[] = [];
+  let skippedPrefs = 0;
 
   for (const stat of userStats) {
     if (stat.totalCount <= 0) {
@@ -65,6 +68,10 @@ export function selectWeeklySummaryCandidates(
 
     const userDevices = devicesByUser.get(stat.userId) ?? [];
     for (const device of userDevices) {
+      if (device.prefs?.streak === false) {
+        skippedPrefs += 1;
+        continue;
+      }
       const text = stat.isPremium
         ? weeklySummaryPremiumTemplate(
             stat.totalCount,
@@ -88,7 +95,7 @@ export function selectWeeklySummaryCandidates(
     }
   }
 
-  return { candidates, skippedPrefs: 0 };
+  return { candidates, skippedPrefs };
 }
 
 // 0=Pazar..6=Cumartesi (Date#getUTCDay ile aynı sözleşim). date-keys.ts'teki
@@ -176,7 +183,7 @@ export class WeeklySummaryCampaign {
           isActive: true,
           expoPushToken: { $exists: true, $nin: [null, ''] },
         })
-        .select('deviceId expoPushToken userId locale timezone')
+        .select('deviceId expoPushToken userId prefs locale timezone')
         .lean()
         .exec(),
     ]);
@@ -198,6 +205,7 @@ export class WeeklySummaryCampaign {
         deviceId: device.deviceId,
         expoPushToken: device.expoPushToken,
         userId: String(device.userId),
+        prefs: device.prefs,
         locale: device.locale,
         timezone: device.timezone,
       }));

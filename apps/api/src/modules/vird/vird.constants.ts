@@ -32,6 +32,8 @@ export const VIRD_ERROR_CODE = {
   PREMIUM_MAX_ACTIVE_PROGRAMS: 'PREMIUM_MAX_ACTIVE_PROGRAMS',
   NOT_ACTIVATABLE: 'VIRD_NOT_ACTIVATABLE',
   PHASES_REQUIRED: 'VIRD_PHASES_REQUIRED',
+  PHASES_INVALID: 'VIRD_PHASES_INVALID',
+  PROGRAM_EXPIRED: 'VIRD_PROGRAM_EXPIRED',
 } as const;
 
 export type VirdErrorCode =
@@ -47,4 +49,8 @@ export const VIRD_ERROR_MESSAGE: Record<VirdErrorCode, string> = {
     'Yalnızca taslak veya duraklatılmış bir program aktifleştirilebilir.',
   [VIRD_ERROR_CODE.PHASES_REQUIRED]:
     'Manuel vird programı için en az bir faz gereklidir.',
+  [VIRD_ERROR_CODE.PHASES_INVALID]:
+    'Fazlar 1. günden başlamalı; boşluk veya çakışma olmamalı.',
+  [VIRD_ERROR_CODE.PROGRAM_EXPIRED]:
+    'Bu programın süresi doldu, kopyalayıp yeniden başlat.',
 };

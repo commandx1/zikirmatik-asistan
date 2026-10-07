@@ -169,8 +169,50 @@ describe('SpecialDays (e2e)', () => {
       .delete(`/v1/special-days/${id}`)
       .set(ADMIN)
       .expect(200);
+  });
 
-    // GET'ler hâlâ kullanıcı oturumu ister.
-    await request(t.http).get('/v1/special-days').expect(401);
+  describe('QA kararları (A-22, SPD-05)', () => {
+    // API-SPD-02 (A-22): GET uçları misafire açık
+    it('GET list, home, :id/detail, :id tokensız 200; yazma yine 401/403', async () => {
+      const doc = await seedSpecialDay();
+      const id = doc._id.toString();
+      await request(t.http).get('/v1/special-days').expect(200);
+      await request(t.http).get('/v1/special-days/home').expect(200);
+      await request(t.http).get(`/v1/special-days/${id}/detail`).expect(200);
+      await request(t.http).get(`/v1/special-days/${id}`).expect(200);
+      await request(t.http)
+        .patch(`/v1/special-days/${id}`)
+        .send({ priority: 1 })
+        .expect(401);
+    });
+
+    // API-SPD-05 / API-TZ-14: tarihsiz home İSTEK tz bugünü
+    it('home tarihsiz: referenceDate ve hero istek saat diliminin bugünüdür', async () => {
+      const dayIn = (tz: string) =>
+        new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date());
+      const behind = 'Pacific/Pago_Pago';
+      const ahead = 'Pacific/Kiritimati';
+      expect(dayIn(ahead) > dayIn(behind)).toBe(true);
+      await seedSpecialDay({
+        date: dayIn(behind),
+        name: { tr: 'Geri', en: 'Behind' },
+      });
+      await seedSpecialDay({
+        date: dayIn(ahead),
+        name: { tr: 'İleri', en: 'Ahead' },
+      });
+
+      for (const tz of [behind, ahead]) {
+        const res = await request(t.http)
+          .get('/v1/special-days/home')
+          .set('x-client-timezone', tz)
+          .expect(200);
+        const body = data<{ referenceDate: string; hero: { date: string } }>(
+          res,
+        );
+        expect(body.referenceDate).toBe(dayIn(tz));
+        expect(body.hero.date).toBe(dayIn(tz));
+      }
+    });
   });
 });

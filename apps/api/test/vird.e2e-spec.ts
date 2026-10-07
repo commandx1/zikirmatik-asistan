@@ -482,7 +482,7 @@ describe('Vird Programı (e2e)', () => {
       const user = await newUser();
       const dhikrModel = t.model<DhikrDocument>('Dhikr');
       const dhikrId = await seedDhikr(dhikrModel);
-      const startDate = shiftDateKey(istanbulDateKey(new Date()), -10);
+      const startDate = istanbulDateKey(new Date());
 
       const created = await request(t.http)
         .post('/v1/vird/programs')
@@ -512,7 +512,12 @@ describe('Vird Programı (e2e)', () => {
       const programModel = t.model<VirdProgramDocument>('VirdProgram');
       await programModel.updateOne(
         { _id: new Types.ObjectId(programId) },
-        { $set: { endDate: shiftDateKey(istanbulDateKey(new Date()), -1) } },
+        {
+          $set: {
+            startDate: shiftDateKey(startDate, -10),
+            endDate: shiftDateKey(startDate, -1),
+          },
+        },
       );
 
       await request(t.http)
@@ -522,6 +527,218 @@ describe('Vird Programı (e2e)', () => {
 
       const stored = await programModel.findById(programId).lean().exec();
       expect(stored?.status).toBe('completed');
+    });
+  });
+
+  describe('QA kararları (A-23, A-24, M-22, M-23)', () => {
+    const journey = (
+      dhikrId: string,
+      overrides: Record<string, unknown> = {},
+    ) => ({
+      title: { tr: 'Yolculuk', en: 'Journey' },
+      kind: 'journey',
+      startDate: istanbulDateKey(new Date()),
+      phases: [
+        { fromDay: 1, toDay: 3, slots: { morning: [{ dhikrId, target: 1 }] } },
+      ],
+      ...overrides,
+    });
+    const phase = (fromDay: number, toDay: number | null, dhikrId: string) => ({
+      fromDay,
+      toDay,
+      slots: { morning: [{ dhikrId, target: 1 }] },
+    });
+
+    // API-VRD-28 (A-23): bitişi geçmiş journey başlatılamaz
+    it('süresi dolmuş journey activate → 400 VIRD_PROGRAM_EXPIRED, taslak kalır', async () => {
+      const user = await newUser();
+      const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+      const created = await request(t.http)
+        .post('/v1/vird/programs')
+        .set(bearer(user.accessToken))
+        .send(
+          journey(dhikrId, {
+            startDate: shiftDateKey(istanbulDateKey(new Date()), -10),
+          }),
+        )
+        .expect(201);
+      const id = data<{ _id: string }>(created)._id;
+
+      const res = await request(t.http)
+        .post(`/v1/vird/programs/${id}/activate`)
+        .set(bearer(user.accessToken))
+        .expect(400);
+      expect(errCode(res)).toBe(VIRD_ERROR_CODE.PROGRAM_EXPIRED);
+      expect(JSON.stringify(res.body)).toContain(
+        'Bu programın süresi doldu, kopyalayıp yeniden başlat.',
+      );
+      const stored = await t
+        .model<VirdProgramDocument>('VirdProgram')
+        .findById(id)
+        .lean()
+        .exec();
+      expect(stored?.status).toBe('draft');
+    });
+
+    // API-VRD-28: "bugün" istek saat diliminde (Pago_Pago UTC-11 ile
+    // Kiritimati UTC+14 arası 25 saat: takvim günleri her zaman farklı)
+    it('bitiş günü = istek tz bugünü → activate OK; ileri tz ile 400', async () => {
+      const user = await newUser();
+      const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+      const behind = 'Pacific/Pago_Pago';
+      const ahead = 'Pacific/Kiritimati';
+      const dayIn = (tz: string) =>
+        new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date());
+      // endDate = startDate + 2 = geri bölgenin bugünü
+      const create = async () =>
+        data<{ _id: string }>(
+          await request(t.http)
+            .post('/v1/vird/programs')
+            .set(bearer(user.accessToken))
+            .send(
+              journey(dhikrId, {
+                startDate: shiftDateKey(dayIn(behind), -2),
+                clientId: randomUUID(),
+              }),
+            )
+            .expect(201),
+        )._id;
+      expect(dayIn(ahead) > dayIn(behind)).toBe(true);
+      await request(t.http)
+        .post(`/v1/vird/programs/${await create()}/activate`)
+        .set(bearer(user.accessToken))
+        .set('x-client-timezone', ahead)
+        .expect(400);
+      await request(t.http)
+        .post(`/v1/vird/programs/${await create()}/activate`)
+        .set(bearer(user.accessToken))
+        .set('x-client-timezone', behind)
+        .expect(201);
+    });
+
+    // API-VRD-27 (A-24)
+    it.each([
+      ['1. günden başlamıyor', (d: string) => [phase(2, 3, d)]],
+      ['boşluk', (d: string) => [phase(1, 2, d), phase(4, 5, d)]],
+      ['çakışma', (d: string) => [phase(1, 3, d), phase(3, 5, d)]],
+      ['toDay < fromDay', (d: string) => [phase(1, 3, d), phase(4, 2, d)]],
+    ])(
+      'manuel journey fazları: %s → 400 VIRD_PHASES_INVALID',
+      async (_n, build) => {
+        const user = await newUser();
+        const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+        const res = await request(t.http)
+          .post('/v1/vird/programs')
+          .set(bearer(user.accessToken))
+          .send(journey(dhikrId, { phases: build(dhikrId) }))
+          .expect(400);
+        expect(errCode(res)).toBe(VIRD_ERROR_CODE.PHASES_INVALID);
+      },
+    );
+
+    it('manuel journey: boşluksuz fazlar 201; PATCH ile bozuk faz → 400', async () => {
+      const user = await newUser();
+      const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+      const created = await request(t.http)
+        .post('/v1/vird/programs')
+        .set(bearer(user.accessToken))
+        .send(
+          journey(dhikrId, {
+            phases: [phase(1, 2, dhikrId), phase(3, 5, dhikrId)],
+          }),
+        )
+        .expect(201);
+      const id = data<{ _id: string }>(created)._id;
+      const res = await request(t.http)
+        .patch(`/v1/vird/programs/${id}`)
+        .set(bearer(user.accessToken))
+        .send({ phases: [phase(1, 2, dhikrId), phase(4, 5, dhikrId)] })
+        .expect(400);
+      expect(errCode(res)).toBe(VIRD_ERROR_CODE.PHASES_INVALID);
+    });
+
+    // M-22 (sunucu yarısı): içerik düzenleme durumu değiştirmez
+    it('duraklatılmış programın içeriği PATCH ile düzenlenince paused kalır', async () => {
+      const user = await newUser();
+      const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+      const created = await request(t.http)
+        .post('/v1/vird/programs')
+        .set(bearer(user.accessToken))
+        .send(createManualPayload([dhikrId]))
+        .expect(201);
+      const id = data<{ _id: string }>(created)._id;
+      await request(t.http)
+        .post(`/v1/vird/programs/${id}/activate`)
+        .set(bearer(user.accessToken))
+        .expect(201);
+      await request(t.http)
+        .patch(`/v1/vird/programs/${id}`)
+        .set(bearer(user.accessToken))
+        .send({ status: 'paused' })
+        .expect(200);
+
+      const res = await request(t.http)
+        .patch(`/v1/vird/programs/${id}`)
+        .set(bearer(user.accessToken))
+        .send({
+          title: { tr: 'Yeni', en: 'New' },
+          phases: createManualPayload([dhikrId]).phases,
+        })
+        .expect(200);
+      expect(data<{ status: string }>(res).status).toBe('paused');
+    });
+
+    // M-23 (sunucu yarısı): ilerleme programa bağlı
+    it('aynı zikir iki programda: A programının logu B/today sayacına taşınmaz', async () => {
+      const user = await newUser();
+      await makePremium(t.model<UserDocument>(User.name), user.userId);
+      const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+      const today = istanbulDateKey(new Date());
+      const ids: string[] = [];
+      for (let i = 0; i < 2; i += 1) {
+        const created = await request(t.http)
+          .post('/v1/vird/programs')
+          .set(bearer(user.accessToken))
+          .send(createManualPayload([dhikrId], { clientId: `m23-${i}` }))
+          .expect(201);
+        const id = data<{ _id: string }>(created)._id;
+        await request(t.http)
+          .post(`/v1/vird/programs/${id}/activate`)
+          .set(bearer(user.accessToken))
+          .expect(201);
+        ids.push(id);
+      }
+      await request(t.http)
+        .post('/v1/dhikr-logs')
+        .set(bearer(user.accessToken))
+        .send({
+          userId: user.userId,
+          dhikrId,
+          count: 10,
+          targetCount: 10,
+          date: today,
+          virdProgramId: ids[0],
+          virdSlot: 'morning',
+          virdDayIndex: 1,
+        })
+        .expect(201);
+
+      const view = async (id: string) =>
+        data<{
+          isDayComplete: boolean;
+          slots: { morning?: { items: { count: number }[] } };
+        }>(
+          await request(t.http)
+            .get(`/v1/vird/today?date=${today}&programId=${id}`)
+            .set(bearer(user.accessToken))
+            .expect(200),
+        );
+      const a = await view(ids[0]);
+      const b = await view(ids[1]);
+      expect(a.slots.morning?.items[0].count).toBe(10);
+      expect(a.isDayComplete).toBe(true);
+      expect(b.slots.morning?.items[0].count).toBe(0);
+      expect(b.isDayComplete).toBe(false);
     });
   });
 });

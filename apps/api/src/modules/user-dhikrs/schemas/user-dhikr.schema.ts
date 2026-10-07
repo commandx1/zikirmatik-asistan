@@ -12,8 +12,9 @@ export class UserDhikr {
   @Prop({ type: String, required: true, trim: true })
   clientId!: string;
 
-  @Prop({ type: String, required: true, trim: true })
-  name!: string;
+  // Opsiyonel: sunucu varsayılan başlık yazmaz (istemci kendi dilinde gösterir).
+  @Prop({ type: String, trim: true, default: null })
+  name?: string | null;
 
   @Prop({ type: String, trim: true })
   transliteration?: string;

@@ -165,6 +165,27 @@ describe('PushCampaignsService', () => {
     );
   });
 
+  it('counts an Expo ticket/chunk failure as skipped.error, not sent, and records meta.error (B17)', async () => {
+    jest.setSystemTime(DAY_TIME);
+    winbackCampaign.buildCandidates.mockResolvedValue({
+      candidates: [candidate()],
+      skippedPrefs: 0,
+    });
+    pushDispatchModel.create.mockResolvedValue({});
+    pushSender.sendToDevices.mockResolvedValue({
+      sentCount: 0,
+      skippedCount: 0,
+      ticketErrorCount: 1,
+      deactivatedDeviceIds: [],
+    });
+
+    const result = await service.run('winback');
+
+    expect(result.sent).toBe(0);
+    expect(result.skipped.error).toBe(1);
+    expect(pushDispatchModel.updateOne).toHaveBeenCalled();
+  });
+
   it('does not create a reservation or call the push sender in dry-run mode', async () => {
     jest.setSystemTime(DAY_TIME);
     winbackCampaign.buildCandidates.mockResolvedValue({

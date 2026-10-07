@@ -148,7 +148,7 @@ export class PushCampaignsService {
       }
 
       try {
-        await this.pushSender.sendToDevices(
+        const result = await this.pushSender.sendToDevices(
           [
             {
               deviceId: candidate.deviceId,
@@ -161,6 +161,10 @@ export class PushCampaignsService {
             data: candidate.data,
           },
         );
+        // Expo chunk/bilet hatası throw etmez, sayıyla döner: sent değil error.
+        if (result.ticketErrorCount > 0) {
+          throw new Error('expo-ticket-error');
+        }
         sent += 1;
       } catch (error) {
         skipped.error += 1;

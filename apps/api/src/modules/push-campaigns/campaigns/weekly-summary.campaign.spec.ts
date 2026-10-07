@@ -100,11 +100,16 @@ describe('selectWeeklySummaryCandidates', () => {
     expect(candidates).toHaveLength(0);
   });
 
-  it('never reports a prefs skip (weekly-summary has no prefs gate)', () => {
-    const { skippedPrefs } = selectWeeklySummaryCandidates(
+  it('skips devices with prefs.streak === false and counts them (A-17)', () => {
+    const { candidates, skippedPrefs } = selectWeeklySummaryCandidates(
       [stat()],
-      [device()],
+      [
+        device({ deviceId: 'off', prefs: { streak: false } }),
+        device({ deviceId: 'on', prefs: { streak: true } }),
+        device({ deviceId: 'unset' }),
+      ],
     );
-    expect(skippedPrefs).toBe(0);
+    expect(candidates.map((c) => c.deviceId)).toEqual(['on', 'unset']);
+    expect(skippedPrefs).toBe(1);
   });
 });

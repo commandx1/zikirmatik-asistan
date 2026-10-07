@@ -66,23 +66,18 @@ describe('UserDhikrsService', () => {
       expect(filter.clientId).toMatch(/^auto-/);
     });
 
-    it("name verilmezse buildNextAutoTitle ile 'Başlık N' üretilir (mevcut başlıklardan max+1)", async () => {
-      userDhikrModel.find.mockReturnValue(
-        leanExec([
-          { name: 'Başlık 1' },
-          { name: 'Başlık 3' },
-          { name: 'Özel' },
-        ]),
-      );
+    it("name verilmezse sunucu 'Başlık N' üretmez: name null, transliteration yazılmaz (A-21)", async () => {
       userDhikrModel.findOneAndUpdate.mockReturnValue(leanExec({}));
 
       await service.createOrUpdate(userId, {});
 
       const [, update] = userDhikrModel.findOneAndUpdate.mock.calls[0] as [
         unknown,
-        { $set: { name: string } },
+        { $set: { name: string | null; transliteration?: string } },
       ];
-      expect(update.$set.name).toBe('Başlık 4');
+      expect(update.$set.name).toBeNull();
+      expect(update.$set.transliteration).toBeUndefined();
+      expect(userDhikrModel.find).not.toHaveBeenCalled();
     });
   });
 

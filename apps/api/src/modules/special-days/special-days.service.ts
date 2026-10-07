@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
-import { istanbulDateKey } from '../../common/utils/date-keys';
+import { istanbulDateKey, todayKey } from '../../common/utils/date-keys';
 import type { LocalizedText } from '../../common/types/localized-text';
 import { CreateSpecialDayDto } from './dto/create-special-day.dto';
 import { QuerySpecialDaysDto } from './dto/query-special-days.dto';
@@ -160,7 +160,7 @@ export class SpecialDaysService implements OnApplicationBootstrap {
   }
 
   async getHome(query: QuerySpecialDaysHomeDto) {
-    const date = query.date ?? toDateKey(new Date());
+    const date = query.date ?? todayKey();
 
     const activeDays = await this.specialDayModel
       .find({
@@ -384,13 +384,6 @@ function describeError(error: unknown): string {
   }
 
   return typeof error === 'string' ? error : 'bilinmeyen hata';
-}
-
-function toDateKey(value: Date) {
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, '0');
-  const day = String(value.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 function calculateDateDiff(isoDate: string) {

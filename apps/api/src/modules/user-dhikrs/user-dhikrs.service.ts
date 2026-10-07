@@ -15,8 +15,8 @@ export class UserDhikrsService {
   async createOrUpdate(userId: string, payload: CreateUserDhikrDto) {
     const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
     const clientId = payload.clientId?.trim() || this.buildAutoClientId();
-    const name =
-      payload.name?.trim() || (await this.buildNextAutoTitle(userObjectId));
+    // Ad yoksa null: varsayılan başlığı istemci kendi dilinde gösterir.
+    const name = payload.name?.trim() || null;
 
     const next = await this.userDhikrModel
       .findOneAndUpdate(
@@ -24,7 +24,8 @@ export class UserDhikrsService {
         {
           $set: {
             name,
-            transliteration: payload.transliteration?.trim() || name,
+            transliteration:
+              payload.transliteration?.trim() || name || undefined,
             arabic: payload.arabic?.trim() || undefined,
             meaning: payload.meaning?.trim() || undefined,
             target: typeof payload.target === 'number' ? payload.target : 0,
@@ -127,28 +128,5 @@ export class UserDhikrsService {
 
   private buildAutoClientId() {
     return `auto-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-  }
-
-  private async buildNextAutoTitle(userId: Types.ObjectId) {
-    const items = await this.userDhikrModel
-      .find({ userId }, { name: 1 })
-      .lean()
-      .exec();
-
-    let max = 0;
-    for (const item of items) {
-      const text = typeof item.name === 'string' ? item.name.trim() : '';
-      const match = /^Başlık\s+(\d+)$/i.exec(text);
-      if (!match) {
-        continue;
-      }
-
-      const value = Number.parseInt(match[1] ?? '', 10);
-      if (Number.isFinite(value) && value > max) {
-        max = value;
-      }
-    }
-
-    return `Başlık ${max + 1}`;
   }
 }

@@ -9,7 +9,11 @@ import {
   SpecialDay,
   type SpecialDayDocument,
 } from '../../special-days/schemas/special-day.schema';
-import { istanbulDateKey, shiftDateKey } from '../../../common/utils/date-keys';
+import {
+  dateKeyInZone,
+  shiftDateKey,
+  validTimezone,
+} from '../../../common/utils/date-keys';
 import {
   kandilDayTemplate,
   kandilEveTemplate,
@@ -39,13 +43,15 @@ export type KandilDeviceInput = {
 
 /**
  * Pure tarih eşleşmesi (DB'siz) — kandil.campaign.spec.ts doğrudan bunu test
- * eder. 'eve' yarının, 'day' bugünün İstanbul takvim gününü hedefler.
+ * eder. 'eve' yarının, 'day' bugünün takvim gününü hedefler; "bugün" cihazın
+ * kayıtlı IANA bölgesine göre (yok/geçersizse İstanbul) hesaplanır.
  */
 export function resolveKandilTargetDateKey(
   mode: KandilMode,
   now: Date,
+  timezone?: string,
 ): string {
-  const todayKey = istanbulDateKey(now);
+  const todayKey = dateKeyInZone(now, validTimezone(timezone));
   return mode === 'eve' ? shiftDateKey(todayKey, 1) : todayKey;
 }
 
@@ -109,11 +115,19 @@ export class KandilCampaign {
     mode: KandilMode,
     now: Date,
   ): Promise<CampaignBuildResult> {
-    const targetDateKey = resolveKandilTargetDateKey(mode, now);
-
+    // Cihaz bölgeleri UTC-12..+14 aralığında "bugün"ü ±1 gün kaydırır; geniş
+    // aralıkla çek, eşleşmeyi cihaz başına yap.
+    const utcToday = dateKeyInZone(now, 'UTC');
     const specialDayDocs = await this.specialDayModel
-      .find({ type: 'kandil', date: targetDateKey, isActive: true })
-      .select('name')
+      .find({
+        type: 'kandil',
+        date: {
+          $gte: shiftDateKey(utcToday, -2),
+          $lte: shiftDateKey(utcToday, 3),
+        },
+        isActive: true,
+      })
+      .select('name date')
       .lean()
       .exec();
 
@@ -130,20 +144,27 @@ export class KandilCampaign {
       .lean()
       .exec();
 
-    return selectKandilCandidates(
-      specialDayDocs.map((doc) => ({
-        id: String(doc._id),
-        nameTr: doc.name.tr,
-        nameEn: doc.name.en,
-      })),
-      devices.map((device) => ({
-        deviceId: device.deviceId,
-        expoPushToken: device.expoPushToken,
-        prefs: device.prefs,
-        locale: device.locale,
-        timezone: device.timezone,
-      })),
-      mode,
-    );
+    const deviceInputs: KandilDeviceInput[] = devices.map((device) => ({
+      deviceId: device.deviceId,
+      expoPushToken: device.expoPushToken,
+      prefs: device.prefs,
+      locale: device.locale,
+      timezone: device.timezone,
+    }));
+
+    const result: CampaignBuildResult = { candidates: [], skippedPrefs: 0 };
+    for (const doc of specialDayDocs) {
+      const { candidates, skippedPrefs } = selectKandilCandidates(
+        [{ id: String(doc._id), nameTr: doc.name.tr, nameEn: doc.name.en }],
+        deviceInputs.filter(
+          (device) =>
+            resolveKandilTargetDateKey(mode, now, device.timezone) === doc.date,
+        ),
+        mode,
+      );
+      result.candidates.push(...candidates);
+      result.skippedPrefs += skippedPrefs;
+    }
+    return result;
   }
 }

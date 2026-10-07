@@ -1,3 +1,5 @@
+import fc from 'fast-check';
+import { dateKeyInZone, shiftDateKey } from '../../../common/utils/date-keys';
 import {
   resolveKandilTargetDateKey,
   selectKandilCandidates,
@@ -19,6 +21,56 @@ describe('resolveKandilTargetDateKey', () => {
   it('rolls the month over correctly for "eve" on the last day of the month', () => {
     const endOfMonth = new Date('2026-06-30T07:00:00.000Z');
     expect(resolveKandilTargetDateKey('eve', endOfMonth)).toBe('2026-07-01');
+  });
+});
+
+describe('resolveKandilTargetDateKey — cihaz saat dilimi (A-18)', () => {
+  it('aynı an, farklı bölge: hedef gün cihazın yerel gününe göre', () => {
+    const now = new Date('2026-10-10T18:30:00Z'); // İstanbul 21:30 10 Eki, Kiritimati 08:30 11 Eki
+    expect(resolveKandilTargetDateKey('day', now, 'Europe/Istanbul')).toBe(
+      '2026-10-10',
+    );
+    expect(resolveKandilTargetDateKey('day', now, 'Pacific/Kiritimati')).toBe(
+      '2026-10-11',
+    );
+    expect(resolveKandilTargetDateKey('eve', now, 'Pacific/Kiritimati')).toBe(
+      '2026-10-12',
+    );
+  });
+
+  it('bölge yok/geçersiz → İstanbul', () => {
+    const now = new Date('2026-10-10T22:30:00Z'); // İstanbul 11 Eki 01:30
+    expect(resolveKandilTargetDateKey('day', now)).toBe('2026-10-11');
+    expect(resolveKandilTargetDateKey('day', now, 'Not/AZone')).toBe(
+      '2026-10-11',
+    );
+  });
+
+  it('özellik: day = bölgenin yerel günü, eve = day + 1 (rastgele an + IANA bölge)', () => {
+    const zones = [
+      'Europe/Istanbul',
+      'America/Los_Angeles',
+      'Pacific/Kiritimati',
+      'Pacific/Pago_Pago',
+      'Asia/Kolkata',
+      'Australia/Lord_Howe',
+      'Europe/London',
+    ];
+    fc.assert(
+      fc.property(
+        fc.date({
+          min: new Date('2024-01-01'),
+          max: new Date('2030-12-31'),
+          noInvalidDate: true,
+        }),
+        fc.constantFrom(...zones),
+        (now, tz) => {
+          const day = resolveKandilTargetDateKey('day', now, tz);
+          const eve = resolveKandilTargetDateKey('eve', now, tz);
+          return day === dateKeyInZone(now, tz) && eve === shiftDateKey(day, 1);
+        },
+      ),
+    );
   });
 });
 

@@ -589,5 +589,23 @@ describe('VirdTemplatesService', () => {
 
       expect(specialDayModel.find).toHaveBeenCalledTimes(2);
     });
+
+    it('cache (B18): farklı "bugün" (farklı saat dilimi) için ayrı girdi — başkasının günüyle çözülmüş çapa dönmez', async () => {
+      mockSpecialDayCandidates([{ date: '2099-05-01' }]);
+      type Resolver = (
+        template: { sourceEventKey: string },
+        todayKey: string,
+      ) => Promise<string | undefined>;
+      const internals = service as unknown as { resolveAnchorDate: Resolver };
+      const resolve: Resolver = (template, todayKey) =>
+        internals.resolveAnchorDate(template, todayKey);
+
+      await resolve({ sourceEventKey: 'kadir-gecesi' }, '2099-04-30');
+      await resolve({ sourceEventKey: 'kadir-gecesi' }, '2099-05-01');
+      expect(specialDayModel.find).toHaveBeenCalledTimes(2);
+
+      await resolve({ sourceEventKey: 'kadir-gecesi' }, '2099-05-01');
+      expect(specialDayModel.find).toHaveBeenCalledTimes(2);
+    });
   });
 });

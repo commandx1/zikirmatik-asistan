@@ -21,6 +21,7 @@ import {
   type VirdProgramPhase,
 } from './schemas/vird-program.schema';
 import { completeExpiredJourneys } from './utils/complete-expired-journeys';
+import { findManualPhasesError } from './utils/vird-phases';
 import { VirdTemplatesService } from './vird-templates.service';
 import {
   PREMIUM_MAX_ACTIVE_PROGRAMS,
@@ -98,6 +99,7 @@ export class VirdProgramsService {
     const phases = this.normalizePhases(source, payload.phases);
     if (source === 'manual') {
       this.assertDhikrLimit(isPremium, phases);
+      this.assertManualJourneyPhases(payload.kind, phases);
     }
 
     const { dayCount, endDate } = this.deriveDayCountAndEndDate(
@@ -371,6 +373,7 @@ export class VirdProgramsService {
       : undefined;
     if (nextPhases && existing.source === 'manual') {
       this.assertDhikrLimit(isPremium, nextPhases);
+      this.assertManualJourneyPhases(existing.kind, nextPhases);
     }
 
     const set: Record<string, unknown> = {};
@@ -449,6 +452,17 @@ export class VirdProgramsService {
       throw new BadRequestException({
         code: VIRD_ERROR_CODE.NOT_ACTIVATABLE,
         message: VIRD_ERROR_MESSAGE[VIRD_ERROR_CODE.NOT_ACTIVATABLE],
+      });
+    }
+
+    if (
+      program.kind === 'journey' &&
+      program.endDate &&
+      program.endDate < todayKey()
+    ) {
+      throw new BadRequestException({
+        code: VIRD_ERROR_CODE.PROGRAM_EXPIRED,
+        message: VIRD_ERROR_MESSAGE[VIRD_ERROR_CODE.PROGRAM_EXPIRED],
       });
     }
 
@@ -542,6 +556,19 @@ export class VirdProgramsService {
       throw new ForbiddenException({
         code: VIRD_ERROR_CODE.PREMIUM_REQUIRED,
         message: VIRD_ERROR_MESSAGE[VIRD_ERROR_CODE.PREMIUM_REQUIRED],
+      });
+    }
+  }
+
+  private assertManualJourneyPhases(kind: string, phases: VirdProgramPhase[]) {
+    if (kind !== 'journey') {
+      return;
+    }
+    const error = findManualPhasesError(phases);
+    if (error) {
+      throw new BadRequestException({
+        code: VIRD_ERROR_CODE.PHASES_INVALID,
+        message: error,
       });
     }
   }

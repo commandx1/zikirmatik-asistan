@@ -328,16 +328,19 @@ export class VirdTemplatesService {
       return template.anchorDate;
     }
 
+    // Anahtar "bugün"ü de içerir: farklı saat dilimindeki kullanıcılar
+    // birbirinin gününe göre çözülmüş çapayı görmesin.
+    const cacheKey = `${todayKey}|${template.sourceEventKey}`;
     const cache = this.freshSpecialDayAnchorCache();
-    if (cache.has(template.sourceEventKey)) {
-      return cache.get(template.sourceEventKey) ?? undefined;
+    if (cache.has(cacheKey)) {
+      return cache.get(cacheKey) ?? undefined;
     }
 
     const anchorDate = await this.findUpcomingAnchorDate(
       template.sourceEventKey,
       todayKey,
     );
-    cache.set(template.sourceEventKey, anchorDate ?? null);
+    cache.set(cacheKey, anchorDate ?? null);
     this.specialDayAnchorCache = {
       expiresAt: Date.now() + SPECIAL_DAY_ANCHOR_CACHE_TTL_MS,
       byFamily: cache,

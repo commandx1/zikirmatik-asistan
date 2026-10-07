@@ -51,6 +51,30 @@ describe('UserDhikrs (e2e)', () => {
     expect(data<unknown[]>(list)).toHaveLength(1);
   });
 
+  // API-UDH-05 (A-21): sunucu "Başlık N" üretmez; ad boş kalır
+  it('ad gönderilmezse sunucu varsayılan başlık yazmaz (name null, transliteration boş)', async () => {
+    const me = await signIn(t.http, { sub: 'e2e-ud-noname' });
+
+    const bodies: { name?: string | null; transliteration?: string }[] = [];
+    for (let i = 0; i < 2; i += 1) {
+      const res = await request(t.http)
+        .post('/v1/user-dhikrs')
+        .set(bearer(me.accessToken))
+        .send({ target: 10 })
+        .expect(201);
+      bodies.push(data(res));
+    }
+    for (const body of bodies) {
+      expect(body.name ?? null).toBeNull();
+      expect(body.transliteration ?? null).toBeNull();
+    }
+    const list = await request(t.http)
+      .get('/v1/user-dhikrs')
+      .set(bearer(me.accessToken))
+      .expect(200);
+    expect(JSON.stringify(data(list))).not.toContain('Başlık');
+  });
+
   it('clientId gönderilmezse otomatik üretilir', async () => {
     const me = await signIn(t.http, { sub: 'e2e-ud-2' });
 
