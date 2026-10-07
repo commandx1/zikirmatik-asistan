@@ -55,6 +55,7 @@ import {
   AiUsageLogSchema,
 } from '../ai/schemas/ai-usage-log.schema';
 import { AppEvent, AppEventSchema } from '../events/schemas/app-event.schema';
+import { CirclesModule } from '../circles/circles.module';
 import { Circle, CircleSchema } from '../circles/schemas/circle.schema';
 import {
   PushDispatch,
@@ -63,6 +64,7 @@ import {
 
 @Module({
   imports: [
+    CirclesModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: AiRecommendation.name, schema: AiRecommendationSchema },

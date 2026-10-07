@@ -44,6 +44,7 @@ describe('UsersService', () => {
       noopModel,
       noopModel,
       noopModel,
+      { transferFounderOnDelete: jest.fn() } as never,
     );
   });
 
@@ -183,6 +184,7 @@ describe('UsersService', () => {
         deleteMany() as never,
         { updateMany: jest.fn().mockResolvedValue({}) } as never,
         deleteMany() as never,
+        { transferFounderOnDelete: jest.fn() } as never,
       );
 
       await deletionService.deleteUserAllData(userIdToDelete);
@@ -251,6 +253,7 @@ describe('UsersService', () => {
         event as never,
         circle as never,
         push as never,
+        { transferFounderOnDelete: jest.fn() } as never,
       );
 
       await svc.deleteUserAllData(id);

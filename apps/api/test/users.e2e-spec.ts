@@ -191,4 +191,51 @@ describe('Users (e2e)', () => {
     const circle = await circleModel.findById(circleId).lean();
     expect(circle?.memberIds.map(String)).toEqual([String(other)]);
   });
+
+  it('DELETE: A-04 kurucu hesabını silince kuruculuk en eski aktif üyeye geçer; üyesiz halka kapanır', async () => {
+    const me = await signIn(t.http, { sub: 'e2e-users-8' });
+    const uid = new Types.ObjectId(me.userId);
+    const first = new Types.ObjectId();
+    const second = new Types.ObjectId();
+    const circleModel = t.model<{
+      memberIds: Types.ObjectId[];
+      creatorId: Types.ObjectId;
+      status: string;
+    }>('Circle');
+    const base = {
+      goalCount: 10,
+      dhikrId: new Types.ObjectId(),
+      status: 'active',
+    };
+    const withMembers = (
+      await circleModel.collection.insertOne({
+        ...base,
+        code: 'AAAAAAA2',
+        creatorId: uid,
+        memberIds: [uid, first, second],
+      })
+    ).insertedId;
+    const alone = (
+      await circleModel.collection.insertOne({
+        ...base,
+        code: 'AAAAAAA3',
+        creatorId: uid,
+        memberIds: [uid],
+      })
+    ).insertedId;
+
+    await request(t.http)
+      .delete(`/v1/users/${me.userId}`)
+      .set(bearer(me.accessToken))
+      .expect(200);
+
+    const transferred = await circleModel.findById(withMembers).lean();
+    expect(String(transferred?.creatorId)).toBe(String(first));
+    expect(transferred?.status).toBe('active');
+    expect(transferred?.memberIds.map(String)).toEqual([
+      String(first),
+      String(second),
+    ]);
+    expect((await circleModel.findById(alone).lean())?.status).toBe('closed');
+  });
 });

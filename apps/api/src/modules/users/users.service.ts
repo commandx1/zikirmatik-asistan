@@ -28,6 +28,7 @@ import { AiCreditLedger } from '../ai/schemas/ai-credit-ledger.schema';
 import { AiCreditWallet } from '../ai/schemas/ai-credit-wallet.schema';
 import { AiUsageLog } from '../ai/schemas/ai-usage-log.schema';
 import { AppEvent } from '../events/schemas/app-event.schema';
+import { CirclesService } from '../circles/circles.service';
 import { Circle } from '../circles/schemas/circle.schema';
 import { PushDispatch } from '../push-campaigns/schemas/push-dispatch.schema';
 
@@ -67,6 +68,7 @@ export class UsersService {
     @InjectModel(Circle.name) private readonly circleModel: Model<Circle>,
     @InjectModel(PushDispatch.name)
     private readonly pushDispatchModel: Model<PushDispatch>,
+    private readonly circlesService: CirclesService,
   ) {}
 
   async createUser(payload: CreateUserDto) {
@@ -252,6 +254,8 @@ export class UsersService {
 
   async deleteUserAllData(userId: string): Promise<void> {
     const objectId = this.asObjectId(userId);
+    // A-04: kurucu olduğu açık halkaların kuruculuğunu devret (veya kapat).
+    await this.circlesService.transferFounderOnDelete(userId);
     // Push rezervasyonları yalnız deviceId taşır; cihazlar silinmeden ÖNCE
     // kullanıcının cihazlarının kimlikleri alınır (idempotent: ikinci çağrıda boş).
     const deviceIds = await this.deviceModel.distinct('deviceId', {

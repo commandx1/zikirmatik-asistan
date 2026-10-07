@@ -136,7 +136,7 @@ describe('CirclesService', () => {
         { deviceId: 'd1', expoPushToken: 'ExponentPushToken[abc]' },
       ]);
     pushSender.sendToDevices.mockReset().mockResolvedValue({ sentCount: 1 });
-    circleModel.updateOne.mockReturnValue(chain(undefined));
+    circleModel.updateOne.mockReturnValue(chain({ modifiedCount: 1 }));
     circleModel.updateMany.mockReturnValue(chain(undefined));
 
     service = new CirclesService(
@@ -201,7 +201,7 @@ describe('CirclesService', () => {
       expect(circleModel.create).not.toHaveBeenCalled();
     });
 
-    it('falls back to the dhikr name and seeds the creator as the first member', async () => {
+    it('writes no default name (A-21) and seeds the creator as the first member', async () => {
       mockPremium(true);
       circleModel.countDocuments.mockResolvedValue(0);
       circleModel.create.mockImplementation((doc: Record<string, unknown>) => ({
@@ -213,7 +213,11 @@ describe('CirclesService', () => {
         goalCount: 1000,
       });
 
-      expect(summary.name).toBe('Salavat');
+      expect(summary.name).toBeNull();
+      const [created] = circleModel.create.mock.calls[0] as [
+        Record<string, unknown>,
+      ];
+      expect(created).not.toHaveProperty('name');
       expect(summary.memberCount).toBe(1);
       expect(summary.isCreator).toBe(true);
       expect(summary.code).toHaveLength(CIRCLE_CODE_LENGTH);
@@ -299,7 +303,7 @@ describe('CirclesService', () => {
       expect(createdDoc.name).toBe('Benim Halkam');
     });
 
-    it('uses a plain-string dhikr name as-is (not {tr,en})', async () => {
+    it('keeps the name null for a plain-string dhikr name too', async () => {
       mockPremium(true);
       circleModel.countDocuments.mockResolvedValue(0);
       dhikrModel.findById.mockReturnValue(
@@ -314,7 +318,7 @@ describe('CirclesService', () => {
         goalCount: 1000,
       });
 
-      expect(summary.name).toBe('PlainName');
+      expect(summary.name).toBeNull();
     });
 
     it('retries with a new code on a duplicate-key error and succeeds', async () => {
@@ -397,7 +401,7 @@ describe('CirclesService', () => {
             { expiresAt: { $exists: false }, endDate: { $lt: today } },
           ],
         },
-        { $set: { status: 'closed' } },
+        { $set: { status: 'closed', expiredAt: expect.any(Date) as Date } },
       );
       const updateManyOrder =
         circleModel.updateMany.mock.invocationCallOrder[0];
@@ -884,21 +888,43 @@ describe('CirclesService', () => {
       ).resolves.toMatchObject({ code: CIRCLE_ERROR_CODE.NOT_ACTIVE });
     });
 
-    it('rejects an active circle whose endDate is yesterday', async () => {
+    it('accepts an active circle whose endDate is yesterday (A-01 late contribution)', async () => {
       const yesterday = shiftDateKey(istanbulDateKey(new Date()), -1);
       circleModel.findOne.mockReturnValue(
         chain({ status: 'active', dhikrId: dhikrObjectId, endDate: yesterday }),
       );
 
       await expect(
-        captureForbidden(
-          service.assertCanContribute(
-            userId,
-            circleObjectId.toHexString(),
-            dhikrObjectId.toHexString(),
-          ),
+        service.assertCanContribute(
+          userId,
+          circleObjectId.toHexString(),
+          dhikrObjectId.toHexString(),
         ),
-      ).resolves.toMatchObject({ code: CIRCLE_ERROR_CODE.NOT_ACTIVE });
+      ).resolves.toBeUndefined();
+    });
+
+    it('accepts completed and expiry-closed circles but rejects a creator-closed one', async () => {
+      for (const [doc, ok] of [
+        [{ status: 'completed' }, true],
+        [{ status: 'closed', expiredAt: new Date() }, true],
+        [{ status: 'closed' }, false],
+      ] as const) {
+        circleModel.findOne.mockReturnValue(
+          chain({ ...doc, dhikrId: dhikrObjectId }),
+        );
+        const attempt = service.assertCanContribute(
+          userId,
+          circleObjectId.toHexString(),
+          dhikrObjectId.toHexString(),
+        );
+        if (ok) {
+          await expect(attempt).resolves.toBeUndefined();
+        } else {
+          await expect(captureForbidden(attempt)).resolves.toMatchObject({
+            code: CIRCLE_ERROR_CODE.NOT_ACTIVE,
+          });
+        }
+      }
     });
 
     it('accepts an active circle whose endDate is today', async () => {

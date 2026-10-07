@@ -321,7 +321,7 @@ describe('Zikir Halkası (e2e)', () => {
       expect(data<{ totalCount: number }>(after3).totalCount).toBe(42);
     });
 
-    it('hedef dolunca completed; sonraki katkı 403 CIRCLE_NOT_ACTIVE', async () => {
+    it('A-01: hedef dolunca completed; sonraki katkı KABUL edilir, toplam hedefi aşar, completed kalır', async () => {
       const creator = await premiumUser();
       const { dhikrId, circle } = await seedActiveCircle(creator, {
         goalCount: 5,
@@ -334,9 +334,28 @@ describe('Zikir Halkası (e2e)', () => {
         .expect(200);
       expect(data<{ status: string }>(after).status).toBe('completed');
 
-      const res = await contribute(creator, circle.id, dhikrId, 1);
-      expect(res.status).toBe(403);
-      expect(errCode(res)).toBe(CIRCLE_ERROR_CODE.NOT_ACTIVE);
+      await contribute(creator, circle.id, dhikrId, 6).expect(201);
+      const late = await request(t.http)
+        .get(`/v1/circles/${circle.id}`)
+        .set(bearer(creator.accessToken))
+        .expect(200);
+      expect(data<{ status: string }>(late).status).toBe('completed');
+      expect(data<{ totalCount: number }>(late).totalCount).toBe(6);
+    });
+
+    it('A-21: ad verilmezse yanıtta name null, dhikr bilgisi döner', async () => {
+      const creator = await premiumUser();
+      const { circle } = await seedActiveCircle(creator);
+      const res = await request(t.http)
+        .get(`/v1/circles/${circle.id}`)
+        .set(bearer(creator.accessToken))
+        .expect(200);
+      const body = data<{
+        name: string | null;
+        dhikr: { name: { tr: string } };
+      }>(res);
+      expect(body.name).toBeNull();
+      expect(body.dhikr.name.tr).toBeTruthy();
     });
 
     it('üye olmayan katkı → 403 CIRCLE_NOT_MEMBER', async () => {

@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { als } from '../../common/logging/request-context';
 import { CirclesService } from './circles.service';
@@ -28,6 +28,7 @@ describe('CirclesService — timezone, locale, guest name', () => {
     countDocuments: jest.fn(),
     find: jest.fn(),
     updateMany: jest.fn(),
+    updateOne: jest.fn(),
   };
   const dhikrLogModel = {
     aggregate: jest.fn(),
@@ -154,6 +155,7 @@ describe('CirclesService — timezone, locale, guest name', () => {
     userModel.findById.mockReturnValue(
       chain({ displayName: 'Misafir Kullanıcı' }),
     );
+    circleModel.updateOne.mockReturnValue(chain({ modifiedCount: 1 }));
     devicesService.findActiveByUserIds.mockResolvedValue([
       { deviceId: 'old', expoPushToken: 'ExponentPushToken[a]' },
       { deviceId: 'en', expoPushToken: 'ExponentPushToken[b]', locale: 'en' },
@@ -225,21 +227,10 @@ describe('CirclesService — timezone, locale, guest name', () => {
     ): Promise<boolean> {
       jest.setSystemTime(new Date(at));
       circleModel.findOne.mockReturnValue(chain(doc));
-      try {
-        await withTimezone(tz, () =>
-          service.assertCanContribute(
-            userId,
-            circleObjectId.toHexString(),
-            dhikrObjectId.toHexString(),
-          ),
-        );
-        return true;
-      } catch (error) {
-        expect((error as ForbiddenException).getResponse()).toMatchObject({
-          code: CIRCLE_ERROR_CODE.NOT_ACTIVE,
-        });
-        return false;
-      }
+      // A-01: assertCanContribute artık süresi dolan halkayı da kabul eder;
+      // "açık mı" sorusu preview'ın (aynı isCircleExpired) durumundan okunur.
+      const preview = await withTimezone(tz, () => service.preview('ABCDEFGH'));
+      return preview.status === 'active';
     }
 
     /** findMine'ın kapanış filtresini belgelere uygular ($or/$lt/$lte/$exists). */
@@ -255,17 +246,14 @@ describe('CirclesService — timezone, locale, guest name', () => {
         }
         const value = doc[key] as string | Date | undefined;
         const ops = cond as {
-          $lt?: unknown;
-          $lte?: unknown;
+          $lt?: string | Date;
+          $lte?: string | Date;
           $exists?: boolean;
         };
         if (ops.$exists === false && value !== undefined) return false;
-        if (ops.$lt !== undefined && !(value !== undefined && value < ops.$lt))
+        if (ops.$lt != null && !(value !== undefined && value < ops.$lt))
           return false;
-        if (
-          ops.$lte !== undefined &&
-          !(value !== undefined && value <= ops.$lte)
-        )
+        if (ops.$lte != null && !(value !== undefined && value <= ops.$lte))
           return false;
         return true;
       });
@@ -451,7 +439,7 @@ describe('CirclesService — timezone, locale, guest name', () => {
       expect(detail.status).toBe('closed');
       expect(updateOne).toHaveBeenCalledWith(
         { _id: circleObjectId, status: 'active' },
-        { $set: { status: 'closed' } },
+        { $set: { status: 'closed', expiredAt: expect.any(Date) as Date } },
       );
     });
 

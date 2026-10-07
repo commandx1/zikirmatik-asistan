@@ -89,6 +89,22 @@ export function circleCompletedPush(
   };
 }
 
+export function circleFounderTransferredPush(
+  name: string,
+  locale: PushLocale = 'tr',
+): { title: string; body: string } {
+  if (locale === 'en') {
+    return {
+      title: 'You are now the circle admin',
+      body: `You are now the admin of the "${name}" circle.`,
+    };
+  }
+  return {
+    title: 'Halkanın yöneticisi oldun',
+    body: `"${name}" halkasının yöneticisi oldun.`,
+  };
+}
+
 export function circleMemberJoinedPush(
   displayName: string | undefined,
   name: string,

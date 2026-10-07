@@ -38,6 +38,7 @@ import {
   CIRCLE_MAX_ACTIVE_PER_CREATOR,
   CIRCLE_MAX_MEMBERS,
   circleCompletedPush,
+  circleFounderTransferredPush,
   circleMemberJoinedPush,
   generateCircleCode,
   type CircleErrorCode,
@@ -59,7 +60,8 @@ export type CircleDhikrSnapshot = {
 };
 
 export type CirclePreview = {
-  name: string;
+  // null: kullanıcı ad vermedi; istemci dhikr.name'den yerel etiket üretir.
+  name: string | null;
   dhikr: CircleDhikrSnapshot;
   goalCount: number;
   totalCount: number;
@@ -94,7 +96,7 @@ export type CircleDetail = CircleSummary & {
 
 type CircleLean = {
   _id: Types.ObjectId;
-  name: string;
+  name?: string | null;
   dhikrId: Types.ObjectId;
   goalCount: number;
   endDate?: string;
@@ -105,6 +107,7 @@ type CircleLean = {
   memberLimit: number;
   totalCount: number;
   status: CircleStatus;
+  expiredAt?: Date;
 };
 
 type DhikrSnapshotLean = {
@@ -140,6 +143,26 @@ function isCircleExpired(
   );
 }
 
+// isCircleExpired'in Mongo karşılığı (tek kaynak): süresi geçmiş belgeler.
+function expiredFilter(now: Date) {
+  return [
+    { expiresAt: { $lte: now } },
+    {
+      expiresAt: { $exists: false },
+      endDate: { $lt: dateKeyInZone(now, LEGACY_CIRCLE_EXPIRY_TIMEZONE) },
+    },
+  ];
+}
+
+// Push/etiket için halka adı; ad yoksa zikrin cihaz dilindeki adı.
+function circleLabel(
+  name: string | null | undefined,
+  dhikr: DhikrSnapshotLean | null | undefined,
+  locale: PushLocale,
+): string {
+  return name || dhikr?.name?.[locale] || dhikr?.name?.tr || '';
+}
+
 @Injectable()
 export class CirclesService {
   private readonly logger = new Logger(CirclesService.name);
@@ -172,9 +195,11 @@ export class CirclesService {
     // işlem DEĞİLDİR (Mongo'da "koşullu insert" yok) — aynı anda gelen iki
     // istek tavanı bir aşabilir. Kabul edilen sapma: sonuç yalnız fazladan
     // bir halkadır, paylaşılan bir sayacı bozmaz.
+    // Süresi geçmiş ama henüz kapanmamış halka pasif sayılır.
     const activeCount = await this.circleModel.countDocuments({
       creatorId: userObjectId,
       status: 'active',
+      $nor: expiredFilter(new Date()),
     });
     const activeLimit = premium
       ? CIRCLE_MAX_ACTIVE_PER_CREATOR
@@ -198,13 +223,14 @@ export class CirclesService {
       });
     }
 
-    const name = dto.name?.trim() || localizedTr(dhikr.name);
+    // Sunucu varsayılan ad YAZMAZ (A-21); boşsa alan hiç yazılmaz.
+    const name = dto.name?.trim() || undefined;
     const timezone = requestTimezone();
 
     for (let attempt = 0; attempt < CODE_ATTEMPTS; attempt += 1) {
       try {
         const created = await this.circleModel.create({
-          name,
+          ...(name && { name }),
           dhikrId: dhikr._id,
           goalCount: dto.goalCount,
           endDate: dto.endDate,
@@ -244,17 +270,9 @@ export class CirclesService {
         {
           memberIds: userObjectId,
           status: 'active',
-          $or: [
-            { expiresAt: { $lte: now } },
-            {
-              expiresAt: { $exists: false },
-              endDate: {
-                $lt: dateKeyInZone(now, LEGACY_CIRCLE_EXPIRY_TIMEZONE),
-              },
-            },
-          ],
+          $or: expiredFilter(now),
         },
-        { $set: { status: 'closed' } },
+        { $set: { status: 'closed', expiredAt: now } },
       )
       .exec();
 
@@ -319,7 +337,7 @@ export class CirclesService {
       await this.circleModel
         .updateOne(
           { _id: circle._id, status: 'active' },
-          { $set: { status: 'closed' } },
+          { $set: { status: 'closed', expiredAt: new Date() } },
         )
         .exec();
       circle.status = 'closed';
@@ -379,13 +397,17 @@ export class CirclesService {
     }
     const dhikr = await this.findDhikrSnapshot(circle.dhikrId);
     return {
-      name: circle.name,
+      name: circle.name ?? null,
       dhikr: toSnapshot(dhikr),
       goalCount: circle.goalCount,
       totalCount: circle.totalCount,
       memberCount: circle.memberIds.length,
       memberLimit: circle.memberLimit ?? CIRCLE_MAX_MEMBERS,
-      status: circle.status,
+      // Süresi geçmiş ama kimse açmadığı için hâlâ 'active' görünen halka.
+      status:
+        circle.status === 'active' && isCircleExpired(circle, new Date())
+          ? 'closed'
+          : circle.status,
     };
   }
 
@@ -402,6 +424,15 @@ export class CirclesService {
     // Zaten üye: idempotent, yazım da push de yok.
     if (circle.memberIds.some((memberId) => memberId.equals(userObjectId))) {
       return this.buildSummary(userObjectId, circle);
+    }
+    if (circle.status === 'active' && isCircleExpired(circle, new Date())) {
+      await this.circleModel
+        .updateOne(
+          { _id: circle._id, status: 'active' },
+          { $set: { status: 'closed', expiredAt: new Date() } },
+        )
+        .exec();
+      throw this.forbidden(CIRCLE_ERROR_CODE.NOT_ACTIVE);
     }
     if (circle.status !== 'active') {
       throw this.forbidden(CIRCLE_ERROR_CODE.NOT_ACTIVE);
@@ -447,23 +478,36 @@ export class CirclesService {
       memberId.equals(userObjectId),
     );
     if (!wasMember) {
-      const joiner = await this.userModel
-        .findById(userObjectId)
-        .select('displayName')
-        .lean()
+      // (halka, üye) başına bir kez: bayrak atomik $addToSet ile alınır;
+      // yarışan/yinelenen katılımlarda yalnız bir çağrı modified görür.
+      const claimed = await this.circleModel
+        .updateOne(
+          { _id: before._id, joinNotifiedIds: { $ne: userObjectId } },
+          { $addToSet: { joinNotifiedIds: userObjectId } },
+        )
         .exec();
-      await this.notify(
-        [String(before.creatorId)],
-        (locale) =>
-          circleMemberJoinedPush(
-            isDefaultName(joiner?.displayName)
-              ? undefined
-              : joiner?.displayName,
-            before.name,
-            locale,
-          ),
-        String(before._id),
-      );
+      if (claimed.modifiedCount > 0) {
+        const [joiner, dhikr] = await Promise.all([
+          this.userModel
+            .findById(userObjectId)
+            .select('displayName')
+            .lean()
+            .exec(),
+          this.findDhikrSnapshot(before.dhikrId),
+        ]);
+        await this.notify(
+          [String(before.creatorId)],
+          (locale) =>
+            circleMemberJoinedPush(
+              isDefaultName(joiner?.displayName)
+                ? undefined
+                : joiner?.displayName,
+              circleLabel(before.name, dhikr, locale),
+              locale,
+            ),
+          String(before._id),
+        );
+      }
     }
 
     return this.buildSummary(userObjectId, {
@@ -533,13 +577,15 @@ export class CirclesService {
     const userObjectId = this.asObjectId(userId);
     const circle = await this.circleModel
       .findOne({ _id: this.asObjectId(circleId), memberIds: userObjectId })
-      .select('status dhikrId endDate expiresAt')
+      .select('status dhikrId expiredAt')
       .lean()
       .exec();
     if (!circle) {
       throw this.forbidden(CIRCLE_ERROR_CODE.NOT_MEMBER);
     }
-    if (circle.status !== 'active' || isCircleExpired(circle, new Date())) {
+    // A-01: hedef dolmuş (completed) ve süresi dolmuş halkaya geç katkı
+    // KABUL edilir. Yalnız kurucunun kapattığı halka (expiredAt yok) reddeder.
+    if (circle.status === 'closed' && !circle.expiredAt) {
       throw this.forbidden(CIRCLE_ERROR_CODE.NOT_ACTIVE);
     }
     if (!dhikrId || !circle.dhikrId.equals(dhikrId)) {
@@ -583,7 +629,7 @@ export class CirclesService {
 
     const circle = await this.circleModel
       .findById(circleObjectId)
-      .select('goalCount name memberIds')
+      .select('goalCount name memberIds dhikrId')
       .lean()
       .exec();
     if (!circle || total < circle.goalCount) {
@@ -604,12 +650,76 @@ export class CirclesService {
       return total;
     }
 
+    const dhikr = await this.findDhikrSnapshot(circle.dhikrId);
     await this.notify(
       circle.memberIds.map(String),
-      (locale) => circleCompletedPush(circle.name, locale),
+      (locale) =>
+        circleCompletedPush(circleLabel(circle.name, dhikr, locale), locale),
       String(circleObjectId),
     );
     return total;
+  }
+
+  /**
+   * A-04: kurucu hesabını silerken (deleteUserAllData) açık halkalarının
+   * kuruculuğu en eski aktif üyeye (memberIds sırası = katılım sırası) geçer;
+   * üye yoksa halka kapanır. Limitler geriye dönük uygulanmaz.
+   */
+  async transferFounderOnDelete(userId: string): Promise<void> {
+    const userObjectId = this.asObjectId(userId);
+    const open = await this.circleModel
+      .find({ creatorId: userObjectId, status: 'active' })
+      .select('_id')
+      .lean()
+      .exec();
+    for (const { _id } of open) {
+      await this.transferOne(_id, userObjectId);
+    }
+  }
+
+  private async transferOne(circleId: Types.ObjectId, from: Types.ObjectId) {
+    // Aday, okuma ile yazma arasında ayrılabilir: yazım filtresi adayın hâlâ
+    // üye olmasını ister, olmazsa yeniden okunur (sınırlı deneme).
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const circle = await this.circleModel
+        .findOne({ _id: circleId, creatorId: from, status: 'active' })
+        .select('memberIds name dhikrId')
+        .lean()
+        .exec();
+      if (!circle) {
+        return;
+      }
+      const next = circle.memberIds.find((id) => !id.equals(from));
+      if (!next) {
+        await this.circleModel
+          .updateOne(
+            { _id: circleId, creatorId: from, status: 'active' },
+            { $set: { status: 'closed' } },
+          )
+          .exec();
+        return;
+      }
+      const moved = await this.circleModel
+        .updateOne(
+          { _id: circleId, creatorId: from, status: 'active', memberIds: next },
+          { $set: { creatorId: next }, $pull: { memberIds: from } },
+        )
+        .exec();
+      if (moved.modifiedCount === 0) {
+        continue;
+      }
+      const dhikr = await this.findDhikrSnapshot(circle.dhikrId);
+      await this.notify(
+        [String(next)],
+        (locale) =>
+          circleFounderTransferredPush(
+            circleLabel(circle.name, dhikr, locale),
+            locale,
+          ),
+        String(circleId),
+      );
+      return;
+    }
   }
 
   // --- helpers ---
@@ -676,7 +786,7 @@ export class CirclesService {
     return {
       id: String(circle._id),
       code: circle.code,
-      name: circle.name,
+      name: circle.name ?? null,
       dhikrId: String(circle.dhikrId),
       dhikr: toSnapshot(dhikr),
       goalCount: circle.goalCount,
@@ -761,13 +871,6 @@ function normalizeCode(code: string) {
 
 function isDefaultName(displayName: string | undefined): boolean {
   return displayName === GUEST_DISPLAY_NAME;
-}
-
-function localizedTr(value: LocalizedText | string | undefined): string {
-  if (!value) {
-    return '';
-  }
-  return typeof value === 'string' ? value : value.tr;
 }
 
 function toSnapshot(

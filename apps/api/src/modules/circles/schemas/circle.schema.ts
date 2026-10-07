@@ -16,8 +16,10 @@ export type CircleStatus = 'active' | 'completed' | 'closed';
  */
 @Schema({ collection: 'circles', timestamps: true, versionKey: false })
 export class Circle {
-  @Prop({ type: String, required: true, trim: true, maxlength: 60 })
-  name!: string;
+  // Kullanıcı vermediyse YAZILMAZ (null/yok): istemci zikrin adından kendi
+  // dilinde etiket üretir.
+  @Prop({ type: String, trim: true, maxlength: 60 })
+  name?: string | null;
 
   @Prop({ type: Types.ObjectId, ref: Dhikr.name, required: true })
   dhikrId!: Types.ObjectId;
@@ -71,6 +73,16 @@ export class Circle {
   // (findOneAndUpdate filtresinde completedAt: null olarak kullanılır).
   @Prop({ type: Date, default: null })
   completedAt?: Date | null;
+
+  // Süre dolumuyla kapanan halkanın kapanış anı. Yalnız bu kapanış türü geç
+  // katkıyı kabul eder; kurucunun kapattığı halkada alan yoktur.
+  @Prop({ type: Date })
+  expiredAt?: Date;
+
+  // "X katıldı" push'u gönderilmiş üyeler: (halka, üye) başına en fazla bir
+  // bildirim; ayrılıp dönmek tekrar bildirmez.
+  @Prop({ type: [Types.ObjectId], default: [] })
+  joinNotifiedIds!: Types.ObjectId[];
 
   readonly createdAt!: Date;
   readonly updatedAt!: Date;

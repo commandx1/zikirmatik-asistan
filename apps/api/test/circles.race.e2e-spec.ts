@@ -480,7 +480,7 @@ describe('Zikir Halkası — gerçek Mongo eşzamanlılık', () => {
   // ------------------------------------------------------------------
   // 7) Tamamlanmış / kapalı / süresi geçmiş halkaya katkı
   // ------------------------------------------------------------------
-  it('7) completed / closed / endDate geçmiş: CIRCLE_NOT_ACTIVE, yeni log yok', async () => {
+  it('7) A-01: completed ve süresi geçmiş halka katkıyı KABUL eder; kurucu kapatmışsa reddeder', async () => {
     const { creatorId, dhikrId, circle } = await seedCircle({ goalCount: 10 });
     const circleObjectId = new Types.ObjectId(circle.id);
 
@@ -496,18 +496,17 @@ describe('Zikir Halkası — gerçek Mongo eşzamanlılık', () => {
       circleId: circleObjectId,
     });
 
-    await expectRejection(
-      dhikrLogsService.create(
-        logDto({ userId: creatorId, dhikrId, count: 99, circleId: circle.id }),
-      ),
-      { code: CIRCLE_ERROR_CODE.NOT_ACTIVE },
+    // A-01: tamamlanmış halkaya geç katkı KABUL edilir, toplam hedefi aşar.
+    await dhikrLogsService.create(
+      logDto({ userId: creatorId, dhikrId, count: 99, circleId: circle.id }),
     );
     expect(
       await dhikrLogModel.countDocuments({ circleId: circleObjectId }),
     ).toBe(logsBefore);
-    expect(
-      (await circleModel.findById(circle.id).lean().exec())?.totalCount,
-    ).toBe(totalBefore);
+    const afterLate = await circleModel.findById(circle.id).lean().exec();
+    expect(afterLate?.totalCount).toBe(99);
+    expect(afterLate?.totalCount).toBeGreaterThan(totalBefore);
+    expect(afterLate?.status).toBe('completed');
 
     // closed
     const closed = await seedCircleFor(creatorId, dhikrId);
@@ -527,17 +526,17 @@ describe('Zikir Halkası — gerçek Mongo eşzamanlılık', () => {
         { $set: { endDate: shiftDateKey(today, -1) } },
       )
       .exec();
-    await expectRejection(
-      dhikrLogsService.create(
-        logDto({ userId: creatorId, dhikrId, count: 5, circleId: expired.id }),
-      ),
-      { code: CIRCLE_ERROR_CODE.NOT_ACTIVE },
+    await dhikrLogsService.create(
+      logDto({ userId: creatorId, dhikrId, count: 5, circleId: expired.id }),
     );
     expect(
       await dhikrLogModel.countDocuments({
         circleId: new Types.ObjectId(expired.id),
       }),
-    ).toBe(0);
+    ).toBe(1);
+    expect(
+      (await circleModel.findById(expired.id).lean().exec())?.totalCount,
+    ).toBe(5);
   });
 
   async function seedCircleFor(creatorId: string, dhikrId: string) {
@@ -895,11 +894,155 @@ describe('Zikir Halkası — gerçek Mongo eşzamanlılık', () => {
       'closed',
     );
 
-    await expectRejection(
-      dhikrLogsService.create(
-        logDto({ userId: creatorId, dhikrId, count: 5, circleId: circle.id }),
-      ),
-      { code: CIRCLE_ERROR_CODE.NOT_ACTIVE },
+    // A-01: süre dolumuyla kapanan halka geç katkıyı yine kabul eder.
+    await dhikrLogsService.create(
+      logDto({ userId: creatorId, dhikrId, count: 5, circleId: circle.id }),
     );
+    expect(
+      (await circleModel.findById(circle.id).lean().exec())?.totalCount,
+    ).toBe(5);
+  });
+
+  // ------------------------------------------------------------------
+  // 16) Süresi geçmiş ama kapanmamış halka pasif sayılır (CIR-04/16/21)
+  // ------------------------------------------------------------------
+  async function expireInDb(circleId: string) {
+    await circleModel
+      .updateOne(
+        { _id: new Types.ObjectId(circleId) },
+        {
+          $set: {
+            endDate: shiftDateKey(today, -1),
+            expiresAt: new Date(Date.now() - 60_000),
+          },
+        },
+      )
+      .exec();
+  }
+
+  it("16a) CIR-04: bitişi geçmiş kapanmamış halka ücretsiz kurucuyu paywall'a düşürmez", async () => {
+    const creatorId = await seedUser('Ucretsiz', false);
+    const dhikrId = await seedDhikr('k16a');
+    const first = await seedCircleFor(creatorId, dhikrId);
+    await expireInDb(first.id);
+
+    const second = await seedCircleFor(creatorId, dhikrId);
+    expect(second.id).not.toBe(first.id);
+  });
+
+  it('16b) CIR-16: preview bitişi geçmiş halkayı closed gösterir', async () => {
+    const { circle } = await seedCircle();
+    await expireInDb(circle.id);
+    expect((await circlesService.preview(circle.code)).status).toBe('closed');
+  });
+
+  it('16c) CIR-21: bitişi geçmiş halkaya join → CIRCLE_NOT_ACTIVE', async () => {
+    const { circle } = await seedCircle();
+    await expireInDb(circle.id);
+    const [joiner] = await seedUsers(1);
+    await expectRejection(circlesService.join(joiner, circle.code), {
+      code: CIRCLE_ERROR_CODE.NOT_ACTIVE,
+      status: 403,
+    });
+  });
+
+  // ------------------------------------------------------------------
+  // 17) A-06: "X katıldı" push'u (halka, üye) başına bir kez
+  // ------------------------------------------------------------------
+  it('17) A-06: ayrılıp yeniden katılan için kurucuya ikinci push gitmez', async () => {
+    const { circle } = await seedCircle();
+    const [member] = await seedUsers(1);
+    await circlesService.join(member, circle.code);
+    await circlesService.leave(member, circle.id);
+    await circlesService.join(member, circle.code);
+    expect(countPush('yeni katılım')).toBe(1);
+  });
+
+  it('17b) A-06: aynı üyenin 20 paralel katılım+ayrılma+katılım dalgası en çok 1 push', async () => {
+    const { circle } = await seedCircle();
+    const [member] = await seedUsers(1);
+    await circlesService.join(member, circle.code);
+    await circlesService.leave(member, circle.id);
+    await Promise.allSettled(
+      Array.from({ length: 20 }, () =>
+        circlesService.join(member, circle.code),
+      ),
+    );
+    expect(countPush('yeni katılım')).toBe(1);
+  });
+
+  // ------------------------------------------------------------------
+  // 18) A-04: kurucu hesabı silinince kuruculuk devri
+  // ------------------------------------------------------------------
+  it('18) A-04: kuruculuk en eski aktif üyeye geçer, push gider', async () => {
+    const { creatorId, circle } = await seedCircle();
+    const [first, second] = await seedUsers(2);
+    await circlesService.join(first, circle.code);
+    await circlesService.join(second, circle.code);
+    pushSender.sendToDevices.mockClear();
+
+    await circlesService.transferFounderOnDelete(creatorId);
+
+    const doc = await circleModel.findById(circle.id).lean().exec();
+    expect(String(doc?.creatorId)).toBe(first);
+    expect(doc?.status).toBe('active');
+    expect(doc?.memberIds.map(String)).not.toContain(creatorId);
+    expect(countPush('yöneticisi oldun')).toBe(1);
+  });
+
+  it('18b) A-04: üye yoksa halka kapanır; tamamlanmış halkaya dokunulmaz', async () => {
+    const { creatorId, dhikrId, circle } = await seedCircle();
+    const done = await seedCircleFor(creatorId, dhikrId);
+    await circleModel
+      .updateOne({ _id: new Types.ObjectId(done.id) }, { status: 'completed' })
+      .exec();
+
+    await circlesService.transferFounderOnDelete(creatorId);
+
+    expect((await circleModel.findById(circle.id).lean().exec())?.status).toBe(
+      'closed',
+    );
+    const doneDoc = await circleModel.findById(done.id).lean().exec();
+    expect(doneDoc?.status).toBe('completed');
+    expect(pushSender.sendToDevices).not.toHaveBeenCalled();
+  });
+
+  it('18c) A-04: devir sırasında ilk üye ayrılırsa sıradaki üyeye geçer', async () => {
+    const { creatorId, circle } = await seedCircle();
+    const [first, second] = await seedUsers(2);
+    await circlesService.join(first, circle.code);
+    await circlesService.join(second, circle.code);
+
+    await Promise.all([
+      circlesService.leave(first, circle.id),
+      circlesService.transferFounderOnDelete(creatorId),
+    ]);
+
+    const doc = await circleModel.findById(circle.id).lean().exec();
+    expect(doc?.status).toBe('active');
+    expect(doc?.memberIds.map(String)).toContain(String(doc?.creatorId));
+    expect([first, second]).toContain(String(doc?.creatorId));
+  });
+
+  // ------------------------------------------------------------------
+  // 19) A-21: sunucu varsayılan halka adı yazmaz
+  // ------------------------------------------------------------------
+  it('19) A-21: ad verilmezse null saklanır, yanıtta dhikr bilgisi var; push zikir adını kullanır', async () => {
+    const creatorId = await seedUser('Kurucu', true);
+    const dhikrId = await seedDhikr('k19');
+    const created = await circlesService.create(creatorId, {
+      dhikrId,
+      goalCount: 10,
+    });
+    expect(created.name).toBeNull();
+    expect(created.dhikr.name.tr).toBe('tr-k19');
+    const doc = await circleModel.findById(created.id).lean().exec();
+    expect(doc?.name ?? null).toBeNull();
+
+    const [member] = await seedUsers(1);
+    await circlesService.join(member, created.code);
+    const body = (pushSender.sendToDevices.mock.calls as PushCall[])[0]?.[1]
+      .body;
+    expect(body).toContain('tr-k19');
   });
 });
