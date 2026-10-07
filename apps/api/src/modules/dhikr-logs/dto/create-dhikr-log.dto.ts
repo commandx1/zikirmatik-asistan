@@ -23,8 +23,10 @@ const LOG_SOURCE = {
 } as const;
 
 export class CreateDhikrLogDto {
+  // Sunucu yok sayar, token sahibini kullanır; eski istemci hâlâ gönderiyor.
+  @IsOptional()
   @IsMongoId()
-  userId!: string;
+  userId?: string;
 
   @ValidateIf((payload: CreateDhikrLogDto) => !payload.customDhikrId)
   @IsMongoId()

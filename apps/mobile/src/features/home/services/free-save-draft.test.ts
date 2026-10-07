@@ -17,6 +17,11 @@ describe("validateFreeSaveDraft", () => {
 });
 
 describe("createOnceGate (B-49)", () => {
+  it("A-02: target above the server cap (100000) is invalid; 100000 is allowed", () => {
+    expect(validateFreeSaveDraft({ name: "x", target: "100001" })).toEqual({ ok: false, error: "targetInvalid" });
+    expect(validateFreeSaveDraft({ name: "x", target: "100000" })).toEqual({ ok: true, name: "x", target: 100000 });
+  });
+
   it("MOB-KAY-04: a double tap enters once; release re-arms it", () => {
     const gate = createOnceGate();
     expect([gate.enter(), gate.enter()]).toEqual([true, false]);

@@ -180,6 +180,14 @@ export class CirclesService {
 
   async create(userId: string, dto: CreateCircleDto): Promise<CircleSummary> {
     const userObjectId = this.asObjectId(userId);
+    // Girdi doğrulaması limit/yetki kontrolünden önce (400 > 403).
+    if (dto.endDate && dto.endDate < todayKey()) {
+      throw new BadRequestException({
+        code: CIRCLE_ERROR_CODE.END_DATE_PAST,
+        message: CIRCLE_ERROR_MESSAGE[CIRCLE_ERROR_CODE.END_DATE_PAST],
+      });
+    }
+
     const premium = await this.isPremiumUser(userObjectId);
 
     const dhikr = await this.dhikrModel
@@ -215,13 +223,6 @@ export class CirclesService {
       );
     }
     const memberLimit = premium ? CIRCLE_MAX_MEMBERS : CIRCLE_FREE_MAX_MEMBERS;
-
-    if (dto.endDate && dto.endDate < todayKey()) {
-      throw new BadRequestException({
-        code: CIRCLE_ERROR_CODE.END_DATE_PAST,
-        message: CIRCLE_ERROR_MESSAGE[CIRCLE_ERROR_CODE.END_DATE_PAST],
-      });
-    }
 
     // Sunucu varsayılan ad YAZMAZ (A-21); boşsa alan hiç yazılmaz.
     const name = dto.name?.trim() || undefined;

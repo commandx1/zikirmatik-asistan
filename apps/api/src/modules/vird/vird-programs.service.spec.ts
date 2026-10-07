@@ -45,6 +45,11 @@ describe('VirdProgramsService', () => {
     findById: jest.fn(),
   };
 
+  // Varsayılan: istenen tüm katalog zikirleri var.
+  const dhikrModel = {
+    countDocuments: jest.fn(),
+  };
+
   const templatesService = {
     resolveForProgram: jest.fn(),
   };
@@ -123,10 +128,17 @@ describe('VirdProgramsService', () => {
     });
     userModel.findById.mockReset();
     templatesService.resolveForProgram.mockReset();
+    dhikrModel.countDocuments.mockReset();
+    dhikrModel.countDocuments.mockImplementation(
+      (filter: { _id: { $in: unknown[] } }) => ({
+        exec: () => Promise.resolve(filter._id.$in.length),
+      }),
+    );
     service = new VirdProgramsService(
       virdProgramModel as never,
       userModel as never,
       templatesService as never,
+      dhikrModel as never,
     );
   });
 

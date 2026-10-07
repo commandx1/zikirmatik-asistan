@@ -26,9 +26,6 @@
     "parity:check": "node scripts/visual-regression/compare.mjs",
     "prepare": "husky"
   },
-  "lint-staged": {
-    "*.{ts,tsx,js,mjs,cjs}": "eslint --flag v10_config_lookup_from_file --fix"
-  },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@types/react": "^19.0.10",

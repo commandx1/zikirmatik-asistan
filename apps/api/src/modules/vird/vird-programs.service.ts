@@ -9,6 +9,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
 import { shiftDateKey, todayKey } from '../../common/utils/date-keys';
+import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import {
   CreateVirdProgramDto,
@@ -47,6 +48,7 @@ export class VirdProgramsService {
     private readonly virdProgramModel: Model<VirdProgramDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly templatesService: VirdTemplatesService,
+    @InjectModel(Dhikr.name) private readonly dhikrModel: Model<DhikrDocument>,
   ) {}
 
   async findAllForUser(userId: string) {
@@ -97,6 +99,7 @@ export class VirdProgramsService {
     }
 
     const phases = this.normalizePhases(source, payload.phases);
+    await this.assertCatalogDhikrsExist(phases);
     if (source === 'manual') {
       this.assertDhikrLimit(isPremium, phases);
       this.assertManualJourneyPhases(payload.kind, phases);
@@ -371,6 +374,9 @@ export class VirdProgramsService {
     const nextPhases = payload.phases
       ? this.normalizePhases(existing.source, payload.phases)
       : undefined;
+    if (nextPhases) {
+      await this.assertCatalogDhikrsExist(nextPhases);
+    }
     if (nextPhases && existing.source === 'manual') {
       this.assertDhikrLimit(isPremium, nextPhases);
       this.assertManualJourneyPhases(existing.kind, nextPhases);
@@ -626,6 +632,34 @@ export class VirdProgramsService {
         free: this.mapItems(phase.slots?.free),
       },
     }));
+  }
+
+  /** Sarkan referans engeli: katalog dhikrId'leri var olmalı. customDhikrId
+   * istemci tarafıdır, kontrol edilmez. */
+  private async assertCatalogDhikrsExist(phases: VirdProgramPhase[]) {
+    const ids = new Set<string>();
+    for (const phase of phases) {
+      for (const items of Object.values(phase.slots)) {
+        for (const item of items ?? []) {
+          if (item.dhikrId) {
+            ids.add(item.dhikrId.toString());
+          }
+        }
+      }
+    }
+    if (ids.size === 0) {
+      return;
+    }
+    const found = await this.dhikrModel
+      .countDocuments({
+        _id: { $in: [...ids].map((id) => new Types.ObjectId(id)) },
+      })
+      .exec();
+    if (found !== ids.size) {
+      throw new BadRequestException(
+        'Programdaki zikirlerden biri katalogda bulunamadı.',
+      );
+    }
   }
 
   private mapItems(

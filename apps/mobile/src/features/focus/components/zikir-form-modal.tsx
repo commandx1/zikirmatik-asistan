@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { KeyboardAwareBottomSheetModal } from '../../../components/ui/keyboard-aware-bottom-sheet-modal'
 import { PrimaryCtaButton } from '../../../components/ui/primary-cta-button'
 import { ThemedInput } from '../../../components/ui/themed-input'
+import { MAX_DHIKR_TARGET } from '../../home/services/free-save-draft'
 
 type ZikirFormValues = {
   name: string
@@ -69,7 +70,7 @@ export function ZikirFormModal({
     }
 
     const parsedTarget = targetDraft.trim().length > 0 ? Number.parseInt(targetDraft, 10) : 0
-    if (!Number.isFinite(parsedTarget) || parsedTarget < 0) {
+    if (!Number.isFinite(parsedTarget) || parsedTarget < 0 || parsedTarget > MAX_DHIKR_TARGET) {
       setLocalError(t('focus:form.errors.targetInvalid'))
       return
     }

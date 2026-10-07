@@ -235,7 +235,7 @@ export class DhikrLogsService {
     // halkanın zikriyle eşleşiyor mu (bkz. CirclesService.assertCanContribute).
     if (circleObjectId) {
       await this.circlesService.assertCanContribute(
-        payload.userId,
+        userObjectId.toHexString(),
         circleObjectId.toHexString(),
         dhikrId,
         payload.date,
@@ -324,11 +324,11 @@ export class DhikrLogsService {
 
     const created = await this.upsertLogOnce(filter, update);
 
-    await this.safeRecalcStreak(payload.userId);
+    await this.safeRecalcStreak(userObjectId.toHexString());
     await this.safeApplyVirdProgress(
       vird
         ? {
-            userId: payload.userId,
+            userId: userObjectId.toHexString(),
             virdProgramId: vird.virdProgramId.toString(),
             date: payload.date,
           }
@@ -545,7 +545,7 @@ export class DhikrLogsService {
       }
       const item = items[index];
       const key = `${item.userId}:${vird.virdProgramId.toString()}:${item.date}`;
-      if (seen.has(key)) {
+      if (!item.userId || seen.has(key)) {
         continue;
       }
       seen.add(key);
@@ -614,6 +614,8 @@ export class DhikrLogsService {
     }
 
     const result = await this.dhikrLogModel.deleteMany(filter).exec();
+    // B11: silinen günler seriyi düşürebilir; longestStreak $max ile korunur.
+    await this.safeRecalcStreak(userId);
 
     return {
       deleted: true,
@@ -648,8 +650,8 @@ export class DhikrLogsService {
     };
   }
 
-  private asObjectId(rawId: string) {
-    if (!Types.ObjectId.isValid(rawId)) {
+  private asObjectId(rawId?: string): Types.ObjectId {
+    if (!rawId || !Types.ObjectId.isValid(rawId)) {
       throw new NotFoundException('Geçersiz ObjectId değeri.');
     }
 

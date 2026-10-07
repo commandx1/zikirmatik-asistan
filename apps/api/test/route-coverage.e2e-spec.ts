@@ -111,6 +111,32 @@ describe('Rota kapsamı (e2e)', () => {
         .query(query)
         .set(bearer(user.accessToken));
 
+    it('[BUG:B11] silme sonrası seri yeniden hesaplanır (currentStreak şişik kalmaz); longestStreak düşmez', async () => {
+      const user = await newUser();
+      const d1 = await newDhikr();
+      const d2 = await newDhikr();
+      await writeLog(user, { dhikrId: d1, date: today });
+      await writeLog(user, { dhikrId: d1, date: yesterday });
+      await writeLog(user, { dhikrId: d2, date: shiftDateKey(today, -5) });
+      const streak = () =>
+        request(t.http)
+          .get(`/v1/streaks/${user.userId}`)
+          .set(bearer(user.accessToken))
+          .expect(200);
+      expect(data(await streak())).toMatchObject({
+        currentStreak: 2,
+        longestStreak: 2,
+      });
+
+      await del(user, { dhikrId: d1 }).expect(200);
+
+      expect(data(await streak())).toMatchObject({
+        currentStreak: 0,
+        longestStreak: 2,
+        totalDaysActive: 1,
+      });
+    });
+
     it('[HAPPY] dhikrId: kullanıcının o zikre ait TÜM günlerini siler; diğer zikir ve diğer kullanıcı kalır', async () => {
       const user = await newUser();
       const other = await newUser();

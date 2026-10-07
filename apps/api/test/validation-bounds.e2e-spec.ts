@@ -91,8 +91,11 @@ describe('Doğrulama sınırları (e2e)', () => {
       expect(doc?.isPremium).toBeFalsy();
     });
 
-    it('[CHAR] gövdede userId ZORUNLU (ObjectId) — token sahibi zaten kullanılsa da eksikse 400 (ÜRÜN SORUSU)', async () => {
-      await postLog({ userId: undefined }).expect(400);
+    it('gövdede userId OPSİYONEL ve yok sayılır (token sahibi kullanılır); bozuksa yine 400', async () => {
+      await postLog({ userId: undefined }).expect(201);
+      const other = await signIn(t.http, { sub: `e2e-vb-o-${randomUUID()}` });
+      const res = await postLog({ userId: other.userId }).expect(201);
+      expect(data<{ userId: string }>(res).userId).toBe(user.userId);
       await postLog({ userId: 'xyz' }).expect(400);
     });
 
@@ -381,9 +384,31 @@ describe('Doğrulama sınırları (e2e)', () => {
     it.each(['ab', 'a'.repeat(60)])('[BOUND] name=%p → 201', async (name) => {
       await create({ name }).expect(201);
     });
-    it('[CHAR] name yalnız boşluk (3 karakter) → 201 geçer (🟡: kırpma yok)', async () => {
+    it('name yalnız boşluk → 201 ama kırpılır; ad hiç yazılmaz (A-21)', async () => {
       const res = await create({ name: '   ' }).expect(201);
-      expect(data<{ id: string }>(res).id).toBeTruthy();
+      const id = data<{ id: string }>(res).id;
+      expect(id).toBeTruthy();
+      const doc = await t
+        .model('Circle')
+        .findById(id)
+        .lean<{ name?: string }>();
+      expect(doc?.name).toBeUndefined();
+      const named = await create({ name: '  ab  ' }).expect(201);
+      const doc2 = await t
+        .model('Circle')
+        .findById(data<{ id: string }>(named).id)
+        .lean<{ name?: string }>();
+      expect(doc2?.name).toBe('ab');
+    });
+
+    it('geçmiş endDate: limit/premium kontrolünden ÖNCE 400 (ücretsiz + zaten 1 aktif halka olsa da)', async () => {
+      await send('post', '/v1/circles', { dhikrId, goalCount: 10 }).expect(201);
+      const res = await send('post', '/v1/circles', {
+        dhikrId,
+        goalCount: 10,
+        endDate: shiftDateKey(today, -1),
+      }).expect(400);
+      expect(JSON.stringify(res.body)).toContain('END_DATE_PAST');
     });
 
     it('[BOUND] dhikrId bozuk → 400; var olmayan → 404', async () => {
@@ -730,13 +755,21 @@ describe('Doğrulama sınırları (e2e)', () => {
       await ud({ target: -1 }).expect(400);
       await ud({ target: 1.5 }).expect(400);
       await ud({ target: '5' }).expect(400);
-      await ud({ target: 0 }).expect(201);
       await ud({ isFavorite: 'x' }).expect(400);
       await ud({ name: 5 }).expect(400);
     });
-    it('[CHAR] boş gövde 201 (hiçbir alan zorunlu değil; clientId üretilir); target 2^31 kabul (üst sınır yok)', async () => {
+    it('boş gövde 201 (hiçbir alan zorunlu değil; clientId üretilir — bilinçli, istemci taslak kaydı bunu kullanır)', async () => {
       await send('post', '/v1/user-dhikrs', {}).expect(201);
-      await ud({ target: 2 ** 31 }).expect(201);
+    });
+    it('[BOUND] target: 0 (hedef yok — mobil boş hedefi 0 gönderir), 1 ve 100000 → 201; 100001, 2^31, 1e300 → 400 (A-02 tavanı); PATCH aynı', async () => {
+      await ud({ target: 0 }).expect(201);
+      await ud({ target: 1 }).expect(201);
+      await ud({ clientId: 'tgt', target: 100_000 }).expect(201);
+      for (const target of [100_001, 2 ** 31, 1e300]) {
+        await ud({ target }).expect(400);
+        await send('patch', '/v1/user-dhikrs/tgt', { target }).expect(400);
+      }
+      await send('patch', '/v1/user-dhikrs/tgt', { target: 5 }).expect(200);
     });
   });
 
@@ -781,10 +814,22 @@ describe('Doğrulama sınırları (e2e)', () => {
       await program(undefined).expect(400);
       await program('x').expect(400);
     });
-    it('[CHAR] katalogda olmayan dhikrId ile program 201 (var olma kontrolü yok; ÜRÜN/TEKNİK SORU: sarkan referans)', async () => {
-      await program([
+    it('katalogda olmayan dhikrId ile program → 400 Türkçe mesaj; customDhikrId kontrol edilmez', async () => {
+      const res = await program([
         phase({ slots: { morning: [{ dhikrId: OID, target: 1 }] } }),
+      ]).expect(400);
+      expect(JSON.stringify(res.body)).toContain('katalogda');
+      await program([
+        phase({ slots: { morning: [{ customDhikrId: 'c-1', target: 1 }] } }),
       ]).expect(201);
+      await program([phase()]).expect(201);
+    });
+    it('PATCH ile de olmayan dhikrId → 400', async () => {
+      const ok = await program([phase()]).expect(201);
+      const id = data<{ _id: string }>(ok)._id;
+      await send('patch', `/v1/vird/programs/${id}`, {
+        phases: [phase({ slots: { morning: [{ dhikrId: OID, target: 1 }] } })],
+      }).expect(400);
     });
     it('[CHAR] toDay < fromDay tek başına (routine) 500 vermez (❓ S24: ürün kuralı belirsiz)', async () => {
       const res = await program([phase({ fromDay: 5, toDay: 2 })]);

@@ -1,3 +1,6 @@
+/** Sunucunun tek kayıt / kişisel zikir hedefi tavanı (API MAX_LOG_COUNT, karar A-02). */
+export const MAX_DHIKR_TARGET = 100_000;
+
 export type FreeSaveDraftResult =
   | { ok: true; name: string; target: number }
   | { ok: false; error: "nameRequired" | "targetInvalid" };
@@ -13,7 +16,7 @@ export function validateFreeSaveDraft(draft: { name: string; target: string }): 
     return { ok: true, name, target: 0 };
   }
   const parsed = Number.parseInt(targetText, 10);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
+  if (!Number.isFinite(parsed) || parsed <= 0 || parsed > MAX_DHIKR_TARGET) {
     return { ok: false, error: "targetInvalid" };
   }
   return { ok: true, name, target: parsed };

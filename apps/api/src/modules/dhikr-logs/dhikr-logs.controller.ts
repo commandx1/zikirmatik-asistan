@@ -25,8 +25,7 @@ export class DhikrLogsController {
 
   @Post()
   create(@Body() payload: CreateDhikrLogDto, @CurrentUserId() userId: string) {
-    payload.userId = userId;
-    return this.dhikrLogsService.create(payload);
+    return this.dhikrLogsService.create({ ...payload, userId });
   }
 
   @Post('bulk')
