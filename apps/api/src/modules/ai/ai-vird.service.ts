@@ -141,58 +141,84 @@ export class AiVirdService {
       };
     }
 
-    // AIV-06: taslağı teslim edilmiş (makbuzlu) ama sonradan kaybolmuş
-    // (silindi / vazgeçildi / TTL) flowId yeniden kullanılamaz — kredisiz
-    // üretim açığı. Makbuzsuz debit = debit ile taslak yazımı arasında çöken
-    // istek: aşağıda kredi tekrar düşmeden (debitCreditForFlow mevcut satırı
-    // görür) bir kez yeniden üretilir; eşzamanlı retry'lar `ai.flowId`
-    // unique index'inde tek programa iner.
-    if (access?.alreadyDebited && access.fulfilled) {
+    // AIV-06: makbuzlu debit'in taslağı sonradan kaybolduysa (silindi /
+    // vazgeçildi / TTL) flowId yeniden kullanılamaz. Makbuzsuz debit (debit
+    // ile taslak arasında ölen süreç ya da a801253 öncesi eski satır) TEK bir
+    // kurtarma koşusu hak eder: atomik talep edilir, kaybedenler ve sonraki
+    // denemeler 409 alır — ajan bir ödenmiş debit başına en çok bir kez koşar.
+    // Eşzamanlı kurtarmada beklemek yerine 409: ajan saniyeler sürer, sahibi
+    // bitirdikten sonraki retry mevcut taslağı yukarıda 201 ile alır.
+    const recovering = Boolean(access?.alreadyDebited);
+    if (
+      recovering &&
+      (access?.fulfilled ||
+        !(await this.aiCreditsService.claimFlowRecovery(
+          userId,
+          flowId,
+          AI_CREDIT_REASONS.VIRD_PROGRAM_DEBIT,
+        )))
+    ) {
       throw new ConflictException({
         code: 'AI_FLOW_ALREADY_USED',
         message: 'Bu istek daha önce kullanıldı. Yeni bir istek başlat.',
       });
     }
 
-    const recentDhikrIds =
-      await this.retrievalService.getRecentDhikrIds(userId);
+    // Bu isteğin sahip olduğu (iade edebileceği) debit: kurtarma talebi ya da
+    // aşağıda bu isteğin yazdığı satır. Eşzamanlı kopya istek (AIV-15) başka
+    // isteğin debit'ini iade etmez.
+    let ownsDebit = recovering;
+    let draft: Awaited<ReturnType<VirdProgramsService['createAiDraft']>>;
+    let wallet: { balance: number };
+    try {
+      const recentDhikrIds =
+        await this.retrievalService.getRecentDhikrIds(userId);
 
-    const outcome = await this.agent.run({
-      freeText,
-      durationDays: payload.durationDays,
-      slots: payload.slots,
-      recentDhikrIds,
-      locale,
-      flowId,
-      userId: userId.toString(),
-    });
+      const outcome = await this.agent.run({
+        freeText,
+        durationDays: payload.durationDays,
+        slots: payload.slots,
+        recentDhikrIds,
+        locale,
+        flowId,
+        userId: userId.toString(),
+      });
 
-    if (outcome.kind === 'offTopic') {
-      log.log(`[vird-off-topic] tespit edildi — ${Date.now() - startedAt}ms`);
-      return { kind: 'offTopic', message: OFF_TOPIC_MESSAGE[locale] };
+      if (outcome.kind === 'offTopic') {
+        log.log(`[vird-off-topic] tespit edildi — ${Date.now() - startedAt}ms`);
+        if (ownsDebit) await this.refundUndelivered(userId, flowId);
+        return { kind: 'offTopic', message: OFF_TOPIC_MESSAGE[locale] };
+      }
+
+      // B9: önce kredi düşülür, sonra taslak yazılır.
+      const debit = await this.aiCreditsService.debitCreditForFlow(
+        userId,
+        flowId,
+        user.isPremium,
+        promptHash,
+        AI_CREDIT_REASONS.VIRD_PROGRAM_DEBIT,
+        VIRD_PROGRAM_CREDIT_COST,
+      );
+      ownsDebit ||= Boolean(debit.created);
+      wallet = debit;
+
+      draft = await this.virdProgramsService.createAiDraft({
+        userId,
+        flowId,
+        intent: outcome.expandedQuery,
+        durationDays: payload.durationDays,
+        summary: outcome.summary,
+        title: outcome.title,
+        phases: this.toProgramPhases(outcome.phases),
+        prayerSelection: payload.prayerSelection,
+        slots: payload.slots,
+      });
+    } catch (error) {
+      // Teslim edilemeyen kesim iade edilir; asıl hata yine yüzeye çıkar.
+      if (ownsDebit) await this.refundUndelivered(userId, flowId);
+      throw error;
     }
-
-    // B9: önce kredi düşülür, sonra taslak yazılır.
-    const wallet = await this.aiCreditsService.debitCreditForFlow(
-      userId,
-      flowId,
-      user.isPremium,
-      promptHash,
-      AI_CREDIT_REASONS.VIRD_PROGRAM_DEBIT,
-      VIRD_PROGRAM_CREDIT_COST,
-    );
-
-    const draft = await this.virdProgramsService.createAiDraft({
-      userId,
-      flowId,
-      intent: outcome.expandedQuery,
-      durationDays: payload.durationDays,
-      summary: outcome.summary,
-      title: outcome.title,
-      phases: this.toProgramPhases(outcome.phases),
-      prayerSelection: payload.prayerSelection,
-      slots: payload.slots,
-    });
+    // Makbuz yazılamazsa iade YOK: taslak var, sonraki retry makbuzu tamamlar.
     await this.markDraftDelivered(userId, flowId, draft._id);
 
     log.log(
@@ -205,6 +231,30 @@ export class AiVirdService {
       program: await this.buildPreview(draft, locale),
       remainingCredits: wallet.balance,
     };
+  }
+
+  /**
+   * Taslak yazılmadıysa debit'i iade eder (refundFlowDebit). Taslak varsa
+   * (yazım fırlattı ama kayıt düştü / eşzamanlı kopya yazdı) iade edilmez —
+   * aksi halde ücretsiz program kalırdı. Telafi hatası asıl hatayı gölgelemez.
+   */
+  private async refundUndelivered(userId: Types.ObjectId, flowId: string) {
+    try {
+      const draft = await this.virdProgramsService.findAiDraftByFlowId(
+        userId.toString(),
+        flowId,
+      );
+      if (draft) return;
+      await this.aiCreditsService.refundFlowDebit(
+        userId,
+        flowId,
+        AI_CREDIT_REASONS.VIRD_PROGRAM_DEBIT,
+      );
+    } catch (error) {
+      this.runtime
+        .flowLog(flowId)
+        .error(`[vird-refund-failed] ${String(error)}`);
+    }
   }
 
   private markDraftDelivered(

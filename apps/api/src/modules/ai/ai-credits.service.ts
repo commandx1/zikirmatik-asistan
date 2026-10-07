@@ -341,7 +341,7 @@ export class AiCreditsService {
     promptHash: string,
     reason: AiCreditReason = AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
     amount = 1,
-  ): Promise<{ balance: number }> {
+  ): Promise<{ balance: number; created: boolean }> {
     const existingDebit = await this.aiCreditLedgerModel
       .findOne({
         userId,
@@ -357,7 +357,7 @@ export class AiCreditsService {
         .findOne({ userId })
         .lean()
         .exec();
-      return { balance: wallet?.balance ?? 0 };
+      return { balance: wallet?.balance ?? 0, created: false };
     }
 
     const creditState = await this.ensureCreditState(userId, isPremium);
@@ -394,7 +394,7 @@ export class AiCreditsService {
           .findOne({ userId })
           .lean()
           .exec();
-        return { balance: currentWallet?.balance ?? 0 };
+        return { balance: currentWallet?.balance ?? 0, created: false };
       }
       throw error;
     }
@@ -408,9 +408,11 @@ export class AiCreditsService {
     // Her iki alanın yeni değeri de aynı $set aşamasında, orijinal (stage
     // öncesi) grantCredits'e göre hesaplanır — aggregation $set/$addFields
     // semantiğinde bir stage'in alanları birbirinin YENİ değerini görmez.
-    let updatedWallet: { balance: number } | null = null;
+    // new:false → kesim öncesi cüzdan: kovadan alınan pay (grantTake) iade
+    // (refundFlowDebit) için debit satırına yazılır.
+    let walletBefore: { balance: number; grantCredits: number } | null = null;
     try {
-      updatedWallet = await this.aiCreditWalletModel
+      walletBefore = await this.aiCreditWalletModel
         .findOneAndUpdate(
           { userId, balance: { $gte: amount } },
           [
@@ -436,7 +438,7 @@ export class AiCreditsService {
           ],
           // Mongoose 9: aggregation pipeline'lı update için updatePipeline zorunlu;
           // eksikse "Cannot pass an array to query updates" fırlatır (canlı testte 500).
-          { new: true, updatePipeline: true },
+          { new: false, updatePipeline: true },
         )
         .exec();
     } catch (error) {
@@ -451,7 +453,7 @@ export class AiCreditsService {
       throw error;
     }
 
-    if (!updatedWallet) {
+    if (!walletBefore) {
       // Düşülecek kredi kalmamış: ledger kaydını telafi olarak sil ve reddet.
       await this.aiCreditLedgerModel
         .deleteOne({
@@ -467,6 +469,8 @@ export class AiCreditsService {
       });
     }
 
+    const balanceAfter = walletBefore.balance - amount;
+    const grantTake = Math.min(walletBefore.grantCredits, amount);
     // balanceAfter bilgilendirme amaçlı; başarısız olsa da akışı bozmasın.
     try {
       await this.aiCreditLedgerModel
@@ -476,7 +480,7 @@ export class AiCreditsService {
             reason,
             flowId,
           },
-          { $set: { balanceAfter: updatedWallet.balance } },
+          { $set: { balanceAfter, 'metadata.grantTake': grantTake } },
         )
         .exec();
     } catch (error) {
@@ -485,7 +489,79 @@ export class AiCreditsService {
       );
     }
 
-    return { balance: updatedWallet.balance };
+    return { balance: balanceAfter, created: true };
+  }
+
+  /**
+   * AIV-06: makbuzsuz debit'in (debit ile teslim arasında çöken istek ya da
+   * a801253 öncesi eski satır) TEK seferlik kurtarma hakkını atomik talep
+   * eder. true → bu istek ajanı bir kez yeniden koşturabilir; false → hak
+   * kullanılmış, teslim edilmiş ya da satır yok (çağıran 409 verir).
+   */
+  async claimFlowRecovery(
+    userId: Types.ObjectId,
+    flowId: string,
+    reason: AiCreditReason,
+  ): Promise<boolean> {
+    const result = await this.aiCreditLedgerModel
+      .updateOne(
+        {
+          userId,
+          reason,
+          flowId,
+          'metadata.fulfilledRef': { $exists: false },
+          'metadata.recoveryAt': { $exists: false },
+        },
+        { $set: { 'metadata.recoveryAt': new Date() } },
+      )
+      .exec();
+    return result.modifiedCount === 1;
+  }
+
+  /**
+   * Teslim edilemeyen (makbuzsuz) flow debit'ini iade eder: satır atomik
+   * silinir (CRD-17 telafi deseni — eşzamanlı iki iade tek kez uygular),
+   * kesilen kredi alındığı kovalara geri yazılır. flowId taze hale gelir:
+   * aynı flowId ile yeni deneme normal ücretlendirilir. Kova payı bilinmeyen
+   * (eski) satırda tamamı grant kovasına döner — kalıcı topup kredisi basılmaz.
+   */
+  async refundFlowDebit(
+    userId: Types.ObjectId,
+    flowId: string,
+    reason: AiCreditReason,
+  ): Promise<void> {
+    const debit = await this.aiCreditLedgerModel
+      .findOneAndDelete({
+        userId,
+        reason,
+        flowId,
+        'metadata.fulfilledRef': { $exists: false },
+      })
+      .lean()
+      .exec();
+    if (!debit || debit.delta >= 0) return;
+    const amount = -debit.delta;
+    const recordedGrantTake = debit.metadata?.grantTake;
+    const grantTake =
+      typeof recordedGrantTake === 'number' ? recordedGrantTake : amount;
+    await this.aiCreditWalletModel
+      .updateOne(
+        { userId },
+        [
+          {
+            $set: {
+              grantCredits: { $add: ['$grantCredits', grantTake] },
+              topupCredits: { $add: ['$topupCredits', amount - grantTake] },
+            },
+          },
+          { $set: WALLET_BALANCE_STAGE },
+        ],
+        { updatePipeline: true },
+      )
+      .exec();
+    this.logger.warn(
+      `Flow debit iade edildi (flow ${flowId}, ${reason}, ${amount} kredi)`,
+    );
   }
 
   async ensureCreditState(
