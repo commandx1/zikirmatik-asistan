@@ -1,8 +1,31 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { REMINDER_OFFER_SHOWN_KEY } from "../../../lib/storage/keys";
+import { useBadgeCelebrationStore } from "../../../store/badge-celebration-store";
 import { useNotificationPromptStore } from "../../../store/notification-prompt-store";
 import { useProfileStore } from "../../../store/profile-store";
+import { BADGE_CELEBRATION_IDLE_MS } from "../../stats/services/badge-celebration";
+
+// The badge modal appears after the counter idles (BADGE_CELEBRATION_IDLE_MS)
+// plus the stats refetch; the card must not stack on it, so it waits that long
+// and then until the badge modal (if any) is closed.
+const BADGE_SETTLE_MS = BADGE_CELEBRATION_IDLE_MS + 1500;
+let offerInFlight = false;
+
+function waitForBadgeModalClosed(): Promise<void> {
+  const store = useBadgeCelebrationStore;
+  if (!store.getState().isCelebrationVisible) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    const unsubscribe = store.subscribe((state) => {
+      if (!state.isCelebrationVisible) {
+        unsubscribe();
+        resolve();
+      }
+    });
+  });
+}
 
 type OfferInput = {
   permissionGranted: boolean;
@@ -25,6 +48,10 @@ export function shouldOfferReminderCard(input: OfferInput): boolean {
  * soft-ask modal is the card; the OS dialog opens only after "Evet".
  */
 export async function offerDailyReminderAfterSave(optIn: () => void): Promise<void> {
+  if (offerInFlight) {
+    return;
+  }
+  offerInFlight = true;
   try {
     const [current, shown] = await Promise.all([
       Notifications.getPermissionsAsync(),
@@ -39,10 +66,14 @@ export async function offerDailyReminderAfterSave(optIn: () => void): Promise<vo
     if (!offer) {
       return;
     }
+    await new Promise((resolve) => setTimeout(resolve, BADGE_SETTLE_MS));
+    await waitForBadgeModalClosed();
     await AsyncStorage.setItem(REMINDER_OFFER_SHOWN_KEY, "1");
     useNotificationPromptStore.getState().setNextReason("dailyReminder");
     optIn();
   } catch {
     // Best effort: an offer must never break saving.
+  } finally {
+    offerInFlight = false;
   }
 }

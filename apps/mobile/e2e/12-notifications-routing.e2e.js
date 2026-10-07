@@ -53,7 +53,7 @@ describe('12 bildirim, özel günler, yönlendirme, zorunlu güncelleme', () => 
     resetUserData();
   });
 
-  it('@smoke B-11 bildirim kartı: OS izin penceresi açılmaz, "Şimdi değil" izin istemez, kayıtlardan sonra kart tekrar çıkmaz', async () => {
+  it('@smoke B-11 bildirim kartı: OS izin penceresi açılmaz, "Şimdi değil" izin istemez, ilk kayıttan (serbest-kayıt formu) sonra kart çıkar, tekrar çıkmaz', async () => {
     // OS izni verilmemiş temiz kurulum: iOS "unset", Android kurulum sonrası izni geri al.
     await device.launchApp({ newInstance: true, delete: true, permissions: { notifications: isAndroid ? 'YES' : 'unset' } });
     if (isAndroid) {
@@ -75,18 +75,14 @@ describe('12 bildirim, özel günler, yönlendirme, zorunlu güncelleme', () => 
     await element(by.id('e2e-home-save-name-input')).replaceText('Bildirim Zikri');
     await element(by.id('e2e-home-save-target-input')).replaceText('1');
     await element(by.id('e2e-home-save-name-submit')).tap();
-    // Serbest-kayıt formu yolu kartı tetiklemiyor (rapor: B-11); düzenli Kaydet yolu tetikler.
+    // Serbest-kayıt formu = ilk başarılı kayıt: kart rozet modalı kapandıktan sonra çıkar (kuyruk).
     await dismissBadgeIfShown(8000);
-    await sleep(2500);
-    await tapN('e2e-home-counter', 1);
-    await element(by.id('e2e-home-save')).tap();
-    await dismissBadgeIfShown(5000);
     await exists('e2e-notif-offer-dismiss', 30000);
     // "Şimdi değil": OS izin penceresi açılmaz, kart kapanır.
     await element(by.id('e2e-notif-offer-dismiss')).tap();
     await waitFor(element(by.id('e2e-notif-offer-dismiss'))).not.toExist().withTimeout(10000);
 
-    // Sonraki kayıtta kart tekrar çıkmaz.
+    // Sonraki düzenli Kaydet'te kart tekrar çıkmaz.
     await tapN('e2e-home-counter', 1);
     await element(by.id('e2e-home-save')).tap();
     await sleep(4000);

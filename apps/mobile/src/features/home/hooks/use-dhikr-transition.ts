@@ -8,6 +8,8 @@ import { useAuthStore } from '../../../store/auth-store'
 import { useDhikrStore } from '../../../store/dhikr-store'
 import { createDhikrLog } from '../../dhikrs/services/dhikr-logs-api-client'
 import { findVerifiedActiveDhikrByTransliteration } from '../../dhikrs/services/dhikrs-api-client'
+import { offerDailyReminderAfterSave } from '../../notifications/services/reminder-offer'
+import { useTourNotificationOptIn } from '../../tour/hooks/use-tour-notification-opt-in'
 import { createUserDhikr } from '../../dhikrs/services/user-dhikrs-api-client'
 import type { EsmaulHusnaItem, ZikirItem } from '../../focus/types'
 import { buildNextAutoFreeTitle } from '../services/free-mode-title'
@@ -75,6 +77,7 @@ export function useDhikrTransition({
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
   const isMember = authStatus === 'authenticated' && Boolean(sessionUserId)
+  const optInDailyReminder = useTourNotificationOptIn()
   // B-49: a fast double tap on the free-save submit must create one dhikr.
   const freeSubmitGate = useRef(createOnceGate()).current
   useEffect(() => {
@@ -296,6 +299,8 @@ export function useDhikrTransition({
       )
       .then(savedLog => {
         applySavedBackendLog(savedLog)
+        // B-11: the free-mode save is also a first saved dhikr.
+        void offerDailyReminderAfterSave(optInDailyReminder)
       })
       .catch((error: unknown) => {
         const message = error instanceof Error ? error.message : t('home:errors.dhikrLogSaveFailed')
