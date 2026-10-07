@@ -7,7 +7,16 @@ import type { DeviceDocument } from '../src/modules/devices/schemas/device.schem
 import { PushSenderService } from '../src/modules/push/push-sender.service';
 import { createTestApp, type TestApp } from './helpers/create-test-app';
 import { clearCollections, syncIndexes } from './helpers/db';
-import { data, signIn } from './helpers/fixtures';
+import {
+  bearer,
+  data,
+  makePremium,
+  seedDhikr,
+  signIn,
+} from './helpers/fixtures';
+import { istanbulDateKey } from '../src/common/utils/date-keys';
+import type { DhikrDocument } from '../src/modules/dhikrs/schemas/dhikr.schema';
+import type { UserDocument } from '../src/modules/users/schemas/user.schema';
 import { atInstant } from './helpers/clock';
 
 const SECRET = 'test-campaign-secret'; // setup-env.ts CAMPAIGN_TRIGGER_SECRET
@@ -576,5 +585,49 @@ describe('PushCampaigns (e2e)', () => {
         { numRuns: 25 },
       );
     });
+  });
+
+  // API-PSH-22
+  it('push_dispatches sentAt üzerinde 30 günlük TTL indeksi var', async () => {
+    const indexes = await t.model('PushDispatch').collection.indexes();
+    const ttl = indexes.find((i) => i.key.sentAt === 1);
+    expect(ttl?.expireAfterSeconds).toBe(30 * 24 * 60 * 60);
+  });
+
+  // API-PSH-20
+  it('halka katılım push’u kampanya günlük tavanından (push_dispatches) etkilenmez', async () => {
+    const creator = await signIn(t.http, { sub: 'psh20-creator' });
+    const joiner = await signIn(t.http, { sub: 'psh20-joiner' });
+    await makePremium(t.model<UserDocument>('User'), creator.userId);
+    await t.model<DeviceDocument>('Device').create({
+      deviceId: 'psh20-device',
+      expoPushToken: 'ExponentPushToken[psh20]',
+      platform: 'ios',
+      isActive: true,
+      userId: new Types.ObjectId(creator.userId),
+    });
+    // Aynı cihaz bugün kampanya kotasını zaten doldurmuş.
+    await t.model('PushDispatch').create({
+      campaignKey: 'winback',
+      deviceId: 'psh20-device',
+      dayKey: istanbulDateKey(new Date()),
+      sentAt: new Date(),
+    });
+    const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+    const created = await request(t.http)
+      .post('/v1/circles')
+      .set(bearer(creator.accessToken))
+      .send({ dhikrId, goalCount: 100 })
+      .expect(201);
+    pushSendMock().mockClear();
+
+    await request(t.http)
+      .post('/v1/circles/join')
+      .set(bearer(joiner.accessToken))
+      .send({ code: data<{ code: string }>(created).code })
+      .expect(201);
+
+    expect(pushSendMock()).toHaveBeenCalledTimes(1);
+    expect(await t.model('PushDispatch').countDocuments({})).toBe(1);
   });
 });

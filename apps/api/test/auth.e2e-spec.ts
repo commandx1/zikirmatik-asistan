@@ -255,4 +255,43 @@ describe('Auth (e2e)', () => {
       nowSpy.mockRestore();
     }
   });
+
+  it('API-AUTH-05: idToken boş veya yalnız boşluk → 400', async () => {
+    for (const idToken of ['', '   ']) {
+      await request(t.http)
+        .post('/v1/auth/provider/verify')
+        .send({
+          provider: 'google',
+          platform: 'android',
+          idToken,
+          deviceId: 'e2e-device-a5',
+        })
+        .expect(400);
+    }
+  });
+
+  it('API-AUTH-10: e-postası aynı Google ve Apple girişi aynı kullanıcıya bağlanır', async () => {
+    const g = await signIn(t.http, {
+      sub: 'g-same-mail',
+      email: 'Same@Example.com',
+    });
+    const a = await signIn(t.http, {
+      sub: 'a-same-mail',
+      email: 'same@example.com',
+      provider: 'apple',
+      platform: 'ios',
+    });
+    expect(a.userId).toBe(g.userId);
+    expect(await t.model('User').countDocuments({})).toBe(1);
+    expect(await t.model('AuthIdentity').countDocuments({})).toBe(2);
+  });
+
+  it('API-AUTH-22: kayıtsız deviceId ile giriş başarılı, cihaz oluşturulmaz', async () => {
+    const signed = await signIn(t.http, {
+      sub: 'e2e-auth-nodev',
+      deviceId: 'never-registered-device',
+    });
+    expect(signed.userId).toBeTruthy();
+    expect(await t.model('Device').countDocuments({})).toBe(0);
+  });
 });

@@ -230,6 +230,25 @@ describe('WebhooksController', () => {
       );
     });
 
+    it('purchased_at_ms yoksa başlangıç = şimdi (API-WHK-18)', async () => {
+      jest.useFakeTimers({ now: new Date('2026-06-15T07:00:00.000Z') });
+      try {
+        subscriptionsService.create.mockResolvedValue(undefined);
+
+        await controller.handleRevenueCat(
+          `Bearer ${secret}`,
+          payload({ id: 'evt-now', purchased_at_ms: undefined }),
+        );
+
+        const [dto] = subscriptionsService.create.mock.calls[0] as [
+          { startDate: Date },
+        ];
+        expect(dto.startDate.toISOString()).toBe('2026-06-15T07:00:00.000Z');
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
     it('expiration_at_ms yoksa grant event atlanır (create çağrılmaz)', async () => {
       await controller.handleRevenueCat(
         `Bearer ${secret}`,

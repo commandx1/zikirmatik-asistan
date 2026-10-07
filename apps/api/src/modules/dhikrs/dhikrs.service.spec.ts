@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { Binary } from 'mongodb';
+import { Types } from 'mongoose';
 import { DhikrsService } from './dhikrs.service';
 
 describe('DhikrsService', () => {
@@ -93,5 +94,47 @@ describe('DhikrsService', () => {
     await expect(
       service.findVerifiedActiveByTransliteration('Bilinmeyen'),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  describe('update() embedding yenileme (API-DHK-10)', () => {
+    const lean = (value: unknown) => ({
+      lean: () => ({ exec: () => Promise.resolve(value) }),
+    });
+    const id = '507f1f77bcf86cd799439011';
+
+    function build(storedHash: string) {
+      const model = {
+        findByIdAndUpdate: jest
+          .fn()
+          .mockReturnValue(lean({ _id: id, embeddingSourceHash: storedHash })),
+        updateOne: jest.fn().mockReturnValue({ exec: jest.fn() }),
+      };
+      embeddingService.buildSourceText.mockReturnValue('kaynak');
+      embeddingService.sourceHash.mockReturnValue('yeni-hash');
+      embeddingService.embed.mockResolvedValue([0.1, 0.2]);
+      return {
+        model,
+        svc: new DhikrsService(model as never, embeddingService as never),
+      };
+    }
+
+    it('kaynak hash değiştiyse vektörü yeniler', async () => {
+      const { model, svc } = build('eski-hash');
+      await svc.update(id, { isActive: true });
+      expect(embeddingService.embed).toHaveBeenCalledTimes(1);
+      const [filter, update] = model.updateOne.mock.calls[0] as [
+        unknown,
+        { $set: { embeddingSourceHash: string } },
+      ];
+      expect(filter).toEqual({ _id: new Types.ObjectId(id) });
+      expect(update.$set.embeddingSourceHash).toBe('yeni-hash');
+    });
+
+    it('hash aynıysa yeniden embed etmez', async () => {
+      const { model, svc } = build('yeni-hash');
+      await svc.update(id, { isActive: true });
+      expect(embeddingService.embed).not.toHaveBeenCalled();
+      expect(model.updateOne).not.toHaveBeenCalled();
+    });
   });
 });

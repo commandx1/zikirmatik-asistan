@@ -132,9 +132,8 @@ export class VirdProgressService {
       )
       .exec();
 
-    if (dayComplete) {
-      await this.streaksService.recalculateVirdForUser(input.userId);
-    }
+    // Gün sonradan tamamlanmamışa dönebilir (son yazan kazanır) → her yazımda yeniden hesapla.
+    await this.streaksService.recalculateVirdForUser(input.userId);
   }
 
   /**

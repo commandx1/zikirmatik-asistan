@@ -238,4 +238,71 @@ describe('Users (e2e)', () => {
     ]);
     expect((await circleModel.findById(alone).lean())?.status).toBe('closed');
   });
+
+  it('API-USR-10: aynı token ile ikinci DELETE hata vermez (idempotent)', async () => {
+    const me = await signIn(t.http, { sub: 'e2e-usr-10' });
+    for (let i = 0; i < 2; i++) {
+      await request(t.http)
+        .delete(`/v1/users/${me.userId}`)
+        .set(bearer(me.accessToken))
+        .expect(200);
+    }
+  });
+
+  it('API-USR-11: silme sonrası aynı hesapla giriş → yeni kullanıcı, eski veri yok', async () => {
+    const me = await signIn(t.http, { sub: 'e2e-usr-11', email: 'u11@x.com' });
+    await t.model('UserDhikr').create({
+      userId: new Types.ObjectId(me.userId),
+      clientId: 'c-11',
+      name: 'Eski',
+      target: 33,
+    });
+    await request(t.http)
+      .delete(`/v1/users/${me.userId}`)
+      .set(bearer(me.accessToken))
+      .expect(200);
+
+    const again = await signIn(t.http, {
+      sub: 'e2e-usr-11',
+      email: 'u11@x.com',
+    });
+    expect(again.isNewUser).toBe(true);
+    expect(again.userId).not.toBe(me.userId);
+    expect(
+      await t
+        .model('UserDhikr')
+        .countDocuments({ userId: new Types.ObjectId(again.userId) }),
+    ).toBe(0);
+  });
+
+  it('API-USR-12: koleksiyon hatasında kullanıcı belgesi kalır, tekrar deneme tamamlar', async () => {
+    const me = await signIn(t.http, { sub: 'e2e-usr-12' });
+    const oid = new Types.ObjectId(me.userId);
+    await t.model('UserDhikr').create({
+      userId: oid,
+      clientId: 'c-12',
+      name: 'X',
+      target: 1,
+    });
+    const streakModel = t.model('Streak');
+    const spy = jest
+      .spyOn(streakModel, 'deleteMany')
+      .mockImplementationOnce(() => Promise.reject(new Error('boom')) as never);
+    try {
+      await request(t.http)
+        .delete(`/v1/users/${me.userId}`)
+        .set(bearer(me.accessToken))
+        .expect(500);
+      expect(await t.model('User').countDocuments({ _id: oid })).toBe(1);
+    } finally {
+      spy.mockRestore();
+    }
+
+    await request(t.http)
+      .delete(`/v1/users/${me.userId}`)
+      .set(bearer(me.accessToken))
+      .expect(200);
+    expect(await t.model('User').countDocuments({ _id: oid })).toBe(0);
+    expect(await t.model('UserDhikr').countDocuments({ userId: oid })).toBe(0);
+  });
 });

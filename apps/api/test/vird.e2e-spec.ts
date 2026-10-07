@@ -12,6 +12,7 @@ import {
   User,
   type UserDocument,
 } from '../src/modules/users/schemas/user.schema';
+import type { VirdDayProgressDocument } from '../src/modules/vird/schemas/vird-day-progress.schema';
 import type { VirdProgramDocument } from '../src/modules/vird/schemas/vird-program.schema';
 import type { VirdTemplateDocument } from '../src/modules/vird/schemas/vird-template.schema';
 import {
@@ -739,6 +740,226 @@ describe('Vird Programı (e2e)', () => {
       expect(a.isDayComplete).toBe(true);
       expect(b.slots.morning?.items[0].count).toBe(0);
       expect(b.isDayComplete).toBe(false);
+    });
+  });
+
+  describe('QA boşlukları (VRD-16/18/22/25/29/33, VPR-12/13)', () => {
+    const post = (u: SignInResult, body: Record<string, unknown>) =>
+      request(t.http)
+        .post('/v1/vird/programs')
+        .set(bearer(u.accessToken))
+        .send(body);
+    const activate = (u: SignInResult, id: string) =>
+      request(t.http)
+        .post(`/v1/vird/programs/${id}/activate`)
+        .set(bearer(u.accessToken));
+    const patch = (
+      u: SignInResult,
+      id: string,
+      body: Record<string, unknown>,
+    ) =>
+      request(t.http)
+        .patch(`/v1/vird/programs/${id}`)
+        .set(bearer(u.accessToken))
+        .send(body);
+    const stored = (id: string) =>
+      t.model<VirdProgramDocument>('VirdProgram').findById(id).lean().exec();
+    const setup = async (premium = false) => {
+      const user = await newUser();
+      if (premium)
+        await makePremium(t.model<UserDocument>(User.name), user.userId);
+      const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+      return { user, dhikrId };
+    };
+    const idOf = (res: { body: unknown }) =>
+      data<{ _id: string }>(res as { body: { data: unknown } })._id;
+
+    it('VRD-16: manuel startDate yok → 400', async () => {
+      const { user, dhikrId } = await setup();
+      const { startDate: _omit, ...body } = createManualPayload([dhikrId]);
+      void _omit;
+      await post(user, body).expect(400);
+      await post(user, { ...body, startDate: '   ' }).expect(400);
+    });
+
+    it('VRD-18: clientId yoksa srv-… üretilir, iki clientId’siz program çakışmaz', async () => {
+      const { user, dhikrId } = await setup();
+      const a = await post(user, createManualPayload([dhikrId])).expect(201);
+      const b = await post(user, createManualPayload([dhikrId])).expect(201);
+      const ca = data<{ clientId: string }>(a).clientId;
+      const cb = data<{ clientId: string }>(b).clientId;
+      expect(ca).toMatch(/^srv-/);
+      expect(cb).toMatch(/^srv-/);
+      expect(ca).not.toBe(cb);
+    });
+
+    it('VRD-22: aynı programa eşzamanlı çift activate → ikisi de aktif programı döner', async () => {
+      const { user, dhikrId } = await setup();
+      for (let round = 0; round < 5; round++) {
+        const id = idOf(
+          await post(
+            user,
+            createManualPayload([dhikrId], { clientId: `r${round}` }),
+          ).expect(201),
+        );
+        const [x, y] = await Promise.all([
+          activate(user, id),
+          activate(user, id),
+        ]);
+        expect([x.status, y.status]).toEqual([201, 201]);
+        expect(data<{ status: string }>(x).status).toBe('active');
+        expect(data<{ status: string }>(y).status).toBe('active');
+        expect((await stored(id))?.status).toBe('active');
+        await t
+          .model<VirdProgramDocument>('VirdProgram')
+          .updateOne({ _id: id }, { $set: { status: 'archived' } });
+      }
+    });
+
+    it('VRD-25: paused/completed/archived → expiresAt temizlenir; active→draft süreyi yeniden kurmaz', async () => {
+      const { user, dhikrId } = await setup();
+      for (const status of ['paused', 'completed', 'archived']) {
+        const id = idOf(
+          await post(
+            user,
+            createManualPayload([dhikrId], { clientId: `s-${status}` }),
+          ).expect(201),
+        );
+        expect((await stored(id))?.expiresAt).toBeDefined();
+        await patch(user, id, { status }).expect(200);
+        expect((await stored(id))?.expiresAt).toBeUndefined();
+      }
+      const id = idOf(
+        await post(
+          user,
+          createManualPayload([dhikrId], { clientId: 's-draft' }),
+        ).expect(201),
+      );
+      await activate(user, id).expect(201);
+      expect((await stored(id))?.expiresAt).toBeUndefined();
+      await patch(user, id, { status: 'draft' }).expect(200);
+      const back = await stored(id);
+      expect(back?.status).toBe('draft');
+      expect(back?.expiresAt).toBeUndefined();
+    });
+
+    it('VRD-29: aynı dilimde aynı zikir tekrarı → ilki tutulur', async () => {
+      const { user, dhikrId } = await setup();
+      const res = await post(
+        user,
+        createManualPayload([dhikrId], {
+          phases: [
+            {
+              fromDay: 1,
+              toDay: null,
+              slots: {
+                morning: [
+                  { dhikrId, target: 7 },
+                  { dhikrId, target: 99 },
+                ],
+              },
+            },
+          ],
+        }),
+      ).expect(201);
+      const morning = (await stored(idOf(res)))?.phases[0].slots.morning ?? [];
+      expect(morning).toHaveLength(1);
+      expect(morning[0].target).toBe(7);
+    });
+
+    it('VRD-33: manuel ve şablon taslak ~30 gün sonra silinmek üzere işaretlenir (TTL index)', async () => {
+      const { user, dhikrId } = await setup();
+      const tpl = await seedVirdTemplate();
+      const manual = await post(user, createManualPayload([dhikrId])).expect(
+        201,
+      );
+      const fromTpl = await post(user, {
+        title: { tr: 'x', en: 'x' },
+        kind: 'routine',
+        source: 'template',
+        templateKey: tpl.key,
+      }).expect(201);
+      for (const res of [manual, fromTpl]) {
+        const exp = (await stored(idOf(res)))?.expiresAt as Date;
+        const days = (exp.getTime() - Date.now()) / 86_400_000;
+        expect(days).toBeGreaterThan(29.9);
+        expect(days).toBeLessThan(30.1);
+      }
+      const idx = await t
+        .model<VirdProgramDocument>('VirdProgram')
+        .collection.indexes();
+      expect(
+        idx.some((i) => i.key.expiresAt === 1 && i.expireAfterSeconds === 0),
+      ).toBe(true);
+    });
+
+    describe('vird logu', () => {
+      const writeLog = (
+        u: SignInResult,
+        dhikrId: string,
+        programId: string,
+        count: number,
+      ) =>
+        request(t.http)
+          .post('/v1/dhikr-logs')
+          .set(bearer(u.accessToken))
+          .send({
+            userId: u.userId,
+            dhikrId,
+            count,
+            targetCount: 10,
+            date: istanbulDateKey(new Date()),
+            virdProgramId: programId,
+            virdSlot: 'morning',
+            virdDayIndex: 1,
+          })
+          .expect(201);
+      const todayView = async (u: SignInResult, programId: string) =>
+        data<{ isDayComplete: boolean }>(
+          await request(t.http)
+            .get(
+              `/v1/vird/today?date=${istanbulDateKey(new Date())}&programId=${programId}`,
+            )
+            .set(bearer(u.accessToken))
+            .expect(200),
+        );
+      const streak = async (u: SignInResult) =>
+        data<{ virdCurrentStreak: number }>(
+          await request(t.http)
+            .get(`/v1/streaks/${u.userId}`)
+            .set(bearer(u.accessToken))
+            .expect(200),
+        ).virdCurrentStreak;
+
+      it('VPR-12: son yazan kazanır; daha düşük sayı günü tamamlanmamışa çevirir', async () => {
+        const { user, dhikrId } = await setup();
+        const id = idOf(
+          await post(user, createManualPayload([dhikrId])).expect(201),
+        );
+        await activate(user, id).expect(201);
+        await writeLog(user, dhikrId, id, 10);
+        expect((await todayView(user, id)).isDayComplete).toBe(true);
+        await writeLog(user, dhikrId, id, 3);
+        expect((await todayView(user, id)).isDayComplete).toBe(false);
+      });
+
+      it.each(['draft', 'paused', 'completed'])(
+        'VPR-13: %s programa yazılan vird logu ilerleme ve vird serisi üretir',
+        async (status) => {
+          const { user, dhikrId } = await setup();
+          const id = idOf(
+            await post(user, createManualPayload([dhikrId])).expect(201),
+          );
+          if (status !== 'draft') await patch(user, id, { status }).expect(200);
+          await writeLog(user, dhikrId, id, 10);
+          const progress = await t
+            .model<VirdDayProgressDocument>('VirdDayProgress')
+            .findOne({ programId: new Types.ObjectId(id) })
+            .lean();
+          expect(progress?.isDayComplete).toBe(true);
+          expect(await streak(user)).toBe(1);
+        },
+      );
     });
   });
 });

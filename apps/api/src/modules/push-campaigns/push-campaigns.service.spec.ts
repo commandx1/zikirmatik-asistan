@@ -251,4 +251,19 @@ describe('PushCampaignsService', () => {
       DAY_TIME,
     );
   });
+
+  it("token'sız aday noToken sayılır; rezervasyon ve gönderim yok (API-PSH-11)", async () => {
+    jest.setSystemTime(DAY_TIME);
+    winbackCampaign.buildCandidates.mockResolvedValue({
+      candidates: [candidate({ expoPushToken: undefined })],
+      skippedPrefs: 0,
+    });
+
+    const result = await service.run('winback');
+
+    expect(result.skipped.noToken).toBe(1);
+    expect(result.sent).toBe(0);
+    expect(pushDispatchModel.create).not.toHaveBeenCalled();
+    expect(pushSender.sendToDevices).not.toHaveBeenCalled();
+  });
 });

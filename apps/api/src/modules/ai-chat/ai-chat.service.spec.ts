@@ -610,6 +610,32 @@ describe('AiChatService', () => {
       },
     );
 
+    it('CHT-08: atıf kartı en fazla 3 kaynak içerir (5 farklı kaynak kullanılsa bile)', async () => {
+      const { service, user, retrievalService } = createHarness();
+      stubClassify({ mode: 'bilgi', searchQuery: 'abdest' });
+      retrievalService.searchSourcePassages.mockResolvedValue(
+        [1, 2, 3, 4, 5].map((n) =>
+          samplePassage({
+            sourceId: `kaynak-${n}`,
+            sourceTitle: `Kaynak ${n}`,
+          }),
+        ) as never,
+      );
+      stubBilgiAnswer({
+        coverage: 'full',
+        usedPassages: ['P1', 'P2', 'P3', 'P4', 'P5'],
+        answer: 'Cevap.',
+      });
+
+      const result = await service.createConversation(user._id.toString(), {
+        firstMessage: 'abdest nasıl alınır',
+      });
+
+      expect(
+        result.messages[1].sourceCitations.map((c) => c.sourceTitle),
+      ).toEqual(['Kaynak 1', 'Kaynak 2', 'Kaynak 3']);
+    });
+
     it('grounds the system prompt on the retrieved passages', async () => {
       const { service, user, retrievalService } = createHarness();
       stubClassify({ mode: 'bilgi', searchQuery: 'abdestin farzları' });

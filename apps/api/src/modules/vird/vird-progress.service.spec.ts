@@ -89,7 +89,7 @@ describe('VirdProgressService', () => {
       expect(streaksService.recalculateVirdForUser).not.toHaveBeenCalled();
     });
 
-    it('upserts an incomplete day and does not touch the vird streak', async () => {
+    it('upserts an incomplete day and recalculates the vird streak (API-STR-18: düşüş)', async () => {
       mockProgramLookup(routineProgram);
       mockLogs([{ virdSlot: 'morning', dhikrId, count: 10 }]);
 
@@ -113,7 +113,7 @@ describe('VirdProgressService', () => {
       expect(update.$set.isDayComplete).toBe(false);
       expect(update.$set.dayIndex).toBe(1);
       expect(update.$set.completedSlots).toEqual([]);
-      expect(streaksService.recalculateVirdForUser).not.toHaveBeenCalled();
+      expect(streaksService.recalculateVirdForUser).toHaveBeenCalled();
     });
 
     it('upserts a complete day and recalculates the vird streak', async () => {

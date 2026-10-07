@@ -267,4 +267,26 @@ describe('Subscriptions (e2e)', () => {
       .send({})
       .expect(403);
   });
+
+  // API-SUB-15
+  it('sync-user: RC aktif ama DB’de aktif kayıt yok → isPremium false kalır, kayıt yaratılmaz', async () => {
+    const user = await signIn(t.http, { sub: 'sub-user-sub15' });
+    verifyPremium.mockResolvedValue({
+      active: true,
+      productId: 'rc_annual',
+      expiresAt: RC_EXPIRES,
+      provider: 'apple',
+    });
+
+    const res = await request(t.http)
+      .post(`/v1/subscriptions/sync-user/${user.userId}`)
+      .set(bearer(user.accessToken))
+      .send({ hasActivePremiumEntitlement: true, provider: 'apple' })
+      .expect(201);
+
+    expect(data<{ isPremium: boolean }>(res).isPremium).toBe(false);
+    expect(
+      await t.model<SubscriptionDocument>('Subscription').countDocuments({}),
+    ).toBe(0);
+  });
 });

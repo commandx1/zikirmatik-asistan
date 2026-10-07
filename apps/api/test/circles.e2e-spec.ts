@@ -131,6 +131,71 @@ describe('Zikir Halkası (e2e)', () => {
       expect(errCode(res)).toBe(CIRCLE_ERROR_CODE.PREMIUM_REQUIRED);
     });
 
+    it('CIR-03: ücretsiz kurucu, önceki halka closed/completed ise yeni halka kurabilir', async () => {
+      const user = await newUser();
+      const create = (dhikrId: string, goalCount = 100) =>
+        request(t.http)
+          .post('/v1/circles')
+          .set(bearer(user.accessToken))
+          .send({ dhikrId, goalCount });
+      const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
+
+      const first = data<{ id: string }>(await create(dhikrId).expect(201));
+      await create(dhikrId).expect(403);
+      await request(t.http)
+        .post(`/v1/circles/${first.id}/close`)
+        .set(bearer(user.accessToken))
+        .expect(201);
+
+      const second = data<{ id: string }>(
+        await create(dhikrId, 10).expect(201),
+      );
+      await create(dhikrId).expect(403);
+      await contribute(user, second.id, dhikrId, 10).expect(201);
+      const stored = await t
+        .model<CircleDocument>(Circle.name)
+        .findById(second.id)
+        .lean();
+      expect(stored?.status).toBe('completed');
+
+      await create(dhikrId).expect(201);
+    });
+
+    it('CIR-51: kurucu premium’u kaybedince halka ve memberLimit sürer; yeni halka kurulamaz', async () => {
+      const creator = await premiumUser();
+      const { dhikrId, circle } = await seedActiveCircle(creator);
+      await t
+        .model<UserDocument>(User.name)
+        .updateOne({ _id: creator.userId }, { $set: { isPremium: false } });
+
+      const detail = await request(t.http)
+        .get(`/v1/circles/${circle.id}`)
+        .set(bearer(creator.accessToken))
+        .expect(200);
+      expect(
+        data<{ status: string; memberLimit: number }>(detail),
+      ).toMatchObject({
+        status: 'active',
+        memberLimit: 200,
+      });
+
+      // 6. üye bile katılabilir: limit kuruluşta yazıldı, ücretsiz 5'e inmez.
+      for (let i = 0; i < 5; i += 1) {
+        const member = await newUser();
+        await request(t.http)
+          .post('/v1/circles/join')
+          .set(bearer(member.accessToken))
+          .send({ code: circle.code })
+          .expect(201);
+      }
+      const res = await request(t.http)
+        .post('/v1/circles')
+        .set(bearer(creator.accessToken))
+        .send({ dhikrId, goalCount: 100 })
+        .expect(403);
+      expect(errCode(res)).toBe(CIRCLE_ERROR_CODE.PREMIUM_REQUIRED);
+    });
+
     it('premium → 201, code deseni /^[A-HJ-NP-Z2-9]{8}$/, memberLimit 200', async () => {
       const user = await premiumUser();
       const { circle } = await seedActiveCircle(user);

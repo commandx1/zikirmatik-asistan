@@ -2,7 +2,7 @@ import request from 'supertest';
 import type { Model } from 'mongoose';
 import { createTestApp, type TestApp } from './helpers/create-test-app';
 import { clearCollections, syncIndexes } from './helpers/db';
-import { data, seedDhikr } from './helpers/fixtures';
+import { bearer, data, seedDhikr, signIn } from './helpers/fixtures';
 import type { DhikrDocument } from '../src/modules/dhikrs/schemas/dhikr.schema';
 import type { DhikrCollectionDocument } from '../src/modules/dhikr-collections/schemas/dhikr-collection.schema';
 
@@ -73,5 +73,52 @@ describe('DhikrCollections (e2e)', () => {
     await request(t.http)
       .get('/v1/dhikr-collections/bilinmeyen-key')
       .expect(404);
+  });
+
+  // API-COL-05
+  it('detay inaktif/doğrulanmamış zikirleri de döndürür', async () => {
+    const inactive = await seedDhikr(dhikrModel, { isActive: false });
+    const unverified = await seedDhikr(dhikrModel, { isVerified: false });
+    await collectionModel.create({
+      key: 'karisik',
+      label: { tr: 'Karışık', en: 'Mixed' },
+      category: 'gunluk',
+      dhikrIds: [inactive, unverified],
+      dhikrCount: 2,
+      isActive: true,
+    });
+
+    const res = await request(t.http)
+      .get('/v1/dhikr-collections/karisik')
+      .expect(200);
+    expect(
+      data<{ dhikrs: Array<{ _id: string }> }>(res).dhikrs.map((d) => d._id),
+    ).toEqual([inactive, unverified]);
+  });
+
+  // API-COL-06
+  it('hiçbir koleksiyonda premium kilidi yok (tokensız ve ücretsiz kullanıcı 200)', async () => {
+    const dhikrId = await seedDhikr(dhikrModel);
+    for (const key of ['k-gunluk', 'k-namaz', 'k-ozel']) {
+      await collectionModel.create({
+        key,
+        label: { tr: key, en: key },
+        category: key === 'k-namaz' ? 'namaz' : 'gunluk',
+        dhikrIds: [dhikrId],
+        dhikrCount: 1,
+        isActive: true,
+      });
+    }
+    const me = await signIn(t.http, { sub: 'e2e-col06' });
+
+    for (const key of ['k-gunluk', 'k-namaz', 'k-ozel']) {
+      for (const headers of [{}, bearer(me.accessToken)]) {
+        const res = await request(t.http)
+          .get(`/v1/dhikr-collections/${key}`)
+          .set(headers)
+          .expect(200);
+        expect(JSON.stringify(res.body)).not.toMatch(/premium|locked/i);
+      }
+    }
   });
 });

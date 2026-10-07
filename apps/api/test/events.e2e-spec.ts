@@ -74,4 +74,11 @@ describe('Events (e2e)', () => {
       'streak_saved',
     ]);
   });
+
+  // API-EVT-06
+  it('app_events createdAt üzerinde 180 günlük TTL indeksi var', async () => {
+    const indexes = await appEventModel.collection.indexes();
+    const ttl = indexes.find((i) => i.key.createdAt === 1 && !i.key.userId);
+    expect(ttl?.expireAfterSeconds).toBe(180 * 24 * 60 * 60);
+  });
 });

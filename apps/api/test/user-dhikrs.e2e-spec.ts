@@ -127,4 +127,58 @@ describe('UserDhikrs (e2e)', () => {
       .send({ name: 'x' })
       .expect(401);
   });
+
+  // API-UDH-06
+  it('POST upsert: gönderilmeyen alanları sıfırlar (isFavorite:false, target:0)', async () => {
+    const me = await signIn(t.http, { sub: 'e2e-udh06' });
+    await request(t.http)
+      .post('/v1/user-dhikrs')
+      .set(bearer(me.accessToken))
+      .send({ clientId: 'reset-me', name: 'Ad', target: 33, isFavorite: true })
+      .expect(201);
+
+    const res = await request(t.http)
+      .post('/v1/user-dhikrs')
+      .set(bearer(me.accessToken))
+      .send({ clientId: 'reset-me', name: 'Ad' })
+      .expect(201);
+    expect(data<{ target: number; isFavorite: boolean }>(res)).toMatchObject({
+      target: 0,
+      isFavorite: false,
+    });
+  });
+
+  // API-UDH-08
+  it("PATCH name:'' boş ad olarak kabul edilir", async () => {
+    const me = await signIn(t.http, { sub: 'e2e-udh08' });
+    await request(t.http)
+      .post('/v1/user-dhikrs')
+      .set(bearer(me.accessToken))
+      .send({ clientId: 'blank', name: 'Dolu' })
+      .expect(201);
+
+    const res = await request(t.http)
+      .patch('/v1/user-dhikrs/blank')
+      .set(bearer(me.accessToken))
+      .send({ name: '' })
+      .expect(200);
+    expect(data<{ name: string }>(res).name).toBe('');
+  });
+
+  // API-UDH-09
+  it('kullanıcı başına kayıt sayısı sınırsız (25 kayıt hepsi saklanır)', async () => {
+    const me = await signIn(t.http, { sub: 'e2e-udh09' });
+    for (let i = 0; i < 25; i += 1) {
+      await request(t.http)
+        .post('/v1/user-dhikrs')
+        .set(bearer(me.accessToken))
+        .send({ clientId: `c-${i}`, name: `Z${i}` })
+        .expect(201);
+    }
+    const list = await request(t.http)
+      .get('/v1/user-dhikrs')
+      .set(bearer(me.accessToken))
+      .expect(200);
+    expect(data<unknown[]>(list)).toHaveLength(25);
+  });
 });

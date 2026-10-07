@@ -63,4 +63,43 @@ describe('App (e2e)', () => {
       process.env.MONGODB_URI = original;
     }
   });
+
+  it('API-APP-11: bilinmeyen rota → 404 + requestId', async () => {
+    const res = await request(t.http).get('/v1/yok-boyle-bir-rota').expect(404);
+    expect(res.body).toMatchObject({ statusCode: 404 });
+    expect(typeof (res.body as { requestId?: unknown }).requestId).toBe(
+      'string',
+    );
+  });
+
+  it('API-DIL-04: sunucu hata mesajları Türkçe (örnekler)', async () => {
+    const msg = (res: { body: { message?: unknown } }) =>
+      String(res.body.message);
+
+    const bad = await request(t.http)
+      .post('/v1/auth/provider/verify')
+      .send({
+        provider: 'apple',
+        platform: 'android',
+        idToken: '{"sub":"x"}',
+        deviceId: 'd',
+      })
+      .expect(400);
+    expect(msg(bad)).toBe('Platform/provider eşleşmesi geçersiz.');
+
+    const me = await signIn(t.http, { sub: 'e2e-dil-1' });
+    const other = await signIn(t.http, { sub: 'e2e-dil-2' });
+    const forbidden = await request(t.http)
+      .get(`/v1/users/${other.userId}`)
+      .set(bearer(me.accessToken))
+      .expect(403);
+    expect(msg(forbidden)).toMatch(/[ığüşöçİ]|yetki|erişim|kullanıcı/i);
+    expect(msg(forbidden)).not.toMatch(/forbidden|not found|unauthorized/i);
+
+    const refresh = await request(t.http)
+      .post('/v1/auth/refresh')
+      .send({ refreshToken: 'rt.bozuk.token' })
+      .expect(401);
+    expect(msg(refresh)).toBe('Oturum yenilenemedi. Tekrar giriş yapmalısın.');
+  });
 });
