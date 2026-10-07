@@ -13,7 +13,6 @@ import { User, type UserDocument } from '../users/schemas/user.schema';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { QuerySubscriptionsDto } from './dto/query-subscriptions.dto';
 import { SyncPremiumDto } from './dto/sync-premium.dto';
-import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { RevenueCatVerifierService } from './revenuecat-verifier.service';
 import {
   Subscription,
@@ -184,95 +183,6 @@ export class SubscriptionsService {
     }
 
     return subscription;
-  }
-
-  async update(id: string, payload: UpdateSubscriptionDto, userId?: string) {
-    let nextUserId: Types.ObjectId | undefined;
-
-    if (payload.userId) {
-      nextUserId = this.asObjectId(
-        payload.userId,
-        'Geçersiz kullanıcı kimliği.',
-      );
-      await this.ensureUserExists(nextUserId);
-    }
-
-    const targetSubscriptionId = this.asObjectId(
-      id,
-      'Geçersiz abonelik kimliği.',
-    );
-    const ownerFilter = userId
-      ? {
-          _id: targetSubscriptionId,
-          userId: this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.'),
-        }
-      : { _id: targetSubscriptionId };
-
-    const existing = await this.subscriptionModel
-      .findOne(ownerFilter)
-      .lean()
-      .exec();
-    if (!existing) {
-      throw new NotFoundException('Güncellenecek abonelik kaydı bulunamadı.');
-    }
-
-    const subscription = await this.subscriptionModel
-      .findByIdAndUpdate(
-        targetSubscriptionId,
-        {
-          $set: {
-            ...payload,
-            ...(nextUserId ? { userId: nextUserId } : {}),
-          },
-        },
-        { returnDocument: 'after' },
-      )
-      .lean()
-      .exec();
-
-    if (!subscription) {
-      throw new NotFoundException('Güncellenen abonelik kaydı bulunamadı.');
-    }
-
-    await this.syncUserPremiumStatus(existing.userId);
-    if (nextUserId && existing.userId.toString() !== nextUserId.toString()) {
-      await this.syncUserPremiumStatus(nextUserId);
-    }
-
-    return subscription;
-  }
-
-  async remove(id: string, userId?: string) {
-    const targetSubscriptionId = this.asObjectId(
-      id,
-      'Geçersiz abonelik kimliği.',
-    );
-    if (userId) {
-      const ownerId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
-      const existing = await this.subscriptionModel
-        .findOne({ _id: targetSubscriptionId, userId: ownerId }, { _id: 1 })
-        .lean()
-        .exec();
-      if (!existing) {
-        throw new NotFoundException('Silinecek abonelik kaydı bulunamadı.');
-      }
-    }
-
-    const deleted = await this.subscriptionModel
-      .findByIdAndDelete(targetSubscriptionId)
-      .lean()
-      .exec();
-
-    if (!deleted) {
-      throw new NotFoundException('Silinecek abonelik kaydı bulunamadı.');
-    }
-
-    await this.syncUserPremiumStatus(deleted.userId);
-
-    return {
-      deleted: true,
-      id,
-    };
   }
 
   /**

@@ -1,11 +1,9 @@
 import {
   Body,
   Controller,
-  Delete,
   ForbiddenException,
   Get,
   Param,
-  Patch,
   Post,
   Query,
   UseGuards,
@@ -15,7 +13,6 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { QuerySubscriptionsDto } from './dto/query-subscriptions.dto';
 import { SyncPremiumDto } from './dto/sync-premium.dto';
-import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { SubscriptionsService } from './subscriptions.service';
 
 @Controller('v1/subscriptions')
@@ -49,25 +46,6 @@ export class SubscriptionsController {
   @Get(':id')
   findById(@Param('id') id: string, @CurrentUserId() userId: string) {
     return this.subscriptionsService.findById(id, userId);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() payload: UpdateSubscriptionDto,
-    @CurrentUserId() userId: string,
-  ) {
-    if (payload.userId && payload.userId !== userId) {
-      throw new ForbiddenException(
-        'Sadece kendi abonelik kaydını güncelleyebilirsin.',
-      );
-    }
-    return this.subscriptionsService.update(id, payload, userId);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string, @CurrentUserId() userId: string) {
-    return this.subscriptionsService.remove(id, userId);
   }
 
   @Post('sync-user/:userId')

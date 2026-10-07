@@ -155,7 +155,7 @@ Kaynak sırası: hafıza dosyaları ve `docs/` (ürün kuralı) → kod (rota, h
 | API-STR-07 | Logu olan ama seri belgesi olmayan → GET tembel doldurur | uç | api-e2e | T/streaks:155 | ✅ |
 | API-STR-08 | Hiç log yok → sıfırlar döner, belge yazılmaz | uç | birim | U/streaks.service:72 (aynalayan) | 🟡 |
 | API-STR-09 | Yalnız tamamlanmış günler seriye; tamamlanmamış log günleri yalnız `totalDaysActive`'e sayılır | normal | api-e2e | — | ❌ |
-| API-STR-10 | V: son yazım 3 gün önce (o an seri 5); O: bugün yazım olmadan GET; Z: `currentStreak:0` olmalı (şu an saklı 5 döner — okuma anında yeniden hesap yok) | zaman | api-e2e | — | ❌ |
+| API-STR-10 | V: son yazım 3 gün önce (o an seri 5); O: bugün yazım olmadan GET; Z: `currentStreak:0` (okuma anında `effectiveStreak`, `lastCompletedDate` + x-client-timezone) | zaman | api-e2e | T/streaks:309, T/streaks:330, U/streak-calculator:70 | ✅ |
 | API-STR-11 | `POST :userId/recalculate` kendi → güncel seri | normal | api-e2e | — | ❌ |
 | API-STR-12 | Aynı gün birden çok tamamlanmış log → tek gün | uç | birim | U/streak-calculator:55 | ✅ |
 | API-STR-13 | Gelecek tarihli tamamlanmış log `longestStreak`/`totalDaysActive`'i etkiler, `currentStreak`'i etkilemez | zaman | birim | — | ❓ S12 |
@@ -183,7 +183,7 @@ Kaynak sırası: hafıza dosyaları ve `docs/` (ürün kuralı) → kod (rota, h
 | API-STA-10 | Rozetler: count-100/1k/10k/100k (toplam), streak-7/30/100 (`longest`), vird-7/30/100 (vird `longest`); `progress` 0..1 | normal | birim | U/stats-aggregator:41, :63 | ✅ |
 | API-STA-11 | API rozet listesi `packages/shared` listesiyle birebir | normal | birim | packages/shared/src/utils/badges.test.ts | ✅ |
 | API-STA-12 | Halka logları toplam/rozete sayılıyor ama kaynak dağılımında (`circle`) görünmüyor | uç | birim | — | ❓ S14 |
-| API-STA-13 | Seri alanları bayat seri belgesinden gelir (bkz. API-STR-10) | zaman | api-e2e | — | ❌ |
+| API-STA-13 | Seri alanları okuma anında değerlendirilir; bayat seri dönmez (bkz. API-STR-10) | zaman | api-e2e | T/streaks:309 | ✅ |
 | API-STA-14 | Heatmap 365, günlük seri 30 gün, eksik günler 0 ile dolu | normal | birim | U/stats-aggregator:156 | ✅ |
 | API-STA-15 | Top zikir etiketi her zaman `name.tr` (EN kullanıcı Türkçe görür) | dil | api-e2e | — | ❓ S21 |
 
@@ -329,9 +329,9 @@ Kaynak sırası: hafıza dosyaları ve `docs/` (ürün kuralı) → kod (rota, h
 | API-SUB-06 | Başkası için `userId` ile POST → 403 | yetki | api-e2e | T/subscriptions:163 | ✅ |
 | API-SUB-07 | `GET ?userId=başkası` → 403; parametresiz → yalnız kendi | yetki | api-e2e | T/subscriptions:174 | ✅ |
 | API-SUB-08 | `GET /:id` başkasının → 404 | yetki | api-e2e | — | ❌ |
-| API-SUB-09 | V: kullanıcının (süresi geçmiş) kendi abonelik kaydı; O: `PATCH {status:'active', plan:'premium', endDate:2099}`; Z: premium VERİLMEMELİ (şu an doğrulamasız `isPremium:true`, cron da düzeltmez) | yetki | api-e2e | T/subscriptions:54 (yalnız `cancelled`) | ❌ |
-| API-SUB-10 | PATCH ile `userId` başka kullanıcıya → 403 | yetki | api-e2e | — | ❌ |
-| API-SUB-11 | DELETE kendi → `isPremium` yeniden hesaplanır; başkasının → 404 | yetki | api-e2e | T/subscriptions:54 | 🟡 |
+| API-SUB-09 | `PATCH /v1/subscriptions/:id` rota yok → 404; kullanıcı aboneliğini doğrudan değiştiremez (süresi geçmiş kayıt 2099 ile premium olmaz) | yetki | api-e2e | T/subscriptions:70 | ✅ |
+| API-SUB-10 | PATCH rotası yok → 404; `userId` değişimi de mümkün değil | yetki | api-e2e | T/subscriptions:70 | ✅ |
+| API-SUB-11 | `DELETE /v1/subscriptions/:id` rota yok → 404; kullanıcı aboneliğini doğrudan değiştiremez, kayıt silinmez | yetki | api-e2e | T/subscriptions:96 | ✅ |
 | API-SUB-12 | `sync-user`: RC aktif değil + istemci `true` → aktifler `expired`, `isPremium:false` | yetki | api-e2e | T/subscriptions:129, :202 | ✅ |
 | API-SUB-13 | `sync-user`: RC ulaşılamaz → DB durumu korunur | uç | api-e2e | T/subscriptions:146 | ✅ |
 | API-SUB-14 | `sync-user`: RC aktif + DB'de aktif kayıt → true | normal | api-e2e | T/subscriptions:185 | ✅ |
@@ -619,7 +619,7 @@ Kural: JWT rotalarında token yoksa/bozuksa **401**. Başkasının kaynağı iç
 | `/v1/ai/chat/conversations/:id/messages` (POST, GET, `/stream`) | JWT | 401 | **404** | T/ai-chat:99 |
 | `POST /v1/subscriptions` | JWT | 401 | **403** (gövde userId) | T/subscriptions:163 |
 | `GET /v1/subscriptions` | JWT | 401 | **403** (`?userId`) | T/subscriptions:174 |
-| `GET/PATCH/DELETE /v1/subscriptions/:id` | JWT | 401 | **404** (PATCH'te userId değişimi 403) | — |
+| `GET /v1/subscriptions/:id` (PATCH/DELETE rotaları kaldırıldı → 404) | JWT | 401 | **404** | — |
 | `POST /v1/subscriptions/sync-user/:userId` | JWT | 401 | **403** | T/subscriptions:227 |
 | `/v1/user-dhikrs` (POST, GET, PATCH/DELETE `:clientId`) | JWT | 401 | **404** | T/user-dhikrs:65, :99 |
 | `/v1/vird/programs…`, `/today`, `/history` | JWT | 401 | **404** | T/vird:281 |
@@ -756,7 +756,7 @@ Her soru bir ürün kararıdır; parantez içi **önerilen varsayılan**. Cevap 
 
 | # | Önem | Yer | Bulgu |
 |---|---|---|---|
-| B1 | **Yüksek** | `apps/api/src/modules/subscriptions/subscriptions.controller.ts:54`, `subscriptions.service.ts:189` | `PATCH /v1/subscriptions/:id` RevenueCat doğrulaması olmadan `status/plan/endDate` yazıyor; kullanıcı eski (süresi geçmiş) kaydını `active` + `endDate:2099` yapıp kendine kalıcı premium verebilir. Cron bunu düzeltmez (`endDate ≥ now`). POST'taki doğrulama PATCH'e uygulanmamış. |
+| B1 | **Yüksek** | `apps/api/src/modules/subscriptions/subscriptions.controller.ts:54`, `subscriptions.service.ts:189` | `PATCH /v1/subscriptions/:id` RevenueCat doğrulaması olmadan `status/plan/endDate` yazıyor; kullanıcı eski (süresi geçmiş) kaydını `active` + `endDate:2099` yapıp kendine kalıcı premium verebilir. Cron bunu düzeltmez (`endDate ≥ now`). POST'taki doğrulama PATCH'e uygulanmamış. | **ÇÖZÜLDÜ:** PATCH/DELETE rotaları kaldırıldı (API-SUB-09).
 | B2 | **Yüksek** | `apps/api/src/modules/streaks/streaks.service.ts:37` | `getByUser` saklı seri belgesini yeniden hesaplamadan döndürüyor. Kullanıcı birkaç gün log yazmazsa `currentStreak` eski değerde kalıyor; `/v1/stats/summary` ve ana ekran başlığı da şişkin seri gösterir. (STR-05 testi bunu yakalamaz: log 2 gün öncesine yazılıyor ve yazım anında hesaplanıyor.) |
 | B3 | Orta | `apps/api/src/modules/webhooks/webhooks.controller.ts:89` → `subscriptions.service.ts:359` | `EXPIRATION`/`BILLING_ISSUE`, olayın hangi döneme ait olduğuna bakmadan sağlayıcının TÜM aktif aboneliklerini `expired` yapıyor. RENEWAL'dan sonra geç gelen eski EXPIRATION yeni dönemi düşürür; doğrulama modunda `sync-user` kayıt yaratmadığı için (SUB-15) premium bir sonraki RENEWAL'a kadar kaybolur. |
 | B4 | Orta | `apps/api/src/modules/auth/auth.service.ts:175` | Refresh rotasyonu eskiyi iptal etmiyor: bellekten silinen eski token durumsuz imza yolundan yine kabul ediliyor; çıkışta iptal yok. Sızan refresh 30 gün geçerli. |

@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import request from 'supertest';
 import { RevenueCatVerifierService } from '../src/modules/subscriptions/revenuecat-verifier.service';
 import type { SubscriptionDocument } from '../src/modules/subscriptions/schemas/subscription.schema';
@@ -51,32 +52,64 @@ describe('Subscriptions (e2e)', () => {
     };
   }
 
-  it('POST: kendine abonelik yazabilir; CRUD rotaları çalışır', async () => {
+  it('POST: kendine abonelik yazabilir; GET listeler', async () => {
     const user = await signIn(t.http, { sub: 'sub-user-1' });
 
-    const createRes = await request(t.http)
+    await request(t.http)
       .post('/v1/subscriptions')
       .set(bearer(user.accessToken))
       .send(premiumPayload(user.userId))
       .expect(201);
-    const created = data<{ _id: string }>(createRes);
 
     await request(t.http)
       .get('/v1/subscriptions')
       .set(bearer(user.accessToken))
       .expect(200);
+  });
 
-    const patchRes = await request(t.http)
-      .patch(`/v1/subscriptions/${created._id}`)
-      .set(bearer(user.accessToken))
-      .send({ status: 'cancelled' })
-      .expect(200);
-    expect(data<{ status: string }>(patchRes).status).toBe('cancelled');
+  it('PATCH /:id rotası yok → 404; süresi geçmiş kayıt 2099 ile premium yapılamaz', async () => {
+    const user = await signIn(t.http, { sub: 'sub-user-patch' });
+    const subModel = t.model('Subscription');
+    const sub = await subModel.create({
+      ...premiumPayload(user.userId, { status: 'expired' }),
+      userId: new Types.ObjectId(user.userId),
+      startDate: new Date('2024-01-01'),
+      endDate: new Date('2024-02-01'),
+    });
 
     await request(t.http)
-      .delete(`/v1/subscriptions/${created._id}`)
+      .patch(`/v1/subscriptions/${String(sub._id)}`)
       .set(bearer(user.accessToken))
-      .expect(200);
+      .send({ status: 'active', plan: 'premium', endDate: '2099-01-01' })
+      .expect(404);
+
+    const stored = await subModel
+      .findById(sub._id)
+      .lean<{ status?: string }>()
+      .exec();
+    expect(stored?.status).toBe('expired');
+    const userDoc = await t
+      .model<UserDocument>('User')
+      .findById(user.userId)
+      .lean()
+      .exec();
+    expect(userDoc?.isPremium).toBe(false);
+  });
+
+  it('DELETE /:id rotası yok → 404; kayıt silinmez', async () => {
+    const user = await signIn(t.http, { sub: 'sub-user-delete' });
+    const subModel = t.model('Subscription');
+    const sub = await subModel.create({
+      ...premiumPayload(user.userId),
+      userId: new Types.ObjectId(user.userId),
+    });
+
+    await request(t.http)
+      .delete(`/v1/subscriptions/${String(sub._id)}`)
+      .set(bearer(user.accessToken))
+      .expect(404);
+
+    expect(await subModel.findById(sub._id).lean().exec()).not.toBeNull();
   });
 
   it('RevenueCat aktif değilse POST → 403 SUBSCRIPTION_NOT_VERIFIED, isPremium false kalır', async () => {
