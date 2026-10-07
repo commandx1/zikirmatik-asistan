@@ -60,7 +60,12 @@ export async function createTestApp(opts: { overrides?: Override[] } = {}) {
     logger: ['error'],
   });
   configureApp(app);
-  await app.init();
+  // Bir kez ve 127.0.0.1'e bağlan (listen init'i de yapar). Dinlemeyen bir
+  // sunucuda supertest her istekte listen(0) ile wildcard'a (::) bağlanıp
+  // 127.0.0.1:port'a gider; macOS, başka bir sürecin 127.0.0.1'de tuttuğu
+  // portu (ör. Android emülatörü) wildcard'a yine verir ve istek o sürece
+  // düşer → "Parse Error: Expected HTTP/", 404 ya da asılı kalma (flaky).
+  await app.listen(0, '127.0.0.1');
 
   const connection = app.get<Connection>(getConnectionToken());
 

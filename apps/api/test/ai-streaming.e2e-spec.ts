@@ -1,7 +1,7 @@
 /**
  * AI Sohbet SSE (iki stream rotası) + `/ai-progress` WebSocket — gerçek Mongo,
  * mock LLM. Ham text/event-stream ayrıştırılır; istemci kopması gerçek bir
- * http isteğinin iptaliyle (app.listen(0)) denenir.
+ * http isteğinin iptaliyle (createTestApp'in dinlediği port) denenir.
  * Önkoşul: pnpm db:test
  */
 import { randomUUID } from 'node:crypto';
@@ -27,7 +27,6 @@ describe('AI akış kanalları (e2e)', () => {
     t = await createTestApp();
     await syncIndexes(t.connection);
     ai = t.app.get(AiRuntimeService);
-    await t.app.listen(0);
     port = ((t.app.getHttpServer() as Server).address() as AddressInfo).port;
   });
 

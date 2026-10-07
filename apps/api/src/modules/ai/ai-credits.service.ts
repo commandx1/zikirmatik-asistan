@@ -283,7 +283,7 @@ export class AiCreditsService {
     promptHash: string,
     reason: AiCreditReason = AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
     amount = 1,
-  ): Promise<{ alreadyDebited: boolean }> {
+  ): Promise<{ alreadyDebited: boolean; fulfilled: boolean }> {
     const existingDebit = await this.aiCreditLedgerModel
       .findOne({
         userId,
@@ -295,12 +295,15 @@ export class AiCreditsService {
 
     if (existingDebit) {
       this.assertPromptHashMatches(existingDebit.promptHash, promptHash);
-      return { alreadyDebited: true };
+      return {
+        alreadyDebited: true,
+        fulfilled: Boolean(existingDebit.metadata?.fulfilledRef),
+      };
     }
 
     const creditState = await this.ensureCreditState(userId, isPremium);
     if (creditState.balance >= amount) {
-      return { alreadyDebited: false };
+      return { alreadyDebited: false, fulfilled: false };
     }
 
     throw new ForbiddenException({
@@ -308,6 +311,27 @@ export class AiCreditsService {
       message:
         'AI Rehber için kredin yetersiz. Premium veya kredi paketi alarak devam edebilirsin.',
     });
+  }
+
+  /**
+   * Debit satırına "karşılığı teslim edildi" makbuzu düşer (ör. AI vird
+   * taslağının id'si). Makbuzlu bir debit'in ürünü sonradan kaybolursa
+   * (silme, vazgeç, TTL, arşiv sınırı) aynı flowId bir daha kredisiz ürün
+   * üretmez; makbuzsuz debit = debit ile yazım arasında çöken istek → retry
+   * kredisiz yeniden üretebilir (AIV-06).
+   */
+  async markFlowFulfilled(
+    userId: Types.ObjectId,
+    flowId: string,
+    reason: AiCreditReason,
+    fulfilledRef: string,
+  ): Promise<void> {
+    await this.aiCreditLedgerModel
+      .updateOne(
+        { userId, reason, flowId },
+        { $set: { 'metadata.fulfilledRef': fulfilledRef } },
+      )
+      .exec();
   }
 
   async debitCreditForFlow(

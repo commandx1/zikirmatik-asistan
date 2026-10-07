@@ -128,6 +128,10 @@ export class AiVirdService {
     );
     if (existingDraft) {
       log.log('[vird-idempotent] flowId için mevcut taslak dönüyor, kredi yok');
+      // Taslak yazıldı ama makbuz yazılamadan çökülmüşse makbuzu tamamla.
+      if (access?.alreadyDebited && !access.fulfilled) {
+        await this.markDraftDelivered(userId, flowId, existingDraft._id);
+      }
       const credits = await this.aiCreditsService.getCredits(userId.toString());
       return {
         kind: 'program',
@@ -137,9 +141,13 @@ export class AiVirdService {
       };
     }
 
-    // AIV-06: kredisi zaten düşülmüş ama taslağı silinmiş flowId yeniden
-    // kullanılamaz (kredisiz üretim açığı).
-    if (access?.alreadyDebited) {
+    // AIV-06: taslağı teslim edilmiş (makbuzlu) ama sonradan kaybolmuş
+    // (silindi / vazgeçildi / TTL) flowId yeniden kullanılamaz — kredisiz
+    // üretim açığı. Makbuzsuz debit = debit ile taslak yazımı arasında çöken
+    // istek: aşağıda kredi tekrar düşmeden (debitCreditForFlow mevcut satırı
+    // görür) bir kez yeniden üretilir; eşzamanlı retry'lar `ai.flowId`
+    // unique index'inde tek programa iner.
+    if (access?.alreadyDebited && access.fulfilled) {
       throw new ConflictException({
         code: 'AI_FLOW_ALREADY_USED',
         message: 'Bu istek daha önce kullanıldı. Yeni bir istek başlat.',
@@ -185,6 +193,7 @@ export class AiVirdService {
       prayerSelection: payload.prayerSelection,
       slots: payload.slots,
     });
+    await this.markDraftDelivered(userId, flowId, draft._id);
 
     log.log(
       `[vird-done] programId=${draft._id.toString()} — ${Date.now() - startedAt}ms`,
@@ -196,6 +205,19 @@ export class AiVirdService {
       program: await this.buildPreview(draft, locale),
       remainingCredits: wallet.balance,
     };
+  }
+
+  private markDraftDelivered(
+    userId: Types.ObjectId,
+    flowId: string,
+    draftId: Types.ObjectId,
+  ) {
+    return this.aiCreditsService.markFlowFulfilled(
+      userId,
+      flowId,
+      AI_CREDIT_REASONS.VIRD_PROGRAM_DEBIT,
+      draftId.toString(),
+    );
   }
 
   /** Ajanın DhikrLean gömülü outcome fazlarını, şemanın beklediği dhikrId-only şekle çevirir. */

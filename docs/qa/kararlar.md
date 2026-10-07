@@ -61,7 +61,7 @@ Katalogdaki ❓ soruların cevapları. Testler bu kararlara göre yazılır.
 - **Son dalga (2026-10-07)** Uygulanmamış kararlar + bug'lar, performans (seri yalnız günün ilk sayımlı kaydında; special-days/home hafifletme), kalan test boşlukları — hepsi onaylı.
 - **VPR-12** Vird'de tamamlanmış gün, sonradan gelen daha düşük sayımla tamamlanmamışa dönmez (ana sayaç A-13 ile aynı).
 - **VPR-13** Aktif olmayan (draft/paused/completed) vird programına gelen kayıt kabul edilir, kişisel kayıt ve genel seriye sayılır; vird ilerlemesi ve vird serisi yazılmaz.
-- **AIV-06 (teknik/güvenlik)** Silinen AI vird taslağının flowId'si tekrar kullanılamaz (kredisiz üretim açığı) → 409.
+- **AIV-06 (teknik/güvenlik)** AI vird flowId debit kaydına teslim fişi (metadata.fulfilledRef) düşülür: fiş var + taslak yok (silme, TTL, arşiv) → 409 AI_FLOW_ALREADY_USED; fiş yok + taslak yok (debit sonrası çökme) → bir kez ücretsiz yeniden üretim, eşzamanlı tekrar tek program.
 - **Admin dhikr yanıtları (teknik)** POST/PATCH /v1/dhikrs yanıtı embedding vektörünü döndürmez.
 - **Halka oturumu modeli (2026-10-07, "Halka sıklığı" kararının yerine geçer)** Periyodik otomatik gönderim/yoklama YOK. "Gönder" butonu (yanıtla toplam da yenilenir) + "Toplamı yenile" butonu + "Gönderilmeyi bekleyen: N" göstergesi. Otomatik gönderim yalnız: oturumdan çıkış, uygulama arka plana geçiş, hedefe ulaşma (M-11). Oturuma girişte bir kez yükleme.
 - **Halka sayaç ekranında dua metni** Oturum ekranında zikrin Arapçası, okunuşu (transliteration) ve anlamı ana sayaçtaki gibi gösterilir (CircleDhikrSnapshot zaten taşıyor; API değişikliği yok).

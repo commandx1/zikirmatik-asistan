@@ -18,6 +18,7 @@ import {
   MockRetrievalService,
 } from '../src/modules/ai/testing/ai-mocks';
 import { toDhikrCandidate } from '../src/modules/ai/retrieval.service';
+import { VirdProgramsService } from '../src/modules/vird/vird-programs.service';
 import type { DhikrDocument } from '../src/modules/dhikrs/schemas/dhikr.schema';
 import { createTestApp, type TestApp } from './helpers/create-test-app';
 import { clearCollections, syncIndexes } from './helpers/db';
@@ -313,24 +314,103 @@ describe('AI boşlukları (e2e)', () => {
       expect(await programs(user)).toHaveLength(1);
     });
 
-    it('AIV-06: taslak silindikten sonra aynı flowId → 409, kredisiz üretim yok', async () => {
+    const virdDebits = (user: { userId: string }) =>
+      t.model('AiCreditLedger').countDocuments({
+        userId: new Types.ObjectId(user.userId),
+        reason: 'VIRD_PROGRAM_DEBIT',
+      });
+    const balance = async (user: { accessToken: string }) =>
+      data<{ balance: number }>(
+        await request(t.http)
+          .get('/v1/ai/credits')
+          .set(bearer(user.accessToken))
+          .expect(200),
+      ).balance;
+
+    it.each([
+      [
+        'DELETE /v1/vird/programs/:id (mobil Vazgeç)',
+        (user: { accessToken: string }, programId: string) =>
+          request(t.http)
+            .delete(`/v1/vird/programs/${programId}`)
+            .set(bearer(user.accessToken))
+            .expect(200),
+      ],
+      [
+        'TTL / arşiv sınırı (doğrudan silme)',
+        () => t.model('VirdProgram').deleteMany({}),
+      ],
+    ])(
+      'AIV-06: taslak teslim edildikten sonra silinirse (%s) aynı flowId → 409, kredisiz üretim yok',
+      async (_n, removeDraft) => {
+        const user = await newUser();
+        await seedThree();
+        const payload = body();
+        const first = data<{ programId: string }>(
+          await create(user, payload).expect(201),
+        );
+        await removeDraft(user, first.programId);
+        const callsAfterFirst = ai.calls.length;
+
+        const res = await create(user, payload).expect(409);
+        expect(JSON.stringify(res.body)).toContain('AI_FLOW_ALREADY_USED');
+        expect(await programs(user)).toHaveLength(0);
+        expect(await virdDebits(user)).toBe(1);
+        expect(ai.calls.length).toBe(callsAfterFirst);
+      },
+    );
+
+    // Debit ile taslak yazımı arasında süreç ölür (B9 sırası): kredi düşmüş,
+    // taslak yok, makbuz yok.
+    const crashAfterDebit = async (
+      user: { accessToken: string },
+      payload: Record<string, unknown>,
+    ) => {
+      jest
+        .spyOn(t.app.get(VirdProgramsService), 'createAiDraft')
+        .mockRejectedValueOnce(new Error('simulated crash'));
+      await create(user, payload).expect(500);
+    };
+
+    it('AIV-06: debit sonrası çöküş → retry 201, kredi tekrar düşmez, tek program', async () => {
       const user = await newUser();
       await seedThree();
       const payload = body();
-      const first = data<{ remainingCredits: number; programId: string }>(
+      const before = await balance(user);
+      await crashAfterDebit(user, payload);
+      expect(await programs(user)).toHaveLength(0);
+      expect(await balance(user)).toBe(before - 3);
+
+      const retry = data<{ programId: string; remainingCredits: number }>(
         await create(user, payload).expect(201),
       );
+      expect(retry.remainingCredits).toBe(before - 3);
+      expect(await virdDebits(user)).toBe(1);
+      expect(await programs(user)).toHaveLength(1);
+
+      // Bu taslak artık teslim edildi: silinirse yeniden üretilmez.
       await t.model('VirdProgram').deleteMany({});
-      const res = await create(user, payload).expect(409);
-      expect(JSON.stringify(res.body)).toContain('AI_FLOW_ALREADY_USED');
-      expect(await programs(user)).toHaveLength(0);
-      expect(first.remainingCredits).toBeDefined();
-      expect(
-        await t.model('AiCreditLedger').countDocuments({
-          userId: new Types.ObjectId(user.userId),
-          reason: 'VIRD_PROGRAM_DEBIT',
-        }),
-      ).toBe(1);
+      await create(user, payload).expect(409);
+    });
+
+    it('AIV-06: debit sonrası çöküş + eşzamanlı retry → tek program, tek debit', async () => {
+      const user = await newUser();
+      await seedThree();
+      const payload = body();
+      const before = await balance(user);
+      await crashAfterDebit(user, payload);
+
+      const results = await Promise.all(
+        [0, 1, 2].map(() => create(user, payload)),
+      );
+      expect(results.map((r) => r.status)).toEqual([201, 201, 201]);
+      const ids = new Set(
+        results.map((r) => data<{ programId: string }>(r).programId),
+      );
+      expect(ids.size).toBe(1);
+      expect(await programs(user)).toHaveLength(1);
+      expect(await virdDebits(user)).toBe(1);
+      expect(await balance(user)).toBe(before - 3);
     });
 
     it('AIV-08: dil önceliği gövde locale > Accept-Language > tr', async () => {

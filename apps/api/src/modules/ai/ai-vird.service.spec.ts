@@ -39,6 +39,7 @@ function createHarness(options?: {
     computePromptHash: jest.fn(() => 'hash-123'),
     ensureCreditAccessForFlow: jest.fn(() => Promise.resolve()),
     debitCreditForFlow: jest.fn(() => Promise.resolve({ balance: 7 })),
+    markFlowFulfilled: jest.fn(() => Promise.resolve()),
     getCredits: jest.fn(() =>
       Promise.resolve({
         balance: 10,
