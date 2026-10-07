@@ -101,3 +101,14 @@ export function shiftDateKey(key: string, deltaDays: number): string {
   dt.setUTCDate(dt.getUTCDate() + deltaDays);
   return dt.toISOString().slice(0, 10);
 }
+
+/** `YYYY-MM-DD` biçiminde VE takvimde gerçekten var olan bir gün mü? */
+export function isValidDateKey(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false;
+  }
+  const [year, month, day] = value.split('-').map(Number);
+  const dt = new Date(Date.UTC(year, month - 1, day));
+  // 0000–0099 yılları Date.UTC'de 1900+ olur → gidiş-dönüş eşleşmez → reddedilir.
+  return dt.toISOString().slice(0, 10) === value;
+}

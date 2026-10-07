@@ -6,13 +6,16 @@ import {
   IsInt,
   IsOptional,
   IsString,
-  Matches,
   Max,
   Min,
   ValidateNested,
 } from 'class-validator';
-import { LocalizedTextDto } from '../../../common/dto/localized-text.dto';
+import {
+  LocalizedTextDto,
+  RequiredLocalizedTextDto,
+} from '../../../common/dto/localized-text.dto';
 import { SpecialDayPracticeDto } from './special-day-practice.dto';
+import { IsDateKey } from '../../../common/validators/is-date-key';
 
 const SPECIAL_DAY_TYPE = {
   kandil: 'kandil',
@@ -23,8 +26,8 @@ const SPECIAL_DAY_TYPE = {
 export class UpdateSpecialDayDto {
   @IsOptional()
   @ValidateNested()
-  @Type(() => LocalizedTextDto)
-  name?: LocalizedTextDto;
+  @Type(() => RequiredLocalizedTextDto)
+  name?: RequiredLocalizedTextDto;
 
   @IsOptional()
   @IsEnum(SPECIAL_DAY_TYPE)
@@ -32,7 +35,7 @@ export class UpdateSpecialDayDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateKey()
   date?: string;
 
   @IsOptional()

@@ -4,10 +4,10 @@ import {
   IsOptional,
   IsString,
   Length,
-  Matches,
   Max,
   Min,
 } from 'class-validator';
+import { IsDateKey } from '../../../common/validators/is-date-key';
 
 export class CreateCircleDto {
   // Verilmezse zikrin adı (name.tr) kullanılır — bkz. CirclesService.create.
@@ -25,6 +25,6 @@ export class CreateCircleDto {
   goalCount!: number;
 
   @IsOptional()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateKey()
   endDate?: string;
 }

@@ -3,24 +3,25 @@ import {
   ArrayMaxSize,
   IsArray,
   IsBoolean,
+  IsDefined,
   IsEnum,
   IsIn,
   IsInt,
   IsMongoId,
   IsOptional,
   IsString,
-  Matches,
   Min,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { LocalizedTextDto } from '../../../common/dto/localized-text.dto';
+import { RequiredLocalizedTextDto } from '../../../common/dto/localized-text.dto';
 import {
   VIRD_PROGRAM_KIND_ENUM,
   VIRD_PROGRAM_SOURCE_ENUM,
   type VirdProgramKind,
   type VirdProgramSource,
 } from '../vird.types';
+import { IsDateKey } from '../../../common/validators/is-date-key';
 
 export class VirdItemDto {
   @ValidateIf((item: VirdItemDto) => !item.customDhikrId)
@@ -83,6 +84,7 @@ export class VirdPhaseDto {
   @IsString()
   note?: string;
 
+  @IsDefined()
   @ValidateNested()
   @Type(() => VirdPhaseSlotsDto)
   slots!: VirdPhaseSlotsDto;
@@ -106,6 +108,7 @@ export class VirdRemindersDto {
   @IsBoolean()
   enabled!: boolean;
 
+  @IsDefined()
   @ValidateNested()
   @Type(() => VirdReminderSlotsDto)
   slots!: VirdReminderSlotsDto;
@@ -117,9 +120,10 @@ export class CreateVirdProgramDto {
   @IsString()
   clientId?: string;
 
+  @IsDefined()
   @ValidateNested()
-  @Type(() => LocalizedTextDto)
-  title!: LocalizedTextDto;
+  @Type(() => RequiredLocalizedTextDto)
+  title!: RequiredLocalizedTextDto;
 
   @IsEnum(VIRD_PROGRAM_KIND_ENUM)
   kind!: VirdProgramKind;
@@ -150,7 +154,7 @@ export class CreateVirdProgramDto {
   // o da yoksa bugün (İstanbul) kullanılır.
   @IsOptional()
   @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateKey()
   startDate?: string;
 
   @IsOptional()

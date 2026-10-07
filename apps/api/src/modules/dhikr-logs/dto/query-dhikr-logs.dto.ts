@@ -1,4 +1,5 @@
-import { IsMongoId, IsOptional, IsString, Matches } from 'class-validator';
+import { IsMongoId, IsOptional, IsString } from 'class-validator';
+import { IsDateKey } from '../../../common/validators/is-date-key';
 
 export class QueryDhikrLogsDto {
   @IsOptional()
@@ -11,11 +12,11 @@ export class QueryDhikrLogsDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateKey()
   dateFrom?: string;
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateKey()
   dateTo?: string;
 }

@@ -242,10 +242,12 @@ export class VirdProgressService {
     );
 
     const items: { date: string; isDayComplete: boolean }[] = [];
-    let cursor = fromKey;
-    while (cursor <= toKey) {
-      items.push({ date: cursor, isDayComplete: completeDates.has(cursor) });
-      cursor = shiftDateKey(cursor, 1);
+    // Gün sayısıyla ilerle: `cursor <= toKey` döngüsü toKey=9999-12-31'de
+    // 10000-01-01 üretip RangeError (500) atıyordu.
+    const dayCount = daysBetween(fromKey, toKey) + 1;
+    for (let offset = 0; offset < dayCount; offset += 1) {
+      const date = shiftDateKey(fromKey, offset);
+      items.push({ date, isDayComplete: completeDates.has(date) });
     }
 
     return { items };

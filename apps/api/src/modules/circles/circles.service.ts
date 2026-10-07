@@ -12,6 +12,7 @@ import type { LocalizedText } from '../../common/types/localized-text';
 import {
   STATS_TIMEZONE,
   dateKeyInZone,
+  isValidDateKey,
   requestTimezone,
   shiftDateKey,
   startOfDayInZone,
@@ -120,7 +121,6 @@ type DhikrSnapshotLean = {
 
 const DHIKR_SNAPSHOT_FIELDS = 'name nameArabic transliteration meaning';
 const CODE_ATTEMPTS = 3;
-const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 // Süre sonu halka başına TEK bir andır (tüm üyeler için ortak): endDate
 // gününün kurucunun saat dilimindeki sonu, kuruluşta expiresAt olarak
 // saklanır. expiresAt'i olmayan eski belgeler İstanbul günüyle kapanır.
@@ -318,7 +318,7 @@ export class CirclesService {
     id: string,
     date?: string,
   ): Promise<CircleDetail> {
-    if (date !== undefined && !DATE_KEY_PATTERN.test(date)) {
+    if (date !== undefined && !isValidDateKey(date)) {
       throw new BadRequestException('date YYYY-MM-DD biçiminde olmalı.');
     }
     const userObjectId = this.asObjectId(userId);

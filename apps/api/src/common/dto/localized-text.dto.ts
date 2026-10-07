@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, Matches } from 'class-validator';
 
 /**
  * İki dilli metin alanı ({ tr, en }) için ortak doğrulama DTO'su.
@@ -10,5 +10,19 @@ export class LocalizedTextDto {
   tr!: string;
 
   @IsString()
+  en!: string;
+}
+
+/**
+ * Şemada zorunlu (boş olamayan) başlık/ad alanları için: tr ve en trim sonrası
+ * boşsa 400 (aksi halde Mongoose `required` hatası 500 olurdu).
+ */
+export class RequiredLocalizedTextDto {
+  @IsString()
+  @Matches(/\S/, { message: '$property boş olamaz.' })
+  tr!: string;
+
+  @IsString()
+  @Matches(/\S/, { message: '$property boş olamaz.' })
   en!: string;
 }

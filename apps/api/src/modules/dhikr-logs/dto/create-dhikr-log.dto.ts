@@ -5,12 +5,12 @@ import {
   IsMongoId,
   IsOptional,
   IsString,
-  Matches,
   Max,
   Min,
   ValidateIf,
 } from 'class-validator';
 import { VIRD_SLOT_KEY_ENUM, type VirdSlotKey } from '../../vird/vird.types';
+import { IsDateKey } from '../../../common/validators/is-date-key';
 
 export const MAX_LOG_COUNT = 100_000;
 
@@ -84,7 +84,7 @@ export class CreateDhikrLogDto {
   isFavorite?: boolean;
 
   @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateKey()
   date!: string;
 
   // --- Vird Programı alanları (opsiyonel) ---

@@ -7,7 +7,7 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { LocalizedTextDto } from '../../../common/dto/localized-text.dto';
+import { RequiredLocalizedTextDto } from '../../../common/dto/localized-text.dto';
 import {
   VIRD_PROGRAM_STATUS_ENUM,
   type VirdProgramStatus,
@@ -26,8 +26,8 @@ import { VirdPhaseDto, VirdRemindersDto } from './create-vird-program.dto';
 export class UpdateVirdProgramDto {
   @IsOptional()
   @ValidateNested()
-  @Type(() => LocalizedTextDto)
-  title?: LocalizedTextDto;
+  @Type(() => RequiredLocalizedTextDto)
+  title?: RequiredLocalizedTextDto;
 
   @IsOptional()
   @IsArray()

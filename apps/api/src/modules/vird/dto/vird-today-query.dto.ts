@@ -1,10 +1,11 @@
-import { IsMongoId, IsOptional, IsString, Matches } from 'class-validator';
+import { IsMongoId, IsOptional, IsString } from 'class-validator';
+import { IsDateKey } from '../../../common/validators/is-date-key';
 
 export class VirdTodayQueryDto {
   // Belirtilmezse İstanbul takvim günü (bugün) kullanılır.
   @IsOptional()
   @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateKey()
   date?: string;
 
   // Belirtilmezse en son güncellenen aktif program kullanılır.

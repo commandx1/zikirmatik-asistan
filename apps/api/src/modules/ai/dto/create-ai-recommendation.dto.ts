@@ -8,6 +8,7 @@ import {
   IsUUID,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
 
 class TimeContextDto {
@@ -38,6 +39,7 @@ export class CreateAiRecommendationDto {
   freeText?: string;
 
   @IsOptional()
+  @ValidateNested()
   @Type(() => TimeContextDto)
   timeContext?: TimeContextDto;
 

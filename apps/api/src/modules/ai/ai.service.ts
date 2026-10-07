@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
+import { dateKeyInZone, requestTimezone } from '../../common/utils/date-keys';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
 import { User, type UserDocument } from '../users/schemas/user.schema';
 import { AiProgressGateway } from './ai-progress.gateway';
@@ -407,11 +408,23 @@ export class AiService {
     return typeof error === 'string' ? error : 'bilinmeyen hata';
   }
 
+  // B12: istemci timeContext göndermezse sunucu yerel saati (Render = UTC) değil
+  // isteğin saat dilimi (x-client-timezone, yoksa İstanbul) kullanılır.
   private defaultTimeContext(): TimeContext {
     const now = new Date();
+    const timeZone = requestTimezone();
+    const hour = Number(
+      new Intl.DateTimeFormat('en-GB', {
+        timeZone,
+        hour: '2-digit',
+        hourCycle: 'h23',
+      }).format(now),
+    );
     return {
-      hour: now.getHours(),
-      dayOfWeek: now.getDay(),
+      hour,
+      dayOfWeek: new Date(
+        `${dateKeyInZone(now, timeZone)}T00:00:00Z`,
+      ).getUTCDay(),
       isSpecialDay: false,
     };
   }

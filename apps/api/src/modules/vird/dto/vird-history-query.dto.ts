@@ -1,14 +1,15 @@
-import { IsOptional, IsString, Matches } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import { IsDateKey } from '../../../common/validators/is-date-key';
 
 export class VirdHistoryQueryDto {
   // İkisi de opsiyoneldir; belirtilmezse son 30 gün (bugün dahil) döner.
   @IsOptional()
   @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateKey()
   from?: string;
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateKey()
   to?: string;
 }

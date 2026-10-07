@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
+import { IsDefined, ValidateNested } from 'class-validator';
 import { LocalizedTextDto } from '../../../common/dto/localized-text.dto';
 
 /**
@@ -7,10 +7,12 @@ import { LocalizedTextDto } from '../../../common/dto/localized-text.dto';
  * practices[] elemanı olarak kullanılır.
  */
 export class SpecialDayPracticeDto {
+  @IsDefined()
   @ValidateNested()
   @Type(() => LocalizedTextDto)
   title!: LocalizedTextDto;
 
+  @IsDefined()
   @ValidateNested()
   @Type(() => LocalizedTextDto)
   description!: LocalizedTextDto;

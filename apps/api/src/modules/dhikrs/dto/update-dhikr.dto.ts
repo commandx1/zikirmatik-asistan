@@ -6,6 +6,7 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  Matches,
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -16,6 +17,7 @@ import { normalizeTimeOfDay } from '../utils/time-of-day';
 export class UpdateDhikrDto {
   @IsOptional()
   @IsString()
+  @Matches(/\S/, { message: 'nameArabic boş olamaz.' })
   nameArabic?: string;
 
   @IsOptional()
