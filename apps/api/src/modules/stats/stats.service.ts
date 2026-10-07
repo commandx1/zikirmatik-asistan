@@ -92,7 +92,22 @@ export class StatsService {
                   },
                 },
               ],
-              source: [{ $group: { _id: '$source', count: { $sum: 1 } } }],
+              // A-14: circleId taşıyan her log, source alanı ne olursa olsun
+              // "circle" kovasına düşer.
+              source: [
+                {
+                  $group: {
+                    _id: {
+                      $cond: [
+                        { $ifNull: ['$circleId', false] },
+                        'circle',
+                        '$source',
+                      ],
+                    },
+                    count: { $sum: 1 },
+                  },
+                },
+              ],
               topDhikrs: [
                 {
                   $group: {

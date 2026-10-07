@@ -2,7 +2,12 @@
 // The API does not depend on the shared workspace package; the shared type is
 // the client-side contract and this response is structurally compatible.
 
-export type StatsSourceKey = 'manual' | 'ai' | 'special-day' | 'notification';
+export type StatsSourceKey =
+  | 'manual'
+  | 'ai'
+  | 'special-day'
+  | 'notification'
+  | 'circle';
 
 export type StatsDailyPoint = {
   date: string;
@@ -79,6 +84,7 @@ const SOURCE_KEYS: StatsSourceKey[] = [
   'ai',
   'special-day',
   'notification',
+  'circle',
 ];
 
 export type StatsDateWindows = {
@@ -214,6 +220,7 @@ function normalizeSource(docs: RawSourceDoc[]): StatsSourceBreakdown {
     ai: 0,
     'special-day': 0,
     notification: 0,
+    circle: 0,
   };
   for (const doc of docs) {
     if (doc._id && SOURCE_KEYS.includes(doc._id)) {
@@ -350,6 +357,7 @@ const EMPTY_SOURCE_BREAKDOWN: StatsSourceBreakdown = {
   ai: 0,
   'special-day': 0,
   notification: 0,
+  circle: 0,
 };
 
 const EMPTY_COMPARISON: StatsPeriodComparison = {

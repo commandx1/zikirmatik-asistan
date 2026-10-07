@@ -735,6 +735,9 @@ describe('duplicate key (E11000) retry', () => {
       .mockResolvedValueOnce({ upsertedCount: 0 });
     const dhikrLogModel = {
       bulkWrite,
+      findOne: jest
+        .fn()
+        .mockReturnValue(chain(jest.fn().mockResolvedValue(null))),
       find: jest.fn().mockReturnValue(chain(jest.fn().mockResolvedValue([]))),
     };
 
@@ -767,6 +770,9 @@ describe('duplicate key (E11000) retry', () => {
     const bulkWrite = jest.fn().mockRejectedValue(bulkError);
     const dhikrLogModel = {
       bulkWrite,
+      findOne: jest
+        .fn()
+        .mockReturnValue(chain(jest.fn().mockResolvedValue(null))),
       find: jest.fn().mockReturnValue(chain(jest.fn().mockResolvedValue([]))),
     };
 

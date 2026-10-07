@@ -169,6 +169,7 @@ describe('buildStatsSummary', () => {
       ai: 10,
       'special-day': 0,
       notification: 0,
+      circle: 0,
     });
     expect(summary.topDhikrs[0]).toEqual({
       key: 'abc123',
@@ -211,6 +212,7 @@ describe('buildStatsSummary', () => {
         ai: 0,
         'special-day': 0,
         notification: 0,
+        circle: 0,
       });
       expect(lockedSummary.comparison).toEqual({
         week: { current: 0, previous: 0, changePercent: 0 },

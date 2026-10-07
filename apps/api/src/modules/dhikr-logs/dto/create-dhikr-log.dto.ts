@@ -12,6 +12,8 @@ import {
 } from 'class-validator';
 import { VIRD_SLOT_KEY_ENUM, type VirdSlotKey } from '../../vird/vird.types';
 
+export const MAX_LOG_COUNT = 100_000;
+
 const LOG_SOURCE = {
   manual: 'manual',
   ai: 'ai',
@@ -52,8 +54,12 @@ export class CreateDhikrLogDto {
   @IsString()
   aiAssistantNote?: string;
 
+  // A-02: tek kayıtta en fazla 100.000 sayım (halka hilesi + hatalı istemci).
   @IsInt()
   @Min(0)
+  @Max(MAX_LOG_COUNT, {
+    message: `count en fazla ${MAX_LOG_COUNT} olabilir.`,
+  })
   count!: number;
 
   @IsInt()

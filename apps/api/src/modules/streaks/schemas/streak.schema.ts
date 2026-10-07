@@ -22,10 +22,15 @@ export class Streak {
   @Prop({ type: String })
   lastActiveDate?: string;
 
-  // currentStreak'in bittiği gün (son tamamlanan gün); okuma anında serinin
+  // currentStreak'in bittiği gün (sayımı > 0 olan son gün; ad geriye uyum için); okuma anında serinin
   // hâlâ canlı olup olmadığı buna göre değerlendirilir (effectiveStreak).
   @Prop({ type: String })
   lastCompletedDate?: string;
+
+  // Seri kural sürümü (2 = sayımı > 0 olan gün, M-21). Yoksa belge eski
+  // kuralla yazılmıştır → ilk okumada yeniden hesaplanır.
+  @Prop({ type: Number })
+  streakRule?: number;
 
   @Prop({ type: Number, required: true, default: 0 })
   totalDaysActive!: number;

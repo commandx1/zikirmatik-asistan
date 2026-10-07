@@ -18,6 +18,9 @@ import {
   type StoredStreak,
 } from './utils/streak-calculator';
 
+/** Seri kuralı sürümü: 2 = sayımı > 0 olan gün (M-21). Eski belgede yok. */
+const STREAK_RULE = 2;
+
 @Injectable()
 export class StreaksService {
   constructor(
@@ -38,10 +41,9 @@ export class StreaksService {
       .lean()
       .exec();
 
-    // lastCompletedDate alanından önce yazılmış canlı seri: neyle biteceğini
-    // bilmiyoruz → aşağıdaki gibi bir kez yeniden hesapla (alanı da yazar).
-    const legacy =
-      streak && streak.currentStreak > 0 && !streak.lastCompletedDate;
+    // M-21 öncesi (tamamlanma tabanlı) yazılmış belge: "sayımı > 0" kuralıyla
+    // bir kez yeniden hesapla (STREAK_RULE'u da yazar).
+    const legacy = streak && streak.streakRule !== STREAK_RULE;
     if (streak && !legacy) {
       return this.present(streak);
     }
@@ -68,19 +70,21 @@ export class StreaksService {
     const objectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
     await this.ensureUserExists(objectId);
 
-    const [allDates, completedDates] = await Promise.all([
+    // M-21: gün, o gün sayımı > 0 olan bir log varsa sayılır (hedef şartı yok).
+    const [allDates, activeDates] = await Promise.all([
       this.dhikrLogModel.distinct('date', { userId: objectId }),
       this.dhikrLogModel.distinct('date', {
         userId: objectId,
-        isCompleted: true,
+        count: { $gt: 0 },
       }),
     ]);
 
     const { currentStreak, longestStreak } = calculateCompletionStreak(
-      completedDates,
+      activeDates,
       todayKey(),
     );
-    const lastCompletedDate = completedDates.slice().sort().at(-1);
+    // Alan adı geriye uyum için aynı: artık "sayımı > 0 olan son gün".
+    const lastCompletedDate = activeDates.slice().sort().at(-1);
     const sortedActive = allDates.slice().sort();
     const totalDaysActive = sortedActive.length;
     const lastActiveDate =
@@ -95,11 +99,13 @@ export class StreaksService {
           $set: {
             userId: objectId,
             currentStreak,
-            longestStreak,
             totalDaysActive,
             lastActiveDate,
             lastCompletedDate,
+            streakRule: STREAK_RULE,
           },
+          // A-15: kazanılan en uzun seri asla düşmez (rozetler geri alınmaz).
+          $max: { longestStreak },
         },
         { upsert: true, returnDocument: 'after' },
       )
@@ -142,9 +148,10 @@ export class StreaksService {
           $set: {
             userId: objectId,
             virdCurrentStreak: currentStreak,
-            virdLongestStreak: longestStreak,
             virdLastCompleteDate,
           },
+          // A-15: vird_day_progress 400 gün TTL ile silinse de düşmez.
+          $max: { virdLongestStreak: longestStreak },
         },
         { upsert: true, returnDocument: 'after' },
       )

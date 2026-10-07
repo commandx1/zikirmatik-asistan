@@ -6,10 +6,11 @@ export type CompletionStreak = {
 };
 
 /**
- * Completion-based streak.
+ * Day-based streak.
  *
- * @param completedDates  YYYY-MM-DD keys of days that had at least one completed
- *                        dhikr log (order/duplicates irrelevant).
+ * @param completedDates  YYYY-MM-DD keys of qualifying days (general streak:
+ *                        days with a log of count > 0; vird: complete days)
+ *                        (order/duplicates irrelevant).
  * @param todayKey        today's YYYY-MM-DD key (in the app timezone).
  *
  * - `longestStreak`: the longest run of consecutive completed days.

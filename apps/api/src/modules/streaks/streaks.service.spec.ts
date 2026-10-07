@@ -38,8 +38,13 @@ describe('StreaksService', () => {
       );
     });
 
-    it('mevcut streak dokümanı canlıysa (son tamamlanan gün bugün) aynen döner', async () => {
-      const doc = { userId, currentStreak: 4, lastCompletedDate: todayKey() };
+    it('mevcut streak dokümanı canlıysa (son sayımlı gün bugün) aynen döner', async () => {
+      const doc = {
+        userId,
+        currentStreak: 4,
+        lastCompletedDate: todayKey(),
+        streakRule: 2,
+      };
       streakModel.findOne.mockReturnValue(leanExec(doc));
 
       const result = await service.getByUser(userId);
@@ -48,12 +53,13 @@ describe('StreaksService', () => {
       expect(streakModel.findOneAndUpdate).not.toHaveBeenCalled();
     });
 
-    it('son tamamlanan gün dünden eskiyse saklı seri bayat → 0 (yazmadan)', async () => {
+    it('son sayımlı gün dünden eskiyse saklı seri bayat → 0 (yazmadan)', async () => {
       streakModel.findOne.mockReturnValue(
         leanExec({
           userId,
           currentStreak: 5,
           longestStreak: 5,
+          streakRule: 2,
           lastCompletedDate: shiftDateKey(todayKey(), -3),
           virdCurrentStreak: 2,
           virdLastCompleteDate: todayKey(),
@@ -72,7 +78,7 @@ describe('StreaksService', () => {
       expect(streakModel.findOneAndUpdate).not.toHaveBeenCalled();
     });
 
-    it('lastCompletedDate olmayan eski canlı belge bir kez yeniden hesaplanır', async () => {
+    it('streakRule olmayan eski belge (M-21 öncesi) bir kez yeniden hesaplanır', async () => {
       streakModel.findOne.mockReturnValue(
         leanExec({ userId, currentStreak: 4 }),
       );

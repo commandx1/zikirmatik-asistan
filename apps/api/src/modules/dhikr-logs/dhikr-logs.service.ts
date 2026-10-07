@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
+import { shiftDateKey, todayKey } from '../../common/utils/date-keys';
 import { CirclesService } from '../circles/circles.service';
 import { Dhikr, type DhikrDocument } from '../dhikrs/schemas/dhikr.schema';
 import { StreaksService } from '../streaks/streaks.service';
@@ -161,6 +162,36 @@ export class DhikrLogsService {
     };
   }
 
+  /**
+   * A-12: gerçek bir takvim günü olmalı (2026-02-30 geçersiz) ve isteğin
+   * saat diliminde bugün+1'den ileri olamaz (+1 TZ payı).
+   */
+  private assertValidLogDate(date: string) {
+    if (shiftDateKey(date, 0) !== date) {
+      throw new BadRequestException('Geçersiz tarih.');
+    }
+    if (date > shiftDateKey(todayKey(), 1)) {
+      throw new BadRequestException('Gelecek tarihli kayıt oluşturulamaz.');
+    }
+  }
+
+  /**
+   * A-13: tamamlanma sunucuda belirlenir (count ≥ targetCount). Hedefsiz
+   * (targetCount 0) kayıtta karar verilecek bir hedef yok → istemci bayrağı
+   * korunur. Bir kez tamamlanan gün asla geri alınmaz (existing).
+   */
+  private resolveCompleted(
+    count: number,
+    targetCount: number,
+    clientFlag: boolean | undefined,
+    existingCompleted: boolean,
+  ) {
+    if (existingCompleted) {
+      return true;
+    }
+    return targetCount > 0 ? count >= targetCount : (clientFlag ?? false);
+  }
+
   async create(payload: CreateDhikrLogDto) {
     const userObjectId = this.asObjectId(payload.userId);
     const dhikrId = hasNonEmptyString(payload.dhikrId)
@@ -186,6 +217,7 @@ export class DhikrLogsService {
         'dhikrId veya customDhikrId alanlarından biri zorunludur.',
       );
     }
+    this.assertValidLogDate(payload.date);
 
     await this.ensureReferencesExist(
       [userObjectId],
@@ -221,12 +253,20 @@ export class DhikrLogsService {
     // same day overwrites the earlier one. `isCompleted` must not follow that
     // rule: once a target was reached that day the streak has been earned, and
     // a subsequent partial session (reset + save 5 of 100) must not revoke it.
-    const existing = await this.dhikrLogModel
-      .findOne(filter, { isCompleted: 1 })
-      .lean()
-      .exec();
-    const isCompleted =
-      existing?.isCompleted === true ? true : (payload.isCompleted ?? false);
+    const existing = await this.dhikrLogModel.findOne(filter).lean().exec();
+    // M-04: sayım 0 yazımı bugünün tamamlanmış kaydını ezmez (no-op, mevcut
+    // kayıt döner). Halka logunda $max zaten düşürmez.
+    if (payload.count === 0 && existing?.isCompleted && !circleObjectId) {
+      return existing;
+    }
+    const isCompleted = this.resolveCompleted(
+      circleObjectId
+        ? Math.max(existing?.count ?? 0, payload.count)
+        : payload.count,
+      payload.targetCount,
+      payload.isCompleted,
+      existing?.isCompleted === true,
+    );
 
     const updateSet: Record<string, unknown> = {
       count: payload.count,
@@ -349,6 +389,8 @@ export class DhikrLogsService {
       );
     }
 
+    payload.items.forEach((item) => this.assertValidLogDate(item.date));
+
     const itemsWithDhikrId = payload.items.filter(hasDhikrId);
     const userObjectIds = payload.items.map((item) =>
       this.asObjectId(item.userId),
@@ -368,14 +410,31 @@ export class DhikrLogsService {
       ),
     );
 
-    const operations = payload.items.map((item, index) => {
+    const existingLogs = await Promise.all(
+      filters.map((filter) =>
+        this.dhikrLogModel.findOne(filter, { isCompleted: 1 }).lean().exec(),
+      ),
+    );
+
+    const operations: BulkLogOperation[] = [];
+    payload.items.forEach((item, index) => {
       const vird = virdRefs[index];
+      const existingCompleted = existingLogs[index]?.isCompleted === true;
+      // M-04: sayım 0, tamamlanmış kaydı ezmez.
+      if (item.count === 0 && existingCompleted) {
+        return;
+      }
       const set: Record<string, unknown> = {
         count: item.count,
         targetCount: item.targetCount,
         sessionDuration: item.sessionDuration ?? 0,
         source: item.source ?? 'manual',
-        isCompleted: item.isCompleted ?? false,
+        isCompleted: this.resolveCompleted(
+          item.count,
+          item.targetCount,
+          item.isCompleted,
+          existingCompleted,
+        ),
       };
       const setOnInsert: Record<string, unknown> = {
         userId: userObjectIds[index],
@@ -385,24 +444,24 @@ export class DhikrLogsService {
       if (vird) {
         set.virdProgramId = vird.virdProgramId;
         set.virdSlot = vird.virdSlot;
-        set.virdPrayerIndex = vird.virdPrayerIndex;
+        // Vird alanları YALNIZ $set'te (create ile aynı kural): aynı yol
+        // $setOnInsert'te de olursa upsert Mongo'da çakışma (kod 40) verir.
+        set.virdPrayerIndex = vird.virdPrayerIndex ?? null;
         if (typeof item.virdDayIndex === 'number') {
           set.virdDayIndex = item.virdDayIndex;
         }
-        setOnInsert.virdProgramId = vird.virdProgramId;
-        setOnInsert.virdSlot = vird.virdSlot;
-        setOnInsert.virdPrayerIndex = vird.virdPrayerIndex;
       }
-      return {
+      operations.push({
         updateOne: {
           filter: filters[index],
           update: { $set: set, $setOnInsert: setOnInsert },
           upsert: true,
         },
-      };
+      });
     });
 
-    const upsertedCount = await this.bulkWriteWithRetry(operations);
+    const upsertedCount =
+      operations.length > 0 ? await this.bulkWriteWithRetry(operations) : 0;
 
     const items = await this.dhikrLogModel.find({ $or: filters }).lean().exec();
 
