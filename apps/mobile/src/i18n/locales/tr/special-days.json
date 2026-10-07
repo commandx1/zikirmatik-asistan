@@ -15,16 +15,6 @@
     "cta": "İncele",
     "defaultSubtitle": "Bu güne dair bilmen gerekenler"
   },
-  "notificationSettings": {
-    "title": "Kandil bildirimlerini al",
-    "subtitle": "Kandilden 1 gün ve 1 saat önce bildirim"
-  },
-  "ramadanMode": {
-    "title": "Ramazan Modu",
-    "sahur": "Sahur",
-    "iftar": "İftar",
-    "cta": "Ramazan zikirlerine git"
-  },
   "upcoming": {
     "title": "Yaklaşan Günler"
   },

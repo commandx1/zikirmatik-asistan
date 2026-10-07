@@ -4,7 +4,8 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { useCircleStore } from "../../../store/circle-store";
-import { resolveLocalizedText, withAlpha} from "@zikirmatik/shared";
+import { withAlpha } from "@zikirmatik/shared";
+import { circleProgressPercent, resolveCircleTitle } from "../services/circle-share";
 import { TEST_IDS } from "../../../test-ids";
 import { useAppLocale } from "../../../i18n";
 
@@ -46,8 +47,8 @@ export function CircleCard() {
     );
   }
 
-  const percent = activeCircle.goalCount > 0 ? Math.min(100, Math.round((activeCircle.totalCount / activeCircle.goalCount) * 100)) : 0;
-  const title = activeCircle.name || resolveLocalizedText(activeCircle.dhikr.name, locale);
+  const percent = circleProgressPercent(activeCircle.totalCount, activeCircle.goalCount);
+  const title = resolveCircleTitle(activeCircle, locale);
 
   return (
     <View className="mb-5 px-5">

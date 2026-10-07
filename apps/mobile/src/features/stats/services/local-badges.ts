@@ -40,7 +40,8 @@ export function resolveActiveDays(
 
   for (const item of items) {
     const safeCount = Math.max(0, Math.floor(item.current));
-    const dayKey = resolveActivityDateKey(item, today) ?? (safeCount > 0 ? todayKey : null);
+    // M-21: a day counts only if something was counted (a reset / 0 leaves a fresh stamp but no activity).
+    const dayKey = safeCount > 0 ? (resolveActivityDateKey(item, today) ?? todayKey) : null;
     if (dayKey) {
       activeDays.add(dayKey);
     }

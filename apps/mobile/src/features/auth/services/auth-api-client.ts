@@ -35,3 +35,13 @@ export async function refreshSession(payload: RefreshTokenRequest): Promise<Refr
     errors: errors()
   });
 }
+
+/** Çıkışta refresh token'ı sunucuda iptal eder (Bearer gerekmez, idempotent 204). */
+export async function logoutSession(payload: RefreshTokenRequest): Promise<void> {
+  await request<unknown>("/v1/auth/logout", {
+    method: "POST",
+    body: payload,
+    emptyValue: undefined,
+    errors: errors()
+  });
+}

@@ -22,7 +22,8 @@ export function SourceDonut({ breakdown }: { breakdown: StatsSourceBreakdown }) 
     manual: tokens.accent,
     ai: tokens.success,
     "special-day": withAlpha(tokens.accent, 0.5),
-    notification: withAlpha(tokens.textMuted, 0.6)
+    notification: withAlpha(tokens.textMuted, 0.6),
+    circle: withAlpha(tokens.success, 0.5)
   };
 
   const total = SOURCE_ORDER.reduce((sum, key) => sum + breakdown[key], 0);

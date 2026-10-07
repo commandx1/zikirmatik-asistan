@@ -66,6 +66,10 @@
     "minutePickerTitle": "Dakika Seç",
     "invalidTime": "Lütfen geçerli bir saat gir (00-23 / 00-59)."
   },
+  "logoutConfirm": {
+    "title": "Çıkış yapılsın mı?",
+    "message": "Misafir olarak devam edersin; verilerin hesabında saklı kalır."
+  },
   "deleteAccountModal": {
     "warning": "⚠️  Bu işlem geri alınamaz",
     "title": "Hesabını Sil",
@@ -90,6 +94,7 @@
     "manageSubscriptionFailed": "Abonelik yönetim ekranı açılamadı.",
     "storeOpenFailed": "Mağaza sayfası açılamadı.",
     "noEmailApp": "Cihazında varsayılan e-posta uygulaması yok gibi görünüyor.",
+    "deleteAccountFailed": "Hesap silinemedi. Lütfen tekrar dene.",
     "reminderTimeUpdateFailed": "Saat güncellenemedi. Lütfen tekrar dene.",
     "pushPrefsUpdateFailed": "Bildirim tercihi güncellenemedi. Lütfen tekrar dene."
   },
@@ -103,7 +108,7 @@
       },
       "circle": {
         "title": "Zikir Halkası kur",
-        "description": "Sevdiklerinle ortak hedefe zikirle ulaş."
+        "description": "10 halka, 200 üye"
       },
       "aiCredits": {
         "title": "AI Rehber Kredileri",

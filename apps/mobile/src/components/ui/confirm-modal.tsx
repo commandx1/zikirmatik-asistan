@@ -12,6 +12,8 @@ type ConfirmModalProps = {
   confirmLabel?: string
   cancelLabel?: string
   destructive?: boolean
+  confirmTestID?: string
+  cancelTestID?: string
   onConfirm: () => void
   onCancel: () => void
 }
@@ -23,6 +25,8 @@ export function ConfirmModal({
   confirmLabel,
   cancelLabel,
   destructive = false,
+  confirmTestID,
+  cancelTestID,
   onConfirm,
   onCancel
 }: ConfirmModalProps) {
@@ -54,6 +58,7 @@ export function ConfirmModal({
           <View className='mt-5 gap-2'>
             <Pressable
               onPress={onConfirm}
+              testID={confirmTestID}
               accessibilityRole='button'
               accessibilityLabel={okLabel}
               className='h-11 items-center justify-center rounded-full border px-4'
@@ -66,6 +71,7 @@ export function ConfirmModal({
             {cancelLabel ? (
               <Pressable
                 onPress={onCancel}
+                testID={cancelTestID}
                 accessibilityRole='button'
                 accessibilityLabel={cancelLabel}
                 className='h-10 items-center justify-center rounded-full px-4'

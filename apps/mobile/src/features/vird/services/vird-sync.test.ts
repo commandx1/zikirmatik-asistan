@@ -124,9 +124,9 @@ describe("buildVirdTodaySnapshot", () => {
     expect(result).toEqual({
       dateKey: "2026-02-14",
       progress: {
-        "morning:0:d1": { count: 33, target: 33 },
-        "prayer:1:d2": { count: 5, target: 10 },
-        "prayer:2:d2": { count: 0, target: 10 }
+        "p1|morning:0:d1": { count: 33, target: 33 },
+        "p1|prayer:1:d2": { count: 5, target: 10 },
+        "p1|prayer:2:d2": { count: 0, target: 10 }
       }
     });
   });

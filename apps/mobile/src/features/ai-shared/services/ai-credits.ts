@@ -4,17 +4,21 @@ import type { AiDailyQuota } from "../../ai-guide/services/ai-api-client";
 
 export type CreditState = { balance: number; isPremium: boolean };
 
-/** /v1/ai/credits alınamazsa /v1/ai/quota'dan türetilen bakiye. */
-export function resolveCreditsFromQuota(quota: AiDailyQuota): CreditState {
-  return {
-    balance: quota.isPremium ? Number.MAX_SAFE_INTEGER : Math.max(0, (quota.limit ?? 1) - quota.used),
-    isPremium: quota.isPremium
-  };
+/**
+ * /v1/ai/credits alınamazsa /v1/ai/quota'dan türetilen bakiye (yalnız
+ * ücretsiz). Premium için gerçek bakiye kotadan bilinemez (M-07: uydurma
+ * "sınırsız" sayı yok) → undefined; çağıran son bilinen değere düşer.
+ */
+export function resolveCreditsFromQuota(quota: AiDailyQuota): CreditState | undefined {
+  if (quota.isPremium) {
+    return undefined;
+  }
+  return { balance: Math.max(0, (quota.limit ?? 1) - quota.used), isPremium: false };
 }
 
-/** Rehber/Sohbet requiredCredits=1 (balance > 0), Vird programı 3. */
-export function hasEnoughCredits({ balance, isPremium, requiredCredits }: CreditState & { requiredCredits: number }) {
-  return isPremium || balance >= requiredCredits;
+/** M-07: yalnız gerçek bakiye — premium dahil. Rehber/Sohbet requiredCredits=1, Vird programı 3. */
+export function hasEnoughCredits({ balance, requiredCredits }: CreditState & { requiredCredits: number }) {
+  return balance >= requiredCredits;
 }
 
 /** Yanıttaki `remainingCredits` — sonlu sayı değilse yok sayılır (undefined). */

@@ -15,16 +15,6 @@
     "cta": "View",
     "defaultSubtitle": "What you should know about this day"
   },
-  "notificationSettings": {
-    "title": "Get kandil notifications",
-    "subtitle": "Notification 1 day and 1 hour before the kandil"
-  },
-  "ramadanMode": {
-    "title": "Ramadan Mode",
-    "sahur": "Suhoor",
-    "iftar": "Iftar",
-    "cta": "Go to Ramadan dhikrs"
-  },
   "upcoming": {
     "title": "Upcoming Days"
   },

@@ -147,17 +147,19 @@ export function ProfileSettingsSections({
         </ProfileSettingsCard>
       </View>
 
-      <View>
-        <ProfileSectionTitle label={t("profile:sections.account.title")} />
-        <ProfileSettingsCard>
-          <Pressable onPress={onPressDeleteAccount} className="flex-row items-center justify-start p-4">
-            <View className="flex-row items-center gap-3">
-              <View className="h-8 w-8" />
-              <Text className="text-base font-medium" style={{ color: "#EF4444" }}>{t("profile:sections.account.deleteAccount")}</Text>
-            </View>
-          </Pressable>
-        </ProfileSettingsCard>
-      </View>
+      {isAuthenticated ? (
+        <View>
+          <ProfileSectionTitle label={t("profile:sections.account.title")} />
+          <ProfileSettingsCard>
+            <Pressable onPress={onPressDeleteAccount} testID={TEST_IDS.profile.deleteAccount} className="flex-row items-center justify-start p-4">
+              <View className="flex-row items-center gap-3">
+                <View className="h-8 w-8" />
+                <Text className="text-base font-medium" style={{ color: "#EF4444" }}>{t("profile:sections.account.deleteAccount")}</Text>
+              </View>
+            </Pressable>
+          </ProfileSettingsCard>
+        </View>
+      ) : null}
 
     </View>
   );

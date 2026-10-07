@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const refreshSession = vi.fn();
+const logoutSession = vi.fn();
 
 vi.mock("@react-native-async-storage/async-storage", () => ({
   default: { getItem: vi.fn(async () => null), setItem: vi.fn(), removeItem: vi.fn() }
@@ -10,12 +11,14 @@ vi.mock("../features/auth/services/auth-api-client", () => ({
   AuthApiError: class AuthApiError extends Error {
     constructor(
       public readonly kind: "transient" | "terminal",
-      message: string
+      message: string,
+      public readonly status?: number
     ) {
       super(message);
     }
   },
   refreshSession: (...args: unknown[]) => refreshSession(...args),
+  logoutSession: (...args: unknown[]) => logoutSession(...args),
   verifyProvider: vi.fn()
 }));
 vi.mock("../features/auth/services/mock-provider-auth", () => ({
@@ -36,7 +39,7 @@ const { getAuthBridge } = await import("../lib/http/auth-bridge");
 const { captureGuestMigrationSnapshot } = await import("../features/auth/services/guest-migration");
 const { useGuestMigrationStore } = await import("./guest-migration-store");
 const { verifyProvider, AuthApiError } = await import("../features/auth/services/auth-api-client");
-const { getOrCreateDeviceId } = await import("../features/notifications/services/push-device-registration");
+const { getOrCreateDeviceId, unlinkPushDevice } = await import("../features/notifications/services/push-device-registration");
 const { requestProviderIdToken } = await import("../features/auth/services/mock-provider-auth");
 
 const session = { userId: "u1", accessToken: "old-access", refreshToken: "refresh-1", isNewUser: false };
@@ -85,6 +88,94 @@ describe("auth-store refreshAuthenticatedSession", () => {
     expect(getAuthBridge().getAccessToken()).toBe("old-access");
     await getAuthBridge().refresh();
     expect(getAuthBridge().getAccessToken()).toBe("bridged");
+  });
+});
+
+describe("auth-store refresh rotation (single-use tokens)", () => {
+  beforeEach(() => {
+    refreshSession.mockReset();
+    useAuthStore.setState({ status: "authenticated", session: session as never, isSessionRefreshing: false });
+  });
+
+  it("many concurrent callers trigger exactly one refresh and the ROTATED refresh token is stored", async () => {
+    refreshSession.mockResolvedValue({ ...session, accessToken: "access-2", refreshToken: "refresh-2" });
+
+    await Promise.all([1, 2, 3, 4].map(() => getAuthBridge().refresh()));
+
+    expect(refreshSession).toHaveBeenCalledTimes(1);
+    expect(refreshSession).toHaveBeenCalledWith({ refreshToken: "refresh-1" });
+    expect(useAuthStore.getState().session?.refreshToken).toBe("refresh-2");
+    expect(useAuthStore.getState().session?.accessToken).toBe("access-2");
+  });
+
+  it("the next refresh uses the rotated token, never the spent one", async () => {
+    refreshSession.mockResolvedValueOnce({ ...session, refreshToken: "refresh-2" });
+    refreshSession.mockResolvedValueOnce({ ...session, refreshToken: "refresh-3" });
+    await getAuthBridge().refresh();
+    await getAuthBridge().refresh();
+    expect(refreshSession).toHaveBeenNthCalledWith(2, { refreshToken: "refresh-2" });
+  });
+});
+
+describe("auth-store B-12: which refresh failures drop the session", () => {
+  beforeEach(() => {
+    refreshSession.mockReset();
+    useAuthStore.setState({ status: "authenticated", session: session as never, isSessionRefreshing: false });
+  });
+
+  it.each([429, 408])("HTTP %i keeps the session (rate limit / timeout is transient)", async (status) => {
+    refreshSession.mockRejectedValue(new AuthApiError("terminal", "slow down", status));
+    await useAuthStore.getState().refreshAuthenticatedSession();
+    expect(useAuthStore.getState().status).toBe("authenticated");
+    expect(useAuthStore.getState().session?.refreshToken).toBe("refresh-1");
+  });
+
+  it.each([400, 401, 403])("HTTP %i drops the session", async (status) => {
+    refreshSession.mockRejectedValue(new AuthApiError("terminal", "revoked", status));
+    await useAuthStore.getState().refreshAuthenticatedSession();
+    expect(useAuthStore.getState().status).toBe("signed_out");
+    expect(useAuthStore.getState().session).toBeUndefined();
+  });
+});
+
+describe("auth-store B-15 double sign-in tap", () => {
+  it("a second signInWithProvider while authenticating is a no-op (single provider request)", async () => {
+    (requestProviderIdToken as ReturnType<typeof vi.fn>).mockReset().mockResolvedValue("t");
+    (getOrCreateDeviceId as ReturnType<typeof vi.fn>).mockReset().mockResolvedValue("d");
+    (verifyProvider as ReturnType<typeof vi.fn>).mockReset().mockResolvedValue({ userId: "u9", accessToken: "a", refreshToken: "r", isNewUser: false });
+    useAuthStore.setState({ status: "signed_out", session: undefined, guestMode: true, lastAuthenticatedUserId: undefined });
+    const first = useAuthStore.getState().signInWithProvider("google");
+    const second = useAuthStore.getState().signInWithProvider("google");
+    await Promise.all([first, second]);
+    expect(requestProviderIdToken).toHaveBeenCalledTimes(1);
+    expect(verifyProvider).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("auth-store signOut", () => {
+  beforeEach(() => {
+    logoutSession.mockReset().mockResolvedValue(undefined);
+    (unlinkPushDevice as ReturnType<typeof vi.fn>).mockReset().mockResolvedValue(undefined);
+    useAuthStore.setState({ status: "authenticated", session: session as never, guestMode: false });
+  });
+
+  it("revokes the refresh token on the server before the session is cleared", async () => {
+    let sessionAtCall: unknown = "unset";
+    logoutSession.mockImplementation(async () => {
+      sessionAtCall = useAuthStore.getState().session;
+    });
+    await useAuthStore.getState().signOut();
+    expect(logoutSession).toHaveBeenCalledWith({ refreshToken: "refresh-1" });
+    expect(sessionAtCall).toBeDefined();
+    expect(useAuthStore.getState().session).toBeUndefined();
+    expect(useAuthStore.getState().guestMode).toBe(true);
+  });
+
+  it("a failing logout call never blocks sign-out", async () => {
+    logoutSession.mockRejectedValue(new Error("offline"));
+    await useAuthStore.getState().signOut();
+    expect(useAuthStore.getState().status).toBe("signed_out");
+    expect(useAuthStore.getState().session).toBeUndefined();
   });
 });
 

@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { ConfirmModal } from '../../../components/ui/confirm-modal'
 import { useAuthPromptStore } from '../../../store/auth-prompt-store'
+import { TEST_IDS } from '../../../test-ids'
 
 export function AuthPromptModal() {
   const { t } = useTranslation('auth')
@@ -16,6 +17,8 @@ export function AuthPromptModal() {
       message={t('auth:promptModal.message')}
       confirmLabel={t('auth:promptModal.confirm')}
       cancelLabel={t('auth:promptModal.cancel')}
+      confirmTestID={TEST_IDS.auth.promptConfirm}
+      cancelTestID={TEST_IDS.auth.promptCancel}
       onConfirm={() => {
         close()
         router.push('/auth')

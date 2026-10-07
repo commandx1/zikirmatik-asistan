@@ -1,4 +1,5 @@
 {
+  "personalFallbackName": "Dhikr",
   "errors": {
     "logActionFailed": "Dhikr log action failed.",
     "listFailed": "Failed to fetch dhikr list.",

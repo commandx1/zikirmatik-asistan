@@ -7,10 +7,14 @@ import { toIntlLocale } from "../../../lib/locale-format";
 import { useGuestMigrationStore } from "../../../store/guest-migration-store";
 import { fetchAiRecommendations } from "../../ai-shared/services/ai-queries";
 import { DhikrsApiError } from "../services/dhikrs-api-client";
+import { resolvePersonalDhikrName } from "../services/personal-dhikr-label";
 import { fetchDhikrCatalog, fetchDhikrLogs, fetchUserDhikrs } from "../services/dhikr-queries";
 import type { BackendDhikrLog } from "../services/dhikr-logs-api-client";
+import { isLogFromToday } from "../../home/services/day-rollover";
 
 type LatestLog = {
+  /** Log gününün YYYY-MM-DD'si — eski günün sayımı bugünün sayacına yazılmasın (M-01). */
+  date?: string;
   count: number;
   targetCount: number;
   createdAt?: string;
@@ -21,6 +25,7 @@ type LatestLog = {
 };
 
 type LatestCustomLog = {
+  date?: string;
   count: number;
   targetCount: number;
   createdAt?: string;
@@ -45,6 +50,7 @@ export function indexLatestDhikrLogs(logs: BackendDhikrLog[]): {
     }
     if (log.dhikrId && !latestByDhikr.has(log.dhikrId)) {
       latestByDhikr.set(log.dhikrId, {
+        date: log.date,
         count: log.count,
         targetCount: log.targetCount,
         createdAt: log.createdAt,
@@ -61,6 +67,7 @@ export function indexLatestDhikrLogs(logs: BackendDhikrLog[]): {
     }
     if (log.customDhikrId && !latestByCustomDhikr.has(log.customDhikrId)) {
       latestByCustomDhikr.set(log.customDhikrId, {
+        date: log.date,
         count: log.count,
         targetCount: log.targetCount,
         createdAt: log.createdAt,
@@ -70,6 +77,15 @@ export function indexLatestDhikrLogs(logs: BackendDhikrLog[]): {
   }
 
   return { latestByDhikr, latestByCustomDhikr };
+}
+
+// M-01: the counter shows today's count — a log written on an earlier day still
+// supplies target / favorite / last-activity, but the count starts again at 0.
+export function counterFromLog(log: { date?: string; createdAt?: string; count: number } | undefined) {
+  if (!log) {
+    return undefined;
+  }
+  return isLogFromToday(log, new Date()) ? log.count : 0;
 }
 
 export function useDhikrBackendSync() {
@@ -119,12 +135,12 @@ export function useDhikrBackendSync() {
             const customLog = latestByCustomDhikr.get(item.clientId);
             return {
               id: item.clientId,
-              name: item.name.trim(),
-              transliteration: item.transliteration?.trim() || item.name,
+              name: resolvePersonalDhikrName(item, i18n.t("dhikrs:personalFallbackName")),
+              transliteration: item.transliteration?.trim() || resolvePersonalDhikrName(item, i18n.t("dhikrs:personalFallbackName")),
               arabic: item.arabic,
               meaning: item.meaning,
               target: customLog?.targetCount ?? item.target,
-              current: customLog?.count,
+              current: counterFromLog(customLog),
               lastActivityLabel: customLog?.createdAt ? toLastActivityLabel(customLog.createdAt) : undefined,
               lastActivityAt: customLog?.createdAt,
               isFavorite: customLog?.isFavorite ?? item.isFavorite
@@ -146,7 +162,7 @@ export function useDhikrBackendSync() {
             aiAssistantNote: log?.aiAssistantNote ?? (log?.aiRecommendationId ? assistantNoteByRecommendationId.get(log.aiRecommendationId) : undefined),
             aiRecommendationId: log?.aiRecommendationId,
             target: log?.targetCount ?? item.recommendedCount,
-            current: log?.count,
+            current: counterFromLog(log),
             lastActivityLabel: log?.createdAt ? toLastActivityLabel(log.createdAt) : undefined,
             lastActivityAt: log?.createdAt,
             isFavorite: log?.isFavorite

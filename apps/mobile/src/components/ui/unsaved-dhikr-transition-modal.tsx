@@ -12,6 +12,7 @@ type UnsavedDhikrTransitionModalProps = {
   onSaveAndContinue: () => void;
   onContinueWithoutSaving: () => void;
   onCancel: () => void;
+  testIDs?: { saveAndContinue?: string; continueWithoutSaving?: string; cancel?: string };
 };
 
 export function UnsavedDhikrTransitionModal({
@@ -22,7 +23,8 @@ export function UnsavedDhikrTransitionModal({
   error,
   onSaveAndContinue,
   onContinueWithoutSaving,
-  onCancel
+  onCancel,
+  testIDs
 }: UnsavedDhikrTransitionModalProps) {
   const { tokens } = useThemeTokens();
   const { t } = useTranslation("components");
@@ -51,6 +53,7 @@ export function UnsavedDhikrTransitionModal({
             <Pressable
               disabled={isSaving}
               onPress={onSaveAndContinue}
+              testID={testIDs?.saveAndContinue}
               className="h-11 items-center justify-center rounded-full px-4"
               style={{ backgroundColor: tokens.accent, opacity: isSaving ? 0.72 : 1 }}
             >
@@ -65,6 +68,7 @@ export function UnsavedDhikrTransitionModal({
             <Pressable
               disabled={isSaving}
               onPress={onContinueWithoutSaving}
+              testID={testIDs?.continueWithoutSaving}
               className="h-11 items-center justify-center rounded-full border px-4"
               style={{
                 borderColor: withAlpha(tokens.textPrimary, 0.18),
@@ -79,6 +83,7 @@ export function UnsavedDhikrTransitionModal({
             <Pressable
               disabled={isSaving}
               onPress={onCancel}
+              testID={testIDs?.cancel}
               className="h-10 items-center justify-center rounded-full px-4"
               style={{ opacity: isSaving ? 0.56 : 1 }}
             >

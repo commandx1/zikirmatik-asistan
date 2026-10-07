@@ -9,6 +9,9 @@
 import { useCallback, useEffect } from "react";
 import { useAuthStore } from "../../../store/auth-store";
 import { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
+import { useVirdStore } from "../../../store/vird-store";
+import { deleteVirdProgram } from "../services/vird-api-client";
+import { discardAiDraft } from "../services/vird-ai-create-service";
 import { useVirdActivation } from "./use-vird-activation";
 import { useVirdAiGenerate } from "./use-vird-ai-generate";
 
@@ -31,10 +34,18 @@ export function useVirdAiCreate(onOpenPremiumSheet?: () => void) {
     void refreshCredits();
   }, [authStatus, refreshCredits]);
 
+  const draftProgramId = generate.programId;
   const discardDraft = useCallback(() => {
+    // B-20: sunucudaki taslağı da sil (senkronda geri gelmesin).
+    void discardAiDraft({
+      programId: draftProgramId,
+      isMember: authStatus === "authenticated",
+      deleteRemote: deleteVirdProgram,
+      removeLocal: (id) => useVirdStore.getState().removeProgram(id)
+    });
     clearDraft();
     resetActivation();
-  }, [clearDraft, resetActivation]);
+  }, [authStatus, clearDraft, draftProgramId, resetActivation]);
 
   /**
    * ProfilePremiumSheet'in `onPremiumActivated` callback'i için tek giriş

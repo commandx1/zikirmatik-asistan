@@ -20,6 +20,8 @@ export const VIRD_SLOT_KEYS: readonly VirdSlotKey[] = ["morning", "prayer", "eve
 /** dayIndexFor/phaseForDay/expectedItemsForDay'in ihtiyaç duyduğu minimal
  * program şekli — hem VirdProgramLocal hem ham sunucu VirdProgram'ıyla uyumlu. */
 export type VirdDayProgramLike = {
+  /** Verilirse ilerleme anahtarları programa göre ayrışır (M-23, bkz. scopeItemKey). */
+  id?: string;
   startDate: string;
   phases: VirdPhase[];
   prayerSelection?: number[];
@@ -69,6 +71,15 @@ export function resolveDhikrRef(item: Pick<VirdItem, "dhikrId" | "customDhikrId"
  */
 export function buildVirdItemKey(slot: VirdSlotKey, prayerIndex: number | null | undefined, ref: string): string {
   return `${slot}:${prayerIndex ?? 0}:${ref}`;
+}
+
+/**
+ * M-23: yerel ilerleme programa bağlıdır — aynı zikir/dilim iki programda da
+ * varsa biri diğerinin ilerlemesini tamamlanmış göstermez. Sunucu itemKey'i
+ * (`slot:idx:ref`, "|" içermez) `${programId}|` ile öneklenir.
+ */
+export function scopeItemKey(programId: string | undefined, itemKey: string): string {
+  return programId ? `${programId}|${itemKey}` : itemKey;
 }
 
 /** İki YYYY-MM-DD anahtarı arasındaki gün farkı (toKey - fromKey), timezone
@@ -123,7 +134,7 @@ export function expectedItemsForDay(program: VirdDayProgramLike, dayIndex: numbe
       if (slot === "prayer") {
         for (const prayerIndex of prayerSelection) {
           expected.push({
-            itemKey: buildVirdItemKey(slot, prayerIndex, ref),
+            itemKey: scopeItemKey(program.id, buildVirdItemKey(slot, prayerIndex, ref)),
             slot,
             prayerIndex,
             ref,
@@ -132,7 +143,7 @@ export function expectedItemsForDay(program: VirdDayProgramLike, dayIndex: numbe
         }
       } else {
         expected.push({
-          itemKey: buildVirdItemKey(slot, null, ref),
+          itemKey: scopeItemKey(program.id, buildVirdItemKey(slot, null, ref)),
           slot,
           prayerIndex: null,
           ref,

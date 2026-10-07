@@ -16,6 +16,7 @@ import {
 import { useProfileStore } from "../../../store/profile-store";
 import { formatLongDate } from "../../../lib/locale-format";
 import { resolveLocalizedText, toDateKey } from "@zikirmatik/shared";
+import { daysUntil } from "../services/special-days-countdown";
 
 
 export function useSpecialDays() {
@@ -112,15 +113,6 @@ function mapUpcomingDay(
     dateLabel: formatLongDate(item.date, locale),
     remaining: formatDaysRemaining(daysUntil(item.date)),
   };
-}
-
-function daysUntil(isoDate: string): number {
-  const now = new Date();
-  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  const parts = isoDate.split("-").map(Number);
-  // isoDate is always "YYYY-MM-DD", so all three parts exist.
-  const targetUtc = Date.UTC(parts[0]!, parts[1]! - 1, parts[2]!);
-  return Math.max(0, Math.round((targetUtc - todayUtc) / 86_400_000));
 }
 
 function formatDaysRemaining(days: number): string {

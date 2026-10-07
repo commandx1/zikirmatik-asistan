@@ -41,6 +41,8 @@ export type GuestMigrationSnapshot = {
   /** Local calendar day (YYYY-MM-DD) the guest progress is attributed to. */
   dateKey: string;
   items: GuestSnapshotItem[];
+  /** M-19: taşınan serbest mod sayımı (items içinde "Serbest" kişisel zikri olarak da bulunur). */
+  freeModeCount?: number;
   /**
    * v2 alanı (bkz. captureGuestMigrationSnapshot) — eski (bu alan eklenmeden
    * önce kuyruğa alınmış) bekleyen bir snapshot'ta bulunmaz; okuma tarafı

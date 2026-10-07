@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useThemePreferences } from "../../../hooks/use-theme-preferences";
 import { useProfileStore } from "../../../store/profile-store";
 import { THEME_LABELS } from "../../../theme/labels";
+import { PREMIUM_THEME_NAMES } from "../../../theme/premium-themes";
 
 export type ThemeOption = {
   id: ThemeName;
@@ -46,160 +47,138 @@ const THEME_NAMES: ThemeName[] = [
   //"premium-doku"
 ];
 
-const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label">> = {
+const SWATCH_COLORS: Record<ThemeName, Omit<ThemeOption, "id" | "label" | "isPremiumLocked">> = {
   "gece-koyu": {
     swatchBg: "#0F1B2D",
     swatchInner: "#162236",
     dotColor: "#C8972A",
-    dotBorder: "#C8972A",
-    isPremiumLocked: false
+    dotBorder: "#C8972A"
   },
   "gece-lacivert": {
     swatchBg: "#0A0F1F",
     swatchInner: "#111A33",
     dotColor: "#6FA8FF",
-    dotBorder: "#6FA8FF",
-    isPremiumLocked: true
+    dotBorder: "#6FA8FF"
   },
   "cami-yesili": {
     swatchBg: "#0A1A14",
     swatchInner: "#112A20",
     dotColor: "#C8972A",
-    dotBorder: "#C8972A",
-    isPremiumLocked: false
+    dotBorder: "#C8972A"
   },
   "col-kumulu": {
     swatchBg: "#2A2015",
     swatchInner: "#3C2E1F",
     dotColor: "#E0B25A",
-    dotBorder: "#E0B25A",
-    isPremiumLocked: false
+    dotBorder: "#E0B25A"
   },
   "kum-tasi-minimal": {
     swatchBg: "#EFE3D0",
     swatchInner: "#DCC8A8",
     dotColor: "#9A6B2F",
-    dotBorder: "#9A6B2F",
-    isPremiumLocked: true
+    dotBorder: "#9A6B2F"
   },
   "zumrut-mermer": {
     swatchBg: "#0E1E1A",
     swatchInner: "#15332B",
     dotColor: "#4FB08B",
-    dotBorder: "#4FB08B",
-    isPremiumLocked: true
+    dotBorder: "#4FB08B"
   },
   "saf-gece-amoled": {
     swatchBg: "#000000",
     swatchInner: "#0F0F10",
     dotColor: "#C8972A",
-    dotBorder: "#C8972A",
-    isPremiumLocked: true
+    dotBorder: "#C8972A"
   },
   "ay-isigi": {
     swatchBg: "#F6F7FB",
     swatchInner: "#E9ECF5",
     dotColor: "#4056A1",
-    dotBorder: "#4056A1",
-    isPremiumLocked: true
+    dotBorder: "#4056A1"
   },
   "klasik-bej": {
     swatchBg: "#F5F0E8",
     swatchInner: "#FFFFFF",
     dotColor: "#8B7355",
-    dotBorder: "#8B7355",
-    isPremiumLocked: true
+    dotBorder: "#8B7355"
   },
   "derin-mavi": {
     swatchBg: "#0A1128",
     swatchInner: "#141F3D",
     dotColor: "#94A3B8",
-    dotBorder: "#94A3B8",
-    isPremiumLocked: true
+    dotBorder: "#94A3B8"
   },
   "gul-bahcesi": {
     swatchBg: "#2A1116",
     swatchInner: "#3D1A22",
     dotColor: "#C8972A",
-    dotBorder: "#C8972A",
-    isPremiumLocked: true
+    dotBorder: "#C8972A"
   },
   "saf-siyah": {
     swatchBg: "#000000",
     swatchInner: "#111111",
     dotColor: "#C8972A",
-    dotBorder: "#C8972A",
-    isPremiumLocked: false
+    dotBorder: "#C8972A"
   },
   "galaksi-girdabi": {
     swatchBg: "#080514",
     swatchInner: "#1A0842",
     dotColor: "#8B5CF6",
-    dotBorder: "#8B5CF6",
-    isPremiumLocked: true
+    dotBorder: "#8B5CF6"
   },
   "karadeniz": {
     swatchBg: "#0A1510",
     swatchInner: "#14261C",
     dotColor: "#5EA87A",
-    dotBorder: "#5EA87A",
-    isPremiumLocked: false
+    dotBorder: "#5EA87A"
   },
   "safran": {
     swatchBg: "#180E04",
     swatchInner: "#2A1A09",
     dotColor: "#E87820",
-    dotBorder: "#E87820",
-    isPremiumLocked: false
+    dotBorder: "#E87820"
   },
   "tekke": {
     swatchBg: "#0E0B1F",
     swatchInner: "#17102E",
     dotColor: "#7A58B2",
-    dotBorder: "#7A58B2",
-    isPremiumLocked: false
+    dotBorder: "#7A58B2"
   },
   "peygamber-mavisi": {
     swatchBg: "#060F1E",
     swatchInner: "#0C1B30",
     dotColor: "#3E8FD4",
-    dotBorder: "#3E8FD4",
-    isPremiumLocked: false
+    dotBorder: "#3E8FD4"
   },
   "hilal-gecesi": {
     swatchBg: "#030710",
     swatchInner: "#07101F",
     dotColor: "#B8C8E8",
-    dotBorder: "#B8C8E8",
-    isPremiumLocked: true
+    dotBorder: "#B8C8E8"
   },
   "su-dalgasi": {
     swatchBg: "#050C18",
     swatchInner: "#0A1628",
     dotColor: "#4ABACC",
-    dotBorder: "#4ABACC",
-    isPremiumLocked: true
+    dotBorder: "#4ABACC"
   },
   "lacivert-indigo": {
     swatchBg: "#08091A",
     swatchInner: "#0F1130",
     dotColor: "#7B82F0",
-    dotBorder: "#7B82F0",
-    isPremiumLocked: true
+    dotBorder: "#7B82F0"
   },
   "altin-varak": {
     swatchBg: "#110E05",
     swatchInner: "#1E1A0A",
     dotColor: "#EFC030",
-    dotBorder: "#EFC030",
-    isPremiumLocked: true
+    dotBorder: "#EFC030"
   },
   /* "premium-doku": {
     swatchBg: "#101A22",
     swatchInner: "#1B2A36",
     dotColor: "#D4AF37",
-    dotBorder: "#D4AF37",
-    isPremiumLocked: true
+    dotBorder: "#D4AF37"
   } */
 };
 
@@ -219,7 +198,7 @@ export function useThemeSelector() {
       id,
       label: t(THEME_LABELS[id]),
       ...base,
-      isPremiumLocked: !isPremium && base.isPremiumLocked
+      isPremiumLocked: !isPremium && PREMIUM_THEME_NAMES.has(id)
     };
   }) as ThemeOption[];
 

@@ -6,6 +6,7 @@ import { InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { ToastBanner } from '../../components/ui/toast-banner'
+import { useDhikrStore } from '../../store/dhikr-store'
 import { useOnboardingStore } from '../../store/onboarding-store'
 import { useTour } from '../../features/tour/use-tour'
 import {
@@ -20,6 +21,7 @@ import { withAlpha } from "@zikirmatik/shared";
 import { TodaysVirdCard } from '../vird/components/todays-vird-card'
 import { CircleCard } from '../circle/components/circle-card'
 import { EsmaulHusnaSectionSkeleton } from './components/esmaul-husna-section-skeleton'
+import { DayRolloverModal } from './components/day-rollover-modal'
 import { DhikrContentStack } from '../../components/ui/dhikr-content-stack'
 import { DhikrResumeModal } from '../../components/ui/dhikr-resume-modal'
 import { KeyboardAwareBottomSheetModal } from '../../components/ui/keyboard-aware-bottom-sheet-modal'
@@ -487,6 +489,11 @@ function UnsavedTransitionModal() {
       onSaveAndContinue={home.onUnsavedTransitionSaveAndContinue}
       onContinueWithoutSaving={home.onUnsavedTransitionContinueWithoutSaving}
       onCancel={home.onUnsavedTransitionCancel}
+      testIDs={{
+        saveAndContinue: TEST_IDS.home.unsavedSaveContinue,
+        continueWithoutSaving: TEST_IDS.home.unsavedDiscard,
+        cancel: TEST_IDS.home.unsavedCancel
+      }}
     />
   )
 }
@@ -563,6 +570,7 @@ export function HomeView() {
     home.isFreeSaveNameModalOpen ||
     home.isTargetDowngradeWarningOpen ||
     home.isUnsavedTransitionModalOpen ||
+    home.isDayRolloverOpen ||
     home.isEsmaResumeGuardOpen
   const setHomeOverlayOpen = useBadgeCelebrationStore((s) => s.setHomeOverlayOpen)
   const isBadgeCelebrationVisible = useBadgeCelebrationStore((s) => s.isCelebrationVisible)
@@ -615,6 +623,12 @@ export function HomeView() {
     setToastMessage(message)
     toastTimerRef.current = setTimeout(() => setToastMessage(null), 2500)
   }, [])
+
+  // B-1: save / sync failures were only written to the store, never shown.
+  const syncError = useDhikrStore(state => state.syncError)
+  useEffect(() => {
+    if (syncError) showToast(syncError)
+  }, [syncError, showToast])
 
   useEffect(() => {
     if (!isMountedRef.current) {
@@ -738,6 +752,7 @@ export function HomeView() {
         onContinue={home.onEsmaResumeGuardContinue}
         onFresh={home.onEsmaResumeGuardFresh}
         onCancel={home.onEsmaResumeGuardCancel}
+        testIDs={{ continue: TEST_IDS.home.resumeContinue, fresh: TEST_IDS.home.resumeFresh }}
       />
       <Suspense fallback={null}>
         <DailyEsmaWelcomeModal
@@ -752,7 +767,8 @@ export function HomeView() {
       <TargetDowngradeWarningModal />
       <FreeSaveNameModal />
       <UnsavedTransitionModal />
-      <ToastBanner message={toastMessage} />
+      <DayRolloverModal />
+      <ToastBanner message={toastMessage} testID={TEST_IDS.home.toast} />
       <ProfilePremiumSheet
         visible={premiumSheet.isOpen}
         selectedPlan={premiumSheet.plan}

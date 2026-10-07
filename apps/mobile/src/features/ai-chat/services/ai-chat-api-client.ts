@@ -5,9 +5,10 @@
 import { fetch as streamFetch } from "expo/fetch";
 import { i18n } from "../../../i18n";
 import { AI_CREDIT_INSUFFICIENT_CODE, AI_UNAVAILABLE_CODE } from "../../ai-shared/ai-error-codes";
+import { readSse, SSE_IDLE_TIMEOUT_MS, SseStreamError } from "./chat-sse";
 import type { AiSourceCitation, ChatConversationSummary, ChatMessageRaw, ChatMode, ChatCoverage } from "../types";
 import { API_BASE_URL } from "../../../lib/env";
-import { ApiError, errorFromBody, request, safeParseJson } from "../../../lib/http/client";
+import { ApiError, errorFromBody, request } from "../../../lib/http/client";
 
 export { AI_CREDIT_INSUFFICIENT_CODE, AI_UNAVAILABLE_CODE };
 
@@ -33,6 +34,8 @@ export type CreateConversationPayload = {
   firstMessage: string;
   locale?: "tr" | "en";
   socketId?: string;
+  /** A-11: mesaj başına bir kez üretilir, aynı mesajın her tekrarında aynı gider (UUID). */
+  clientMessageId?: string;
 };
 
 export type CreateConversationResponse = {
@@ -49,6 +52,8 @@ export type CreateConversationResponse = {
 export type SendMessagePayload = {
   message: string;
   socketId?: string;
+  /** bkz. CreateConversationPayload.clientMessageId */
+  clientMessageId?: string;
 };
 
 export type SendMessageResponse = {
@@ -167,99 +172,49 @@ async function consumeChatSse(
     headers.authorization = `Bearer ${accessToken.trim()}`;
   }
 
+  // B-28: yanıt başlığı gelene kadar da (fetch) bekçi gerekir; abort hem
+  // çağıranın sinyalinden hem zaman aşımından tetiklenir.
+  const controller = new AbortController();
+  const onCallerAbort = () => controller.abort();
+  signal?.addEventListener("abort", onCallerAbort);
+  const headerTimer = setTimeout(() => controller.abort(), SSE_IDLE_TIMEOUT_MS);
+
   let response: Awaited<ReturnType<typeof streamFetch>>;
   try {
     response = await streamFetch(`${API_BASE_URL}${path}`, {
       method: "POST",
       headers,
       body: JSON.stringify(body),
-      signal
+      signal: controller.signal
     });
   } catch {
+    signal?.removeEventListener("abort", onCallerAbort);
     if (signal?.aborted) {
       return;
     }
     throw new AiChatApiError("transient", i18n.t("ai-chat:errors.serviceUnreachable"));
+  } finally {
+    clearTimeout(headerTimer);
   }
-
-  if (!response.ok || !response.body) {
-    const rawResponse = await response.text().catch(() => "");
-    throw errorFromBody(response.status, rawResponse, i18n.t("ai-chat:errors.serviceUnavailable"));
-  }
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
 
   try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-
-      let boundary = buffer.indexOf("\n\n");
-      while (boundary !== -1) {
-        const rawEvent = buffer.slice(0, boundary);
-        buffer = buffer.slice(boundary + 2);
-        processSseEvent(rawEvent, handlers);
-        boundary = buffer.indexOf("\n\n");
-      }
+    if (!response.ok || !response.body) {
+      const rawResponse = await response.text().catch(() => "");
+      throw errorFromBody(response.status, rawResponse, i18n.t("ai-chat:errors.serviceUnavailable"));
     }
+
+    await readSse(response.body.getReader(), handlers, i18n.t("ai-chat:errors.sendFailed"));
   } catch (error) {
     if (signal?.aborted) {
       return;
     }
+    // B-28/B-29: sessiz kalan ya da `done`'sız kapanan akış → hata (mesaj takılı kalmaz).
+    if (error instanceof SseStreamError) {
+      throw new AiChatApiError("transient", i18n.t("ai-chat:errors.sendFailed"));
+    }
     throw error;
-  }
-}
-
-function processSseEvent(rawEvent: string, handlers: ChatStreamHandlers) {
-  let eventName = "message";
-  const dataLines: string[] = [];
-
-  for (const line of rawEvent.split("\n")) {
-    if (line.startsWith("event:")) {
-      eventName = line.slice("event:".length).trim();
-    } else if (line.startsWith("data:")) {
-      dataLines.push(line.slice("data:".length).trim());
-    }
-  }
-
-  if (dataLines.length === 0) {
-    return;
-  }
-
-  const data = safeParseJson(dataLines.join("\n"));
-
-  switch (eventName) {
-    case "token": {
-      const delta = (data as { delta?: unknown } | undefined)?.delta;
-      if (typeof delta === "string") {
-        handlers.onToken?.(delta);
-      }
-      break;
-    }
-    case "done": {
-      handlers.onDone?.(data as ChatStreamDonePayload);
-      break;
-    }
-    case "error": {
-      const candidate = (data as { code?: unknown; reason?: unknown; requestId?: unknown; message?: unknown } | undefined) ?? {};
-      const message =
-        typeof candidate.message === "string" && candidate.message.trim()
-          ? candidate.message
-          : i18n.t("ai-chat:errors.sendFailed");
-      handlers.onError?.({
-        code: typeof candidate.code === "string" ? candidate.code : undefined,
-        reason: typeof candidate.reason === "string" ? candidate.reason : undefined,
-        requestId: typeof candidate.requestId === "string" ? candidate.requestId : undefined,
-        message
-      });
-      break;
-    }
-    default:
-      break;
+  } finally {
+    signal?.removeEventListener("abort", onCallerAbort);
   }
 }
 

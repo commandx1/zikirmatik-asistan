@@ -82,6 +82,11 @@ export function AuthScreen() {
   }
 
   const handleProvider = async (provider: AuthProvider) => {
+    // B-15: ikinci dokunuş no-op signIn'den sonra pendingProvider'ı null'lıyor,
+    // giriş sürerken gösterge kayboluyordu. Süren giriş varsa hiç dokunma.
+    if (useAuthStore.getState().status === "authenticating") {
+      return;
+    }
     setPendingProvider(provider);
     void Haptics.selectionAsync().catch(() => {});
     await signInWithProvider(provider);

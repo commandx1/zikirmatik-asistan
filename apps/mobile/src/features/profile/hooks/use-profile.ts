@@ -14,6 +14,7 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useOnboardingStore } from "../../../store/onboarding-store";
 import { toMemberSinceLabel } from "../services/profile-format";
+import { runDeleteAccount } from "../services/delete-account";
 import { useReminderTimeModal } from "./use-reminder-time-modal";
 
 export function useProfile() {
@@ -48,6 +49,8 @@ export function useProfile() {
   const [feedbackError, setFeedbackError] = useState<string>();
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [deleteAccountError, setDeleteAccountError] = useState<string>();
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   const refresh = useCallback(async () => {
     if (authStatus !== "authenticated" || !session?.userId) {
@@ -64,7 +67,11 @@ export function useProfile() {
 
   const goThemeSelector = () => router.push("/theme-selector");
   const goFontSelector = () => router.push("/font-selector");
+  // M-15: çıkış önce onay sorar.
+  const openLogoutConfirm = () => setIsLogoutConfirmOpen(true);
+  const closeLogoutConfirm = () => setIsLogoutConfirmOpen(false);
   const onLogout = async () => {
+    setIsLogoutConfirmOpen(false);
     await signOut();
     router.replace("/(tabs)/home");
   };
@@ -76,15 +83,23 @@ export function useProfile() {
     router.push("/(tabs)/home");
   };
 
-  const openDeleteAccountModal = () => setIsDeleteAccountModalOpen(true);
+  const openDeleteAccountModal = () => {
+    setDeleteAccountError(undefined);
+    setIsDeleteAccountModalOpen(true);
+  };
   const closeDeleteAccountModal = () => setIsDeleteAccountModalOpen(false);
   const deleteAccount = async () => {
-    if (!session?.userId) return;
+    if (!session?.userId || isDeletingAccount) return;
     setIsDeletingAccount(true);
+    setDeleteAccountError(undefined);
     try {
-      await deleteUser(session.userId);
-      await signOut();
-      router.replace("/(tabs)/home");
+      const { ok } = await runDeleteAccount(session.userId, { deleteUser, signOut });
+      if (ok) {
+        setIsDeleteAccountModalOpen(false);
+        router.replace("/(tabs)/home");
+      } else {
+        setDeleteAccountError(t("profile:errors.deleteAccountFailed"));
+      }
     } finally {
       setIsDeletingAccount(false);
     }
@@ -280,7 +295,11 @@ export function useProfile() {
     tourReplay,
     isAuthenticated: authStatus === "authenticated",
     onLogout,
+    isLogoutConfirmOpen,
+    openLogoutConfirm,
+    closeLogoutConfirm,
     goSignIn,
+    deleteAccountError,
     isDeleteAccountModalOpen,
     isDeletingAccount,
     openDeleteAccountModal,

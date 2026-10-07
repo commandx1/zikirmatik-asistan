@@ -13,6 +13,7 @@ import { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
 import { AiApiError, selectAiRecommendation } from "../services/ai-api-client";
 import { resolveVisibleAiGuideHistory } from "../services/ai-guide-history-service";
 import { resolveRecommendation } from "../services/ai-guide-localize";
+import { buildRecommendationStart } from "../services/recommendation-start";
 import { useAiGuideHistory } from "./use-ai-guide-history";
 import { useAiGuideRequest } from "./use-ai-guide-request";
 
@@ -63,12 +64,15 @@ export function useAiGuide(onOpenPremiumSheet?: () => void) {
     [resolvedHistoryItems, isHistoryExpanded]
   );
 
-  const selectRecommendation = (recommendation: AiGuideRecommendation) => {
+  // fresh: "Sıfırdan başla" — the recommended target applies (M-06). The
+  // dhikr is added from the recommendation if the local catalog lacks it (B-26).
+  const selectRecommendation = (recommendation: AiGuideRecommendation, opts?: { fresh?: boolean }) => {
     selectDhikr(
       recommendation.id,
       recommendationId
         ? { recommendationId, prompt: lastPrompt.trim() || t("ai-guide:genericPrompt"), assistantNote }
-        : undefined
+        : undefined,
+      buildRecommendationStart(recommendation, Boolean(opts?.fresh), t("home:lastActivity.notStarted"))
     );
 
     if (authStatus !== "authenticated" || !recommendationId) {

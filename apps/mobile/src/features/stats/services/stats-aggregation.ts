@@ -40,7 +40,8 @@ export function buildLocalStatsSummary(
       favoriteCount += 1;
     }
 
-    const dayKey = resolveActivityDateKey(item, today) ?? (safeCount > 0 ? todayKey : null);
+    // M-21: a day counts only if something was counted (a reset / 0 leaves a fresh stamp but no activity).
+    const dayKey = safeCount > 0 ? (resolveActivityDateKey(item, today) ?? todayKey) : null;
     if (!dayKey) {
       continue;
     }
@@ -101,7 +102,8 @@ export function buildLocalStatsSummary(
       manual: allTimeCount,
       ai: 0,
       "special-day": 0,
-      notification: 0
+      notification: 0,
+      circle: 0
     },
     topDhikrs,
     comparison: {

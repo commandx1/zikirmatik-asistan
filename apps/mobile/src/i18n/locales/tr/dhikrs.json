@@ -1,4 +1,5 @@
 {
+  "personalFallbackName": "Zikir",
   "errors": {
     "logActionFailed": "Zikir log işlemi başarısız oldu.",
     "listFailed": "Zikir listesi alınamadı.",

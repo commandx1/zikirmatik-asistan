@@ -20,14 +20,17 @@ import { createDhikrLog } from '../../dhikrs/services/dhikr-logs-api-client'
 import { AppleWatchView, type CounterVisualModel } from '../../home/components/apple-watch'
 import { TesbihCounterView } from '../../home/components/tesbih-counter'
 import { useHydrateVirdSnapshots } from '../hooks/use-hydrate-vird-snapshots'
-import { dayIndexFor, VIRD_SLOT_KEYS } from '../services/vird-day'
+import { VIRD_SLOT_KEYS } from '../services/vird-day'
 import { calculateVirdStreak } from '../services/vird-streak'
 import {
+  buildDirtyEntry,
   buildSessionItems,
   buildSessionLogPayload,
+  itemForDay,
   nextIncompleteSession,
   pickNextIndex,
   remainingReps,
+  type VirdDirtyEntry,
   type VirdSessionItem,
   type VirdSessionKey
 } from '../services/vird-session'
@@ -116,7 +119,6 @@ function SessionBody({
   useHydrateVirdSnapshots(program.id)
 
   const todayKey = toDateKey(new Date())
-  const dayIndex = dayIndexFor(program, todayKey)
 
   const todayProgress = useVirdStore((state) => state.dayProgress[todayKey])
   const setProgress = useVirdStore((state) => state.setProgress)
@@ -160,57 +162,54 @@ function SessionBody({
   const sessionUserId = useAuthStore((state) => state.session?.userId)
   const applySavedBackendLog = useDhikrStore((state) => state.applySavedBackendLog)
 
-  // Bu oturumda değişip henüz sunucuya yazılmamış item'lar. Yalnız bunlar POST edilir;
-  // dokunulmamış item'lar kapanışta gereksiz istek üretmez.
-  const dirtyRef = useRef(new Set<string>())
+  // Bu oturumda değişip henüz sunucuya yazılmamış (gün + item) girdileri. Yalnız
+  // bunlar POST edilir; dokunulmamış item'lar kapanışta gereksiz istek üretmez.
+  // M-24: anahtar GÜN içerir — gece yarısını geçen oturumda dünün sayımı kendi
+  // gününe (date + dayIndex) yazılır, bugünün satırıyla karışmaz.
+  const dirtyRef = useRef(new Map<string, VirdDirtyEntry>())
 
   const flush = useCallback(
-    async (itemKey: string) => {
+    async (dirtyKey: string) => {
       if (authStatus !== 'authenticated' || !sessionUserId) {
         return
       }
-      if (!dirtyRef.current.has(itemKey)) {
+      const entry = dirtyRef.current.get(dirtyKey)
+      if (!entry) {
         return
       }
-      const item = items.find((candidate) => candidate.itemKey === itemKey)
-      if (!item) {
-        return
-      }
-      const liveCount = useVirdStore.getState().dayProgress[todayKey]?.[itemKey]?.count ?? 0
+      const liveCount = useVirdStore.getState().dayProgress[entry.dateKey]?.[entry.item.itemKey]?.count ?? 0
       // İyimser temizleme: close() + unmount cleanup art arda çağrıldığında aynı
       // sayı iki kez POST edilmesin; hata olursa tekrar kirli işaretlenir.
-      dirtyRef.current.delete(itemKey)
+      dirtyRef.current.delete(dirtyKey)
       try {
         const payload = buildSessionLogPayload({
           userId: sessionUserId,
           program,
-          item: { ...item, count: liveCount },
-          dayIndex,
-          date: todayKey,
+          item: { ...entry.item, count: liveCount },
+          dayIndex: entry.dayIndex,
+          date: entry.dateKey,
           locale,
           fallbackName
         })
         const saved = await createDhikrLog(payload)
         applySavedBackendLog(saved)
       } catch (error: unknown) {
-        dirtyRef.current.add(itemKey)
+        dirtyRef.current.set(dirtyKey, entry)
         console.warn('[vird-session] log kaydı başarısız', error)
       }
     },
-    [authStatus, sessionUserId, todayKey, items, program, dayIndex, locale, fallbackName, applySavedBackendLog]
+    [authStatus, sessionUserId, program, locale, fallbackName, applySavedBackendLog]
   )
 
-  // unmount/AppState background flush her zaman EN GÜNCEL items/flush'ı
-  // kullanmalı — bağımlılık dizisine flush eklemek her sayaç artışında
-  // efekti yeniden bağlardı, bu yüzden ref üzerinden okunur.
-  const itemsRef = useRef(items)
-  itemsRef.current = items
+  // unmount/AppState background flush her zaman EN GÜNCEL flush'ı kullanmalı —
+  // bağımlılık dizisine flush eklemek her sayaç artışında efekti yeniden
+  // bağlardı, bu yüzden ref üzerinden okunur.
   const flushRef = useRef(flush)
   flushRef.current = flush
 
   const flushAll = useCallback(() => {
-    for (const item of itemsRef.current) {
-      void flushRef.current(item.itemKey)
+    for (const dirtyKey of Array.from(dirtyRef.current.keys())) {
+      void flushRef.current(dirtyKey)
     }
   }, [])
 
@@ -229,36 +228,59 @@ function SessionBody({
     return () => subscription.remove()
   }, [flushAll])
 
-  const onCountPress = () => {
+  // M-24: dokunuş anının günü (render'daki todayKey gece yarısından önce
+  // hesaplanmış olabilir) ve o günün aynı item'ı.
+  const resolveTap = (): { tapKey: string; item: VirdSessionItem } | null => {
     if (!current) {
+      return null
+    }
+    const tapKey = toDateKey(new Date())
+    if (tapKey === todayKey) {
+      return { tapKey, item: current }
+    }
+    const item = itemForDay(program, tapKey, sessionKey, current.itemKey, useVirdStore.getState().dayProgress[tapKey])
+    return item ? { tapKey, item } : null
+  }
+
+  const onCountPress = () => {
+    const tap = resolveTap()
+    if (!tap) {
       return
     }
-    const { itemKey, count, target } = current
+    const { tapKey, item } = tap
+    const { itemKey, count, target } = item
     if (count >= target) {
       return
     }
     const next = count + 1
-    setProgress(todayKey, itemKey, next, target)
-    dirtyRef.current.add(itemKey)
+    setProgress(tapKey, itemKey, next, target)
+    const entry = buildDirtyEntry(program, tapKey, item)
+    dirtyRef.current.set(entry.key, entry)
     fireCounterFeedback({ prev: count, next, lapSize: target, pattern: hapticsPattern, soundPack: effectiveSoundPack })
     if (next >= target) {
-      void flush(itemKey)
+      void flush(entry.key)
     }
   }
 
   const onResetPress = () => {
-    if (!current) {
+    const tap = resolveTap()
+    if (!tap) {
       return
     }
-    setProgress(todayKey, current.itemKey, 0, current.target)
-    dirtyRef.current.add(current.itemKey)
+    setProgress(tap.tapKey, tap.item.itemKey, 0, tap.item.target)
+    const entry = buildDirtyEntry(program, tap.tapKey, tap.item)
+    dirtyRef.current.set(entry.key, entry)
   }
 
   const goNext = () => {
     if (!current) {
       return
     }
-    void flush(current.itemKey)
+    for (const entry of Array.from(dirtyRef.current.values())) {
+      if (entry.item.itemKey === current.itemKey) {
+        void flush(entry.key)
+      }
+    }
     if (nextIndex != null) {
       setCurrentIndex(nextIndex)
     }

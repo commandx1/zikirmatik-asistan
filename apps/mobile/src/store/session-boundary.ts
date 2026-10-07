@@ -3,6 +3,7 @@ import { aiGuideLastKey } from "../lib/storage/keys";
 import { useBadgeCelebrationStore } from "./badge-celebration-store";
 import { useCircleStore } from "./circle-store";
 import { useDhikrStore } from "./dhikr-store";
+import { useGuestMigrationStore } from "./guest-migration-store";
 import { useOnboardingStore } from "./onboarding-store";
 import { useProfileStore } from "./profile-store";
 import { useStreakReminderStore } from "./streak-reminder-store";
@@ -26,6 +27,12 @@ export function resetSessionScopedStores(previousUserId?: string) {
   // tercihini görmemeli.
   useBadgeCelebrationStore.setState({ seededForOwner: null, celebratedBadgeKeys: [] });
   useStreakReminderStore.setState({ streakReminderEnabled: false });
+  // B-13: bekleyen/başarısız bir misafir taşıma anlık görüntüsü bu oturuma
+  // aittir; çıkış / hesap değişiminde silinmezse sonraki açılışta `pending`
+  // olup BAŞKA hesaba taşınabilir. (Girişte kuyruğa alma bu fonksiyondan
+  // önce/ayrı yolda olur — auth-store yalnızca !previousUserId iken kuyruğa
+  // alır, bu fonksiyonu yalnızca previousUserId varken çağırır.)
+  useGuestMigrationStore.getState().clear();
 
   // AI Rehber'in "son cevap" önbelleği kullanıcıya özel bir AsyncStorage
   // anahtarında tutulur (persist dışı, bkz. lib/storage/keys.ts). Bir sonraki

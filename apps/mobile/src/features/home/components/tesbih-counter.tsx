@@ -8,6 +8,7 @@ import { useThemePreferences } from '../../../hooks/use-theme-preferences'
 import { useCounterStyleStore } from '../../../store/counter-style-store'
 import { AppleWatchView, useHomeCounterModel, type AppleWatchProps, type CounterVisualViewProps } from './apple-watch'
 import { TesbihStrand } from './tesbih-strand'
+import { TEST_IDS } from '../../../test-ids'
 import { WatchControlButtons } from './watch-control-buttons'
 import { withAlpha } from "@zikirmatik/shared";
 
@@ -110,6 +111,7 @@ export function TesbihCounterView({ model, controls = 'full', ...rest }: Counter
           onResetPress={() => setIsResetConfirmVisible(true)}
           onSavePress={home.onSavePress}
           isSaving={home.isSavingLog}
+          saveDisabled={home.count <= 0}
           variant={controls}
         />
       </View>
@@ -121,6 +123,8 @@ export function TesbihCounterView({ model, controls = 'full', ...rest }: Counter
         confirmLabel={t('home:resetModal.confirmLabel')}
         cancelLabel={t('home:resetModal.cancelLabel')}
         destructive
+        confirmTestID={TEST_IDS.home.resetConfirm}
+        cancelTestID={TEST_IDS.home.resetCancel}
         onConfirm={() => {
           setIsResetConfirmVisible(false)
           home.onResetPress()

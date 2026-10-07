@@ -30,7 +30,8 @@ export const WEEKDAY_DISPLAY_ORDER = [2, 3, 4, 5, 6, 7, 1];
 export const SOURCE_ORDER: StatsSourceKey[] = [
   "manual",
   "ai",
-  "special-day"
+  "special-day",
+  "circle"
 ];
 
 /**

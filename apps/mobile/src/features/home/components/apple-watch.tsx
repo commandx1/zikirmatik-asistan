@@ -312,6 +312,7 @@ export function AppleWatchView({
                 onResetPress={onResetConfirmPress}
                 onSavePress={home.onSavePress}
                 isSaving={home.isSavingLog}
+                saveDisabled={home.count <= 0}
                 variant={controls}
                 resetTestID={testIDs?.reset}
                 saveTestID={testIDs?.save}
@@ -339,6 +340,8 @@ export function AppleWatchView({
         confirmLabel={t('home:resetModal.confirmLabel')}
         cancelLabel={t('home:resetModal.cancelLabel')}
         destructive
+        confirmTestID={TEST_IDS.home.resetConfirm}
+        cancelTestID={TEST_IDS.home.resetCancel}
         onConfirm={() => {
           setIsResetConfirmVisible(false)
           home.onResetPress()

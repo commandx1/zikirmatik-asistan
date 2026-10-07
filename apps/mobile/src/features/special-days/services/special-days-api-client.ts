@@ -81,16 +81,18 @@ export async function getSpecialDaysHome(date?: string): Promise<BackendSpecialD
   const query = params.toString();
   const path = query ? `/v1/special-days/home?${query}` : "/v1/special-days/home";
   return request<BackendSpecialDayHomeResponse>(path, {
+    // A-22: GET uçları misafire açık — token gerekmez (süresi dolmuş üye tokenı 401 üretmesin).
     method: "GET",
-    auth: true,
+    auth: false,
     errors: errors()
   });
 }
 
 export async function getSpecialDayDetail(id: string): Promise<BackendSpecialDayDetail> {
   return request<BackendSpecialDayDetail>(`/v1/special-days/${id}/detail`, {
+    // A-22: GET uçları misafire açık — token gerekmez (süresi dolmuş üye tokenı 401 üretmesin).
     method: "GET",
-    auth: true,
+    auth: false,
     errors: errors()
   });
 }

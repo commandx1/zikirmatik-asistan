@@ -7,6 +7,7 @@ import {
   type LocalizedText,
   type VirdPhase,
   type VirdPhaseSlots,
+  type VirdProgramStatus,
   type VirdSlotKey,
   type VirdTemplateDetail
 } from "@zikirmatik/shared";
@@ -192,4 +193,41 @@ export function buildAutoVirdTitle(enabledSlots: readonly VirdSlotKey[]): Locali
   const tr = ordered.map((slot) => AUTO_TITLE_SLOT_LABEL[slot].tr).join("-");
   const en = ordered.map((slot) => AUTO_TITLE_SLOT_LABEL[slot].en).join("-");
   return { tr: `${tr} virdi`, en: `${en} vird` };
+}
+
+/**
+ * M-22: düzenleme programın durumunu DEĞİŞTİRMEZ (sunucu PATCH durumu korur);
+ * kaydederken yeniden aktifleştirme yok. Aktivasyon yalnız (a) yeni program
+ * ("Kaydet ve başlat") ya da (b) önceden aktif olan yerel programın ilk kez
+ * sunucuya yazılması (taslak döndü) için gerekir. Duraklatılmış/taslak bir
+ * program ayrı "Aktifleştir" eylemiyle açılır (vird-program-list-item.tsx).
+ */
+export function shouldActivateAfterSave(
+  existing: { status: VirdProgramStatus } | null | undefined,
+  saved: { status: VirdProgramStatus }
+): boolean {
+  if (!existing) {
+    return true;
+  }
+  return existing.status === "active" && saved.status !== "active";
+}
+
+/**
+ * Editör dilimlerinden tek fazlı (1. gün, açık uçlu) program fazı üretir:
+ * kapalı (enabledSlots dışı) dilimdeki zikirler programa girmez; hedef en az 1'e
+ * kıskaçlanır (0/NaN -> 1).
+ */
+export function buildPhasesFromEditorSlots(slots: EditorSlots, enabledSlots: readonly VirdSlotKey[]): VirdPhase[] {
+  const phaseSlots: VirdPhaseSlots = {};
+  for (const slot of VIRD_SLOT_KEYS) {
+    const items = slots[slot];
+    if (!enabledSlots.includes(slot) || !items || items.length === 0) {
+      continue;
+    }
+    phaseSlots[slot] = items.map((item) => ({
+      ...(item.isCustom ? { customDhikrId: item.ref } : { dhikrId: item.ref }),
+      target: Math.max(1, Math.floor(item.target) || 1)
+    }));
+  }
+  return [{ fromDay: 1, toDay: null, slots: phaseSlots }];
 }

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { toDateKey } from "@zikirmatik/shared";
 import type { BackendDhikrLog } from "../services/dhikr-logs-api-client";
 import { resolveActivityDateKey } from "../../home/services/local-streak";
 
@@ -23,7 +24,7 @@ vi.mock("../services/dhikrs-api-client", () => ({
   DhikrsApiError: class DhikrsApiError extends Error {}
 }));
 
-const { indexLatestDhikrLogs } = await import("./use-dhikr-backend-sync");
+const { indexLatestDhikrLogs, counterFromLog } = await import("./use-dhikr-backend-sync");
 
 function log(overrides: Partial<BackendDhikrLog>): BackendDhikrLog {
   return {
@@ -73,5 +74,15 @@ describe("indexLatestDhikrLogs", () => {
     const logs = [log({ customDhikrId: "c1", count: 5 })];
     const { latestByCustomDhikr } = indexLatestDhikrLogs(logs);
     expect(latestByCustomDhikr.get("c1")?.count).toBe(5);
+  });
+});
+
+describe("counterFromLog (M-01: the counter starts at 0 on a new day)", () => {
+  const todayKey = toDateKey(new Date());
+
+  it("MOB-HID-06: an earlier day's log no longer fills today's counter; today's log does", () => {
+    expect(counterFromLog({ date: "2020-01-01", count: 30 })).toBe(0);
+    expect(counterFromLog({ date: todayKey, count: 30 })).toBe(30);
+    expect(counterFromLog(undefined)).toBeUndefined();
   });
 });

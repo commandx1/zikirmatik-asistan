@@ -53,6 +53,12 @@
     "targetLabel": "Target (optional)",
     "targetPlaceholder": "Leave blank for unlimited"
   },
+  "dayRollover": {
+    "title": "Yesterday's dhikr wasn't saved",
+    "message": "You counted {{count}} for {{name}} yesterday and didn't save it. Today starts from 0.",
+    "save": "Save yesterday's {{count}}",
+    "discard": "Discard"
+  },
   "toast": {
     "tapAnywhere": "You can count by tapping anywhere on the screen",
     "tapCircleOnly": "Only counts when you tap the circle",

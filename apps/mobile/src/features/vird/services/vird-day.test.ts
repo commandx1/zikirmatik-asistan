@@ -9,6 +9,7 @@ import {
   isJourneyFinished,
   phaseForDay,
   resolveDhikrRef,
+  scopeItemKey,
   slotProgress,
   type VirdDayProgramLike,
   type VirdJourneyProgramLike
@@ -288,5 +289,25 @@ describe("buildVirdItemKey", () => {
     expect(buildVirdItemKey("morning", null, "abc")).toBe("morning:0:abc");
     expect(buildVirdItemKey("morning", undefined, "abc")).toBe("morning:0:abc");
     expect(buildVirdItemKey("prayer", 3, "abc")).toBe("prayer:3:abc");
+  });
+});
+
+describe("M-23: ilerleme programa bağlı (MOB-VRD-41)", () => {
+  const phases: VirdPhase[] = [{ fromDay: 1, toDay: null, slots: { morning: [{ dhikrId, target: 10 }] } }];
+  const programA: VirdDayProgramLike = { id: "A", startDate: "2026-06-01", phases };
+  const programB: VirdDayProgramLike = { id: "B", startDate: "2026-06-01", phases };
+
+  it("scopeItemKey: id yoksa anahtar aynı, varsa önekli", () => {
+    expect(scopeItemKey(undefined, "morning:0:x")).toBe("morning:0:x");
+    expect(scopeItemKey("A", "morning:0:x")).toBe("A|morning:0:x");
+  });
+
+  it("A programındaki tamamlanma B programını tamamlanmış göstermez (aynı zikir, aynı dilim)", () => {
+    const progress = { [`A|morning:0:${dhikrId}`]: { count: 10, target: 10, completed: true } };
+    const expectedA = expectedItemsForDay(programA, 1);
+    const expectedB = expectedItemsForDay(programB, 1);
+    expect(isDayComplete(expectedA, progress)).toBe(true);
+    expect(isDayComplete(expectedB, progress)).toBe(false);
+    expect(slotProgress(expectedB, progress).morning?.items[0]?.count).toBe(0);
   });
 });

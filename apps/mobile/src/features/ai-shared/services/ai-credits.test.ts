@@ -2,19 +2,16 @@ import { describe, expect, it, vi } from "vitest";
 import { hasEnoughCredits, normalizeRemainingCredits, pollUntil, resolveCreditsFromQuota } from "./ai-credits";
 
 describe("resolveCreditsFromQuota", () => {
-  it("premium → sınırsız bakiye", () => {
-    expect(resolveCreditsFromQuota({ used: 5, limit: 3, isPremium: true })).toEqual({
-      balance: Number.MAX_SAFE_INTEGER,
-      isPremium: true
-    });
+  it("M-07: premium → uydurma bakiye yok (undefined), MAX_SAFE_INTEGER asla", () => {
+    expect(resolveCreditsFromQuota({ used: 5, limit: 3, isPremium: true })).toBeUndefined();
   });
   it("ücretsiz → limit - used, 0'ın altına inmez", () => {
     expect(resolveCreditsFromQuota({ used: 1, limit: 3, isPremium: false })).toEqual({ balance: 2, isPremium: false });
-    expect(resolveCreditsFromQuota({ used: 5, limit: 3, isPremium: false }).balance).toBe(0);
+    expect(resolveCreditsFromQuota({ used: 5, limit: 3, isPremium: false })?.balance).toBe(0);
   });
   it("limit null → 1 sayılır", () => {
-    expect(resolveCreditsFromQuota({ used: 0, limit: null, isPremium: false }).balance).toBe(1);
-    expect(resolveCreditsFromQuota({ used: 1, limit: null, isPremium: false }).balance).toBe(0);
+    expect(resolveCreditsFromQuota({ used: 0, limit: null, isPremium: false })?.balance).toBe(1);
+    expect(resolveCreditsFromQuota({ used: 1, limit: null, isPremium: false })?.balance).toBe(0);
   });
 });
 
@@ -27,8 +24,9 @@ describe("hasEnoughCredits", () => {
     expect(hasEnoughCredits({ balance: 2, isPremium: false, requiredCredits: 3 })).toBe(false);
     expect(hasEnoughCredits({ balance: 3, isPremium: false, requiredCredits: 3 })).toBe(true);
   });
-  it("premium bakiyeden bağımsız geçer", () => {
-    expect(hasEnoughCredits({ balance: 0, isPremium: true, requiredCredits: 3 })).toBe(true);
+  it("M-07: premium da gerçek bakiyeye bakar", () => {
+    expect(hasEnoughCredits({ balance: 0, isPremium: true, requiredCredits: 1 })).toBe(false);
+    expect(hasEnoughCredits({ balance: 50, isPremium: true, requiredCredits: 3 })).toBe(true);
   });
 });
 

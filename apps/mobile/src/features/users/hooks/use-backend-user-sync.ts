@@ -25,6 +25,7 @@ export function useBackendUserSync() {
   const userId = useAuthStore((s) => s.session?.userId);
   const hydrateProfile = useProfileStore((s) => s.hydrateFromBackend);
   const hydrateAppearance = useThemeStore((s) => s.hydrateAppearance);
+  const enforceThemeEntitlement = useThemeStore((s) => s.enforceThemeEntitlement);
   const { data: user, refetch } = useBackendUser();
   const hasReconciledReminderRef = useRef(false);
 
@@ -36,6 +37,10 @@ export function useBackendUserSync() {
     const { profile, appearance } = toBackendUserHydration(user);
     hydrateProfile(profile);
     hydrateAppearance(appearance);
+    // Sunucu premium değil diyorsa kilitli tema (yerel ya da sunucudan gelen) varsayılana döner.
+    if (typeof user.isPremium === "boolean") {
+      enforceThemeEntitlement(user.isPremium);
+    }
 
     if (!user.notifSettings?.dailyReminder || hasReconciledReminderRef.current) {
       return;
@@ -68,7 +73,7 @@ export function useBackendUserSync() {
     })().catch(() => {
       // Keep local snapshot when reminder reconciliation fails.
     });
-  }, [hydrateAppearance, hydrateProfile, user]);
+  }, [enforceThemeEntitlement, hydrateAppearance, hydrateProfile, user]);
 
   useEffect(() => {
     if (authStatus !== "authenticated" || !userId) {

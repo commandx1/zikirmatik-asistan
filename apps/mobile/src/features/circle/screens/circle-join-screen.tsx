@@ -14,7 +14,7 @@ import { resolveLocalizedText } from "@zikirmatik/shared";
 import { useRequireAuth } from "../../auth/hooks/use-require-auth";
 import { trackEvent } from "../../../lib/analytics";
 import { CircleApiError, fetchCirclePreview, joinCircle, resolveCircleErrorMessage } from "../services/circle-api-client";
-import { parseCircleCode } from "../services/circle-share";
+import { parseCircleCode, resolveCircleTitle } from "../services/circle-share";
 import { useAppLocale } from "../../../i18n";
 
 export function CircleJoinScreen({ code: rawCode }: { code: string }) {
@@ -94,7 +94,7 @@ export function CircleJoinScreen({ code: rawCode }: { code: string }) {
         ) : preview ? (
           <>
             <ThemedCard className="mb-4 rounded-2xl p-4">
-              <Text className="mb-1 text-lg font-semibold text-text-primary">{preview.name}</Text>
+              <Text className="mb-1 text-lg font-semibold text-text-primary">{resolveCircleTitle(preview, locale)}</Text>
               <Text className="mb-3 text-xs text-text-muted">{resolveLocalizedText(preview.dhikr.name, locale)}</Text>
               <Text className="text-xs text-text-muted">
                 {t("circle:home.progress", { total: preview.totalCount, goal: preview.goalCount })}

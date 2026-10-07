@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
@@ -13,6 +14,7 @@ import { VIRD_ERROR_CODE } from "../services/vird-error-codes";
 import type { VirdProgramLocal } from "../types";
 import { VirdSwapActiveModal } from "./vird-swap-active-modal";
 import { useAppLocale } from "../../../i18n";
+import { TEST_IDS } from "../../../test-ids";
 
 type Props = {
   program: VirdProgramLocal;
@@ -27,6 +29,7 @@ type Props = {
 // use-vird-program-actions.ts swapActive).
 export function VirdProgramListItem({ program, onRequirePremium }: Props) {
   const { t } = useTranslation("vird");
+  const router = useRouter();
   const locale = useAppLocale();
   const { tokens } = useThemeTokens();
   const { pauseProgram, deleteProgram, activateProgram, swapActive } = useVirdProgramActions();
@@ -38,6 +41,8 @@ export function VirdProgramListItem({ program, onRequirePremium }: Props) {
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [isSwapPending, setIsSwapPending] = useState(false);
   const [error, setError] = useState<string | undefined>();
+  // A-23: süresi dolmuş program "Aktifleştir" ile açılamaz — kopyalayıp yeniden başlat önerilir.
+  const [isExpired, setIsExpired] = useState(false);
 
   const isActive = program.status === "active";
   const title = resolveLocalizedText(program.title, locale);
@@ -63,6 +68,7 @@ export function VirdProgramListItem({ program, onRequirePremium }: Props) {
         if (result.code === VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE) {
           setIsSwapPending(true);
         } else {
+          setIsExpired(result.code === VIRD_ERROR_CODE.PROGRAM_EXPIRED);
           setError(result.message);
         }
         return;
@@ -114,10 +120,23 @@ export function VirdProgramListItem({ program, onRequirePremium }: Props) {
       </Text>
 
       {error ? <Text className="mb-2 text-xs text-[#F97373]">{error}</Text> : null}
+      {isExpired ? (
+        <Pressable
+          testID={TEST_IDS.vird.programCloneRestart}
+          onPress={() => router.push({ pathname: "/vird/editor", params: { cloneFrom: program.id } })}
+          className="mb-2 self-start rounded-full border px-3 py-1.5"
+          style={{ borderColor: tokens.accent }}
+        >
+          <Text className="text-xs font-semibold" style={{ color: tokens.accent }}>
+            {t("vird:setup.cloneAndRestartAction")}
+          </Text>
+        </Pressable>
+      ) : null}
 
       <View className="flex-row items-center gap-2">
         <Pressable
           disabled={isBusy}
+          testID={TEST_IDS.vird.programToggle}
           onPress={() => void handleToggleActive()}
           className="flex-row items-center gap-1.5 rounded-full border px-3 py-1.5"
           style={{ borderColor: tokens.accent, opacity: isBusy ? 0.6 : 1 }}

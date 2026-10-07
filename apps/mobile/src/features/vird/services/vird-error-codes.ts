@@ -23,7 +23,9 @@ const VIRD_ERROR_MESSAGE_KEY: Record<VirdErrorCode, string> = {
   [VIRD_ERROR_CODE.PREMIUM_REQUIRED]: "vird:errors.premiumRequired",
   [VIRD_ERROR_CODE.PREMIUM_MAX_ACTIVE_PROGRAMS]: "vird:errors.premiumMaxActivePrograms",
   [VIRD_ERROR_CODE.NOT_ACTIVATABLE]: "vird:errors.notActivatable",
-  [VIRD_ERROR_CODE.PHASES_REQUIRED]: "vird:errors.phasesRequired"
+  [VIRD_ERROR_CODE.PHASES_REQUIRED]: "vird:errors.phasesRequired",
+  [VIRD_ERROR_CODE.PHASES_INVALID]: "vird:errors.phasesInvalid",
+  [VIRD_ERROR_CODE.PROGRAM_EXPIRED]: "vird:errors.programExpired"
 };
 
 /**

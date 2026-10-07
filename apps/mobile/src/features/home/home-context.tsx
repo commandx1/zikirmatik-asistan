@@ -9,6 +9,7 @@ import type { ZikirSource } from '../focus/types'
 import { useStreak } from '../stats/hooks/use-streak'
 import { useCounterEngine } from './hooks/use-counter-engine'
 import { useDailyEsmaWelcome } from './hooks/use-daily-esma-welcome'
+import { useDayRollover } from './hooks/use-day-rollover'
 import { useDhikrLogSave } from './hooks/use-dhikr-log-save'
 import { useDhikrTransition } from './hooks/use-dhikr-transition'
 import { useFreeSaveForm } from './hooks/use-free-save-form'
@@ -55,6 +56,7 @@ function useHomeValues() {
   const save = useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave: freeSave.open })
   const engine = useCounterEngine({ selectedDhikr, onAutoSave: save.autoSaveSelected, openFreeSave: freeSave.open })
   const editors = useHomeEditors({ selectedDhikr })
+  const rollover = useDayRollover({ selectedDhikr, dhikrDisplayName })
   const transition = useDhikrTransition({
     selectedDhikr,
     dhikrDisplayName,
@@ -68,6 +70,7 @@ function useHomeValues() {
       transition.hasUnsavedActiveDhikr ||
       editors.isEditingTarget ||
       freeSave.isOpen ||
+      rollover.isDayRolloverOpen ||
       Boolean(transition.pendingDhikrTransition) ||
       transition.isSelectingEsmaDhikr,
     onStart: transition.onEsmaPress
@@ -122,11 +125,12 @@ function useHomeValues() {
       ...engine.ui,
       ...editors.ui,
       ...transition.ui,
+      ...rollover,
       ...esma
     }),
     [
       greeting, streakLabel, streakDays, serverStreak, isRefreshing, refresh, tapAnywhereEnabled, toggleTapAnywhere, mainDhikr,
-      selectedDhikrId, save.ui, engine.ui, editors.ui, transition.ui, esma
+      selectedDhikrId, save.ui, engine.ui, editors.ui, transition.ui, rollover, esma
     ]
   )
 

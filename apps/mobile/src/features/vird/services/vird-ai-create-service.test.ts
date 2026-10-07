@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 // vird-ai-create-service.ts -> ai-api-client.ts (AiApiError sınıfı için) ->
 // react-native (Platform) + ../../../i18n zincirini gerçek modüllerle
@@ -12,6 +12,7 @@ import type { BackendDhikr } from "../../dhikrs/services/dhikrs-api-client";
 import {
   buildAiVirdDhikrSnapshots,
   buildCreateAiVirdProgramPayload,
+  discardAiDraft,
   mapAiVirdCreateError,
   selectProgramsToPause,
   toActivatedAiVirdProgramLocal
@@ -207,5 +208,29 @@ describe("selectProgramsToPause", () => {
     expect(
       selectProgramsToPause([p("a", "active"), p("target", "active"), p("b", "active"), p("c", "draft")], "target")
     ).toEqual([p("a", "active"), p("b", "active")]);
+  });
+});
+
+describe("discardAiDraft (B-20)", () => {
+  it("üye: sunucudaki taslak silinir ve yerel kopya kaldırılır", async () => {
+    const deleteRemote = vi.fn().mockResolvedValue({ deleted: true });
+    const removeLocal = vi.fn();
+    await discardAiDraft({ programId: "p1", isMember: true, deleteRemote, removeLocal });
+    expect(deleteRemote).toHaveBeenCalledWith("p1");
+    expect(removeLocal).toHaveBeenCalledWith("p1");
+  });
+
+  it("misafir: sunucu çağrısı yok", async () => {
+    const deleteRemote = vi.fn();
+    await discardAiDraft({ programId: "p1", isMember: false, deleteRemote, removeLocal: vi.fn() });
+    expect(deleteRemote).not.toHaveBeenCalled();
+  });
+
+  it("silme hatası yutulur; taslak yoksa hiçbir şey yapılmaz", async () => {
+    const deleteRemote = vi.fn().mockRejectedValue(new Error("offline"));
+    await expect(discardAiDraft({ programId: "p1", isMember: true, deleteRemote, removeLocal: vi.fn() })).resolves.toBeUndefined();
+    const untouched = vi.fn();
+    await discardAiDraft({ programId: undefined, isMember: true, deleteRemote: untouched, removeLocal: untouched });
+    expect(untouched).not.toHaveBeenCalled();
   });
 });

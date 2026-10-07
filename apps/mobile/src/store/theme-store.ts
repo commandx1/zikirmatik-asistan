@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 import type { ThemeName } from "@zikirmatik/shared";
 import { saveUserPreferences } from "../features/users/services/users-api-client";
+import { resolveAllowedTheme } from "../theme/premium-themes";
 import { useAuthStore } from "./auth-store";
 
 export type AppFontFamily =
@@ -18,13 +19,15 @@ type ThemeState = {
   fontFamily: AppFontFamily;
   setThemeName: (themeName: ThemeName) => void;
   setFontFamily: (fontFamily: AppFontFamily) => void;
+  /** A-07 + M-13: premium bittiyse premium-only tema ücretsiz varsayılana döner (sunucuya da yazılır). */
+  enforceThemeEntitlement: (isPremium: boolean) => void;
   hydrateAppearance: (payload: { themeName?: ThemeName; fontFamily?: AppFontFamily }) => void;
   markHydrated: () => void;
 };
 
 export const useThemeStore = create<ThemeState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       hasHydrated: false,
       themeName: "gece-koyu",
       fontFamily: "default",
@@ -35,6 +38,12 @@ export const useThemeStore = create<ThemeState>()(
       setFontFamily: (fontFamily) => {
         set({ fontFamily });
         syncUserAppearance({ fontFamily });
+      },
+      enforceThemeEntitlement: (isPremium) => {
+        const allowed = resolveAllowedTheme(get().themeName, isPremium);
+        if (allowed !== get().themeName) {
+          get().setThemeName(allowed);
+        }
       },
       hydrateAppearance: (payload) => {
         set((state) => ({

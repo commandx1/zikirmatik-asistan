@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStableCallback } from '../../../hooks/use-stable-callback'
+import { useAuthPromptStore } from '../../../store/auth-prompt-store'
 import { useAuthStore } from '../../../store/auth-store'
 import { useDhikrStore } from '../../../store/dhikr-store'
 import { buildDhikrLogPayload, resolveDhikrLogSource } from '../../dhikrs/services/dhikr-log-payload'
 import { createDhikrLog } from '../../dhikrs/services/dhikr-logs-api-client'
 import type { ZikirItem } from '../../focus/types'
+import { resolveSavePress } from '../services/save-press'
 
 type Options = {
   selectedDhikr: ZikirItem | undefined
@@ -22,6 +24,8 @@ export function useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave 
   const selectedSource = useDhikrStore(state => state.selectedSource)
   const setSelectedSource = useDhikrStore(state => state.setSelectedSource)
   const freeTarget = useDhikrStore(state => state.freeModeTarget)
+  const freeCount = useDhikrStore(state => state.freeModeCount)
+  const openAuthPrompt = useAuthPromptStore(state => state.open)
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
   const [isSavingLog, setIsSavingLog] = useState(false)
@@ -49,14 +53,18 @@ export function useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave 
       const safeCount = selectedDhikr.target > 0 ? Math.min(selectedDhikr.target, rawCount) : rawCount
       const isCompleted = selectedDhikr.target > 0 && safeCount >= selectedDhikr.target
 
-      if (authStatus !== 'authenticated' || !sessionUserId) {
-        if (silent) {
-          return false
-        }
+      // M-04 / B-9: a 0 count is never written (the server would overwrite a
+      // completed log of the day with it); nothing to save counts as saved.
+      if (safeCount <= 0) {
+        return true
+      }
 
-        const message = t('home:errors.loginRequiredToSave')
-        setSyncError(message)
-        setUnsavedTransitionError(message)
+      if (authStatus !== 'authenticated' || !sessionUserId) {
+        // M-02: a guest's progress stays on the device; the sign-up prompt is
+        // the visible feedback (an auto-save stays silent).
+        if (!silent) {
+          openAuthPrompt()
+        }
         return false
       }
 
@@ -97,13 +105,21 @@ export function useDhikrLogSave({ selectedDhikr, dhikrDisplayName, openFreeSave 
   })
 
   const onSavePress = useStableCallback(() => {
-    if (selectedDhikr) {
+    const action = resolveSavePress({
+      hasSelectedDhikr: Boolean(selectedDhikr),
+      count: selectedDhikr ? selectedDhikr.current : freeCount,
+      isMember: authStatus === 'authenticated' && Boolean(sessionUserId)
+    })
+
+    if (action === 'save' || action === 'login-prompt') {
       void saveSelectedProgress()
       return
     }
 
-    setSyncError(undefined)
-    openFreeSave(freeTarget > 0 ? String(freeTarget) : '')
+    if (action === 'free-save') {
+      setSyncError(undefined)
+      openFreeSave(freeTarget > 0 ? String(freeTarget) : '')
+    }
   })
 
   const ui = useMemo(

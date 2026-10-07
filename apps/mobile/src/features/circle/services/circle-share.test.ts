@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { buildCircleLogPayload, buildCircleShareMessage, computeDisplayTotal, parseCircleCode } from "./circle-share";
+import {
+  buildCircleLogPayload,
+  buildCircleShareMessage,
+  circleProgressPercent,
+  computeDisplayTotal,
+  parseCircleCode,
+  resolveCircleTitle
+} from "./circle-share";
 
 describe("buildCircleShareMessage", () => {
   it("uses the unprefixed /halka link and Turkish text for a tr locale", () => {
@@ -9,9 +16,10 @@ describe("buildCircleShareMessage", () => {
     expect(message).toContain("Ailem");
   });
 
-  it("uses no locale prefix and English text for an en locale", () => {
+  it("M-09: uses the /en/halka link and English text for an en locale", () => {
     const message = buildCircleShareMessage({ name: "Family", code: "ABCD2345", locale: "en" });
-    expect(message).toContain("https://zikirmatik-asistan.vercel.app/halka/ABCD2345");
+    expect(message).toContain("https://zikirmatik-asistan.vercel.app/en/halka/ABCD2345");
+    expect(parseCircleCode(message)).toBe("ABCD2345");
     expect(message).toContain("Code: ABCD2345");
     expect(message).toContain("Family");
   });
@@ -41,7 +49,7 @@ describe("buildCircleShareMessage", () => {
 
   it("falls back to the English message for an unknown locale (real behavior: only 'tr'-prefixed locales get Turkish text)", () => {
     const message = buildCircleShareMessage({ name: "Family", code: "ABCD2345", locale: "de" });
-    expect(message).toContain("https://zikirmatik-asistan.vercel.app/halka/ABCD2345");
+    expect(message).toContain("https://zikirmatik-asistan.vercel.app/en/halka/ABCD2345");
     expect(message).toContain("Code: ABCD2345");
   });
 
@@ -219,5 +227,25 @@ describe("buildCircleLogPayload", () => {
     });
     expect(payload).not.toHaveProperty("customDhikrId");
     expect(payload).not.toHaveProperty("virdProgramId");
+  });
+});
+
+describe("resolveCircleTitle (null name -> dhikr name in app language)", () => {
+  const dhikr = { name: { tr: "Salavat", en: "Salawat" } };
+  it("uses the circle name when present", () => {
+    expect(resolveCircleTitle({ name: "Ailem", dhikr }, "en")).toBe("Ailem");
+  });
+  it("falls back to the localized dhikr name when name is null or empty", () => {
+    expect(resolveCircleTitle({ name: null, dhikr }, "tr")).toBe("Salavat");
+    expect(resolveCircleTitle({ name: null, dhikr }, "en")).toBe("Salawat");
+    expect(resolveCircleTitle({ name: "", dhikr }, "en")).toBe("Salawat");
+  });
+});
+
+describe("circleProgressPercent (total may exceed goal)", () => {
+  it("caps at 100 when the total exceeds the goal", () => {
+    expect(circleProgressPercent(1500, 1000)).toBe(100);
+    expect(circleProgressPercent(500, 1000)).toBe(50);
+    expect(circleProgressPercent(0, 0)).toBe(0);
   });
 });

@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import * as Crypto from "expo-crypto";
 import { useTranslation } from "react-i18next";
-import { toDateKey, type VirdPhase, type VirdSlotKey, resolveLocalizedText } from "@zikirmatik/shared";
+import { toDateKey, type VirdSlotKey, resolveLocalizedText } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
@@ -18,13 +18,21 @@ import { useVirdStore } from "../../../store/vird-store";
 import { trackEvent } from "../../../lib/analytics";
 import { ProfilePremiumSheet } from "../../profile/components/profile-premium-sheet";
 import { VirdDhikrPickerModal, type VirdDhikrPickerSelection } from "../components/vird-dhikr-picker-modal";
-import { VirdEditorSlotCard, type VirdEditorSlotItem } from "../components/vird-editor-slot-card";
+import { VirdEditorSlotCard } from "../components/vird-editor-slot-card";
 import { VirdSwapActiveModal } from "../components/vird-swap-active-modal";
 import { useHydrateVirdSnapshots } from "../hooks/use-hydrate-vird-snapshots";
 import { useVirdProgramActions } from "../hooks/use-vird-program-actions";
 import { createVirdProgram, updateVirdProgram, VirdApiError } from "../services/vird-api-client";
 import { dayIndexFor, phaseForDay, resolveDhikrRef, VIRD_SLOT_KEYS } from "../services/vird-day";
-import { buildAutoVirdTitle, buildEditorSlotsFromPhase, toLocalizedText, type EditorSlots } from "../services/vird-editor-helpers";
+import {
+  buildAutoVirdTitle,
+  buildEditorSlotsFromPhase,
+  buildPhasesFromEditorSlots,
+  shouldActivateAfterSave,
+  toLocalizedText,
+  type EditorSlots
+} from "../services/vird-editor-helpers";
+import { findPhasesError } from "../services/vird-phases";
 import { VIRD_ERROR_CODE, resolveVirdErrorMessage } from "../services/vird-error-codes";
 import { toLocalVirdProgram } from "../services/vird-sync";
 import type { DhikrSnapshot, VirdProgramLocal } from "../types";
@@ -35,37 +43,6 @@ type PendingSwap = { localProgram: VirdProgramLocal };
 
 function nowIso(): string {
   return new Date().toISOString();
-}
-
-function buildPhasesFromEditorSlots(slots: EditorSlots, enabledSlots: readonly VirdSlotKey[]): VirdPhase[] {
-  const phaseSlots: EditorSlots = {};
-
-  for (const slot of VIRD_SLOT_KEYS) {
-    if (!enabledSlots.includes(slot)) {
-      continue;
-    }
-    const items = slots[slot];
-    if (!items || items.length === 0) {
-      continue;
-    }
-    phaseSlots[slot] = items;
-  }
-
-  return [
-    {
-      fromDay: 1,
-      toDay: null,
-      slots: Object.fromEntries(
-        Object.entries(phaseSlots).map(([slot, items]) => [
-          slot,
-          (items as VirdEditorSlotItem[]).map((item) => ({
-            ...(item.isCustom ? { customDhikrId: item.ref } : { dhikrId: item.ref }),
-            target: Math.max(1, Math.floor(item.target) || 1)
-          }))
-        ])
-      )
-    }
-  ];
 }
 
 type VirdEditorScreenProps = { programId?: string; cloneFromId?: string };
@@ -90,7 +67,11 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
   const setActiveProgram = useVirdStore((state) => state.setActiveProgram);
   const setNotice = useVirdStore((state) => state.setNotice);
   const { activateProgram, swapActive } = useVirdProgramActions();
-  const premiumSheet = usePremiumSheet();
+  // B-22: çakışma modalından premium'a geçilip satın alma tamamlanınca bekleyen
+  // program aktifleştirilir (aksi halde taslak kalırdı).
+  const premiumResumeRef = useRef<() => void>(() => {});
+  const pendingPremiumProgramRef = useRef<VirdProgramLocal | null>(null);
+  const premiumSheet = usePremiumSheet({ onPremiumActivated: () => premiumResumeRef.current() });
 
   const existingProgram = useMemo(
     () => (programId ? programs.find((program) => program.id === programId) ?? null : null),
@@ -232,11 +213,37 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
     router.dismissTo("/vird");
   };
 
+  // M-22: yalnız gerektiğinde aktifleştirir (bkz. shouldActivateAfterSave);
+  // mevcut programı düzenlemek durumu değiştirmez.
+  const finishSave = async (localProgram: VirdProgramLocal, notice: "started" | "saved") => {
+    if (!shouldActivateAfterSave(existingProgram, localProgram)) {
+      goToHub("saved");
+      return;
+    }
+    const activation = await activateProgram(localProgram);
+    if (!activation.ok) {
+      if (activation.code === VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE) {
+        setPendingSwap({ localProgram });
+        return;
+      }
+      setSaveError(activation.message || t("vird:editor.errors.activateFailed"));
+      return;
+    }
+    void trackEvent("vird_activated");
+    goToHub(notice);
+  };
+
   const handleSaveRoutine = async () => {
     const phases = buildPhasesFromEditorSlots(slots, enabledSlots);
     const hasAnyDhikr = Object.values(phases[0]?.slots ?? {}).some((items) => items && items.length > 0);
     if (!hasAnyDhikr) {
       setSaveError(t("vird:editor.errors.atLeastOneDhikr"));
+      return;
+    }
+
+    // A-24: sunucudaki VIRD_PHASES_INVALID kuralının istemci aynası (istek atmadan uyarı).
+    if (findPhasesError(phases)) {
+      setSaveError(t("vird:errors.phasesInvalid"));
       return;
     }
 
@@ -311,18 +318,7 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
       void trackEvent("vird_created", { source: "manual" });
     }
 
-    const activation = await activateProgram(localProgram);
-    if (!activation.ok) {
-      if (activation.code === VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE) {
-        setPendingSwap({ localProgram });
-        return;
-      }
-      setSaveError(activation.message || t("vird:editor.errors.activateFailed"));
-      return;
-    }
-
-    void trackEvent("vird_activated");
-    goToHub(existingProgram ? "saved" : "started");
+    await finishSave(localProgram, existingProgram ? "saved" : "started");
   };
 
   const handleSaveJourney = async () => {
@@ -343,19 +339,7 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
     }
 
     upsertProgram(localProgram);
-
-    const activation = await activateProgram(localProgram);
-    if (!activation.ok) {
-      if (activation.code === VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE) {
-        setPendingSwap({ localProgram });
-        return;
-      }
-      setSaveError(activation.message || t("vird:editor.errors.activateFailed"));
-      return;
-    }
-
-    void trackEvent("vird_activated");
-    goToHub("saved");
+    await finishSave(localProgram, "saved");
   };
 
   const handleSave = async () => {
@@ -399,7 +383,25 @@ export function VirdEditorScreen({ programId, cloneFromId }: VirdEditorScreenPro
     }
   };
 
+  premiumResumeRef.current = () => {
+    const program = pendingPremiumProgramRef.current;
+    pendingPremiumProgramRef.current = null;
+    if (!program) {
+      return;
+    }
+    void (async () => {
+      const result = await activateProgram(program);
+      if (result.ok) {
+        void trackEvent("vird_activated");
+        goToHub("started");
+      } else {
+        setSaveError(result.message || t("vird:editor.errors.activateFailed"));
+      }
+    })();
+  };
+
   const handleUpgradeFromSwap = () => {
+    pendingPremiumProgramRef.current = pendingSwap?.localProgram ?? null;
     setPendingSwap(null);
     premiumSheet.open();
   };

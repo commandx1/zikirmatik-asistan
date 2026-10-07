@@ -76,7 +76,7 @@ export function AiGuideScreen() {
       dhikrName: item.title ?? item.transliteration,
       onFresh: () => {
         clearDhikrProgress(item.id);
-        guide.selectRecommendation(item);
+        guide.selectRecommendation(item, { fresh: true });
         router.push("/(tabs)/home");
       },
       onContinue: () => {

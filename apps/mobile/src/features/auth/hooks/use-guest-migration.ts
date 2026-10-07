@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { i18n } from "../../../i18n";
 import { useAuthStore } from "../../../store/auth-store";
 import { useGuestMigrationStore } from "../../../store/guest-migration-store";
-import { runGuestMigration } from "../services/guest-migration";
+import { clearMigratedFreeMode, runGuestMigration } from "../services/guest-migration";
 
 // Module-level in-flight lock: React 18 strict/double effects and rapid
 // re-renders must never start two concurrent migration runs.
@@ -39,6 +39,7 @@ export function useGuestMigration() {
 
     runGuestMigration(snapshot, { userId })
       .then(() => {
+        clearMigratedFreeMode(snapshot);
         useGuestMigrationStore.getState().completeRun();
       })
       .catch(async (error) => {

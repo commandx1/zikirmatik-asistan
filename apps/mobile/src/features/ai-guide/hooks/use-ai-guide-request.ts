@@ -3,6 +3,7 @@
 // 503 / genel hata) ve tekrar-dene / satın-alma-sonrası devam akışları.
 // Başarılı sonuç ve sonuç temizliği use-ai-guide-history.ts'e devredilir.
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createInFlightGuard } from "../../ai-shared/services/in-flight-guard";
 import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import { getAppLocale } from "../../../i18n";
@@ -194,24 +195,35 @@ export function useAiGuideRequest({ credits, history, onOpenPremiumSheet }: Opti
     [applyRemainingCredits, applyResult, authStatus, clearResult, markInsufficient, onOpenPremiumSheet, userId, t, withProgress]
   );
 
+  // B-23: isLoading, kredi ön kontrolü (await) bitene kadar false kalır →
+  // çift dokunuş iki istek/iki kredi demekti; senkron ref ile kapatılır.
+  const inFlight = useRef(createInFlightGuard()).current;
+
   const submitIntent = async () => {
     if (isLoading) {
       return;
     }
 
-    Keyboard.dismiss();
-    setPostPurchaseNotice(undefined);
-    setAiUnavailable(null);
-    const flowId = createFlowId();
-    setActiveFlowId(flowId);
-    const request = { freeText: intentInput.trim() || undefined, flowId };
-
-    if (!(await ensureCreditsAvailable())) {
-      pendingRequestRef.current = request;
+    if (!inFlight.acquire()) {
       return;
     }
+    try {
+      Keyboard.dismiss();
+      setPostPurchaseNotice(undefined);
+      setAiUnavailable(null);
+      const flowId = createFlowId();
+      setActiveFlowId(flowId);
+      const request = { freeText: intentInput.trim() || undefined, flowId };
 
-    await executeRecommendationRequest(request);
+      if (!(await ensureCreditsAvailable())) {
+        pendingRequestRef.current = request;
+        return;
+      }
+
+      await executeRecommendationRequest(request);
+    } finally {
+      inFlight.release();
+    }
   };
 
   /**
@@ -229,14 +241,21 @@ export function useAiGuideRequest({ credits, history, onOpenPremiumSheet }: Opti
       return;
     }
 
-    setPostPurchaseNotice(undefined);
-
-    if (!(await ensureCreditsAvailable())) {
-      pendingRequestRef.current = request;
+    if (!inFlight.acquire()) {
       return;
     }
+    try {
+      setPostPurchaseNotice(undefined);
 
-    await executeRecommendationRequest(request);
+      if (!(await ensureCreditsAvailable())) {
+        pendingRequestRef.current = request;
+        return;
+      }
+
+      await executeRecommendationRequest(request);
+    } finally {
+      inFlight.release();
+    }
   };
 
   const resumeAfterCreditPurchase = async () => {

@@ -26,6 +26,10 @@ export function useNotificationTapRouting() {
         if (route) {
           navigate(route);
         }
+        // B-18: temizlenmezse sonraki soğuk açılışlar aynı rotaya tekrar gider.
+        if (response) {
+          void Notifications.clearLastNotificationResponseAsync().catch(() => {});
+        }
       });
     }
 

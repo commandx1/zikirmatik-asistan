@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { safeAsyncStorage } from "../lib/storage/zustand-storage";
 import { toDateKey, type VirdStreakSnapshot } from "@zikirmatik/shared";
+import { scopeItemKey } from "../features/vird/services/vird-day";
 import type {
   VirdDayItemProgress,
   VirdDayProgressByDate,
@@ -156,6 +157,26 @@ function mergeMax(existing: VirdDayItemProgress | undefined, count: number, targ
   };
 }
 
+/** Programa göre öneklenmemiş (eski) itemKey'leri activeProgramId'ye atfeder. */
+export function scopeLegacyDayProgress(
+  dayProgress: VirdDayProgressByDate | undefined,
+  activeProgramId: string | null | undefined
+): VirdDayProgressByDate {
+  const next: VirdDayProgressByDate = {};
+  for (const [dateKey, day] of Object.entries(dayProgress ?? {})) {
+    const scopedDay: Record<string, VirdDayItemProgress> = {};
+    for (const [itemKey, entry] of Object.entries(day ?? {})) {
+      if (itemKey.includes("|")) {
+        scopedDay[itemKey] = entry;
+      } else if (activeProgramId) {
+        scopedDay[scopeItemKey(activeProgramId, itemKey)] = entry;
+      }
+    }
+    next[dateKey] = scopedDay;
+  }
+  return next;
+}
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -269,16 +290,23 @@ export const useVirdStore = create<VirdStore>()(
     {
       name: "vird-store-v1",
       storage: createJSONStorage(() => safeAsyncStorage),
-      version: 2,
+      version: 3,
       // v2 (FAZ C): reminderPrefs.provinceKey (il seçimi) kaldırıldı, yerini
       // coords (GPS) aldı — bkz. ../features/vird/types.ts VirdReminderPrefs.
       // version < 2 için (v1 ya da hiç version taşımayan bozuk/eski veri)
       // dhikr-store.ts'teki savunmacı desenle aynı gerekçeyle (persist
       // edilmiş state ASLA crash'e sebep olmamalı) alan alan güvenli
       // varsayılanlara düşülür; provinceKey bilerek OKUNMAZ/DÜŞÜRÜLÜR.
+      // v3 (M-23): dayProgress itemKey'leri programa göre öneklenir
+      // (scopeItemKey). Önek öncesi anahtarlar (v1/v2) en iyi tahminle o anki
+      // aktif programa atfedilir; aktif program yoksa atılır.
       migrate: (persistedState, version) => {
-        if (version >= 2) {
+        if (version >= 3) {
           return persistedState as VirdStore;
+        }
+        if (version >= 2) {
+          const current = persistedState as VirdStore;
+          return { ...current, dayProgress: scopeLegacyDayProgress(current.dayProgress, current.activeProgramId) };
         }
 
         try {
@@ -287,10 +315,13 @@ export const useVirdStore = create<VirdStore>()(
           const rawPrefs = isPlainObject(state.reminderPrefs) ? state.reminderPrefs : undefined;
           const rawSlots = rawPrefs && isPlainObject(rawPrefs.slots) ? (rawPrefs.slots as Record<string, unknown>) : undefined;
 
+          const migratedActiveId = typeof state.activeProgramId === "string" ? state.activeProgramId : null;
           return {
             programs: Array.isArray(state.programs) ? (state.programs as VirdProgramLocal[]) : defaults.programs,
             activeProgramId: typeof state.activeProgramId === "string" ? state.activeProgramId : defaults.activeProgramId,
-            dayProgress: isPlainObject(state.dayProgress) ? (state.dayProgress as VirdDayProgressByDate) : defaults.dayProgress,
+            dayProgress: isPlainObject(state.dayProgress)
+              ? scopeLegacyDayProgress(state.dayProgress as VirdDayProgressByDate, migratedActiveId)
+              : defaults.dayProgress,
             reminderPrefs: {
               enabled: typeof rawPrefs?.enabled === "boolean" ? rawPrefs.enabled : defaults.reminderPrefs.enabled,
               slots: {

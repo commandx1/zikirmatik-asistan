@@ -1,5 +1,6 @@
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { TEST_IDS } from "../../../test-ids";
 
 const DANGER_COLOR = "#ef4444";
 
@@ -14,6 +15,7 @@ const LOST_DATA_ITEM_KEYS = [
 type ProfileDeleteAccountModalProps = {
   visible: boolean;
   isDeleting: boolean;
+  error?: string;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -21,6 +23,7 @@ type ProfileDeleteAccountModalProps = {
 export function ProfileDeleteAccountModal({
   visible,
   isDeleting,
+  error,
   onConfirm,
   onCancel
 }: ProfileDeleteAccountModalProps) {
@@ -59,9 +62,16 @@ export function ProfileDeleteAccountModal({
           ))}
         </View>
 
+        {error ? (
+          <Text className="mt-4 text-sm font-medium" style={{ color: DANGER_COLOR }} testID={TEST_IDS.profile.deleteError}>
+            {error}
+          </Text>
+        ) : null}
+
         <View className="mt-6 gap-2">
           <Pressable
             onPress={onConfirm}
+            testID={TEST_IDS.profile.deleteConfirm}
             disabled={isDeleting}
             className={`h-12 items-center justify-center rounded-2xl ${isDeleting ? "opacity-60" : ""}`}
             style={{ backgroundColor: `${DANGER_COLOR}20`, borderWidth: 1, borderColor: `${DANGER_COLOR}55` }}

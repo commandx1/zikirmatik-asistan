@@ -14,9 +14,8 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useCircleStore } from "../../../store/circle-store";
 import { fetchCirclesForUser } from "../services/circle-queries";
 import { useRequireAuth } from "../../auth/hooks/use-require-auth";
-import { resolveLocalizedText } from "@zikirmatik/shared";
 import { ProfilePremiumSheet } from "../../profile/components/profile-premium-sheet";
-import { parseCircleCode } from "../services/circle-share";
+import { circleProgressPercent, parseCircleCode, resolveCircleTitle } from "../services/circle-share";
 import { TEST_IDS } from "../../../test-ids";
 import { useAppLocale } from "../../../i18n";
 
@@ -138,14 +137,14 @@ function CircleRow({ circle }: { circle: CircleSummary }) {
   const { t } = useTranslation("circle");
   const { tokens } = useThemeTokens();
   const locale = useAppLocale();
-  const percent = circle.goalCount > 0 ? Math.min(100, Math.round((circle.totalCount / circle.goalCount) * 100)) : 0;
+  const percent = circleProgressPercent(circle.totalCount, circle.goalCount);
 
   return (
     <Pressable onPress={() => router.push(`/circle/${circle.id}`)}>
       <ThemedCard className="mb-3 rounded-2xl p-4">
         <View className="mb-1 flex-row items-center justify-between">
           <Text className="flex-1 pr-2 text-sm font-semibold text-text-primary" numberOfLines={1}>
-            {circle.name || resolveLocalizedText(circle.dhikr.name, locale)}
+            {resolveCircleTitle(circle, locale)}
           </Text>
           <Text className="text-xs font-semibold" style={{ color: circle.status === "active" ? tokens.success : tokens.textMuted }}>
             {t(`circle:status.${circle.status}`)}

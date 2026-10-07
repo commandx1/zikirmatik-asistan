@@ -3,10 +3,12 @@
 // tekrar-dene / satın-alma-sonrası devam. Mesaj dizisi geçişleri saf olarak
 // ../services/chat-messages.ts'dedir.
 //
-// Bilinen, bilerek korunan davranışlar: AI_CREDIT_INSUFFICIENT'ta metin
-// girdiye geri konmaz; sohbet değiştirme/yeni sohbet akan isteği iptal etmez;
+// Hatada (kredi/limit dahil, B-30) yazılan metin girdiye geri konur; aynı metnin
+// tekrarı aynı clientMessageId'yi taşır (A-11). Bilinen, bilerek korunan
+// davranışlar: sohbet değiştirme/yeni sohbet akan isteği iptal etmez;
 // her token'da mesaj dizisinin tamamı yeniden eşlenir.
 import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { createInFlightGuard } from "../../ai-shared/services/in-flight-guard";
 import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import { getAppLocale } from "../../../i18n";
@@ -15,13 +17,19 @@ import { useProfileStore } from "../../../store/profile-store";
 import type { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
 import { useAiProgressSteps } from "../../ai-shared/hooks/use-ai-progress-steps";
 import {
-  AI_CREDIT_INSUFFICIENT_CODE,
-  AI_UNAVAILABLE_CODE,
   AiChatApiError,
   streamChatMessage,
   streamCreateConversation,
   type ChatStreamHandlers
 } from "../services/ai-chat-api-client";
+import { createFlowId } from "../../../lib/ids";
+import {
+  classifyChatError,
+  isBlankMessage,
+  resolveClientMessageId,
+  retryOnInProgress,
+  type ClientMessageKey
+} from "../services/chat-send-policy";
 import { appendMessage, appendStreamToken, finalizeStream, removeTransientMessages } from "../services/chat-messages";
 import type { ChatConversationSummary, ChatMessageRaw } from "../types";
 
@@ -61,6 +69,10 @@ export function useChatStream({
   // pendingMessageRef'ten (satın alma sonrası devam akışı) ayrı tutulur.
   const aiUnavailableMessageRef = useRef<string>("");
   const streamAbortRef = useRef<AbortController | undefined>(undefined);
+  // A-11: mesaj başına bir kez üretilir; başarılı `done`'da sıfırlanır.
+  const clientMessageRef = useRef<ClientMessageKey | undefined>(undefined);
+  // Çift dokunuş koruması: isSending state'i kredi ön kontrolü bitene kadar false kalır.
+  const inFlight = useRef(createInFlightGuard()).current;
 
   useEffect(() => {
     return () => {
@@ -76,6 +88,8 @@ export function useChatStream({
       setError(undefined);
       setAiUnavailable(null);
 
+      clientMessageRef.current = resolveClientMessageId(clientMessageRef.current, text, createFlowId);
+      const clientMessageId = clientMessageRef.current.id;
       const stepLabel = (key: string) =>
         t(`ai-chat:loading.steps.${key}`, { defaultValue: t("ai-chat:loading.defaultStep") });
 
@@ -130,6 +144,7 @@ export function useChatStream({
               }
             }
 
+            clientMessageRef.current = undefined;
             setMessages((prev) => finalizeStream(prev, optimisticUserMessage.id, streamingAssistantId, payload));
             applyRemainingCredits(payload.remainingCredits);
           },
@@ -146,39 +161,41 @@ export function useChatStream({
           }
 
           const accessToken = useAuthStore.getState().session?.accessToken;
-          if (!activeConversationId) {
-            await streamCreateConversation(
-              { firstMessage: text, locale, socketId },
-              accessToken,
-              handlers,
-              abortController.signal
-            );
-          } else {
-            await streamChatMessage(
-              activeConversationId,
-              { message: text, socketId },
-              accessToken,
-              handlers,
-              abortController.signal
-            );
-          }
+          await retryOnInProgress(() =>
+            activeConversationId
+              ? streamChatMessage(
+                  activeConversationId,
+                  { message: text, socketId, clientMessageId },
+                  accessToken,
+                  handlers,
+                  abortController.signal
+                )
+              : streamCreateConversation(
+                  { firstMessage: text, locale, socketId, clientMessageId },
+                  accessToken,
+                  handlers,
+                  abortController.signal
+                )
+          );
         } catch (err) {
           setMessages((prev) => removeTransientMessages(prev, optimisticUserMessage.id, streamingAssistantId));
 
-          if (err instanceof AiChatApiError && err.code === AI_CREDIT_INSUFFICIENT_CODE) {
-            // Not: 503 dalının aksine metin girdiye geri konmaz (mevcut davranış).
+          const code = err instanceof AiChatApiError ? err.code : undefined;
+          const kind = classifyChatError(code);
+          // Yazılan metin hiçbir hatada kaybolmaz (B-30); tekrar aynı anahtarla gider.
+          setInputValue(text);
+
+          if (kind === "credit") {
             markInsufficient();
             pendingMessageRef.current = text;
             onOpenPremiumSheet?.();
-          } else if (err instanceof AiChatApiError && err.code === AI_UNAVAILABLE_CODE) {
-            // Kredi düşülmedi, hiçbir şey kalıcılaştırılmadı — metni girdiye
-            // geri koy ve "Tekrar dene" seçeneği sun.
+          } else if (kind === "unavailable") {
+            // Kredi düşülmedi, hiçbir şey kalıcılaştırılmadı — "Tekrar dene" seçeneği sun.
             aiUnavailableMessageRef.current = text;
-            setInputValue(text);
             // Non-TR: the client already replaced the (Turkish) server text with a
             // generic fallback, so use the specific "credit not charged" copy.
             setAiUnavailable({
-              message: getAppLocale() === "tr" ? err.message || t("ai-chat:errors.aiUnavailable") : t("ai-chat:errors.aiUnavailable")
+              message: getAppLocale() === "tr" ? (err as AiChatApiError).message || t("ai-chat:errors.aiUnavailable") : t("ai-chat:errors.aiUnavailable")
             });
           } else if (err instanceof AiChatApiError) {
             setError(err.message);
@@ -212,24 +229,31 @@ export function useChatStream({
 
   const sendMessage = useCallback(async () => {
     const text = inputValue.trim();
-    if (!text || isSending) {
+    if (isBlankMessage(text) || isSending) {
       return;
     }
 
-    Keyboard.dismiss();
-    setAiUnavailable(null);
-
-    if (!(await ensureCreditsAvailable())) {
-      pendingMessageRef.current = text;
+    if (!inFlight.acquire()) {
       return;
     }
+    try {
+      Keyboard.dismiss();
+      setAiUnavailable(null);
 
-    await runSend(text);
-  }, [ensureCreditsAvailable, inputValue, isSending, runSend]);
+      if (!(await ensureCreditsAvailable())) {
+        pendingMessageRef.current = text;
+        return;
+      }
+
+      await runSend(text);
+    } finally {
+      inFlight.release();
+    }
+  }, [ensureCreditsAvailable, inFlight, inputValue, isSending, runSend]);
 
   /**
    * AI_UNAVAILABLE sonrası "Tekrar dene" — aynı metni yeniden gönderir.
-   * flowId sunucuda üretildiği için yeni istek her zaman güvenlidir.
+   * Aynı metin → aynı clientMessageId (A-11), tekrar güvenlidir.
    */
   const retryLastMessage = useCallback(async () => {
     if (isSending) {
@@ -237,17 +261,24 @@ export function useChatStream({
     }
 
     const text = aiUnavailableMessageRef.current || inputValue.trim();
-    if (!text) {
+    if (isBlankMessage(text)) {
       return;
     }
 
-    if (!(await ensureCreditsAvailable())) {
-      pendingMessageRef.current = text;
+    if (!inFlight.acquire()) {
       return;
     }
+    try {
+      if (!(await ensureCreditsAvailable())) {
+        pendingMessageRef.current = text;
+        return;
+      }
 
-    await runSend(text);
-  }, [ensureCreditsAvailable, inputValue, isSending, runSend]);
+      await runSend(text);
+    } finally {
+      inFlight.release();
+    }
+  }, [ensureCreditsAvailable, inFlight, inputValue, isSending, runSend]);
 
   const resumeAfterCreditPurchase = useCallback(async () => {
     if (isSending) {

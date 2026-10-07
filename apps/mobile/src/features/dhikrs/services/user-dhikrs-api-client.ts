@@ -5,7 +5,8 @@ export type BackendUserDhikr = {
   _id: string;
   userId: string;
   clientId: string;
-  name: string;
+  /** A-21: sunucu varsayılan ad yazmaz → null/boş olabilir. */
+  name?: string | null;
   transliteration?: string;
   arabic?: string;
   meaning?: string;

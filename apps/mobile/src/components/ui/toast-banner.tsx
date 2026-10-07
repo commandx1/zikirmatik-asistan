@@ -14,9 +14,10 @@ type ToastBannerProps = {
   iconName?: string;
   /** Ekranın üstünde (varsayılan) ya da altında konumlandır. */
   position?: "top" | "bottom";
+  testID?: string;
 };
 
-export function ToastBanner({ message, iconName = "hand-pointer", position = "top" }: ToastBannerProps) {
+export function ToastBanner({ message, iconName = "hand-pointer", position = "top", testID }: ToastBannerProps) {
   const { tokens } = useThemeTokens();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(12)).current;
@@ -46,6 +47,7 @@ export function ToastBanner({ message, iconName = "hand-pointer", position = "to
 
   return (
     <Animated.View
+      testID={testID}
       pointerEvents="none"
       style={{
         position: "absolute",

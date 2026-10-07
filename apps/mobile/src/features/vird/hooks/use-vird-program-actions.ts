@@ -14,11 +14,14 @@
 // activateProgram: hasOtherLocalActiveProgram kontrolü), böylece çağıran
 // kod (paywall/onay akışı) iki durumda da AYNI code'a bakabilir.
 import { useCallback } from "react";
+import { toDateKey } from "@zikirmatik/shared";
 import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import { useVirdStore } from "../../../store/vird-store";
-import { activateVirdProgram, deleteVirdProgram, updateVirdProgram, VirdApiError } from "../services/vird-api-client";
+import { activateVirdProgram, deleteVirdProgram, fetchVirdPrograms, updateVirdProgram, VirdApiError } from "../services/vird-api-client";
+import { selectProgramsToPause } from "../services/vird-ai-create-service";
 import { VIRD_ERROR_CODE, resolveVirdErrorMessage } from "../services/vird-error-codes";
+import { isJourneyFinished } from "../services/vird-day";
 import { toLocalVirdProgram } from "../services/vird-sync";
 import type { VirdProgramLocal } from "../types";
 
@@ -32,7 +35,6 @@ function nowIso(): string {
 
 export function useVirdProgramActions() {
   const authStatus = useAuthStore((state) => state.status);
-  const isPremium = useProfileStore((state) => state.isPremium);
   const upsertProgram = useVirdStore((state) => state.upsertProgram);
   const removeProgram = useVirdStore((state) => state.removeProgram);
   const setActiveProgram = useVirdStore((state) => state.setActiveProgram);
@@ -94,6 +96,16 @@ export function useVirdProgramActions() {
         return { ok: true, program };
       }
 
+      // A-23: bitişi geçmiş yolculuk başlatılamaz (sunucudaki 400
+      // VIRD_PROGRAM_EXPIRED kuralının aynısı; misafir/yerelde de geçerli).
+      if (isJourneyFinished(program, toDateKey(new Date()))) {
+        return {
+          ok: false,
+          code: VIRD_ERROR_CODE.PROGRAM_EXPIRED,
+          message: resolveVirdErrorMessage(VIRD_ERROR_CODE.PROGRAM_EXPIRED, "")
+        };
+      }
+
       if (isServerBacked(program)) {
         try {
           const server = await activateVirdProgram(program.id);
@@ -111,7 +123,8 @@ export function useVirdProgramActions() {
 
       // Misafir / henüz senkron olmamış yerel program: sunucu yok, ücretsiz
       // "1 aktif program" limitini burada emüle et (bkz. dosya başı notu).
-      if (!isPremium) {
+      // getState: premium satın alımından hemen sonra çağrılabilir (render closure bayat olabilir).
+      if (!useProfileStore.getState().isPremium) {
         const hasOtherActive = useVirdStore
           .getState()
           .programs.some((candidate) => candidate.id !== program.id && candidate.status === "active");
@@ -125,22 +138,35 @@ export function useVirdProgramActions() {
       setActiveProgram(merged.id);
       return { ok: true, program: merged };
     },
-    [isServerBacked, isPremium, upsertProgram, setActiveProgram]
+    [isServerBacked, upsertProgram, setActiveProgram]
   );
 
   /**
    * Ortak "aktif programı değiştir" akışı (bkz. components/vird-swap-active-modal.tsx):
-   * mevcut aktif programı (varsa) duraklatır, ardından `next`'i aktive eder.
-   * Duraklatma başarısız olursa aktivasyon hiç denenmez, duraklatmanın hatası döner.
+   * `next` dışındaki TÜM aktif programları duraklatır (B-21: AI yoluyla aynı
+   * kural — yalnız yerel activeProgramId değil), ardından `next`'i aktive eder.
+   * Üyede liste sunucudan taze çekilir (premium'dan düşen kullanıcının başka
+   * aktifleri kalmış olabilir; çekilemezse yerel liste). Duraklatma
+   * başarısız olursa aktivasyon hiç denenmez, duraklatmanın hatası döner.
    */
   const swapActive = useCallback(
     async (next: VirdProgramLocal): Promise<VirdActionResult> => {
-      const currentActive = useVirdStore
-        .getState()
-        .programs.find((candidate) => candidate.id === useVirdStore.getState().activeProgramId);
+      const stored = useVirdStore.getState().programs;
+      let toPause: VirdProgramLocal[];
+      if (authStatus === "authenticated") {
+        try {
+          toPause = selectProgramsToPause(await fetchVirdPrograms(), next.id).map((server) =>
+            toLocalVirdProgram(server, stored.find((program) => program.id === server.id))
+          );
+        } catch {
+          toPause = selectProgramsToPause(stored.filter(isServerBacked), next.id);
+        }
+      } else {
+        toPause = selectProgramsToPause(stored, next.id);
+      }
 
-      if (currentActive && currentActive.id !== next.id) {
-        const paused = await pauseProgram(currentActive);
+      for (const program of toPause) {
+        const paused = await pauseProgram(program);
         if (!paused.ok) {
           return paused;
         }
@@ -148,7 +174,7 @@ export function useVirdProgramActions() {
 
       return activateProgram(next);
     },
-    [pauseProgram, activateProgram]
+    [authStatus, isServerBacked, pauseProgram, activateProgram]
   );
 
   return { pauseProgram, deleteProgram, activateProgram, swapActive };

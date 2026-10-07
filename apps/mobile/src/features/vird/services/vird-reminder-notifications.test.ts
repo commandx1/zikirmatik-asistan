@@ -96,6 +96,23 @@ describe("syncVirdReminders", () => {
     expect(scheduleNotificationAsync).not.toHaveBeenCalled();
   });
 
+  it("A-07/M-13: isPremium=false cancels everything and schedules nothing; isPremium=true schedules", async () => {
+    getAllScheduledNotificationsAsync.mockResolvedValue([
+      { identifier: "old-vird", content: { data: { kind: VIRD_SLOT_REMINDER_KIND } } }
+    ]);
+
+    const { syncVirdReminders } = await import("./vird-reminder-notifications");
+    const base = { program, reminderPrefs: enabledPrefs, dayProgress: {}, now: wellBeforeAnyTrigger };
+
+    const lapsed = await syncVirdReminders({ ...base, isPremium: false });
+    expect(lapsed).toEqual({ scheduled: 0 });
+    expect(cancelScheduledNotificationAsync).toHaveBeenCalledWith("old-vird");
+    expect(scheduleNotificationAsync).not.toHaveBeenCalled();
+
+    const active = await syncVirdReminders({ ...base, isPremium: true });
+    expect(active.scheduled).toBeGreaterThan(0);
+  });
+
   it("null coords schedules fixed default times", async () => {
     const { syncVirdReminders } = await import("./vird-reminder-notifications");
     const result = await syncVirdReminders({

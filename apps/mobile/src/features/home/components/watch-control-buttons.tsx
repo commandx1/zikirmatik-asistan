@@ -11,6 +11,8 @@ type WatchControlButtonsProps = {
   onResetPress: () => void
   onSavePress: () => void
   isSaving?: boolean
+  /** M-04: sayım 0 iken Kaydet pasif. */
+  saveDisabled?: boolean
   listBtnRef?: RefObject<View | null>
   targetBtnRef?: RefObject<View | null>
   resetBtnRef?: RefObject<View | null>
@@ -33,6 +35,7 @@ export function WatchControlButtons({
   onResetPress,
   onSavePress,
   isSaving = false,
+  saveDisabled = false,
   listBtnRef,
   targetBtnRef,
   resetBtnRef,
@@ -100,8 +103,8 @@ export function WatchControlButtons({
         ref={saveBtnRef}
         onPress={onSavePress}
         testID={saveTestID}
-        disabled={isSaving}
-        className={`h-9 w-9 items-center justify-center rounded-full border ${isSaving ? 'opacity-50' : ''}`}
+        disabled={isSaving || saveDisabled}
+        className={`h-9 w-9 items-center justify-center rounded-full border ${isSaving || saveDisabled ? 'opacity-50' : ''}`}
         style={{ borderColor: controlButtonBorder, backgroundColor: controlButtonBg }}
       >
         {isSaving ? (

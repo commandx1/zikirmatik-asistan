@@ -1,4 +1,5 @@
 import { toDateKey, type VirdProgram, resolveLocalizedText } from "@zikirmatik/shared";
+import { i18n } from "../../../i18n";
 import { isObjectId as isObjectIdLike } from "../../dhikrs/services/dhikr-ids";
 import { useDhikrStore } from "../../../store/dhikr-store";
 import { useProfileStore } from "../../../store/profile-store";
@@ -63,8 +64,9 @@ export type GuestMigrationPlan = {
  *
  * Must be called BEFORE resetSessionScopedStores() wipes the local store.
  * Returns null when the guest produced nothing worth migrating.
- * Note: free-mode (serbest) counts are intentionally not migrated — they have
- * no dhikr identity, so there is no backend log key to attach them to.
+ * Free mode (M-19): an unsaved free-mode count (> 0) has no dhikr identity, so
+ * it is carried over as a personal dhikr named "Serbest"/"Free" holding that
+ * count for today (see freeModeSnapshotItem).
  *
  * Vird: bir misafir authenticate OLAMAYACAĞINDAN tüm programları her zaman
  * `origin:'local'`dır (bkz. GuestVirdSnapshot) — yine de defensive olarak
@@ -81,11 +83,14 @@ export function captureGuestMigrationSnapshot(): GuestMigrationSnapshot | null {
   const localVirdPrograms = virdState.programs.filter((program) => program.origin === "local");
   const hasVirdData = localVirdPrograms.length > 0;
 
-  if (relevant.length === 0 && !hasVirdData) {
+  const { freeModeCount, freeModeTarget } = useDhikrStore.getState();
+  const now = new Date();
+  const freeItem = freeModeSnapshotItem(freeModeCount, freeModeTarget, now, i18n.t("home:freeMode.label"));
+
+  if (relevant.length === 0 && !hasVirdData && !freeItem) {
     return null;
   }
 
-  const now = new Date();
   const locale = useProfileStore.getState().locale;
   const vird: GuestVirdSnapshot | undefined = hasVirdData
     ? {
@@ -99,7 +104,7 @@ export function captureGuestMigrationSnapshot(): GuestMigrationSnapshot | null {
     id: `guest-migration-${now.getTime()}`,
     capturedAt: now.toISOString(),
     dateKey: toDateKey(now),
-    items: relevant.map((item) => ({
+    items: [...relevant.map((item) => ({
       id: item.id,
       source: item.source,
       name: resolveLocalizedText(item.name, locale),
@@ -109,9 +114,44 @@ export function captureGuestMigrationSnapshot(): GuestMigrationSnapshot | null {
       current: item.current,
       target: item.target,
       isFavorite: item.isFavorite
-    })),
+    })), ...(freeItem ? [freeItem] : [])],
+    ...(freeItem ? { freeModeCount: freeItem.current } : {}),
     ...(vird ? { vird } : {})
   };
+}
+
+/** M-19: pure builder of the "Serbest" personal item for a guest's free-mode count; null at 0. */
+export function freeModeSnapshotItem(
+  freeModeCount: number,
+  freeModeTarget: number,
+  now: Date,
+  name: string
+): GuestSnapshotItem | null {
+  const count = Math.max(0, Math.floor(freeModeCount));
+  if (count <= 0) {
+    return null;
+  }
+  return {
+    id: `personal-serbest-${now.getTime().toString(36)}`,
+    source: "personal",
+    name,
+    transliteration: name,
+    current: count,
+    target: freeModeTarget > 0 ? Math.floor(freeModeTarget) : 0,
+    isFavorite: false
+  };
+}
+
+/**
+ * After a successful run, drops the free-mode count that was migrated so it
+ * isn't counted twice (it now lives in the account as "Serbest"). Taps made
+ * after the snapshot was taken (count moved) are left alone.
+ */
+export function clearMigratedFreeMode(snapshot: GuestMigrationSnapshot): void {
+  const state = useDhikrStore.getState();
+  if (snapshot.freeModeCount && state.freeModeCount === snapshot.freeModeCount) {
+    state.clearFreeModeSession();
+  }
 }
 
 /**
@@ -131,7 +171,7 @@ export function planGuestMigration(
     createLogs: [],
     favoriteUpdates: [],
     skippedItemIds: [],
-    ...planVirdMigration(snapshot.vird, backend.existingVirdPrograms)
+    ...planVirdMigration(snapshot.vird, backend.existingVirdPrograms, backend.logs)
   };
 
   const locale = useProfileStore.getState().locale;
@@ -211,7 +251,9 @@ export function planGuestMigration(
  */
 export function planVirdMigration(
   vird: GuestVirdSnapshot | undefined,
-  existingVirdPrograms: VirdProgram[]
+  existingVirdPrograms: VirdProgram[],
+  /** Sunucudaki mevcut loglar — kısmen başarılı bir önceki turun vird ilerleme loglarını tekrar yazmamak için (B-14). */
+  existingLogs: BackendDhikrLog[] = []
 ): Pick<GuestMigrationPlan, "createVirdPrograms" | "createVirdProgressLogs"> {
   if (!vird || vird.programs.length === 0) {
     return { createVirdPrograms: [], createVirdProgressLogs: [] };
@@ -251,6 +293,22 @@ export function planVirdMigration(
             customDhikrName: dhikrSnapshot ? resolveLocalizedText(dhikrSnapshot.name, locale) : undefined
           }
         : { dhikrId: item.ref };
+
+      const serverProgramId = existingVirdPrograms.find((existing) => existing.clientId === program.clientId)?.id;
+      const alreadyWritten =
+        serverProgramId !== undefined &&
+        existingLogs.some(
+          (log) =>
+            log.virdProgramId === serverProgramId &&
+            log.date.slice(0, 10) === dateKey &&
+            log.virdSlot === item.slot &&
+            (log.virdPrayerIndex ?? null) === (item.prayerIndex ?? null) &&
+            (isCustom ? log.customDhikrId === item.ref : log.dhikrId === item.ref) &&
+            log.count >= entry.count
+        );
+      if (alreadyWritten) {
+        continue;
+      }
 
       createVirdProgressLogs.push({
         clientProgramId: program.clientId,

@@ -1,4 +1,4 @@
-export type StatsSourceKey = "manual" | "ai" | "special-day" | "notification";
+export type StatsSourceKey = "manual" | "ai" | "special-day" | "notification" | "circle";
 
 export type StatsDailyPoint = {
   /** YYYY-MM-DD */

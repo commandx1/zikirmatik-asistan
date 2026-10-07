@@ -46,3 +46,16 @@ describe("resetSessionScopedStores", () => {
     expect(removeItemMock).not.toHaveBeenCalled();
   });
 });
+
+describe("B-13 guest migration does not leak across accounts", () => {
+  it("clears a pending/failed guest-migration snapshot on sign-out / account switch", async () => {
+    const { useGuestMigrationStore } = await import("./guest-migration-store");
+    useGuestMigrationStore.getState().queueSnapshot({ id: "s", capturedAt: "2026-01-01T00:00:00Z", dateKey: "2026-01-01", items: [] });
+    useGuestMigrationStore.getState().failRun("offline");
+
+    resetSessionScopedStores("user-a");
+
+    expect(useGuestMigrationStore.getState().snapshot).toBeUndefined();
+    expect(useGuestMigrationStore.getState().status).toBe("idle");
+  });
+});

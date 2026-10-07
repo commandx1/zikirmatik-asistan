@@ -91,6 +91,7 @@
     "otherProgramsHeading": "Diğer programlar",
     "pauseAction": "Duraklat",
     "resumeAction": "Aktifleştir",
+    "cloneAndRestartAction": "Kopyala ve yeniden başlat",
     "deleteAction": "Sil",
     "deleteConfirmTitle": "Programı sil",
     "deleteConfirmMessage": "\"{{title}}\" programını silmek istediğine emin misin?"
@@ -188,6 +189,8 @@
     "serviceUnavailable": "Vird servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar dene.",
     "serviceUnreachable": "İnternet bağlantını kontrol edip tekrar dene.",
     "notActivatable": "Yalnızca taslak veya duraklatılmış bir program aktifleştirilebilir.",
-    "phasesRequired": "Manuel vird programı için en az bir faz gereklidir."
+    "phasesRequired": "Manuel vird programı için en az bir faz gereklidir.",
+    "phasesInvalid": "Fazlar 1. günden başlamalı; boşluk veya çakışma olmamalı.",
+    "programExpired": "Bu programın süresi doldu. Kopyalayıp yeniden başlatabilirsin."
   }
 }

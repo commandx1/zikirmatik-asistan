@@ -3,7 +3,7 @@ import { AppState, Text } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { toDateKey, resolveLocalizedText } from "@zikirmatik/shared";
+import { toDateKey } from "@zikirmatik/shared";
 import type { CircleDetail } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
@@ -23,8 +23,16 @@ import { trackEvent } from "../../../lib/analytics";
 import { maybeRequestStoreReview } from "../../review/request-store-review";
 import { AppleWatchView, type CounterVisualModel } from "../../home/components/apple-watch";
 import { TesbihCounterView } from "../../home/components/tesbih-counter";
-import { fetchCircle } from "../services/circle-api-client";
-import { buildCircleLogPayload, computeDisplayTotal } from "../services/circle-share";
+import { CIRCLE_ERROR_CODE, CircleApiError, fetchCircle } from "../services/circle-api-client";
+import { buildCircleLogPayload, computeDisplayTotal, resolveCircleTitle } from "../services/circle-share";
+import {
+  canTapCircle,
+  isGoalReached,
+  pendingFlushes,
+  seedTodayCount,
+  tapDay,
+  type DayCounts
+} from "../services/circle-session-logic";
 import { useAppLocale } from "../../../i18n";
 import { TEST_IDS } from "../../../test-ids";
 
@@ -45,11 +53,11 @@ export function CircleSessionScreen({ id }: { id: string }) {
   const router = useRouter();
   const { t } = useTranslation("circle");
   const locale = useAppLocale();
-  // Gün anahtarı oturum boyunca SABİT: her render'da yeniden hesaplansaydı gece
-  // yarısını geçen bir oturumda canlı sayı (dünkü dokunuşlar dahil) yeni günün
-  // log'una yazılır ve halka toplamı çift sayılırdı. Mount anındaki gün ile
-  // devam etmek dürüst kalır (dünkü log büyür), çift sayım olmaz.
-  const [todayKey] = useState(() => toDateKey(new Date()));
+  // M-24: her dokunuş DOKUNUŞ ANININ (cihaz yerel) gününe yazılır. Gün anahtarı
+  // render'da değil, dokunuşta yenilenir; gün değişince eski günün sayımı
+  // olduğu gibi gönderilir, yeni gün 0'dan başlar (çift sayım yok).
+  const [todayKey, setTodayKey] = useState(() => toDateKey(new Date()));
+  const todayKeyRef = useRef(todayKey);
 
   const authStatus = useAuthStore((state) => state.status);
   const sessionUserId = useAuthStore((state) => state.session?.userId);
@@ -67,14 +75,20 @@ export function CircleSessionScreen({ id }: { id: string }) {
   const effectiveSoundPack = isPremium ? soundPack : "off";
   const counterStyle = useCounterStyleStore((state) => state.counterStyle);
 
-  const [detail, setDetail] = useState<CircleDetail | null>(null);
   const [locked, setLocked] = useState(false);
 
-  // Canlı sayaç: render closure'larına güvenmemek için ref'te tutulur,
-  // her artışta useCircleStore.todayCounts'a da yansıtılır (bkz. görev notu).
-  const liveCountRef = useRef(0);
+  // Canlı sayaç (gün bazlı): render closure'larına güvenmemek için ref'te
+  // tutulur, bugünkü değer useCircleStore.todayCounts'a da yansıtılır.
+  // Mount'ta kalıcı yerel sayımla tohumlanır (B-33: çevrimdışı açılan oturum da
+  // bekleyen sayımı gönderebilsin).
+  const countsRef = useRef<DayCounts | null>(null);
+  if (countsRef.current === null) {
+    const local = useCircleStore.getState().todayCounts[id];
+    countsRef.current = local && local.dateKey === todayKey && local.count > 0 ? { [todayKey]: local.count } : {};
+  }
+  const sentRef = useRef<DayCounts>({});
   const seededRef = useRef(false);
-  const lastFlushedRef = useRef(0);
+  const liveToday = () => countsRef.current?.[todayKeyRef.current] ?? 0;
   // Sunucudan gelen "çift" (toplam, benim payım) HER ZAMAN birlikte set
   // edilir — ikisi ayrı ayrı güncellenirse (ör. yalnız toplam tazelenirse)
   // computeDisplayTotal formülü anlık olarak yanlış bir "başkalarının payı"
@@ -104,7 +118,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
   const detailQuery = useQuery(
     {
       queryKey: qk.circle(id),
-      queryFn: () => fetchCircle(id, todayKey),
+      queryFn: () => fetchCircle(id, todayKeyRef.current),
       enabled: authStatus === "authenticated" && !!sessionUserId,
       refetchInterval: POLL_INTERVAL_MS
     },
@@ -116,7 +130,6 @@ export function CircleSessionScreen({ id }: { id: string }) {
     if (!fresh) {
       return;
     }
-    setDetail(fresh);
     // Store artık monoton (upsertCircle geri düşürmez) — halka ekranları
     // arası tutarlılık için burada da yazılır.
     upsertCircle(fresh);
@@ -137,13 +150,15 @@ export function CircleSessionScreen({ id }: { id: string }) {
     }
     if (!seededRef.current) {
       seededRef.current = true;
-      const localToday = useCircleStore.getState().todayCounts[id];
-      const seed = Math.max(localToday && localToday.dateKey === todayKey ? localToday.count : 0, fresh.myTodayCount ?? 0);
-      liveCountRef.current = seed;
-      setTodayCount(id, todayKey, seed);
+      const key = todayKeyRef.current;
+      const mine = fresh.myTodayCount ?? 0;
+      const seed = seedTodayCount(useCircleStore.getState().todayCounts[id], key, mine);
+      countsRef.current = { ...countsRef.current, [key]: Math.max(countsRef.current?.[key] ?? 0, seed) };
+      sentRef.current = { ...sentRef.current, [key]: Math.max(sentRef.current[key] ?? 0, mine) };
+      setTodayCount(id, key, countsRef.current[key] ?? seed);
     }
-    setDisplayTotal((prev) => computeDisplayTotal(prev, fresh.totalCount, fresh.myTodayCount ?? 0, liveCountRef.current));
-  }, [detailQuery.data, id, setTodayCount, todayKey, upsertCircle]);
+    setDisplayTotal((prev) => computeDisplayTotal(prev, fresh.totalCount, fresh.myTodayCount ?? 0, liveToday()));
+  }, [detailQuery.data, id, setTodayCount, upsertCircle]);
 
   useEffect(() => {
     if (detailQuery.error) {
@@ -152,36 +167,48 @@ export function CircleSessionScreen({ id }: { id: string }) {
   }, [detailQuery.error]);
 
   const flush = useCallback(async () => {
-    if (!sessionUserId || !detail) {
+    // Halka bilgisi store'dan (çevrimdışı açılışta da vardır) — detail'e bağlı değil.
+    const circle = useCircleStore.getState().circles.find((item) => item.id === id);
+    if (!sessionUserId || !circle) {
       return;
     }
-    const count = liveCountRef.current;
-    if (count === lastFlushedRef.current) {
-      return;
-    }
-    const previousFlushed = lastFlushedRef.current;
-    lastFlushedRef.current = count;
-    try {
-      const response = await createDhikrLog(
-        buildCircleLogPayload({ userId: sessionUserId, circle: { id: detail.id, dhikrId: detail.dhikrId, goalCount: detail.goalCount }, count, date: todayKey })
-      );
-      let nextDisplay = displayTotalRef.current;
-      if (typeof response.circleTotalCount === "number") {
-        // mine = sunucunun $max sonrası GERÇEK log sayısı (başka cihaz daha
-        // yüksek yazdıysa gönderdiğimizden büyük olabilir), gönderilen değil.
-        const mine = response.count ?? count;
-        serverPairRef.current = { total: response.circleTotalCount, mine };
-        nextDisplay = computeDisplayTotal(displayTotalRef.current, response.circleTotalCount, mine, liveCountRef.current);
-        setDisplayTotal(nextDisplay);
+    for (const { date, count } of pendingFlushes(countsRef.current ?? {}, sentRef.current)) {
+      const previousSent = sentRef.current[date] ?? 0;
+      // Optimistik işaretle (çakışan flush'lar aynı sayıyı iki kez göndermesin);
+      // hata olursa geri alınır ki sonraki tetikte yeniden denensin.
+      sentRef.current = { ...sentRef.current, [date]: count };
+      try {
+        const response = await createDhikrLog(
+          buildCircleLogPayload({ userId: sessionUserId, circle: { id: circle.id, dhikrId: circle.dhikrId, goalCount: circle.goalCount }, count, date })
+        );
+        if (date !== todayKeyRef.current) {
+          continue;
+        }
+        let nextDisplay = displayTotalRef.current;
+        if (typeof response.circleTotalCount === "number") {
+          // mine = sunucunun $max sonrası GERÇEK log sayısı (başka cihaz daha
+          // yüksek yazdıysa gönderdiğimizden büyük olabilir), gönderilen değil.
+          const mine = response.count ?? count;
+          serverPairRef.current = { total: response.circleTotalCount, mine };
+          nextDisplay = computeDisplayTotal(displayTotalRef.current, response.circleTotalCount, mine, liveToday());
+          setDisplayTotal(nextDisplay);
+        }
+        bumpTotal(id, nextDisplay);
+      } catch (error) {
+        if (error instanceof CircleApiError && error.code === CIRCLE_ERROR_CODE.NOT_ACTIVE) {
+          // Kurucu halkayı kapattı: sunucu katkıyı reddeder — yeniden deneme yok,
+          // sayaç kilitlenir, detay tazelenir (durum "closed" gelir).
+          setLocked(true);
+          void detailQuery.refetch();
+          continue;
+        }
+        sentRef.current = { ...sentRef.current, [date]: previousSent };
+        console.warn("[circle-session] log kaydı başarısız", error);
+        break;
       }
-      bumpTotal(id, nextDisplay);
-    } catch (error) {
-      // Başarısız flush geri alınır ki bir sonraki tetikte (periyodik flush /
-      // kapanış / arka plan) aynı sayı yeniden denensin.
-      lastFlushedRef.current = previousFlushed;
-      console.warn("[circle-session] log kaydı başarısız", error);
     }
-  }, [sessionUserId, detail, todayKey, bumpTotal, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- detailQuery.refetch kararlı; liveToday ref okur
+  }, [sessionUserId, id, bumpTotal]);
 
   const flushRef = useRef(flush);
   flushRef.current = flush;
@@ -229,23 +256,41 @@ export function CircleSessionScreen({ id }: { id: string }) {
     );
   }
 
-  const circleName = storedCircle.name || resolveLocalizedText(storedCircle.dhikr.name, locale);
+  const circleName = resolveCircleTitle(storedCircle, locale);
   const goal = storedCircle.goalCount;
 
   const onCountPress = () => {
-    if (locked) {
+    // M-12: ilk detay gelene kadar (ve kilitliyken) dokunuş yok.
+    if (!canTapCircle({ loaded: seededRef.current, locked })) {
       return;
     }
-    const prev = liveCountRef.current;
-    const next = prev + 1;
-    liveCountRef.current = next;
-    setTodayCount(id, todayKey, next);
+    const key = toDateKey(new Date());
+    if (key !== todayKeyRef.current) {
+      // Gece yarısı geçti: eski günün sayımı gönderilir, yeni gün 0'dan başlar.
+      // Sunucu toplamı eski günün payını zaten içerir -> "benim payım" 0.
+      void flushRef.current();
+      todayKeyRef.current = key;
+      setTodayKey(key);
+      if (serverPairRef.current) {
+        serverPairRef.current = { ...serverPairRef.current, mine: 0 };
+      }
+    }
+    const prev = liveToday();
+    countsRef.current = tapDay(countsRef.current ?? {}, key);
+    const next = liveToday();
+    setTodayCount(id, key, next);
     const pair = serverPairRef.current;
     const nextDisplay = pair
       ? computeDisplayTotal(displayTotalRef.current, pair.total, pair.mine, next)
       : Math.max(displayTotalRef.current, storedCircle.totalCount);
     setDisplayTotal(nextDisplay);
     fireCounterFeedback({ prev, next, lapSize: LAP_SIZE, pattern: hapticsPattern, soundPack: effectiveSoundPack });
+    if (isGoalReached(nextDisplay, goal)) {
+      // M-11: hedefe ulaşıldı -> sayaç anında yerel kilit + son gönderim.
+      displayTotalRef.current = nextDisplay;
+      setLocked(true);
+      void flushRef.current();
+    }
   };
 
   const close = () => {
@@ -277,9 +322,9 @@ export function CircleSessionScreen({ id }: { id: string }) {
 
       <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
         {locked ? (
-          <ThemedCard className="mb-4 items-center rounded-2xl px-4 py-6">
+          <ThemedCard testID={TEST_IDS.circle.sessionLocked} className="mb-4 items-center rounded-2xl px-4 py-6">
             <Text className="mb-4 text-sm text-text-muted">
-              {storedCircle.status === "completed" ? t("circle:session.completedNotice") : t("circle:session.closedNotice")}
+              {storedCircle.status === "closed" ? t("circle:session.closedNotice") : t("circle:session.completedNotice")}
             </Text>
             <PrimaryCtaButton label={t("circle:session.close")} onPress={close} className="w-full" />
           </ThemedCard>
@@ -291,7 +336,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
               <AppleWatchView model={model} controls="none" testIDs={SESSION_TEST_IDS} />
             )}
             <Text className="-mt-4 mb-3 text-center text-xs text-text-muted">
-              {t("circle:session.mine", { count: liveCountRef.current })}
+              {t("circle:session.mine", { count: countsRef.current?.[todayKey] ?? 0 })}
             </Text>
           </>
         )}

@@ -53,6 +53,12 @@ export type SyncVirdRemindersInput = {
   dayProgress: VirdDayProgressByDate;
   now?: Date;
   requestPermission?: boolean;
+  /**
+   * A-07 + M-13: false ise (premium bitti) hatırlatmalar durur — planlananlar
+   * iptal edilir; program ve tercihler korunur, premium dönünce kendiliğinden
+   * yeniden kurulur. Verilmezse (undefined) kapı uygulanmaz.
+   */
+  isPremium?: boolean;
 };
 
 export type SyncVirdRemindersResult = { scheduled: number };
@@ -70,7 +76,7 @@ export function syncVirdReminders(input: SyncVirdRemindersInput): Promise<SyncVi
 async function runSync(input: SyncVirdRemindersInput): Promise<SyncVirdRemindersResult> {
   const now = input.now ?? new Date();
 
-  if (!input.reminderPrefs.enabled || !input.program) {
+  if (!input.reminderPrefs.enabled || !input.program || input.isPremium === false) {
     await cancelVirdReminders();
     return { scheduled: 0 };
   }

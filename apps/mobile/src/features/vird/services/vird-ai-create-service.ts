@@ -141,3 +141,30 @@ export function selectProgramsToPause<T extends Pick<VirdProgram, "id" | "status
 ): T[] {
   return programs.filter((program) => program.status === "active" && program.id !== targetId);
 }
+
+/**
+ * B-20: AI önizlemesinde "Vazgeç" sunucudaki taslağı da siler (aksi halde
+ * senkronda hub'da geri gelirdi). Silme hatası yutulur (ağ yok → kullanıcıyı
+ * bloklamaz; taslak sunucuda 7 gün sonra zaten düşer) ve yerel kopya her
+ * durumda kaldırılır. Misafirde sunucu çağrısı yoktur.
+ */
+export async function discardAiDraft(args: {
+  programId: string | undefined;
+  isMember: boolean;
+  deleteRemote: (id: string) => Promise<unknown>;
+  removeLocal: (id: string) => void;
+}): Promise<void> {
+  const { programId, isMember, deleteRemote, removeLocal } = args;
+  if (!programId) {
+    return;
+  }
+  removeLocal(programId);
+  if (!isMember) {
+    return;
+  }
+  try {
+    await deleteRemote(programId);
+  } catch {
+    // best-effort
+  }
+}

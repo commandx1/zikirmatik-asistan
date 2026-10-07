@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { useStableCallback } from "../../../hooks/use-stable-callback";
 import { useAuthStore } from "../../../store/auth-store";
-import { useProfileStore } from "../../../store/profile-store";
 import { fetchAiCredits, fetchAiQuota } from "../services/ai-queries";
 import {
   hasEnoughCredits,
@@ -24,7 +23,6 @@ type Options = {
 export function useAiCredits({ requiredCredits = 1, alwaysRefresh = false, onOpenPremiumSheet }: Options = {}) {
   const authStatus = useAuthStore((s) => s.status);
   const userId = useAuthStore((s) => s.session?.userId);
-  const profilePremium = useProfileStore((s) => s.isPremium);
 
   const [creditBalance, setCreditBalance] = useState(0);
   const [creditsConfirmed, setCreditsConfirmed] = useState(false);
@@ -54,6 +52,9 @@ export function useAiCredits({ requiredCredits = 1, alwaysRefresh = false, onOpe
     } catch {
       try {
         const state = resolveCreditsFromQuota(await fetchAiQuota());
+        if (!state) {
+          return lastRef.current;
+        }
         write(state.balance, true, state.isPremium);
         return state;
       } catch {
@@ -72,8 +73,7 @@ export function useAiCredits({ requiredCredits = 1, alwaysRefresh = false, onOpe
         ? await refreshCredits()
         : { balance: creditBalance, isPremium: lastRef.current.isPremium };
 
-    // Bilinçli birleşim: profil store'u VEYA sunucu yanıtı premium diyorsa geç.
-    if (hasEnoughCredits({ balance: state.balance, isPremium: state.isPremium || profilePremium, requiredCredits })) {
+    if (hasEnoughCredits({ ...state, requiredCredits })) {
       return true;
     }
 

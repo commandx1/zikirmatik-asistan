@@ -141,7 +141,7 @@ describe("vird-store", () => {
   it("persists under the expected storage key and version", () => {
     const options = useVirdStore.persist.getOptions();
     expect(options.name).toBe("vird-store-v1");
-    expect(options.version).toBe(2);
+    expect(options.version).toBe(3);
   });
 
   describe("upsertProgram", () => {
@@ -412,6 +412,20 @@ describe("vird-store", () => {
     expect(state.notice).toBeNull();
   });
 
+  describe("M-23: ilerleme programa bağlı", () => {
+    it("v2 -> v3: öneksiz anahtarlar aktif programa atfedilir, öneklilere dokunulmaz, aktif program yoksa atılır", () => {
+      const options = useVirdStore.persist.getOptions() as { migrate: (state: unknown, version: number) => VirdStore };
+      const day = { "morning:0:x": { count: 2, target: 3, completed: false }, "p9|evening:0:y": { count: 1, target: 1, completed: true } };
+      const withActive = options.migrate({ activeProgramId: "p1", dayProgress: { "2026-01-01": day } }, 2);
+      expect(withActive.dayProgress["2026-01-01"]).toEqual({
+        "p1|morning:0:x": { count: 2, target: 3, completed: false },
+        "p9|evening:0:y": { count: 1, target: 1, completed: true }
+      });
+      const noActive = options.migrate({ activeProgramId: null, dayProgress: { "2026-01-01": day } }, 2);
+      expect(Object.keys(noActive.dayProgress["2026-01-01"]!)).toEqual(["p9|evening:0:y"]);
+    });
+  });
+
   describe("persisted state migration", () => {
     function migrate(persistedState: unknown, version: number) {
       const options = useVirdStore.persist.getOptions() as {
@@ -425,7 +439,7 @@ describe("vird-store", () => {
 
     it("passes the persisted state through untouched once already at the current version", () => {
       const persisted = { programs: [makeProgram()], activeProgramId: "local-1" };
-      expect(migrate(persisted, 2)).toBe(persisted);
+      expect(migrate(persisted, 3)).toBe(persisted);
     });
 
     it("does not crash on undefined/null/corrupted persisted state and returns safe defaults", () => {
@@ -456,7 +470,7 @@ describe("vird-store", () => {
 
       expect(result.programs).toEqual([]); // corrupted -> default
       expect(result.activeProgramId).toBe("kept-id"); // valid -> kept
-      expect(result.dayProgress).toEqual({ "2026-01-01": { x: { count: 1, target: 1, completed: true } } });
+      expect(result.dayProgress).toEqual({ "2026-01-01": { "kept-id|x": { count: 1, target: 1, completed: true } } }); // M-23: eski anahtar aktif programa atfedilir
       expect(result.reminderPrefs).toEqual({
         enabled: true,
         slots: { morning: true, prayer: false, evening: false, night: false }, // "nope" -> default false

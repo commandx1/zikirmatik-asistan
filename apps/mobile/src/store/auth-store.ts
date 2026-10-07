@@ -9,7 +9,7 @@ import type {
   AuthSession,
   ClientPlatform
 } from "@zikirmatik/shared";
-import { AuthApiError, refreshSession, verifyProvider } from "../features/auth/services/auth-api-client";
+import { AuthApiError, logoutSession, refreshSession, verifyProvider } from "../features/auth/services/auth-api-client";
 import { clearProviderSession, ProviderAuthError, requestProviderIdToken } from "../features/auth/services/mock-provider-auth";
 import { captureGuestMigrationSnapshot } from "../features/auth/services/guest-migration";
 import { getOrCreateDeviceId, unlinkPushDevice } from "../features/notifications/services/push-device-registration";
@@ -125,6 +125,12 @@ export const useAuthStore = create<AuthStore>()(
         return refreshPromise;
       },
       signOut: async () => {
+        // Refresh token sunucuda iptal edilsin (oturum silinmeden ÖNCE başlar);
+        // ağ hatası çıkışı engellemez.
+        const refreshToken = get().session?.refreshToken;
+        if (refreshToken) {
+          void logoutSession({ refreshToken }).catch(() => {});
+        }
         resetSessionScopedStores(get().session?.userId);
         set({
           status: "signed_out",
@@ -207,7 +213,7 @@ async function runSessionRefresh(refreshToken: string) {
       };
     });
   } catch (error) {
-    if (error instanceof AuthApiError && error.kind === "transient") {
+    if (isTransientRefreshError(error)) {
       set({ isSessionRefreshing: false });
       return;
     }
@@ -220,6 +226,12 @@ async function runSessionRefresh(refreshToken: string) {
       lastSessionRefreshAt: undefined
     });
   }
+}
+
+// B-12: yalnız gerçek ret (400/401/403...) oturumu düşürür; ağ/5xx ve
+// 408/429 (hız sınırı) geçicidir — oturum korunur.
+export function isTransientRefreshError(error: unknown) {
+  return error instanceof AuthApiError && (error.kind === "transient" || error.status === 429 || error.status === 408);
 }
 
 function resolveClientPlatform(): ClientPlatform {

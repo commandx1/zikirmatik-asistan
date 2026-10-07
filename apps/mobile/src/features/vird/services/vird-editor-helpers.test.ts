@@ -4,7 +4,9 @@ import {
   buildAutoVirdTitle,
   buildEditorSlotsFromPhase,
   buildLocalProgramFromTemplate,
+  buildPhasesFromEditorSlots,
   countDistinctDhikrRefs,
+  shouldActivateAfterSave,
   toLocalizedText,
   wouldExceedFreeDhikrLimit
 } from "./vird-editor-helpers";
@@ -178,5 +180,47 @@ describe("buildLocalProgramFromTemplate", () => {
     });
 
     expect(program.title).toEqual({ tr: "Vird Programı", en: "Vird Program" });
+  });
+});
+
+describe("shouldActivateAfterSave (M-22, MOB-VRD-15)", () => {
+  it("yeni program kaydedilince aktifleştirilir (Kaydet ve başlat)", () => {
+    expect(shouldActivateAfterSave(null, { status: "draft" })).toBe(true);
+  });
+  it("duraklatılmış/taslak programı düzenleyip kaydetmek yeniden aktifleştirmez", () => {
+    expect(shouldActivateAfterSave({ status: "paused" }, { status: "paused" })).toBe(false);
+    expect(shouldActivateAfterSave({ status: "draft" }, { status: "draft" })).toBe(false);
+  });
+  it("aktif programı düzenlemek yeniden aktifleştirme çağrısı yapmaz", () => {
+    expect(shouldActivateAfterSave({ status: "active" }, { status: "active" })).toBe(false);
+  });
+  it("önceden aktif yerel program sunucuya ilk yazılışta taslak dönerse aktifleştirilir", () => {
+    expect(shouldActivateAfterSave({ status: "active" }, { status: "draft" })).toBe(true);
+  });
+});
+
+describe("buildPhasesFromEditorSlots (MOB-VRD-06, MOB-VRD-10)", () => {
+  const item = (ref: string, target: number, isCustom = false) => ({ ref, isCustom, target });
+
+  it("kapalı dilimdeki zikirler programa girmez; tek faz 1. günden açık uçlu", () => {
+    const phases = buildPhasesFromEditorSlots(
+      { morning: [item("a", 33)], evening: [item("b", 10)] },
+      ["morning"]
+    );
+    expect(phases).toEqual([{ fromDay: 1, toDay: null, slots: { morning: [{ dhikrId: "a", target: 33 }] } }]);
+  });
+
+  it("hedef 0/negatif/NaN en az 1'e kıskaçlanır, ondalık aşağı yuvarlanır; özel zikir customDhikrId", () => {
+    const phases = buildPhasesFromEditorSlots(
+      { morning: [item("a", 0), item("b", -5), item("c", Number.NaN), item("d", 7.9), item("my", 3, true)] },
+      ["morning"]
+    );
+    expect(phases[0]!.slots.morning).toEqual([
+      { dhikrId: "a", target: 1 },
+      { dhikrId: "b", target: 1 },
+      { dhikrId: "c", target: 1 },
+      { dhikrId: "d", target: 7 },
+      { customDhikrId: "my", target: 3 }
+    ]);
   });
 });

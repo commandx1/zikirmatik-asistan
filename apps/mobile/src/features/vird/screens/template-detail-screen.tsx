@@ -43,7 +43,10 @@ export function TemplateDetailScreen({ templateKey }: Props) {
   const { t } = useTranslation("vird");
   const locale = useAppLocale();
   const { tokens } = useThemeTokens();
-  const premiumSheet = usePremiumSheet();
+  // B-22: çakışma modalından premium'a geçilip satın alma bitince bekleyen program aktifleştirilir.
+  const premiumResumeRef = useRef<() => void>(() => {});
+  const pendingPremiumProgramRef = useRef<VirdProgramLocal | null>(null);
+  const premiumSheet = usePremiumSheet({ onPremiumActivated: () => premiumResumeRef.current() });
 
   const authStatus = useAuthStore((state) => state.status);
   const isPremium = useProfileStore((state) => state.isPremium);
@@ -186,6 +189,24 @@ export function TemplateDetailScreen({ templateKey }: Props) {
     }
   };
 
+  premiumResumeRef.current = () => {
+    const program = pendingPremiumProgramRef.current;
+    pendingPremiumProgramRef.current = null;
+    if (!program) {
+      return;
+    }
+    void (async () => {
+      const result = await activateProgram(program);
+      if (result.ok) {
+        void trackEvent("template_started", { key: templateKey });
+        setNotice("started");
+        router.dismissTo("/vird");
+      } else {
+        setStartError(result.message || t("vird:templates.detail.startFailed"));
+      }
+    })();
+  };
+
   const handleKeepDraft = () => {
     setPendingSwap(null);
     setNotice("draft");
@@ -274,6 +295,7 @@ export function TemplateDetailScreen({ templateKey }: Props) {
         isSubmitting={isSwapSubmitting}
         onPauseAndStart={() => void handlePauseAndStart()}
         onUpgrade={() => {
+          pendingPremiumProgramRef.current = pendingSwap?.localProgram ?? null;
           setPendingSwap(null);
           premiumSheet.open();
         }}

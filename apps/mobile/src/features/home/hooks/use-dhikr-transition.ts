@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toDateKey, type LocalizedText } from '@zikirmatik/shared'
 import { useStableCallback } from '../../../hooks/use-stable-callback'
 import { getAppLocale } from '../../../i18n'
+import { useAuthPromptStore } from '../../../store/auth-prompt-store'
 import { useAuthStore } from '../../../store/auth-store'
 import { useDhikrStore } from '../../../store/dhikr-store'
 import { createDhikrLog } from '../../dhikrs/services/dhikr-logs-api-client'
@@ -10,7 +11,8 @@ import { findVerifiedActiveDhikrByTransliteration } from '../../dhikrs/services/
 import { createUserDhikr } from '../../dhikrs/services/user-dhikrs-api-client'
 import type { EsmaulHusnaItem, ZikirItem } from '../../focus/types'
 import { buildNextAutoFreeTitle } from '../services/free-mode-title'
-import { shouldConfirmUnsavedDhikrTransition } from '../services/unsaved-transition-guard'
+import { createOnceGate, validateFreeSaveDraft } from '../services/free-save-draft'
+import { hasUnsavedActiveProgress, shouldConfirmUnsavedDhikrTransition } from '../services/unsaved-transition-guard'
 import type { useFreeSaveForm } from './use-free-save-form'
 import { usePendingTransition } from './use-pending-transition'
 
@@ -66,10 +68,18 @@ export function useDhikrTransition({
   const addCustomDhikr = useDhikrStore(state => state.addCustomDhikr)
   const applySavedBackendLog = useDhikrStore(state => state.applySavedBackendLog)
   const setSyncError = useDhikrStore(state => state.setSyncError)
+  const markPersonalUnsaved = useDhikrStore(state => state.markPersonalUnsaved)
+  const openAuthPrompt = useAuthPromptStore(state => state.open)
   const freeCount = useDhikrStore(state => state.freeModeCount)
   const freeTarget = useDhikrStore(state => state.freeModeTarget)
   const authStatus = useAuthStore(state => state.status)
   const sessionUserId = useAuthStore(state => state.session?.userId)
+  const isMember = authStatus === 'authenticated' && Boolean(sessionUserId)
+  // B-49: a fast double tap on the free-save submit must create one dhikr.
+  const freeSubmitGate = useRef(createOnceGate()).current
+  useEffect(() => {
+    if (freeSave.isOpen) freeSubmitGate.release()
+  }, [freeSave.isOpen, freeSubmitGate])
 
   const [activeQuickDhikr, setActiveQuickDhikr] = useState(selectedDhikr ? dhikrDisplayName(selectedDhikr) : '')
   const [isSelectingEsmaDhikr, setIsSelectingEsmaDhikr] = useState(false)
@@ -193,7 +203,9 @@ export function useDhikrTransition({
         targetDhikrId,
         unsavedProgressDhikrIds,
         hasUnsavedFreeMode: !selectedDhikrId && freeCount > 0,
-        isLeavingFreeMode
+        isLeavingFreeMode,
+        currentCount: selectedDhikr ? selectedDhikr.current : freeCount,
+        isMember
       })
     )
   }
@@ -231,19 +243,17 @@ export function useDhikrTransition({
   const onEsmaResumeGuardCancel = useCallback(() => setEsmaResumePending(null), [])
 
   const onFreeSaveNameSubmit = useStableCallback(() => {
-    const trimmed = freeSave.nameDraft.trim()
-    if (!trimmed) {
-      freeSave.setError(t('home:errors.nameRequired'))
+    const draft = validateFreeSaveDraft({ name: freeSave.nameDraft, target: freeSave.targetDraft })
+    if (!draft.ok) {
+      freeSave.setError(t(draft.error === 'nameRequired' ? 'home:errors.nameRequired' : 'home:errors.targetInvalid'))
       return
     }
-    const parsedTarget =
-      freeSave.targetDraft.trim().length > 0 ? Number.parseInt(freeSave.targetDraft, 10) : undefined
-    if (parsedTarget !== undefined && (!Number.isFinite(parsedTarget) || parsedTarget <= 0)) {
-      freeSave.setError(t('home:errors.targetInvalid'))
+    if (!freeSubmitGate.enter()) {
       return
     }
+    const trimmed = draft.name
     const countToSave = freeCount
-    const targetToSave = parsedTarget ?? 0
+    const targetToSave = draft.target
     const transliteration = freeSave.transliterationDraft.trim() || undefined
     const meaning = freeSave.meaningDraft.trim() || undefined
 
@@ -260,11 +270,15 @@ export function useDhikrTransition({
     if (transitionAfterSave) {
       runDhikrTransition(transitionAfterSave)
     }
-    if (authStatus !== 'authenticated' || !sessionUserId) {
-      setSyncError(t('home:errors.loginRequiredToSavePermanently'))
+    if (!isMember || !sessionUserId) {
+      // M-02: the local dhikr is created; the sign-up prompt explains why it is device-only.
+      openAuthPrompt()
       return
     }
 
+    // B-7: until the server has it, the new dhikr is "unsaved" so a sync
+    // that does not know it yet can't drop it; a successful log clears the mark.
+    markPersonalUnsaved(createdId)
     save.setIsSavingLog(true)
     setSyncError(undefined)
     void createUserDhikr({ clientId: createdId, name: trimmed, transliteration, meaning, target: targetToSave })
@@ -332,7 +346,12 @@ export function useDhikrTransition({
     ui,
     pendingDhikrTransition: guard.pending,
     isSelectingEsmaDhikr,
-    hasUnsavedActiveDhikr: selectedDhikrId ? unsavedProgressDhikrIds.includes(selectedDhikrId) : freeCount > 0,
+    hasUnsavedActiveDhikr: hasUnsavedActiveProgress({
+      selectedDhikrId,
+      unsavedProgressDhikrIds,
+      currentCount: selectedDhikr ? selectedDhikr.current : freeCount,
+      isMember
+    }),
     activeFreeModeTitle,
     onEsmaPress
   }

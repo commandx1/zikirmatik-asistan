@@ -58,7 +58,7 @@ export function ProfileScreen() {
                 void trackEvent("widget_guide_opened", { from: "profile" });
               }}
               isAuthenticated={profile.isAuthenticated}
-              onPressLogout={profile.onLogout}
+              onPressLogout={profile.openLogoutConfirm}
               onPressSignIn={profile.goSignIn}
               onPressDeleteAccount={profile.openDeleteAccountModal}
               onChangeHapticsPattern={profile.onChangeHapticsPattern}
@@ -114,9 +114,20 @@ export function ProfileScreen() {
           onConfirm={notificationSettings.clearPushPrefsError}
           onCancel={notificationSettings.clearPushPrefsError}
         />
+        <ConfirmModal
+          visible={profile.isLogoutConfirmOpen}
+          title={t("profile:logoutConfirm.title")}
+          message={t("profile:logoutConfirm.message")}
+          confirmLabel={t("profile:sections.other.logout")}
+          cancelLabel={t("common:actions.cancel")}
+          destructive
+          onConfirm={() => void profile.onLogout()}
+          onCancel={profile.closeLogoutConfirm}
+        />
         <ProfileDeleteAccountModal
           visible={profile.isDeleteAccountModalOpen}
           isDeleting={profile.isDeletingAccount}
+          error={profile.deleteAccountError}
           onConfirm={profile.deleteAccount}
           onCancel={profile.closeDeleteAccountModal}
         />

@@ -9,6 +9,7 @@
 import type { CreateVirdProgramRequest, VirdProgram, VirdTodayResponse } from "@zikirmatik/shared";
 import { activateVirdProgram, createVirdProgram, fetchVirdPrograms, VirdApiError } from "./vird-api-client";
 import type { VirdProgramLocal } from "../types";
+import { scopeItemKey } from "./vird-day";
 import type { VirdServerTodaySnapshot } from "../../../store/vird-store";
 
 /** VirdProgramLocal'ın yalnızca sunucunun CreateVirdProgramRequest'inin
@@ -83,13 +84,14 @@ export function buildVirdTodaySnapshot(today: VirdTodayResponse, dateKey: string
     return undefined;
   }
 
+  const programId = today.program.id;
   const progress: Record<string, { count: number; target: number }> = {};
   for (const slotView of Object.values(today.slots)) {
     if (!slotView) {
       continue;
     }
     for (const item of slotView.items) {
-      progress[item.itemKey] = { count: item.count, target: item.target };
+      progress[scopeItemKey(programId, item.itemKey)] = { count: item.count, target: item.target };
     }
   }
 

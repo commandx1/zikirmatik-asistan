@@ -36,6 +36,30 @@ export function buildSessionItems(
   return items.filter((item) => key.slot !== "prayer" || item.prayerIndex === key.prayerIndex);
 }
 
+/**
+ * M-24: dokunuş anının gününe ait aynı item (itemKey günden bağımsızdır; sayım
+ * ve hedef ise o günün ilerlemesinden gelir). Gece yarısını geçen bir
+ * oturumda `current` önceki günün satırı olabilir — dokunuş yeni günün
+ * satırına yazılır. Item o günün fazında yoksa undefined.
+ */
+export function itemForDay(
+  program: VirdDayProgramLike,
+  dateKey: string,
+  key: VirdSessionKey,
+  itemKey: string,
+  progress: VirdDayProgressMap | undefined
+): VirdSessionItem | undefined {
+  return buildSessionItems(program, dateKey, key, progress).find((item) => item.itemKey === itemKey);
+}
+
+/** Sunucuya henüz yazılmamış bir (gün, item) — dirty haritasının girdisi. */
+export type VirdDirtyEntry = { key: string; dateKey: string; dayIndex: number; item: VirdSessionItem };
+
+/** Dirty anahtarı GÜN + item'dır: gece yarısı sonrası dünün yazılmamış sayımı bugünküyle karışmaz. */
+export function buildDirtyEntry(program: VirdDayProgramLike, dateKey: string, item: VirdSessionItem): VirdDirtyEntry {
+  return { key: `${dateKey}#${item.itemKey}`, dateKey, dayIndex: dayIndexFor(program, dateKey), item };
+}
+
 /** currentIndex'ten SONRAKİ ilk tamamlanmamış item'ın index'i (currentIndex'in
  * kendisi hariç, listenin sonunda başa sarar) — hiçbiri yoksa null. */
 export function pickNextIndex(items: VirdSessionItem[], currentIndex: number): number | null {

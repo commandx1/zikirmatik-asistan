@@ -33,6 +33,9 @@ export function useVirdReminderSync(): void {
   const setReminderPrefs = useVirdStore((state) => state.setReminderPrefs);
   // Notification texts come from i18n.t at schedule time: resync on language change.
   const locale = useProfileStore((s) => s.locale);
+  // A-07 + M-13: premium bitince vird hatırlatmaları durur (B-42); premium
+  // durumundaki her değişiklik (webhook/istemci uzlaşması) burada yeniden kurar.
+  const isPremium = useProfileStore((s) => s.isPremium);
 
   // activeProgram referansı yalnızca store'daki ilgili program gerçekten
   // değiştiğinde değişir (bkz. vird-store.ts upsertProgram/replaceFromServer);
@@ -44,6 +47,8 @@ export function useVirdReminderSync(): void {
       return null;
     }
     return {
+      // id: ilerleme anahtarları programa bağlı (M-23, bkz. scopeItemKey).
+      id: activeProgram.id,
       startDate: activeProgram.startDate,
       phases: activeProgram.phases,
       prayerSelection: activeProgram.prayerSelection
@@ -81,6 +86,7 @@ export function useVirdReminderSync(): void {
       program: programForScheduling,
       reminderPrefs,
       dayProgress,
+      isPremium,
       requestPermission: false
     }).catch(() => {});
 
@@ -94,6 +100,7 @@ export function useVirdReminderSync(): void {
           program: programForScheduling,
           reminderPrefs,
           dayProgress,
+          isPremium,
           requestPermission: false
         }).catch(() => {});
         void refreshCoords();
@@ -101,5 +108,5 @@ export function useVirdReminderSync(): void {
     });
 
     return () => subscription.remove();
-  }, [programForScheduling, reminderPrefs, dayProgress, refreshCoords, locale]);
+  }, [programForScheduling, reminderPrefs, dayProgress, refreshCoords, locale, isPremium]);
 }

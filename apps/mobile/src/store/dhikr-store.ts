@@ -56,7 +56,17 @@ type DhikrStore = {
   isHydratedFromBackend: boolean;
   lastSavedBackendLog?: BackendDhikrLog;
   syncError?: string;
-  selectDhikr: (id: string, aiContext?: Omit<AiDhikrContext, "dhikrId">) => void;
+  /** `opts.fallback`: item to add when `id` is not in the local catalog (B-26);
+   * `opts.target`: AI-recommended target applied on a fresh start (M-06). */
+  selectDhikr: (
+    id: string,
+    aiContext?: Omit<AiDhikrContext, "dhikrId">,
+    opts?: { fallback?: ZikirItem; target?: number }
+  ) => void;
+  /** Gün dönümü (M-01): seçili zikrin sayacı 0'dan başlar, kaydedilmemiş işareti düşer. */
+  startNewDay: (id: string) => void;
+  /** Sunucuya yazılamayan yerel kişisel zikri hidrasyondan korur (B-7). */
+  markPersonalUnsaved: (id: string) => void;
   clearSelectedDhikr: () => void;
   upsertPersonalDhikr: (item: {
     id: string;
@@ -224,6 +234,26 @@ function clearUnsavedSnapshot(
   };
 }
 
+function logDayKey(log: BackendDhikrLog) {
+  const day = typeof log.date === "string" ? log.date.slice(0, 10) : "";
+  return /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : toDateKey(new Date());
+}
+
+// Adds the fallback item when the id is not in the catalog (B-26) and applies a
+// recommended target (M-06) clamped like every other target change.
+function applyStartOptions(
+  items: ZikirItem[],
+  id: string,
+  opts: { fallback?: ZikirItem; target?: number } | undefined
+): ZikirItem[] {
+  const withItem = items.some((item) => item.id === id) || !opts?.fallback ? items : [opts.fallback, ...items];
+  if (!opts?.target || opts.target <= 0) {
+    return withItem;
+  }
+  const target = normalizeTarget(opts.target);
+  return withItem.map((item) => (item.id === id ? { ...item, target, current: Math.min(item.current, target) } : item));
+}
+
 export const useDhikrStore = create<DhikrStore>()(
   persist((set, get) => ({
     items: INITIAL_ITEMS,
@@ -239,12 +269,14 @@ export const useDhikrStore = create<DhikrStore>()(
     unsavedProgressSnapshots: {},
     isHydratedFromBackend: false,
     lastSavedBackendLog: undefined,
-    selectDhikr: (id, aiContext) => {
-    if (!get().items.some((item) => item.id === id)) {
+    selectDhikr: (id, aiContext, opts) => {
+    const known = get().items.some((item) => item.id === id);
+    if (!known && !opts?.fallback) {
       return;
     }
 
-    set({
+    set((state) => ({
+      items: applyStartOptions(state.items, id, opts),
       selectedDhikrId: id,
       activeAiContext: aiContext
         ? {
@@ -253,8 +285,24 @@ export const useDhikrStore = create<DhikrStore>()(
           }
         : undefined,
       selectedSource: undefined,
-    });
+    }));
   },
+  startNewDay: (id) =>
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === id
+          ? { ...item, current: 0, lastActivityLabel: getDhikrStoreText().notStarted(), lastActivityAt: undefined }
+          : item
+      ),
+      ...clearUnsavedSnapshot(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, id)
+    })),
+  markPersonalUnsaved: (id) =>
+    set((state) => {
+      const item = state.items.find((value) => value.id === id && value.source === "personal");
+      return item
+        ? markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, { ...item, current: 0 })
+        : {};
+    }),
   clearSelectedDhikr: () =>
     set({ selectedDhikrId: "", activeAiContext: undefined, selectedSource: undefined }),
   setSelectedSource: (source) => set({ selectedSource: source }),
@@ -413,7 +461,9 @@ export const useDhikrStore = create<DhikrStore>()(
           : item
       ),
       selectedDhikrId: state.selectedDhikrId === id ? "" : state.selectedDhikrId,
-      activeAiContext: state.activeAiContext?.dhikrId === id ? undefined : state.activeAiContext
+      activeAiContext: state.activeAiContext?.dhikrId === id ? undefined : state.activeAiContext,
+      // Fresh start: an old restore point must not bring the dropped count back.
+      ...clearUnsavedSnapshot(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, id)
     })),
   incrementSelected: () =>
     set((state) => {
@@ -447,25 +497,40 @@ export const useDhikrStore = create<DhikrStore>()(
     }),
   resetSelected: () =>
     set((state) => {
-      let changedItem: ZikirItem | undefined;
+      let resetItem: ZikirItem | undefined;
       const items = state.items.map((item) => {
         if (item.id !== state.selectedDhikrId) {
           return item;
         }
 
-        changedItem = item;
         const now = new Date();
-        return {
+        resetItem = {
           ...item,
           current: 0,
           lastActivityLabel: formatLastActivityLabel(now),
           lastActivityAt: now.toISOString()
         };
+        return resetItem;
       });
 
+      // M-05: reset is final — the restore point is the reset state itself, so
+      // "continue without saving" can't bring the pre-reset count back.
       return {
         items,
-        ...markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, changedItem)
+        ...(resetItem
+          ? {
+              unsavedProgressDhikrIds: addUnique(state.unsavedProgressDhikrIds, resetItem.id),
+              unsavedProgressSnapshots: {
+                ...state.unsavedProgressSnapshots,
+                [resetItem.id]: {
+                  current: 0,
+                  target: resetItem.target,
+                  lastActivityLabel: resetItem.lastActivityLabel,
+                  lastActivityAt: resetItem.lastActivityAt
+                }
+              }
+            }
+          : {})
       };
     }),
   setSelectedCount: (count) =>
@@ -659,7 +724,15 @@ export const useDhikrStore = create<DhikrStore>()(
         };
       });
 
-      const nextItems = [...normalizedPersonal, ...readyItems];
+      // B-7: a local personal dhikr the server never got (failed save) must not
+      // vanish on the next sync while it is still marked unsaved.
+      const localOnly = state.items.filter(
+        (item) =>
+          item.source === "personal" &&
+          state.unsavedProgressDhikrIds.includes(item.id) &&
+          !personalItems.some((value) => value.id === item.id)
+      );
+      const nextItems = [...normalizedPersonal, ...localOnly, ...readyItems];
 
       return {
         items: nextItems,
@@ -683,19 +756,38 @@ export const useDhikrStore = create<DhikrStore>()(
             : item
         )
       : state.items;
+    const current = items.find((item) => item.id === targetId);
+    // Vird/circle logs live in their own stores: they say nothing about the
+    // main counter. Taps that landed while this save was in flight (count moved
+    // past the saved log) keep the dhikr unsaved, with the saved count as the
+    // new restore point (B-8).
+    const isForeignLog = Boolean(log.virdProgramId || log.circleId);
+    const movedPastSave = Boolean(current && current.current !== log.count);
+    const unsaved = isForeignLog
+      ? {}
+      : movedPastSave && current
+        ? {
+            unsavedProgressSnapshots: {
+              ...state.unsavedProgressSnapshots,
+              [current.id]: {
+                current: log.count,
+                target: current.target,
+                lastActivityLabel: current.lastActivityLabel,
+                lastActivityAt: current.lastActivityAt
+              }
+            }
+          }
+        : clearUnsavedSnapshot(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, targetId);
 
     return {
       items,
       // A saved log is an active day for the server streak too (vird
       // sessions reach the backend only through here, never through the
-      // counter), so the local fallback streak agrees with it.
-      activeDayKeys: log.count > 0 ? appendActiveDayKey(state.activeDayKeys, toDateKey(new Date())) : state.activeDayKeys,
+      // counter), so the local fallback streak agrees with it. Dated by the
+      // log's own day (a saved "yesterday" counts yesterday).
+      activeDayKeys: log.count > 0 ? appendActiveDayKey(state.activeDayKeys, logDayKey(log)) : state.activeDayKeys,
       lastSavedBackendLog: log,
-      ...clearUnsavedSnapshot(
-        state.unsavedProgressDhikrIds,
-        state.unsavedProgressSnapshots,
-        targetId
-      )
+      ...unsaved
     };
   }),
   setSyncError: (message) => set({ syncError: message }),

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useThemeTokens } from "@zikirmatik/ui";
-import { toDateKey, resolveLocalizedText } from "@zikirmatik/shared";
+import { toDateKey } from "@zikirmatik/shared";
 import type { CircleDetail } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
@@ -19,7 +19,7 @@ import { useCircleStore } from "../../../store/circle-store";
 
 import { trackEvent } from "../../../lib/analytics";
 import { closeCircle, fetchCircle, leaveCircle } from "../services/circle-api-client";
-import { buildCircleShareMessage } from "../services/circle-share";
+import { buildCircleShareMessage, circleProgressPercent, resolveCircleTitle } from "../services/circle-share";
 import { circleEndLabel } from "../services/circle-end-label";
 import { TEST_IDS } from "../../../test-ids";
 import { useAppLocale } from "../../../i18n";
@@ -75,8 +75,8 @@ export function CircleDetailScreen({ id }: { id: string }) {
     );
   }
 
-  const percent = storedCircle.goalCount > 0 ? Math.min(100, Math.round((storedCircle.totalCount / storedCircle.goalCount) * 100)) : 0;
-  const title = storedCircle.name || resolveLocalizedText(storedCircle.dhikr.name, locale);
+  const percent = circleProgressPercent(storedCircle.totalCount, storedCircle.goalCount);
+  const title = resolveCircleTitle(storedCircle, locale);
 
   const handleShare = async () => {
     void trackEvent("circle_share_pressed");

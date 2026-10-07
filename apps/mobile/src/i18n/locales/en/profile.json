@@ -66,6 +66,10 @@
     "minutePickerTitle": "Select Minute",
     "invalidTime": "Please enter a valid time (00-23 / 00-59)."
   },
+  "logoutConfirm": {
+    "title": "Sign out?",
+    "message": "You'll continue as a guest; your data stays saved in your account."
+  },
   "deleteAccountModal": {
     "warning": "⚠️  This action cannot be undone",
     "title": "Delete Your Account",
@@ -90,6 +94,7 @@
     "manageSubscriptionFailed": "Couldn't open the subscription management screen.",
     "storeOpenFailed": "Couldn't open the store page.",
     "noEmailApp": "It looks like you don't have a default email app on your device.",
+    "deleteAccountFailed": "Couldn't delete the account. Please try again.",
     "reminderTimeUpdateFailed": "Couldn't update the time. Please try again.",
     "pushPrefsUpdateFailed": "Couldn't update the notification preference. Please try again."
   },
@@ -103,7 +108,7 @@
       },
       "circle": {
         "title": "Start a Dhikr Circle",
-        "description": "Reach a shared goal with your loved ones through dhikr."
+        "description": "10 circles, 200 members"
       },
       "aiCredits": {
         "title": "AI Guide Credits",

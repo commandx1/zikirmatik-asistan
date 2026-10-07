@@ -15,7 +15,8 @@ export type CircleDhikrSnapshot = {
 };
 
 export type CirclePreview = {
-  name: string;
+  /** null: sunucu varsayılan ad yazmaz; istemci zikrin adını kendi dilinde gösterir. */
+  name: string | null;
   dhikr: CircleDhikrSnapshot;
   goalCount: number;
   totalCount: number;

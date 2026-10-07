@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildDirtyEntry,
   buildSessionItems,
   buildSessionLogPayload,
   buildVirdLogFields,
+  itemForDay,
   nextIncompleteSession,
   pickNextIndex,
   remainingReps,
@@ -270,5 +272,27 @@ describe("buildSessionLogPayload", () => {
     });
     expect(payload.isCompleted).toBe(false);
     expect(payload.count).toBe(0);
+  });
+});
+
+describe("M-24: gece yarısını geçen seans, dokunuş anının gününe yazar (MOB-VSE-14)", () => {
+  const key = { slot: "morning", prayerIndex: null } as const;
+  const itemKey = `morning:0:${dhikrId}`;
+
+  it("itemForDay: aynı item, hedef/sayım o günün ilerlemesinden", () => {
+    const yesterday = itemForDay(program, "2026-01-01", key, itemKey, { [itemKey]: { count: 33, target: 33, completed: true } });
+    const today = itemForDay(program, "2026-01-02", key, itemKey, undefined);
+    expect(yesterday).toMatchObject({ count: 33, completed: true });
+    expect(today).toMatchObject({ count: 0, completed: false });
+    expect(itemForDay(program, "2026-01-02", key, "morning:0:baska", undefined)).toBeUndefined();
+  });
+
+  it("buildDirtyEntry: iki gün ayrı girdi (kendi tarihi + dayIndex'i ile), birbirini ezmez", () => {
+    const item = itemForDay(program, "2026-01-01", key, itemKey, undefined)!;
+    const a = buildDirtyEntry(program, "2026-01-01", item);
+    const b = buildDirtyEntry(program, "2026-01-02", item);
+    expect(a.key).not.toBe(b.key);
+    expect([a.dayIndex, b.dayIndex]).toEqual([1, 2]);
+    expect([a.dateKey, b.dateKey]).toEqual(["2026-01-01", "2026-01-02"]);
   });
 });

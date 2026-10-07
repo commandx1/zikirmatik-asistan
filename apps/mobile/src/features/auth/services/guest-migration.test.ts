@@ -2,7 +2,15 @@ import { describe, expect, it, vi } from "vitest";
 import type { VirdProgram } from "@zikirmatik/shared";
 import type { GuestMigrationSnapshot, GuestVirdSnapshot } from "../../../store/guest-migration-store";
 import type { VirdProgramLocal } from "../../vird/types";
-import { planGuestMigration, planVirdMigration, type GuestMigrationBackendState } from "./guest-migration";
+import { useDhikrStore } from "../../../store/dhikr-store";
+import {
+  captureGuestMigrationSnapshot,
+  clearMigratedFreeMode,
+  freeModeSnapshotItem,
+  planGuestMigration,
+  planVirdMigration,
+  type GuestMigrationBackendState
+} from "./guest-migration";
 
 vi.mock("../../../i18n", () => ({
   i18n: {
@@ -373,7 +381,7 @@ describe("planVirdMigration", () => {
     const vird = makeVirdSnapshot({
       dayProgress: {
         [DATE_KEY]: {
-          "morning:0:custom-1": { count: 20, target: 33, completed: false }
+          "local-program-1|morning:0:custom-1": { count: 20, target: 33, completed: false }
         }
       }
     });
@@ -402,7 +410,7 @@ describe("planVirdMigration", () => {
     const vird = makeVirdSnapshot({
       dayProgress: {
         [DATE_KEY]: {
-          [`prayer:2:${VERIFIED_ID}`]: { count: 10, target: 10, completed: true }
+          [`local-program-1|prayer:2:${VERIFIED_ID}`]: { count: 10, target: 10, completed: true }
         }
       }
     });
@@ -442,5 +450,79 @@ describe("planVirdMigration", () => {
     });
 
     expect(planVirdMigration(vird, []).createVirdProgressLogs).toEqual([]);
+  });
+});
+
+describe("M-19 free-mode migration", () => {
+  it("MOB-GIR-19: builds a personal 'Serbest' item carrying the count; nothing at 0", () => {
+    const now = new Date(2026, 1, 14, 10);
+    const item = freeModeSnapshotItem(12, 0, now, "Serbest");
+
+    expect(item).toMatchObject({ source: "personal", name: "Serbest", current: 12, target: 0, isFavorite: false });
+    expect(item?.id.startsWith("personal-serbest-")).toBe(true);
+    expect(freeModeSnapshotItem(0, 33, now, "Serbest")).toBeNull();
+  });
+
+  it("plans a personal dhikr (named explicitly) plus today's log for the free item", () => {
+    const item = freeModeSnapshotItem(12, 33, new Date(2026, 1, 14, 10), "Serbest")!;
+    const plan = planGuestMigration(makeSnapshot([item]), makeBackend());
+
+    expect(plan.createUserDhikrs).toEqual([
+      expect.objectContaining({ clientId: item.id, name: "Serbest", target: 33 })
+    ]);
+    expect(plan.createLogs).toEqual([
+      expect.objectContaining({ customDhikrId: item.id, count: 12, date: DATE_KEY })
+    ]);
+  });
+
+  it("capture includes the free-mode count as a Serbest item and clearMigratedFreeMode drops it once", () => {
+    useDhikrStore.getState().resetSessionScoped();
+    useDhikrStore.setState({ items: [], freeModeCount: 9, freeModeTarget: 0 });
+
+    const snapshot = captureGuestMigrationSnapshot();
+    expect(snapshot?.freeModeCount).toBe(9);
+    expect(snapshot?.items.find((i) => i.current === 9)).toMatchObject({ source: "personal", name: "home:freeMode.label" });
+
+    clearMigratedFreeMode(snapshot!);
+    expect(useDhikrStore.getState().freeModeCount).toBe(0);
+  });
+
+  it("clearMigratedFreeMode keeps taps made after the snapshot was taken", () => {
+    useDhikrStore.getState().resetSessionScoped();
+    useDhikrStore.setState({ items: [], freeModeCount: 9 });
+    const snapshot = captureGuestMigrationSnapshot()!;
+    useDhikrStore.setState({ freeModeCount: 12 });
+
+    clearMigratedFreeMode(snapshot);
+    expect(useDhikrStore.getState().freeModeCount).toBe(12);
+  });
+});
+
+describe("B-14 vird progress logs are not duplicated on a retry", () => {
+  const progressVird = () =>
+    makeVirdSnapshot({
+      dayProgress: { [DATE_KEY]: { "local-program-1|morning:0:custom-1": { count: 20, target: 33, completed: false } } }
+    });
+
+  it("first run plans the log; a re-run after a partial success (log already on the server) does not", () => {
+    const vird = progressVird();
+    const server = makeServerVirdProgram({ id: "server-1", clientId: vird.programs[0]!.clientId });
+
+    expect(planVirdMigration(vird, [server]).createVirdProgressLogs).toHaveLength(1);
+
+    const written = {
+      _id: "l1",
+      userId: "user-1",
+      customDhikrId: "custom-1",
+      count: 20,
+      targetCount: 33,
+      date: DATE_KEY,
+      isCompleted: false,
+      virdProgramId: "server-1",
+      virdSlot: "morning" as const,
+      virdDayIndex: 1
+    };
+    expect(planVirdMigration(vird, [server], [written]).createVirdProgressLogs).toHaveLength(0);
+    expect(planVirdMigration(vird, [server], [{ ...written, count: 5 }]).createVirdProgressLogs).toHaveLength(1);
   });
 });

@@ -1,7 +1,14 @@
 // Detox e2e seçicileri (apps/mobile/e2e). Değerler e2e/helpers.js'te de
 // düz string olarak kullanılır — değiştirirsen ikisini birlikte güncelle.
 export const TEST_IDS = {
-  auth: { google: "e2e-auth-google", guest: "e2e-auth-guest", close: "e2e-auth-close" },
+  auth: {
+    google: "e2e-auth-google",
+    guest: "e2e-auth-guest",
+    close: "e2e-auth-close",
+    // Misafir Kaydet → "Kalıcı kaydetmek için giriş yap" istemi (auth-prompt-modal.tsx).
+    promptConfirm: "e2e-auth-prompt-confirm",
+    promptCancel: "e2e-auth-prompt-cancel",
+  },
   tabs: {
     home: "e2e-tab-home",
     focus: "e2e-tab-focus",
@@ -27,8 +34,31 @@ export const TEST_IDS = {
     saveNameInput: "e2e-home-save-name-input",
     saveTargetInput: "e2e-home-save-target-input",
     saveNameSubmit: "e2e-home-save-name-submit",
+    // Kaydet/geçiş hataları ve bildirimler (B-1): ana sayfa toast'ı.
+    toast: "e2e-home-toast",
+    // Sıfırla onay modalı (SAY-15/16).
+    resetConfirm: "e2e-home-reset-confirm",
+    resetCancel: "e2e-home-reset-cancel",
+    // Kaydedilmemiş zikir geçiş modalı (KAY-11/15/17).
+    unsavedSaveContinue: "e2e-home-unsaved-save-continue",
+    unsavedDiscard: "e2e-home-unsaved-discard",
+    unsavedCancel: "e2e-home-unsaved-cancel",
+    // Devam/sıfırdan modalı (KAY-19/20/21, M-06).
+    resumeContinue: "e2e-home-resume-continue",
+    resumeFresh: "e2e-home-resume-fresh",
+    // Gün dönümü "dünkü N'i kaydet / at" (M-01).
+    dayRolloverSave: "e2e-home-day-rollover-save",
+    dayRolloverDiscard: "e2e-home-day-rollover-discard",
   },
-  profile: { name: "e2e-profile-name", signIn: "e2e-profile-sign-in", scroll: "e2e-profile-scroll" },
+  profile: {
+    name: "e2e-profile-name",
+    signIn: "e2e-profile-sign-in",
+    scroll: "e2e-profile-scroll",
+    logout: "e2e-profile-logout",
+    deleteAccount: "e2e-profile-delete-account",
+    deleteConfirm: "e2e-profile-delete-confirm",
+    deleteError: "e2e-profile-delete-error",
+  },
   collections: {
     card: "e2e-collection-card",
     filterChip: "e2e-collection-filter-chip",
@@ -76,6 +106,10 @@ export const TEST_IDS = {
     // story-vird.e2e.js'in tüm gerçek dataset'i (klasik-sabah ~20 zikir, biri 100
     // hedefli) tek tek saymadan "gün tamamlandı" durumuna ulaşması için eklendi.
     sessionSkip: "e2e-vird-session-skip",
+    // "Diğer programlar" satırı: duraklat/aktifleştir düğmesi ve süresi dolmuş programda
+    // "Kopyala ve yeniden başlat" (M-22, A-23 Detox TODO).
+    programToggle: "e2e-vird-program-toggle",
+    programCloneRestart: "e2e-vird-program-clone-restart",
   },
   circle: {
     hub: "e2e-circle-hub",
@@ -98,6 +132,8 @@ export const TEST_IDS = {
     // kapatma ikonu testID'siz idi — story-circle.e2e.js için eklendi (bkz. rapor).
     sessionStart: "e2e-circle-session-start",
     sessionClose: "e2e-circle-session-close",
+    // Hedefe ulaşınca / kapatılınca sayaç yerine görünen kilit kartı (M-11, MOB-HAL-24/25).
+    sessionLocked: "e2e-circle-session-locked",
   },
   premium: { sheet: "e2e-premium-sheet", scroll: "e2e-premium-scroll", close: "e2e-premium-close" },
   aiGuide: {

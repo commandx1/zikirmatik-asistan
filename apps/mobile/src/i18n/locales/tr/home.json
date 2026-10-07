@@ -53,6 +53,12 @@
     "targetLabel": "Hedef (opsiyonel)",
     "targetPlaceholder": "Boş bırakırsan sonsuz"
   },
+  "dayRollover": {
+    "title": "Dünkü zikrin kaydedilmemiş",
+    "message": "{{name}} için dün {{count}} çekmiştin ve kaydetmemiştin. Bugün 0'dan başlıyorsun.",
+    "save": "Dünkü {{count}}'i kaydet",
+    "discard": "At"
+  },
   "toast": {
     "tapAnywhere": "Ekranın her yerine dokunarak sayabilirsin",
     "tapCircleOnly": "Sadece yuvarlağa basınca sayar",

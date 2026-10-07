@@ -91,6 +91,7 @@
     "otherProgramsHeading": "Other programs",
     "pauseAction": "Pause",
     "resumeAction": "Activate",
+    "cloneAndRestartAction": "Copy and restart",
     "deleteAction": "Delete",
     "deleteConfirmTitle": "Delete program",
     "deleteConfirmMessage": "Are you sure you want to delete \"{{title}}\"?"
@@ -188,6 +189,8 @@
     "serviceUnavailable": "The vird service is unavailable right now. Please try again later.",
     "serviceUnreachable": "Check your internet connection and try again.",
     "notActivatable": "Only a draft or paused program can be activated.",
-    "phasesRequired": "A manual vird program needs at least one dhikr."
+    "phasesRequired": "A manual vird program needs at least one dhikr.",
+    "phasesInvalid": "Phases must start on day 1 with no gaps or overlaps.",
+    "programExpired": "This program has ended. You can copy it and start again."
   }
 }

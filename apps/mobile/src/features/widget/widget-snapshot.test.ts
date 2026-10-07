@@ -453,7 +453,7 @@ describe("buildWidgetSnapshot", () => {
         virdStore: virdStoreFull({
           programs: [program],
           activeProgramId: program.id,
-          dayProgress: { "2026-09-21": { "morning:0:d1": { count: 10, target: 10, completed: true } } }
+          dayProgress: { "2026-09-21": { "p1|morning:0:d1": { count: 10, target: 10, completed: true } } }
         })
       };
       const vird = buildWidgetSnapshot(raw, now).vird;
@@ -521,7 +521,7 @@ describe("buildWidgetSnapshot", () => {
         virdStore: virdStoreFull({
           programs: [program],
           activeProgramId: program.id,
-          dayProgress: { "2026-09-21": { "morning:0:d1": { count: 10, target: 10, completed: true } } }
+          dayProgress: { "2026-09-21": { "p1|morning:0:d1": { count: 10, target: 10, completed: true } } }
         })
       };
       const vird = buildWidgetSnapshot(raw, now).vird;
@@ -540,7 +540,7 @@ describe("buildWidgetSnapshot", () => {
         virdStore: virdStoreFull({
           programs: [program],
           activeProgramId: program.id,
-          dayProgress: { "2026-09-20": { "morning:0:d1": { count: 10, target: 10, completed: true } } }
+          dayProgress: { "2026-09-20": { "p1|morning:0:d1": { count: 10, target: 10, completed: true } } }
         })
       };
       const vird = buildWidgetSnapshot(raw, now).vird;

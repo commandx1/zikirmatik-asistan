@@ -12,6 +12,16 @@ describe("buildDhikrLogPayload", () => {
     vi.useRealTimers();
   });
 
+  it("M-01 / MOB-HID-06: an explicit date (yesterday's unsaved count) wins over today", () => {
+    const payload = buildDhikrLogPayload(
+      { id: OBJECT_ID, target: 33, isFavorite: false },
+      { userId: "u1", displayName: "x", count: 30, isCompleted: false, date: "2026-09-23" }
+    );
+
+    expect(payload.date).toBe("2026-09-23");
+    expect(payload.count).toBe(30);
+  });
+
   it("katalog (ObjectId) zikri dhikrId ile, varsayılan manual kaynakla gönderir", () => {
     const payload = buildDhikrLogPayload(
       { id: OBJECT_ID, target: 33, arabic: "سبحان الله", isFavorite: true },

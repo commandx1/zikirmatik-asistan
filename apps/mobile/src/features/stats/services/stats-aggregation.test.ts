@@ -52,6 +52,11 @@ describe("buildLocalStatsSummary", () => {
     expect(summary.totals.averagePerActiveDay).toBe(9); // round(18 / 2 active days)
   });
 
+  it("yerel özet kaynak dağılımı 'circle' anahtarını da taşır (A-14)", () => {
+    expect(Object.keys(summary.sourceBreakdown).sort()).toEqual(["ai", "circle", "manual", "notification", "special-day"]);
+    expect(summary.sourceBreakdown.circle).toBe(0);
+  });
+
   it("groups activity by day and reports today's total", () => {
     expect(summary.periods.today).toBe(15); // item1 (5) + item2 (10), both dated today
     expect(summary.streak.totalDaysActive).toBe(2); // today + yesterday

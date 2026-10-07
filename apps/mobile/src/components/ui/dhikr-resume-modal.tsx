@@ -10,9 +10,10 @@ type Props = {
   onContinue: () => void
   onFresh: () => void
   onCancel: () => void
+  testIDs?: { continue?: string; fresh?: string }
 }
 
-export function DhikrResumeModal({ visible, dhikrName, currentCount, onContinue, onFresh, onCancel }: Props) {
+export function DhikrResumeModal({ visible, dhikrName, currentCount, onContinue, onFresh, onCancel, testIDs }: Props) {
   const { tokens } = useThemeTokens()
   const { t } = useTranslation('components')
 
@@ -42,6 +43,7 @@ export function DhikrResumeModal({ visible, dhikrName, currentCount, onContinue,
           <View className='gap-2'>
             <Pressable
               onPress={onContinue}
+              testID={testIDs?.continue}
               className='h-11 items-center justify-center rounded-full border px-4'
               style={{
                 borderColor: withAlpha(tokens.accent, 0.42),
@@ -55,6 +57,7 @@ export function DhikrResumeModal({ visible, dhikrName, currentCount, onContinue,
 
             <Pressable
               onPress={onFresh}
+              testID={testIDs?.fresh}
               className='h-11 items-center justify-center rounded-full border px-4'
               style={{
                 borderColor: withAlpha(tokens.textPrimary, 0.2),

@@ -2,6 +2,7 @@
 // socketId YOK → basit spinner), 503 tekrar dene, kredi satın alma sonrası
 // devam, taslağı atma. Saf parçalar ../services/vird-ai-create-service.ts'de.
 import { useCallback, useRef, useState } from "react";
+import { createInFlightGuard } from "../../ai-shared/services/in-flight-guard";
 import { useTranslation } from "react-i18next";
 import type { VirdSlotKey } from "@zikirmatik/shared";
 import { useAppLocale } from "../../../i18n";
@@ -104,26 +105,37 @@ export function useVirdAiGenerate(credits: ReturnType<typeof useAiCredits>, onOp
     [applyRemainingCredits, authStatus, markInsufficient, onOpenPremiumSheet, t, userId]
   );
 
+  // B-23: isGenerating kredi ön kontrolü (await) bitince set ediliyordu →
+  // çift dokunuş 2 üretim = 6 kredi. Senkron ref ile kapatılır.
+  const inFlight = useRef(createInFlightGuard()).current;
+
   const submitGenerate = useCallback(async () => {
     if (isGenerating || slots.length === 0) {
       return;
     }
 
-    setPostPurchaseNotice(undefined);
-    setAiUnavailable(null);
-    setGenerationError(undefined);
-    setOffTopicMessage(undefined);
-
-    const flowId = createFlowId();
-    const payload = buildCreateAiVirdProgramPayload({ freeText, durationDays, slots, prayerSelection, locale }, flowId);
-
-    if (!(await ensureCreditsAvailable())) {
-      pendingGenerateRequestRef.current = payload;
+    if (!inFlight.acquire()) {
       return;
     }
+    try {
+      setPostPurchaseNotice(undefined);
+      setAiUnavailable(null);
+      setGenerationError(undefined);
+      setOffTopicMessage(undefined);
 
-    await executeGenerate(payload);
-  }, [durationDays, ensureCreditsAvailable, executeGenerate, freeText, isGenerating, locale, prayerSelection, slots]);
+      const flowId = createFlowId();
+      const payload = buildCreateAiVirdProgramPayload({ freeText, durationDays, slots, prayerSelection, locale }, flowId);
+
+      if (!(await ensureCreditsAvailable())) {
+        pendingGenerateRequestRef.current = payload;
+        return;
+      }
+
+      await executeGenerate(payload);
+    } finally {
+      inFlight.release();
+    }
+  }, [durationDays, ensureCreditsAvailable, executeGenerate, freeText, inFlight, isGenerating, locale, prayerSelection, slots]);
 
   const retryGenerateAfterUnavailable = useCallback(async () => {
     if (isGenerating) {
@@ -135,15 +147,22 @@ export function useVirdAiGenerate(credits: ReturnType<typeof useAiCredits>, onOp
       return;
     }
 
-    setPostPurchaseNotice(undefined);
-
-    if (!(await ensureCreditsAvailable())) {
-      pendingGenerateRequestRef.current = payload;
+    if (!inFlight.acquire()) {
       return;
     }
+    try {
+      setPostPurchaseNotice(undefined);
 
-    await executeGenerate(payload);
-  }, [ensureCreditsAvailable, executeGenerate, isGenerating]);
+      if (!(await ensureCreditsAvailable())) {
+        pendingGenerateRequestRef.current = payload;
+        return;
+      }
+
+      await executeGenerate(payload);
+    } finally {
+      inFlight.release();
+    }
+  }, [ensureCreditsAvailable, executeGenerate, inFlight, isGenerating]);
 
   const resumeGenerateAfterCreditPurchase = useCallback(async () => {
     if (isGenerating) {

@@ -1,7 +1,7 @@
 // Zikir Halkası paylaşım/davet yardımcıları — saf (RN import'suz), test
 // edilebilir mantık. Ekranlar (circle-detail-screen.tsx, circle-join-screen.tsx)
 // bu fonksiyonları kullanır.
-import { CIRCLE_CODE_RE, type CircleSummary } from "@zikirmatik/shared";
+import { CIRCLE_CODE_RE, resolveLocalizedText, type CircleSummary, type LocalizedText } from "@zikirmatik/shared";
 import type { CreateDhikrLogPayload } from "../../dhikrs/services/dhikr-logs-api-client";
 
 const SHARE_BASE_URL = "https://zikirmatik-asistan.vercel.app";
@@ -16,14 +16,28 @@ export function buildCircleShareMessage({
   code: string;
   locale: string;
 }): string {
-  // Site tek dilli (kökte TR); eski /tr/halka linkleri sitede 301 ile köke döner.
-  const link = `${SHARE_BASE_URL}/halka/${code}`;
+  // M-09: TR kökte (/halka/KOD), EN kullanıcı /en/halka/KOD.
+  const isTr = locale.startsWith("tr");
+  const link = `${SHARE_BASE_URL}${isTr ? "" : "/en"}/halka/${code}`;
 
-  if (locale.startsWith("tr")) {
+  if (isTr) {
     return `${name} zikir halkasına katıl!\n${link}\nKod: ${code}`;
   }
 
   return `Join the "${name}" dhikr circle!\n${link}\nCode: ${code}`;
+}
+
+/** Halka başlığı: ad yoksa (null) zikrin adı uygulama dilinde. */
+export function resolveCircleTitle(
+  circle: { name: string | null; dhikr: { name: LocalizedText } },
+  locale: "tr" | "en"
+): string {
+  return circle.name || resolveLocalizedText(circle.dhikr.name, locale);
+}
+
+/** İlerleme çubuğu yüzdesi: hedef aşılsa da en çok 100 (gerçek sayı ayrıca gösterilir). */
+export function circleProgressPercent(total: number, goal: number): number {
+  return goal > 0 ? Math.min(100, Math.round((total / goal) * 100)) : 0;
 }
 
 /**

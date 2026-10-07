@@ -22,7 +22,8 @@ export function buildDhikrLogPayload(
     displayName,
     count,
     isCompleted,
-    sourceContext = { source: 'manual' }
+    sourceContext = { source: 'manual' },
+    date
   }: {
     userId: string
     /** Only sent for personal dhikrs (`customDhikrName`). */
@@ -30,6 +31,8 @@ export function buildDhikrLogPayload(
     count: number
     isCompleted: boolean
     sourceContext?: DhikrLogSourceContext
+    /** Log day (YYYY-MM-DD); default today. M-01 saves yesterday's count under yesterday. */
+    date?: string
   }
 ): CreateDhikrLogPayload {
   const dhikrKey = isObjectId(item.id)
@@ -41,7 +44,7 @@ export function buildDhikrLogPayload(
     ...dhikrKey,
     count,
     targetCount: item.target,
-    date: toDateKey(new Date()),
+    date: date ?? toDateKey(new Date()),
     ...sourceContext,
     isCompleted,
     isFavorite: item.isFavorite
