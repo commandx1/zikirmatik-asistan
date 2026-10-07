@@ -283,7 +283,7 @@ export class AiCreditsService {
     promptHash: string,
     reason: AiCreditReason = AI_CREDIT_REASONS.RECOMMENDATION_DEBIT,
     amount = 1,
-  ) {
+  ): Promise<{ alreadyDebited: boolean }> {
     const existingDebit = await this.aiCreditLedgerModel
       .findOne({
         userId,
@@ -295,12 +295,12 @@ export class AiCreditsService {
 
     if (existingDebit) {
       this.assertPromptHashMatches(existingDebit.promptHash, promptHash);
-      return;
+      return { alreadyDebited: true };
     }
 
     const creditState = await this.ensureCreditState(userId, isPremium);
     if (creditState.balance >= amount) {
-      return;
+      return { alreadyDebited: false };
     }
 
     throw new ForbiddenException({

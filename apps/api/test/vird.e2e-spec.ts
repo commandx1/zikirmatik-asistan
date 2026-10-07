@@ -931,7 +931,7 @@ describe('Vird Programı (e2e)', () => {
             .expect(200),
         ).virdCurrentStreak;
 
-      it('VPR-12: son yazan kazanır; daha düşük sayı günü tamamlanmamışa çevirir', async () => {
+      it('VPR-12: tamamlanmış gün daha düşük sayımla geri dönmez, seri düşmez', async () => {
         const { user, dhikrId } = await setup();
         const id = idOf(
           await post(user, createManualPayload([dhikrId])).expect(201),
@@ -939,12 +939,14 @@ describe('Vird Programı (e2e)', () => {
         await activate(user, id).expect(201);
         await writeLog(user, dhikrId, id, 10);
         expect((await todayView(user, id)).isDayComplete).toBe(true);
+        expect(await streak(user)).toBe(1);
         await writeLog(user, dhikrId, id, 3);
-        expect((await todayView(user, id)).isDayComplete).toBe(false);
+        expect((await todayView(user, id)).isDayComplete).toBe(true);
+        expect(await streak(user)).toBe(1);
       });
 
       it.each(['draft', 'paused', 'completed'])(
-        'VPR-13: %s programa yazılan vird logu ilerleme ve vird serisi üretir',
+        'VPR-13: %s programa yazılan log kabul edilir, genel seriye sayılır; vird ilerleme/serisi yazılmaz',
         async (status) => {
           const { user, dhikrId } = await setup();
           const id = idOf(
@@ -956,8 +958,15 @@ describe('Vird Programı (e2e)', () => {
             .model<VirdDayProgressDocument>('VirdDayProgress')
             .findOne({ programId: new Types.ObjectId(id) })
             .lean();
-          expect(progress?.isDayComplete).toBe(true);
-          expect(await streak(user)).toBe(1);
+          expect(progress).toBeNull();
+          expect(await streak(user)).toBe(0);
+          const general = data<{ currentStreak: number }>(
+            await request(t.http)
+              .get(`/v1/streaks/${user.userId}`)
+              .set(bearer(user.accessToken))
+              .expect(200),
+          );
+          expect(general.currentStreak).toBe(1);
         },
       );
     });

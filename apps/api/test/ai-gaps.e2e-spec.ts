@@ -313,7 +313,7 @@ describe('AI boşlukları (e2e)', () => {
       expect(await programs(user)).toHaveLength(1);
     });
 
-    it('AIV-06: taslak silindikten sonra aynı flowId → yeni program kredisiz üretilir (mevcut davranış, ürün sorusu B7)', async () => {
+    it('AIV-06: taslak silindikten sonra aynı flowId → 409, kredisiz üretim yok', async () => {
       const user = await newUser();
       await seedThree();
       const payload = body();
@@ -321,11 +321,10 @@ describe('AI boşlukları (e2e)', () => {
         await create(user, payload).expect(201),
       );
       await t.model('VirdProgram').deleteMany({});
-      const second = data<{ remainingCredits: number; programId: string }>(
-        await create(user, payload).expect(201),
-      );
-      expect(second.programId).not.toBe(first.programId);
-      expect(second.remainingCredits).toBe(first.remainingCredits);
+      const res = await create(user, payload).expect(409);
+      expect(JSON.stringify(res.body)).toContain('AI_FLOW_ALREADY_USED');
+      expect(await programs(user)).toHaveLength(0);
+      expect(first.remainingCredits).toBeDefined();
       expect(
         await t.model('AiCreditLedger').countDocuments({
           userId: new Types.ObjectId(user.userId),

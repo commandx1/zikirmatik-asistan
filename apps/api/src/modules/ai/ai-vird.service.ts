@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
 import { Dhikr } from '../dhikrs/schemas/dhikr.schema';
@@ -106,7 +110,7 @@ export class AiVirdService {
       },
     });
 
-    await this.aiCreditsService.ensureCreditAccessForFlow(
+    const access = await this.aiCreditsService.ensureCreditAccessForFlow(
       userId,
       flowId,
       user.isPremium,
@@ -131,6 +135,15 @@ export class AiVirdService {
         program: await this.buildPreview(existingDraft, locale),
         remainingCredits: credits.balance,
       };
+    }
+
+    // AIV-06: kredisi zaten düşülmüş ama taslağı silinmiş flowId yeniden
+    // kullanılamaz (kredisiz üretim açığı).
+    if (access?.alreadyDebited) {
+      throw new ConflictException({
+        code: 'AI_FLOW_ALREADY_USED',
+        message: 'Bu istek daha önce kullanıldı. Yeni bir istek başlat.',
+      });
     }
 
     const recentDhikrIds =

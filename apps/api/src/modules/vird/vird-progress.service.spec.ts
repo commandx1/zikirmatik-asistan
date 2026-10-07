@@ -4,7 +4,11 @@ import { VirdProgressService } from './vird-progress.service';
 
 describe('VirdProgressService', () => {
   const virdProgramModel = { findOne: jest.fn(), updateMany: jest.fn() };
-  const virdDayProgressModel = { findOneAndUpdate: jest.fn(), find: jest.fn() };
+  const virdDayProgressModel = {
+    findOneAndUpdate: jest.fn(),
+    find: jest.fn(),
+    exists: jest.fn(),
+  };
   const dhikrLogModel = { find: jest.fn() };
   const streaksService = {
     recalculateVirdForUser: jest.fn(),
@@ -42,6 +46,9 @@ describe('VirdProgressService', () => {
     });
     virdDayProgressModel.findOneAndUpdate.mockReset();
     virdDayProgressModel.find.mockReset();
+    virdDayProgressModel.exists
+      .mockReset()
+      .mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
     dhikrLogModel.find.mockReset();
     streaksService.recalculateVirdForUser
       .mockReset()
@@ -64,6 +71,7 @@ describe('VirdProgressService', () => {
 
   const routineProgram = {
     _id: programId,
+    status: 'active',
     startDate: '2026-01-01',
     prayerSelection: [1, 2, 3, 4, 5],
     phases: [
@@ -76,6 +84,17 @@ describe('VirdProgressService', () => {
   };
 
   describe('applyLogWrite', () => {
+    it('VPR-13: does not write progress for a non-active program', async () => {
+      mockProgramLookup({ ...routineProgram, status: 'paused' });
+      await service.applyLogWrite({
+        userId,
+        virdProgramId: programId,
+        date: '2026-01-05',
+      });
+      expect(virdDayProgressModel.findOneAndUpdate).not.toHaveBeenCalled();
+      expect(streaksService.recalculateVirdForUser).not.toHaveBeenCalled();
+    });
+
     it('does nothing when the program cannot be found for this user', async () => {
       mockProgramLookup(null);
 

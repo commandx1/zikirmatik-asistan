@@ -57,3 +57,11 @@ Katalogdaki ❓ soruların cevapları. Testler bu kararlara göre yazılır.
 - **MOB-SAY-32** Misafirde elle girilen sayı (setSelectedCount) ömür boyu toplam zikre ve toplam sayı rozetlerine sayılır (üye ile aynı kural).
 - **MOB-VRD-25** Vird şablonları şablon bazında: klasik şablonlar ücretsiz ve rozetsiz, Ramazan/Esma/Kandil yolculukları "Premium" rozetli (kod doğru; eski doc güncellenecek).
 - **B-41 / B-50 / B-58 (teknik)** Vird seansında sıfırlama ön plan senkronunda geri gelmez; 7. gün teklifi yalnız ana sekmede açılır; web halka sayfası canonical'ı ana sayfaya işaret etmez (noindex ile tutarlı).
+- **Halka sıklığı (yük testi sonrası)** Oturumda katkı gönderimi 3 sn → 5 sn, detay yenileme 5 sn → 10 sn; kapanışta ve hedefe ulaşınca anında gönderim sürer.
+- **Son dalga (2026-10-07)** Uygulanmamış kararlar + bug'lar, performans (seri yalnız günün ilk sayımlı kaydında; special-days/home hafifletme), kalan test boşlukları — hepsi onaylı.
+- **VPR-12** Vird'de tamamlanmış gün, sonradan gelen daha düşük sayımla tamamlanmamışa dönmez (ana sayaç A-13 ile aynı).
+- **VPR-13** Aktif olmayan (draft/paused/completed) vird programına gelen kayıt kabul edilir, kişisel kayıt ve genel seriye sayılır; vird ilerlemesi ve vird serisi yazılmaz.
+- **AIV-06 (teknik/güvenlik)** Silinen AI vird taslağının flowId'si tekrar kullanılamaz (kredisiz üretim açığı) → 409.
+- **Admin dhikr yanıtları (teknik)** POST/PATCH /v1/dhikrs yanıtı embedding vektörünü döndürmez.
+- **Halka oturumu modeli (2026-10-07, "Halka sıklığı" kararının yerine geçer)** Periyodik otomatik gönderim/yoklama YOK. "Gönder" butonu (yanıtla toplam da yenilenir) + "Toplamı yenile" butonu + "Gönderilmeyi bekleyen: N" göstergesi. Otomatik gönderim yalnız: oturumdan çıkış, uygulama arka plana geçiş, hedefe ulaşma (M-11). Oturuma girişte bir kez yükleme.
+- **Halka sayaç ekranında dua metni** Oturum ekranında zikrin Arapçası, okunuşu (transliteration) ve anlamı ana sayaçtaki gibi gösterilir (CircleDhikrSnapshot zaten taşıyor; API değişikliği yok).

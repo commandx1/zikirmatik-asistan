@@ -165,6 +165,31 @@ describe('Dhikrs (e2e)', () => {
     }
   });
 
+  it('admin POST/PATCH yanıtında embedding vektörü dönmez', async () => {
+    const localized = { tr: 'emb-tr', en: 'emb-en' };
+    const ADMIN = { 'x-admin-secret': 'test-admin-secret' };
+    const created = await request(t.http)
+      .post('/v1/dhikrs')
+      .set(ADMIN)
+      .send({
+        nameArabic: 'سبحان الله',
+        name: localized,
+        transliteration: localized,
+        meaning: localized,
+        virtue: localized,
+        source: localized,
+      })
+      .expect(201);
+    expect(JSON.stringify(created.body)).not.toContain('"embedding"');
+    const id = data<{ _id: string }>(created)._id;
+    const patched = await request(t.http)
+      .patch(`/v1/dhikrs/${id}`)
+      .set(ADMIN)
+      .send({ name: { tr: 'yeni-tr', en: 'yeni-en' } })
+      .expect(200);
+    expect(JSON.stringify(patched.body)).not.toContain('"embedding"');
+  });
+
   // API-DHK-11
   it('PATCH/DELETE bilinmeyen id → 404', async () => {
     const unknown = '64b000000000000000000001';

@@ -36,7 +36,9 @@ export class DhikrsService {
       canonicalKey: canonicalKeyFromArabic(payload.nameArabic),
       ...(embeddingFields ?? {}),
     });
-    return created.toObject();
+    const obj = created.toObject();
+    delete obj.embedding;
+    return obj;
   }
 
   async findAll(query: QueryDhikrsDto) {
@@ -111,7 +113,12 @@ export class DhikrsService {
         await this.dhikrModel
           .updateOne({ _id: objectId }, { $set: embeddingFields })
           .exec();
-        return { ...dhikr, ...embeddingFields };
+        const merged: Record<string, unknown> = {
+          ...dhikr,
+          ...embeddingFields,
+        };
+        delete merged.embedding;
+        return merged;
       }
     }
 

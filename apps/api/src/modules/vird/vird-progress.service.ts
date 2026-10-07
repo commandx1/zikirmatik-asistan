@@ -83,7 +83,9 @@ export class VirdProgressService {
       .findOne({ _id: programObjectId, userId: userObjectId })
       .lean()
       .exec();
-    if (!program) {
+    // VPR-13: aktif olmayan programa gelen kayıt kişisel log olarak kalır;
+    // vird ilerlemesi/serisi yazılmaz.
+    if (!program || program.status !== 'active') {
       return;
     }
 
@@ -106,7 +108,10 @@ export class VirdProgressService {
         slotExpected.every((item) => completedSet.has(item.itemKey))
       );
     });
-    const dayComplete = isDayComplete(expected, countByItemKey);
+    // VPR-12: tamamlanmış gün, sonradan gelen düşük sayımla geri dönmez.
+    const dayComplete =
+      isDayComplete(expected, countByItemKey) ||
+      (await this.wasDayCompleted(userObjectId, programObjectId, input.date));
 
     await this.virdDayProgressModel
       .findOneAndUpdate(
@@ -132,7 +137,7 @@ export class VirdProgressService {
       )
       .exec();
 
-    // Gün sonradan tamamlanmamışa dönebilir (son yazan kazanır) → her yazımda yeniden hesapla.
+    // Seri her yazımda yeniden hesaplanır (gün tamamlanmamışsa düşer, STR-18).
     await this.streaksService.recalculateVirdForUser(input.userId);
   }
 
@@ -210,7 +215,9 @@ export class VirdProgressService {
       program,
       dayIndex,
       slots,
-      isDayComplete: isDayComplete(expected, countByItemKey),
+      isDayComplete:
+        isDayComplete(expected, countByItemKey) ||
+        (await this.wasDayCompleted(objectId, program._id, dateKey)),
       virdStreak,
     };
   }
@@ -250,6 +257,17 @@ export class VirdProgressService {
     }
 
     return { items };
+  }
+
+  private async wasDayCompleted(
+    userId: Types.ObjectId,
+    programId: Types.ObjectId,
+    date: string,
+  ) {
+    const row = await this.virdDayProgressModel
+      .exists({ userId, programId, date, isDayComplete: true })
+      .exec();
+    return row !== null;
   }
 
   private async getVirdStreakSnapshot(userId: string) {

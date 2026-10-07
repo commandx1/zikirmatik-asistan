@@ -60,7 +60,7 @@ describe('Log / seri boşlukları (e2e)', () => {
     expect(await t.model('DhikrLog').countDocuments({})).toBe(0);
   });
 
-  it('API-STR-18: vird günü daha düşük sayıyla tamamlanmamışa dönerse virdCurrentStreak düşer', async () => {
+  it('API-STR-18: vird serisi her yazımda yeniden hesaplanır (eksik gün 0, tamamlanınca 1, sonradan düşük sayım düşürmez — VPR-12)', async () => {
     const user = await signIn(t.http, { sub: 'gap-str-18' });
     const dhikrId = await seedDhikr(t.model<DhikrDocument>('Dhikr'));
     const created = await request(t.http)
@@ -107,9 +107,11 @@ describe('Log / seri boşlukları (e2e)', () => {
           .expect(200),
       ).virdCurrentStreak;
 
+    await log(2);
+    expect(await streak()).toBe(0);
     await log(5);
     expect(await streak()).toBe(1);
-    await log(2); // son yazan kazanır → gün tamamlanmamış
-    expect(await streak()).toBe(0);
+    await log(2); // VPR-12: tamamlanmış gün geri dönmez
+    expect(await streak()).toBe(1);
   });
 });
