@@ -27,7 +27,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,mjs,cjs}": "eslint --fix"
+    "*.{ts,tsx,js,mjs,cjs}": "eslint --flag v10_config_lookup_from_file --fix"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

@@ -13,8 +13,10 @@ describe('PushCampaigns (e2e)', () => {
 
   // createTestApp PushSenderService'i jest.fn'li bir değerle değiştirir.
   const pushSendMock = () =>
-     
-    jest.mocked(t.app.get(PushSenderService).sendToDevices);
+    t.app.get<
+      PushSenderService,
+      { sendToDevices: jest.MockedFunction<PushSenderService['sendToDevices']> }
+    >(PushSenderService).sendToDevices;
 
   beforeAll(async () => {
     t = await createTestApp();
