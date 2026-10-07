@@ -18,4 +18,11 @@ export class AuthController {
   refresh(@Body() payload: RefreshTokenDto) {
     return this.authService.refresh(payload.refreshToken);
   }
+
+  /** A-20: refresh token ailesini iptal eder. Bearer gerekmez; idempotent 204. */
+  @Post('auth/logout')
+  @HttpCode(204)
+  async logout(@Body() payload: RefreshTokenDto): Promise<void> {
+    await this.authService.logout(payload.refreshToken);
+  }
 }

@@ -48,6 +48,7 @@ export class AiChatController {
       firstMessage: payload.firstMessage,
       locale,
       socketId: payload.socketId,
+      clientMessageId: payload.clientMessageId,
     });
   }
 
@@ -83,6 +84,7 @@ export class AiChatController {
         firstMessage: payload.firstMessage,
         locale,
         socketId: payload.socketId,
+        clientMessageId: payload.clientMessageId,
       },
       req,
       res,

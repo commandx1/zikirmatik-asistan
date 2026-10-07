@@ -35,6 +35,11 @@ export class Subscription {
   @Prop({ type: String, unique: true, sparse: true })
   providerEventId?: string;
 
+  // Grant olayının RevenueCat event_timestamp_ms'i. EXPIRATION yalnız bundan
+  // SONRA üretilmişse bu kaydı düşürür (sırasız teslim, WHK-15). Yoksa createdAt.
+  @Prop({ type: Date })
+  providerEventAt?: Date;
+
   readonly createdAt!: Date;
   readonly updatedAt!: Date;
 }

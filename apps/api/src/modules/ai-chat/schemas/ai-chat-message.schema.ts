@@ -84,9 +84,27 @@ export class AiChatMessage {
   @Prop({ type: [Object], default: undefined })
   sourceCitations?: AiSourceCitation[];
 
+  // A-11: istemci mesaj anahtarı — kullanıcı + assistant mesajında aynı değer.
+  @Prop({ type: String })
+  clientMessageId?: string;
+
   readonly createdAt!: Date;
 }
 
 export const AiChatMessageSchema = SchemaFactory.createForClass(AiChatMessage);
 
 AiChatMessageSchema.index({ conversationId: 1, createdAt: 1 });
+
+// A-11: aynı kullanıcı + aynı istemci anahtarı rol başına tek mesaj (eşzamanlı
+// tekrarda ikinci yazım E11000 → ilk yanıt yeniden döner). Eski mesajlarda alan
+// yok → partial filtre dışında.
+AiChatMessageSchema.index(
+  { userId: 1, clientMessageId: 1, role: 1 },
+  {
+    name: 'uniq_user_clientMessageId_role',
+    unique: true,
+    partialFilterExpression: {
+      clientMessageId: { $exists: true, $type: 'string' },
+    },
+  },
+);

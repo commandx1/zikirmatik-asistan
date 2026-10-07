@@ -8,6 +8,10 @@ import {
   AuthIdentity,
   AuthIdentitySchema,
 } from './schemas/auth-identity.schema';
+import {
+  RefreshToken,
+  RefreshTokenSchema,
+} from './schemas/refresh-token.schema';
 
 @Module({
   imports: [
@@ -15,6 +19,7 @@ import {
     DevicesModule,
     MongooseModule.forFeature([
       { name: AuthIdentity.name, schema: AuthIdentitySchema },
+      { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
   ],
   controllers: [AuthController],

@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ForbiddenException, Logger } from '@nestjs/common';
 import { Types } from 'mongoose';
+import fc from 'fast-check';
 import { AiCreditsService } from './ai-credits.service';
 
 type PrivateAiService = {
@@ -200,9 +201,10 @@ function createService(initialPremium = false) {
               >;
             }
           | PipelineStage[],
-        options?: { upsert?: boolean },
-      ) => ({
-        exec: () => {
+        options?: { upsert?: boolean; new?: boolean },
+      ) => {
+        const exec = () => {
+          const before = wallet ? { ...wallet } : null;
           if (!walletMatches(filter)) {
             const onlyUserId = Object.keys(filter).every(
               (key) => key === 'userId',
@@ -225,9 +227,11 @@ function createService(initialPremium = false) {
           } else {
             applyWalletUpdate(update);
           }
+          if (options?.new === false) return before;
           return wallet ? { ...wallet } : null;
-        },
-      }),
+        };
+        return { exec, lean: () => ({ exec }) };
+      },
     ),
     updateOne: jest.fn(
       (
@@ -509,24 +513,24 @@ describe('AiService credits', () => {
     ).rejects.toBeInstanceOf(ForbiddenException);
   });
 
-  it('resets grant on premium⇄free toggle (new cycle) but does not grant monthly twice in same month', async () => {
+  it('A-08: keeps remaining monthly credits on premium⇄free toggle within the month, never grants monthly twice', async () => {
     jest.setSystemTime(new Date('2026-07-08T10:00:00.000Z'));
     const { service, ledger, setPremium } = createService(true);
 
     const premium = await service.getCredits(USER_ID);
     expect(premium.balance).toBe(50);
 
-    // Downgrade: bu kullanıcı hiç FREE_DAILY_GRANT almamıştı (premium'du),
-    // bu yüzden ilk free grant'ı karşılama bonusu (3) olarak verilir.
+    // Downgrade (aynı ay): kalan aylık kredi ay sonuna kadar kullanılabilir;
+    // günlük grant (karşılama 3) onu ezmez, max(kalan, günlük).
     setPremium(false);
     const free = await service.getCredits(USER_ID);
-    expect(free.balance).toBe(3);
+    expect(free.balance).toBe(50);
 
-    // Aynı ay içinde tekrar premium: aylık grant için ledger kaydı zaten
-    // mevcut (E11000) → wallet'a dokunulmaz, mevcut bakiye korunur.
+    // A-08: aynı ay premium bitti → kalan aylık hak (50) silinmez; aynı ay
+    // tekrar premium: aylık ledger zaten var (E11000) → kalan hak korunur.
     setPremium(true);
     const premiumAgain = await service.getCredits(USER_ID);
-    expect(premiumAgain.balance).toBe(3);
+    expect(premiumAgain.balance).toBe(50);
 
     expect(
       ledger.filter((entry) => entry.reason === 'PREMIUM_MONTHLY_GRANT').length,
@@ -761,5 +765,141 @@ describe('AiCreditsService wallet debit options', () => {
     const debitStart = source.indexOf('async debitCreditForFlow(');
     const debitSource = source.slice(debitStart);
     expect(debitSource).toContain('updatePipeline: true');
+  });
+});
+
+describe('AiCreditsService ledger invariants (A-08, property)', () => {
+  afterEach(() => jest.useRealTimers());
+
+  type Op =
+    | { kind: 'premium'; value: boolean }
+    | { kind: 'days'; n: number }
+    | { kind: 'debit'; amount: number }
+    | { kind: 'topup' }
+    | { kind: 'refund' };
+
+  const opArb: fc.Arbitrary<Op> = fc.oneof(
+    fc.record({ kind: fc.constant('premium' as const), value: fc.boolean() }),
+    fc.record({
+      kind: fc.constant('days' as const),
+      n: fc.integer({ min: 0, max: 40 }),
+    }),
+    fc.record({
+      kind: fc.constant('debit' as const),
+      amount: fc.integer({ min: 1, max: 3 }),
+    }),
+    fc.record({ kind: fc.constant('topup' as const) }),
+    fc.record({ kind: fc.constant('refund' as const) }),
+  );
+
+  it('bakiye ≥ 0 ve = grant + topup; toplam kesim ≤ toplam giriş; ay/gün başına tek grant; aynı ay yeniden abonelik bakiyeyi artırmaz', async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        fc.boolean(),
+        fc.array(opArb, { maxLength: 30 }),
+        async (startPremium, ops) => {
+          jest.useFakeTimers();
+          let now = new Date('2026-07-28T10:00:00.000Z').getTime();
+          jest.setSystemTime(now);
+          const { service, ledger, setPremium } = createService(startPremium);
+          const userId = new Types.ObjectId(USER_ID);
+          let premium = startPremium;
+          let seq = 0;
+          const monthlyRows = (month: string) =>
+            ledger.filter(
+              (e) =>
+                e.reason === 'PREMIUM_MONTHLY_GRANT' && e.monthKey === month,
+            ).length;
+
+          for (const op of ops) {
+            const before = await service.getCredits(USER_ID);
+            const month = new Date(now).toISOString().slice(0, 7);
+            const resubscribeSameMonth =
+              op.kind === 'premium' &&
+              op.value &&
+              !before.isPremium &&
+              monthlyRows(month) === 1;
+
+            if (op.kind === 'premium') {
+              setPremium(op.value);
+              premium = op.value;
+            } else if (op.kind === 'days') {
+              now += op.n * 24 * 60 * 60 * 1000;
+              jest.setSystemTime(now);
+            } else if (op.kind === 'debit') {
+              await service
+                .debitCreditForFlow(
+                  userId,
+                  `f-${++seq}`,
+                  premium,
+                  'h',
+                  'CHAT_MESSAGE_DEBIT',
+                  op.amount,
+                )
+                .catch((e: unknown) => {
+                  if (!(e instanceof ForbiddenException)) throw e;
+                });
+            } else if (op.kind === 'topup') {
+              await service.applyTopupPurchase({
+                userId: USER_ID,
+                productId: 'topupsmall',
+                providerEventId: `t-${++seq}`,
+              });
+            } else {
+              await service.applyTopupRefund({
+                userId: USER_ID,
+                productId: 'topupsmall',
+                providerEventId: `r-${++seq}`,
+              });
+            }
+
+            const after = await service.getCredits(USER_ID);
+            const { wallet } = await service.ensureCreditState(userId, premium);
+            expect(wallet.balance).toBeGreaterThanOrEqual(0);
+            expect(wallet.grantCredits).toBeGreaterThanOrEqual(0);
+            expect(wallet.topupCredits).toBeGreaterThanOrEqual(0);
+            expect(wallet.balance).toBe(
+              wallet.grantCredits + wallet.topupCredits,
+            );
+
+            const sum = (pred: (d: number) => boolean) =>
+              ledger
+                .filter((e) => pred(e.delta))
+                .reduce((acc, e) => acc + Math.abs(e.delta), 0);
+            expect(sum((d) => d < 0)).toBeLessThanOrEqual(sum((d) => d > 0));
+
+            for (const [reason, key] of [
+              ['PREMIUM_MONTHLY_GRANT', 'monthKey'],
+              ['FREE_DAILY_GRANT', 'dayKey'],
+            ] as const) {
+              const keys = ledger
+                .filter((e) => e.reason === reason)
+                .map((e) => e[key]);
+              expect(new Set(keys).size).toBe(keys.length);
+            }
+
+            if (resubscribeSameMonth) {
+              expect(after.balance).toBeLessThanOrEqual(before.balance);
+            }
+          }
+          jest.useRealTimers();
+        },
+      ),
+      { numRuns: 150 },
+    );
+  });
+
+  it("A-08: ay değişince taşınan aylık kredi biter, günlük grant'e döner", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-07-30T10:00:00.000Z'));
+    const { service, setPremium } = createService(true);
+    expect((await service.getCredits(USER_ID)).balance).toBe(50);
+    setPremium(false);
+    jest.setSystemTime(new Date('2026-07-31T10:00:00.000Z'));
+    expect((await service.getCredits(USER_ID)).balance).toBe(50);
+    jest.setSystemTime(new Date('2026-08-01T10:00:00.000Z'));
+    // Ağustos: taşıma bitti → yalnız günlük grant (ilk ücretsiz grant 31 Tem'de
+    // alındığı için karşılama değil, 1).
+    expect((await service.getCredits(USER_ID)).balance).toBe(1);
   });
 });

@@ -17,7 +17,8 @@ import type {
   RevenueCatWebhookPayload,
 } from './dto/revenuecat-event.dto';
 
-const EVENTS_THAT_REVOKE_PREMIUM = new Set(['EXPIRATION', 'BILLING_ISSUE']);
+// A-09: BILLING_ISSUE premium düşürmez (mağaza grace süresi) — yalnız EXPIRATION.
+const EVENTS_THAT_REVOKE_PREMIUM = new Set(['EXPIRATION']);
 const EVENTS_THAT_GRANT_PREMIUM = new Set([
   'INITIAL_PURCHASE',
   'RENEWAL',
@@ -75,6 +76,13 @@ export class WebhooksController {
         await this.handleGrant(event);
       } else if (EVENTS_THAT_GRANT_TOPUP.has(event.type)) {
         await this.handleTopup(event);
+      } else if (event.type === 'BILLING_ISSUE') {
+        await this.handleBillingIssue(event);
+      } else if (
+        event.type === 'CANCELLATION' &&
+        event.cancel_reason === 'CUSTOMER_SUPPORT'
+      ) {
+        await this.handleRefund(event);
       }
     } catch (err) {
       this.logger.error(
@@ -92,12 +100,44 @@ export class WebhooksController {
       return;
     }
 
-    const provider = resolveProvider(event.store);
-    await this.subscriptionsService.syncPremiumForUser(userId, {
-      hasActivePremiumEntitlement: false,
-      provider,
+    await this.subscriptionsService.expirePremiumFromEvent(
+      userId,
+      resolveProvider(event.store),
+      event.event_timestamp_ms ? new Date(event.event_timestamp_ms) : undefined,
+    );
+    this.logger.log(`Premium expiration processed for user ${userId}`);
+  }
+
+  private async handleBillingIssue(event: RevenueCatEvent) {
+    if (!event.grace_period_expiration_at_ms) return;
+    const userId = await this.resolveUserId(event);
+    if (!userId) return;
+    await this.subscriptionsService.extendPremiumForGracePeriod(
+      userId,
+      resolveProvider(event.store),
+      new Date(event.grace_period_expiration_at_ms),
+    );
+  }
+
+  /**
+   * A-10 iade (RC: CANCELLATION + cancel_reason CUSTOMER_SUPPORT, hem abonelik
+   * hem tek seferlik satın alım için). Abonelikte hiçbir şey yapılmaz —
+   * RevenueCat'in EXPIRATION'ı beklenir. Kredi paketinde paketin kredisi
+   * kalan bakiyeden düşülür (min 0, olay başına bir kez).
+   */
+  private async handleRefund(event: RevenueCatEvent) {
+    const userId = await this.resolveUserId(event);
+    if (!userId) return;
+
+    const result = await this.aiCreditsService.applyTopupRefund({
+      userId,
+      productId: event.product_id,
+      providerEventId: resolveProviderEventId(event),
     });
-    this.logger.log(`Premium revoked for user ${userId}`);
+    this.logger.log(
+      `Refund for user ${userId} (${event.product_id}) applied=${result.applied} ` +
+        `reason=${result.reason} deducted=${result.credits}`,
+    );
   }
 
   private async handleGrant(event: RevenueCatEvent) {
@@ -126,7 +166,11 @@ export class WebhooksController {
         : new Date(),
       endDate: new Date(event.expiration_at_ms),
     });
-    await this.subscriptionsService.create(dto, resolveProviderEventId(event));
+    await this.subscriptionsService.create(
+      dto,
+      resolveProviderEventId(event),
+      event.event_timestamp_ms ? new Date(event.event_timestamp_ms) : undefined,
+    );
     this.logger.log(`Premium granted for user ${userId}`);
   }
 

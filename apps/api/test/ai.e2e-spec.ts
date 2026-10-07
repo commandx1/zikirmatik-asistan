@@ -429,4 +429,102 @@ describe('AI (e2e)', () => {
       process.env.NODE_ENV = original;
     }
   });
+  // ── QA: CRD-11/13 eşzamanlılık, A-08 aylık kredi taşıma (gerçek Mongo) ──
+  it('CRD-13/B8: cüzdanı olmayan kullanıcının eşzamanlı ilk istekleri 500 vermez, tek cüzdan', async () => {
+    const user = await signIn(t.http, { sub: `e2e-ai-${randomUUID()}` });
+    const results = await Promise.all(
+      Array.from({ length: 6 }, () =>
+        request(t.http).get('/v1/ai/credits').set(bearer(user.accessToken)),
+      ),
+    );
+    expect(results.map((r) => r.status)).toEqual(Array(6).fill(200));
+    for (const r of results) {
+      expect(data<{ balance: number }>(r).balance).toBe(
+        FREE_SIGNUP_BONUS_CREDIT_AMOUNT,
+      );
+    }
+    const userId = new Types.ObjectId(user.userId);
+    expect(await t.model('AiCreditWallet').countDocuments({ userId })).toBe(1);
+    expect(
+      await t
+        .model('AiCreditLedger')
+        .countDocuments({ userId, reason: 'FREE_DAILY_GRANT' }),
+    ).toBe(1);
+  });
+
+  it('CRD-11: aynı flowId ile iki eşzamanlı öneri → tek ledger satırı, tek kesim', async () => {
+    const user = await signIn(t.http, { sub: `e2e-ai-${randomUUID()}` });
+    const dhikrModel = t.model<DhikrDocument>('Dhikr');
+    for (let i = 0; i < 3; i++) await seedDhikr(dhikrModel);
+    const flowId = randomUUID();
+    const send = () =>
+      request(t.http)
+        .post('/v1/ai/recommendations')
+        .set(bearer(user.accessToken))
+        .send({ userId: user.userId, freeText: 'aynı istek', flowId });
+    const results = await Promise.all([send(), send()]);
+    expect(results.map((r) => r.status)).toEqual([201, 201]);
+    const userId = new Types.ObjectId(user.userId);
+    expect(
+      await t
+        .model('AiCreditLedger')
+        .countDocuments({ userId, reason: 'RECOMMENDATION_DEBIT' }),
+    ).toBe(1);
+    const balance = await request(t.http)
+      .get('/v1/ai/credits')
+      .set(bearer(user.accessToken))
+      .expect(200);
+    expect(data<{ balance: number }>(balance).balance).toBe(
+      FREE_SIGNUP_BONUS_CREDIT_AMOUNT - 1,
+    );
+  });
+
+  it('A-08: premium bitince kalan aylık kredi ay sonuna kadar kalır; aynı ay yeniden abonelikte geri gelir (çift grant yok)', async () => {
+    const user = await signIn(t.http, { sub: `e2e-ai-${randomUUID()}` });
+    const userModel = t.model<UserDocument>(User.name);
+    const credits = () =>
+      request(t.http)
+        .get('/v1/ai/credits')
+        .set(bearer(user.accessToken))
+        .expect(200)
+        .then((res) => data<{ balance: number }>(res).balance);
+    const chat = (text: string) =>
+      request(t.http)
+        .post('/v1/ai/chat/conversations')
+        .set(bearer(user.accessToken))
+        .send({ firstMessage: text })
+        .expect(201);
+
+    await makePremium(userModel, user.userId);
+    expect(await credits()).toBe(PREMIUM_MONTHLY_CREDIT_AMOUNT);
+    await chat('bir');
+    await chat('iki');
+    const remaining = PREMIUM_MONTHLY_CREDIT_AMOUNT - 2;
+
+    // Premium bitti (aynı ay): kalan aylık hak silinmez.
+    await userModel.updateOne(
+      { _id: user.userId },
+      { $set: { isPremium: false } },
+    );
+    expect(await credits()).toBe(remaining);
+
+    // Ertesi ücretsiz gün (aynı ay): hâlâ silinmez.
+    const userId = new Types.ObjectId(user.userId);
+    await t
+      .model('AiCreditWallet')
+      .updateOne({ userId }, { $set: { grantCycleKey: '2000-01-01' } });
+    await t
+      .model('AiCreditLedger')
+      .deleteMany({ userId, reason: 'FREE_DAILY_GRANT' });
+    expect(await credits()).toBe(remaining);
+
+    // Aynı ay yeniden premium: kalan hak geri/korunur, ikinci aylık grant yok.
+    await makePremium(userModel, user.userId);
+    expect(await credits()).toBe(remaining);
+    expect(
+      await t
+        .model('AiCreditLedger')
+        .countDocuments({ userId, reason: 'PREMIUM_MONTHLY_GRANT' }),
+    ).toBe(1);
+  });
 });

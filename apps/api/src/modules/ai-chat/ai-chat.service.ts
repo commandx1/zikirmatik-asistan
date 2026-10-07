@@ -1,5 +1,6 @@
 import { randomUUID, createHash } from 'node:crypto';
 import {
+  ConflictException,
   HttpException,
   Injectable,
   Logger,
@@ -81,6 +82,18 @@ type ChatIntent = {
   searchQuery: string;
 };
 
+type StoredChatMessage = AiChatMessage & { _id: Types.ObjectId };
+
+type ChatTurn = {
+  conversationId: Types.ObjectId;
+  userMessage: StoredChatMessage;
+  assistantMessage: StoredChatMessage;
+};
+
+function isDuplicateKeyError(error: unknown): boolean {
+  return (error as { code?: unknown } | null)?.code === 11000;
+}
+
 const MAX_CONTEXT_MESSAGES = 10;
 const MAX_SOURCE_CITATIONS = 3;
 const TITLE_MAX_LENGTH = 60;
@@ -112,12 +125,14 @@ export class AiChatService {
 
   /**
    * Yeni bir konuşma oluşturur ve ilk kullanıcı mesajını işler.
-   * Kredi düşümü tek-atım öneri akışıyla aynı deseni izler: erken erişim
-   * kontrolü + başarılı tamamlanmada debit (bkz. AiService.ensureCreditAccessForFlow).
+   * Kredi: erken erişim kontrolü (ensureCreditAccessForFlow) + ajan başarıyla
+   * tamamlanınca debit.
    *
-   * Persist sırası: ajan BAŞARIYLA tamamlanmadan konuşma/mesaj hiç
-   * yaratılmaz — AI-only akışta fallback yok, bu yüzden başarısız bir
-   * denemenin yarım kalmış kaydı olmamalı (bkz. AiPipelineError).
+   * Sıra (B9/CHT-21): ajan → DEBIT → persist. Ajan başarısızsa ya da eşzamanlı
+   * istekler bakiyeyi tükettiyse (debit 403) hiçbir şey kalıcılaşmaz — ücretsiz
+   * içerik kalmaz. ponytail: debit sonrası persist Mongo hatasıyla düşerse kredi
+   * gider (telafi yok); clientMessageId'li tekrar aynı ledger satırıyla ücretsiz
+   * tamamlanır (A-11).
    */
   async createConversation(
     userId: string,
@@ -125,15 +140,26 @@ export class AiChatService {
       firstMessage: string;
       locale?: SupportedAiLocale;
       socketId?: string;
+      clientMessageId?: string;
     },
   ) {
     const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
     const firstMessage = payload.firstMessage.trim();
     const locale: SupportedAiLocale = payload.locale ?? 'tr';
     const socketId = payload.socketId;
+    const clientMessageId = payload.clientMessageId;
 
     const user = await this.ensureUserExists(userObjectId);
-    const flowId = randomUUID();
+    if (clientMessageId) {
+      const replay = await this.findReplay(
+        userObjectId,
+        clientMessageId,
+        firstMessage,
+      );
+      if (replay) return this.toCreateResponse(replay);
+    }
+
+    const flowId = clientMessageId ?? randomUUID();
     const promptHash = this.computePromptHash(firstMessage);
 
     await this.aiCreditsService.ensureCreditAccessForFlow(
@@ -154,35 +180,6 @@ export class AiChatService {
       userId: userObjectId,
     });
 
-    const now = new Date();
-    const conversation = await this.conversationModel.create({
-      userId: userObjectId,
-      title: this.generateTitle(firstMessage),
-      status: 'active',
-      lastMessageAt: now,
-      locale,
-    });
-
-    const userMessage = await this.messageModel.create({
-      conversationId: conversation._id,
-      userId: userObjectId,
-      role: 'user',
-      content: firstMessage,
-    });
-
-    const assistantMessage = await this.persistAssistantReply(
-      conversation._id,
-      userObjectId,
-      agentResult,
-    );
-
-    await this.conversationModel
-      .updateOne(
-        { _id: conversation._id },
-        { $set: { lastMessageAt: new Date() } },
-      )
-      .exec();
-
     await this.aiCreditsService.debitCreditForFlow(
       userObjectId,
       flowId,
@@ -191,25 +188,23 @@ export class AiChatService {
       AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
     );
 
-    const freshConversation = await this.conversationModel
-      .findById(conversation._id)
-      .lean()
-      .exec();
+    const turn = await this.persistTurn({
+      userId: userObjectId,
+      newConversation: { title: this.generateTitle(firstMessage), locale },
+      userText: firstMessage,
+      agentResult,
+      clientMessageId,
+    });
 
-    return {
-      conversation: freshConversation,
-      messages: [
-        this.toMessageResponse(userMessage),
-        this.toMessageResponse(assistantMessage),
-      ],
-    };
+    return this.toCreateResponse(turn);
   }
 
   /**
-   * createConversation'ın SSE karşılığı: aynı erken kredi kontrolü + geç
-   * persist/debit sırasını izler, ama assistant yanıtını `streamText` ile
+   * createConversation'ın SSE karşılığı: aynı erken kredi kontrolü + ajan →
+   * debit → persist sırasını izler, ama assistant yanıtını `streamText` ile
    * token-token yazar. Event sırası: token×N → done (hata → error).
-   * REST createConversation korunur, bu yalnızca paralel bir akış rotasıdır.
+   * A-11 tekrarı: kayıtlı yanıt tek `token` (tüm metin) + `done` olarak
+   * yeniden oynatılır (bkz. replaySse).
    */
   async streamCreateConversation(
     userId: string,
@@ -217,6 +212,7 @@ export class AiChatService {
       firstMessage: string;
       locale?: SupportedAiLocale;
       socketId?: string;
+      clientMessageId?: string;
     },
     req: Request,
     res: Response,
@@ -225,9 +221,18 @@ export class AiChatService {
     const locale: SupportedAiLocale = payload.locale ?? 'tr';
     const socketId = payload.socketId;
 
-    const access = await this.tryEnsureStreamAccess(res, userId, firstMessage);
+    const access = await this.tryEnsureStreamAccess(
+      res,
+      userId,
+      firstMessage,
+      payload.clientMessageId,
+    );
     if (!access) return;
     const { userObjectId, user, flowId, promptHash } = access;
+    if (access.replay) {
+      await this.replaySse(res, userObjectId, access.replay, true);
+      return;
+    }
 
     const { clientAborted, abortSignal, finish } = this.beginSse(req, res);
     this.emitStep(socketId, 'creating', 'Sohbet başlatılıyor...');
@@ -248,35 +253,6 @@ export class AiChatService {
         return;
       }
 
-      const now = new Date();
-      const conversation = await this.conversationModel.create({
-        userId: userObjectId,
-        title: this.generateTitle(firstMessage),
-        status: 'active',
-        lastMessageAt: now,
-        locale,
-      });
-
-      const userMessage = await this.messageModel.create({
-        conversationId: conversation._id,
-        userId: userObjectId,
-        role: 'user',
-        content: firstMessage,
-      });
-
-      const assistantMessage = await this.persistAssistantReply(
-        conversation._id,
-        userObjectId,
-        agentResult,
-      );
-
-      await this.conversationModel
-        .updateOne(
-          { _id: conversation._id },
-          { $set: { lastMessageAt: new Date() } },
-        )
-        .exec();
-
       const wallet = await this.aiCreditsService.debitCreditForFlow(
         userObjectId,
         flowId,
@@ -285,22 +261,19 @@ export class AiChatService {
         AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
       );
 
-      const freshConversation = await this.conversationModel
-        .findById(conversation._id)
-        .lean()
-        .exec();
-
-      this.writeSse(res, 'done', {
-        messageId: assistantMessage._id.toString(),
-        content: assistantMessage.content,
-        remainingCredits: wallet.balance,
-        conversationId: conversation._id.toString(),
-        conversation: freshConversation,
-        userMessage: this.toMessageResponse(userMessage),
-        mode: agentResult.mode,
-        coverage: agentResult.coverage,
-        sourceCitations: agentResult.sourceCitations ?? [],
+      const turn = await this.persistTurn({
+        userId: userObjectId,
+        newConversation: { title: this.generateTitle(firstMessage), locale },
+        userText: firstMessage,
+        agentResult,
+        clientMessageId: payload.clientMessageId,
       });
+
+      this.writeSse(
+        res,
+        'done',
+        await this.donePayload(turn, wallet.balance, true),
+      );
       finish();
     } catch (error) {
       this.handleStreamFailure(
@@ -316,13 +289,13 @@ export class AiChatService {
 
   /**
    * Var olan bir konuşmaya yeni kullanıcı mesajı ekler, ajanı son 10 mesajlık
-   * pencereyle çalıştırır ve — SADECE ajan başarıyla tamamlanırsa — kullanıcı
-   * ve assistant mesajlarını birlikte kalıcılaştırır.
+   * pencereyle çalıştırır, krediyi düşer ve — SADECE ikisi de başarılıysa —
+   * kullanıcı ve assistant mesajlarını birlikte kalıcılaştırır.
    */
   async sendMessage(
     userId: string,
     conversationId: string,
-    payload: { message: string; socketId?: string },
+    payload: { message: string; socketId?: string; clientMessageId?: string },
   ) {
     const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
     const conversationObjectId = this.asObjectId(
@@ -331,6 +304,7 @@ export class AiChatService {
     );
     const message = payload.message.trim();
     const socketId = payload.socketId;
+    const clientMessageId = payload.clientMessageId;
 
     const user = await this.ensureUserExists(userObjectId);
     const conversation = await this.ensureOwnedConversation(
@@ -338,7 +312,20 @@ export class AiChatService {
       userObjectId,
     );
 
-    const flowId = randomUUID();
+    if (clientMessageId) {
+      const replay = await this.findReplay(
+        userObjectId,
+        clientMessageId,
+        message,
+        conversationObjectId,
+      );
+      if (replay) {
+        const credits = await this.aiCreditsService.getCredits(userId);
+        return this.toSendResponse(replay, credits.balance);
+      }
+    }
+
+    const flowId = clientMessageId ?? randomUUID();
     const promptHash = this.computePromptHash(message);
 
     await this.aiCreditsService.ensureCreditAccessForFlow(
@@ -365,26 +352,6 @@ export class AiChatService {
       userId: userObjectId,
     });
 
-    const userMessage = await this.messageModel.create({
-      conversationId: conversationObjectId,
-      userId: userObjectId,
-      role: 'user',
-      content: message,
-    });
-
-    const assistantMessage = await this.persistAssistantReply(
-      conversationObjectId,
-      userObjectId,
-      agentResult,
-    );
-
-    await this.conversationModel
-      .updateOne(
-        { _id: conversationObjectId },
-        { $set: { lastMessageAt: new Date() } },
-      )
-      .exec();
-
     const wallet = await this.aiCreditsService.debitCreditForFlow(
       userObjectId,
       flowId,
@@ -393,18 +360,22 @@ export class AiChatService {
       AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
     );
 
-    return {
-      message: this.toMessageResponse(userMessage),
-      reply: this.toMessageResponse(assistantMessage),
-      remainingCredits: wallet.balance,
-    };
+    const turn = await this.persistTurn({
+      userId: userObjectId,
+      conversationId: conversationObjectId,
+      userText: message,
+      agentResult,
+      clientMessageId,
+    });
+
+    return this.toSendResponse(turn, wallet.balance);
   }
 
   /** sendMessage'ın SSE karşılığı — bkz. streamCreateConversation dokümantasyonu. */
   async streamSendMessage(
     userId: string,
     conversationId: string,
-    payload: { message: string; socketId?: string },
+    payload: { message: string; socketId?: string; clientMessageId?: string },
     req: Request,
     res: Response,
   ): Promise<void> {
@@ -426,10 +397,15 @@ export class AiChatService {
       res,
       userId,
       message,
+      payload.clientMessageId,
       conversationObjectId,
     );
     if (!access) return;
     const { userObjectId, user, flowId, promptHash, conversation } = access;
+    if (access.replay) {
+      await this.replaySse(res, userObjectId, access.replay, false);
+      return;
+    }
     const locale: SupportedAiLocale =
       (conversation?.locale as SupportedAiLocale) ?? 'tr';
 
@@ -458,26 +434,6 @@ export class AiChatService {
         return;
       }
 
-      const userMessage = await this.messageModel.create({
-        conversationId: conversationObjectId,
-        userId: userObjectId,
-        role: 'user',
-        content: message,
-      });
-
-      const assistantMessage = await this.persistAssistantReply(
-        conversationObjectId,
-        userObjectId,
-        agentResult,
-      );
-
-      await this.conversationModel
-        .updateOne(
-          { _id: conversationObjectId },
-          { $set: { lastMessageAt: new Date() } },
-        )
-        .exec();
-
       const wallet = await this.aiCreditsService.debitCreditForFlow(
         userObjectId,
         flowId,
@@ -486,16 +442,19 @@ export class AiChatService {
         AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
       );
 
-      this.writeSse(res, 'done', {
-        messageId: assistantMessage._id.toString(),
-        content: assistantMessage.content,
-        remainingCredits: wallet.balance,
-        conversationId: conversationObjectId.toString(),
-        userMessage: this.toMessageResponse(userMessage),
-        mode: agentResult.mode,
-        coverage: agentResult.coverage,
-        sourceCitations: agentResult.sourceCitations ?? [],
+      const turn = await this.persistTurn({
+        userId: userObjectId,
+        conversationId: conversationObjectId,
+        userText: message,
+        agentResult,
+        clientMessageId: payload.clientMessageId,
       });
+
+      this.writeSse(
+        res,
+        'done',
+        await this.donePayload(turn, wallet.balance, false),
+      );
       finish();
     } catch (error) {
       this.handleStreamFailure(
@@ -507,6 +466,198 @@ export class AiChatService {
         finish,
       );
     }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Kalıcılaştırma + A-11 tekrar (clientMessageId)
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Turu kalıcılaştırır (gerekirse yeni konuşma + user + assistant mesajı).
+   * clientMessageId'li eşzamanlı tekrarda user mesajı unique index'e takılır
+   * (E11000): bu isteğin açtığı konuşma silinir ve kazanan turun kaydı döner.
+   */
+  private async persistTurn(input: {
+    userId: Types.ObjectId;
+    conversationId?: Types.ObjectId;
+    newConversation?: { title: string; locale: SupportedAiLocale };
+    userText: string;
+    agentResult: ChatAgentResult;
+    clientMessageId?: string;
+  }): Promise<ChatTurn> {
+    const { userId, agentResult, clientMessageId } = input;
+    let conversationId = input.conversationId;
+    if (!conversationId) {
+      const conversation = await this.conversationModel.create({
+        userId,
+        title: input.newConversation?.title,
+        status: 'active',
+        lastMessageAt: new Date(),
+        locale: input.newConversation?.locale ?? 'tr',
+      });
+      conversationId = conversation._id;
+    }
+    const idempotency = clientMessageId ? { clientMessageId } : {};
+
+    let userMessage: StoredChatMessage;
+    try {
+      userMessage = await this.messageModel.create({
+        conversationId,
+        userId,
+        role: 'user',
+        content: input.userText,
+        ...idempotency,
+      });
+    } catch (error) {
+      if (!clientMessageId || !isDuplicateKeyError(error)) throw error;
+      if (!input.conversationId) {
+        await this.conversationModel.deleteOne({ _id: conversationId }).exec();
+      }
+      const replay = await this.findReplay(
+        userId,
+        clientMessageId,
+        input.userText,
+      );
+      if (!replay) throw error;
+      return replay;
+    }
+
+    const assistantMessage = await this.messageModel.create({
+      conversationId,
+      userId,
+      role: 'assistant',
+      content: agentResult.content,
+      usedModel: agentResult.usedModel,
+      mode: agentResult.mode,
+      coverage: agentResult.coverage,
+      sourceCitations: agentResult.sourceCitations,
+      ...idempotency,
+    });
+
+    await this.conversationModel
+      .updateOne(
+        { _id: conversationId },
+        { $set: { lastMessageAt: new Date() } },
+      )
+      .exec();
+
+    return { conversationId, userMessage, assistantMessage };
+  }
+
+  /**
+   * A-11: aynı kullanıcı + clientMessageId için kayıtlı turu bulur. Anahtar
+   * farklı metinle (veya başka konuşmada) kullanılmışsa 409. User mesajı var
+   * ama assistant henüz yazılmamışsa (eşzamanlı tur persist ortasında) kısa
+   * süre bekler.
+   */
+  private async findReplay(
+    userId: Types.ObjectId,
+    clientMessageId: string,
+    text: string,
+    conversationId?: Types.ObjectId,
+  ): Promise<ChatTurn | null> {
+    const userMessage = await this.messageModel
+      .findOne({ userId, clientMessageId, role: 'user' })
+      .exec();
+    if (!userMessage) return null;
+    if (
+      userMessage.content !== text ||
+      (conversationId && !userMessage.conversationId.equals(conversationId))
+    ) {
+      throw new ConflictException({
+        code: 'CLIENT_MESSAGE_ID_CONFLICT',
+        message: 'Bu mesaj anahtarı farklı bir mesajla kullanılmış.',
+      });
+    }
+
+    // ponytail: 10×100 ms yoklama; user yazılıp assistant yazılamadan çöken
+    // tur bu anahtar için kalıcı 409 IN_PROGRESS üretir (çok nadir).
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const assistantMessage = await this.messageModel
+        .findOne({ userId, clientMessageId, role: 'assistant' })
+        .exec();
+      if (assistantMessage) {
+        return {
+          conversationId: userMessage.conversationId,
+          userMessage,
+          assistantMessage,
+        };
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    throw new ConflictException({
+      code: 'CLIENT_MESSAGE_ID_IN_PROGRESS',
+      message: 'Bu mesaj hâlâ işleniyor, birazdan tekrar dene.',
+    });
+  }
+
+  private async toCreateResponse(turn: ChatTurn) {
+    const conversation = await this.conversationModel
+      .findById(turn.conversationId)
+      .lean()
+      .exec();
+    return {
+      conversation,
+      messages: [
+        this.toMessageResponse(turn.userMessage),
+        this.toMessageResponse(turn.assistantMessage),
+      ],
+    };
+  }
+
+  private toSendResponse(turn: ChatTurn, remainingCredits: number) {
+    return {
+      message: this.toMessageResponse(turn.userMessage),
+      reply: this.toMessageResponse(turn.assistantMessage),
+      remainingCredits,
+    };
+  }
+
+  private async donePayload(
+    turn: ChatTurn,
+    remainingCredits: number,
+    withConversation: boolean,
+  ) {
+    const assistant = turn.assistantMessage;
+    return {
+      messageId: assistant._id.toString(),
+      content: assistant.content,
+      remainingCredits,
+      conversationId: turn.conversationId.toString(),
+      ...(withConversation
+        ? {
+            conversation: await this.conversationModel
+              .findById(turn.conversationId)
+              .lean()
+              .exec(),
+          }
+        : {}),
+      userMessage: this.toMessageResponse(turn.userMessage),
+      mode: assistant.mode,
+      coverage: assistant.coverage,
+      sourceCitations: assistant.sourceCitations ?? [],
+    };
+  }
+
+  /** A-11 SSE tekrarı: ajan çalışmaz, kredi düşmez; tek token (tüm metin) + done. */
+  private async replaySse(
+    res: Response,
+    userId: Types.ObjectId,
+    turn: ChatTurn,
+    withConversation: boolean,
+  ) {
+    const credits = await this.aiCreditsService.getCredits(userId.toString());
+    const done = await this.donePayload(
+      turn,
+      credits.balance,
+      withConversation,
+    );
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('X-Accel-Buffering', 'no');
+    this.writeSse(res, 'token', { delta: done.content });
+    this.writeSse(res, 'done', done);
+    res.end();
   }
 
   async listConversations(userId: string, page: number, limit: number) {
@@ -1205,6 +1356,7 @@ export class AiChatService {
     res: Response,
     userId: string,
     promptText: string,
+    clientMessageId?: string,
     conversationId?: Types.ObjectId,
   ): Promise<{
     userObjectId: Types.ObjectId;
@@ -1212,6 +1364,7 @@ export class AiChatService {
     flowId: string;
     promptHash: string;
     conversation?: { locale?: string };
+    replay?: ChatTurn;
   } | null> {
     try {
       const userObjectId = this.asObjectId(
@@ -1223,8 +1376,20 @@ export class AiChatService {
         ? await this.ensureOwnedConversation(conversationId, userObjectId)
         : undefined;
 
-      const flowId = randomUUID();
+      const flowId = clientMessageId ?? randomUUID();
       const promptHash = this.computePromptHash(promptText);
+
+      const replay = clientMessageId
+        ? await this.findReplay(
+            userObjectId,
+            clientMessageId,
+            promptText,
+            conversationId,
+          )
+        : null;
+      if (replay) {
+        return { userObjectId, user, flowId, promptHash, replay };
+      }
 
       await this.aiCreditsService.ensureCreditAccessForFlow(
         userObjectId,
@@ -1341,7 +1506,14 @@ export class AiChatService {
       return;
     }
 
-    if (error instanceof AiPipelineError) {
+    const httpBody =
+      error instanceof HttpException ? error.getResponse() : undefined;
+    if (httpBody && typeof httpBody === 'object' && 'code' in httpBody) {
+      // Akış sonrası debit 403'ü (eşzamanlı tükenme) / anahtar çakışması:
+      // istemciye gerçek kodu ver (AI_CREDIT_INSUFFICIENT vb.), mesaj zaten kullanıcıya yönelik.
+      logError(`Stream HTTP hatası: ${this.describeError(error)}`);
+      this.writeSse(res, 'error', { ...httpBody, requestId: flowId });
+    } else if (error instanceof AiPipelineError) {
       logError(`AI pipeline hatası (reason=${error.reason}): ${error.message}`);
       this.writeSse(res, 'error', {
         code: AI_UNAVAILABLE_CODE,
@@ -1358,23 +1530,6 @@ export class AiChatService {
       });
     }
     finish();
-  }
-
-  private async persistAssistantReply(
-    conversationId: Types.ObjectId,
-    userId: Types.ObjectId,
-    agentResult: ChatAgentResult,
-  ) {
-    return this.messageModel.create({
-      conversationId,
-      userId,
-      role: 'assistant',
-      content: agentResult.content,
-      usedModel: agentResult.usedModel,
-      mode: agentResult.mode,
-      coverage: agentResult.coverage,
-      sourceCitations: agentResult.sourceCitations,
-    });
   }
 
   private async loadContextWindow(conversationId: Types.ObjectId) {
@@ -1412,7 +1567,7 @@ export class AiChatService {
     return `${trimmed.slice(0, TITLE_MAX_LENGTH).trimEnd()}…`;
   }
 
-  private toMessageResponse(doc: AiChatMessageDocument) {
+  private toMessageResponse(doc: StoredChatMessage) {
     return {
       id: doc._id.toString(),
       conversationId: doc.conversationId.toString(),

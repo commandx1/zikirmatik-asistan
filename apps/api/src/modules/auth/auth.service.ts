@@ -8,10 +8,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import {
+  createHash,
   createHmac,
   createPublicKey,
   createVerify,
   randomBytes,
+  randomUUID,
   timingSafeEqual,
 } from 'node:crypto';
 import { type Model, Types } from 'mongoose';
@@ -27,6 +29,10 @@ import {
   AuthIdentity,
   type AuthIdentityDocument,
 } from './schemas/auth-identity.schema';
+import {
+  RefreshToken,
+  type RefreshTokenDocument,
+} from './schemas/refresh-token.schema';
 import { createAccessToken } from '../../common/auth/access-token';
 
 type ProviderClaims = {
@@ -50,14 +56,6 @@ type AppleJwk = {
 
 @Injectable()
 export class AuthService {
-  private readonly sessionByRefreshToken = new Map<
-    string,
-    {
-      userId: string;
-      displayName?: string;
-    }
-  >();
-
   private appleKeyCache?: { expiresAt: number; keys: AppleJwk[] };
 
   constructor(
@@ -66,6 +64,8 @@ export class AuthService {
     private readonly devicesService: DevicesService,
     @InjectModel(AuthIdentity.name)
     private readonly authIdentityModel: Model<AuthIdentityDocument>,
+    @InjectModel(RefreshToken.name)
+    private readonly refreshTokenModel: Model<RefreshTokenDocument>,
   ) {}
 
   async verifyProvider(
@@ -107,12 +107,7 @@ export class AuthService {
     }
 
     const accessToken = this.createAccessToken(user.id);
-    const refreshToken = this.createRefreshToken(user.id);
-
-    this.sessionByRefreshToken.set(refreshToken, {
-      userId: user.id,
-      displayName: user.displayName,
-    });
+    const refreshToken = await this.issueRefreshToken(user.id, randomUUID());
 
     // Best effort only: a device linking failure should never block sign-in.
     if (payload.deviceId?.trim()) {
@@ -151,48 +146,182 @@ export class AuthService {
     }
   }
 
+  /**
+   * A-20: refresh token tek kullanımlık (rotation). Akış:
+   * 1. İmza + süre (durumsuz) — geçersiz → 401.
+   * 2. Kayıt kullanılmamış/iptal edilmemişse atomik "kullanıldı" işaretlenir,
+   *    aynı ailede yeni token verilir.
+   * 3. Kayıt yoksa: bu sürümden önce verilmiş (DB'siz) eski token — bir kez
+   *    kabul edilip yeni aileye alınır (kurulu uygulamalar oturumdan düşmesin;
+   *    eski token'lar en geç TTL'de, 30 günde biter).
+   * 4. Kullanılmış token tekrar gelirse: çocuğu HİÇ kullanılmadıysa yanıt
+   *    istemciye ulaşmamış sayılır (ağ kopması) → çocuk iptal, yeni çocuk
+   *    verilir. Çocuk kullanılmışsa iki taraf aynı aileyi kullanıyor → çalıntı:
+   *    aile iptal + 401.
+   * Kullanıcı silinmişse 401 + aile iptal (B14).
+   */
   async refresh(refreshToken: string): Promise<RefreshTokenResponse> {
     if (!refreshToken) {
       throw new BadRequestException('refreshToken zorunludur.');
     }
 
-    const existing = this.sessionByRefreshToken.get(refreshToken);
-    if (existing) {
-      this.sessionByRefreshToken.delete(refreshToken);
-
-      const nextRefreshToken = this.createRefreshToken(existing.userId);
-      const accessToken = this.createAccessToken(existing.userId);
-      this.sessionByRefreshToken.set(nextRefreshToken, existing);
-
-      return {
-        userId: existing.userId,
-        accessToken,
-        refreshToken: nextRefreshToken,
-        displayName: existing.displayName,
-      };
+    const parsed = this.parseRefreshToken(refreshToken);
+    if (!parsed) {
+      throw this.sessionExpired();
     }
 
-    const userId = this.parseRefreshTokenUserId(refreshToken);
-    if (!userId) {
-      throw new UnauthorizedException(
-        'Oturum yenilenemedi. Tekrar giriş yapmalısın.',
-      );
+    const tokenHash = hashRefreshToken(refreshToken);
+    const now = new Date();
+    let record = await this.refreshTokenModel
+      .findOneAndUpdate(
+        { tokenHash, usedAt: null, revokedAt: null },
+        { $set: { usedAt: now } },
+        { returnDocument: 'after' },
+      )
+      .lean()
+      .exec();
+
+    if (!record) {
+      record = await this.claimLegacyToken(tokenHash, parsed, now);
+    }
+    if (!record) {
+      record = await this.retryLostRotation(tokenHash, now);
+    }
+    if (!record) {
+      throw this.sessionExpired();
     }
 
-    const user = await this.usersService.touchAuthUser(userId);
-    const accessToken = this.createAccessToken(user.id);
-    const nextRefreshToken = this.createRefreshToken(user.id);
-    this.sessionByRefreshToken.set(nextRefreshToken, {
-      userId: user.id,
-      displayName: user.displayName,
-    });
+    let user: { id: string; displayName?: string };
+    try {
+      user = await this.usersService.touchAuthUser(record.userId.toString());
+    } catch (error) {
+      if (!(error instanceof NotFoundException)) throw error;
+      await this.revokeFamily(record.familyId);
+      throw this.sessionExpired();
+    }
+
+    const nextRefreshToken = await this.issueRefreshToken(
+      user.id,
+      record.familyId,
+    );
+    await this.refreshTokenModel
+      .updateOne(
+        { tokenHash },
+        { $set: { replacedByHash: hashRefreshToken(nextRefreshToken) } },
+      )
+      .exec();
 
     return {
       userId: user.id,
-      accessToken,
+      accessToken: this.createAccessToken(user.id),
       refreshToken: nextRefreshToken,
       displayName: user.displayName,
     };
+  }
+
+  /** A-20 çıkış: token'ın ailesini iptal eder. Bilinmeyen/geçersiz token sessizce yok sayılır. */
+  async logout(refreshToken: string): Promise<void> {
+    if (!refreshToken) {
+      throw new BadRequestException('refreshToken zorunludur.');
+    }
+    const tokenHash = hashRefreshToken(refreshToken);
+    const record = await this.refreshTokenModel
+      .findOne({ tokenHash })
+      .lean()
+      .exec();
+    if (record) {
+      await this.revokeFamily(record.familyId);
+      return;
+    }
+
+    // Kayıtsız eski token: sonradan göç yolundan kabul edilmesin diye iptal kaydı yaz.
+    const parsed = this.parseRefreshToken(refreshToken);
+    if (!parsed) return;
+    await this.refreshTokenModel
+      .updateOne(
+        { tokenHash },
+        {
+          $setOnInsert: {
+            userId: new Types.ObjectId(parsed.userId),
+            familyId: randomUUID(),
+            expiresAt: new Date(parsed.expiresAt),
+            revokedAt: new Date(),
+          },
+        },
+        { upsert: true },
+      )
+      .exec();
+  }
+
+  private async issueRefreshToken(userId: string, familyId: string) {
+    const refreshToken = this.createRefreshToken(userId);
+    const parsed = this.parseRefreshToken(refreshToken);
+    await this.refreshTokenModel.create({
+      tokenHash: hashRefreshToken(refreshToken),
+      userId: new Types.ObjectId(userId),
+      familyId,
+      expiresAt: new Date(parsed?.expiresAt ?? Date.now()),
+    });
+    return refreshToken;
+  }
+
+  /** Göç: DB'de hiç kaydı olmayan imzalı token tek seferlik kabul edilir (unique tokenHash yarışı tekler). */
+  private async claimLegacyToken(
+    tokenHash: string,
+    parsed: { userId: string; expiresAt: number },
+    now: Date,
+  ) {
+    if (await this.refreshTokenModel.exists({ tokenHash })) return null;
+    try {
+      const created = await this.refreshTokenModel.create({
+        tokenHash,
+        userId: new Types.ObjectId(parsed.userId),
+        familyId: randomUUID(),
+        expiresAt: new Date(parsed.expiresAt),
+        usedAt: now,
+      });
+      return created.toObject();
+    } catch (error) {
+      if ((error as { code?: unknown }).code === 11000) return null;
+      throw error;
+    }
+  }
+
+  private async retryLostRotation(tokenHash: string, now: Date) {
+    const record = await this.refreshTokenModel
+      .findOne({ tokenHash })
+      .lean()
+      .exec();
+    if (!record) return null;
+
+    if (!record.revokedAt && record.usedAt && record.replacedByHash) {
+      const child = await this.refreshTokenModel
+        .findOneAndUpdate(
+          { tokenHash: record.replacedByHash, usedAt: null, revokedAt: null },
+          { $set: { revokedAt: now } },
+        )
+        .lean()
+        .exec();
+      if (child) return record;
+    }
+
+    await this.revokeFamily(record.familyId);
+    return null;
+  }
+
+  private async revokeFamily(familyId: string) {
+    await this.refreshTokenModel
+      .updateMany(
+        { familyId, revokedAt: null },
+        { $set: { revokedAt: new Date() } },
+      )
+      .exec();
+  }
+
+  private sessionExpired() {
+    return new UnauthorizedException(
+      'Oturum yenilenemedi. Tekrar giriş yapmalısın.',
+    );
   }
 
   private async createUserAndLinkIdentity(
@@ -482,7 +611,9 @@ export class AuthService {
     return ttlMinutes * 60;
   }
 
-  private parseRefreshTokenUserId(refreshToken: string) {
+  private parseRefreshToken(
+    refreshToken: string,
+  ): { userId: string; expiresAt: number } | null {
     const segments = refreshToken.split('.');
     if (segments.length !== 3 || segments[0] !== 'rt') {
       return null;
@@ -522,7 +653,7 @@ export class AuthService {
       return null;
     }
 
-    return userId;
+    return { userId, expiresAt };
   }
 
   private getRefreshTokenSecret() {
@@ -587,6 +718,10 @@ function safeTimingEqual(a: string, b: string) {
     return false;
   }
   return timingSafeEqual(left, right);
+}
+
+function hashRefreshToken(refreshToken: string) {
+  return createHash('sha256').update(refreshToken).digest('hex');
 }
 
 function signRefreshPayload(payloadSegment: string, secret: string) {

@@ -5,10 +5,15 @@ import type { RevenueCatWebhookPayload } from './dto/revenuecat-event.dto';
 describe('WebhooksController', () => {
   const subscriptionsService = {
     syncPremiumForUser: jest.fn(),
+    expirePremiumFromEvent: jest.fn(),
+    extendPremiumForGracePeriod: jest.fn(),
     create: jest.fn(),
     resolveExistingUserId: jest.fn(),
   };
-  const aiCreditsService = { applyTopupPurchase: jest.fn() };
+  const aiCreditsService = {
+    applyTopupPurchase: jest.fn(),
+    applyTopupRefund: jest.fn(),
+  };
   const configService = { get: jest.fn() };
 
   let controller: WebhooksController;
@@ -36,6 +41,7 @@ describe('WebhooksController', () => {
   beforeEach(() => {
     Object.values(subscriptionsService).forEach((fn) => fn.mockReset());
     aiCreditsService.applyTopupPurchase.mockReset();
+    aiCreditsService.applyTopupRefund.mockReset();
     configService.get.mockReset();
     configService.get.mockImplementation((key: string) =>
       key === 'REVENUECAT_WEBHOOK_SECRET' ? secret : undefined,
@@ -131,32 +137,65 @@ describe('WebhooksController', () => {
   });
 
   describe('event türü yönlendirme', () => {
-    it('EXPIRATION → syncPremiumForUser(false) çağırır', async () => {
-      subscriptionsService.syncPremiumForUser.mockResolvedValue(undefined);
-
+    it('EXPIRATION → expirePremiumFromEvent(olay zamanı) çağırır', async () => {
       await controller.handleRevenueCat(
         `Bearer ${secret}`,
-        payload({ type: 'EXPIRATION' }),
+        payload({ type: 'EXPIRATION', event_timestamp_ms: 1500 }),
       );
 
-      expect(subscriptionsService.syncPremiumForUser).toHaveBeenCalledWith(
+      expect(subscriptionsService.expirePremiumFromEvent).toHaveBeenCalledWith(
         'user-mongo-id',
-        { hasActivePremiumEntitlement: false, provider: 'apple' },
+        'apple',
+        new Date(1500),
       );
     });
 
-    it('BILLING_ISSUE → syncPremiumForUser(false) çağırır', async () => {
-      subscriptionsService.syncPremiumForUser.mockResolvedValue(undefined);
-
+    it('BILLING_ISSUE premium düşürmez (A-09); grace varsa bitişi uzatır', async () => {
       await controller.handleRevenueCat(
         `Bearer ${secret}`,
         payload({ type: 'BILLING_ISSUE', store: 'PLAY_STORE' }),
       );
+      expect(subscriptionsService.syncPremiumForUser).not.toHaveBeenCalled();
+      expect(
+        subscriptionsService.expirePremiumFromEvent,
+      ).not.toHaveBeenCalled();
+      expect(
+        subscriptionsService.extendPremiumForGracePeriod,
+      ).not.toHaveBeenCalled();
 
-      expect(subscriptionsService.syncPremiumForUser).toHaveBeenCalledWith(
-        'user-mongo-id',
-        { hasActivePremiumEntitlement: false, provider: 'google' },
+      await controller.handleRevenueCat(
+        `Bearer ${secret}`,
+        payload({
+          type: 'BILLING_ISSUE',
+          store: 'PLAY_STORE',
+          grace_period_expiration_at_ms: 9000,
+        }),
       );
+      expect(
+        subscriptionsService.extendPremiumForGracePeriod,
+      ).toHaveBeenCalledWith('user-mongo-id', 'google', new Date(9000));
+    });
+
+    it('CANCELLATION CUSTOMER_SUPPORT (iade) → applyTopupRefund çağırır', async () => {
+      aiCreditsService.applyTopupRefund.mockResolvedValue({
+        applied: true,
+        reason: 'ok',
+        credits: 10,
+      });
+      await controller.handleRevenueCat(
+        `Bearer ${secret}`,
+        payload({
+          type: 'CANCELLATION',
+          cancel_reason: 'CUSTOMER_SUPPORT',
+          product_id: 'topupsmall',
+          id: 'evt-r',
+        }),
+      );
+      expect(aiCreditsService.applyTopupRefund).toHaveBeenCalledWith({
+        userId: 'user-mongo-id',
+        productId: 'topupsmall',
+        providerEventId: 'evt-r',
+      });
     });
 
     it('INITIAL_PURCHASE/RENEWAL/UNCANCELLATION → subscriptionsService.create çağırır', async () => {
@@ -175,6 +214,7 @@ describe('WebhooksController', () => {
           provider: 'apple',
         }),
         'evt-1',
+        undefined,
       );
     });
 
@@ -186,6 +226,7 @@ describe('WebhooksController', () => {
       expect(subscriptionsService.create).toHaveBeenCalledWith(
         expect.anything(),
         'INITIAL_PURCHASE:user-1:premium_monthly:1000',
+        undefined,
       );
     });
 
@@ -227,6 +268,7 @@ describe('WebhooksController', () => {
       expect(subscriptionsService.syncPremiumForUser).not.toHaveBeenCalled();
       expect(subscriptionsService.create).not.toHaveBeenCalled();
       expect(aiCreditsService.applyTopupPurchase).not.toHaveBeenCalled();
+      expect(aiCreditsService.applyTopupRefund).not.toHaveBeenCalled();
     });
   });
 

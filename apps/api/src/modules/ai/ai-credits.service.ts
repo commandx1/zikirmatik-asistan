@@ -151,6 +151,88 @@ export class AiCreditsService {
   }
 
   /**
+   * Kredi paketi iadesi (A-10): paketin kredisi kalan bakiyeden düşülür —
+   * önce topup, kalan grant kovasından; bakiye 0'ın altına inmez. Ledger
+   * REFUND satırı (providerEventId unique) olay başına tek uygulamayı garantiler.
+   * Katalogda olmayan ürün (abonelik) → etkisiz.
+   */
+  async applyTopupRefund(input: {
+    userId: string;
+    productId: string;
+    providerEventId: string;
+  }) {
+    const userId = this.asObjectId(input.userId, 'Geçersiz kullanıcı kimliği.');
+    const productId = input.productId?.trim();
+    const providerEventId = input.providerEventId?.trim();
+    const credits = productId ? this.resolveTopupCredits(productId) : 0;
+    if (!providerEventId || credits <= 0) {
+      return { applied: false as const, reason: 'not_topup', credits: 0 };
+    }
+
+    try {
+      await this.aiCreditLedgerModel.create({
+        userId,
+        reason: AI_CREDIT_REASONS.REFUND,
+        delta: -credits,
+        providerEventId,
+        metadata: { productId, kind: 'topup_refund' },
+      });
+    } catch (error) {
+      if (this.isDuplicateKeyError(error)) {
+        return {
+          applied: false as const,
+          reason: 'duplicate_event',
+          credits: 0,
+        };
+      }
+      throw error;
+    }
+
+    const topupTake = { $min: ['$topupCredits', credits] };
+    const before = await this.aiCreditWalletModel
+      .findOneAndUpdate(
+        { userId },
+        [
+          {
+            $set: {
+              topupCredits: { $subtract: ['$topupCredits', topupTake] },
+              grantCredits: {
+                $subtract: [
+                  '$grantCredits',
+                  {
+                    $min: [
+                      '$grantCredits',
+                      { $subtract: [credits, topupTake] },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+          { $set: { balance: { $add: ['$grantCredits', '$topupCredits'] } } },
+        ],
+        { new: false, updatePipeline: true },
+      )
+      .lean()
+      .exec();
+
+    const deducted = Math.min(Math.max(0, before?.balance ?? 0), credits);
+    await this.aiCreditLedgerModel
+      .updateOne(
+        { reason: AI_CREDIT_REASONS.REFUND, providerEventId },
+        {
+          $set: {
+            delta: -deducted,
+            balanceAfter: Math.max(0, (before?.balance ?? 0) - deducted),
+          },
+        },
+      )
+      .exec();
+
+    return { applied: true as const, reason: 'ok', credits: deducted };
+  }
+
+  /**
    * `extra` opsiyoneldir — AI Vird Programı akışı burayı durationDays/slots/
    * prayerSelection ile doldurur (aynı flowId'nin farklı bir program isteğiyle
    * yeniden kullanılmasını da RECOMMENDATION_DEBIT'teki freeText gibi tespit
@@ -386,24 +468,17 @@ export class AiCreditsService {
     userId: Types.ObjectId,
     isPremium: boolean,
   ): Promise<CreditState> {
-    const initialWallet =
-      (await this.aiCreditWalletModel.findOne({ userId }).exec()) ??
-      (await this.aiCreditWalletModel.create({ userId }));
-
+    let wallet = await this.findOrCreateWallet(userId);
     const grant = await this.resolveGrantStatus(userId, isPremium);
-    let wallet = initialWallet;
 
     if (
       wallet.grantReason !== grant.reason ||
       wallet.grantCycleKey !== grant.cycleKey
     ) {
       // Grant yalnızca ledger insert'i başarılıysa uygulanır: unique index
-      // (dayKey/monthKey) aynı döngüde ikinci grant'i engeller. Böylece
-      // premium⇄free toggle'ında aylık grant tekrar verilmez ve mevcut
-      // bakiye korunur (downgrade'de krediler sıfırlanmaz). Yeni döngüde
-      // grant uygulandığında ise grantCredits BİRİKMEZ: kullanılmayan
-      // önceki grant döngü değişince sıfırlanır ($set), topupCredits'e
-      // dokunulmaz.
+      // (dayKey/monthKey) aynı döngüde ikinci grant'i engeller — premium⇄free
+      // toggle'ında aylık grant tekrar verilmez. Yeni döngüde grantCredits
+      // BİRİKMEZ (önceki döngünün artığı sıfırlanır), topupCredits'e dokunulmaz.
       let grantApplied = false;
       try {
         await this.aiCreditLedgerModel.create({
@@ -420,23 +495,49 @@ export class AiCreditsService {
         }
       }
 
+      if (!grantApplied) {
+        const settled = await this.awaitConcurrentGrant(userId, grant);
+        if (settled) return this.toCreditState(settled, isPremium);
+      }
+
+      // A-08: kova bu ayın aylık premium kredisini taşıyorsa, premium bitince
+      // ücretsiz günlük grant onu SİLMEZ (en az günlük miktar kadar kalır);
+      // aynı ay yeniden premium olunca (aylık ledger zaten var) kalan hak korunur.
+      const monthKey = grant.monthKey ?? grant.cycleKey.slice(0, 7);
+      const holdsMonthly =
+        wallet.carryMonthKey === monthKey ||
+        (wallet.grantReason === AI_CREDIT_REASONS.PREMIUM_MONTHLY_GRANT &&
+          wallet.grantCycleKey === monthKey);
+      const carryMonthKey =
+        isPremium || holdsMonthly
+          ? monthKey
+          : grantApplied
+            ? null
+            : (wallet.carryMonthKey ?? null);
+      const grantCredits = !grantApplied
+        ? '$grantCredits'
+        : !isPremium && holdsMonthly
+          ? { $max: ['$grantCredits', grant.amount] }
+          : grant.amount;
+
+      // Pipeline: bakiye canlı alanlardan hesaplanır — eşzamanlı topup/debit
+      // bayat okumayla ezilmez (CRD-18).
       wallet =
         (await this.aiCreditWalletModel
           .findOneAndUpdate(
             { userId },
-            {
-              $set: {
-                grantReason: grant.reason,
-                grantCycleKey: grant.cycleKey,
-                ...(grantApplied
-                  ? {
-                      grantCredits: grant.amount,
-                      balance: Math.max(0, wallet.topupCredits) + grant.amount,
-                    }
-                  : {}),
+            [
+              {
+                $set: {
+                  grantReason: grant.reason,
+                  grantCycleKey: grant.cycleKey,
+                  carryMonthKey,
+                  grantCredits,
+                },
               },
-            },
-            { upsert: true, new: true, setDefaultsOnInsert: true },
+              { $set: WALLET_BALANCE_STAGE },
+            ],
+            { new: true, updatePipeline: true },
           )
           .exec()) ?? wallet;
     } else {
@@ -447,19 +548,28 @@ export class AiCreditsService {
           (await this.aiCreditWalletModel
             .findOneAndUpdate(
               { userId },
-              {
-                $set: {
-                  topupCredits: Math.max(0, wallet.topupCredits),
-                  grantCredits: Math.max(0, wallet.grantCredits),
-                  balance: nextBalance,
+              [
+                {
+                  $set: {
+                    topupCredits: { $max: [0, '$topupCredits'] },
+                    grantCredits: { $max: [0, '$grantCredits'] },
+                  },
                 },
-              },
-              { new: true },
+                { $set: WALLET_BALANCE_STAGE },
+              ],
+              { new: true, updatePipeline: true },
             )
             .exec()) ?? wallet;
       }
     }
 
+    return this.toCreditState(wallet, isPremium);
+  }
+
+  private toCreditState(
+    wallet: AiCreditWalletDocument,
+    isPremium: boolean,
+  ): CreditState {
     return {
       balance: wallet.balance,
       isPremium,
@@ -467,6 +577,69 @@ export class AiCreditsService {
       monthlyGrant: isPremium ? PREMIUM_MONTHLY_CREDIT_AMOUNT : 0,
       wallet,
     };
+  }
+
+  /**
+   * Aynı döngünün grant ledger satırını eşzamanlı başka bir istek az önce
+   * yazdıysa (E11000), onun cüzdan güncellemesini bekle — yoksa bu istek grant
+   * yazılmadan önceki bakiyeyi (ör. 0) görüp yersiz 403 verir (CRD-11/13).
+   * ponytail: 20×25 ms yoklama; uygulayan istek ledger ile cüzdan arasında
+   * çökerse grant kaybolur (önceden de böyleydi).
+   */
+  private async awaitConcurrentGrant(
+    userId: Types.ObjectId,
+    grant: {
+      reason: AiCreditReason;
+      cycleKey: string;
+      dayKey?: string;
+      monthKey?: string;
+    },
+  ): Promise<AiCreditWalletDocument | null> {
+    const row = await this.aiCreditLedgerModel
+      .findOne({
+        userId,
+        reason: grant.reason,
+        ...(grant.dayKey ? { dayKey: grant.dayKey } : {}),
+        ...(grant.monthKey ? { monthKey: grant.monthKey } : {}),
+      })
+      .lean()
+      .exec();
+    const createdAt = row?.createdAt ? new Date(row.createdAt).getTime() : 0;
+    if (Date.now() - createdAt > 5_000) return null;
+
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const wallet = await this.aiCreditWalletModel.findOne({ userId }).exec();
+      if (
+        wallet?.grantReason === grant.reason &&
+        wallet.grantCycleKey === grant.cycleKey
+      ) {
+        return wallet;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
+    return null;
+  }
+
+  /** B8/CRD-13: eşzamanlı ilk istekler E11000 → 500 vermesin; upsert + yarışı kaybeden yeniden okur. */
+  private async findOrCreateWallet(
+    userId: Types.ObjectId,
+  ): Promise<AiCreditWalletDocument> {
+    let wallet: AiCreditWalletDocument | null = null;
+    try {
+      wallet = await this.aiCreditWalletModel
+        .findOneAndUpdate(
+          { userId },
+          { $setOnInsert: { userId } },
+          { upsert: true, new: true, setDefaultsOnInsert: true },
+        )
+        .exec();
+    } catch (error) {
+      if (!this.isDuplicateKeyError(error)) throw error;
+    }
+    wallet ??= await this.aiCreditWalletModel.findOne({ userId }).exec();
+    if (!wallet)
+      throw new Error(`AI cüzdanı oluşturulamadı: ${String(userId)}`);
+    return wallet;
   }
 
   private async resolveGrantStatus(
@@ -554,6 +727,11 @@ export class AiCreditsService {
     return new Types.ObjectId(rawId);
   }
 }
+
+// İkinci pipeline aşaması: bakiye = grant + topup (ilk aşamanın YENİ değerleriyle).
+const WALLET_BALANCE_STAGE = {
+  balance: { $add: ['$grantCredits', '$topupCredits'] },
+};
 
 function toUtcDayKey(date: Date) {
   const year = date.getUTCFullYear();

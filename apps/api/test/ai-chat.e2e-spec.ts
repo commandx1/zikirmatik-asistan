@@ -216,4 +216,162 @@ describe('AI Sohbet (e2e)', () => {
       .expect(200);
     expect(data(messages)).toBeTruthy();
   });
+  // ── QA: CRD-12/CHT-21 eşzamanlı tükenme, A-11 istemci mesaj anahtarı, B16 ──
+  const sse = (req: request.Test) =>
+    req.buffer(true).parse((res, cb) => {
+      let body = '';
+      res.on('data', (chunk: Buffer) => (body += chunk.toString()));
+      res.on('end', () => cb(null, body));
+    });
+  const sseEvent = (raw: string, name: string) => {
+    const block = raw
+      .split('\n\n')
+      .find((b) => b.startsWith(`event: ${name}\n`));
+    return block
+      ? (JSON.parse(block.split('\ndata: ')[1]) as Record<string, unknown>)
+      : undefined;
+  };
+
+  it('CRD-12/CHT-21/B9: bakiye 1, iki eşzamanlı mesaj → biri 201, diğeri 403 ve İÇERİK KALMAZ', async () => {
+    const { user, credits } = await setup();
+    await credits(); // cüzdan + bugünkü grant
+    const userId = new Types.ObjectId(user.userId);
+    await t
+      .model('AiCreditWallet')
+      .updateOne({ userId }, { $set: { grantCredits: 1, balance: 1 } });
+
+    const results = await Promise.all(
+      ['birinci', 'ikinci'].map((text) =>
+        request(t.http)
+          .post('/v1/ai/chat/conversations')
+          .set(bearer(user.accessToken))
+          .send({ firstMessage: text }),
+      ),
+    );
+    expect(results.map((r) => r.status).sort()).toEqual([201, 403]);
+    expect(await t.model('AiConversation').countDocuments({ userId })).toBe(1);
+    expect(await t.model('AiChatMessage').countDocuments({ userId })).toBe(2);
+    expect(
+      await t
+        .model('AiCreditLedger')
+        .countDocuments({ userId, reason: 'CHAT_MESSAGE_DEBIT' }),
+    ).toBe(1);
+    expect(await credits()).toBe(0);
+  });
+
+  it('B16/CHT-10: yalnız boşluk mesaj → 400, kredi düşmez', async () => {
+    const { user, credits } = await setup();
+    const before = await credits();
+    await request(t.http)
+      .post('/v1/ai/chat/conversations')
+      .set(bearer(user.accessToken))
+      .send({ firstMessage: '   \n\t ' })
+      .expect(400);
+    const created = await request(t.http)
+      .post('/v1/ai/chat/conversations')
+      .set(bearer(user.accessToken))
+      .send({ firstMessage: 'ilk' })
+      .expect(201);
+    const conversationId = data<{ conversation: { _id: string } }>(created)
+      .conversation._id;
+    await request(t.http)
+      .post(`/v1/ai/chat/conversations/${conversationId}/messages`)
+      .set(bearer(user.accessToken))
+      .send({ message: '    ' })
+      .expect(400);
+    expect(await credits()).toBe(before - 1);
+  });
+
+  it('A-11: konuşma oluşturma aynı clientMessageId ile tekrar → aynı yanıt, ikinci kredi/konuşma/LLM yok', async () => {
+    const { user, credits } = await setup();
+    const before = await credits();
+    const clientMessageId = randomUUID();
+    const send = () =>
+      request(t.http)
+        .post('/v1/ai/chat/conversations')
+        .set(bearer(user.accessToken))
+        .send({ firstMessage: 'tekrar gelen soru', clientMessageId })
+        .expect(201);
+    type Body = {
+      conversation: { _id: string };
+      messages: { id: string; role: string }[];
+    };
+    const first = data<Body>(await send());
+    const callsAfterFirst = ai.calls.length;
+    const second = data<Body>(await send());
+
+    expect(second.conversation._id).toBe(first.conversation._id);
+    expect(second.messages.map((m) => m.id)).toEqual(
+      first.messages.map((m) => m.id),
+    );
+    expect(ai.calls.length).toBe(callsAfterFirst);
+    expect(await credits()).toBe(before - 1);
+    const userId = new Types.ObjectId(user.userId);
+    expect(await t.model('AiConversation').countDocuments({ userId })).toBe(1);
+    expect(await t.model('AiChatMessage').countDocuments({ userId })).toBe(2);
+  });
+
+  it('A-11: sendMessage aynı clientMessageId (ardışık + eşzamanlı) → tek mesaj çifti, tek kredi; farklı metin → 409', async () => {
+    const { user, credits } = await setup();
+    const created = await request(t.http)
+      .post('/v1/ai/chat/conversations')
+      .set(bearer(user.accessToken))
+      .send({ firstMessage: 'ilk' })
+      .expect(201);
+    const conversationId = data<{ conversation: { _id: string } }>(created)
+      .conversation._id;
+    const before = await credits();
+    const clientMessageId = randomUUID();
+    const send = (message = 'ikinci mesaj') =>
+      request(t.http)
+        .post(`/v1/ai/chat/conversations/${conversationId}/messages`)
+        .set(bearer(user.accessToken))
+        .send({ message, clientMessageId });
+
+    const [a, b] = await Promise.all([send(), send()]);
+    expect([a.status, b.status]).toEqual([201, 201]);
+    const c = await send().expect(201);
+    type Body = { reply: { id: string }; message: { id: string } };
+    expect(data<Body>(b).reply.id).toBe(data<Body>(a).reply.id);
+    expect(data<Body>(c).reply.id).toBe(data<Body>(a).reply.id);
+    expect(data<Body>(c).message.id).toBe(data<Body>(a).message.id);
+
+    expect(await credits()).toBe(before - 1);
+    expect(
+      await t
+        .model('AiChatMessage')
+        .countDocuments({ conversationId: new Types.ObjectId(conversationId) }),
+    ).toBe(4);
+
+    const conflict = await send('başka metin').expect(409);
+    expect(conflict.body).toMatchObject({ code: 'CLIENT_MESSAGE_ID_CONFLICT' });
+  });
+
+  it('A-11: SSE aynı clientMessageId ile tekrar → kayıtlı yanıt token+done olarak yeniden oynatılır, kredi düşmez', async () => {
+    const { user, credits } = await setup();
+    const before = await credits();
+    const clientMessageId = randomUUID();
+    const stream = () =>
+      sse(
+        request(t.http)
+          .post('/v1/ai/chat/conversations/stream')
+          .set(bearer(user.accessToken))
+          .send({ firstMessage: 'akış sorusu', clientMessageId }),
+      ).expect(201);
+
+    const first = sseEvent((await stream()).body as string, 'done');
+    expect(first?.messageId).toBeTruthy();
+    const callsAfterFirst = ai.calls.length;
+
+    const replayRaw = (await stream()).body as string;
+    const replay = sseEvent(replayRaw, 'done');
+    expect(sseEvent(replayRaw, 'token')).toEqual({ delta: first?.content });
+    expect(replay).toMatchObject({
+      messageId: first?.messageId,
+      conversationId: first?.conversationId,
+      content: first?.content,
+    });
+    expect(ai.calls.length).toBe(callsAfterFirst);
+    expect(await credits()).toBe(before - 1);
+  });
 });

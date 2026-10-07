@@ -111,7 +111,11 @@ export class SubscriptionsService {
   }
 
   /** providerEventId (yalnız webhook) verilirse idempotent: aynı olay tek belge. */
-  async create(payload: CreateSubscriptionDto, providerEventId?: string) {
+  async create(
+    payload: CreateSubscriptionDto,
+    providerEventId?: string,
+    providerEventAt?: Date,
+  ) {
     const userId = this.asObjectId(
       payload.userId,
       'Geçersiz kullanıcı kimliği.',
@@ -122,7 +126,14 @@ export class SubscriptionsService {
       ? await this.subscriptionModel
           .findOneAndUpdate(
             { providerEventId },
-            { $setOnInsert: { ...payload, userId, providerEventId } },
+            {
+              $setOnInsert: {
+                ...payload,
+                userId,
+                providerEventId,
+                ...(providerEventAt ? { providerEventAt } : {}),
+              },
+            },
             { upsert: true, returnDocument: 'after' },
           )
           .lean()
@@ -277,6 +288,62 @@ export class SubscriptionsService {
       userId,
       isPremium: user?.isPremium ?? false,
     };
+  }
+
+  /**
+   * Webhook EXPIRATION: yalnız olay üretilmeden ÖNCE verilmiş aktif dönemleri
+   * düşürür — RENEWAL'dan sonra teslim edilen eski EXPIRATION yeni dönemi
+   * öldürmez (WHK-15/B3). providerEventAt'i olmayan (istemci/eski) kayıtlar
+   * createdAt ile kıyaslanır. eventAt yoksa (RC her olayda gönderir) şimdi.
+   */
+  async expirePremiumFromEvent(
+    userId: string,
+    provider: 'apple' | 'google',
+    eventAt: Date = new Date(),
+  ) {
+    const objectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
+    await this.subscriptionModel
+      .updateMany(
+        {
+          userId: objectId,
+          plan: 'premium',
+          status: 'active',
+          provider,
+          $or: [
+            { providerEventAt: { $lt: eventAt } },
+            { providerEventAt: null, createdAt: { $lte: eventAt } },
+          ],
+        },
+        { $set: { status: 'expired', endDate: new Date() } },
+      )
+      .exec();
+    await this.syncUserPremiumStatus(objectId);
+  }
+
+  /**
+   * Webhook BILLING_ISSUE (A-09): premium düşmez; mağaza grace süresi varsa
+   * aktif dönemlerin bitişi grace sonuna uzar ki cron erken düşürmesin.
+   * Grace biterse RC EXPIRATION gönderir (kaçarsa cron grace sonunda düşürür).
+   */
+  async extendPremiumForGracePeriod(
+    userId: string,
+    provider: 'apple' | 'google',
+    graceEndsAt: Date,
+  ) {
+    const objectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
+    await this.subscriptionModel
+      .updateMany(
+        {
+          userId: objectId,
+          plan: 'premium',
+          status: 'active',
+          provider,
+          endDate: { $lt: graceEndsAt },
+        },
+        { $set: { endDate: graceEndsAt } },
+      )
+      .exec();
+    await this.syncUserPremiumStatus(objectId);
   }
 
   private async syncUserPremiumStatus(userId: Types.ObjectId) {

@@ -109,3 +109,17 @@ AiCreditLedgerSchema.index(
     },
   },
 );
+
+// İade (A-10) olay başına bir kez. Anahtar sırası TOPUP index'inden farklı:
+// aynı anahtar deseni + farklı partial filter otomatik ad çakışması yaratırdı.
+AiCreditLedgerSchema.index(
+  { providerEventId: 1, reason: 1 },
+  {
+    name: 'uniq_refund_providerEventId',
+    unique: true,
+    partialFilterExpression: {
+      reason: AI_CREDIT_REASONS.REFUND,
+      providerEventId: { $exists: true, $type: 'string' },
+    },
+  },
+);

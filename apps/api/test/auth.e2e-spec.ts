@@ -1,3 +1,4 @@
+import { createHmac, randomUUID } from 'node:crypto';
 import request from 'supertest';
 import { createTestApp, type TestApp } from './helpers/create-test-app';
 import { clearCollections, syncIndexes } from './helpers/db';
@@ -148,5 +149,94 @@ describe('Auth (e2e)', () => {
       .exec();
     expect(device).not.toBeNull();
     expect(String(device?.userId)).toBe(signed.userId);
+  });
+  // ── A-20: refresh rotation + iptal, eski (DB'siz) token göçü, B14 ────────
+  const refresh = (refreshToken: string) =>
+    request(t.http).post('/v1/auth/refresh').send({ refreshToken });
+  const next = async (refreshToken: string) =>
+    data<{ refreshToken: string }>(await refresh(refreshToken).expect(200))
+      .refreshToken;
+  // Bu sürümden önce verilmiş, sunucuda kaydı olmayan imzalı token (setup-env
+  // AUTH_REFRESH_TOKEN_SECRET=e2e-refresh) — auth.service createRefreshToken biçimi.
+  const legacyToken = (userId: string) => {
+    const payload = Buffer.from(
+      `${userId}.${Date.now() + 86_400_000}.${randomUUID()}`,
+      'utf-8',
+    ).toString('base64url');
+    const sig = createHmac('sha256', 'e2e-refresh')
+      .update(payload)
+      .digest('base64url');
+    return `rt.${payload}.${sig}`;
+  };
+
+  it('A-20/AUTH-16: refresh tek kullanımlık; kullanılmış token tekrar → 401 ve aile iptal', async () => {
+    const signed = await signIn(t.http, { sub: 'e2e-auth-rot' });
+    const t1 = await next(signed.refreshToken);
+    const t2 = await next(t1); // t1 kullanıldı → t0'ın çocuğu kullanılmış
+
+    await refresh(signed.refreshToken).expect(401); // hırsızlık tespiti
+    await refresh(t2).expect(401); // aile iptal edildi
+  });
+
+  it('A-20: yanıtı kaybolan refresh (çocuk hiç kullanılmadı) tekrar denenebilir', async () => {
+    const signed = await signIn(t.http, { sub: 'e2e-auth-lost' });
+    await next(signed.refreshToken); // yanıt istemciye ulaşmadı varsay
+    const t2 = await next(signed.refreshToken);
+    await next(t2);
+  });
+
+  it('A-20: POST /v1/auth/logout token ailesini iptal eder, idempotent 204', async () => {
+    const signed = await signIn(t.http, { sub: 'e2e-auth-logout' });
+    const t1 = await next(signed.refreshToken);
+
+    await request(t.http)
+      .post('/v1/auth/logout')
+      .send({ refreshToken: t1 })
+      .expect(204);
+    await refresh(t1).expect(401);
+    await request(t.http)
+      .post('/v1/auth/logout')
+      .send({ refreshToken: t1 })
+      .expect(204);
+    await request(t.http)
+      .post('/v1/auth/logout')
+      .send({ refreshToken: 'rt.uydurma.deadbeef' })
+      .expect(204);
+    await request(t.http).post('/v1/auth/logout').send({}).expect(400);
+  });
+
+  it('A-20 göç: kayıtsız eski token bir kez kabul edilip aileye döner; tekrar → 401; çıkışta iptal', async () => {
+    const signed = await signIn(t.http, { sub: 'e2e-auth-legacy' });
+    const legacy = legacyToken(signed.userId);
+    const t1 = await next(legacy);
+    const t2 = await next(t1);
+    await refresh(legacy).expect(401);
+    await refresh(t2).expect(401);
+
+    const legacy2 = legacyToken(signed.userId);
+    await request(t.http)
+      .post('/v1/auth/logout')
+      .send({ refreshToken: legacy2 })
+      .expect(204);
+    await refresh(legacy2).expect(401);
+  });
+
+  it("AUTH-17/B14: hesabı silinmiş kullanıcının refresh'i 401 (404 değil)", async () => {
+    const signed = await signIn(t.http, { sub: 'e2e-auth-deleted' });
+    await t.model('User').deleteOne({ _id: signed.userId });
+    await refresh(signed.refreshToken).expect(401);
+    await refresh(legacyToken(signed.userId)).expect(401);
+  });
+
+  it('AUTH-15: süresi geçmiş refresh → 401', async () => {
+    const signed = await signIn(t.http, { sub: 'e2e-auth-expired' });
+    const nowSpy = jest
+      .spyOn(Date, 'now')
+      .mockReturnValue(Date.now() + 31 * 24 * 60 * 60 * 1000);
+    try {
+      await refresh(signed.refreshToken).expect(401);
+    } finally {
+      nowSpy.mockRestore();
+    }
   });
 });

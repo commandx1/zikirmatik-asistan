@@ -29,6 +29,11 @@ export class AiCreditWallet {
   @Prop({ type: String })
   grantCycleKey?: string;
 
+  // A-08: grantCredits bu UTC ayın (YYYY-MM) premium aylık kredisini taşıyorsa
+  // o ay; premium bitince kalan hak ay sonuna kadar ücretsiz günlerde silinmez.
+  @Prop({ type: String, default: null })
+  carryMonthKey?: string | null;
+
   readonly createdAt!: Date;
   readonly updatedAt!: Date;
 }
