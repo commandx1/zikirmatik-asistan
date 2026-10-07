@@ -6,6 +6,7 @@ describe('DhikrLogsService.create', () => {
   const dhikrLogModel = {
     findOne: jest.fn(),
     findOneAndUpdate: jest.fn(),
+    exists: jest.fn(),
   };
 
   const userModel = {
@@ -53,6 +54,7 @@ describe('DhikrLogsService.create', () => {
   beforeEach(() => {
     dhikrLogModel.findOne.mockReset();
     dhikrLogModel.findOneAndUpdate.mockReset();
+    dhikrLogModel.exists.mockReset().mockResolvedValue(null);
     userModel.countDocuments.mockReset().mockResolvedValue(1);
     dhikrModel.countDocuments.mockReset().mockResolvedValue(1);
     streaksService.recalculateForUser.mockReset().mockResolvedValue(undefined);
@@ -74,6 +76,22 @@ describe('DhikrLogsService.create', () => {
       virdProgressService as never,
       circlesService as never,
     );
+  });
+
+  it('recalculates the streak only when the day had no count>0 log yet', async () => {
+    const body = { userId, dhikrId, targetCount: 100, date: '2026-07-30' };
+    mockExistingLog(null);
+    await service.create({ ...body, count: 5 });
+    expect(streaksService.recalculateForUser).toHaveBeenCalledTimes(1);
+
+    dhikrLogModel.exists.mockResolvedValue({ _id: 'x' });
+    await service.create({ ...body, count: 9 });
+    expect(streaksService.recalculateForUser).toHaveBeenCalledTimes(1);
+
+    // count>0 -> 0 can drop the day: recalculate even though the day was active
+    mockExistingLog({ count: 5 } as never);
+    await service.create({ ...body, count: 0 });
+    expect(streaksService.recalculateForUser).toHaveBeenCalledTimes(2);
   });
 
   it('stores a completed log for a first write of the day', async () => {
@@ -572,6 +590,7 @@ describe('vird upsert operator safety', () => {
       }),
     });
     const dhikrLogModel = {
+      exists: jest.fn().mockResolvedValue(null),
       findOne: jest.fn().mockReturnValue({
         lean: jest.fn().mockReturnValue({
           exec: jest.fn().mockResolvedValue(null),
@@ -674,6 +693,7 @@ describe('duplicate key (E11000) retry', () => {
       .mockResolvedValueOnce({ _id: 'log1', count: 33 });
     const findOneAndUpdate = jest.fn().mockReturnValue(chain(exec));
     const dhikrLogModel = {
+      exists: jest.fn().mockResolvedValue(null),
       findOne: jest
         .fn()
         .mockReturnValue(chain(jest.fn().mockResolvedValue(null))),
@@ -697,6 +717,7 @@ describe('duplicate key (E11000) retry', () => {
       .mockRejectedValueOnce(duplicateKeyError());
     const findOneAndUpdate = jest.fn().mockReturnValue(chain(exec));
     const dhikrLogModel = {
+      exists: jest.fn().mockResolvedValue(null),
       findOne: jest
         .fn()
         .mockReturnValue(chain(jest.fn().mockResolvedValue(null))),
@@ -713,6 +734,7 @@ describe('duplicate key (E11000) retry', () => {
     const exec = jest.fn().mockRejectedValue(new Error('network down'));
     const findOneAndUpdate = jest.fn().mockReturnValue(chain(exec));
     const dhikrLogModel = {
+      exists: jest.fn().mockResolvedValue(null),
       findOne: jest
         .fn()
         .mockReturnValue(chain(jest.fn().mockResolvedValue(null))),

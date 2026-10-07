@@ -167,6 +167,10 @@ export class SpecialDaysService implements OnApplicationBootstrap {
         isActive: true,
         date: { $gte: date },
       })
+      // article/practices yanıtta kullanılmaz; okunmaz (perf).
+      .select(
+        'name type date hijriDate description eventKey dayIndex dayCount hasSpecialFlow priority createdAt',
+      )
       .sort({ date: 1, priority: -1, createdAt: 1 })
       .lean()
       .exec();

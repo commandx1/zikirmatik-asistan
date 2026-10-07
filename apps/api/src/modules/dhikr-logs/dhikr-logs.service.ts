@@ -254,7 +254,16 @@ export class DhikrLogsService {
     // same day overwrites the earlier one. `isCompleted` must not follow that
     // rule: once a target was reached that day the streak has been earned, and
     // a subsequent partial session (reset + save 5 of 100) must not revoke it.
-    const existing = await this.dhikrLogModel.findOne(filter).lean().exec();
+    const [existing, dayHadActive] = await Promise.all([
+      this.dhikrLogModel.findOne(filter).lean().exec(),
+      // Seri yalnız şu durumlarda değişir: o günün ilk sayımı > 0 logu (ya da
+      // günün ilk logu: totalDaysActive) veya sayımı > 0 → 0 düşüşü.
+      this.dhikrLogModel.exists({
+        userId: userObjectId,
+        date: payload.date,
+        count: { $gt: 0 },
+      }),
+    ]);
     // M-04: sayım 0 yazımı bugünün tamamlanmış kaydını ezmez (no-op, mevcut
     // kayıt döner). Halka logunda $max zaten düşürmez.
     if (payload.count === 0 && existing?.isCompleted && !circleObjectId) {
@@ -324,7 +333,9 @@ export class DhikrLogsService {
 
     const created = await this.upsertLogOnce(filter, update);
 
-    await this.safeRecalcStreak(userObjectId.toHexString());
+    if (!dayHadActive || (payload.count === 0 && (existing?.count ?? 0) > 0)) {
+      await this.safeRecalcStreak(userObjectId.toHexString());
+    }
     await this.safeApplyVirdProgress(
       vird
         ? {

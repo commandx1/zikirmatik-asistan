@@ -20,6 +20,8 @@ export type StatsSourceBreakdown = Record<StatsSourceKey, number>;
 export type StatsTopDhikr = {
   key: string;
   label: string;
+  /** A-21: katalog zikri için iki dilli ad (en yoksa tr); özel zikirde yok. */
+  nameI18n?: { tr: string; en: string };
   totalCount: number;
   sessions: number;
 };
@@ -132,6 +134,7 @@ export type RawTopDhikrDoc = {
   customDhikrId?: string | null;
   customName?: string | null;
   dhikrName?: string | null;
+  dhikrNameEn?: string | null;
   totalCount: number;
   sessions: number;
 };
@@ -237,9 +240,11 @@ function mapTopDhikrs(docs: RawTopDhikrDoc[]): StatsTopDhikr[] {
       (doc.customDhikrId ? String(doc.customDhikrId) : undefined) ??
       'unknown';
     const label = doc.dhikrName?.trim() || doc.customName?.trim() || 'Zikir';
+    const tr = doc.dhikrName?.trim();
     return {
       key,
       label,
+      ...(tr ? { nameI18n: { tr, en: doc.dhikrNameEn?.trim() || tr } } : {}),
       totalCount: doc.totalCount ?? 0,
       sessions: doc.sessions ?? 0,
     };

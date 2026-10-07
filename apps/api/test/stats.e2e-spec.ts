@@ -319,4 +319,59 @@ describe('Stats (e2e)', () => {
       });
     });
   });
+
+  // A-21: topDhikrs iki dilli ad döner; `label` (tr) eski sürümler için kalır.
+  it('A-21: topDhikrs nameI18n {tr,en}; en yoksa tr; özel zikirde yok', async () => {
+    const user = await signIn(t.http, { sub: 'stats-a21' });
+    await makePremium(t.model('User'), user.userId);
+    const dhikrModel = t.model<DhikrDocument>('Dhikr');
+    const both = await seedDhikr(dhikrModel, {
+      name: { tr: 'Sübhanallah', en: 'Glory be to Allah' },
+    });
+    const trOnly = await seedDhikr(dhikrModel, {
+      name: { tr: 'Elhamdülillah', en: 'x' },
+    });
+    // Eski kayıtlar: en alanı yok → tr'ye düşmeli (şema create'te zorunlu kılar).
+    await dhikrModel.collection.updateOne(
+      { _id: new Types.ObjectId(trOnly) },
+      { $unset: { 'name.en': '' } },
+    );
+    const log = t.model<DhikrLogDocument>('DhikrLog');
+    const base = {
+      userId: new Types.ObjectId(user.userId),
+      date: today,
+      targetCount: 33,
+      isCompleted: false,
+      source: 'manual' as const,
+    };
+    await log.create({ ...base, dhikrId: new Types.ObjectId(both), count: 30 });
+    await log.create({
+      ...base,
+      dhikrId: new Types.ObjectId(trOnly),
+      count: 20,
+    });
+    await log.create({
+      ...base,
+      customDhikrId: 'c1',
+      customDhikrName: 'Benim zikrim',
+      count: 10,
+    });
+
+    const res = await request(t.http)
+      .get('/v1/stats/summary')
+      .set(bearer(user.accessToken))
+      .expect(200);
+    const top = data<{ topDhikrs: Record<string, unknown>[] }>(res).topDhikrs;
+    expect(top.map((d) => ({ label: d.label, nameI18n: d.nameI18n }))).toEqual([
+      {
+        label: 'Sübhanallah',
+        nameI18n: { tr: 'Sübhanallah', en: 'Glory be to Allah' },
+      },
+      {
+        label: 'Elhamdülillah',
+        nameI18n: { tr: 'Elhamdülillah', en: 'Elhamdülillah' },
+      },
+      { label: 'Benim zikrim', nameI18n: undefined },
+    ]);
+  });
 });

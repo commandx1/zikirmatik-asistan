@@ -139,6 +139,7 @@ export class StatsService {
                     totalCount: 1,
                     sessions: 1,
                     dhikrName: { $arrayElemAt: ['$dhikr.name.tr', 0] },
+                    dhikrNameEn: { $arrayElemAt: ['$dhikr.name.en', 0] },
                   },
                 },
               ],

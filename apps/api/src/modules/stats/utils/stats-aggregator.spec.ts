@@ -108,6 +108,7 @@ describe('buildStatsSummary', () => {
         totalCount: 500,
         sessions: 20,
         dhikrName: 'Estağfirullah',
+        dhikrNameEn: 'Seeking Forgiveness',
       },
       {
         customDhikrId: 'custom-1',
@@ -174,11 +175,13 @@ describe('buildStatsSummary', () => {
     expect(summary.topDhikrs[0]).toEqual({
       key: 'abc123',
       label: 'Estağfirullah',
+      nameI18n: { tr: 'Estağfirullah', en: 'Seeking Forgiveness' },
       totalCount: 500,
       sessions: 20,
     });
     expect(summary.topDhikrs[1].label).toBe('Salavat');
     expect(summary.topDhikrs[1].key).toBe('custom-1');
+    expect(summary.topDhikrs[1].nameI18n).toBeUndefined();
   });
 
   it('propagates the vird streak snapshot into streak and badges, defaulting to 0 when absent', () => {
