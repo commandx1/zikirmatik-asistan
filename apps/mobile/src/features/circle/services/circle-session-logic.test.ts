@@ -1,6 +1,17 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { canTapCircle, FLUSH_INTERVAL_MS, POLL_INTERVAL_MS, isGoalReached, pendingFlushes, seedTodayCount, tapDay } from "./circle-session-logic";
+import {
+  canManualRefresh,
+  canManualSend,
+  canTapCircle,
+  isGoalReached,
+  mergeResponseTotal,
+  pendingFlushes,
+  pendingTotal,
+  seedTodayCount,
+  shouldAutoSend,
+  tapDay
+} from "./circle-session-logic";
 
 describe("tapDay (M-24: dokunuş anının gününe yazar)", () => {
   it("gece yarısını geçen dokunuşlar yeni güne yazılır, eski gün korunur", () => {
@@ -59,9 +70,33 @@ describe("canTapCircle (M-12) ve isGoalReached (M-11)", () => {
   });
 });
 
-describe("session intervals (yük testi kararı)", () => {
-  it("flush 5 sn, poll 10 sn", () => {
-    expect(FLUSH_INTERVAL_MS).toBe(5_000);
-    expect(POLL_INTERVAL_MS).toBe(10_000);
+describe("halka oturumu modeli (2026-10-07): periyodik gönderim yok", () => {
+  it("pendingTotal: günler arası gönderilmemiş dokunuşların toplamı", () => {
+    expect(pendingTotal({ a: 5, b: 3 }, { a: 2, b: 3 })).toBe(3);
+    expect(pendingTotal({ a: 5 }, {})).toBe(5);
+    expect(pendingTotal({ a: 2 }, { a: 2 })).toBe(0);
+    expect(pendingTotal({}, {})).toBe(0);
+  });
+  it("otomatik gönderim yalnız çıkış, arka plan, hedef; tap/zamanlayıcı asla", () => {
+    expect(shouldAutoSend("leave", 3)).toBe(true);
+    expect(shouldAutoSend("background", 1)).toBe(true);
+    expect(shouldAutoSend("goal", 1)).toBe(true);
+    expect(shouldAutoSend("tap", 9)).toBe(false);
+    expect(shouldAutoSend("timer", 9)).toBe(false);
+    expect(shouldAutoSend("leave", 0)).toBe(false);
+  });
+  it("Gönder: bekleyen varken ve gönderim sürmüyorken; Yenile: yenileme sürmüyorken", () => {
+    expect(canManualSend({ pending: 2, sending: false })).toBe(true);
+    expect(canManualSend({ pending: 0, sending: false })).toBe(false);
+    expect(canManualSend({ pending: 2, sending: true })).toBe(false);
+    expect(canManualRefresh({ refreshing: false })).toBe(true);
+    expect(canManualRefresh({ refreshing: true })).toBe(false);
+  });
+  it("mergeResponseTotal: yanıt toplamı birleşir, geriye düşmez, toplam yoksa null", () => {
+    expect(mergeResponseTotal(10, { circleTotalCount: 40, count: 5 }, 5, 5)).toEqual({ pair: { total: 40, mine: 5 }, display: 40 });
+    expect(mergeResponseTotal(50, { circleTotalCount: 40, count: 5 }, 5, 5)?.display).toBe(50);
+    // başka cihaz daha yüksek yazdıysa mine yanıttan gelir
+    expect(mergeResponseTotal(0, { circleTotalCount: 40, count: 9 }, 5, 6)?.pair.mine).toBe(9);
+    expect(mergeResponseTotal(10, {}, 5, 5)).toBeNull();
   });
 });

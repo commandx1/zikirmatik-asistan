@@ -59,6 +59,8 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
   const [templates, setTemplates] = useState<VirdTemplateSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
+  // MOB-VRD-28: "Tekrar dene" bu sayacı artırıp aynı yüklemeyi yeniden çalıştırır.
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let isCancelled = false;
@@ -85,7 +87,7 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
     return () => {
       isCancelled = true;
     };
-  }, [t]);
+  }, [t, attempt]);
 
   const renderItem = useCallback(
     ({ item }: { item: VirdTemplateSummary }) => (
@@ -111,7 +113,17 @@ export function TemplateShelf({ vertical = false }: { vertical?: boolean }) {
           <ActivityIndicator color={tokens.accent} />
         </View>
       ) : error ? (
-        <Text className="px-4 text-xs text-text-muted">{error}</Text>
+        <View className="px-4">
+          <Text className="text-xs text-text-muted">{error}</Text>
+          <Pressable
+            testID={TEST_IDS.vird.templatesRetry}
+            accessibilityRole="button"
+            onPress={() => setAttempt((n) => n + 1)}
+            className="self-start py-2"
+          >
+            <Text className="text-xs font-semibold text-accent">{t("vird:templates.retry")}</Text>
+          </Pressable>
+        </View>
       ) : (
         <FlatList
           data={templates}

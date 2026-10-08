@@ -142,6 +142,8 @@ export const TEST_IDS = {
     aiSubmit: "e2e-vird-ai-submit",
     aiStart: "e2e-vird-ai-start",
     aiDiscard: "e2e-vird-ai-discard",
+    // Şablon rafı yükleme hatasında "Tekrar dene" (MOB-VRD-28).
+    templatesRetry: "e2e-vird-templates-retry",
   },
   circle: {
     hub: "e2e-circle-hub",
@@ -166,6 +168,13 @@ export const TEST_IDS = {
     // kapatma ikonu testID'siz idi — story-circle.e2e.js için eklendi (bkz. rapor).
     sessionStart: "e2e-circle-session-start",
     sessionClose: "e2e-circle-session-close",
+    // Oturum modeli: elle gönder / toplamı yenile / bekleyen göstergesi / hata satırı / dua metni.
+    sessionScroll: "e2e-circle-session-scroll",
+    sendButton: "e2e-circle-send",
+    refreshButton: "e2e-circle-refresh",
+    pendingCount: "e2e-circle-pending-count",
+    sessionNotice: "e2e-circle-session-notice",
+    dhikrText: "e2e-circle-dhikr-text",
     // Hedefe ulaşınca / kapatılınca sayaç yerine görünen kilit kartı (M-11, MOB-HAL-24/25).
     sessionLocked: "e2e-circle-session-locked",
     // Katılma önizlemesindeki "Katıl" düğmesi; detaydaki ayrıl/kapat düğmeleri ve onay butonları.

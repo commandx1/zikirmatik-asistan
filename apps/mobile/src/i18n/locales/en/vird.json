@@ -138,6 +138,7 @@
     "listTitle": "Vird Programs",
     "shelfTitle": "Vird Programs",
     "loadError": "Couldn't load templates.",
+    "retry": "Try again",
     "premiumBadge": "Premium",
     "untitledFallback": "Vird Program",
     "dayCountLabel_one": "{{count}} day",

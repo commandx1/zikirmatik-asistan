@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AppState, Text } from "react-native";
-import { useFocusEffect, useRouter } from "expo-router";
+import { AppState, Pressable, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { toDateKey } from "@zikirmatik/shared";
+import { resolveLocalizedText, toDateKey } from "@zikirmatik/shared";
 import type { CircleDetail } from "@zikirmatik/shared";
 import { PageHeader } from "../../../components/ui/page-header";
 import { PageLayout, PageScrollView } from "../../../components/ui/page-layout";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { PrimaryCtaButton } from "../../../components/ui/primary-cta-button";
+import { ErrorBox } from "../../../components/ui/error-box";
+import { DhikrContentStack } from "../../../components/ui/dhikr-content-stack";
 import { queryClient } from "../../../lib/query-client";
 import { qk } from "../../../lib/query-keys";
 
@@ -26,13 +28,17 @@ import { TesbihCounterView } from "../../home/components/tesbih-counter";
 import { CIRCLE_ERROR_CODE, CircleApiError, fetchCircle, resolveCircleActionError } from "../services/circle-api-client";
 import { buildCircleLogPayload, computeDisplayTotal, resolveCircleTitle } from "../services/circle-share";
 import {
+  canManualRefresh,
+  canManualSend,
   canTapCircle,
-  FLUSH_INTERVAL_MS,
   isGoalReached,
+  mergeResponseTotal,
   pendingFlushes,
-  POLL_INTERVAL_MS,
+  pendingTotal,
   seedTodayCount,
+  shouldAutoSend,
   tapDay,
+  type AutoSendEvent,
   type DayCounts
 } from "../services/circle-session-logic";
 import { useAppLocale } from "../../../i18n";
@@ -119,8 +125,9 @@ export function CircleSessionScreen({ id }: { id: string }) {
     {
       queryKey: qk.circle(id),
       queryFn: () => fetchCircle(id, todayKeyRef.current),
-      enabled: authStatus === "authenticated" && !!sessionUserId,
-      refetchInterval: POLL_INTERVAL_MS
+      // Halka oturumu modeli: oturuma girişte bir kez yüklenir; periyodik yoklama
+      // yok, yenileme "Toplamı yenile" düğmesiyle.
+      enabled: authStatus === "authenticated" && !!sessionUserId
     },
     queryClient
   );
@@ -166,11 +173,20 @@ export function CircleSessionScreen({ id }: { id: string }) {
     }
   }, [detailQuery.error]);
 
-  const flush = useCallback(async () => {
+  // Gönder/yenile düğmelerinin uçuştaki durumu (ref: çift dokunuşta state commit'ini beklemez).
+  const [sending, setSending] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const sendingRef = useRef(false);
+  const refreshingRef = useRef(false);
+  const [notice, setNotice] = useState<"send" | "refresh" | null>(null);
+  const [, setTick] = useState(0);
+
+  /** Başarılıysa (veya gönderecek bir şey yoksa) true; hata/çevrimdışıysa false (bekleyen korunur). */
+  const flush = useCallback(async (): Promise<boolean> => {
     // Halka bilgisi store'dan (çevrimdışı açılışta da vardır) — detail'e bağlı değil.
     const circle = useCircleStore.getState().circles.find((item) => item.id === id);
     if (!sessionUserId || !circle) {
-      return;
+      return true;
     }
     for (const { date, count } of pendingFlushes(countsRef.current ?? {}, sentRef.current)) {
       const previousSent = sentRef.current[date] ?? 0;
@@ -185,12 +201,11 @@ export function CircleSessionScreen({ id }: { id: string }) {
           continue;
         }
         let nextDisplay = displayTotalRef.current;
-        if (typeof response.circleTotalCount === "number") {
-          // mine = sunucunun $max sonrası GERÇEK log sayısı (başka cihaz daha
-          // yüksek yazdıysa gönderdiğimizden büyük olabilir), gönderilen değil.
-          const mine = response.count ?? count;
-          serverPairRef.current = { total: response.circleTotalCount, mine };
-          nextDisplay = computeDisplayTotal(displayTotalRef.current, response.circleTotalCount, mine, liveToday());
+        const merged = mergeResponseTotal(displayTotalRef.current, response, count, liveToday());
+        if (merged) {
+          serverPairRef.current = merged.pair;
+          nextDisplay = merged.display;
+          displayTotalRef.current = nextDisplay;
           setDisplayTotal(nextDisplay);
         }
         bumpTotal(id, nextDisplay);
@@ -204,29 +219,28 @@ export function CircleSessionScreen({ id }: { id: string }) {
         }
         sentRef.current = { ...sentRef.current, [date]: previousSent };
         console.warn("[circle-session] log kaydı başarısız", error);
-        break;
+        return false;
       }
     }
+    return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- detailQuery.refetch kararlı; liveToday ref okur
   }, [sessionUserId, id, bumpTotal]);
 
   const flushRef = useRef(flush);
   flushRef.current = flush;
 
-  useFocusEffect(
-    useCallback(() => {
-      const flushTimer = setInterval(() => {
-        void flushRef.current();
-      }, FLUSH_INTERVAL_MS);
-      return () => {
-        clearInterval(flushTimer);
-      };
-    }, [])
-  );
+  const pendingNow = () => pendingTotal(countsRef.current ?? {}, sentRef.current);
+  // Otomatik gönderim yalnız çıkış, arka plan ve hedefe ulaşmada (shouldAutoSend).
+  const autoSendRef = useRef<(event: AutoSendEvent) => void>(() => {});
+  autoSendRef.current = (event) => {
+    if (shouldAutoSend(event, pendingNow())) {
+      void flushRef.current();
+    }
+  };
 
   useEffect(() => {
     return () => {
-      void flushRef.current();
+      autoSendRef.current("leave");
       bumpTotal(id, displayTotalRef.current);
     };
   }, [bumpTotal, id]);
@@ -234,7 +248,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextState) => {
       if (nextState === "inactive" || nextState === "background") {
-        void flushRef.current();
+        autoSendRef.current("background");
       }
     });
     return () => subscription.remove();
@@ -285,6 +299,8 @@ export function CircleSessionScreen({ id }: { id: string }) {
     countsRef.current = tapDay(countsRef.current ?? {}, key);
     const next = liveToday();
     setTodayCount(id, key, next);
+    setNotice(null);
+    setTick((n) => n + 1);
     const pair = serverPairRef.current;
     const nextDisplay = pair
       ? computeDisplayTotal(displayTotalRef.current, pair.total, pair.mine, next)
@@ -295,14 +311,50 @@ export function CircleSessionScreen({ id }: { id: string }) {
       // M-11: hedefe ulaşıldı -> sayaç anında yerel kilit + son gönderim.
       displayTotalRef.current = nextDisplay;
       setLocked(true);
-      void flushRef.current();
+      autoSendRef.current("goal");
     }
   };
 
   const close = () => {
-    void flush();
+    autoSendRef.current("leave");
     router.back();
   };
+
+  const pending = pendingNow();
+
+  const onSend = async () => {
+    if (sendingRef.current || !canManualSend({ pending, sending })) {
+      return;
+    }
+    sendingRef.current = true;
+    setSending(true);
+    setNotice(null);
+    const ok = await flush();
+    sendingRef.current = false;
+    setSending(false);
+    if (!ok) {
+      setNotice("send");
+    }
+  };
+
+  const onRefresh = async () => {
+    if (refreshingRef.current || !canManualRefresh({ refreshing })) {
+      return;
+    }
+    refreshingRef.current = true;
+    setRefreshing(true);
+    setNotice(null);
+    const result = await detailQuery.refetch();
+    refreshingRef.current = false;
+    setRefreshing(false);
+    if (result.isError) {
+      setNotice("refresh");
+    }
+  };
+
+  const dhikrSnapshot = storedCircle.dhikr;
+  const transliteration = dhikrSnapshot.transliteration ? resolveLocalizedText(dhikrSnapshot.transliteration, locale) : undefined;
+  const meaning = dhikrSnapshot.meaning ? resolveLocalizedText(dhikrSnapshot.meaning, locale) : undefined;
 
   const progress = goal > 0 ? Math.min(1, displayTotal / goal) : 0;
 
@@ -326,7 +378,7 @@ export function CircleSessionScreen({ id }: { id: string }) {
     <PageLayout>
       <PageHeader title={circleName} leftIconName="xmark" onPressLeft={close} leftTestID={TEST_IDS.circle.sessionClose} />
 
-      <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={40}>
+      <PageScrollView testID={TEST_IDS.circle.sessionScroll} contentInnerClassName="w-full px-5" bottomPadding={40}>
         {locked ? (
           <ThemedCard testID={TEST_IDS.circle.sessionLocked} className="mb-4 items-center rounded-2xl px-4 py-6">
             <Text className="mb-4 text-sm text-text-muted">
@@ -346,6 +398,32 @@ export function CircleSessionScreen({ id }: { id: string }) {
             </Text>
           </>
         )}
+        <Text testID={TEST_IDS.circle.pendingCount} className="mb-3 text-center text-sm text-text-muted">
+          {t("circle:session.pending", { count: pending })}
+        </Text>
+        {notice ? (
+          <ErrorBox testID={TEST_IDS.circle.sessionNotice} message={t(notice === "send" ? "circle:session.sendError" : "circle:session.refreshError")} />
+        ) : null}
+        <PrimaryCtaButton
+          testID={TEST_IDS.circle.sendButton}
+          label={t(sending ? "circle:session.sending" : "circle:session.send")}
+          onPress={() => void onSend()}
+          disabled={!canManualSend({ pending, sending })}
+          className="mb-2 w-full"
+          style={canManualSend({ pending, sending }) ? undefined : { opacity: 0.5 }}
+        />
+        <Pressable
+          testID={TEST_IDS.circle.refreshButton}
+          accessibilityRole="button"
+          onPress={() => void onRefresh()}
+          disabled={!canManualRefresh({ refreshing })}
+          className="mb-5 items-center px-4 py-2"
+        >
+          <Text className="text-sm font-semibold text-text-muted">{t(refreshing ? "circle:session.refreshing" : "circle:session.refresh")}</Text>
+        </Pressable>
+        <View testID={TEST_IDS.circle.dhikrText}>
+          <DhikrContentStack arabic={dhikrSnapshot.nameArabic} transliteration={transliteration} meaning={meaning} />
+        </View>
       </PageScrollView>
     </PageLayout>
   );

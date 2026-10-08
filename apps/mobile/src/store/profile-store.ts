@@ -8,6 +8,8 @@ type ProfileState = {
   displayName: string;
   memberSinceLabel: string;
   isPremium: boolean;
+  /** Oturum içinde sunucudan isPremium alındı mı (kalıcı DEĞİL; MOB-PRM-13). */
+  premiumFresh: boolean;
   locale: SupportedLocale;
   reminderTime: string;
   dailyReminderEnabled: boolean;
@@ -41,6 +43,7 @@ export const useProfileStore = create<ProfileState>()(
       displayName: "",
       memberSinceLabel: "",
       isPremium: false,
+      premiumFresh: false,
       locale: detectDeviceLocale(),
       reminderTime: "08:00",
       dailyReminderEnabled: false,
@@ -78,6 +81,7 @@ export const useProfileStore = create<ProfileState>()(
           displayName: "",
           memberSinceLabel: "",
           isPremium: false,
+          premiumFresh: false,
           reminderTime: "08:00",
           dailyReminderEnabled: false,
           kandilNotificationsEnabled: true,
@@ -89,7 +93,7 @@ export const useProfileStore = create<ProfileState>()(
         set((state) => ({
           ...state,
           ...(payload.displayName ? { displayName: payload.displayName } : {}),
-          ...(typeof payload.isPremium === "boolean" ? { isPremium: payload.isPremium } : {}),
+          ...(typeof payload.isPremium === "boolean" ? { isPremium: payload.isPremium, premiumFresh: true } : {}),
           ...(payload.reminderTime ? { reminderTime: payload.reminderTime } : {}),
           ...(typeof payload.dailyReminderEnabled === "boolean"
             ? { dailyReminderEnabled: payload.dailyReminderEnabled }

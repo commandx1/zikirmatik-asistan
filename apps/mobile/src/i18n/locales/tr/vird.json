@@ -138,6 +138,7 @@
     "listTitle": "Vird Programları",
     "shelfTitle": "Vird Programları",
     "loadError": "Şablonlar yüklenemedi.",
+    "retry": "Tekrar dene",
     "premiumBadge": "Premium",
     "untitledFallback": "Vird Programı",
     "dayCountLabel_one": "{{count}} gün",

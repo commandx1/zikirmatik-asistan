@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasUnsavedActiveProgress, shouldConfirmUnsavedDhikrTransition } from "./unsaved-transition-guard";
+import { hasUnsavedActiveProgress, resolveCollectionSaveRoute, shouldConfirmUnsavedDhikrTransition } from "./unsaved-transition-guard";
 
 describe("unsaved-transition-guard", () => {
   it("asks for confirmation when switching away from an unsaved selected dhikr", () => {
@@ -83,5 +83,19 @@ describe("unsaved-transition-guard — misafir serbest mod", () => {
 
   it("does not warn a guest at free-mode count 0", () => {
     expect(shouldConfirmUnsavedDhikrTransition({ ...free, currentCount: 0, isMember: false })).toBe(false);
+  });
+});
+
+describe("resolveCollectionSaveRoute (MOB-KOL-04 / B-47)", () => {
+  it("serbest modda kaydedilmemiş sayım: üye de misafir de ad formuna gider (loginRequired değil)", () => {
+    expect(resolveCollectionSaveRoute({ hasSelectedDhikr: false, freeModeCount: 5, isMember: true })).toBe("free-save-form");
+    expect(resolveCollectionSaveRoute({ hasSelectedDhikr: false, freeModeCount: 5, isMember: false })).toBe("free-save-form");
+  });
+  it("seçili zikir: üye log kaydeder, oturumsuz giriş ister", () => {
+    expect(resolveCollectionSaveRoute({ hasSelectedDhikr: true, freeModeCount: 0, isMember: true })).toBe("save-log");
+    expect(resolveCollectionSaveRoute({ hasSelectedDhikr: true, freeModeCount: 0, isMember: false })).toBe("login-required");
+  });
+  it("serbest mod boşsa kaydedilecek bir şey yok", () => {
+    expect(resolveCollectionSaveRoute({ hasSelectedDhikr: false, freeModeCount: 0, isMember: true })).toBe("login-required");
   });
 });

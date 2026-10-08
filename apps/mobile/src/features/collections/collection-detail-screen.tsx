@@ -15,6 +15,8 @@ import { useDhikrStartGuard } from "../../hooks/use-dhikr-start-guard";
 import { useAuthStore } from "../../store/auth-store";
 import { useDhikrStore } from "../../store/dhikr-store";
 import { resolveLocalizedText, toDateKey } from "@zikirmatik/shared";
+import { useHomeNavigationIntentStore } from "../home/services/home-navigation-intent-store";
+import { resolveCollectionSaveRoute, shouldConfirmUnsavedDhikrTransition } from "../home/services/unsaved-transition-guard";
 import { isObjectId } from "../dhikrs/services/dhikr-ids";
 import { createDhikrLog } from "../dhikrs/services/dhikr-logs-api-client";
 import { useCollectionDetail } from "./hooks/use-collection-detail";
@@ -58,26 +60,30 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
   const [isSavingUnsaved, setIsSavingUnsaved] = useState(false);
   const [unsavedSaveError, setUnsavedSaveError] = useState<string | null>(null);
 
+  const upsertCollectionSnapshot = (dhikr: BackendCollectionDhikr) => {
+    upsertDhikrSnapshot({
+      id: dhikr._id,
+      source: "ready",
+      name: dhikr.name,
+      arabic: dhikr.nameArabic,
+      transliteration: dhikr.transliteration,
+      meaning: dhikr.meaning,
+      virtue: dhikr.virtue,
+      contentSource: dhikr.source,
+      current: 0,
+      target: dhikr.recommendedCount,
+      lastActivityLabel: t("collections:detail.notStarted"),
+      streakDays: 0,
+      isFavorite: false,
+    });
+  };
+
   const startDhikr = (dhikr: BackendCollectionDhikr) => {
     guard.guardedStart({
       id: dhikr._id,
       dhikrName: resolveLocalizedText(dhikr.name, locale),
       onFresh: () => {
-        upsertDhikrSnapshot({
-          id: dhikr._id,
-          source: "ready",
-          name: dhikr.name,
-          arabic: dhikr.nameArabic,
-          transliteration: dhikr.transliteration,
-          meaning: dhikr.meaning,
-          virtue: dhikr.virtue,
-          contentSource: dhikr.source,
-          current: 0,
-          target: dhikr.recommendedCount,
-          lastActivityLabel: t("collections:detail.notStarted"),
-          streakDays: 0,
-          isFavorite: false,
-        });
+        upsertCollectionSnapshot(dhikr);
         selectDhikr(dhikr._id);
         setSelectedTarget(dhikr.recommendedCount);
         setSelectedCount(0);
@@ -91,12 +97,17 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
   };
 
   const handleStartDhikr = (dhikr: BackendCollectionDhikr) => {
-    const isSameTarget = dhikr._id === selectedDhikrId;
-    const hasUnsaved = !isSameTarget && (
-      selectedDhikrId
-        ? unsavedProgressDhikrIds.includes(selectedDhikrId)
-        : freeModeCount > 0
-    );
+    // Ana sayfadaki geçiş korumasıyla aynı karar (M-03/M-04 dahil).
+    const selected = storeItems.find((d) => d.id === selectedDhikrId);
+    const hasUnsaved = shouldConfirmUnsavedDhikrTransition({
+      selectedDhikrId: selectedDhikrId ?? "",
+      targetDhikrId: dhikr._id,
+      unsavedProgressDhikrIds,
+      hasUnsavedFreeMode: !selectedDhikrId && freeModeCount > 0,
+      isLeavingFreeMode: true,
+      currentCount: selected ? selected.current : freeModeCount,
+      isMember: authStatus === "authenticated" && Boolean(sessionUserId)
+    });
     if (hasUnsaved) {
       setPendingDhikr(dhikr);
       setUnsavedSaveError(null);
@@ -108,7 +119,20 @@ export function CollectionDetailScreen({ collectionKey }: Props) {
   const handleUnsavedSaveAndContinue = async () => {
     if (!pendingDhikr || isSavingUnsaved) return;
     const selectedDhikr = storeItems.find((d) => d.id === selectedDhikrId);
-    if (!selectedDhikr || authStatus !== "authenticated" || !sessionUserId) {
+    const route = resolveCollectionSaveRoute({
+      hasSelectedDhikr: Boolean(selectedDhikr),
+      freeModeCount,
+      isMember: authStatus === "authenticated" && Boolean(sessionUserId)
+    });
+    if (route === "free-save-form") {
+      // MOB-KOL-04: serbest sayım önce adlandırılır (ana sayfadaki ad formu), sonra bu zikre geçilir.
+      upsertCollectionSnapshot(pendingDhikr);
+      useHomeNavigationIntentStore.getState().requestFreeSaveSelect(pendingDhikr._id);
+      setPendingDhikr(null);
+      router.push("/(tabs)/home");
+      return;
+    }
+    if (route === "login-required" || !selectedDhikr || !sessionUserId) {
       setUnsavedSaveError(t("collections:detail.loginRequired"));
       return;
     }

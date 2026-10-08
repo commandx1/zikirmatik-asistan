@@ -60,6 +60,13 @@
     "cancel": "Vazgeç"
   },
   "session": {
+    "pending": "Gönderilmeyi bekleyen: {{count}}",
+    "send": "Gönder",
+    "sending": "Gönderiliyor...",
+    "refresh": "Toplamı yenile",
+    "refreshing": "Yenileniyor...",
+    "sendError": "Gönderilemedi, bağlantını kontrol et. Sayımın bekliyor.",
+    "refreshError": "Toplam yenilenemedi, tekrar dene.",
     "mine": "Sen bugün: {{count}}",
     "completedNotice": "Bu halka hedefine ulaştı, sayaç durduruldu.",
     "closedNotice": "Bu halka kapatıldı, sayaç durduruldu.",

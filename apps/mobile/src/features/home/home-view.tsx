@@ -33,6 +33,7 @@ import { AppleWatch } from './components/apple-watch'
 import { LapSizeSelector } from './components/lap-size-selector'
 import { TesbihCounter } from './components/tesbih-counter'
 import { useHomeNavigationIntentStore } from './services/home-navigation-intent-store'
+import { decidePaywallIntent } from './services/paywall-intent'
 import { useLocaleUpper } from '../../hooks/use-locale-upper'
 import { usePremiumSheet } from '../../hooks/use-premium-sheet'
 import { useCounterStyleStore } from '../../store/counter-style-store'
@@ -550,20 +551,23 @@ export function HomeView() {
   const pendingPaywallSource = useHomeNavigationIntentStore((s) => s.pendingPaywallSource)
   const consumePaywall = useHomeNavigationIntentStore((s) => s.consumePaywall)
   const [paywallSource, setPaywallSource] = useState<'tesbih_mode' | 'widget' | 'day7_offer'>('tesbih_mode')
+  const premiumFresh = useProfileStore((s) => s.premiumFresh)
+  const paywallAuthStatus = useAuthStore((s) => s.status)
+  const paywallGuestMode = useAuthStore((s) => s.guestMode)
   useEffect(() => {
     if (!pendingPaywallSource) return
+    // MOB-PRM-13: premium durumu sunucudan tazelenene kadar niyet bekletilir;
+    // premiumsa hiç gösterilmez (niyet düşer).
+    const decision = decidePaywallIntent({ authStatus: paywallAuthStatus, guestMode: paywallGuestMode, premiumFresh, isPremium })
+    if (decision === 'wait') return
     consumePaywall()
-    if (!isPremium) {
+    if (decision === 'show') {
       setPaywallSource(pendingPaywallSource)
       premiumSheet.open()
     }
-    // Yalnızca pendingPaywallSource değiştiğinde tetiklenir; isPremium her
-    // an güncel closure'dan okunur ama deps'e eklemek premium durum her
-    // değiştiğinde efekti yeniden çalıştırır (istenmeyen). premiumSheet/
-    // consumePaywall her render'da yeni referans alabilir, deps'e eklemek
-    // aynı sebeple gereksiz yeniden tetikler.
+    // premiumSheet/consumePaywall her render'da yeni referans olabilir; deps'e eklemek gereksiz tetikler.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendingPaywallSource])
+  }, [pendingPaywallSource, paywallAuthStatus, paywallGuestMode, premiumFresh, isPremium])
 
   // Any home modal covering the screen (tour, target editor, esma
   // welcome/resume guard, free-save, downgrade, unsaved-transition, premium

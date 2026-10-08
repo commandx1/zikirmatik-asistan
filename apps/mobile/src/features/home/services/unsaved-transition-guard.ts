@@ -43,3 +43,19 @@ export function hasUnsavedActiveProgress(input: {
   }
   return input.selectedDhikrId ? input.unsavedProgressDhikrIds.includes(input.selectedDhikrId) : true;
 }
+
+/**
+ * MOB-KOL-04 / B-47: koleksiyondaki "Kaydet ve devam" nereye gider?
+ * Serbest mod (seçili zikir yok) önce ad formu ister — ana sayfadaki akış;
+ * seçili zikir doğrudan log olarak kaydedilir; oturumsuz seçili zikir giriş ister.
+ */
+export function resolveCollectionSaveRoute(input: {
+  hasSelectedDhikr: boolean;
+  freeModeCount: number;
+  isMember: boolean;
+}): "free-save-form" | "save-log" | "login-required" {
+  if (!input.hasSelectedDhikr) {
+    return input.freeModeCount > 0 ? "free-save-form" : "login-required";
+  }
+  return input.isMember ? "save-log" : "login-required";
+}

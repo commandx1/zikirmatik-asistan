@@ -8,6 +8,7 @@ const {
   visible,
   exists,
   scrollTo,
+  setAirplane,
   sleep,
   apiSignIn,
   apiGet,
@@ -126,4 +127,28 @@ describe('08 vird: ücretsiz sınırlar, çakışma, şablon', () => {
     await scrollTo('e2e-premium-close', 'e2e-premium-scroll');
     await element(by.id('e2e-premium-close')).tap();
   });
+
+  (device.getPlatform() === 'android' ? it : it.skip)(
+    'MOB-VRD-28 şablon listesi yüklenemeyince "Tekrar dene" görünür; bağlantı gelince yeniden yükler',
+    async () => {
+      await setAirplane(true);
+      try {
+        await device.openURL({ url: 'zikirmatik://vird/templates' });
+        await visible('e2e-vird-templates-retry', 25000);
+      } finally {
+        await setAirplane(false);
+      }
+      await sleep(6000);
+      for (let i = 0; i < 3; i += 1) {
+        await element(by.id('e2e-vird-templates-retry')).tap();
+        try {
+          await exists('e2e-vird-template-card-klasik-sabah', 8000);
+          return;
+        } catch {
+          await sleep(2000);
+        }
+      }
+      throw new Error('Tekrar dene sonrası şablonlar yüklenmedi');
+    },
+  );
 });

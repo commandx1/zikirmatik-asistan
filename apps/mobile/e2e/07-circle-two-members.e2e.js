@@ -28,7 +28,8 @@ async function newCircle(goalCount) {
   }
   const dhikrs = await apiGet('/v1/dhikrs', host.accessToken);
   const dhikrId = (Array.isArray(dhikrs) ? dhikrs : dhikrs.items)[0]._id;
-  return apiPost('/v1/circles', host.accessToken, { dhikrId, goalCount, name: `E2E Halka ${goalCount}` });
+  const created = await apiPost('/v1/circles', host.accessToken, { dhikrId, goalCount, name: `E2E Halka ${goalCount}` });
+  return { ...created, dhikrId };
 }
 
 async function joinInApp(code) {
@@ -45,14 +46,101 @@ async function openSession() {
   await sleep(2500);
 }
 
+// Bekleyen göstergesi 0 olana kadar "Gönder"e basar (ilk deneme bağlantı gecikmesiyle başarısız olabilir).
+async function sendAndWaitPendingZero() {
+  for (let i = 0; i < 4; i += 1) {
+    await scrollIntoView('e2e-circle-send');
+    await element(by.id('e2e-circle-send')).tap();
+    try {
+      await waitForTextContaining('e2e-circle-pending-count', /: 0$/, 6000);
+      return;
+    } catch {
+      await sleep(2000);
+    }
+  }
+  throw new Error('Gönder sonrası bekleyen 0 olmadı');
+}
+
+async function tapRefresh() {
+  await scrollIntoView('e2e-circle-refresh');
+  await element(by.id('e2e-circle-refresh')).tap();
+}
+
+// Kontroller ekran dışındaysa oturum kaydırıcısında görünene kadar kaydır.
+async function scrollIntoView(id) {
+  await waitFor(element(by.id(id)))
+    .toBeVisible()
+    .whileElement(by.id('e2e-circle-session-scroll'))
+    .scroll(150, 'down');
+}
+
+// Kurucu (2. üye) halkaya API ile katkı gönderir.
+async function hostLog(circle, count) {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, '0');
+  await apiPost('/v1/dhikr-logs', host.accessToken, {
+    userId: host.userId,
+    dhikrId: circle.dhikrId,
+    count,
+    targetCount: circle.goalCount,
+    date: `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`,
+    source: 'circle',
+    circleId: circle.id,
+    isCompleted: false,
+  });
+}
+
+async function waitForTotal(circle, total, ms = 20000) {
+  const deadline = Date.now() + ms;
+  let last = -1;
+  while (Date.now() < deadline) {
+    last = (await apiGet(`/v1/circles/${circle.id}`, host.accessToken)).totalCount;
+    if (last === total) return;
+    await sleep(500);
+  }
+  throw new Error(`halka toplamı ${total} olmadı; son: ${last}`);
+}
+
 describe('07 halka: iki üye', () => {
   beforeAll(async () => {
-    host = await apiSignInAs('e2e-host', 'Kurucu Hesap');
     await freshSignIn();
     me = await apiSignIn();
+    // freshSignIn kullanıcıları sıfırlar: kurucu SONRA oluşturulur (yoksa userId geçersiz kalır).
+    host = await apiSignInAs('e2e-host', 'Kurucu Hesap');
   });
 
-  it('kodla katılır; oturumda sayım toplamı artırır, hedefe ulaşınca sayaç kilitlenir (M-11)', async () => {
+  it('oturum modeli: dua metni görünür; dokunuş bekleyene yazılır, Gönder toplamı günceller; ikinci üye gönderir, Toplamı yenile birleşik toplamı gösterir; çıkış otomatik gönderir', async () => {
+    const circle = await newCircle(100);
+    await joinInApp(circle.code);
+    await existsText(/^2\/5.*/, 20000);
+    await openSession();
+    // Zikrin Arapçası/okunuşu/anlamı oturum ekranında (ana sayaçtaki gibi).
+    await exists('e2e-circle-dhikr-text', 10000);
+
+    await tapN('e2e-circle-session-counter', 3);
+    await waitForTextContaining('e2e-circle-session-count-label', /^3/, 10000);
+    await waitForTextContaining('e2e-circle-pending-count', /(Gönderilmeyi bekleyen|Waiting to be sent): 3$/, 10000);
+    // Periyodik otomatik gönderim yok: bekleme sonrası sunucu toplamı hâlâ 0.
+    await sleep(7000);
+    assert.equal((await apiGet(`/v1/circles/${circle.id}`, host.accessToken)).totalCount, 0);
+
+    await sendAndWaitPendingZero();
+    assert.equal((await apiGet(`/v1/circles/${circle.id}`, host.accessToken)).totalCount, 3);
+    await waitForTextContaining('e2e-circle-session-count-label', /^3/, 10000);
+
+    // İkinci üye (kurucu) katkı gönderir; ilk üye "Toplamı yenile" ile birleşik toplamı görür.
+    await hostLog(circle, 4);
+    await tapRefresh();
+    await waitForTextContaining('e2e-circle-session-count-label', /^7/, 15000);
+
+    // Çıkış (kapat) bekleyen sayımı otomatik gönderir.
+    await tapN('e2e-circle-session-counter', 2);
+    await waitForTextContaining('e2e-circle-pending-count', /: 2$/, 10000);
+    await element(by.id('e2e-circle-session-close')).tap();
+    await waitForTotal(circle, 9);
+  });
+
+  it('hedefe ulaşınca sayaç kilitlenir ve son sayım hemen gönderilir (M-11)', async () => {
     const circle = await newCircle(5);
     await joinInApp(circle.code);
     await existsText(/^2\/5.*/, 20000);
@@ -61,10 +149,8 @@ describe('07 halka: iki üye', () => {
     await waitForTextContaining('e2e-circle-session-count-label', /^3/, 10000);
     await tapN('e2e-circle-session-counter', 2);
     await visible('e2e-circle-session-locked', 15000);
-
-    await sleep(3500); // son gönderim
+    await waitForTotal(circle, 5);
     const detail = await apiGet(`/v1/circles/${circle.id}`, host.accessToken);
-    assert.equal(detail.totalCount, 5);
     assert.equal(detail.status, 'completed');
   });
 
@@ -120,7 +206,7 @@ describe('07 halka: iki üye', () => {
   });
 
   (device.getPlatform() === 'android' ? it : it.skip)(
-    'çevrimdışı oturumda sayım kaybolmaz; ağ gelince toplama eklenir',
+    'çevrimdışı oturumda sayım kaybolmaz: Gönder hata gösterir, bekleyen korunur; ağ gelince toplama eklenir',
     async () => {
       const circle = await newCircle(100);
       await joinInApp(circle.code);
@@ -128,13 +214,16 @@ describe('07 halka: iki üye', () => {
       await setAirplane(true);
       try {
         await tapN('e2e-circle-session-counter', 3);
-        await sleep(4000); // flush denemesi başarısız olur
+        await scrollIntoView('e2e-circle-send');
+        await element(by.id('e2e-circle-send')).tap();
+        await visible('e2e-circle-session-notice', 15000);
+        await waitForTextContaining('e2e-circle-pending-count', /: 3$/, 10000);
       } finally {
         await setAirplane(false);
       }
-      await sleep(8000); // bağlantı + sonraki flush
-      const detail = await apiGet(`/v1/circles/${circle.id}`, host.accessToken);
-      assert.equal(detail.totalCount, 3);
+      await sleep(6000); // bağlantı dönsün
+      await sendAndWaitPendingZero();
+      await waitForTotal(circle, 3);
     },
   );
 });

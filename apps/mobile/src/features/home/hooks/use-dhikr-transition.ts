@@ -12,6 +12,7 @@ import { offerDailyReminderAfterSave } from '../../notifications/services/remind
 import { useTourNotificationOptIn } from '../../tour/hooks/use-tour-notification-opt-in'
 import { createUserDhikr } from '../../dhikrs/services/user-dhikrs-api-client'
 import type { EsmaulHusnaItem, ZikirItem } from '../../focus/types'
+import { useHomeNavigationIntentStore } from '../services/home-navigation-intent-store'
 import { buildNextAutoFreeTitle } from '../services/free-mode-title'
 import { createOnceGate, validateFreeSaveDraft } from '../services/free-save-draft'
 import { hasUnsavedActiveProgress, shouldConfirmUnsavedDhikrTransition } from '../services/unsaved-transition-guard'
@@ -212,6 +213,23 @@ export function useDhikrTransition({
       })
     )
   }
+
+  // MOB-KOL-04: koleksiyondan gelen "Kaydet ve devam" (serbest sayım) — ad formunu
+  // aç, kayıttan sonra hedef zikre geç. Serbest sayım artık yoksa doğrudan geç.
+  const pendingFreeSaveSelectId = useHomeNavigationIntentStore(state => state.pendingFreeSaveSelectId)
+  const consumeFreeSaveSelect = useHomeNavigationIntentStore(state => state.consumeFreeSaveSelect)
+  useEffect(() => {
+    if (!pendingFreeSaveSelectId) return
+    consumeFreeSaveSelect()
+    if (!selectedDhikrId && freeCount > 0) {
+      freeSave.setPendingTransition({ kind: 'select', id: pendingFreeSaveSelectId })
+      freeSave.open(freeTarget > 0 ? String(freeTarget) : '')
+    } else {
+      selectDhikr(pendingFreeSaveSelectId)
+    }
+    // freeSave her render'da yeni nesne; yalnız niyet değişince tetiklenmeli.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingFreeSaveSelectId])
 
   const onSelectDhikr = useStableCallback((id: string) => requestDhikrTransition({ kind: 'select', id }, id))
   const onQuickDhikrSelect = useStableCallback((label: string) => {

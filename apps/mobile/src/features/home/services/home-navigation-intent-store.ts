@@ -8,6 +8,11 @@ type HomeNavigationIntentState = {
    * Rota paramı yerine burada taşınır: soğuk açılışta sekme düzeninin auth
    * kapısı /auth'a yönlendirip geri dönerken query paramlarını düşürüyor. */
   pendingPaywallSource?: "widget";
+  /** MOB-KOL-04: koleksiyondan "Kaydet ve devam" + kaydedilmemiş serbest sayım —
+   * ana sayfa serbest-kayıt ad formunu açar, kayıttan sonra bu zikre geçer. */
+  pendingFreeSaveSelectId?: string;
+  requestFreeSaveSelect: (dhikrId: string) => void;
+  consumeFreeSaveSelect: () => void;
   requestPaywall: (source: "widget") => void;
   consumePaywall: () => void;
   requestDailyEsmaStart: (item: EsmaulHusnaItem) => void;
@@ -20,6 +25,9 @@ export const useHomeNavigationIntentStore = create<HomeNavigationIntentState>((s
   pendingDailyEsmaStart: undefined,
   esmaListFocusRequestId: 0,
   pendingPaywallSource: undefined,
+  pendingFreeSaveSelectId: undefined,
+  requestFreeSaveSelect: (dhikrId) => set({ pendingFreeSaveSelectId: dhikrId }),
+  consumeFreeSaveSelect: () => set({ pendingFreeSaveSelectId: undefined }),
   requestPaywall: (source) => set({ pendingPaywallSource: source }),
   consumePaywall: () => set({ pendingPaywallSource: undefined }),
   requestDailyEsmaStart: (item) => set({ pendingDailyEsmaStart: item }),
