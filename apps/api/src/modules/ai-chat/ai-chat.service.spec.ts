@@ -549,6 +549,63 @@ describe('AiChatService', () => {
       expect(reply).not.toHaveProperty('recommendedDhikrs');
     });
 
+    it.each([
+      [
+        'kopuk sayfalar ayrı atıf olur',
+        [
+          [76, 76],
+          [234, 234],
+        ],
+        [
+          [76, 76],
+          [234, 234],
+        ],
+      ],
+      [
+        'bitişik sayfalar birleşir',
+        [
+          [40, 41],
+          [42, 42],
+        ],
+        [[40, 42]],
+      ],
+      [
+        'kesişen aralıklar birleşir',
+        [
+          [10, 15],
+          [12, 20],
+        ],
+        [[10, 20]],
+      ],
+    ] as Array<[string, number[][], number[][]]>)(
+      'aynı kitap: %s',
+      async (_name, input, expected) => {
+        const { service, user, retrievalService } = createHarness();
+        stubClassify({ mode: 'bilgi', searchQuery: 'teyemmüm' });
+        retrievalService.searchSourcePassages.mockResolvedValue(
+          input.map(([pageStart, pageEnd]) =>
+            samplePassage({ pageStart, pageEnd }),
+          ) as never,
+        );
+        stubBilgiAnswer({
+          coverage: 'full',
+          usedPassages: input.map((_, i) => `P${i + 1}`),
+          answer: 'Cevap.',
+        });
+
+        const result = await service.createConversation(user._id.toString(), {
+          firstMessage: 'teyemmüm nasıl yapılır',
+        });
+
+        expect(
+          result.messages[1].sourceCitations.map((c) => [
+            c.pageStart,
+            c.pageEnd,
+          ]),
+        ).toEqual(expected);
+      },
+    );
+
     it('grounds the system prompt on the retrieved passages', async () => {
       const { service, user, retrievalService } = createHarness();
       stubClassify({ mode: 'bilgi', searchQuery: 'abdestin farzları' });

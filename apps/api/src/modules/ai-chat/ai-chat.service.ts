@@ -1118,8 +1118,10 @@ export class AiChatService {
    * (kitap adı + sayfa aralığı) indirger — ama SADECE modelin `usedPassages`
    * alanında gerçekten işaretlediği ref'ler için (bkz. renderPassageRef).
    * Tanınmayan ref'ler (modelin var olmayan bir "P9" üretmesi gibi) sessizce
-   * düşürülür + loglanır. Aynı sourceTitle'dan gelen birden fazla pasaj tek
-   * kayda birleştirilir (en düşük pageStart / en yüksek pageEnd).
+   * düşürülür + loglanır. Aynı sourceTitle'dan gelen pasajlar yalnızca sayfa
+   * aralıkları kesişiyor/bitişikse tek kayda birleştirilir (en düşük pageStart /
+   * en yüksek pageEnd); kopuk sayfalar ayrı kayıt olur (ör. s. 76 ve s. 234,
+   * "s. 76-234" olarak yanıltmaz).
    */
   private buildSourceCitations(
     passages: SourcePassageResult[],
@@ -1140,14 +1142,20 @@ export class AiChatService {
         );
     }
 
-    const bySourceTitle = new Map<string, AiSourceCitation>();
+    const citations: AiSourceCitation[] = [];
     for (const ref of usedRefs) {
       const passage = refToPassage.get(ref);
       if (!passage || !passage.sourceTitle) continue;
 
-      const existing = bySourceTitle.get(passage.sourceTitle);
+      // Aynı kitapta sayfa aralığı kesişen/bitişik kayıt varsa birleştir.
+      const existing = citations.find(
+        (c) =>
+          c.sourceTitle === passage.sourceTitle &&
+          passage.pageStart <= c.pageEnd + 1 &&
+          c.pageStart <= passage.pageEnd + 1,
+      );
       if (!existing) {
-        bySourceTitle.set(passage.sourceTitle, {
+        citations.push({
           sourceId: passage.sourceId,
           sourceTitle: passage.sourceTitle,
           pageStart: passage.pageStart,
@@ -1160,7 +1168,7 @@ export class AiChatService {
       existing.pageEnd = Math.max(existing.pageEnd, passage.pageEnd);
     }
 
-    return Array.from(bySourceTitle.values()).slice(0, MAX_SOURCE_CITATIONS);
+    return citations.slice(0, MAX_SOURCE_CITATIONS);
   }
 
   /**
