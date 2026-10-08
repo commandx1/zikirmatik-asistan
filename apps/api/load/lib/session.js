@@ -19,7 +19,7 @@ export const TIMEZONES = [
   'Pacific/Kiritimati',
 ];
 
-const ALLOWED = http.expectedStatuses(200, 201, 401, 403);
+const ALLOWED = http.expectedStatuses(200, 201, 401, 403, 429);
 
 // STAGES="25:90s,50:90s" → toplam süreye göre aşama indeksi (s0, s1, ...).
 const STAGE_SECONDS = (__ENV.STAGES ?? '')

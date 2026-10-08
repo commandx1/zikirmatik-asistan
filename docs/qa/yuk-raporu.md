@@ -13,6 +13,112 @@ Bu rapordaki **ölçüm** ifadeleri gerçek koşu sonuçlarıdır. **Tahmin** di
 - **Veri doğruluğu: 5 doğrulayıcının 5'i de PASS** (halka toplamı, kredi, vird, yinelenen log, seri). Yük altında veri bozulması bulunmadı.
 - **Bulunan gerçek hata:** Node'un varsayılan 5 sn "keep-alive" süresi yüzünden POST isteklerinin yaklaşık %0.1-0.4'ü düşüyordu. `apps/api/src/main.ts` içinde düzeltildi; aynı yükte hata %0'a indi (bölüm 9).
 
+## 1b. 2026-10-08 — halka buton modeli + performans sonrası
+
+Tüm koşular yine yerel makinede, aynı kurulumda (Docker API 0.5 CPU / 512 MB, Mongo ops/sn örneklemesi aynı; bölüm 2). Prod'a istek gönderilmedi. Bir önceki yük testinden (b669c31) beri değişenler: seri hesabı yalnız günün ilk sayılan logunda (1e9ce2a), `special-days/home` projeksiyonlu, AI'da kullanıcı başına tek istek (429 `AI_REQUEST_IN_FLIGHT`) ve günde 20 ücretsiz koşu, `keepAliveTimeout` 65 sn. Halka oturumu artık 3 sn flush / 5 sn yoklama yapmıyor: "Gönder" butonu, "Toplamı yenile" butonu, çıkışta/arka planda/hedefte otomatik gönderim (docs/qa/kararlar.md, "Halka oturumu modeli").
+
+Aşağıdaki "ops/sn" değerleri boşta tabanı (~2.7) çıkarılmış toplamdır. Önceki sütunlar bölüm 3-4'ten.
+
+### Özet tablo (eski ve yeni)
+
+| Ölçüt | 2026-10-07 | 2026-10-08 | Not |
+|---|---|---|---|
+| Halka üyesi başına Mongo ops/sn | ~5 (eski desen) | **~0.37** (yeni buton modeli) | ölçüm; eski desen performans sonrası da koşuldu: ~4 |
+| Halka: M0 (100 ops/sn) dolma noktası | ~20 üye | **~270 üye** | ölçüm (200 üye = 73, 300 üye = 108 ops/sn) |
+| Halka: Flex (500 ops/sn) dolma noktası | ~100 üye | **Flex'e ulaşılamadı**; Starter ~1.050 üyede yavaşlıyor (~400 ops/sn) | ölçüm; 1.200-1.500 üyede ops/sn ~450-460'ta platoluyor |
+| Halka: Starter diz noktası (p95 > 1 sn) | ~100 üye (p95 0.85 sn) | **~1.050 üye** (900 üye p95 121 ms, 1.200 üye p95 2.2 sn) | ölçüm |
+| Mix: Starter diz noktası (p95 > 1 sn) | ~185 VU | **~340 VU** (325-350 arası; p95 577 ms ve 474 ms - 1.5 sn, koşular arası oynak) | ölçüm, ±%15 |
+| Mix: M0 (100 ops/sn) dolma noktası | ~70-75 VU | **~97 VU** | ölçüm (100 VU = 103 ops/sn) |
+| Mix: VU başına Mongo ops/sn | ~1.4 | **~1.03** | ölçüm |
+| Mix: tavan istek/sn (Starter CPU) | ~55-62 | **~100-115** | ölçüm |
+| Mix: tavan Mongo ops/sn (Starter CPU) | ~260 | **~350-400** | Flex'in 500'üne yine ulaşılamadı |
+| Soak (10 dk, 240 VU = knee'nin ~%70'i) | 20 dk, 130 VU: p95 261 ms | **10 dk, 240 VU: p95 109 ms (tutma), tüm koşu 155 ms; hata %0; bellek 122-126 MiB düz; CPU ort. %35; OOM/yeniden başlatma yok** | ölçüm |
+
+### Zikir Halkası: yeni model (tek koşu 600 üyeye, ikinci koşu 1.500 üyeye kadar)
+
+Üye davranışı: girişte 1 detay GET; 20-60 sn'de bir "Gönder" (kümülatif POST); 30-90 sn'de bir "Toplamı yenile" (detay GET); çıkışta son gönderim; oturum 5 dk. Halka başına üye tavanı 200 olduğu için üyeler 8-12 halkaya dağıtıldı (halka başına en fazla ~125 üye). Tek halkaya 200 üye dolu yük binmesi bu testte ayrıca ölçülmedi.
+
+| Aynı anda aktif üye | p50 | p95 | p99 | Hata % | CPU ort/maks | Bellek maks | Mongo ops/sn |
+|---|---|---|---|---|---|---|---|
+| 300 | 22 | 50 | 156 | 0.00 | 16/26 | 100 | 108 |
+| 600 | 18 | 42 | 152 | 0.00 | 24/31 | 110 | 207 |
+| 900 | 16 | 121 | 258 | 0.00 | 27/40 | 117 | 336 |
+| 1.200 | 256 | 2.214 | 2.691 | 0.00 | 43/52 | 135 | 450 |
+| 1.500 | 4.877 | 13.475 | 17.096 | 0.00 | 50/55 | 173 | 462 |
+
+(Daha küçük adımlar, ilk koşu: 50 üye = 19, 100 üye = 33, 200 üye = 73 ops/sn; p95 hep < 55 ms.)
+
+Eski desen (3 sn flush + 5 sn yoklama) bu kodla yeniden koşuldu (12 halkaya dağıtılmış, öncekinde tek halka vardı):
+
+| Aynı anda aktif üye | p50 | p95 | p99 | Hata % | CPU ort/maks | Mongo ops/sn | Önceki (10-07) ops/sn, p95 |
+|---|---|---|---|---|---|---|---|
+| 50 | 23 | 132 | 267 | 0.00 | 24/33 | 215 | 257, 153 ms |
+| 100 | 111 | 699 | 1.313 | 0.00 | 42/51 | 402 | 492, 851 ms |
+| 150 | 589 | 1.394 | 1.837 | 0.00 | 50/51 | 475 | 525, 1.666 ms |
+
+Okuma: halka maliyeti buton modeliyle yaklaşık **11 kat** düştü (üye başına ~4 ops/sn → ~0.37). Eski desende bile yeni kodla %15-20 ucuzladı (seri hesabı atlanıyor), diz noktası ~100 → ~110 üye. Yeni modelde halka artık M0'ı tek başına 270 üyede doldurur; Starter'ın CPU'su ~1.050 üyede biter, Flex hiç sınır olmaz.
+
+### Mix: kırılma noktası (yeni kod)
+
+| Eşzamanlı kullanıcı | İstek/sn | p50 | p95 | p99 | Hata % | CPU ort/maks | Bellek maks | Mongo ops/sn |
+|---|---|---|---|---|---|---|---|---|
+| 50 | 15.6 | 9 | 26 | 85 | 0.00 | 12/19 | 108 | 53 |
+| 100 | 33.0 | 9 | 44 | 141 | 0.00 | 19/36 | 110 | 104 |
+| 150 | 50.3 | 9 | 54 | 135 | 0.00 | 27/38 | 112 | 153 |
+| 200 | 68.1 | 9 | 132 | 359 | 0.00 | 28/41 | 115 | 206 |
+| 250 | 79.6-83.3 | 10 | 160-258 | 259-847 | 0.00 | 33-35/42-47 | 121 | 255-263 |
+| 275 | 91.8 | 12 | 225 | 427 | 0.00 | 40/51 | 122 | 277 |
+| 300 | 99.7-100.5 | 13-15 | 275-290 | 492-503 | 0.00 | 42-44/52 | 123 | 295-308 |
+| 325 | 106.5 | 25 | 577 | 905 | 0.00 | 45/52 | 126 | 323 |
+| 350 | 103-114 | 72-557 | 474-1.552 | 669-2.240 | 0.00 | 46-51/51 | 127-130 | 312-345 |
+| 400 | 110 | 561 | 1.808-2.078 | 3.248-3.618 | 0.00 | 50-52/52-68 | 129-141 | 350-356 |
+| 500 | 121.9 | 1.002 | 3.201 | 6.670 | 0.00 | 50/53 | 136 | 397 |
+| 600 | 113.2 | 1.115 | 3.170 | 3.682 | 0.00 | 50/51 | 147 | 392 |
+
+Birkaç ayrı koşudan birleştirildi (aynı DB'de arka arkaya; 350 civarı koşular arası oynak, çünkü CPU %50 tavanında kuyruk birikimi önceki aşamadan taşıyor). Hata oranı hiçbir adımda %0'ın üstüne çıkmadı; yine önce gecikme bozuluyor. 600 VU'da çökme/yeniden başlatma yok. Diz noktası **~340 VU** (~185'ten **~1.8 kat**).
+
+### Uç nokta maliyeti (bölüm 7'ye karşı, ardışık 100 istek)
+
+| Uç nokta | Mongo ops/istek (10-07 → 10-08) | CPU ms/istek (10-07 → 10-08) |
+|---|---|---|
+| **POST dhikr-logs (sade) = bir kayıt** | 8.0 → **5.0** | 8.8 → **5.9** |
+| POST dhikr-logs (vird) | 14.1 → 11.1 | 15.7 → 9.4 |
+| POST dhikr-logs (halka) | 12.0 → 9.0 | 10.4 → 7.9 |
+| GET special-days/home | 2.0 → 2.0 | **37.0 → 6.6** |
+| GET circles/:id | 6.0 → 7.0 | 5.0 → 6.2 |
+| GET ai/credits | 3.0 → 3.1 | 4.0 → 4.6 |
+
+Kayıt başına ops/sn: 8 → 5 (probe, tek istek; seri hesabı günün ilk kaydı dışında atlandığı için). AI'da 429'lar: mix senaryosu bir VU = bir kullanıcı olduğundan `AI_REQUEST_IN_FLIGHT` hiç tetiklenmedi (`ai_other_status` = 0; 429 artık beklenen durum olarak sayılıyor, hata sayılmıyor). 20 günlük ücretsiz koşu limiti bu süre içinde tetiklenmedi; yani bu iki kural yük testinde fiilen ölçülmedi, yalnız hata saymıyor.
+
+### DAU tahmini (TAHMİN; varsayımlar bölüm 5 ile aynı)
+
+Kullanıcı günde 2 oturum x 4 dk = 8 dk; eşzamanlı = DAU x 8 x pf / 1440 (DAU = eşzamanlı x 180 / pf).
+
+| | Eşzamanlı | pf=2 | pf=4 (tipik) | pf=10 (Kandil) |
+|---|---|---|---|---|
+| Atlas M0 sınırı (100 ops/sn) | ~97 | ~8.700 | **~4.400** | ~1.700 |
+| Render Starter diz noktası (p95 = 1 sn) | ~340 | ~30.600 | **~15.300** | ~6.100 |
+| Starter'da rahat bölge (diz noktasının %70'i) | ~240 | ~21.600 | **~10.800** | ~4.300 |
+| Atlas Flex sınırı (500 ops/sn; VU başına 1.03) | ~485 (Starter bu yüke ulaşamıyor) | ~43.700 | ~21.800 | ~8.700 |
+
+Halka kullanan kullanıcılar bu hesaba eklenir; yeni modelde üye başına yük ~0.37 ops/sn olduğundan 100 aktif halka üyesi ~37 ops/sn demektir (ana kullanımın ~36 eşzamanlı kullanıcı eşdeğeri).
+
+### Doğrulayıcılar (bu koşuların sonunda, `zikir_load`)
+
+| Doğrulayıcı | Sonuç |
+|---|---|
+| verify-circle | **PASS** (12 halkada totalCount = Σ log sayımı; her halka için yinelenen yok, üye dışı log yok) |
+| verify-credits | **PASS** (1.936 cüzdan, 2.868 ledger; negatif 0, uyumsuz 0, çift flowId 0, öneri/borç uyumsuz 0) |
+| verify-vird | **PASS** (347 aktif programlı kullanıcı; >1 aktif: 0) |
+| verify-logs | **PASS** (111.327 log; yinelenen 0; negatif 0) |
+| verify-streaks | **PASS** (3.566 kullanıcı; eksik 0; tutarsız 0) - seri hesabının günün ilk logunda yapılması veri tutarlılığını bozmadı |
+
+### Test aracı notları
+
+- `circle-heavy` artık varsayılan olarak yeni buton modelini koşar. Eski desen: `CIRCLE_MODEL=old`. Oturum süresi: `CIRCLE_SESSION_S` (vars. 300).
+- Bir halkada en fazla 200 üye olabildiği için büyük N için `node load/seed-circles.mjs 11` ek halka açar ve senaryo VU'ları halkalara dağıtır; `verify-circle.mjs` hepsini kontrol eder.
+- AI 429 yanıtları k6'da beklenen durum (hata sayılmaz); mix'te `ai_429` sayacı var.
+
 ## 2. Kurulum
 
 | Parça | Ayar |
@@ -206,6 +312,8 @@ Kapsam dışı: doğrulayıcılar yalnızca k6 kullanıcılarını (`@k6.local`)
 
 ## 11. Öneriler
 
+(2026-10-08 güncellemesi: 1b bölümündeki yeni sayılar geçerli; aşağıdaki eşikler yeni sayılarla okunmalı. M0: ~97 eşz. / ~4.400 DAU (tipik gün); Starter'ı Standard'a alma: ~240 eşz. / ~10.800 DAU; M10: Flex 500 ops/sn'ye yaklaşıldığında, yaklaşık ~480 eşz. / ~21.800 DAU. Flex'e geçiş önerisi aynen geçerli. Ucuz iyileştirmelerden (a), (b), (c) yapıldı; (d) deploy edilmeli.)
+
 1. **Atlas M0 → Flex'e geçişi (planlanan gece geçişi) bu rapora göre doğru ve acil.** M0 yaklaşık 70-75 eşzamanlı kullanıcıda doluyor; tipik bir günde ~3 bin DAU, Kandil gecesi 1-2 bin DAU. Flex (500 işlem/sn) Starter'ın üretebildiği en yüksek Mongo yükünün (~260 işlem/sn) neredeyse 2 katı.
 2. **Render Starter'ı Standard'a (1 CPU) alma zamanı:** eşzamanlı kullanıcı sayın **~130'a** (diz noktasının %70'i) veya günlük aktif kullanıcı **~6.000'e (tipik gün)** yaklaştığında. Belirti: tepe saatlerde `docker stats` benzeri CPU grafiği (Render metrics) %80-100 civarında dolanması ve istek süresi p95'in 1 sn'yi geçmesi. Bellek bu kararı belirlemiyor (180 MB tepe). CPU'yu ikiye katlamak, ölçülen verimle diz noktasını yaklaşık 350-400 eşzamanlı kullanıcıya taşır (**tahmin**, Standard ile ölçmedik). Birden fazla örnek açarsan cron işlerinin (ör. abonelik mutabakatı, `@Cron` 30 dk) ve socket.io ilerleme kanalının her örnekte çalışacağını unutma.
 3. **Atlas M10 ihtiyacı:** Flex'in 500 işlem/sn sınırı, API tarafı en az 2 kat güçlenince (yaklaşık ~380 eşzamanlı kullanıcı, tipik gün ~15-18 bin DAU, **tahmin**) veya bir halkada ~100 üye aynı anda aktifken dolar. Ondan önce M10 gerekmez. Daha önce ele alınması gereken: yukarıdaki sıcak noktalar 1 ve 3 (seri hesabını azaltmak Mongo yükünü ~%25-30 düşürür, **tahmin**), böylece Flex daha uzun yeter.
@@ -232,5 +340,7 @@ load/run.sh spike mix PRESIGN=400 STAGES=400:10s,400:60s,50:5s,50:75s
 load/run.sh soak mix STAGES=130:20s,130:1200s
 node load/probe-ops.mjs
 for v in circle credits vird logs streaks; do node load/verify-$v.mjs; done
+node load/seed-circles.mjs 11   # büyük halka testi için (üye tavanı 200)
+load/run.sh circle-new circle-heavy STAGES=300:30s,300:90s,600:40s,600:90s,900:40s,900:90s,1200:40s,1200:90s   # CIRCLE_MODEL=old: eski desen
 docker compose -f load/docker-compose.load.yml stop api-load
 ```

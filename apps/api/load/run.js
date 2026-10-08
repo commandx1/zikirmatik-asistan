@@ -23,7 +23,7 @@ const today = new Date().toISOString().slice(0, 10);
 const aiCreditExhausted = new Counter('ai_credit_exhausted');
 
 // ai senaryosu kredi tükenince 403 döner — bunu http_req_failed'a saydırma.
-http.setResponseCallback(http.expectedStatuses(200, 201, 403));
+http.setResponseCallback(http.expectedStatuses(200, 201, 403, 429));
 
 // --- dhikr: VU başına ayrı kullanıcı, artan count ile POST /v1/dhikr-logs.
 let dhikrSession = null;

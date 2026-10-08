@@ -1,6 +1,6 @@
 // Gerçekçi senaryolar. mix: tek kullanıcı oturumu döngüsü (uygulamayı aç, birkaç
 // kayıt, ara sıra AI, düşünme süresi 2–10 sn). circle-heavy: aynı halkada N üye,
-// gerçek uygulama deseni (3 sn'de bir katkı flush'ı + 5 sn'de bir detay poll'u).
+// yeni buton modeli (Gönder 20-60 sn, Toplamı yenile 30-90 sn); CIRCLE_MODEL=old eski 3 sn/5 sn deseni.
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Counter } from 'k6/metrics';
@@ -10,6 +10,7 @@ import { openSession, call, tagStage, TIMEZONES } from './session.js';
 const aiOk = new Counter('ai_ok');
 const aiNoCredit = new Counter('ai_no_credit');
 const aiOther = new Counter('ai_other_status');
+const aiBusy = new Counter('ai_429'); // AI_REQUEST_IN_FLIGHT / günlük ücretsiz limit: beklenen
 const think = () => sleep(2 + Math.random() * 8);
 const today = new Date().toISOString().slice(0, 10);
 const RUN = __ENV.RUN_ID ?? String(Date.now());
@@ -90,6 +91,7 @@ function askAi() {
   const res = call(session, 'POST', '/v1/ai/recommendations', 'POST ai/recommendations', body);
   if (res.status === 201) aiOk.add(1);
   else if (res.status === 403) aiNoCredit.add(1);
+  else if (res.status === 429) aiBusy.add(1);
   else aiOther.add(1);
   // %25: aynı flowId tekrar (ağ retry'ı) — kredi bir kez düşmeli.
   if (res.status === 201 && Math.random() < 0.25) {
@@ -138,34 +140,74 @@ export function mixScenario(seed, pre) {
 let circleSession = null;
 let circleCount = 0;
 
+const rnd = (a, b) => a + Math.random() * (b - a);
+
+function circleSend(C) {
+  const res = call(circleSession, 'POST', '/v1/dhikr-logs', 'POST dhikr-logs circle', {
+    dhikrId: C.dhikrId,
+    circleId: C.id,
+    source: 'circle',
+    count: circleCount,
+    targetCount: 10_000_000,
+    date: today,
+  });
+  check(res, { 'circle-log 201': (r) => r.status === 201 });
+}
+
+function circleDetail(C) {
+  const res = call(circleSession, 'GET', `/v1/circles/${C.id}`, 'GET circles/:id');
+  check(res, { 'circle-detail 200': (r) => r.status === 200 });
+}
+
+// Yeni model (halka oturumu butonları): girişte 1 detay GET, yerelde dokunma,
+// 20-60 sn'de bir "Gönder" (kümülatif POST), 30-90 sn'de bir "Toplamı yenile"
+// (detay GET), çıkışta son gönderim. Oturum süresi CIRCLE_SESSION_S (vars. 300).
+function circleSessionNew(C) {
+  const len = Number(__ENV.CIRCLE_SESSION_S ?? 300);
+  circleDetail(C);
+  let sendAt = rnd(20, 60);
+  let refreshAt = rnd(30, 90);
+  for (let t = 1; t <= len; t += 1) {
+    sleep(1);
+    if (t % 10 === 0) tagStage(); // uzun oturumda aşama etiketi tazelensin
+    circleCount += Math.floor(rnd(0, 3)); // yerel dokunmalar
+    if (t >= sendAt) {
+      circleSend(C);
+      sendAt = t + rnd(20, 60);
+    }
+    if (t >= refreshAt) {
+      circleDetail(C);
+      refreshAt = t + rnd(30, 90);
+    }
+  }
+  circleCount += 1;
+  circleSend(C); // çıkışta son gönderim
+}
+
+// Eski model (CIRCLE_MODEL=old): 3 sn'de bir flush + 5 sn'de bir poll.
+function circleSessionOld(C) {
+  for (let t = 1; t <= 15; t += 1) {
+    sleep(1);
+    if (t % 3 === 0) {
+      circleCount += 1 + Math.floor(Math.random() * 30);
+      circleSend(C);
+    }
+    if (t % 5 === 0) circleDetail(C);
+  }
+}
+
 export function circleHeavyScenario(seed) {
   tagStage();
+  // Halka başına üye tavanı 200: seed-circles.mjs ek halka açtıysa VU'lar dağıtılır.
+  const C = seed.circles ? seed.circles[(__VU - 1) % seed.circles.length] : seed.circle;
   if (!circleSession) {
     circleSession = openSession(`load-circle-${RUN}-${__VU}`, TIMEZONES[__VU % TIMEZONES.length]);
     if (!circleSession) {
       sleep(5);
       return;
     }
-    call(circleSession, 'POST', '/v1/circles/join', 'POST circles/join', { code: seed.circle.code });
+    call(circleSession, 'POST', '/v1/circles/join', 'POST circles/join', { code: C.code });
   }
-  // 15 sn'lik döngü: her 3 sn katkı flush'ı, her 5 sn detay poll'u.
-  for (let t = 1; t <= 15; t += 1) {
-    sleep(1);
-    if (t % 3 === 0) {
-      circleCount += 1 + Math.floor(Math.random() * 30);
-      const res = call(circleSession, 'POST', '/v1/dhikr-logs', 'POST dhikr-logs circle', {
-        dhikrId: seed.circle.dhikrId,
-        circleId: seed.circle.id,
-        source: 'circle',
-        count: circleCount,
-        targetCount: 10_000_000,
-        date: today,
-      });
-      check(res, { 'circle-log 201': (r) => r.status === 201 });
-    }
-    if (t % 5 === 0) {
-      const res = call(circleSession, 'GET', `/v1/circles/${seed.circle.id}`, 'GET circles/:id');
-      check(res, { 'circle-detail 200': (r) => r.status === 200 });
-    }
-  }
+  if (__ENV.CIRCLE_MODEL === 'old') circleSessionOld(C);
+  else circleSessionNew(C);
 }

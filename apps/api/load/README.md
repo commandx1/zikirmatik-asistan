@@ -44,7 +44,7 @@ her 5 sn'de `serverStatus().opcounters` örnekler (ops/sn = fark / süre).
 | Senaryo | Komut |
 |---|---|
 | Kırılma noktası (adım adım VU) | `load/run.sh breakpoint mix STAGES=25:10s,25:80s,50:10s,50:80s,100:10s,100:80s,150:10s,150:80s,200:10s,200:80s` |
-| Halka yoğun (N üye, 3 sn flush + 5 sn poll) | `load/run.sh circle circle-heavy STAGES=50:10s,50:80s,100:10s,100:80s` |
+| Halka yoğun (N üye; buton modeli: Gönder 20-60 sn, Toplamı yenile 30-90 sn, çıkışta gönder; `CIRCLE_MODEL=old` = eski 3 sn flush + 5 sn poll). Halka başına tavan 200 üye: önce `node load/seed-circles.mjs 11` | `load/run.sh circle circle-heavy STAGES=300:30s,300:90s,600:40s,600:90s` |
 | Ani yük | `load/run.sh spike mix PRESIGN=400 STAGES=400:10s,400:60s,50:5s,50:75s` (PRESIGN yoksa kayıt fırtınası da dahil) |
 | Soak | `load/run.sh soak mix STAGES=130:20s,130:1200s` |
 | Uç nokta başına Mongo işlemi + CPU ms | `CONTAINER=load-api-load-1 node load/probe-ops.mjs` |
