@@ -6,7 +6,12 @@
  */
 import { randomUUID } from 'node:crypto';
 import request from 'supertest';
-import { istanbulDateKey, shiftDateKey } from '../src/common/utils/date-keys';
+import { Types } from 'mongoose';
+import {
+  dateKeyInZone,
+  istanbulDateKey,
+  shiftDateKey,
+} from '../src/common/utils/date-keys';
 import { CIRCLE_ERROR_CODE } from '../src/modules/circles/circles.constants';
 import {
   Circle,
@@ -407,6 +412,44 @@ describe('Zikir Halkası (e2e)', () => {
       await send(shiftDateKey(today, -1)).expect(400);
       await send(today).expect(201);
       await send(shiftDateKey(today, 1)).expect(201);
+    });
+
+    it('A-03: kuruluş günü katkı yapanın saat diliminde — kurucudan batıdaki üye kendi "bugün"ünü yazabilir', async () => {
+      const creator = await premiumUser();
+      const { dhikrId, circle } = await seedActiveCircle(creator);
+      const zone = 'America/Los_Angeles';
+      const laToday = dateKeyInZone(new Date(), zone);
+      // Kuruluş anı: İstanbul'da laToday+1 01:00 = LA'da laToday 15:00.
+      await t.model<CircleDocument>(Circle.name).collection.updateOne(
+        { _id: new Types.ObjectId(circle.id) },
+        {
+          $set: {
+            createdAt: new Date(`${shiftDateKey(laToday, 1)}T01:00:00+03:00`),
+          },
+        },
+      );
+      const send = (date: string, timezone?: string) =>
+        request(t.http)
+          .post('/v1/dhikr-logs')
+          .set({
+            ...bearer(creator.accessToken),
+            ...(timezone ? { 'x-client-timezone': timezone } : {}),
+          })
+          .send({
+            userId: creator.userId,
+            dhikrId,
+            count: 3,
+            targetCount: 3,
+            date,
+            source: 'circle',
+            circleId: circle.id,
+          });
+
+      // İstanbul'a göre (başlık yok) laToday kuruluştan önceki gün → 400.
+      await send(laToday).expect(400);
+      // LA'daki üye için aynı gün kuruluş günüdür → 201 (eski uygulama da başlığı gönderir).
+      await send(laToday, zone).expect(201);
+      await send(shiftDateKey(laToday, -1), zone).expect(400);
     });
 
     it('A-01: hedef dolunca completed; sonraki katkı KABUL edilir, toplam hedefi aşar, completed kalır', async () => {

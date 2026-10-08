@@ -579,7 +579,7 @@ export class CirclesService {
     const userObjectId = this.asObjectId(userId);
     const circle = await this.circleModel
       .findOne({ _id: this.asObjectId(circleId), memberIds: userObjectId })
-      .select('status dhikrId expiredAt createdAt timezone')
+      .select('status dhikrId expiredAt createdAt')
       .lean()
       .exec();
     if (!circle) {
@@ -596,12 +596,12 @@ export class CirclesService {
         message: CIRCLE_ERROR_MESSAGE[CIRCLE_ERROR_CODE.DHIKR_MISMATCH],
       });
     }
-    // A-03: kayıt günü halkanın kuruluş gününden (kurucunun saat dilimi,
-    // yoksa İstanbul) önce olamaz. Üst sınır (bugün+1) A-12 genel kuralındadır.
-    if (
-      date &&
-      date < dateKeyInZone(circle.createdAt, circle.timezone ?? STATS_TIMEZONE)
-    ) {
+    // A-03: kayıt günü halkanın kuruluş gününden önce olamaz. Kuruluş günü
+    // KATKI YAPANIN saat diliminde (x-client-timezone, yoksa İstanbul): kurucudan
+    // batıdaki üye, kuruluştan sonraki ilk saatlerde hâlâ "dün"dedir ve kendi
+    // gününü yazar (A-12'deki +1 TZ payının alt sınır karşılığı).
+    // Üst sınır (bugün+1) A-12 genel kuralındadır.
+    if (date && date < dateKeyInZone(circle.createdAt, requestTimezone())) {
       throw new BadRequestException(
         'Kayıt tarihi halkanın kuruluş gününden önce olamaz.',
       );

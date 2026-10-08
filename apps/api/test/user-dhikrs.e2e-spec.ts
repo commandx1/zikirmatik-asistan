@@ -52,7 +52,9 @@ describe('UserDhikrs (e2e)', () => {
   });
 
   // API-UDH-05 (A-21): sunucu "Başlık N" üretmez; ad boş kalır
-  it('ad gönderilmezse sunucu varsayılan başlık yazmaz (name null, transliteration boş)', async () => {
+  // Eski istemci (build ≤102, use-dhikr-backend-sync) her öğede
+  // `item.name.trim()` çağırır: ad her zaman string olmalı (null → çökme).
+  it('ad gönderilmezse sunucu varsayılan başlık yazmaz (name "" — null değil, transliteration boş)', async () => {
     const me = await signIn(t.http, { sub: 'e2e-ud-noname' });
 
     const bodies: { name?: string | null; transliteration?: string }[] = [];
@@ -65,14 +67,20 @@ describe('UserDhikrs (e2e)', () => {
       bodies.push(data(res));
     }
     for (const body of bodies) {
-      expect(body.name ?? null).toBeNull();
+      expect(body.name).toBe('');
       expect(body.transliteration ?? null).toBeNull();
     }
     const list = await request(t.http)
       .get('/v1/user-dhikrs')
       .set(bearer(me.accessToken))
       .expect(200);
-    expect(JSON.stringify(data(list))).not.toContain('Başlık');
+    const items = data<{ name: string; transliteration?: string }[]>(list);
+    expect(JSON.stringify(items)).not.toContain('Başlık');
+    // Eski istemcinin birebir ifadeleri çökmeden çalışmalı.
+    for (const item of items) {
+      expect(item.name.trim()).toBe('');
+      expect(item.transliteration?.trim() || item.name).toBe('');
+    }
   });
 
   it('clientId gönderilmezse otomatik üretilir', async () => {

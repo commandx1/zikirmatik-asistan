@@ -15,8 +15,9 @@ export class UserDhikrsService {
   async createOrUpdate(userId: string, payload: CreateUserDhikrDto) {
     const userObjectId = this.asObjectId(userId, 'Geçersiz kullanıcı kimliği.');
     const clientId = payload.clientId?.trim() || this.buildAutoClientId();
-    // Ad yoksa null: varsayılan başlığı istemci kendi dilinde gösterir.
-    const name = payload.name?.trim() || null;
+    // Ad yoksa "": varsayılan başlığı istemci kendi dilinde gösterir (null
+    // değil — eski istemci uyumu, bkz. user-dhikr.schema.ts).
+    const name = payload.name?.trim() || '';
 
     const next = await this.userDhikrModel
       .findOneAndUpdate(

@@ -13,8 +13,10 @@ export class UserDhikr {
   clientId!: string;
 
   // Opsiyonel: sunucu varsayılan başlık yazmaz (istemci kendi dilinde gösterir).
-  @Prop({ type: String, trim: true, default: null })
-  name?: string | null;
+  // Boş ad "" saklanır, null DEĞİL: build ≤102 senkronda `item.name.trim()`
+  // çağırıyor; null tüm katalog/kişisel zikir hidrasyonunu düşürür.
+  @Prop({ type: String, trim: true, default: '' })
+  name?: string;
 
   @Prop({ type: String, trim: true })
   transliteration?: string;
