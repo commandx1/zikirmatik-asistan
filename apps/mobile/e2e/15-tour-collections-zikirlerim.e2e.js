@@ -7,7 +7,7 @@ const {
   dismissIfShown,
   waitForHome,
   waitForTextContaining,
-  scrollTo,
+  scrollToCentered,
   openTab,
   relaunch,
   tapN,
@@ -53,7 +53,8 @@ describe('15a tur (onboarding turu)', () => {
   it('TUR-05 Profil → "Uygulamayı Tanıt" ana sayfaya gider ve turu yeniden başlatır; TUR-03 Atla turu tamamlanmış sayar', async () => {
     await skipTourIfShown();
     await toProfile();
-    await scrollTo('e2e-settings-tour-replay', 'e2e-profile-scroll');
+    // Yüzen sekme çubuğu hedefi örter (dokunuş AI Rehber sekmesine düşer) → ekran ortasına çek.
+    await scrollToCentered('e2e-settings-tour-replay', 'e2e-profile-scroll');
     await element(by.id('e2e-settings-tour-replay')).tap();
     await exists('e2e-tour-skip', 20000);
     await element(by.id('e2e-tour-skip')).tap();
@@ -70,7 +71,8 @@ describe('15a tur (onboarding turu)', () => {
     if (device.getPlatform() !== 'android') return;
     await skipTourIfShown();
     await toProfile();
-    await scrollTo('e2e-settings-tour-replay', 'e2e-profile-scroll');
+    // Yüzen sekme çubuğu hedefi örter (dokunuş AI Rehber sekmesine düşer) → ekran ortasına çek.
+    await scrollToCentered('e2e-settings-tour-replay', 'e2e-profile-scroll');
     await element(by.id('e2e-settings-tour-replay')).tap();
     await exists('e2e-tour-skip', 20000);
     await device.pressBack();

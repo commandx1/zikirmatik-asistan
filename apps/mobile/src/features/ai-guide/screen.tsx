@@ -358,6 +358,7 @@ export function AiGuideScreen() {
           onContinue={guard.onGuardContinue}
           onFresh={guard.onGuardFresh}
           onCancel={guard.onGuardCancel}
+          testIDs={{ continue: TEST_IDS.home.resumeContinue, fresh: TEST_IDS.home.resumeFresh }}
         />
         <Suspense fallback={null}>
         <DailyEsmaWelcomeModal

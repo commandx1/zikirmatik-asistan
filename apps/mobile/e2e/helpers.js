@@ -127,6 +127,21 @@ async function skipTourIfShown(ms = 3000) {
   await dismissIfShown(IDS.welcomeLater, ms);
 }
 
+// İlk açılış kaplamaları (tur, bildirim kartı, "Hoş geldin") sırayla ve birbirini bekleterek çıkar;
+// sekme çubuğu görünene dek hepsini kapat.
+async function settleOverlays(rounds = 6) {
+  for (let i = 0; i < rounds; i += 1) {
+    try {
+      await expect(element(by.id(IDS.tabMore))).toBeVisible();
+      return;
+    } catch {
+      await dismissIfShown(IDS.tourSkip, 2500);
+      await dismissIfShown('e2e-notif-offer-dismiss', 2500);
+      await dismissIfShown(IDS.welcomeLater, 2500);
+    }
+  }
+}
+
 // Temiz kurulum (artık misafir olarak açılır) + onboarding modallarını kapat +
 // profilden mock Google girişi.
 async function freshSignIn() {
@@ -293,6 +308,29 @@ async function setAirplane(on) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// Yerel gün anahtarı (YYYY-MM-DD), bugünden offsetDays ileri/geri.
+function ymd(offsetDays = 0) {
+  const d = new Date(Date.now() + offsetDays * 86400000);
+  const p = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+// Emülatör saatini bugünden offsetDays kaydır (adb root gerekir; 0 = gerçek saate dön).
+function setDeviceDate(offsetDays) {
+  const d = new Date(Date.now() + offsetDays * 86400000);
+  const p = (x) => String(x).padStart(2, '0');
+  adb('settings put global auto_time 0');
+  adb(`date ${p(d.getMonth() + 1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${d.getFullYear()}.${p(d.getSeconds())}`);
+  adb('am broadcast -a android.intent.action.TIME_SET');
+  if (offsetDays === 0) adb('settings put global auto_time 1');
+}
+
+// Bildirim izni (Android): OS izin penceresi açılmadıysa izin hâlâ verilmemiştir.
+function notifPermissionGranted(pkg = 'com.zikirmatik_asistan.app') {
+  const out = adb(`dumpsys package ${pkg}`);
+  return /android\.permission\.POST_NOTIFICATIONS: granted=true/.test(out);
+}
+
 async function tapN(id, n) {
   for (let i = 0; i < n; i += 1) await element(by.id(id)).tap();
 }
@@ -320,6 +358,7 @@ module.exports = {
   signInWithGoogle,
   continueAsGuest,
   skipTourIfShown,
+  settleOverlays,
   dismissBadgeIfShown,
   freshSignIn,
   openTab,
@@ -341,6 +380,9 @@ module.exports = {
   adbRoot,
   setAirplane,
   sleep,
+  ymd,
+  setDeviceDate,
+  notifPermissionGranted,
   tapN,
   apiRequest,
 };

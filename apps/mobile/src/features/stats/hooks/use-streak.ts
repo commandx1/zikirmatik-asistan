@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuthStore } from '../../../store/auth-store'
 import { useDhikrStore } from '../../../store/dhikr-store'
+import { useGuestMigrationStore } from '../../../store/guest-migration-store'
 import type { BackendStreak } from '../../home/services/streaks-api-client'
 import { cacheServerStreak } from '../../widget/widget-sync'
 import { deriveLocalActivityStats, resolveHeaderStreak } from '../services/local-badges'
@@ -15,6 +16,7 @@ export function useStreak() {
   const freeModeCount = useDhikrStore(state => state.freeModeCount)
   const freeModeActivityAt = useDhikrStore(state => state.freeModeActivityAt)
   const activeDayKeys = useDhikrStore(state => state.activeDayKeys)
+  const migrationStatus = useGuestMigrationStore(state => state.status)
   const [streak, setStreak] = useState<{ forUserId: string; value: BackendStreak } | null>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -33,9 +35,10 @@ export function useStreak() {
     }
   }, [authStatus, sessionUserId])
 
+  // Misafir göçü logları doğrudan yazar (lastSavedBackendLog değişmez): bitince seri tazelenir.
   useEffect(() => {
     void fetchStreakDays()
-  }, [fetchStreakDays])
+  }, [fetchStreakDays, migrationStatus])
 
   useEffect(() => {
     if (authStatus !== 'authenticated' || !sessionUserId || !lastSavedBackendLog) {
