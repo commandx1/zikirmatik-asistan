@@ -26,11 +26,13 @@ export function SourceDonut({ breakdown }: { breakdown: StatsSourceBreakdown }) 
     circle: withAlpha(tokens.success, 0.5)
   };
 
-  const total = SOURCE_ORDER.reduce((sum, key) => sum + breakdown[key], 0);
+  // Eski API 'circle' (ya da başka) anahtarı göndermeyebilir: eksik değer 0, NaN değil.
+  const valueOf = (key: (typeof SOURCE_ORDER)[number]) => breakdown[key] ?? 0;
+  const total = SOURCE_ORDER.reduce((sum, key) => sum + valueOf(key), 0);
 
   let accumulated = 0;
   const segments = SOURCE_ORDER.map((key) => {
-    const value = breakdown[key];
+    const value = valueOf(key);
     const fraction = total > 0 ? value / total : 0;
     const segment = {
       key,
