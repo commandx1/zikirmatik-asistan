@@ -67,6 +67,12 @@ export interface MiddleSceneSpec {
   segments?: SegmentSpec[];
   staticImage?: string;
   badge?: BadgeSpec;
+  // Silent hold appended after this scene's VO (seconds); lengthens the scene's time budget and
+  // pushes every later scene back. Default 0 = unchanged timing.
+  holdAfterSec?: number;
+  // Optional "source card" overlay (RichVideo-05): lines appear one after another from scene
+  // frame `atFrame`; `highlight` (source-video px) draws a gold box inside the phone.
+  sourceCard?: { lines: string[]; atFrame: number; highlight?: { x: number; y: number; w: number; h: number } };
 }
 
 export interface RichVideoManifest {
@@ -91,7 +97,11 @@ const SOURCE_WIDTH_PX = 1080;
 
 export function richVideoGenericDurationInFrames(manifest: RichVideoManifest, fps: number = FPS): number {
   const timeline = buildTimelineFor(manifest.voManifest.sentences, fps);
-  return timeline[timeline.length - 1].end;
+  return timeline[timeline.length - 1].end + manifest.scenes.reduce((sum, sc) => sum + holdFrames(sc), 0);
+}
+
+function holdFrames(sc: MiddleSceneSpec): number {
+  return secToFrames(sc.holdAfterSec ?? 0, FPS);
 }
 
 // Small gold pulse label (reused shape from RichVideo01's CompletionBadge/PillLabel) —
@@ -119,6 +129,69 @@ function PulseBadge({ text }: { text: string }) {
         }}
       >
         {text}
+      </div>
+    </AbsoluteFill>
+  );
+}
+
+const CARD_STAGGER_FRAMES = 7;
+
+function SourceHighlight({ r, atFrame }: { r: { x: number; y: number; w: number; h: number }; atFrame: number }) {
+  const frame = useCurrentFrame();
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: `${(r.x / SOURCE_WIDTH_PX) * 100}%`,
+        top: `${(r.y / SOURCE_HEIGHT_PX) * 100}%`,
+        width: `${(r.w / SOURCE_WIDTH_PX) * 100}%`,
+        height: `${(r.h / SOURCE_HEIGHT_PX) * 100}%`,
+        opacity: fadeIn(frame, atFrame, 10),
+        border: `3px solid ${COLORS.gold}`,
+        borderRadius: 12,
+        background: "rgba(212,168,48,0.14)",
+        boxShadow: "0 0 24px rgba(212,168,48,0.45)",
+      }}
+    />
+  );
+}
+
+function SourceCard({ lines, atFrame }: { lines: string[]; atFrame: number }) {
+  const frame = useCurrentFrame();
+  return (
+    <AbsoluteFill style={{ alignItems: "center", justifyContent: "flex-start" }}>
+      <div
+        style={{
+          marginTop: 905,
+          width: 900,
+          display: "flex",
+          flexDirection: "column",
+          gap: 14,
+          background: "rgba(8,8,24,0.92)",
+          border: `2px solid ${COLORS.gold}`,
+          borderRadius: 28,
+          padding: "26px 34px",
+          boxShadow: "0 16px 50px rgba(0,0,0,0.6), 0 0 30px rgba(212,168,48,0.3)",
+        }}
+      >
+        {lines.map((line, i) => {
+          const at = atFrame + i * CARD_STAGGER_FRAMES;
+          return (
+            <div
+              key={i}
+              style={{
+                opacity: fadeIn(frame, at, 8),
+                transform: `translateY(${(1 - fadeIn(frame, at, 8)) * 18}px)`,
+                fontSize: 40,
+                fontWeight: 700,
+                color: COLORS.goldLight,
+                fontFamily: "sans-serif",
+              }}
+            >
+              {line}
+            </div>
+          );
+        })}
       </div>
     </AbsoluteFill>
   );
@@ -183,10 +256,16 @@ function MiddleScene({ scene, spec, manifest }: { scene: Scene; spec: MiddleScen
       );
     }
   });
+  if (spec.sourceCard) {
+    badges.push(<SourceCard key="sc" lines={spec.sourceCard.lines} atFrame={spec.sourceCard.atFrame} />);
+  }
   const rendered = (
     <>
       <PhoneStage {...phone}>
         {clips}
+        {spec.sourceCard?.highlight ? (
+          <SourceHighlight r={spec.sourceCard.highlight} atFrame={spec.sourceCard.atFrame} />
+        ) : null}
         {manifest.maskTopPx ? (
           <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: `${(manifest.maskTopPx / SOURCE_HEIGHT_PX) * 100}%`, background: maskColor }} />
         ) : null}
@@ -226,7 +305,12 @@ function MiddleScene({ scene, spec, manifest }: { scene: Scene; spec: MiddleScen
 export function createRichVideo(manifest: RichVideoManifest): React.FC {
   return function RichVideoComponent() {
     const timeline = buildTimelineFor(manifest.voManifest.sentences, FPS);
-    const [s1, s2, s3, s4, s5] = timeline;
+    const [h2, h3, h4] = manifest.scenes.map(holdFrames) as [number, number, number];
+    const [s1, t2, t3, t4, t5] = timeline;
+    const s2 = { ...t2, sceneFrames: t2.sceneFrames + h2 };
+    const s3 = { ...t3, start: t3.start + h2, sceneFrames: t3.sceneFrames + h3 };
+    const s4 = { ...t4, start: t4.start + h2 + h3, sceneFrames: t4.sceneFrames + h4 };
+    const s5 = { ...t5, start: t5.start + h2 + h3 + h4 };
     return (
       <AbsoluteFill style={{ background: COLORS.bg }}>
         <Sequence from={s1.start} durationInFrames={s1.sceneFrames} layout="none">

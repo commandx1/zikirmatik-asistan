@@ -11,10 +11,13 @@ import { createRichVideo, richVideoGenericDurationInFrames, type RichVideoManife
 import rich02Config from "../pilots/rich-02.json";
 import rich03Config from "../pilots/rich-03.json";
 import rich04Config from "../pilots/rich-04.json";
+import rich05Config from "../pilots/rich-05.json";
+import { RichVideoCover05 } from "./RichVideoCover05";
 import { RichVideoCover04 } from "./RichVideoCover04";
 import vo02 from "../public/audio/vo-02.json";
 import vo03 from "../public/audio/vo-03.json";
 import vo04 from "../public/audio/vo-04.json";
+import vo05 from "../public/audio/vo-05.json";
 
 const richVideo02Manifest = { ...rich02Config, voManifest: vo02 } as unknown as RichVideoManifest;
 const richVideo03Manifest = { ...rich03Config, voManifest: vo03 } as unknown as RichVideoManifest;
@@ -22,6 +25,8 @@ const richVideo04Manifest = { ...rich04Config, voManifest: vo04 } as unknown as 
 const RichVideo02 = createRichVideo(richVideo02Manifest);
 const RichVideo03 = createRichVideo(richVideo03Manifest);
 const RichVideo04 = createRichVideo(richVideo04Manifest);
+const richVideo05Manifest = { ...rich05Config, voManifest: vo05 } as unknown as RichVideoManifest;
+const RichVideo05 = createRichVideo(richVideo05Manifest);
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -187,6 +192,16 @@ export const RemotionRoot: React.FC = () => {
         height={HEIGHT}
       />
       <Still id="RichVideo-04-cover" component={RichVideoCover04} width={WIDTH} height={HEIGHT} />
+      {/* Video 5 ("AI Sohbet"): `npx remotion render RichVideo-05 out/video-05-ai-sohbet-sesli.mp4 --codec=h264` */}
+      <Composition
+        id="RichVideo-05"
+        component={RichVideo05}
+        durationInFrames={richVideoGenericDurationInFrames(richVideo05Manifest, FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      <Still id="RichVideo-05-cover" component={RichVideoCover05} width={WIDTH} height={HEIGHT} />
     </>
   );
 };

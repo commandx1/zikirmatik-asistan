@@ -501,3 +501,21 @@ onaylanır. "Son Asistan Aramaları" yazma ekranında görünür (kişisel) → 
 yakınlaştırılıp altı soldurulur. Reels güvenli alanı: altyazı `captionBottom: 400` (alt ~380 px
 ve sağ ~120 px IG arayüzü). Generic sahnede tek `PhoneStage` (segment başına değil) — aksi
 hâlde intro slide her segment sınırında yeniden oynar.
+
+## Sesli sürüm, Video 5 ("AI Sohbet — kaynaklı cevap", Instagram Reels) — `RichVideo-05` (2026-10-08)
+
+Mesaj: "Su yoksa abdest nasıl alınır?" → AI Sohbet'e sor → kaynak taranır → cevap kitap + sayfa ile.
+VO `node scripts/tts.mjs 05` (vo-05). Render: `npx remotion render RichVideo-05 out/video-05-ai-sohbet-sesli.mp4 --codec=h264`,
+kapak `npx remotion still RichVideo-05-cover out/video-05-kapak.png`, metin `out/video-05-instagram.txt`.
+Config `pilots/rich-05.json`; yeni opsiyonel sahne alanı `sourceCard` (RichVideoGeneric: `lines`, `atFrame`,
+`highlight` kaynak px) — altın vurgu kutusu + 7 kare arayla beliren kaynak kartı. Varsayılanlar değişmedi.
+Kapak için `public/recordings/ai-chat-05-settled.png` (cfr 30 sn karesinden kırpma).
+
+Kayıt (`public/recordings/ai-chat-05-cfr.mp4`, gerçek Samsung, prod): 0–2 boş sohbet, 2–8.8 soru yazma, ~11.6
+gönder, 15–22.5 "Kaynaklar taranıyor...", 22.8–26 akış, 26–33 yerleşik cevap + 3 kaynak satırı. 1 kredi.
+Kayıt betiği: `scripts/record-ai-chat-05.sh` (yazma → gönder → cevap → bekle).
+
+Tuzaklar: "Son Sohbetler" geçmişi (y 300–813) kişisel — hiçbir karede okunmamalı; pencere kaynak y>850'den
+başlar (phone top -779, scale 1.35) ve geçmiş cevap akarken ~25-26 sn'de kayana dek görünür kalır (akış penceresi
+23.2–24.4). Yazma sırasında "ADB Keyboard" şeridi (y~2140) → `fadeBottom [1400,1420]` ile gizli; nav bar
+`maskBottomPx`. Sahne 4: sabit 27.0–31.3 @1.0, zoom 1.4, kaynak kartı kanvasta y~905; `holdAfterSec: 1.6` (sahne başına opsiyonel sessiz bekleme, sonraki sahneleri öteler) kartı >=2.8 sn tutar. IG üst ~260 px kapalı: sahne 3 phone top -503 + history `maskRects` (y100–850).

@@ -72,6 +72,13 @@ const SENTENCES_BY_ID = {
     "Başla'ya dokun, sayıyı uygulama tutsun.",
     "Her gün ücretsiz hakkın var. Google Play'de Zikirmatik Asistan.",
   ],
+  "05": [
+    "Su yoksa abdest nasıl alınır?",
+    "Zikirmatik'te asistana sor.",
+    "Asistan güvenilir kaynakları tarar,",
+    "cevabı kitabı ve sayfasıyla verir.",
+    "Zikirmatik. Reklamsız, her gün ücretsiz AI hakkın var.",
+  ],
 };
 
 const VIDEO_ID = (process.argv[2] || "01").padStart(2, "0");

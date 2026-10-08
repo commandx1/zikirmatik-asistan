@@ -1,0 +1,90 @@
+{
+  "recordingSrc": "recordings/ai-chat-05-cfr.mp4",
+  "maskTopPx": 100,
+  "maskBottomPx": 150,
+  "captionBottom": 400,
+  "captionMaxWidth": 840,
+  "phone": {
+    "scale": 1.35,
+    "top": -779,
+    "fadeBottom": [
+      1400,
+      1420
+    ]
+  },
+  "scenes": [
+    {
+      "segments": [
+        {
+          "kind": "ramp",
+          "from": 2.0,
+          "to": 11.8
+        }
+      ]
+    },
+    {
+      "segments": [
+        {
+          "kind": "ramp",
+          "from": 11.8,
+          "to": 23.2
+        },
+        {
+          "kind": "fixed",
+          "from": 23.2,
+          "to": 24.4,
+          "rate": 1.0
+        }
+      ],
+      "phone": {
+        "scale": 1.35,
+        "top": -503,
+        "fadeBottom": [
+          1200,
+          1290
+        ]
+      },
+      "maskRects": [
+        {
+          "x": 0,
+          "y": 100,
+          "w": 1080,
+          "h": 750
+        }
+      ]
+    },
+    {
+      "phone": {
+        "scale": 1.4,
+        "top": -853,
+        "fadeBottom": [
+          1130,
+          1230
+        ]
+      },
+      "segments": [
+        {
+          "kind": "fixed",
+          "from": 27.0,
+          "to": 31.3,
+          "rate": 1.0
+        }
+      ],
+      "sourceCard": {
+        "atFrame": 8,
+        "highlight": {
+          "x": 90,
+          "y": 1412,
+          "w": 770,
+          "h": 250
+        },
+        "lines": [
+          "Muhtasar İlmihal · s. 76-85",
+          "Namazın Kılınışı · s. 11",
+          "El-Ezkâr 1. Cilt · s. 89-90"
+        ]
+      },
+      "holdAfterSec": 1.6
+    }
+  ]
+}
