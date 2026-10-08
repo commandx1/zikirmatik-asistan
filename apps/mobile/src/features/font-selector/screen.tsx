@@ -12,6 +12,7 @@ import { PrimaryCtaButton } from "../../components/ui/primary-cta-button";
 import { useThemePreferences } from "../../hooks/use-theme-preferences";
 import { SelectorPreviewCard } from "../theme-selector/components/selector-preview-card";
 import { FONT_LABELS } from "../../theme/fonts";
+import { TEST_IDS } from "../../test-ids";
 
 const OPTIONS: Array<{
   id: AppFontFamily;
@@ -69,7 +70,7 @@ export function FontSelectorScreen() {
             router.back();
           }}
         />
-        <PageScrollView contentInnerClassName="w-full px-5" bottomPadding={24}>
+        <PageScrollView testID={TEST_IDS.settings.fontScroll} contentInnerClassName="w-full px-5" bottomPadding={24}>
           <View className="gap-5">
             <SelectorPreviewCard themeName={themeName} tokens={tokens} previewFontFamily={draftFontFamily} />
 
@@ -78,6 +79,7 @@ export function FontSelectorScreen() {
               return (
                 <Pressable
                   key={item.id}
+                  testID={`${TEST_IDS.settings.fontOption}-${item.id}`}
                   onPress={() => setDraftFontFamily(item.id)}
                   className={`relative rounded-2xl border p-4 ${isActive ? "border-accent" : "border-white/10 bg-card"}`}
                 >
@@ -114,6 +116,7 @@ export function FontSelectorScreen() {
           {hasChanges ? (
             <PrimaryCtaButton
               label={t("font-selector:screen.saveChanges")}
+              testID={TEST_IDS.settings.fontSave}
               onPress={() => setFontFamily(draftFontFamily)}
               textClassName="text-base"
             />

@@ -79,6 +79,7 @@ export function ThemeSelectorScreen() {
             <PrimaryCtaButton
               label={t("theme-selector:screen.saveChanges")}
               onPress={handleSave}
+              testID={TEST_IDS.settings.themeSave}
               textClassName="text-base"
             />
           ) : null}

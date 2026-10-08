@@ -7,6 +7,7 @@ import { createUserDhikr } from '../../dhikrs/services/user-dhikrs-api-client'
 import { useAuthStore } from '../../../store/auth-store'
 import { useDhikrStore } from '../../../store/dhikr-store'
 import { ZikirFormModal } from './zikir-form-modal'
+import { TEST_IDS } from '../../../test-ids'
 
 export function ZikirlerimHeader() {
   const { t } = useTranslation('focus')
@@ -26,12 +27,21 @@ export function ZikirlerimHeader() {
   const saveCreate = async (values: { name: string; transliteration: string; meaning: string; target: number }) => {
     const trimmedName = values.name.trim()
     const trimmedPronunciation = values.transliteration.trim()
+    // B-45: kaydedilmemiş ilerleme varken yeni zikir oluşturmak sayacı sessizce değiştirmemeli.
+    const before = useDhikrStore.getState()
+    const hadUnsaved = before.selectedDhikrId
+      ? before.unsavedProgressDhikrIds.includes(before.selectedDhikrId)
+      : before.freeModeCount > 0
     const createdId = addCustomDhikr({
       name: trimmedName,
       transliteration: trimmedPronunciation || undefined,
       meaning: values.meaning.trim() || undefined,
       target: values.target > 0 ? values.target : 0
     })
+
+    if (hadUnsaved) {
+      useDhikrStore.setState({ selectedDhikrId: before.selectedDhikrId })
+    }
 
     if (authStatus === 'authenticated') {
       setIsSaving(true)
@@ -62,6 +72,7 @@ export function ZikirlerimHeader() {
         title={t('focus:header.title')}
         rightAccessory={
           <Pressable
+            testID={TEST_IDS.zikirlerim.add}
             onPress={() => {
               setError(null)
               setCreateOpen(true)

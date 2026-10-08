@@ -134,7 +134,8 @@ type DhikrStore = {
   resetSessionScoped: () => void;
 };
 
-export const MAX_DHIKR_TARGET = 9999;
+// Sunucu sınırıyla aynı (A-02; formlar features/home/services/free-save-draft.ts).
+export const MAX_DHIKR_TARGET = 100_000;
 
 function formatLastActivityLabel(now: Date = new Date()) {
   return getDhikrStoreText().todayAt(now);
@@ -159,9 +160,11 @@ function normalizeTarget(target: number | undefined) {
   return Math.max(1, Math.min(MAX_DHIKR_TARGET, Math.floor(target)));
 }
 
+const MAX_LAP_SIZE = 9999;
+
 function normalizeLapSize(size: number | undefined) {
-  // Tur boyu için aynı sınırlar geçerli: 1..MAX_DHIKR_TARGET, varsayılan 33.
-  return normalizeTarget(size);
+  // Tur boyu: 1..9999, varsayılan 33 (hedef sınırından bağımsız).
+  return typeof size === "number" && !Number.isNaN(size) ? Math.max(1, Math.min(MAX_LAP_SIZE, Math.floor(size))) : 33;
 }
 
 function resolveCustomTarget(target: number | undefined) {
@@ -536,6 +539,7 @@ export const useDhikrStore = create<DhikrStore>()(
   setSelectedCount: (count) =>
     set((state) => {
       let changedItem: ZikirItem | undefined;
+      let gained = 0;
       const items = state.items.map((item) => {
         if (item.id !== state.selectedDhikrId) {
           return item;
@@ -545,6 +549,7 @@ export const useDhikrStore = create<DhikrStore>()(
           ? Math.max(0, Math.min(item.target, Math.floor(count)))
           : Math.max(0, Math.floor(count));
         changedItem = item;
+        gained = Math.max(0, safeCount - item.current);
         const now = new Date();
         return {
           ...item,
@@ -554,8 +559,12 @@ export const useDhikrStore = create<DhikrStore>()(
         };
       });
 
+      // MOB-SAY-32: elle girilen artış üyeyle aynı kuralla ömür boyu toplama
+      // ve aktif güne sayılır (azaltma toplamı düşürmez).
       return {
         items,
+        lifetimeCount: state.lifetimeCount + gained,
+        activeDayKeys: gained > 0 ? appendActiveDayKey(state.activeDayKeys, toDateKey(new Date())) : state.activeDayKeys,
         ...markUnsavedProgress(state.unsavedProgressDhikrIds, state.unsavedProgressSnapshots, changedItem)
       };
     }),

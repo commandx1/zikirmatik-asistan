@@ -79,7 +79,7 @@ export type VirdStore = VirdStoreData & {
    * recordProgress, sunucu senkronu (replaceFromServer) gibi "asla geriye
    * düşme" gereken yollar için AYNEN kalır.
    */
-  setProgress: (dateKey: string, itemKey: string, count: number, target: number) => void;
+  setProgress: (dateKey: string, itemKey: string, count: number, target: number, opts?: { reset?: boolean }) => void;
   /**
    * GET /v1/vird/programs (+ opsiyonel GET /v1/vird/today) yanıtıyla yerel
    * durumu uzlaştırır: gelen listedeki HER program `origin:'server'` olarak
@@ -226,12 +226,15 @@ export const useVirdStore = create<VirdStore>()(
           };
         }),
 
-      setProgress: (dateKey, itemKey, count, target) =>
+      setProgress: (dateKey, itemKey, count, target, opts) =>
         set((state) => {
           const day = state.dayProgress[dateKey] ?? {};
+          // B-41: sıfırlama işareti (opts.reset) o günün item'ında kalıcıdır;
+          // sonraki dokunuşlar da korur (ponytail: gün sonuna dek yerel kazanır).
+          const reset = opts?.reset || day[itemKey]?.reset;
           const nextDay: Record<string, VirdDayItemProgress> = {
             ...day,
-            [itemKey]: { count, target, completed: count >= target }
+            [itemKey]: { count, target, completed: count >= target, ...(reset ? { reset: true } : {}) }
           };
           return {
             dayProgress: pruneDayProgress({ ...state.dayProgress, [dateKey]: nextDay }, toDateKey(new Date()))
@@ -251,6 +254,9 @@ export const useVirdStore = create<VirdStore>()(
             const day = dayProgress[todayProgress.dateKey] ?? {};
             const nextDay: Record<string, VirdDayItemProgress> = { ...day };
             for (const [itemKey, entry] of Object.entries(todayProgress.progress)) {
+              if (nextDay[itemKey]?.reset) {
+                continue;
+              }
               nextDay[itemKey] = mergeMax(nextDay[itemKey], entry.count, entry.target);
             }
             dayProgress = pruneDayProgress({ ...dayProgress, [todayProgress.dateKey]: nextDay }, toDateKey(new Date()));

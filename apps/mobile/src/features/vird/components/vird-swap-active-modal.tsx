@@ -70,7 +70,7 @@ export function VirdSwapActiveModal({
                 {t("vird:conflict.upgrade")}
               </Text>
             </Pressable>
-            <Pressable onPress={onKeepDraft} disabled={isSubmitting} className="h-10 items-center justify-center rounded-full">
+            <Pressable onPress={onKeepDraft} testID={TEST_IDS.vird.swapKeepDraft} disabled={isSubmitting} className="h-10 items-center justify-center rounded-full">
               <Text className="text-sm font-medium" style={{ color: tokens.textMuted }}>
                 {t("vird:conflict.keepDraft")}
               </Text>

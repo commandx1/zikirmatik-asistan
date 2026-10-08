@@ -1,6 +1,11 @@
 // Halka oturumunun saf mantığı (RN import'suz) — circle-session-screen.tsx
 // bu fonksiyonları kullanır; testler circle-session-logic.test.ts'te.
 
+/** Yük testi sonrası karar: katkı gönderimi 5 sn, detay yenileme 10 sn
+ * (kapanış, hedefe ulaşma ve arka plan gönderimleri anında kalır). */
+export const FLUSH_INTERVAL_MS = 5_000;
+export const POLL_INTERVAL_MS = 10_000;
+
 /** Gün anahtarı (cihazın YEREL günü, YYYY-MM-DD) -> o günkü yerel sayım. */
 export type DayCounts = Record<string, number>;
 

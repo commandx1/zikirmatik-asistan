@@ -3,6 +3,7 @@ import type { RefObject } from 'react'
 import { ActivityIndicator, Pressable, View } from 'react-native'
 import type { ThemeTokens } from '@zikirmatik/shared'
 import { withAlpha } from "@zikirmatik/shared";
+import { TEST_IDS } from '../../../test-ids'
 
 type WatchControlButtonsProps = {
   tokens: ThemeTokens
@@ -81,6 +82,7 @@ export function WatchControlButtons({
       </Pressable>
       <Pressable
         ref={targetBtnRef}
+        testID={TEST_IDS.home.targetButton}
         onPress={onTargetPress}
         className='h-9 w-9 items-center justify-center rounded-full border'
         style={{

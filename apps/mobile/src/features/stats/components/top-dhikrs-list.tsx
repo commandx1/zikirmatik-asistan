@@ -5,6 +5,7 @@ import { useAppLocale } from "../../../i18n";
 import { formatInteger } from "../../../lib/locale-format";
 import type { StatsTopDhikr } from "@zikirmatik/shared";
 import { maxOf, withAlpha } from "./chart-utils";
+import { resolveTopDhikrLabel } from "../services/top-dhikr-label";
 
 export function TopDhikrsList({ items }: { items: StatsTopDhikr[] }) {
   const { tokens } = useThemeTokens();
@@ -27,7 +28,7 @@ export function TopDhikrsList({ items }: { items: StatsTopDhikr[] }) {
           <View className="mb-1.5 flex-row items-center">
             <Text className="w-6 text-sm font-bold text-text-muted">{index + 1}</Text>
             <Text className="flex-1 text-sm font-medium text-text-primary" numberOfLines={1}>
-              {item.label}
+              {resolveTopDhikrLabel(item, locale)}
             </Text>
             <Text className="text-sm font-semibold text-text-muted">{formatInteger(item.totalCount, locale)}</Text>
           </View>

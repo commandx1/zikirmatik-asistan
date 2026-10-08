@@ -76,6 +76,8 @@
     "dhikrUpdateFailed": "Couldn't update the dhikr. Please try again.",
     "loginRequiredToSave": "You need to sign in to save.",
     "dhikrLogSaveFailed": "Couldn't save the dhikr log.",
-    "dhikrSaveFailed": "Couldn't save the dhikr. Please try again."
+    "dhikrSaveFailed": "Couldn't save the dhikr. Please try again.",
+    "dhikrDeleteFailed": "Couldn't delete the dhikr. Please try again.",
+    "freeModeSaveOnHome": "Name and save a free-mode count from the home screen."
   }
 }

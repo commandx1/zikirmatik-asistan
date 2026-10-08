@@ -65,8 +65,8 @@ export function ProfileSettingsSections({
       <View>
         <ProfileSectionTitle label={t("profile:sections.personalization.title")} />
         <ProfileSettingsCard>
-          <ProfileLinkRow label={t("profile:sections.personalization.theme")} iconName="moon" onPress={onPressTheme} bottomBorder />
-          <ProfileLinkRow label={t("profile:sections.personalization.font")} iconName="font" onPress={onPressFont} bottomBorder />
+          <ProfileLinkRow label={t("profile:sections.personalization.theme")} iconName="moon" onPress={onPressTheme} testID={TEST_IDS.settings.theme} bottomBorder />
+          <ProfileLinkRow label={t("profile:sections.personalization.font")} iconName="font" onPress={onPressFont} testID={TEST_IDS.settings.font} bottomBorder />
           <ProfileLinkRow
             label={t("profile:sections.personalization.language")}
             iconName="language"
@@ -133,7 +133,7 @@ export function ProfileSettingsSections({
       <View>
         <ProfileSectionTitle label={t("profile:sections.other.title")} />
         <ProfileSettingsCard>
-          <ProfileLinkRow label={t("profile:sections.other.tourReplay")} iconName="circle-question" bottomBorder onPress={onPressTourReplay} />
+          <ProfileLinkRow label={t("profile:sections.other.tourReplay")} iconName="circle-question" bottomBorder onPress={onPressTourReplay} testID={TEST_IDS.settings.tourReplay} />
           <ProfileLinkRow label={t("profile:sections.other.rateApp")} iconName="star" rightIconRegular bottomBorder onPress={onPressRateApp} />
           <ProfileLinkRow label={t("profile:sections.other.sendFeedback")} iconName="comment-dots" rightIconRegular bottomBorder onPress={onPressSendFeedback} />
           {isAuthenticated ? (

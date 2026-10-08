@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { shouldShowDay7Offer } from "./day7-offer";
+import { canShowDay7Offer, shouldShowDay7Offer } from "./day7-offer";
 import { deriveLocalActivityStats, withServerStreak } from "../../stats/services/local-badges";
 
 describe("shouldShowDay7Offer", () => {
@@ -35,5 +35,22 @@ describe("day-7 offer streak source", () => {
   it("falls back to the local day history when the server streak is not loaded", () => {
     const { currentStreak } = withServerStreak(local, null);
     expect(shouldShowDay7Offer({ isPremium: false, streak: currentStreak, shownAt: null })).toBe(false);
+  });
+});
+
+describe("canShowDay7Offer (B-50)", () => {
+  const base = { isHomeFocused: true, isOverlayOpen: false, isBadgeCelebrationVisible: false };
+
+  it("is true only on the focused home tab with nothing covering it", () => {
+    expect(canShowDay7Offer(base)).toBe(true);
+  });
+
+  it("is false when the home tab is not focused", () => {
+    expect(canShowDay7Offer({ ...base, isHomeFocused: false })).toBe(false);
+  });
+
+  it("is false while an overlay or the badge celebration is up", () => {
+    expect(canShowDay7Offer({ ...base, isOverlayOpen: true })).toBe(false);
+    expect(canShowDay7Offer({ ...base, isBadgeCelebrationVisible: true })).toBe(false);
   });
 });

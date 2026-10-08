@@ -31,10 +31,14 @@ export function useDay7Offer(canShow: boolean, onOffer: () => void, serverStreak
   // down and rescheduling its timer on every unrelated home-view re-render.
   const onOfferRef = useRef(onOffer);
   onOfferRef.current = onOffer;
+  // The foreground setTimeout below outlives effect re-runs; read canShow live so a
+  // tab switch during the delay cancels the offer (B-50).
+  const canShowRef = useRef(canShow);
+  canShowRef.current = canShow;
 
   useEffect(() => {
     function check() {
-      if (!canShow) {
+      if (!canShowRef.current) {
         return;
       }
       const { currentStreak } = withServerStreak(

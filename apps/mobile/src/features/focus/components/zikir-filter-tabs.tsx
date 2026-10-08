@@ -1,4 +1,5 @@
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { TEST_IDS } from "../../../test-ids";
 import { useZikirlerimActions, useZikirlerimState } from "../context/zikirlerim-context";
 
 export function ZikirFilterTabs() {
@@ -14,6 +15,7 @@ export function ZikirFilterTabs() {
             return (
               <Pressable
                 key={filter.key}
+                testID={`${TEST_IDS.zikirlerim.filter}-${filter.key}`}
                 onPress={() => setActiveFilter(filter.key)}
                 className={`rounded-full px-4 py-2 ${active ? "bg-accent" : "border border-white/5 bg-card"}`}
               >

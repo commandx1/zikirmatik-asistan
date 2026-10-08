@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { canTapCircle, isGoalReached, pendingFlushes, seedTodayCount, tapDay } from "./circle-session-logic";
+import { canTapCircle, FLUSH_INTERVAL_MS, POLL_INTERVAL_MS, isGoalReached, pendingFlushes, seedTodayCount, tapDay } from "./circle-session-logic";
 
 describe("tapDay (M-24: dokunuş anının gününe yazar)", () => {
   it("gece yarısını geçen dokunuşlar yeni güne yazılır, eski gün korunur", () => {
@@ -56,5 +56,12 @@ describe("canTapCircle (M-12) ve isGoalReached (M-11)", () => {
     expect(isGoalReached(100, 100)).toBe(true);
     expect(isGoalReached(150, 100)).toBe(true);
     expect(isGoalReached(5, 0)).toBe(false);
+  });
+});
+
+describe("session intervals (yük testi kararı)", () => {
+  it("flush 5 sn, poll 10 sn", () => {
+    expect(FLUSH_INTERVAL_MS).toBe(5_000);
+    expect(POLL_INTERVAL_MS).toBe(10_000);
   });
 });

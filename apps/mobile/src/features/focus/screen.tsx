@@ -11,6 +11,7 @@ import { ZikirListSection } from "./components/zikir-list-section";
 import { ZikirlerimHeader } from "./components/zikirlerim-header";
 import { useZikirlerimActions, useZikirlerimState, ZikirlerimProvider } from "./context/zikirlerim-context";
 import { useAppLocale } from "../../i18n";
+import { TEST_IDS } from "../../test-ids";
 
 export function FocusScreen() {
   return (
@@ -91,6 +92,11 @@ function FocusContent() {
           onSaveAndContinue={saveAndContinueUnsavedTransition}
           onContinueWithoutSaving={continueWithoutSavingUnsavedTransition}
           onCancel={cancelUnsavedTransition}
+          testIDs={{
+            saveAndContinue: TEST_IDS.home.unsavedSaveContinue,
+            continueWithoutSaving: TEST_IDS.home.unsavedDiscard,
+            cancel: TEST_IDS.home.unsavedCancel
+          }}
         />
       </View>
     </PageLayout>

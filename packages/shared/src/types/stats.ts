@@ -1,3 +1,5 @@
+import type { LocalizedText } from "./domain";
+
 export type StatsSourceKey = "manual" | "ai" | "special-day" | "notification" | "circle";
 
 export type StatsDailyPoint = {
@@ -26,6 +28,8 @@ export type StatsTopDhikr = {
   /** stable identity: dhikr object id hex or custom dhikr id */
   key: string;
   label: string;
+  /** A-21: iki dilli ad (sunucu ekler); yoksa `label` gösterilir. */
+  nameI18n?: LocalizedText;
   totalCount: number;
   sessions: number;
 };

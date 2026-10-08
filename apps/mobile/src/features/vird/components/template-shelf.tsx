@@ -7,6 +7,7 @@ import { useThemeTokens } from "@zikirmatik/ui";
 import type { VirdTemplateSummary } from "@zikirmatik/shared";
 import { resolveLocalizedText } from "@zikirmatik/shared";
 import { fetchVirdTemplates } from "../services/vird-api-client";
+import { shouldShowTemplatePremiumBadge } from "../services/template-badge";
 import { useAppLocale } from "../../../i18n";
 import { TEST_IDS } from "../../../test-ids";
 
@@ -26,8 +27,8 @@ const TemplateRow = memo(function TemplateRow({ item, vertical, locale, t, route
       className={vertical ? "mb-3 flex-1 rounded-2xl border border-white/8 bg-card p-3" : "w-40 rounded-2xl border border-white/8 bg-card p-3"}
       style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
     >
-      {item.isPremium ? (
-        <View className="mb-2 self-start rounded-full bg-accent-15 px-2 py-0.5">
+      {shouldShowTemplatePremiumBadge(item) ? (
+        <View testID={`${TEST_IDS.vird.templateBadge}-${item.key}`} className="mb-2 self-start rounded-full bg-accent-15 px-2 py-0.5">
           <Text className="text-[10px] font-semibold text-accent">{t("vird:templates.premiumBadge")}</Text>
         </View>
       ) : null}

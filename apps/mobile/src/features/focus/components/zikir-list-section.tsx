@@ -3,6 +3,7 @@ import { FlatList, Platform, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs";
+import { TEST_IDS } from "../../../test-ids";
 import { ConfirmModal } from "../../../components/ui/confirm-modal";
 import { useZikirlerimActions, useZikirlerimState } from "../context/zikirlerim-context";
 import type { ZikirItem } from "../types";
@@ -20,7 +21,7 @@ function ListSeparator() {
 
 export function ZikirListSection() {
   const { t } = useTranslation("focus");
-  const { items, selectedDhikrId, deletingDhikrId, editingDhikr, isUpdatingDhikr, isRefreshing } =
+  const { items, selectedDhikrId, deletingDhikrId, deleteError, editingDhikr, isUpdatingDhikr, isRefreshing } =
     useZikirlerimState();
   const { deleteDhikr, refresh } = useZikirlerimActions();
   // One delete confirmation for the whole list (was one ConfirmModal per card).
@@ -60,7 +61,16 @@ export function ZikirListSection() {
         }}
         onRefresh={refresh}
         refreshing={isRefreshing}
-        ListHeaderComponent={ZikirFilterTabs}
+        ListHeaderComponent={
+          <>
+            <ZikirFilterTabs />
+            {deleteError ? (
+              <Text testID={TEST_IDS.zikirlerim.deleteError} className="mx-5 mb-3 text-xs text-[#F97373]">
+                {deleteError}
+              </Text>
+            ) : null}
+          </>
+        }
         ListEmptyComponent={
           <View className="px-5">
             <View className="items-center rounded-2xl border border-white/5 bg-card p-6">
@@ -76,6 +86,7 @@ export function ZikirListSection() {
         confirmLabel={t("focus:card.deleteModal.confirmLabel")}
         cancelLabel={t("focus:card.deleteModal.cancelLabel")}
         destructive
+        confirmTestID={TEST_IDS.zikirlerim.deleteConfirm}
         onConfirm={() => {
           const item = pendingDelete;
           setPendingDelete(null);

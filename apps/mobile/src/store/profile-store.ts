@@ -121,7 +121,13 @@ export const useProfileStore = create<ProfileState>()(
         // Widget'ın headless handler'ı isPremium'u AsyncStorage'dan okur;
         // girişte hydrateFromBackend sunucu değerini üstüne yazar, çıkışta
         // resetSessionScoped false yapar.
-        isPremium: state.isPremium
+        isPremium: state.isPremium,
+        // B-3: misafirin günlük hatırlatma tercihi yeniden açılışta korunsun
+        // (yoksa hatırlatma iptal olur, seri hatırlatması sürerdi). Girişte
+        // hydrateFromBackend sunucu değerini üstüne yazar. Eski kayıtlarda alan
+        // yoktur → varsayılanlar kalır, migrasyon gerekmez (persist version yok).
+        dailyReminderEnabled: state.dailyReminderEnabled,
+        reminderTime: state.reminderTime
       }),
       onRehydrateStorage: () => (state) => {
         if (state?.locale) {

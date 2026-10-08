@@ -20,3 +20,16 @@ export function shouldShowDay7Offer({
   }
   return true;
 }
+
+/** B-50: tabs stay mounted, so the offer must also wait for the home tab to be focused. */
+export function canShowDay7Offer({
+  isHomeFocused,
+  isOverlayOpen,
+  isBadgeCelebrationVisible
+}: {
+  isHomeFocused: boolean;
+  isOverlayOpen: boolean;
+  isBadgeCelebrationVisible: boolean;
+}): boolean {
+  return isHomeFocused && !isOverlayOpen && !isBadgeCelebrationVisible;
+}

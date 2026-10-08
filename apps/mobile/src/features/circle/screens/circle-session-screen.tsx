@@ -27,8 +27,10 @@ import { CIRCLE_ERROR_CODE, CircleApiError, fetchCircle, resolveCircleActionErro
 import { buildCircleLogPayload, computeDisplayTotal, resolveCircleTitle } from "../services/circle-share";
 import {
   canTapCircle,
+  FLUSH_INTERVAL_MS,
   isGoalReached,
   pendingFlushes,
+  POLL_INTERVAL_MS,
   seedTodayCount,
   tapDay,
   type DayCounts
@@ -36,8 +38,6 @@ import {
 import { useAppLocale } from "../../../i18n";
 import { TEST_IDS } from "../../../test-ids";
 
-const POLL_INTERVAL_MS = 5_000;
-const FLUSH_INTERVAL_MS = 3_000;
 const LAP_SIZE = 33;
 // apps/mobile/e2e/recordings/story-circle.e2e.js için eklendi (bkz. rapor):
 // AppleWatchView/TesbihCounterView testIDs prop'unu destekliyor ama bu ekran hiç

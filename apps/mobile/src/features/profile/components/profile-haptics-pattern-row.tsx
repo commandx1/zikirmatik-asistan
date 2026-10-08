@@ -48,6 +48,7 @@ export function ProfileHapticsPatternRow({ label, iconName, value, onChange }: P
           return (
             <Pressable
               key={pattern}
+              testID={`e2e-haptics-${pattern}`}
               accessibilityRole="button"
               accessibilityState={{ selected: isSelected }}
               onPress={() => selectPattern(pattern)}

@@ -163,3 +163,36 @@ describe("B-7 local personal dhikr whose server save failed", () => {
     expect(useDhikrStore.getState().items.some((i) => i.id === "personal-new")).toBe(false);
   });
 });
+
+describe("B-55 / MOB-SAY-32", () => {
+  beforeEach(() => {
+    useDhikrStore.getState().resetSessionScoped();
+    useDhikrStore.setState({
+      items: [makeItem({ id: "x", target: 0, current: 0 })],
+      selectedDhikrId: "x",
+      lifetimeCount: 0,
+      activeDayKeys: []
+    });
+  });
+
+  it("B-55: store target cap matches the 100000 form/server cap", () => {
+    useDhikrStore.getState().setSelectedTarget(100000);
+    expect(useDhikrStore.getState().items[0]!.target).toBe(100000);
+    useDhikrStore.getState().setSelectedTarget(100001);
+    expect(useDhikrStore.getState().items[0]!.target).toBe(100000);
+  });
+
+  it("MOB-SAY-32: manually entered count adds to lifetimeCount and the active day", () => {
+    useDhikrStore.getState().setSelectedCount(50);
+    expect(useDhikrStore.getState().lifetimeCount).toBe(50);
+    expect(useDhikrStore.getState().activeDayKeys).toEqual([toDateKey(new Date())]);
+  });
+
+  it("MOB-SAY-32: only the increase counts; lowering never reduces the total", () => {
+    useDhikrStore.getState().setSelectedCount(50);
+    useDhikrStore.getState().setSelectedCount(20);
+    expect(useDhikrStore.getState().lifetimeCount).toBe(50);
+    useDhikrStore.getState().setSelectedCount(30);
+    expect(useDhikrStore.getState().lifetimeCount).toBe(60);
+  });
+});

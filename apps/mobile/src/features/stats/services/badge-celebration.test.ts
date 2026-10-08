@@ -96,6 +96,18 @@ describe("evaluateBadgeCelebration", () => {
   });
 });
 
+describe("rozet kuyruğu uygulama öldürülünce (MOB-ROZ-08)", () => {
+  it("gösterilmeden (celebrated'a yazılmadan) kalan rozet yeniden açılışta tekrar celebrate döner", () => {
+    const badges = [makeBadge({ key: "count-100", achieved: true })];
+    const params = { badges, celebratedBadgeKeys: [], owner: "guest", seededForOwner: "guest", isDataSettled: true } as const;
+    const firstRun = evaluateBadgeCelebration(params);
+    // Kuyruk yalnız React state'inde; gösterilene kadar kalıcı store'a yazılmaz → "yeniden açılış" aynı girdidir.
+    const afterRestart = evaluateBadgeCelebration(params);
+    expect(firstRun).toEqual({ action: "celebrate", badges });
+    expect(afterRestart).toEqual(firstRun);
+  });
+});
+
 describe("resolveBadgeDataOwner", () => {
   it("maps auth state to the data owner", () => {
     expect(resolveBadgeDataOwner("signed_out", undefined)).toBe("guest");

@@ -3,10 +3,12 @@ import { Pressable, Text, TextInput, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { useHomeCounter, useHomeUi } from '../home-context'
-import { MAX_DHIKR_TARGET } from '../../../store/dhikr-store'
+import { TEST_IDS } from '../../../test-ids'
 import { withAlpha } from "@zikirmatik/shared";
 
 const QUICK_LAP_SIZES = [33, 99] as const
+// Tur boyu üst sınırı 9999 (store normalizeLapSize) → en fazla 4 hane (MOB-SAY-11).
+const LAP_SIZE_MAX_DIGITS = 4
 
 
 /**
@@ -70,6 +72,7 @@ export const LapSizeSelector = memo(function LapSizeSelector() {
           )
         })}
         <Pressable
+          testID={TEST_IDS.home.lapCustomOption}
           onPress={() => setIsCustomActive(true)}
           className='flex-1 items-center justify-center rounded-xl py-2'
           style={{
@@ -85,9 +88,10 @@ export const LapSizeSelector = memo(function LapSizeSelector() {
       </View>
       {isCustomActive ? (
         <TextInput
+          testID={TEST_IDS.home.lapCustomInput}
           value={customDraft}
           onChangeText={next => {
-            const digits = next.replace(/\D+/g, '').slice(0, String(MAX_DHIKR_TARGET).length)
+            const digits = next.replace(/\D+/g, '').slice(0, LAP_SIZE_MAX_DIGITS)
             setCustomDraft(digits)
             const parsed = Number.parseInt(digits, 10)
             if (!Number.isNaN(parsed) && parsed > 0) {

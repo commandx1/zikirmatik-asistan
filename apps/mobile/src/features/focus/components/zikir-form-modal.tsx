@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { KeyboardAwareBottomSheetModal } from '../../../components/ui/keyboard-aware-bottom-sheet-modal'
 import { PrimaryCtaButton } from '../../../components/ui/primary-cta-button'
 import { ThemedInput } from '../../../components/ui/themed-input'
+import { TEST_IDS } from '../../../test-ids'
 import { MAX_DHIKR_TARGET } from '../../home/services/free-save-draft'
 
 type ZikirFormValues = {
@@ -111,6 +112,7 @@ export function ZikirFormModal({
           setNameDraft(text)
           clearErrors()
         }}
+        testID={TEST_IDS.zikirlerim.formName}
         placeholder={t('focus:form.namePlaceholder')}
         className='mb-3 rounded-xl bg-bg px-3'
         autoFocus
@@ -146,11 +148,12 @@ export function ZikirFormModal({
           clearErrors()
         }}
         keyboardType='number-pad'
+        testID={TEST_IDS.zikirlerim.formTarget}
         placeholder={t('focus:form.targetPlaceholder')}
         className='mb-2 rounded-xl bg-bg px-3'
       />
 
-      {resolvedError ? <Text className='mb-3 text-xs text-[#F97373]'>{resolvedError}</Text> : null}
+      {resolvedError ? <Text testID={TEST_IDS.zikirlerim.formError} className='mb-3 text-xs text-[#F97373]'>{resolvedError}</Text> : null}
 
       <View className='mt-1 mb-2 flex-row items-center justify-end gap-2'>
         <Pressable onPress={onRequestClose} disabled={isSaving} className='rounded-full border border-white/20 px-4 py-2'>
@@ -161,6 +164,7 @@ export function ZikirFormModal({
           onPress={() => {
             void handleSubmit()
           }}
+          testID={TEST_IDS.zikirlerim.formSubmit}
           disabled={isSaveDisabled}
           className={`px-4 !py-2 ${isSaveDisabled ? 'opacity-50' : ''}`}
           textClassName='text-sm font-semibold'

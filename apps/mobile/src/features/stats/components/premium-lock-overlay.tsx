@@ -31,6 +31,7 @@ export function PremiumLockOverlay({ locked, onUnlock, message, children }: Prem
           {message ?? t("stats:premiumLock.message")}
         </Text>
         <Pressable
+          testID="e2e-stats-unlock"
           onPress={onUnlock}
           className="mt-3 rounded-full px-5 py-2.5"
           style={{ backgroundColor: tokens.accent }}

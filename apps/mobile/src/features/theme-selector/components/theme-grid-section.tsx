@@ -27,7 +27,7 @@ export function ThemeGridSection({ options, selected, onSelect, selectedCardRef 
           return (
             <Pressable
               key={option.id}
-              testID={TEST_IDS.theme.swatch}
+              testID={isLocked ? TEST_IDS.settings.themeSwatchLocked : TEST_IDS.theme.swatch}
               ref={isSelected ? selectedCardRef : undefined}
               collapsable={false}
               onPress={() => onSelect(option.id)}
@@ -45,7 +45,7 @@ export function ThemeGridSection({ options, selected, onSelect, selectedCardRef 
                 </View>
               ) : null}
 
-              <View className="h-16 w-full items-center justify-center rounded-[10px] border border-white/10" style={{ backgroundColor: option.swatchBg }}>
+              <View testID={`e2e-theme-option-${option.id}`} className="h-16 w-full items-center justify-center rounded-[10px] border border-white/10" style={{ backgroundColor: option.swatchBg }}>
                 <View
                   className="h-8 w-8 items-center justify-center rounded-full border"
                   style={{ backgroundColor: option.swatchInner, borderColor: `${option.dotBorder}50` }}

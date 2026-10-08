@@ -58,6 +58,15 @@ export const TEST_IDS = {
     freeMode: "e2e-home-free-mode",
     esmaItem: "e2e-home-esma-item",
     welcomeStart: "e2e-home-welcome-start",
+    // Sayaç yan düğmeleri, hedef modalı ve "her yere dokun" anahtarı (Detox 15-*).
+    targetButton: "e2e-home-target-button",
+    targetInput: "e2e-home-target-input",
+    targetSubmit: "e2e-home-target-submit",
+    targetDowngradeApply: "e2e-home-target-downgrade-apply",
+    targetDowngradeCancel: "e2e-home-target-downgrade-cancel",
+    tapAnywhere: "e2e-home-tap-anywhere",
+    lapCustomOption: "e2e-home-lap-custom-option",
+    lapCustomInput: "e2e-home-lap-custom-input",
   },
   profile: {
     name: "e2e-profile-name",
@@ -90,6 +99,8 @@ export const TEST_IDS = {
     // testID'si yoktu — additive only, davranış değişmedi.
     templatesEntry: "e2e-vird-templates-entry",
     templateCard: "e2e-vird-template-card",
+    // MOB-VRD-25: isPremium şablon kartındaki "Premium" rozeti (`${templateBadge}-${key}`) - Detox TODO
+    templateBadge: "e2e-vird-template-badge",
     templateStart: "e2e-vird-template-start",
     reminderSettings: "e2e-vird-reminder-settings",
     newManual: "e2e-vird-new-manual",
@@ -113,6 +124,7 @@ export const TEST_IDS = {
     // ilk satır yerine evrensel bir zikir (Sübhanallah/Salavat) seçebilmesi için eklendi.
     pickerSearch: "e2e-vird-picker-search",
     sessionCounter: "e2e-vird-session-counter",
+    sessionCountLabel: "e2e-vird-session-count-label",
     sessionFinish: "e2e-vird-session-finish",
     // "Atla" bağlantısı (hedefe ulaşmadan sıradaki zikre geç) testID'siz —
     // story-vird.e2e.js'in tüm gerçek dataset'i (klasik-sabah ~20 zikir, biri 100
@@ -124,6 +136,7 @@ export const TEST_IDS = {
     programCloneRestart: "e2e-vird-program-clone-restart",
     // Çakışma modalı "Duraklat ve başlat" düğmesi.
     swapPauseAndStart: "e2e-vird-swap-pause-and-start",
+    swapKeepDraft: "e2e-vird-swap-keep-draft",
     // AI ile vird oluşturma: serbest metin, oluştur, önizlemede başlat / vazgeç.
     aiFreeText: "e2e-vird-ai-free-text",
     aiSubmit: "e2e-vird-ai-submit",
@@ -175,6 +188,32 @@ export const TEST_IDS = {
     unavailable: "e2e-ai-guide-unavailable",
     offTopic: "e2e-ai-guide-off-topic",
     clarify: "e2e-ai-guide-clarify",
+  },
+  // Zikirlerim (focus) ekranı + ayarlar alt ekranları (Detox 15-*).
+  zikirlerim: {
+    add: "e2e-zikir-add",
+    filter: "e2e-zikir-filter", // `${filter}-${all|active|completed|favorites}`
+    formName: "e2e-zikir-form-name",
+    formTarget: "e2e-zikir-form-target",
+    formSubmit: "e2e-zikir-form-submit",
+    formError: "e2e-zikir-form-error",
+    menu: "e2e-zikir-menu",
+    favorite: "e2e-zikir-favorite",
+    update: "e2e-zikir-update",
+    delete: "e2e-zikir-delete",
+    deleteConfirm: "e2e-zikir-delete-confirm",
+    deleteError: "e2e-zikir-delete-error",
+    start: "e2e-zikir-start",
+  },
+  settings: {
+    theme: "e2e-settings-theme",
+    font: "e2e-settings-font",
+    tourReplay: "e2e-settings-tour-replay",
+    themeSwatchLocked: "e2e-theme-swatch-locked",
+    themeSave: "e2e-theme-save",
+    fontOption: "e2e-font-option", // `${fontOption}-${id}`
+    fontSave: "e2e-font-save",
+    fontScroll: "e2e-font-scroll",
   },
   aiChat: {
     entry: "e2e-ai-chat-entry",

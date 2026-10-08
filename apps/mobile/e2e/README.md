@@ -35,12 +35,16 @@ Android'e özgü:
 - Emülatör dili EN olabilir; metin kontrolleri dilden bağımsız (RegExp).
 - Soğuk açılışta "System UI isn't responding" diyaloğu odağı çalarsa (tüm testler "window focus" hatası): `adb root && adb shell pkill -f com.android.systemui`, sonra tekrar koş.
 
-## Akış dosyaları (Android tam süit, 01–14)
+## Akış dosyaları (Android tam süit, 01–17)
 
 01 giriş, 02 sayaç+log+seri, 03 vird seansı, 04 halka+premium+AI, 05 misafir sayaç kuralları, 06 üye geçiş modalları,
 07 halka iki üye (2. hesap API ile), 08 vird ücretsiz (çakışma, M-22, süresi dolmuş, şablon), 09 AI hata modları + çift dokunuş + kredi 0,
 10 profil/premium/ayarlar, 11 çevrimdışı + gün dönümü (yalnız Android; `adb root` + emülatör saati), 12 bildirim/özel gün/derin bağlantı/zorunlu güncelleme,
-13 vird premium + AI ile oluşturma, 14 istatistik kaynak dağılımı.
+13 vird premium + AI ile oluşturma, 14 istatistik kaynak dağılımı,
+15 tur + koleksiyonlar, 16 Zikirlerim + ayarlar (tema/yazı tipi/tık sesi/titreşim) + istatistik kilidi + çevrimdışı/saat dilimi,
+17 sayaç hedef/kalıcılık + misafir kapıları + halka oluşturma + vird seansı + özel günler + widget kartı + sohbet geçmişi.
+
+Ön koşul (Android): `adb -s emulator-5554 root` (16g saat dilimi testi `persist.sys.timezone` yazar; root yoksa adbd yeniden başlar ve Detox'un `adb reverse` tüneli kopar).
 
 - iOS yalnız `@smoke`: `pnpm test:detox:ios:smoke`.
 - 12'deki zorunlu güncelleme testi API'yi yeniden başlatır: `E2E_API_RESTART_CMD=<API'yi APP_MIN_VERSION env'iyle başlatan betik>` verilmezse atlanır.

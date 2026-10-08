@@ -1,7 +1,7 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { useThemeTokens } from '@zikirmatik/ui'
 import { lazy, memo, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { useFocusEffect } from '@react-navigation/native'
+import { useFocusEffect, useIsFocused } from '@react-navigation/native'
 import { InteractionManager, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
@@ -43,6 +43,7 @@ import { ProfilePremiumSheet } from '../profile/components/profile-premium-sheet
 import { WidgetDiscoveryCard } from '../widget/widget-discovery'
 import { TEST_IDS } from '../../test-ids'
 import { useDay7Offer } from './hooks/use-day7-offer'
+import { canShowDay7Offer } from './services/day7-offer'
 import { LapsedSessionBanner } from './components/lapsed-session-banner'
 import { shouldShowLapsedSessionBanner } from './services/lapsed-session-banner'
 
@@ -61,6 +62,7 @@ const TapAnywhereToggle = memo(function TapAnywhereToggle({ onPress, spotlightRe
   return (
     <Pressable
       ref={spotlightRef}
+      testID={TEST_IDS.home.tapAnywhere}
       onPress={onPress}
       accessibilityRole='button'
       accessibilityLabel={t('home:a11y.tapAnywhereToggle')}
@@ -189,6 +191,7 @@ const TargetModal = memo(function TargetModal() {
             {t('home:targetModal.title')}
           </Text>
           <TextInput
+            testID={TEST_IDS.home.targetInput}
             value={home.targetDraft}
             onChangeText={home.onTargetDraftChange}
             keyboardType='number-pad'
@@ -217,6 +220,7 @@ const TargetModal = memo(function TargetModal() {
               </Text>
             </Pressable>
             <Pressable
+              testID={TEST_IDS.home.targetSubmit}
               onPress={home.onTargetSubmit}
               className='rounded-full px-4 py-2'
               style={{ backgroundColor: tokens.accent }}
@@ -270,6 +274,7 @@ const TargetDowngradeWarningModal = memo(function TargetDowngradeWarningModal() 
           </Text>
           <View className='mt-5 gap-2'>
             <Pressable
+              testID={TEST_IDS.home.targetDowngradeApply}
               onPress={home.onTargetDowngradeConfirm}
               className='h-11 items-center justify-center rounded-full px-4'
               style={{ backgroundColor: tokens.accent }}
@@ -279,6 +284,7 @@ const TargetDowngradeWarningModal = memo(function TargetDowngradeWarningModal() 
               </Text>
             </Pressable>
             <Pressable
+              testID={TEST_IDS.home.targetDowngradeCancel}
               onPress={home.onTargetDowngradeCancel}
               className='h-10 items-center justify-center rounded-full px-4'
             >
@@ -579,9 +585,9 @@ export function HomeView() {
     setHomeOverlayOpen(isHomeOverlayOpen)
     return () => setHomeOverlayOpen(false)
   }, [isHomeOverlayOpen, setHomeOverlayOpen])
-  const canShowDay7Offer = !isHomeOverlayOpen && !isBadgeCelebrationVisible
+  const isHomeFocused = useIsFocused()
   useDay7Offer(
-    canShowDay7Offer,
+    canShowDay7Offer({ isHomeFocused, isOverlayOpen: isHomeOverlayOpen, isBadgeCelebrationVisible }),
     () => {
       setPaywallSource('day7_offer')
       premiumSheet.setPlan('annual')

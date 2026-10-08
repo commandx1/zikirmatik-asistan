@@ -12,13 +12,17 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; code: string }>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale, code } = await params;
   const meta = await getTranslations({ locale, namespace: "meta" });
 
   return {
     title: meta("halkaTitle"),
     description: meta("halkaDescription"),
-    robots: { index: false }
+    robots: { index: false },
+    // Self-canonical: layout'tan miras alınan "/" noindex ile çelişirdi (B-58).
+    alternates: {
+      canonical: `${locale === routing.defaultLocale ? "" : `/${locale}`}/halka/${code.toUpperCase()}`
+    }
   };
 }
 

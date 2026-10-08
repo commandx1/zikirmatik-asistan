@@ -76,6 +76,8 @@
     "dhikrUpdateFailed": "Zikir güncellenemedi. Lütfen tekrar dene.",
     "loginRequiredToSave": "Kaydetmek için giriş yapmalısın.",
     "dhikrLogSaveFailed": "Zikir kaydı kaydedilemedi.",
-    "dhikrSaveFailed": "Zikir kaydedilemedi. Lütfen tekrar dene."
+    "dhikrSaveFailed": "Zikir kaydedilemedi. Lütfen tekrar dene.",
+    "dhikrDeleteFailed": "Zikir silinemedi. Lütfen tekrar dene.",
+    "freeModeSaveOnHome": "Serbest sayımı ana sayfadan adlandırıp kaydedebilirsin."
   }
 }

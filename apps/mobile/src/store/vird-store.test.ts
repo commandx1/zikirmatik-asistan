@@ -280,6 +280,34 @@ describe("vird-store", () => {
     });
   });
 
+  describe("B-41 reset marker", () => {
+    const dateKey = toDateKey(new Date());
+
+    it("a reset survives a foreground server merge (old server count does not come back)", () => {
+      useVirdStore.getState().setProgress(dateKey, "a", 20, 33);
+      useVirdStore.getState().setProgress(dateKey, "a", 0, 33, { reset: true });
+
+      useVirdStore.getState().replaceFromServer([], { dateKey, progress: { a: { count: 20, target: 33 } } });
+
+      expect(useVirdStore.getState().dayProgress[dateKey]!.a).toMatchObject({ count: 0, reset: true });
+    });
+
+    it("keeps the marker through later taps, so local counting still wins over a stale server value", () => {
+      useVirdStore.getState().setProgress(dateKey, "a", 0, 33, { reset: true });
+      useVirdStore.getState().setProgress(dateKey, "a", 3, 33);
+
+      useVirdStore.getState().replaceFromServer([], { dateKey, progress: { a: { count: 20, target: 33 } } });
+
+      expect(useVirdStore.getState().dayProgress[dateKey]!.a!.count).toBe(3);
+    });
+
+    it("without a reset, the max merge still applies (regression)", () => {
+      useVirdStore.getState().setProgress(dateKey, "a", 3, 33);
+      useVirdStore.getState().replaceFromServer([], { dateKey, progress: { a: { count: 20, target: 33 } } });
+      expect(useVirdStore.getState().dayProgress[dateKey]!.a!.count).toBe(20);
+    });
+  });
+
   describe("replaceFromServer", () => {
     it("replaces a matching (by clientId) local program and keeps unrelated local-only programs", () => {
       useVirdStore.getState().upsertProgram(makeProgram({ id: "local-only", clientId: "c1", origin: "local" }));

@@ -85,6 +85,9 @@ export type VirdDayItemProgress = {
   count: number;
   target: number;
   completed: boolean;
+  /** B-41: kullanıcı bu item'ı sıfırladı; sunucu senkronu (max birleştirme)
+   * bu gün için yerel değeri ezemez. */
+  reset?: boolean;
 };
 
 /** itemKey (bkz. buildVirdItemKey) -> o günkü ilerleme. */

@@ -17,6 +17,7 @@ import { useZikirlerimActions } from '../context/zikirlerim-context'
 import { resolveLocalizedText } from "@zikirmatik/shared";
 import { useLocaleUpper } from '../../../hooks/use-locale-upper'
 import type { ZikirItem } from '../types'
+import { TEST_IDS } from '../../../test-ids'
 import { useAppLocale } from "../../../i18n";
 
 type ZikirItemCardProps = {
@@ -274,6 +275,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
           ) : null}
         </View>
         <Pressable
+          testID={TEST_IDS.zikirlerim.menu}
           onPress={toggleMenu}
           accessibilityRole='button'
           accessibilityLabel={t('focus:card.menu')}
@@ -291,6 +293,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
           style={{ backgroundColor: withAlpha(tokens.textPrimary, 0.04), borderWidth: 1, borderColor: withAlpha(tokens.textPrimary, 0.08) }}
         >
           <Pressable
+            testID={TEST_IDS.zikirlerim.favorite}
             onPress={() => { toggleFavorite(item.id) }}
             className='flex-row items-center gap-1.5 rounded-full border px-3 py-1.5'
             style={{
@@ -305,6 +308,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
           </Pressable>
           {item.source === 'personal' ? (
             <Pressable
+              testID={TEST_IDS.zikirlerim.update}
               disabled={isUpdatingThisItem}
               onPress={() => { toggleMenu(); openUpdateModal(item) }}
               className={`flex-row items-center gap-1.5 rounded-full border px-3 py-1.5 ${isUpdatingThisItem ? 'opacity-60' : ''}`}
@@ -317,6 +321,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
             </Pressable>
           ) : null}
           <Pressable
+            testID={TEST_IDS.zikirlerim.delete}
             disabled={isDeleting}
             onPress={() => { toggleMenu(); onDeletePress(item) }}
             className={`flex-row items-center gap-1.5 rounded-full border px-3 py-1.5 ${isDeleting ? 'opacity-60' : ''}`}
@@ -396,6 +401,7 @@ export const ZikirItemCard = memo(function ZikirItemCard({ item, isSelected, isD
         </View>
 
         <Pressable
+          testID={TEST_IDS.zikirlerim.start}
           onPress={() => startDhikrOnHome(item.id)}
           className='flex-row items-center gap-1.5 rounded-full bg-accent px-3 py-1.5'
         >

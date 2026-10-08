@@ -44,6 +44,7 @@ type ZikirlerimStateValue = {
   items: ZikirItem[];
   selectedDhikrId: string;
   deletingDhikrId: string;
+  deleteError: string | null;
   editingDhikr: ZikirItem | null;
   isUpdateOpen: boolean;
   isUpdatingDhikr: boolean;
@@ -108,6 +109,8 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const applySavedBackendLog = useDhikrStore((state) => state.applySavedBackendLog);
   const setSyncError = useDhikrStore((state) => state.setSyncError);
   const discardUnsavedProgress = useDhikrStore((state) => state.discardUnsavedProgress);
+  const freeModeCount = useDhikrStore((state) => state.freeModeCount);
+  const clearFreeModeSession = useDhikrStore((state) => state.clearFreeModeSession);
   const removePersonalDhikr = useDhikrStore((state) => state.removePersonalDhikr);
   const clearDhikrProgress = useDhikrStore((state) => state.clearDhikrProgress);
   const lastSavedBackendLog = useDhikrStore((state) => state.lastSavedBackendLog);
@@ -115,6 +118,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const sessionUserId = useAuthStore((state) => state.session?.userId);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [deletingDhikrId, setDeletingDhikrId] = useState("");
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editingDhikrId, setEditingDhikrId] = useState("");
   const [isUpdatingDhikr, setIsUpdatingDhikr] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
@@ -394,6 +398,11 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
   const saveSelectedDhikrProgress = async () => {
     const selectedItem = items.find((item) => item.id === selectedDhikrId);
     if (!selectedItem) {
+      if (!selectedDhikrId && freeModeCount > 0) {
+        // B-46: serbest sayım ad ister; Zikirlerim'den kaydedilemez, sessizce kaybolmasın.
+        setUnsavedTransitionError(t("focus:errors.freeModeSaveOnHome"));
+        return false;
+      }
       return true;
     }
 
@@ -440,7 +449,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
 
   const unsavedTransition = usePendingTransition<PendingFocusTransition>({
     run: runFocusTransition,
-    discard: () => discardUnsavedProgress(selectedDhikrId),
+    discard: () => (selectedDhikrId ? discardUnsavedProgress(selectedDhikrId) : clearFreeModeSession()),
     save: saveSelectedDhikrProgress,
     isSaving: isSavingUnsavedTransition,
     setError: setUnsavedTransitionError
@@ -452,7 +461,11 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       shouldConfirmUnsavedDhikrTransition({
         selectedDhikrId,
         targetDhikrId: transition.id,
-        unsavedProgressDhikrIds
+        unsavedProgressDhikrIds,
+        hasUnsavedFreeMode: !selectedDhikrId && freeModeCount > 0,
+        isLeavingFreeMode: true,
+        currentCount: selectedDhikrId ? items.find((item) => item.id === selectedDhikrId)?.current : freeModeCount,
+        isMember: authStatus === "authenticated"
       })
     );
 
@@ -508,6 +521,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
     }
 
     setDeletingDhikrId(item.id);
+    setDeleteError(null);
     try {
       if (authStatus === "authenticated" && sessionUserId) {
         if (item.source === "personal") {
@@ -536,6 +550,9 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
         setEditingDhikrId("");
         setUpdateError(null);
       }
+    } catch {
+      // B-48: API hatasında öğe listede kalır ve hata görünür.
+      setDeleteError(t("focus:errors.dhikrDeleteFailed"));
     } finally {
       setDeletingDhikrId("");
     }
@@ -567,6 +584,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       items: visibleItems,
       selectedDhikrId,
       deletingDhikrId,
+      deleteError,
       editingDhikr,
       isUpdateOpen: Boolean(editingDhikr),
       isUpdatingDhikr,
@@ -579,7 +597,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
       isRefreshing
     }),
     [
-      filters, activeFilter, visibleItems, selectedDhikrId, deletingDhikrId, editingDhikr, isUpdatingDhikr,
+      filters, activeFilter, visibleItems, selectedDhikrId, deletingDhikrId, deleteError, editingDhikr, isUpdatingDhikr,
       updateError, unsavedTransition.pending, isSavingUnsavedTransition, unsavedTransitionDhikrName,
       unsavedTransitionCount, unsavedTransitionError, isRefreshing
     ]

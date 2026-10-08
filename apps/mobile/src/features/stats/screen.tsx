@@ -53,7 +53,7 @@ export function StatsScreen() {
 
   return (
     <PageLayout>
-      <PageScrollView contentInnerClassName="w-full" onRefresh={refresh} refreshing={isRefreshing}>
+      <PageScrollView testID="e2e-stats-scroll" contentInnerClassName="w-full" onRefresh={refresh} refreshing={isRefreshing}>
       <PageHeader title={t("stats:screen.title")} subtitle={headerSubtitle} />
 
       {isLoading && !data ? (

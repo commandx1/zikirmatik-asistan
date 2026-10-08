@@ -267,9 +267,11 @@ function SessionBody({
     if (!tap) {
       return
     }
-    setProgress(tap.tapKey, tap.item.itemKey, 0, tap.item.target)
+    // B-41: sıfırlama kalıcı işaretlenir (ön plan senkronu geri getirmez) ve hemen gönderilir.
+    setProgress(tap.tapKey, tap.item.itemKey, 0, tap.item.target, { reset: true })
     const entry = buildDirtyEntry(program, tap.tapKey, tap.item)
     dirtyRef.current.set(entry.key, entry)
+    void flush(entry.key)
   }
 
   const goNext = () => {
@@ -383,7 +385,7 @@ function SessionBody({
             {counterStyle === 'tesbih' && isPremium ? (
               <TesbihCounterView model={model} controls="reset-only" />
             ) : (
-              <AppleWatchView model={model} controls="reset-only" testIDs={{ counter: TEST_IDS.vird.sessionCounter }} />
+              <AppleWatchView model={model} controls="reset-only" testIDs={{ counter: TEST_IDS.vird.sessionCounter, countLabel: TEST_IDS.vird.sessionCountLabel }} />
             )}
             <Text testID={TEST_IDS.vird.session} className="-mt-4 mb-3 text-center text-xs text-text-muted">
               {`${position} · ${t('vird:session.remaining', { count: remainingReps(items) })}`}
