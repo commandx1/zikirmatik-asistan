@@ -47,7 +47,7 @@ describe('DevicesService', () => {
     expect(deviceModel.findOneAndUpdate).toHaveBeenCalledWith(
       { deviceId: 'device-1' },
       expect.anything(),
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
     );
   });
 
@@ -74,7 +74,7 @@ describe('DevicesService', () => {
     expect(deviceModel.findOneAndUpdate).toHaveBeenCalledWith(
       { deviceId: 'device-1' },
       expect.anything(),
-      { new: true },
+      { returnDocument: 'after' },
     );
 
     const calls = deviceModel.findOneAndUpdate.mock.calls as unknown[][];
@@ -90,7 +90,7 @@ describe('DevicesService', () => {
     expect(deviceModel.findOneAndUpdate).toHaveBeenCalledWith(
       { deviceId: 'device-1' },
       { $set: { userId: null } },
-      { new: true },
+      { returnDocument: 'after' },
     );
   });
 

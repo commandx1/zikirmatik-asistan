@@ -72,7 +72,7 @@ export class DevicesService {
           $set: set,
           $setOnInsert: setOnInsert,
         },
-        { upsert: true, new: true, setDefaultsOnInsert: true },
+        { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
       )
       .lean()
       .exec();
@@ -93,7 +93,7 @@ export class DevicesService {
         {
           $set: { userId: new Types.ObjectId(userId), lastSeenAt: new Date() },
         },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .lean()
       .exec();
@@ -103,7 +103,11 @@ export class DevicesService {
   // so guests keep receiving pushes after signing out.
   async unlinkUser(deviceId: string) {
     return this.deviceModel
-      .findOneAndUpdate({ deviceId }, { $set: { userId: null } }, { new: true })
+      .findOneAndUpdate(
+        { deviceId },
+        { $set: { userId: null } },
+        { returnDocument: 'after' },
+      )
       .lean()
       .exec();
   }

@@ -201,7 +201,7 @@ function createService(initialPremium = false) {
               >;
             }
           | PipelineStage[],
-        options?: { upsert?: boolean; new?: boolean },
+        options?: { upsert?: boolean; returnDocument?: 'before' | 'after' },
       ) => {
         const exec = () => {
           const before = wallet ? { ...wallet } : null;
@@ -227,7 +227,7 @@ function createService(initialPremium = false) {
           } else {
             applyWalletUpdate(update);
           }
-          if (options?.new === false) return before;
+          if (options?.returnDocument === 'before') return before;
           return wallet ? { ...wallet } : null;
         };
         return { exec, lean: () => ({ exec }) };

@@ -149,7 +149,7 @@ export class AiCreditsService {
       .findOneAndUpdate(
         { userId: userObjectId },
         { $inc: { topupCredits: credits, balance: credits } },
-        { upsert: true, new: true, setDefaultsOnInsert: true },
+        { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
       )
       .exec();
 
@@ -217,7 +217,7 @@ export class AiCreditsService {
           },
           { $set: { balance: { $add: ['$grantCredits', '$topupCredits'] } } },
         ],
-        { new: false, updatePipeline: true },
+        { returnDocument: 'before', updatePipeline: true },
       )
       .lean()
       .exec();
@@ -414,7 +414,7 @@ export class AiCreditsService {
     // Her iki alanın yeni değeri de aynı $set aşamasında, orijinal (stage
     // öncesi) grantCredits'e göre hesaplanır — aggregation $set/$addFields
     // semantiğinde bir stage'in alanları birbirinin YENİ değerini görmez.
-    // new:false → kesim öncesi cüzdan: kovadan alınan pay (grantTake) iade
+    // returnDocument:'before' → kesim öncesi cüzdan: kovadan alınan pay (grantTake) iade
     // (refundFlowDebit) için debit satırına yazılır.
     let walletBefore: { balance: number; grantCredits: number } | null = null;
     try {
@@ -444,7 +444,7 @@ export class AiCreditsService {
           ],
           // Mongoose 9: aggregation pipeline'lı update için updatePipeline zorunlu;
           // eksikse "Cannot pass an array to query updates" fırlatır (canlı testte 500).
-          { new: false, updatePipeline: true },
+          { returnDocument: 'before', updatePipeline: true },
         )
         .exec();
     } catch (error) {
@@ -682,7 +682,7 @@ export class AiCreditsService {
               aiLeaseExpiresAt: new Date(now.getTime() + AI_REQUEST_LEASE_MS),
             },
           },
-          { upsert: true, new: true, setDefaultsOnInsert: true },
+          { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
         )
         .lean()
         .exec();
@@ -834,7 +834,7 @@ export class AiCreditsService {
               },
               { $set: WALLET_BALANCE_STAGE },
             ],
-            { new: true, updatePipeline: true },
+            { returnDocument: 'after', updatePipeline: true },
           )
           .exec()) ?? wallet;
     } else {
@@ -854,7 +854,7 @@ export class AiCreditsService {
                 },
                 { $set: WALLET_BALANCE_STAGE },
               ],
-              { new: true, updatePipeline: true },
+              { returnDocument: 'after', updatePipeline: true },
             )
             .exec()) ?? wallet;
       }
@@ -927,7 +927,7 @@ export class AiCreditsService {
         .findOneAndUpdate(
           { userId },
           { $setOnInsert: { userId } },
-          { upsert: true, new: true, setDefaultsOnInsert: true },
+          { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
         )
         .exec();
     } catch (error) {
