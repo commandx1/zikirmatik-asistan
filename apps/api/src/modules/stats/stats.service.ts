@@ -104,7 +104,8 @@ export class StatsService {
                         '$source',
                       ],
                     },
-                    count: { $sum: 1 },
+                    // Karar 2026-10-08: oturum değil çekilen zikir adedi.
+                    count: { $sum: '$count' },
                   },
                 },
               ],

@@ -145,12 +145,29 @@ describe('Stats (e2e)', () => {
       expect(body.totals.totalSessions).toBe(4);
       expect(body.streak.currentStreak).toBe(4);
       expect(body.sourceBreakdown).toEqual({
-        manual: 2,
+        manual: 50,
         ai: 0,
         'special-day': 0,
         notification: 0,
-        circle: 2,
+        circle: 50,
       });
+    });
+
+    it('sourceBreakdown oturum değil zikir adedi toplamıdır (4+2 manuel, 1 halka)', async () => {
+      const { user, log, base } = await seed('stats-src-sum');
+      await log.create({ ...base, date: today, count: 4 });
+      await log.create({ ...base, date: shiftDateKey(today, -1), count: 2 });
+      await log.create({
+        ...base,
+        date: shiftDateKey(today, -2),
+        count: 1,
+        source: 'circle' as const,
+        circleId: new Types.ObjectId(),
+      });
+      const body = await summary(user.accessToken);
+      expect(body.sourceBreakdown.manual).toBe(6);
+      expect(body.sourceBreakdown.circle).toBe(1);
+      expect(body.totals.allTimeCount).toBe(7);
     });
 
     it('rozet: seri-7 sayımlı (tamamlanmamış) günlerden kazanılır ve vird TTL ile silinse de düşmez', async () => {
