@@ -22,6 +22,14 @@ bkz. §2.5) akışlarının güncel mimarisini anlatır. Üçü de aynı alt yap
   `AiPipelineError` fırlatır; bu hata hiçbir yerde yutulup sessiz bir cevaba
   dönüştürülmez. Kullanıcı her zaman aynı güven verici mesajla 503
   `AI_UNAVAILABLE` alır ve **kredisi düşülmez**.
+- **Kötüye kullanım sınırları (2026-10-08).** Kullanıcı başına aynı anda tek
+  AI isteği (öneri, vird programı, sohbet REST+SSE): ikincisi beklemeden 429
+  `AI_REQUEST_IN_FLIGHT`. Kredi düşmeyen koşular (konu dışı, netleştirme,
+  503, iade, SSE kopması) UTC günü başına 20 ile sınırlı → 429
+  `AI_DAILY_FREE_LIMIT`; ücretli koşular sayılmaz. Kira ve sayaç cüzdan
+  belgesindedir (`AiCreditsService.runGuarded`; kira 5 dk sonra kendiliğinden
+  düşer). Kayıtlı sonucun tekrarı (aynı flowId / clientMessageId) ne
+  engellenir ne sayılır.
 - **Sessiz uydurma cevap yok.** AI Rehber'de model yalnızca kendisine verilen
   aday referanslarını (`C1`, `C2`, …) kullanabilir; ham ObjectId veya
   referans kodu kullanıcıya asla sızmaz (`stripModelRefs`). AI Sohbet'in

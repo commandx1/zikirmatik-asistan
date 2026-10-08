@@ -91,6 +91,8 @@ export function useVirdAiGenerate(credits: ReturnType<typeof useAiCredits>, onOp
         } else if (classification.kind === "unavailable") {
           aiUnavailableRequestRef.current = payload;
           setAiUnavailable({ message: classification.message });
+        } else if (classification.kind === "limit") {
+          setGenerationError(t(classification.messageKey));
         } else {
           setGenerationError(classification.message);
         }

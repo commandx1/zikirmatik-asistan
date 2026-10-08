@@ -11,6 +11,7 @@ import {
   AI_UNAVAILABLE_CODE,
   type CreateAiVirdProgramPayload
 } from "../../ai-guide/services/ai-api-client";
+import { aiLimitMessageKey } from "../../ai-shared/ai-error-codes";
 import type { BackendDhikr } from "../../dhikrs/services/dhikrs-api-client";
 import { toLocalVirdProgram } from "./vird-sync";
 import type { DhikrSnapshot, VirdPhase, VirdProgramLocal, VirdSlotKey } from "../types";
@@ -54,12 +55,14 @@ export function buildCreateAiVirdProgramPayload(
 export type AiVirdCreateErrorClassification =
   | { kind: "creditInsufficient" }
   | { kind: "unavailable"; message: string }
+  | { kind: "limit"; messageKey: NonNullable<ReturnType<typeof aiLimitMessageKey>> }
   | { kind: "terminal"; message: string };
 
 /**
  * `AiApiError`'ı (bkz. ai-api-client.ts) hook'un davranış dallarına eşler:
  * kredi yetersiz → premium sheet, 503 (AI_UNAVAILABLE_CODE) → aynı flowId ile
- * "tekrar dene", diğer her şey → terminal hata mesajı. Sözleşme:
+ * "tekrar dene", 429 sınır kodları → yerelleştirilmiş sınır mesajı (form
+ * korunur), diğer her şey → terminal hata mesajı. Sözleşme:
  * docs/vird-programi.md §3 "Hata kodları".
  */
 export function mapAiVirdCreateError(error: unknown, fallbackMessage: string): AiVirdCreateErrorClassification {
@@ -69,6 +72,10 @@ export function mapAiVirdCreateError(error: unknown, fallbackMessage: string): A
     }
     if (error.code === AI_UNAVAILABLE_CODE) {
       return { kind: "unavailable", message: error.message || fallbackMessage };
+    }
+    const messageKey = aiLimitMessageKey(error.code);
+    if (messageKey) {
+      return { kind: "limit", messageKey };
     }
     return { kind: "terminal", message: error.message || fallbackMessage };
   }

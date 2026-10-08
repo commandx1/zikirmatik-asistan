@@ -116,85 +116,90 @@ export class AiService {
       return this.replayRecommendation(stored, userId);
     }
 
-    const maxRecommendations = payload.maxRecommendations ?? 5;
-    const timeContext = payload.timeContext ?? this.defaultTimeContext();
-    const timeOfDay = this.resolveTimeOfDay(timeContext);
-    const recentDhikrIds =
-      await this.retrievalService.getRecentDhikrIds(userId);
+    // Kayıtlı sonucun tekrarı yukarıda döndü; ajan koşusu tek AI kirası ve
+    // günlük kredisiz koşu sınırı altında (netleştirme/konu dışı sayılır).
+    return this.aiCreditsService.runGuarded(userId, async (markCharged) => {
+      const maxRecommendations = payload.maxRecommendations ?? 5;
+      const timeContext = payload.timeContext ?? this.defaultTimeContext();
+      const timeOfDay = this.resolveTimeOfDay(timeContext);
+      const recentDhikrIds =
+        await this.retrievalService.getRecentDhikrIds(userId);
 
-    const outcome = await this.recommendationAgent.run({
-      freeText,
-      timeOfDay,
-      recentDhikrIds,
-      maxRecommendations,
-      socketId,
-      locale,
-      flowId,
-      userId: userId.toString(),
-    });
-
-    // ── Off-topic ───────────────────────────────────────────────────────────
-    if (outcome.kind === 'offTopic') {
-      log.log(`[off-topic] tespit edildi — ${Date.now() - startedAt}ms`);
-      return {
-        kind: 'offTopic' as const,
-        offTopic: true as const,
-        message: OFF_TOPIC_MESSAGE[locale],
-        recommendedIds: [] as string[],
-        items: [] as SelectedItem[],
-        usedModel: 'openai' as const,
+      const outcome = await this.recommendationAgent.run({
+        freeText,
+        timeOfDay,
+        recentDhikrIds,
+        maxRecommendations,
+        socketId,
         locale,
-      };
-    }
+        flowId,
+        userId: userId.toString(),
+      });
 
-    // ── Netleştirme sorusu ──────────────────────────────────────────────────
-    if (outcome.kind === 'clarification') {
-      log.log(`[clarification] soru üretildi — ${Date.now() - startedAt}ms`);
-      return {
-        kind: 'clarification' as const,
-        needsClarification: true as const,
-        message: outcome.question,
-        // Legacy alan: eski mobil istemciler kategori seçim UI'ı için bu
-        // alanı bekliyordu. Yeni akışta kategori önerilmiyor — her zaman
-        // boş dizi döner (geriye dönük uyumluluk amaçlı, kaldırılmadı).
-        suggestedCategories: [] as string[],
-        recommendedIds: [] as string[],
-        items: [] as SelectedItem[],
-        usedModel: 'openai' as const,
+      // ── Off-topic ───────────────────────────────────────────────────────────
+      if (outcome.kind === 'offTopic') {
+        log.log(`[off-topic] tespit edildi — ${Date.now() - startedAt}ms`);
+        return {
+          kind: 'offTopic' as const,
+          offTopic: true as const,
+          message: OFF_TOPIC_MESSAGE[locale],
+          recommendedIds: [] as string[],
+          items: [] as SelectedItem[],
+          usedModel: 'openai' as const,
+          locale,
+        };
+      }
+
+      // ── Netleştirme sorusu ──────────────────────────────────────────────────
+      if (outcome.kind === 'clarification') {
+        log.log(`[clarification] soru üretildi — ${Date.now() - startedAt}ms`);
+        return {
+          kind: 'clarification' as const,
+          needsClarification: true as const,
+          message: outcome.question,
+          // Legacy alan: eski mobil istemciler kategori seçim UI'ı için bu
+          // alanı bekliyordu. Yeni akışta kategori önerilmiyor — her zaman
+          // boş dizi döner (geriye dönük uyumluluk amaçlı, kaldırılmadı).
+          suggestedCategories: [] as string[],
+          recommendedIds: [] as string[],
+          items: [] as SelectedItem[],
+          usedModel: 'openai' as const,
+          locale,
+        };
+      }
+
+      // ── Seçildi: kalıcılaştır + kredi düş ────────────────────────────────────
+      const reasoning = this.composeReasoning(
+        outcome.summary,
+        outcome.items,
         locale,
-      };
-    }
+      );
 
-    // ── Seçildi: kalıcılaştır + kredi düş ────────────────────────────────────
-    const reasoning = this.composeReasoning(
-      outcome.summary,
-      outcome.items,
-      locale,
-    );
+      // B9: önce kredi düşülür, sonra içerik kalıcılaşır (eşzamanlı kredi
+      // tükenmesinde düşüşsüz içerik kalmaz; chat ile aynı sıra).
+      const wallet = await this.aiCreditsService.debitCreditForFlow(
+        userId,
+        flowId,
+        user.isPremium,
+        promptHash,
+      );
+      markCharged();
+      this.emitStep(socketId, 'finalizing', 'Öneriler hazırlanıyor...');
+      const result = await this.finalizeRecommendation({
+        userId,
+        flowId,
+        freeText,
+        timeContext,
+        reasoning,
+        items: outcome.items,
+        locale,
+      });
 
-    // B9: önce kredi düşülür, sonra içerik kalıcılaşır (eşzamanlı kredi
-    // tükenmesinde düşüşsüz içerik kalmaz; chat ile aynı sıra).
-    const wallet = await this.aiCreditsService.debitCreditForFlow(
-      userId,
-      flowId,
-      user.isPremium,
-      promptHash,
-    );
-    this.emitStep(socketId, 'finalizing', 'Öneriler hazırlanıyor...');
-    const result = await this.finalizeRecommendation({
-      userId,
-      flowId,
-      freeText,
-      timeContext,
-      reasoning,
-      items: outcome.items,
-      locale,
+      log.log(
+        `[done] count=${result.recommendedIds.length} — ${Date.now() - startedAt}ms`,
+      );
+      return { ...result, remainingCredits: wallet.balance };
     });
-
-    log.log(
-      `[done] count=${result.recommendedIds.length} — ${Date.now() - startedAt}ms`,
-    );
-    return { ...result, remainingCredits: wallet.balance };
   }
 
   /**

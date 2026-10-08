@@ -37,6 +37,16 @@ describe("classifyChatError", () => {
     expect(classifyChatError(CLIENT_MESSAGE_ID_CONFLICT)).toBe("other");
     expect(classifyChatError(undefined)).toBe("other");
   });
+
+  it("429 limit codes never open the premium sheet nor auto-retry (hook shows common:aiLimits.*)", async () => {
+    for (const code of ["AI_REQUEST_IN_FLIGHT", "AI_DAILY_FREE_LIMIT"]) {
+      expect(classifyChatError(code)).toBe("other");
+      const limited = Object.assign(new Error("429"), { code });
+      const run = vi.fn().mockRejectedValue(limited);
+      await expect(retryOnInProgress(run, { sleep: async () => {} })).rejects.toBe(limited);
+      expect(run).toHaveBeenCalledTimes(1);
+    }
+  });
 });
 
 describe("retryOnInProgress", () => {

@@ -34,6 +34,21 @@ export class AiCreditWallet {
   @Prop({ type: String, default: null })
   carryMonthKey?: string | null;
 
+  // Tek uçuşta AI isteği kirası (bkz. AiCreditsService.runGuarded): sahibinin
+  // rastgele token'ı + bitiş anı. Süresi geçen kira devralınabilir.
+  @Prop({ type: String })
+  aiLeaseToken?: string;
+
+  @Prop({ type: Date })
+  aiLeaseExpiresAt?: Date;
+
+  // Kredi düşmeyen AI koşusu sayacı; freeRunDayKey (UTC YYYY-MM-DD) değişince sıfırlanır.
+  @Prop({ type: String })
+  freeRunDayKey?: string;
+
+  @Prop({ type: Number, default: 0 })
+  freeRunCount?: number;
+
   readonly createdAt!: Date;
   readonly updatedAt!: Date;
 }

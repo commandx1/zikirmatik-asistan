@@ -159,15 +159,18 @@ describe('AI akış kanalları (e2e)', () => {
         .model('AiChatMessage')
         .countDocuments({ userId });
 
-      const bodies = await Promise.all([
-        createStream(user.accessToken, { firstMessage: 'x [mock:error503]' }),
-        rawSse(
+      // Sıralı: aynı kullanıcının eşzamanlı ikinci AI isteği 429 alır (tek-uçuş kirası).
+      const bodies = [
+        await createStream(user.accessToken, {
+          firstMessage: 'x [mock:error503]',
+        }),
+        await rawSse(
           request(t.http)
             .post(`/v1/ai/chat/conversations/${conversationId}/messages/stream`)
             .set(bearer(user.accessToken))
             .send({ message: 'y [mock:error503]' }),
         ),
-      ]);
+      ];
       for (const res of bodies) {
         const events = parseSse(res.body as string);
         expect(events.map((e) => e.event)).toEqual(['error']);

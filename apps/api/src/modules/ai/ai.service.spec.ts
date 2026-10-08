@@ -36,6 +36,10 @@ function createHarness(options?: {
     computePromptHash: jest.fn(() => 'hash-123'),
     ensureCreditAccessForFlow: jest.fn(() => Promise.resolve()),
     debitCreditForFlow: jest.fn(() => Promise.resolve({ balance: 4 })),
+    runGuarded: jest.fn(
+      (_userId: unknown, run: (charged: () => void) => unknown) =>
+        run(() => undefined),
+    ),
   };
 
   const dhikrModel = {

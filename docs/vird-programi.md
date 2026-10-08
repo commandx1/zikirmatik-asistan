@@ -156,6 +156,9 @@ idempotency'sinden AYRI, ikinci bir katmandır (bkz. `docs/ai-mimari.md`
 | Kredi yetersiz (bakiye < 3) | 403 | `AI_CREDIT_INSUFFICIENT` |
 | Aynı flowId farklı gövdeyle yeniden kullanılmış | 403 | (mesaj: "flowId zaten kullanılmış") |
 | AI/retrieval hatası (herhangi bir adımda) | 503 | `AI_UNAVAILABLE` |
+| Teslim edilmiş flowId (taslak sonradan silinmiş) / kurtarma sürüyor | 409 | `AI_FLOW_ALREADY_USED` |
+| Kullanıcının başka bir AI isteği sürüyor | 429 | `AI_REQUEST_IN_FLIGHT` |
+| Bugünkü kredisiz AI koşusu sınırı (20) doldu | 429 | `AI_DAILY_FREE_LIMIT` |
 | Geçersiz gövde (DTO doğrulama) | 400 | Nest `ValidationPipe` varsayılanı |
 
 ---

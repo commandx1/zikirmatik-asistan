@@ -16,6 +16,7 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useProfileStore } from "../../../store/profile-store";
 import type { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
 import { useAiProgressSteps } from "../../ai-shared/hooks/use-ai-progress-steps";
+import { aiLimitMessageKey } from "../../ai-shared/ai-error-codes";
 import {
   AiChatApiError,
   streamChatMessage,
@@ -182,6 +183,7 @@ export function useChatStream({
 
           const code = err instanceof AiChatApiError ? err.code : undefined;
           const kind = classifyChatError(code);
+          const limitKey = aiLimitMessageKey(code);
           // Yazılan metin hiçbir hatada kaybolmaz (B-30); tekrar aynı anahtarla gider.
           setInputValue(text);
 
@@ -197,6 +199,9 @@ export function useChatStream({
             setAiUnavailable({
               message: getAppLocale() === "tr" ? (err as AiChatApiError).message || t("ai-chat:errors.aiUnavailable") : t("ai-chat:errors.aiUnavailable")
             });
+          } else if (limitKey) {
+            // 429 tek-uçuş / günlük kredisiz sınır: kredi düşmedi, metin yukarıda korundu.
+            setError(t(limitKey));
           } else if (err instanceof AiChatApiError) {
             setError(err.message);
           } else {

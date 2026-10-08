@@ -5,6 +5,10 @@
     "saving": "Kaydediliyor",
     "ok": "Tamam"
   },
+  "aiLimits": {
+    "inFlight": "Önceki asistan isteğin hâlâ işleniyor. Bitince tekrar deneyebilirsin.",
+    "dailyFreeLimit": "Bugünlük kredi düşmeyen asistan deneme sınırına ulaştın. Yarın tekrar deneyebilirsin."
+  },
   "nav": {
     "home": "Ana Sayfa",
     "focus": "Zikirlerim",

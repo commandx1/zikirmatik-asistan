@@ -5,6 +5,10 @@
     "saving": "Saving",
     "ok": "OK"
   },
+  "aiLimits": {
+    "inFlight": "Your previous assistant request is still being processed. Try again once it finishes.",
+    "dailyFreeLimit": "You've reached today's limit for assistant attempts that don't use credits. Try again tomorrow."
+  },
   "nav": {
     "home": "Home",
     "focus": "My Dhikrs",

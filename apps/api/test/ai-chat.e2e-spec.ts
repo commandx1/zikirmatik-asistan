@@ -248,7 +248,11 @@ describe('AI Sohbet (e2e)', () => {
           .send({ firstMessage: text }),
       ),
     );
-    expect(results.map((r) => r.status).sort()).toEqual([201, 403]);
+    // Tek-uçuş kirası: üst üste binen ikinci istek 429; binmezse bakiye 403.
+    expect([
+      [201, 403],
+      [201, 429],
+    ]).toContainEqual(results.map((r) => r.status).sort());
     expect(await t.model('AiConversation').countDocuments({ userId })).toBe(1);
     expect(await t.model('AiChatMessage').countDocuments({ userId })).toBe(2);
     expect(
@@ -328,11 +332,17 @@ describe('AI Sohbet (e2e)', () => {
         .set(bearer(user.accessToken))
         .send({ message, clientMessageId });
 
-    const [a, b] = await Promise.all([send(), send()]);
-    expect([a.status, b.status]).toEqual([201, 201]);
+    const results = await Promise.all([send(), send()]);
+    // Tek-uçuş kirası: üst üste binen kopya 429; binmezse kayıtlı tur 201.
+    expect([
+      [201, 201],
+      [201, 429],
+    ]).toContainEqual(results.map((r) => r.status).sort());
+    const [a, ...rest] = results.filter((r) => r.status === 201);
     const c = await send().expect(201);
     type Body = { reply: { id: string }; message: { id: string } };
-    expect(data<Body>(b).reply.id).toBe(data<Body>(a).reply.id);
+    for (const b of rest)
+      expect(data<Body>(b).reply.id).toBe(data<Body>(a).reply.id);
     expect(data<Body>(c).reply.id).toBe(data<Body>(a).reply.id);
     expect(data<Body>(c).message.id).toBe(data<Body>(a).message.id);
 

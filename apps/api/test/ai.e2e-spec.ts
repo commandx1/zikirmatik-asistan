@@ -367,7 +367,11 @@ describe('AI (e2e)', () => {
       recommend('birinci istek'),
       recommend('ikinci istek'),
     ]);
-    expect(results.map((r) => r.status).sort()).toEqual([201, 403]);
+    // Tek-uçuş kirası: üst üste binen ikinci istek 429; binmezse bakiye 403.
+    expect([
+      [201, 403],
+      [201, 429],
+    ]).toContainEqual(results.map((r) => r.status).sort());
     expect(await t.model('AiRecommendation').countDocuments({ userId })).toBe(
       1,
     );
@@ -408,7 +412,11 @@ describe('AI (e2e)', () => {
       create('sabah zikirleri'),
       create('akşam zikirleri'),
     ]);
-    expect(results.map((r) => r.status).sort()).toEqual([201, 403]);
+    // Tek-uçuş kirası: üst üste binen ikinci istek 429; binmezse bakiye 403.
+    expect([
+      [201, 403],
+      [201, 429],
+    ]).toContainEqual(results.map((r) => r.status).sort());
     expect(await t.model('VirdProgram').countDocuments({ userId })).toBe(1);
   });
 
@@ -522,7 +530,11 @@ describe('AI (e2e)', () => {
         .set(bearer(user.accessToken))
         .send({ userId: user.userId, freeText: 'aynı istek', flowId });
     const results = await Promise.all([send(), send()]);
-    expect(results.map((r) => r.status)).toEqual([201, 201]);
+    // Tek-uçuş kirası: üst üste binen kopya 429; binmezse kayıtlı öneri 201.
+    expect([
+      [201, 201],
+      [201, 429],
+    ]).toContainEqual(results.map((r) => r.status).sort());
     const userId = new Types.ObjectId(user.userId);
     expect(
       await t

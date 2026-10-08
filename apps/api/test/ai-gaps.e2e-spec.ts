@@ -472,7 +472,7 @@ describe('AI boşlukları (e2e)', () => {
       expect(await programs(user)).toHaveLength(1);
     });
 
-    it('AIV-06: kurtarma koşusu taslak yazamazsa → iade, flowId yeniden ücretli', async () => {
+    it('AIV-06: kurtarma koşusu taslak yazamazsa → iade YOK (satır teslim edilmiş olabilir), talep bırakılır, retry ücretsiz kurtarır', async () => {
       const user = await newUser();
       await seedThree();
       const payload = body();
@@ -483,9 +483,9 @@ describe('AI boşlukları (e2e)', () => {
         .mockRejectedValueOnce(new Error('transient'));
 
       await create(user, payload).expect(500);
-      expect(await balance(user)).toBe(before);
-      expect(await virdDebits(user)).toBe(0);
-      expect(await ledgerSum(user)).toBe(before);
+      expect(await balance(user)).toBe(before - 3);
+      expect(await virdDebits(user)).toBe(1);
+      expect(await ledgerSum(user)).toBe(before - 3);
 
       const ok = data<{ remainingCredits: number }>(
         await create(user, payload).expect(201),
@@ -505,9 +505,9 @@ describe('AI boşlukları (e2e)', () => {
       const results = await Promise.all(
         [0, 1, 2].map(() => create(user, payload)),
       );
-      // Kurtarmayı tek istek talep eder; diğerleri 409 (ya da sahibi bitirmişse
-      // mevcut taslağı 201 ile) alır.
-      for (const r of results) expect([201, 409]).toContain(r.status);
+      // Kurtarmayı tek istek talep eder; diğerleri tek-uçuş kirasıyla 429, 409
+      // (ya da sahibi bitirmişse mevcut taslağı 201 ile) alır.
+      for (const r of results) expect([201, 409, 429]).toContain(r.status);
       const ok = results.filter((r) => r.status === 201);
       expect(ok.length).toBeGreaterThanOrEqual(1);
       expect(
@@ -594,9 +594,13 @@ describe('AI boşlukları (e2e)', () => {
         create(user, payload),
         create(user, payload),
       ]);
-      expect(results.map((r) => r.status)).toEqual([201, 201]);
-      const [a, b] = results.map((r) => data<{ programId: string }>(r));
-      expect(a.programId).toBe(b.programId);
+      // Tek-uçuş kirası: üst üste binen kopya 429 alır; binmezse mevcut taslağı döner.
+      for (const r of results) expect([201, 429]).toContain(r.status);
+      const ok = results.filter((r) => r.status === 201);
+      expect(ok.length).toBeGreaterThanOrEqual(1);
+      expect(
+        new Set(ok.map((r) => data<{ programId: string }>(r).programId)).size,
+      ).toBe(1);
       expect(await programs(user)).toHaveLength(1);
       expect(
         await t.model('AiCreditLedger').countDocuments({

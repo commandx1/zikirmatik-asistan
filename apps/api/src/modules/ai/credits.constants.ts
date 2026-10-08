@@ -37,3 +37,15 @@ export const AI_CREDIT_DEFAULT_TOPUP_PRODUCTS: Record<string, number> = {
   topupmedium: 30,
   topuplarge: 75,
 };
+
+// Kötüye kullanım sınırları (2026-10-08 kullanıcı kararı). Kira ve sayaç
+// kullanıcının cüzdan belgesinde tutulur (kullanıcı başına tek belge, unique).
+// Aynı anda tek AI isteği (öneri, vird programı, sohbet REST+SSE): ikincisi
+// beklemeden 429 alır. Kira süresi en uzun AI isteğinin (ajan adımları × ≤45 sn
+// zaman aşımı) üstünde; süreç ölürse kira bu süre sonunda kendiliğinden düşer.
+export const AI_REQUEST_IN_FLIGHT_CODE = 'AI_REQUEST_IN_FLIGHT';
+export const AI_REQUEST_LEASE_MS = 5 * 60_000;
+// UTC günü başına kredi DÜŞMEYEN AI koşusu sınırı (konu dışı, netleştirme,
+// 503/hata, iade, istemci kopması); ücretlenen koşular sayılmaz.
+export const AI_DAILY_FREE_LIMIT_CODE = 'AI_DAILY_FREE_LIMIT';
+export const AI_DAILY_FREE_RUN_LIMIT = 20;

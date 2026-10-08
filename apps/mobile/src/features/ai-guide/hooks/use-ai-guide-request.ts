@@ -13,6 +13,7 @@ import { useAuthStore } from "../../../store/auth-store";
 import { useStableCallback } from "../../../hooks/use-stable-callback";
 import type { useAiCredits } from "../../ai-shared/hooks/use-ai-credits";
 import { useAiProgressSteps } from "../../ai-shared/hooks/use-ai-progress-steps";
+import { aiLimitMessageKey } from "../../ai-shared/ai-error-codes";
 import {
   AiApiError,
   AI_CREDIT_INSUFFICIENT_CODE,
@@ -161,6 +162,7 @@ export function useAiGuideRequest({ credits, history, onOpenPremiumSheet }: Opti
           setActiveFlowId(undefined);
           setIntentInput("");
         } catch (error) {
+          const limitKey = error instanceof AiApiError ? aiLimitMessageKey(error.code) : undefined;
           if (
             error instanceof AiApiError &&
             (error.code === AI_CREDIT_INSUFFICIENT_CODE || error.code === DAILY_LIMIT_REACHED_CODE)
@@ -177,6 +179,9 @@ export function useAiGuideRequest({ credits, history, onOpenPremiumSheet }: Opti
             setAiUnavailable({
               message: getAppLocale() === "tr" ? error.message || t("ai-guide:errors.aiUnavailable") : t("ai-guide:errors.aiUnavailable")
             });
+          } else if (limitKey) {
+            // 429 tek-uçuş / günlük kredisiz sınır: kredi düşmedi, niyet metni korunur.
+            setError(t(limitKey));
           } else if (error instanceof AiApiError && error.kind === "transient" && error.status === undefined) {
             // Timeout / no response: the credit state is unknown, so no "credit not
             // charged" copy — offer the same-flowId retry (server dedupes by flowId).

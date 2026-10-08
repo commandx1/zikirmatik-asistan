@@ -170,33 +170,39 @@ export class AiChatService {
       AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
     );
 
-    this.emitStep(socketId, 'creating', 'Sohbet başlatılıyor...');
-
-    const agentResult = await this.runChatAgent({
-      history: [{ role: 'user', content: firstMessage }],
-      locale,
-      socketId,
-      flowId,
-      userId: userObjectId,
-    });
-
-    await this.aiCreditsService.debitCreditForFlow(
+    return this.aiCreditsService.runGuarded(
       userObjectId,
-      flowId,
-      user.isPremium,
-      promptHash,
-      AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
+      async (markCharged) => {
+        this.emitStep(socketId, 'creating', 'Sohbet başlatılıyor...');
+
+        const agentResult = await this.runChatAgent({
+          history: [{ role: 'user', content: firstMessage }],
+          locale,
+          socketId,
+          flowId,
+          userId: userObjectId,
+        });
+
+        await this.aiCreditsService.debitCreditForFlow(
+          userObjectId,
+          flowId,
+          user.isPremium,
+          promptHash,
+          AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
+        );
+        markCharged();
+
+        const turn = await this.persistTurn({
+          userId: userObjectId,
+          newConversation: { title: this.generateTitle(firstMessage), locale },
+          userText: firstMessage,
+          agentResult,
+          clientMessageId,
+        });
+
+        return this.toCreateResponse(turn);
+      },
     );
-
-    const turn = await this.persistTurn({
-      userId: userObjectId,
-      newConversation: { title: this.generateTitle(firstMessage), locale },
-      userText: firstMessage,
-      agentResult,
-      clientMessageId,
-    });
-
-    return this.toCreateResponse(turn);
   }
 
   /**
@@ -234,57 +240,60 @@ export class AiChatService {
       return;
     }
 
-    const { clientAborted, abortSignal, finish } = this.beginSse(res);
-    this.emitStep(socketId, 'creating', 'Sohbet başlatılıyor...');
+    await this.runStreamGuarded(res, userObjectId, async (markCharged) => {
+      const { clientAborted, abortSignal, finish } = this.beginSse(res);
+      this.emitStep(socketId, 'creating', 'Sohbet başlatılıyor...');
 
-    try {
-      const agentResult = await this.runChatAgentStream({
-        history: [{ role: 'user', content: firstMessage }],
-        locale,
-        socketId,
-        abortSignal,
-        onToken: (delta) => this.writeSse(res, 'token', { delta }),
-        flowId,
-        userId: userObjectId,
-      });
+      try {
+        const agentResult = await this.runChatAgentStream({
+          history: [{ role: 'user', content: firstMessage }],
+          locale,
+          socketId,
+          abortSignal,
+          onToken: (delta) => this.writeSse(res, 'token', { delta }),
+          flowId,
+          userId: userObjectId,
+        });
 
-      if (clientAborted()) {
+        if (clientAborted()) {
+          finish();
+          return;
+        }
+
+        const wallet = await this.aiCreditsService.debitCreditForFlow(
+          userObjectId,
+          flowId,
+          user.isPremium,
+          promptHash,
+          AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
+        );
+        markCharged();
+
+        const turn = await this.persistTurn({
+          userId: userObjectId,
+          newConversation: { title: this.generateTitle(firstMessage), locale },
+          userText: firstMessage,
+          agentResult,
+          clientMessageId: payload.clientMessageId,
+        });
+
+        this.writeSse(
+          res,
+          'done',
+          await this.donePayload(turn, wallet.balance, true),
+        );
         finish();
-        return;
+      } catch (error) {
+        this.handleStreamFailure(
+          res,
+          flowId,
+          locale,
+          error,
+          clientAborted,
+          finish,
+        );
       }
-
-      const wallet = await this.aiCreditsService.debitCreditForFlow(
-        userObjectId,
-        flowId,
-        user.isPremium,
-        promptHash,
-        AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
-      );
-
-      const turn = await this.persistTurn({
-        userId: userObjectId,
-        newConversation: { title: this.generateTitle(firstMessage), locale },
-        userText: firstMessage,
-        agentResult,
-        clientMessageId: payload.clientMessageId,
-      });
-
-      this.writeSse(
-        res,
-        'done',
-        await this.donePayload(turn, wallet.balance, true),
-      );
-      finish();
-    } catch (error) {
-      this.handleStreamFailure(
-        res,
-        flowId,
-        locale,
-        error,
-        clientAborted,
-        finish,
-      );
-    }
+    });
   }
 
   /**
@@ -336,39 +345,45 @@ export class AiChatService {
       AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
     );
 
-    this.emitStep(socketId, 'thinking', 'Mesajın değerlendiriliyor...');
-
-    const priorHistory = await this.loadContextWindow(conversationObjectId);
-    const history = [
-      ...priorHistory,
-      { role: 'user' as const, content: message },
-    ].slice(-MAX_CONTEXT_MESSAGES);
-
-    const agentResult = await this.runChatAgent({
-      history,
-      locale: (conversation.locale as SupportedAiLocale) ?? 'tr',
-      socketId,
-      flowId,
-      userId: userObjectId,
-    });
-
-    const wallet = await this.aiCreditsService.debitCreditForFlow(
+    return this.aiCreditsService.runGuarded(
       userObjectId,
-      flowId,
-      user.isPremium,
-      promptHash,
-      AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
+      async (markCharged) => {
+        this.emitStep(socketId, 'thinking', 'Mesajın değerlendiriliyor...');
+
+        const priorHistory = await this.loadContextWindow(conversationObjectId);
+        const history = [
+          ...priorHistory,
+          { role: 'user' as const, content: message },
+        ].slice(-MAX_CONTEXT_MESSAGES);
+
+        const agentResult = await this.runChatAgent({
+          history,
+          locale: (conversation.locale as SupportedAiLocale) ?? 'tr',
+          socketId,
+          flowId,
+          userId: userObjectId,
+        });
+
+        const wallet = await this.aiCreditsService.debitCreditForFlow(
+          userObjectId,
+          flowId,
+          user.isPremium,
+          promptHash,
+          AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
+        );
+        markCharged();
+
+        const turn = await this.persistTurn({
+          userId: userObjectId,
+          conversationId: conversationObjectId,
+          userText: message,
+          agentResult,
+          clientMessageId,
+        });
+
+        return this.toSendResponse(turn, wallet.balance);
+      },
     );
-
-    const turn = await this.persistTurn({
-      userId: userObjectId,
-      conversationId: conversationObjectId,
-      userText: message,
-      agentResult,
-      clientMessageId,
-    });
-
-    return this.toSendResponse(turn, wallet.balance);
   }
 
   /** sendMessage'ın SSE karşılığı — bkz. streamCreateConversation dokümantasyonu. */
@@ -409,63 +424,66 @@ export class AiChatService {
     const locale: SupportedAiLocale =
       (conversation?.locale as SupportedAiLocale) ?? 'tr';
 
-    const { clientAborted, abortSignal, finish } = this.beginSse(res);
-    this.emitStep(socketId, 'thinking', 'Mesajın değerlendiriliyor...');
+    await this.runStreamGuarded(res, userObjectId, async (markCharged) => {
+      const { clientAborted, abortSignal, finish } = this.beginSse(res);
+      this.emitStep(socketId, 'thinking', 'Mesajın değerlendiriliyor...');
 
-    try {
-      const priorHistory = await this.loadContextWindow(conversationObjectId);
-      const history = [
-        ...priorHistory,
-        { role: 'user' as const, content: message },
-      ].slice(-MAX_CONTEXT_MESSAGES);
+      try {
+        const priorHistory = await this.loadContextWindow(conversationObjectId);
+        const history = [
+          ...priorHistory,
+          { role: 'user' as const, content: message },
+        ].slice(-MAX_CONTEXT_MESSAGES);
 
-      const agentResult = await this.runChatAgentStream({
-        history,
-        locale,
-        socketId,
-        abortSignal,
-        onToken: (delta) => this.writeSse(res, 'token', { delta }),
-        flowId,
-        userId: userObjectId,
-      });
+        const agentResult = await this.runChatAgentStream({
+          history,
+          locale,
+          socketId,
+          abortSignal,
+          onToken: (delta) => this.writeSse(res, 'token', { delta }),
+          flowId,
+          userId: userObjectId,
+        });
 
-      if (clientAborted()) {
+        if (clientAborted()) {
+          finish();
+          return;
+        }
+
+        const wallet = await this.aiCreditsService.debitCreditForFlow(
+          userObjectId,
+          flowId,
+          user.isPremium,
+          promptHash,
+          AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
+        );
+        markCharged();
+
+        const turn = await this.persistTurn({
+          userId: userObjectId,
+          conversationId: conversationObjectId,
+          userText: message,
+          agentResult,
+          clientMessageId: payload.clientMessageId,
+        });
+
+        this.writeSse(
+          res,
+          'done',
+          await this.donePayload(turn, wallet.balance, false),
+        );
         finish();
-        return;
+      } catch (error) {
+        this.handleStreamFailure(
+          res,
+          flowId,
+          locale,
+          error,
+          clientAborted,
+          finish,
+        );
       }
-
-      const wallet = await this.aiCreditsService.debitCreditForFlow(
-        userObjectId,
-        flowId,
-        user.isPremium,
-        promptHash,
-        AI_CREDIT_REASONS.CHAT_MESSAGE_DEBIT,
-      );
-
-      const turn = await this.persistTurn({
-        userId: userObjectId,
-        conversationId: conversationObjectId,
-        userText: message,
-        agentResult,
-        clientMessageId: payload.clientMessageId,
-      });
-
-      this.writeSse(
-        res,
-        'done',
-        await this.donePayload(turn, wallet.balance, false),
-      );
-      finish();
-    } catch (error) {
-      this.handleStreamFailure(
-        res,
-        flowId,
-        locale,
-        error,
-        clientAborted,
-        finish,
-      );
-    }
+    });
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -710,7 +728,9 @@ export class AiChatService {
     const [rawItems, total] = await Promise.all([
       this.messageModel
         .find({ conversationId: conversationObjectId })
-        .sort({ createdAt: 1 })
+        // MOB-AIM-10: sayfa 1 = EN YENİ `limit` mesaj (sayfa n daha eskiler);
+        // sayfa içi artan sırada döner (aşağıda reverse).
+        .sort({ createdAt: -1, _id: -1 })
         .skip(skip)
         .limit(limit)
         .lean()
@@ -720,7 +740,7 @@ export class AiChatService {
         .exec(),
     ]);
 
-    const items = rawItems.map((item) => ({
+    const items = rawItems.reverse().map((item) => ({
       id: item._id.toString(),
       conversationId: item.conversationId.toString(),
       role: item.role,
@@ -1403,6 +1423,24 @@ export class AiChatService {
     } catch (error) {
       this.sendHttpError(res, error);
       return null;
+    }
+  }
+
+  /**
+   * SSE koşusunu tek AI kirası + günlük kredisiz koşu sınırı altında çalıştırır
+   * (AiCreditsService.runGuarded). Kira/sınır 429'u SSE başlıkları yazılmadan
+   * düz JSON döner; koşunun kendi hataları handleStreamFailure'da kalır.
+   */
+  private async runStreamGuarded(
+    res: Response,
+    userId: Types.ObjectId,
+    run: (markCharged: () => void) => Promise<void>,
+  ) {
+    try {
+      await this.aiCreditsService.runGuarded(userId, run);
+    } catch (error) {
+      if (!res.headersSent) this.sendHttpError(res, error);
+      else this.logger.error(`SSE koşusu: ${this.describeError(error)}`);
     }
   }
 

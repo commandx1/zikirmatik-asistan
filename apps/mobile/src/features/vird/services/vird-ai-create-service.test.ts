@@ -90,6 +90,17 @@ describe("mapAiVirdCreateError", () => {
     expect(mapAiVirdCreateError(error, fallback)).toEqual({ kind: "unavailable", message: fallback });
   });
 
+  it("classifies the 429 limit codes as limit with their localized message key (form stays intact)", () => {
+    expect(mapAiVirdCreateError(new AiApiError("terminal", "sürüyor", 429, "AI_REQUEST_IN_FLIGHT"), fallback)).toEqual({
+      kind: "limit",
+      messageKey: "common:aiLimits.inFlight"
+    });
+    expect(mapAiVirdCreateError(new AiApiError("terminal", "sınır", 429, "AI_DAILY_FREE_LIMIT"), fallback)).toEqual({
+      kind: "limit",
+      messageKey: "common:aiLimits.dailyFreeLimit"
+    });
+  });
+
   it("classifies any other AiApiError (e.g. flowId reuse, validation) as terminal", () => {
     const error = new AiApiError("terminal", "flowId zaten kullanılmış", 403);
     expect(mapAiVirdCreateError(error, fallback)).toEqual({ kind: "terminal", message: "flowId zaten kullanılmış" });

@@ -1,6 +1,8 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import {
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   Logger,
   NotFoundException,
@@ -21,6 +23,10 @@ import {
   AI_CREDIT_DEFAULT_TOPUP_PRODUCTS,
   AI_CREDIT_INSUFFICIENT_CODE,
   AI_CREDIT_REASONS,
+  AI_DAILY_FREE_LIMIT_CODE,
+  AI_DAILY_FREE_RUN_LIMIT,
+  AI_REQUEST_IN_FLIGHT_CODE,
+  AI_REQUEST_LEASE_MS,
   type AiCreditReason,
   FREE_DAILY_CREDIT_AMOUNT,
   FREE_SIGNUP_BONUS_CREDIT_AMOUNT,
@@ -494,15 +500,17 @@ export class AiCreditsService {
 
   /**
    * AIV-06: makbuzsuz debit'in (debit ile teslim arasında çöken istek ya da
-   * a801253 öncesi eski satır) TEK seferlik kurtarma hakkını atomik talep
-   * eder. true → bu istek ajanı bir kez yeniden koşturabilir; false → hak
-   * kullanılmış, teslim edilmiş ya da satır yok (çağıran 409 verir).
+   * a801253 öncesi eski satır) kurtarma koşusunu atomik talep eder. Talep
+   * zamanını döner (serbest bırakma anahtarı) ya da null → teslim edilmiş,
+   * satır yok veya başka bir kurtarma sürüyor (çağıran 409 verir). Kira
+   * süresinden eski talep, sahibi öldüğü için yeniden talep edilebilir.
    */
   async claimFlowRecovery(
     userId: Types.ObjectId,
     flowId: string,
     reason: AiCreditReason,
-  ): Promise<boolean> {
+  ): Promise<Date | null> {
+    const now = new Date();
     const result = await this.aiCreditLedgerModel
       .updateOne(
         {
@@ -510,47 +518,123 @@ export class AiCreditsService {
           reason,
           flowId,
           'metadata.fulfilledRef': { $exists: false },
-          'metadata.recoveryAt': { $exists: false },
+          $or: [
+            { 'metadata.recoveryAt': { $exists: false } },
+            {
+              'metadata.recoveryAt': {
+                $lte: new Date(now.getTime() - AI_REQUEST_LEASE_MS),
+              },
+            },
+          ],
         },
-        { $set: { 'metadata.recoveryAt': new Date() } },
+        { $set: { 'metadata.recoveryAt': now } },
       )
       .exec();
-    return result.modifiedCount === 1;
+    return result.modifiedCount === 1 ? now : null;
   }
 
   /**
-   * Teslim edilemeyen (makbuzsuz) flow debit'ini iade eder: satır atomik
-   * silinir (CRD-17 telafi deseni — eşzamanlı iki iade tek kez uygular),
-   * kesilen kredi alındığı kovalara geri yazılır. flowId taze hale gelir:
-   * aynı flowId ile yeni deneme normal ücretlendirilir. Kova payı bilinmeyen
-   * (eski) satırda tamamı grant kovasına döner — kalıcı topup kredisi basılmaz.
+   * Başarısız kurtarma koşusu talebini bırakır (iade YERİNE): satırın teslim
+   * durumu bilinmez (eski satır teslim edilmiş olabilir), iade kredi basardı.
+   * Kullanıcı aynı flowId ile yeniden dener; her deneme günlük ücretsiz koşu
+   * sınırına sayılır.
+   */
+  async releaseFlowRecovery(
+    userId: Types.ObjectId,
+    flowId: string,
+    reason: AiCreditReason,
+    claimedAt: Date,
+  ): Promise<void> {
+    await this.aiCreditLedgerModel
+      .updateOne(
+        { userId, reason, flowId, 'metadata.recoveryAt': claimedAt },
+        { $unset: { 'metadata.recoveryAt': 1 } },
+      )
+      .exec();
+  }
+
+  /**
+   * Teslim (taslak yazımı) ÖNCESİ debit satırına bu isteğin token'ını ekler.
+   * refundFlowDebit token'lı satırı silmez: iade ile eşzamanlı bir teslim
+   * aynı belgede sıralanır — ya iade önce siler (rezervasyon false → taslak
+   * yazılmaz) ya da rezervasyon önce gelir (iade etkisiz). false → debit yok.
+   */
+  async reserveFlowDelivery(
+    userId: Types.ObjectId,
+    flowId: string,
+    reason: AiCreditReason,
+    token: string,
+  ): Promise<boolean> {
+    const result = await this.aiCreditLedgerModel
+      .updateOne(
+        { userId, reason, flowId },
+        { $addToSet: { 'metadata.delivering': token } },
+      )
+      .exec();
+    return result.matchedCount === 1;
+  }
+
+  /** Taslak yazılamadıysa rezervasyonu geri alır (iade yolunu açar). */
+  async releaseFlowDelivery(
+    userId: Types.ObjectId,
+    flowId: string,
+    reason: AiCreditReason,
+    token: string,
+  ): Promise<void> {
+    await this.aiCreditLedgerModel
+      .updateOne(
+        { userId, reason, flowId },
+        { $pull: { 'metadata.delivering': token } },
+      )
+      .exec();
+  }
+
+  /**
+   * Bu isteğin YAZDIĞI ve teslim edilemeyen debit'i iade eder: satır atomik
+   * silinir (makbuz ya da teslim rezervasyonu varsa silinmez; eşzamanlı iki
+   * iade tek kez uygular), kesilen kredi alındığı kovalara döner. flowId taze
+   * hale gelir: aynı flowId ile yeni deneme normal ücretlendirilir.
+   * Kredi basmaz: grant payı yalnız kesimin yapıldığı grant döngüsü (UTC gün /
+   * premium ay) hâlâ sürüyorsa döner — döngü sıfırlandıysa o kredi zaten
+   * sönmüştü. Kova payı bilinmeyen satırın tamamı grant payı sayılır (kalıcı
+   * topup kredisi basılmaz).
    */
   async refundFlowDebit(
     userId: Types.ObjectId,
     flowId: string,
     reason: AiCreditReason,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const debit = await this.aiCreditLedgerModel
       .findOneAndDelete({
         userId,
         reason,
         flowId,
         'metadata.fulfilledRef': { $exists: false },
+        'metadata.delivering.0': { $exists: false },
       })
       .lean()
       .exec();
-    if (!debit || debit.delta >= 0) return;
+    if (!debit || debit.delta >= 0) return false;
     const amount = -debit.delta;
     const recordedGrantTake = debit.metadata?.grantTake;
     const grantTake =
       typeof recordedGrantTake === 'number' ? recordedGrantTake : amount;
+    const debitedAt = new Date(debit.createdAt).toISOString();
+    const sameGrantCycle = {
+      $in: ['$grantCycleKey', [debitedAt.slice(0, 10), debitedAt.slice(0, 7)]],
+    };
     await this.aiCreditWalletModel
       .updateOne(
         { userId },
         [
           {
             $set: {
-              grantCredits: { $add: ['$grantCredits', grantTake] },
+              grantCredits: {
+                $add: [
+                  '$grantCredits',
+                  { $cond: [sameGrantCycle, grantTake, 0] },
+                ],
+              },
               topupCredits: { $add: ['$topupCredits', amount - grantTake] },
             },
           },
@@ -562,6 +646,119 @@ export class AiCreditsService {
     this.logger.warn(
       `Flow debit iade edildi (flow ${flowId}, ${reason}, ${amount} kredi)`,
     );
+    return true;
+  }
+
+  /**
+   * Kötüye kullanım sınırları (AI_REQUEST_IN_FLIGHT / AI_DAILY_FREE_LIMIT):
+   * `run`'ı kullanıcının tek AI kirasını tutarak çalıştırır. Kira cüzdan
+   * belgesindedir (kullanıcı başına tek, unique) — çok örnekte de geçerli;
+   * süresi geçen kira (ölü süreç) devralınır, kira finally'de bırakılır.
+   * `run` ücretlendiğini `markCharged()` ile bildirmezse koşu günün kredisiz
+   * koşu sayacına yazılır; sayaç sınırdaysa run hiç çalışmaz. Kayıtlı sonucun
+   * tekrarı (replay) bu çağrıdan ÖNCE dönmelidir: ne engellenir ne sayılır.
+   */
+  async runGuarded<T>(
+    userId: Types.ObjectId,
+    run: (markCharged: () => void) => Promise<T>,
+  ): Promise<T> {
+    const token = randomUUID();
+    const now = new Date();
+    const dayKey = toUtcDayKey(now);
+    let wallet: Pick<AiCreditWallet, 'freeRunDayKey' | 'freeRunCount'> | null;
+    try {
+      wallet = await this.aiCreditWalletModel
+        .findOneAndUpdate(
+          {
+            userId,
+            $or: [
+              { aiLeaseExpiresAt: null },
+              { aiLeaseExpiresAt: { $lte: now } },
+            ],
+          },
+          {
+            $set: {
+              aiLeaseToken: token,
+              aiLeaseExpiresAt: new Date(now.getTime() + AI_REQUEST_LEASE_MS),
+            },
+          },
+          { upsert: true, new: true, setDefaultsOnInsert: true },
+        )
+        .lean()
+        .exec();
+    } catch (error) {
+      if (!this.isDuplicateKeyError(error)) throw error;
+      throw new HttpException(
+        {
+          code: AI_REQUEST_IN_FLIGHT_CODE,
+          message:
+            'Önceki AI isteğin hâlâ işleniyor. Bitince tekrar deneyebilirsin.',
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
+    try {
+      if (
+        wallet?.freeRunDayKey === dayKey &&
+        (wallet.freeRunCount ?? 0) >= AI_DAILY_FREE_RUN_LIMIT
+      ) {
+        throw new HttpException(
+          {
+            code: AI_DAILY_FREE_LIMIT_CODE,
+            message:
+              'Bugünlük kredi düşmeyen AI deneme sınırına ulaştın. Yarın tekrar deneyebilirsin.',
+          },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+      let charged = false;
+      try {
+        return await run(() => {
+          charged = true;
+        });
+      } finally {
+        // Kira altında: oku-yaz yarışı yok. Pipeline: gün değiştiyse 1'den başlar.
+        if (!charged)
+          await this.aiCreditWalletModel
+            .updateOne(
+              { userId },
+              [
+                {
+                  $set: {
+                    freeRunCount: {
+                      $cond: [
+                        { $eq: ['$freeRunDayKey', dayKey] },
+                        { $add: [{ $ifNull: ['$freeRunCount', 0] }, 1] },
+                        1,
+                      ],
+                    },
+                    freeRunDayKey: dayKey,
+                  },
+                },
+              ],
+              { updatePipeline: true },
+            )
+            .exec()
+            .catch((error: unknown) =>
+              this.logger.warn(
+                `Kredisiz koşu sayacı yazılamadı: ${this.describeError(error)}`,
+              ),
+            );
+      }
+    } finally {
+      await this.aiCreditWalletModel
+        .updateOne(
+          { userId, aiLeaseToken: token },
+          { $unset: { aiLeaseToken: 1, aiLeaseExpiresAt: 1 } },
+        )
+        .exec()
+        .catch((error: unknown) =>
+          this.logger.warn(
+            `AI kirası bırakılamadı: ${this.describeError(error)}`,
+          ),
+        );
+    }
   }
 
   async ensureCreditState(

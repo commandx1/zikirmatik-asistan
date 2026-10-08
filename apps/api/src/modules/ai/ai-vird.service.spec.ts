@@ -40,6 +40,14 @@ function createHarness(options?: {
     ensureCreditAccessForFlow: jest.fn(() => Promise.resolve()),
     debitCreditForFlow: jest.fn(() => Promise.resolve({ balance: 7 })),
     markFlowFulfilled: jest.fn(() => Promise.resolve()),
+    runGuarded: jest.fn(
+      (_userId: unknown, run: (charged: () => void) => unknown) =>
+        run(() => undefined),
+    ),
+    reserveFlowDelivery: jest.fn(() => Promise.resolve(true)),
+    releaseFlowDelivery: jest.fn(() => Promise.resolve()),
+    refundFlowDebit: jest.fn(() => Promise.resolve(true)),
+    releaseFlowRecovery: jest.fn(() => Promise.resolve()),
     getCredits: jest.fn(() =>
       Promise.resolve({
         balance: 10,
