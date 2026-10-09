@@ -120,10 +120,9 @@ androidDescribe('20 yolculuk 2: üyenin günü (vird, sayaç, istatistik, gün d
     const total = summary.totals.allTimeCount;
     assert.equal(total, 7);
     const bySource = Object.values(summary.sourceBreakdown).reduce((a, b) => a + b, 0);
-    // Kaynak dağılımı oturum (log satırı) sayar: 2 vird + 1 sayaç kaydı, hepsi "elle".
-    const sessions = (await apiLogs(me.accessToken)).length;
-    assert.equal(bySource, sessions, JSON.stringify(summary.sourceBreakdown));
-    assert.equal(summary.sourceBreakdown.manual, sessions);
+    // Kaynak dağılımı zikir adedini sayar (b589d39): 2 vird + 1 sayaç kaydı, hepsi "elle".
+    assert.equal(bySource, total, JSON.stringify(summary.sourceBreakdown));
+    assert.equal(summary.sourceBreakdown.manual, total);
     // Toplam kart değeri ekranda.
     await existsText(new RegExp(`^${total}$`), 15000);
     await existsText(/^(Elle|Manual)$/, 15000);
