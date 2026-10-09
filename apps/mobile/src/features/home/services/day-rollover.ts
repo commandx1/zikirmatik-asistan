@@ -47,3 +47,12 @@ export function isLogFromToday(log: { date?: string; createdAt?: string }, now: 
   }
   return true;
 }
+
+// M-01: the counter shows today's count — a log written on an earlier day still
+// supplies target / favorite / last-activity, but the count starts again at 0.
+export function counterFromLog(log: { date?: string; createdAt?: string; count: number } | undefined) {
+  if (!log) {
+    return undefined;
+  }
+  return isLogFromToday(log, new Date()) ? log.count : 0;
+}

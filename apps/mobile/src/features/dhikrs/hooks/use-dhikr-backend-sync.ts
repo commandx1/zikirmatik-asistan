@@ -10,7 +10,9 @@ import { DhikrsApiError } from "../services/dhikrs-api-client";
 import { resolvePersonalDhikrName } from "../services/personal-dhikr-label";
 import { fetchDhikrCatalog, fetchDhikrLogs, fetchUserDhikrs } from "../services/dhikr-queries";
 import type { BackendDhikrLog } from "../services/dhikr-logs-api-client";
-import { isLogFromToday } from "../../home/services/day-rollover";
+import { counterFromLog } from "../../home/services/day-rollover";
+
+export { counterFromLog };
 
 type LatestLog = {
   /** Log gününün YYYY-MM-DD'si — eski günün sayımı bugünün sayacına yazılmasın (M-01). */
@@ -77,15 +79,6 @@ export function indexLatestDhikrLogs(logs: BackendDhikrLog[]): {
   }
 
   return { latestByDhikr, latestByCustomDhikr };
-}
-
-// M-01: the counter shows today's count — a log written on an earlier day still
-// supplies target / favorite / last-activity, but the count starts again at 0.
-export function counterFromLog(log: { date?: string; createdAt?: string; count: number } | undefined) {
-  if (!log) {
-    return undefined;
-  }
-  return isLogFromToday(log, new Date()) ? log.count : 0;
 }
 
 export function useDhikrBackendSync() {

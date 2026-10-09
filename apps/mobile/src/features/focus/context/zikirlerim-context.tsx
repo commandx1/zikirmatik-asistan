@@ -19,6 +19,7 @@ import {
   type BackendDhikrLog
 } from "../../dhikrs/services/dhikr-logs-api-client";
 import { shouldConfirmUnsavedDhikrTransition } from "../../home/services/unsaved-transition-guard";
+import { counterFromLog } from "../../home/services/day-rollover";
 import { usePendingTransition } from "../../home/hooks/use-pending-transition";
 import {
   deleteUserDhikrByClientId,
@@ -248,7 +249,7 @@ export function ZikirlerimProvider({ children }: PropsWithChildren) {
         aiPrompt: latestLog.aiPrompt ?? matched?.aiPrompt,
         aiAssistantNote: latestLog.aiAssistantNote ?? matched?.aiAssistantNote,
         aiRecommendationId: latestLog.aiRecommendationId ?? matched?.aiRecommendationId,
-        current: hasUnsavedProgress && matched ? matched.current : latestLog.count,
+        current: hasUnsavedProgress && matched ? matched.current : counterFromLog(latestLog) ?? 0,
         target: hasUnsavedProgress && matched ? matched.target : (matched?.target ?? latestLog.targetCount),
         lastActivityLabel,
         streakDays: streakInfo.days,

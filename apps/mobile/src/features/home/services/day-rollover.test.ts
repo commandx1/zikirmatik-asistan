@@ -1,6 +1,6 @@
 import fc from "fast-check";
-import { describe, expect, it } from "vitest";
-import { decideDayRollover, isLogFromToday } from "./day-rollover";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { counterFromLog, decideDayRollover, isLogFromToday } from "./day-rollover";
 
 const now = new Date(2026, 9, 7, 9, 0); // 7 Oct 2026, local
 const at = (y: number, m: number, d: number, h = 21) => new Date(y, m, d, h).toISOString();
@@ -63,5 +63,17 @@ describe("isLogFromToday (hydration, MOB-HID-06 member half)", () => {
   it("falls back to createdAt, and is permissive when nothing is known", () => {
     expect(isLogFromToday({ createdAt: at(2026, 9, 6) }, now)).toBe(false);
     expect(isLogFromToday({}, now)).toBe(true);
+  });
+});
+
+describe("counterFromLog (Zikirlerim card, M-01 double count)", () => {
+  afterEach(() => vi.useRealTimers());
+
+  it("yesterday's log -> 0, today's log -> its count", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(now);
+    expect(counterFromLog({ date: "2026-10-06", count: 27 })).toBe(0);
+    expect(counterFromLog({ date: "2026-10-07", count: 27 })).toBe(27);
+    expect(counterFromLog(undefined)).toBeUndefined();
   });
 });
