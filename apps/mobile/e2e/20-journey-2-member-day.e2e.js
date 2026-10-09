@@ -120,7 +120,7 @@ androidDescribe('20 yolculuk 2: üyenin günü (vird, sayaç, istatistik, gün d
     const total = summary.totals.allTimeCount;
     assert.equal(total, 7);
     const bySource = Object.values(summary.sourceBreakdown).reduce((a, b) => a + b, 0);
-    // Kaynak dağılımı zikir adedini sayar (b589d39): 2 vird + 1 sayaç kaydı, hepsi "elle".
+    // Kaynak dağılımı zikir adedini sayar (oturum değil): 2 vird + 1 sayaç kaydı, hepsi "elle".
     assert.equal(bySource, total, JSON.stringify(summary.sourceBreakdown));
     assert.equal(summary.sourceBreakdown.manual, total);
     // Toplam kart değeri ekranda.
