@@ -86,6 +86,13 @@ const SENTENCES_BY_ID = {
     "Sayaca ekle, kaçta kaldığını hep bilirsin.",
     "Zikirmatik. Reklamsız, ücretsiz. Hayırlı Cumalar.",
   ],
+  "07": [
+    "Serini bozma.",
+    "Zikirmatik ana ekranında serini gösterir.",
+    "Dokun, sayaç hemen açılır,",
+    "çıkınca bugünkü sayın da güncel.",
+    "Zikirmatik. Reklamsız, ücretsiz.",
+  ],
 };
 
 const VIDEO_ID = (process.argv[2] || "01").padStart(2, "0");

@@ -15,12 +15,15 @@ import rich05Config from "../pilots/rich-05.json";
 import rich06Config from "../pilots/rich-06.json";
 import { RichVideoCover05 } from "./RichVideoCover05";
 import { RichVideoCover06 } from "./RichVideoCover06";
+import { RichVideoCover07 } from "./RichVideoCover07";
+import rich07Config from "../pilots/rich-07.json";
 import { RichVideoCover04 } from "./RichVideoCover04";
 import vo02 from "../public/audio/vo-02.json";
 import vo03 from "../public/audio/vo-03.json";
 import vo04 from "../public/audio/vo-04.json";
 import vo05 from "../public/audio/vo-05.json";
 import vo06 from "../public/audio/vo-06.json";
+import vo07 from "../public/audio/vo-07.json";
 
 const richVideo02Manifest = { ...rich02Config, voManifest: vo02 } as unknown as RichVideoManifest;
 const richVideo03Manifest = { ...rich03Config, voManifest: vo03 } as unknown as RichVideoManifest;
@@ -32,6 +35,8 @@ const richVideo05Manifest = { ...rich05Config, voManifest: vo05 } as unknown as 
 const RichVideo05 = createRichVideo(richVideo05Manifest);
 const richVideo06Manifest = { ...rich06Config, voManifest: vo06 } as unknown as RichVideoManifest;
 const RichVideo06 = createRichVideo(richVideo06Manifest);
+const richVideo07Manifest = { ...rich07Config, voManifest: vo07 } as unknown as RichVideoManifest;
+const RichVideo07 = createRichVideo(richVideo07Manifest);
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -217,6 +222,16 @@ export const RemotionRoot: React.FC = () => {
         height={HEIGHT}
       />
       <Still id="RichVideo-06-cover" component={RichVideoCover06} width={WIDTH} height={HEIGHT} />
+      {/* Video 7 ("Ana ekran serisi widget"): `npx remotion render RichVideo-07 out/video-07-widget-sesli.mp4 --codec=h264` */}
+      <Composition
+        id="RichVideo-07"
+        component={RichVideo07}
+        durationInFrames={richVideoGenericDurationInFrames(richVideo07Manifest, FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      <Still id="RichVideo-07-cover" component={RichVideoCover07} width={WIDTH} height={HEIGHT} />
     </>
   );
 };

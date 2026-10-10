@@ -1,0 +1,94 @@
+{
+  "recordingSrc": "recordings/widget-07-cfr.mp4",
+  "captionBottom": 400,
+  "captionMaxWidth": 840,
+  "phone": {
+    "scale": 1.4,
+    "top": -63,
+    "fadeBottom": [
+      900,
+      950
+    ]
+  },
+  "scenes": [
+    {
+      "phone": {
+        "scale": 0.82,
+        "top": 130,
+        "fadeBottom": [
+          1700,
+          1701
+        ]
+      },
+      "segments": [
+        {
+          "kind": "ramp",
+          "from": 0.6,
+          "to": 3.9
+        }
+      ],
+      "sourceCard": {
+        "atFrame": 12,
+        "lines": [],
+        "highlight": {
+          "x": 300,
+          "y": 776,
+          "w": 480,
+          "h": 290
+        }
+      }
+    },
+    {
+      "phone": {
+        "scale": 1.5,
+        "top": 200,
+        "fadeBottom": [
+          690,
+          810
+        ]
+      },
+      "segments": [
+        {
+          "kind": "fixed",
+          "from": 3.85,
+          "to": 4.5,
+          "rate": 1.0
+        },
+        {
+          "kind": "ramp",
+          "from": 6.45,
+          "to": 12.45
+        }
+      ]
+    },
+    {
+      "phone": {
+        "scale": 0.82,
+        "top": 130,
+        "fadeBottom": [
+          1700,
+          1701
+        ]
+      },
+      "segments": [
+        {
+          "kind": "fixed",
+          "from": 13.95,
+          "to": 18.2,
+          "rate": 1.0
+        }
+      ],
+      "sourceCard": {
+        "atFrame": 12,
+        "lines": [],
+        "highlight": {
+          "x": 300,
+          "y": 776,
+          "w": 480,
+          "h": 290
+        }
+      },
+      "holdAfterSec": 1.4
+    }
+  ]
+}

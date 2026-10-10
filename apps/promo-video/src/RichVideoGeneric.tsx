@@ -257,7 +257,7 @@ function MiddleScene({ scene, spec, manifest }: { scene: Scene; spec: MiddleScen
       );
     }
   });
-  if (spec.sourceCard) {
+  if (spec.sourceCard?.lines.length) {
     badges.push(<SourceCard key="sc" lines={spec.sourceCard.lines} atFrame={spec.sourceCard.atFrame} />);
   }
   const rendered = (
