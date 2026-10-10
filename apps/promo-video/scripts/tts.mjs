@@ -79,6 +79,13 @@ const SENTENCES_BY_ID = {
     "cevabı kitabı ve sayfasıyla verir.",
     "Zikirmatik. Reklamsız, her gün ücretsiz AI hakkın var.",
   ],
+  "06": [
+    "Bugün Cuma, salavatı unutma.",
+    "Zikirmatik her Cuma sabahı hatırlatır.",
+    "Cuma salavatını kaynağıyla birlikte bul,",
+    "Sayaca ekle, kaçta kaldığını hep bilirsin.",
+    "Zikirmatik. Reklamsız, ücretsiz. Hayırlı Cumalar.",
+  ],
 };
 
 const VIDEO_ID = (process.argv[2] || "01").padStart(2, "0");

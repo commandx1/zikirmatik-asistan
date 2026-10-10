@@ -172,6 +172,7 @@ function SourceCard({ lines, atFrame }: { lines: string[]; atFrame: number }) {
           borderRadius: 28,
           padding: "26px 34px",
           boxShadow: "0 16px 50px rgba(0,0,0,0.6), 0 0 30px rgba(212,168,48,0.3)",
+          opacity: fadeIn(frame, atFrame, 8),
         }}
       >
         {lines.map((line, i) => {

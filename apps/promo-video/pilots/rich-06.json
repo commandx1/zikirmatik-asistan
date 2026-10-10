@@ -1,0 +1,41 @@
+{
+  "recordingSrc": "recordings/cuma-06-cfr.mp4",
+  "maskTopPx": 100,
+  "maskBottomPx": 150,
+  "captionBottom": 400,
+  "captionMaxWidth": 840,
+  "phone": { "scale": 1.4, "top": -63, "fadeBottom": [900, 950] },
+  "scenes": [
+    {
+      "phone": { "scale": 1.5, "top": 80, "fadeBottom": [382, 400] },
+      "segments": [{ "kind": "ramp", "from": 0.2, "to": 3.06 }],
+      "maskRects": [
+        { "x": 0, "y": 90, "w": 1080, "h": 70 },
+        { "x": 0, "y": 570, "w": 1080, "h": 260 }
+      ]
+    },
+    {
+      "phone": { "scale": 1.4, "top": -1, "fadeBottom": [925, 985] },
+      "segments": [
+        { "kind": "ramp", "from": 10.0, "to": 22.7 },
+        { "kind": "fixed", "from": 22.7, "to": 24.0, "rate": 1.0 }
+      ],
+      "sourceCard": {
+        "atFrame": 56,
+        "highlight": { "x": 93, "y": 1126, "w": 894, "h": 84 },
+        "lines": ["Ebû Dâvûd, Salât, 207"]
+      },
+      "holdAfterSec": 0.3
+    },
+    {
+      "phone": { "scale": 1.4, "top": -63, "fadeBottom": [900, 950] },
+      "segments": [
+        { "kind": "fixed", "from": 29.5, "to": 30.2, "rate": 1.0 },
+        { "kind": "ramp", "from": 32.1, "to": 36.1 },
+        { "kind": "fixed", "from": 36.1, "to": 37.2, "rate": 1.0 }
+      ],
+      "maskRects": [{ "x": 150, "y": 190, "w": 780, "h": 85 }],
+      "holdAfterSec": 0.7
+    }
+  ]
+}
