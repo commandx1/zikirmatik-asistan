@@ -93,6 +93,13 @@ const SENTENCES_BY_ID = {
     "çıkınca bugünkü sayın da güncel.",
     "Zikirmatik. Reklamsız, ücretsiz.",
   ],
+  "08": [
+    "Esmaül Hüsna'yı her gün oku.",
+    "Zikirmatik her sabah üç isim önerir.",
+    "Birine dokun, anlamıyla say,",
+    "doksan dokuz ismin hepsi de elinin altında.",
+    "Zikirmatik. Reklamsız, ücretsiz.",
+  ],
 };
 
 const VIDEO_ID = (process.argv[2] || "01").padStart(2, "0");

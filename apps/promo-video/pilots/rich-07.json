@@ -15,10 +15,7 @@
       "phone": {
         "scale": 0.82,
         "top": 130,
-        "fadeBottom": [
-          1700,
-          1701
-        ]
+        "fadeBottom": null
       },
       "segments": [
         {
@@ -65,10 +62,7 @@
       "phone": {
         "scale": 0.82,
         "top": 130,
-        "fadeBottom": [
-          1700,
-          1701
-        ]
+        "fadeBottom": null
       },
       "segments": [
         {

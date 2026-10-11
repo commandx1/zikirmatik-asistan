@@ -1,0 +1,68 @@
+{
+  "recordingSrc": "recordings/esma-08-cfr.mp4",
+  "captionBottom": 400,
+  "captionMaxWidth": 840,
+  "phone": {
+    "scale": 1.0,
+    "top": 0,
+    "fadeBottom": null
+  },
+  "scenes": [
+    {
+      "phone": {
+        "scale": 1.3,
+        "top": -580,
+        "fadeBottom": null
+      },
+      "segments": [
+        {
+          "kind": "fixed",
+          "from": 1.9,
+          "to": 5.2,
+          "rate": 1.0
+        }
+      ]
+    },
+    {
+      "phone": {
+        "scale": 1.3,
+        "top": -275,
+        "fadeBottom": null
+      },
+      "segments": [
+        {
+          "kind": "fixed",
+          "from": 6.3,
+          "to": 6.8,
+          "rate": 1.0
+        },
+        {
+          "kind": "ramp",
+          "from": 8.3,
+          "to": 12.7
+        }
+      ]
+    },
+    {
+      "phone": {
+        "scale": 1.3,
+        "top": -250,
+        "fadeBottom": null
+      },
+      "segments": [
+        {
+          "kind": "ramp",
+          "from": 14.2,
+          "to": 18.8
+        },
+        {
+          "kind": "fixed",
+          "from": 18.8,
+          "to": 19.9,
+          "rate": 1.0
+        }
+      ],
+      "holdAfterSec": 1.2
+    }
+  ]
+}

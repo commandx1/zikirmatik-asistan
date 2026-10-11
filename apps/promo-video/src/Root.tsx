@@ -16,7 +16,9 @@ import rich06Config from "../pilots/rich-06.json";
 import { RichVideoCover05 } from "./RichVideoCover05";
 import { RichVideoCover06 } from "./RichVideoCover06";
 import { RichVideoCover07 } from "./RichVideoCover07";
+import { RichVideoCover08 } from "./RichVideoCover08";
 import rich07Config from "../pilots/rich-07.json";
+import rich08Config from "../pilots/rich-08.json";
 import { RichVideoCover04 } from "./RichVideoCover04";
 import vo02 from "../public/audio/vo-02.json";
 import vo03 from "../public/audio/vo-03.json";
@@ -24,6 +26,7 @@ import vo04 from "../public/audio/vo-04.json";
 import vo05 from "../public/audio/vo-05.json";
 import vo06 from "../public/audio/vo-06.json";
 import vo07 from "../public/audio/vo-07.json";
+import vo08 from "../public/audio/vo-08.json";
 
 const richVideo02Manifest = { ...rich02Config, voManifest: vo02 } as unknown as RichVideoManifest;
 const richVideo03Manifest = { ...rich03Config, voManifest: vo03 } as unknown as RichVideoManifest;
@@ -37,6 +40,8 @@ const richVideo06Manifest = { ...rich06Config, voManifest: vo06 } as unknown as 
 const RichVideo06 = createRichVideo(richVideo06Manifest);
 const richVideo07Manifest = { ...rich07Config, voManifest: vo07 } as unknown as RichVideoManifest;
 const RichVideo07 = createRichVideo(richVideo07Manifest);
+const richVideo08Manifest = { ...rich08Config, voManifest: vo08 } as unknown as RichVideoManifest;
+const RichVideo08 = createRichVideo(richVideo08Manifest);
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -232,6 +237,16 @@ export const RemotionRoot: React.FC = () => {
         height={HEIGHT}
       />
       <Still id="RichVideo-07-cover" component={RichVideoCover07} width={WIDTH} height={HEIGHT} />
+      {/* Video 8 ("Günün Esmaül Hüsnası"): `npx remotion render RichVideo-08 out/video-08-esma-sesli.mp4 --codec=h264` */}
+      <Composition
+        id="RichVideo-08"
+        component={RichVideo08}
+        durationInFrames={richVideoGenericDurationInFrames(richVideo08Manifest, FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      <Still id="RichVideo-08-cover" component={RichVideoCover08} width={WIDTH} height={HEIGHT} />
     </>
   );
 };

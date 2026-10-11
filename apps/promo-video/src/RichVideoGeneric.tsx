@@ -48,7 +48,8 @@ export interface BadgeSpec {
 export interface PhoneSpec {
   scale?: number;
   top?: number;
-  fadeBottom?: [number, number];
+  // null = no fade even if manifest.phone sets one (the mask would clip the frame's shadow).
+  fadeBottom?: [number, number] | null;
 }
 
 export interface MiddleSceneSpec {
@@ -201,7 +202,8 @@ function SourceCard({ lines, atFrame }: { lines: string[]; atFrame: number }) {
 function MiddleScene({ scene, spec, manifest }: { scene: Scene; spec: MiddleSceneSpec; manifest: RichVideoManifest }) {
   const fps = FPS;
   const recordingSrc = spec.recordingSrc ?? manifest.recordingSrc;
-  const phone = { ...manifest.phone, ...spec.phone };
+  const merged = { ...manifest.phone, ...spec.phone };
+  const phone = { ...merged, fadeBottom: merged.fadeBottom ?? undefined };
   const maskColor = manifest.maskColor ?? "#030107";
   const caption = <CaptionPill text={scene.text} bottom={manifest.captionBottom} maxWidth={manifest.captionMaxWidth} />;
 
