@@ -5,7 +5,7 @@
 //   node scripts/kpi-report.mjs --json
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { computeCohorts, isoWeekStart } from './lib/kpi-report.mjs';
+import { computeCohorts, computeSourceRetention, isoWeekStart } from './lib/kpi-report.mjs';
 
 function loadEnvFiles(paths) {
   for (const path of paths) {
@@ -107,6 +107,13 @@ async function main() {
 
     const cohorts = computeCohorts(devices, opensByDevice, now);
 
+    // Edinim kaynağı (install_referrer olayı, yalnız Android; olmayan = unknown)
+    const referrers = await eventsCol
+      .find({ deviceId: { $in: deviceIds }, name: 'install_referrer' }, { projection: { deviceId: 1, props: 1 } })
+      .toArray();
+    const referrerByDevice = new Map(referrers.map((r) => [r.deviceId, r.props]));
+    const sources = computeSourceRetention(devices, opensByDevice, referrerByDevice, now);
+
     // 2) Funnel (aynı pencere: bu döneme install olan cihazlar)
     const funnelEventNames = ['dhikr_completed', 'paywall_viewed', 'purchase_completed'];
     const funnelAgg = await eventsCol
@@ -142,7 +149,7 @@ async function main() {
       funnel.paywall_viewed > 0 ? (funnel.purchase_completed / funnel.paywall_viewed) * 100 : null;
 
     if (wantsJson) {
-      console.log(JSON.stringify({ weeks, since: since.toISOString(), cohorts, funnel, summary: { avgD7, paywallToPurchase } }, null, 2));
+      console.log(JSON.stringify({ weeks, since: since.toISOString(), cohorts, sources, funnel, summary: { avgD7, paywallToPurchase } }, null, 2));
       return;
     }
 
@@ -159,6 +166,13 @@ async function main() {
       { h: 'D1', w: 8, f: (r) => padL(pct(r.d1), 7) },
       { h: 'D7', w: 8, f: (r) => padL(pct(r.d7), 7) },
       { h: 'D30', w: 8, f: (r) => padL(pct(r.d30), 7) },
+    ]);
+
+    printTable('Edinim kaynağı (D1/D7 retention)', sources, [
+      { h: 'kaynak', w: 16, f: (r) => r.source },
+      { h: 'install', w: 8, f: (r) => padL(r.installs, 7) },
+      { h: 'D1', w: 8, f: (r) => padL(pct(r.d1), 7) },
+      { h: 'D7', w: 8, f: (r) => padL(pct(r.d7), 7) },
     ]);
 
     const funnelRows = [

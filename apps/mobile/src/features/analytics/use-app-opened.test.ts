@@ -20,6 +20,8 @@ vi.mock("../../lib/analytics", () => ({
   trackEvent: (...args: unknown[]) => trackEvent(...args)
 }));
 
+vi.mock("./install-referrer", () => ({ captureInstallReferrer: vi.fn() }));
+
 const { attachAppOpenedListener } = await import("./use-app-opened");
 
 describe("attachAppOpenedListener", () => {

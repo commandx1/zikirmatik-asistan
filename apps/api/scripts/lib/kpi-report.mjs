@@ -66,3 +66,46 @@ export function computeCohorts(devices, openEventsByDevice, now) {
       retainedD7: c.retained[7],
     }));
 }
+
+/**
+ * install_referrer olay props'undan edinim kaynağı: hasGclid -> 'google-ads',
+ * yoksa source ('google-play' hariç), yoksa 'organic'; olay yoksa 'unknown'.
+ * @param {{source?:string, hasGclid?:boolean}|undefined|null} props
+ */
+export function classifySource(props) {
+  if (!props) return 'unknown';
+  if (props.hasGclid) return 'google-ads';
+  if (props.source && props.source !== 'google-play') return props.source;
+  return 'organic';
+}
+
+/**
+ * Cihazları edinim kaynağına göre gruplar; kaynak başına D1/D7 retention
+ * (computeCohorts ile aynı kural: lastSeenAt VEYA app_opened birleşimi).
+ * @param {Map<string, {source?:string, hasGclid?:boolean}>} referrerByDevice - deviceId -> install_referrer props
+ * @returns {Array<{source:string, installs:number, d1:number|null, d7:number|null}>}
+ */
+export function computeSourceRetention(devices, openEventsByDevice, referrerByDevice, now) {
+  const groups = new Map();
+  for (const dev of devices) {
+    const source = classifySource(referrerByDevice.get(dev.deviceId));
+    if (!groups.has(source)) groups.set(source, { source, installs: 0, retained: { 1: 0, 7: 0 }, measurable: { 1: 0, 7: 0 } });
+    const g = groups.get(source);
+    g.installs += 1;
+    const opens = openEventsByDevice.get(dev.deviceId) ?? [];
+    for (const n of [1, 7]) {
+      const threshold = new Date(dev.createdAt.getTime() + n * DAY_MS);
+      if (threshold > now) continue;
+      g.measurable[n] += 1;
+      if ((dev.lastSeenAt && dev.lastSeenAt >= threshold) || opens.some((t) => t >= threshold)) g.retained[n] += 1;
+    }
+  }
+  return [...groups.values()]
+    .sort((a, b) => b.installs - a.installs)
+    .map((g) => ({
+      source: g.source,
+      installs: g.installs,
+      d1: g.measurable[1] ? (g.retained[1] / g.measurable[1]) * 100 : null,
+      d7: g.measurable[7] ? (g.retained[7] / g.measurable[7]) * 100 : null,
+    }));
+}

@@ -8,6 +8,7 @@ export const PUSH_DEVICE_ID_KEY = "push-device-id-v1";
 export const PUSH_PERMISSION_PROMPTED_KEY = "push-permission-prompted-v1";
 export const REMINDER_OFFER_SHOWN_KEY = "reminder-offer-shown-v1";
 export const ANALYTICS_QUEUE_KEY = "analytics-queue-v1";
+export const INSTALL_REFERRER_SENT_KEY = "install-referrer-sent-v1";
 
 export const dailyEsmaWelcomeKey = (dateKey: string) => `daily-esma-welcome:${dateKey}`;
 export const aiGuideLastKey = (userId: string) => `ai-guide:last:${userId}`;

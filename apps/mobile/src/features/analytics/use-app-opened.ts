@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { AppState, type AppStateStatus } from "react-native";
 import { trackEvent } from "../../lib/analytics";
+import { captureInstallReferrer } from "./install-referrer";
 
 // Emits app_opened once for the cold start that mounts the root layout, and
 // again on every background/inactive → active transition (a real re-open,
@@ -9,6 +10,7 @@ import { trackEvent } from "../../lib/analytics";
 // be unit tested without a React renderer.
 export function attachAppOpenedListener(): () => void {
   void trackEvent("app_opened");
+  void captureInstallReferrer(); // yalnız soğuk açılış, AppState dalında değil
 
   const subscription = AppState.addEventListener("change", (nextState: AppStateStatus) => {
     if (nextState === "active") {

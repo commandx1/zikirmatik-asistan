@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeCohorts, isoWeekKey } from './kpi-report.mjs';
+import { classifySource, computeCohorts, computeSourceRetention, isoWeekKey } from './kpi-report.mjs';
 
 test('isoWeekKey aynı ISO haftasındaki günleri aynı Pazartesi\'ye eşler', () => {
   assert.equal(isoWeekKey(new Date('2026-09-21T10:00:00Z')), '2026-09-21'); // Pazartesi
@@ -50,4 +50,32 @@ test('computeCohorts: henüz ölçülemeyen Dn için null döner', () => {
   assert.equal(cohorts[0].d1, 0); // D1 ölçülebilir (createdAt+1g <= now) ama açılış yok
   assert.equal(cohorts[0].d7, null); // henüz 7 gün geçmemiş
   assert.equal(cohorts[0].d30, null);
+});
+
+test('classifySource: gclid -> google-ads, google-play -> organic, olay yok -> unknown', () => {
+  assert.equal(classifySource({ hasGclid: true, source: 'google-play' }), 'google-ads');
+  assert.equal(classifySource({ hasGclid: false, source: 'google-play' }), 'organic');
+  assert.equal(classifySource({ hasGclid: false }), 'organic');
+  assert.equal(classifySource({ hasGclid: false, source: 'instagram' }), 'instagram');
+  assert.equal(classifySource(undefined), 'unknown');
+});
+
+test('computeSourceRetention: kaynak başına D1/D7', () => {
+  const now = new Date('2026-09-25T00:00:00Z');
+  const created = new Date('2026-09-01T00:00:00Z');
+  const devices = [
+    { deviceId: 'a', platform: 'android', createdAt: created },
+    { deviceId: 'b', platform: 'android', createdAt: created },
+    { deviceId: 'c', platform: 'ios', createdAt: created },
+  ];
+  const opens = new Map([['a', [new Date('2026-09-10T00:00:00Z')]]]);
+  const refs = new Map([
+    ['a', { hasGclid: true }],
+    ['b', { hasGclid: false, source: 'google-play' }],
+  ]);
+  const rows = computeSourceRetention(devices, opens, refs, now);
+  const by = Object.fromEntries(rows.map((r) => [r.source, r]));
+  assert.equal(by['google-ads'].d7, 100);
+  assert.equal(by.organic.d7, 0);
+  assert.equal(by.unknown.installs, 1);
 });
