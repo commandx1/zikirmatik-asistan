@@ -100,6 +100,13 @@ const SENTENCES_BY_ID = {
     "doksan dokuz ismin hepsi de elinin altında.",
     "Zikirmatik. Reklamsız, ücretsiz.",
   ],
+  "09": [
+    "Otuz günlük vird programını yapay zekâ hazırlasın.",
+    "Niyetini yaz.",
+    "Süreyi ve vakitleri seç; sana özel virdin hazırlansın.",
+    "Her gün ne okuyacağın belli.",
+    "Zikirmatik, Google Play'de.",
+  ],
 };
 
 const VIDEO_ID = (process.argv[2] || "01").padStart(2, "0");

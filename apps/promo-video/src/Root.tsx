@@ -17,8 +17,10 @@ import { RichVideoCover05 } from "./RichVideoCover05";
 import { RichVideoCover06 } from "./RichVideoCover06";
 import { RichVideoCover07 } from "./RichVideoCover07";
 import { RichVideoCover08 } from "./RichVideoCover08";
+import { RichVideoCover09 } from "./RichVideoCover09";
 import rich07Config from "../pilots/rich-07.json";
 import rich08Config from "../pilots/rich-08.json";
+import rich09Config from "../pilots/rich-09.json";
 import { RichVideoCover04 } from "./RichVideoCover04";
 import vo02 from "../public/audio/vo-02.json";
 import vo03 from "../public/audio/vo-03.json";
@@ -27,6 +29,7 @@ import vo05 from "../public/audio/vo-05.json";
 import vo06 from "../public/audio/vo-06.json";
 import vo07 from "../public/audio/vo-07.json";
 import vo08 from "../public/audio/vo-08.json";
+import vo09 from "../public/audio/vo-09.json";
 
 const richVideo02Manifest = { ...rich02Config, voManifest: vo02 } as unknown as RichVideoManifest;
 const richVideo03Manifest = { ...rich03Config, voManifest: vo03 } as unknown as RichVideoManifest;
@@ -42,6 +45,8 @@ const richVideo07Manifest = { ...rich07Config, voManifest: vo07 } as unknown as 
 const RichVideo07 = createRichVideo(richVideo07Manifest);
 const richVideo08Manifest = { ...rich08Config, voManifest: vo08 } as unknown as RichVideoManifest;
 const RichVideo08 = createRichVideo(richVideo08Manifest);
+const richVideo09Manifest = { ...rich09Config, voManifest: vo09 } as unknown as RichVideoManifest;
+const RichVideo09 = createRichVideo(richVideo09Manifest);
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -247,6 +252,16 @@ export const RemotionRoot: React.FC = () => {
         height={HEIGHT}
       />
       <Still id="RichVideo-08-cover" component={RichVideoCover08} width={WIDTH} height={HEIGHT} />
+      {/* Video 9 ("AI ile Vird Programı"): `npx remotion render RichVideo-09 out/video-09-ai-vird-sesli.mp4 --codec=h264` */}
+      <Composition
+        id="RichVideo-09"
+        component={RichVideo09}
+        durationInFrames={richVideoGenericDurationInFrames(richVideo09Manifest, FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      <Still id="RichVideo-09-cover" component={RichVideoCover09} width={WIDTH} height={HEIGHT} />
     </>
   );
 };

@@ -1,0 +1,85 @@
+{
+  "recordingSrc": "recordings/ai-vird-09-cfr.mp4",
+  "captionBottom": 400,
+  "captionMaxWidth": 840,
+  "phone": {
+    "scale": 1.0,
+    "top": 0,
+    "fadeBottom": null
+  },
+  "scenes": [
+    {
+      "phone": {
+        "scale": 1.3,
+        "top": -150,
+        "fadeBottom": null
+      },
+      "segments": [
+        {
+          "kind": "ramp",
+          "from": 2.9,
+          "to": 6.9
+        }
+      ],
+      "holdAfterSec": 1.5,
+      "maskRects": [
+        {
+          "x": 0,
+          "y": 2125,
+          "w": 1080,
+          "h": 215
+        }
+      ]
+    },
+    {
+      "phone": {
+        "scale": 1.3,
+        "top": -150,
+        "fadeBottom": null
+      },
+      "segments": [
+        {
+          "kind": "ramp",
+          "from": 8.5,
+          "to": 16.2,
+          "share": 4
+        },
+        {
+          "kind": "fixed",
+          "from": 16.2,
+          "to": 18.0,
+          "rate": 1.2
+        },
+        {
+          "kind": "ramp",
+          "from": 18.0,
+          "to": 47.2,
+          "share": 3
+        }
+      ],
+      "holdAfterSec": 1.0
+    },
+    {
+      "phone": {
+        "scale": 1.15,
+        "top": -120,
+        "fadeBottom": null
+      },
+      "segments": [
+        {
+          "kind": "fixed",
+          "from": 47.3,
+          "to": 48.5,
+          "rate": 1.0
+        },
+        {
+          "kind": "ramp",
+          "from": 48.5,
+          "to": 61.2
+        }
+      ],
+      "holdAfterSec": 1.5
+    }
+  ],
+  "maskColor": "#0a1222"
+}
