@@ -87,6 +87,14 @@
       "file": "sihir-kahinlik-hukmu.ocr.pdf",
       "index_file": null,
       "version": 1
+    },
+    {
+      "source_id": "diyanet-dualar",
+      "title": "Dualar (Diyanet İşleri Başkanlığı Yayınları)",
+      "type": "dua",
+      "file": "Dualar.pdf",
+      "index_file": null,
+      "version": 1
     }
   ]
 }
