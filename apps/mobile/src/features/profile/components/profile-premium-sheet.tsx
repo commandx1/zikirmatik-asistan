@@ -255,10 +255,6 @@ export function ProfilePremiumSheet({
             </View>
           ) : null}
 
-          <Text className='mb-2 text-center text-xs text-text-muted-70' style={regularTextStyle}>
-            {t('profile:premiumSheet.dailyFreeCreditNote')}
-          </Text>
-
           <Pressable onPress={onClose} testID={TEST_IDS.premium.close} className='py-2'>
             <Text className='text-center text-sm font-medium text-text-muted' style={regularTextStyle}>
               {t('profile:premiumSheet.maybeLater')}

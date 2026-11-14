@@ -13,7 +13,7 @@ export function resolveCreditsFromQuota(quota: AiDailyQuota): CreditState | unde
   if (quota.isPremium) {
     return undefined;
   }
-  return { balance: Math.max(0, (quota.limit ?? 1) - quota.used), isPremium: false };
+  return { balance: Math.max(0, (quota.limit ?? 0) - quota.used), isPremium: false };
 }
 
 /** M-07: yalnız gerçek bakiye — premium dahil. Rehber/Sohbet requiredCredits=1, Vird programı 3. */

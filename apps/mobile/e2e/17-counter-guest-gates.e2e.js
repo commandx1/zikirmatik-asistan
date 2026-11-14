@@ -257,7 +257,11 @@ describe('17c misafir kapıları', () => {
     await existsText(/^(Aylık|Monthly)$/, 10000);
     await existsText(/^(Yıllık|Yearly)$/, 10000);
     await expect(element(by.text(/^\d+ (Kredi|Credits)$/))).not.toExist();
+    // Misafirde kredi paketi yok → CTA "Belki daha sonra"nın hemen üstünde; kapat görünür olunca
+    // CTA hâlâ yüzen sekme çubuğunun altında kalabilir (Espresso örtmeyi görmez) → sona kaydır.
+    // scrollTo('bottom') bu ScrollView'da döngüye giriyor; sabit kaydır, kenara çarpma hatası zararsız.
     await scrollTo('e2e-premium-close', 'e2e-premium-scroll');
+    await element(by.id('e2e-premium-scroll')).scroll(300, 'down', NaN, 0.5).catch(() => {});
     await element(by.text(/^(Hemen Başla|Get Started)$/)).atIndex(0).tap();
     await promptAndCancel();
     await device.pressBack();
@@ -301,11 +305,11 @@ describe('17d vird (misafir)', () => {
     await visible('e2e-vird-hub', 20000);
   };
 
-  it('VRD-02 misafir hub ipucu; VHT-01 ücretsiz hatırlatma kartı yalnız "Premium ile aç"; VAI-01 AI ile oluştur → üye ol modalı', async () => {
+  it('VRD-02 misafir hub ipucu; VHT-01 hatırlatma kartı açık (ücretsiz, misafir dahil); VAI-01 AI ile oluştur → üye ol modalı', async () => {
     await openHub();
     await existsText(/^(Misafir modundasın|You're in guest mode).*$/, 10000);
-    await expect(element(by.id('e2e-vird-reminder-settings'))).not.toExist();
-    await existsText(/^(Premium ile aç|Unlock with Premium)$/, 10000);
+    await exists('e2e-vird-reminder-settings', 10000);
+    await expect(element(by.text(/^(Premium ile aç|Unlock with Premium)$/))).not.toExist();
     await element(by.text(/^(AI ile oluştur|Create with AI)$/)).atIndex(0).tap();
     await exists('e2e-auth-prompt-confirm', 15000);
     await element(by.id('e2e-auth-prompt-cancel')).tap();

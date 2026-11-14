@@ -172,7 +172,7 @@ idempotency'sinden AYRI, ikinci bir katmandır (bkz. `docs/ai-mimari.md`
 | Premium planda en fazla aktif program | 10 | `PREMIUM_MAX_ACTIVE_PROGRAMS` |
 | Kullanıcı başına saklanan arşiv tavanı | 20 | `VIRD_ARCHIVE_MAX` (aşılınca en eski silinir) |
 | Manuel/şablon taslak TTL'i | 30 gün | `VIRD_DRAFT_EXPIRES_AFTER_DAYS` |
-| Hatırlatıcı / şablon / AI ile oluşturma | premium gerektirir | `VIRD_PREMIUM_REQUIRED` |
+| Hatırlatıcı / şablon / AI ile oluşturma | premium gerektirir | `VIRD_PREMIUM_REQUIRED` **[2026-11-14: GEÇERSİZ — vird hatırlatmaları artık herkese ücretsiz.]** |
 
 ---
 

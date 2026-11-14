@@ -139,7 +139,7 @@ Merhaba, uygulamanın geliştiricisiyim. Zikirmatik, reklamsız bir zikir sayac�
 - 541 zikirlik ücretsiz kütüphane ve temel sayaç
 - Vird: zikrini günün bir vaktine bağlayan rutin, seri takibi
 - Zikir Halkası: aile/arkadaşla tek ortak hedefe birlikte sayım (ücretsiz halka 5 kişiye kadar)
-- Kaynak ve sayfa referanslı AI rehber; fetva vermez (Premium özellik, günlük 1 ücretsiz kredi var)
+- Kaynak ve sayfa referanslı AI rehber; fetva vermez (Premium özellik, ücretsiz hesaba tek seferlik 3 kredi karşılama bonusu var)
 
 Premium isteğe bağlıdır; güncel fiyat Google Play'de. Ekran görüntüleri aşağıda.
 Play: <TR Play linki + utm_source=donanimhaber veya technopat>

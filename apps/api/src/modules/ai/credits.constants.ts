@@ -1,5 +1,8 @@
 export const AI_CREDIT_REASONS = {
+  // Artık ledger'a yazılmaz (2026-11-14: ücretsiz günlük kredi kaldırıldı);
+  // eski satırlar ve cüzdanın ücretsiz döngü etiketi (grantReason) için durur.
   FREE_DAILY_GRANT: 'FREE_DAILY_GRANT',
+  FREE_SIGNUP_BONUS: 'FREE_SIGNUP_BONUS',
   PREMIUM_MONTHLY_GRANT: 'PREMIUM_MONTHLY_GRANT',
   RECOMMENDATION_DEBIT: 'RECOMMENDATION_DEBIT',
   CHAT_MESSAGE_DEBIT: 'CHAT_MESSAGE_DEBIT',
@@ -11,7 +14,6 @@ export const AI_CREDIT_REASONS = {
 export type AiCreditReason =
   (typeof AI_CREDIT_REASONS)[keyof typeof AI_CREDIT_REASONS];
 
-export const FREE_DAILY_CREDIT_AMOUNT = 1;
 export const PREMIUM_MONTHLY_CREDIT_AMOUNT = 50;
 
 // AI Vird Programı üretimi (POST /v1/ai/vird-programs) tek seferde bu kadar
@@ -20,8 +22,8 @@ export const PREMIUM_MONTHLY_CREDIT_AMOUNT = 50;
 // debitCreditForFlow amount parametresi).
 export const VIRD_PROGRAM_CREDIT_COST = 3;
 
-// Kullanıcının hiç FREE_DAILY_GRANT almadığı ilk gün için tek seferlik
-// karşılama bonusu; sonraki günler FREE_DAILY_CREDIT_AMOUNT'a döner.
+// Yeni ücretsiz kullanıcıya bir kez verilen karşılama bonusu; topup kovasına
+// yazılır (hiç sönmez). Ücretsiz kullanıcıya bunun dışında kredi verilmez.
 export const FREE_SIGNUP_BONUS_CREDIT_AMOUNT = 3;
 
 export const AI_CREDIT_INSUFFICIENT_CODE = 'AI_CREDIT_INSUFFICIENT';

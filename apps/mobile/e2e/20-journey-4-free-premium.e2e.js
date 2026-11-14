@@ -72,11 +72,11 @@ describe('20 yolculuk 4: ücretsiz -> premium -> premium biter', () => {
     await apiPost(`/v1/vird/programs/${programA._id}/activate`, me.accessToken);
   });
 
-  it('ücretsiz: ikinci aktif program sınırı "Premium\'a geç" ile paywall açar; hatırlatma ve istatistik kilitli', async () => {
+  it('ücretsiz: ikinci aktif program sınırı "Premium\'a geç" ile paywall açar; hatırlatma kartı açık, istatistik kilitli', async () => {
     await reopen();
     await openHub();
     await exists('e2e-vird-program-toggle', 20000);
-    await expect(element(by.id('e2e-vird-reminder-settings'))).not.toExist();
+    await exists('e2e-vird-reminder-settings', 10000);
     await element(by.id('e2e-vird-program-toggle')).atIndex(0).tap();
     await visible('e2e-vird-swap-pause-and-start', 10000);
     await element(by.text(/^(Premium'a geç|Go premium)$/)).atIndex(0).tap();
@@ -118,7 +118,7 @@ describe('20 yolculuk 4: ücretsiz -> premium -> premium biter', () => {
     assert.equal(userTheme(), 'gece-lacivert');
   });
 
-  it('premium biter: programlar korunur, tema varsayılana döner, hatırlatma kartı kilitlenir', async () => {
+  it('premium biter: programlar korunur, tema varsayılana döner, hatırlatma kartı açık kalır', async () => {
     mongo(
       `db.users.updateMany({}, {$set: {isPremium: false}}); db.subscriptions.updateMany({}, {$set: {status: 'expired', endDate: new Date(Date.now() - 86400000)}})`,
     );
@@ -130,8 +130,8 @@ describe('20 yolculuk 4: ücretsiz -> premium -> premium biter', () => {
 
     await openHub();
     await exists('e2e-vird-program-toggle', 20000);
-    await expect(element(by.id('e2e-vird-reminder-settings'))).not.toExist();
-    await existsText(/^(Premium ile aç|Unlock with Premium)$/, 10000);
+    await exists('e2e-vird-reminder-settings', 10000);
+    await expect(element(by.text(/^(Premium ile aç|Unlock with Premium)$/))).not.toExist();
     // A-07: mevcut programlar korunur (otomatik duraklatılmaz).
     assert.equal((await programs()).filter((p) => p.status === 'active').length, 2);
 

@@ -86,7 +86,7 @@
         "description": "In a session you move on to the next dhikr yourself, and the app keeps the count."
       }
     ],
-    "note": "The free version includes 1 active program and up to 3 different dhikr in a manual program; Premium unlocks 10 active programs, unlimited dhikr, templates, prayer-time reminders and AI program creation."
+    "note": "The free version includes 1 active program and up to 3 different dhikr in a manual program; Premium unlocks 10 active programs, unlimited dhikr, premium templates and AI program creation; prayer-time reminders are free for everyone."
   },
   "aiGuide": {
     "eyebrow": "AI Guide",
@@ -106,7 +106,7 @@
         "description": "It does not issue religious rulings; it points you to the relevant source."
       }
     ],
-    "note": "In the free version 1 credit renews every day (with a 3-credit welcome bonus on the first day); Premium grants 50 credits a month, and unused credits do not roll over to the next month."
+    "note": "Free accounts receive a one-time welcome bonus of 3 credits. Premium includes 50 credits that renew every month (unused credits don't carry over). Purchased credit packs never expire."
   },
   "howItWorks": {
     "title": "How Zikirmatik works",
@@ -172,8 +172,8 @@
         ],
         [
           "Daily Vird",
-          "1 active program, 3 dhikr",
-          "10 programs, unlimited dhikr, templates, reminders, AI program creation"
+          "1 active program, 3 dhikr, reminders",
+          "10 programs, unlimited dhikr, premium templates, AI program creation"
         ],
         [
           "Dhikr Circle",
@@ -197,7 +197,7 @@
         ],
         [
           "AI Guide credits",
-          "1 per day (+3 on day 1)",
+          "3 credits (one-time)",
           "50 per month (no rollover)"
         ],
         [
@@ -244,7 +244,7 @@
       },
       {
         "question": "What is AI Guide?",
-        "answer": "AI Guide suggests a dhikr based on your intention and answers your questions with source and page references. It does not issue religious rulings (fatwas); it points you to the relevant source. In the free version 1 credit renews every day; Premium grants 50 credits a month."
+        "answer": "AI Guide suggests a dhikr based on your intention and answers your questions with source and page references. It does not issue religious rulings (fatwas); it points you to the relevant source. Free accounts receive a one-time welcome bonus of 3 credits. Premium includes 50 credits that renew every month (unused credits don't carry over). Purchased credit packs never expire."
       },
       {
         "question": "Do I need an account?",
@@ -297,7 +297,7 @@
     "getOnPlay": "Get it on Google Play"
   },
   "legal": {
-    "lastUpdated": "Last updated: September 28, 2026",
+    "lastUpdated": "Last updated: November 14, 2026",
     "backHome": "Back to home"
   },
   "privacy": {
@@ -364,7 +364,7 @@
       },
       {
         "heading": "4. Premium Subscription, Credits and Purchases",
-        "body": "Premium is purchased through Google Play as a monthly or annual subscription, renews automatically, and can be cancelled at any time from the \"Subscriptions\" section of the Google Play app. For the AI Guide feature, the App also provides free users with 1 credit per day (with a welcome bonus of 3 credits on the first day) and Premium subscribers with 50 credits per month; in addition, one-time packs of 10, 30 or 75 credits can optionally be purchased. All purchases are processed through Google Play and are subject to Google Play's payment terms and policies. For details on requesting a refund, see our Refund Policy."
+        "body": "Premium is purchased through Google Play as a monthly or annual subscription, renews automatically, and can be cancelled at any time from the \"Subscriptions\" section of the Google Play app. For the AI Guide feature, the App also provides free users with a one-time welcome bonus of 3 credits and Premium subscribers with 50 credits that renew every month (unused credits do not carry over); in addition, one-time packs of 10, 30 or 75 credits can optionally be purchased. All purchases are processed through Google Play and are subject to Google Play's payment terms and policies. For details on requesting a refund, see our Refund Policy."
       },
       {
         "heading": "5. Acceptable Use",

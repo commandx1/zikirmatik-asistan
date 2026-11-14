@@ -160,7 +160,7 @@ describe('Vird Programı (e2e)', () => {
       expect(errCode(res)).toBe(VIRD_ERROR_CODE.FREE_LIMIT_DHIKRS);
     });
 
-    it('reminders.enabled:true → 403 VIRD_PREMIUM_REQUIRED', async () => {
+    it('reminders.enabled:true → 201, ücretsiz planda hatırlatmalar kaydedilir', async () => {
       const res = await request(t.http)
         .post('/v1/vird/programs')
         .set(bearer(user.accessToken))
@@ -177,8 +177,13 @@ describe('Vird Programı (e2e)', () => {
             },
           }),
         )
-        .expect(403);
-      expect(errCode(res)).toBe(VIRD_ERROR_CODE.PREMIUM_REQUIRED);
+        .expect(201);
+      const saved = await t
+        .model<VirdProgramDocument>('VirdProgram')
+        .findById(data<{ _id: string }>(res)._id)
+        .lean();
+      expect(saved?.reminders.enabled).toBe(true);
+      expect(saved?.reminders.slots.morning).toBe(true);
     });
 
     it('ikinci program activate → 403 VIRD_FREE_LIMIT_ACTIVE', async () => {

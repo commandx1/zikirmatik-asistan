@@ -361,7 +361,10 @@ describe('AI (e2e)', () => {
     const userId = me!._id;
     await t
       .model('AiCreditWallet')
-      .updateOne({ userId }, { $set: { grantCredits: 1, balance: 1 } });
+      .updateOne(
+        { userId },
+        { $set: { grantCredits: 1, topupCredits: 0, balance: 1 } },
+      );
 
     const results = await Promise.all([
       recommend('birinci istek'),
@@ -393,6 +396,7 @@ describe('AI (e2e)', () => {
       {
         $set: {
           grantCredits: VIRD_PROGRAM_CREDIT_COST,
+          topupCredits: 0,
           balance: VIRD_PROGRAM_CREDIT_COST,
         },
       },
@@ -515,7 +519,7 @@ describe('AI (e2e)', () => {
     expect(
       await t
         .model('AiCreditLedger')
-        .countDocuments({ userId, reason: 'FREE_DAILY_GRANT' }),
+        .countDocuments({ userId, reason: 'FREE_SIGNUP_BONUS' }),
     ).toBe(1);
   });
 

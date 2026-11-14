@@ -151,7 +151,10 @@ function createService(initialPremium = false) {
         }
         continue;
       }
-      if (value !== condition) return false;
+      // Mongo: { alan: null } eksik alanı da eşler.
+      if (condition === null ? value != null : value !== condition) {
+        return false;
+      }
     }
     return true;
   };
@@ -407,26 +410,45 @@ describe('AiService credits', () => {
     jest.useRealTimers();
   });
 
-  it('grants a 3-credit welcome bonus on the first ever free grant, then 1/day', async () => {
+  it('new free user gets the 3-credit signup bonus once; it persists across days and no daily grant follows', async () => {
     jest.setSystemTime(new Date('2026-07-08T10:00:00.000Z'));
-    const { service, ledger } = createService(false);
+    const { service, ledger, walletModel } = createService(false);
 
-    const first = await service.getCredits(USER_ID);
-    const sameDayAgain = await service.getCredits(USER_ID);
-
-    expect(first.balance).toBe(3);
-    expect(sameDayAgain.balance).toBe(3);
-    expect(
-      ledger.filter((entry) => entry.reason === 'FREE_DAILY_GRANT').length,
-    ).toBe(1);
+    expect((await service.getCredits(USER_ID)).balance).toBe(3);
+    expect((await service.getCredits(USER_ID)).balance).toBe(3);
 
     jest.setSystemTime(new Date('2026-07-09T10:00:00.000Z'));
-    const nextDay = await service.getCredits(USER_ID);
+    expect((await service.getCredits(USER_ID)).balance).toBe(3);
+    jest.setSystemTime(new Date('2026-09-01T10:00:00.000Z'));
+    expect((await service.getCredits(USER_ID)).balance).toBe(3);
 
-    expect(nextDay.balance).toBe(1);
+    const wallet = walletModel
+      .findOne({ userId: new Types.ObjectId(USER_ID) })
+      .exec();
+    expect(wallet?.topupCredits).toBe(3);
+    expect(wallet?.grantCredits).toBe(0);
     expect(
-      ledger.filter((entry) => entry.reason === 'FREE_DAILY_GRANT').length,
-    ).toBe(2);
+      ledger.filter((entry) => entry.reason === 'FREE_SIGNUP_BONUS'),
+    ).toHaveLength(1);
+    expect(
+      ledger.filter((entry) => entry.reason === 'FREE_DAILY_GRANT'),
+    ).toHaveLength(0);
+  });
+
+  it('legacy free wallet: no bonus again, old daily grant expires at the next UTC day, topup kept', async () => {
+    jest.setSystemTime(new Date('2026-07-09T10:00:00.000Z'));
+    const { service, ledger, seedWallet } = createService(false);
+    seedWallet({
+      userId: new Types.ObjectId(USER_ID),
+      balance: 3,
+      grantCredits: 1,
+      topupCredits: 2,
+      grantReason: 'FREE_DAILY_GRANT',
+      grantCycleKey: '2026-07-08',
+    });
+
+    expect((await service.getCredits(USER_ID)).balance).toBe(2);
+    expect(ledger).toHaveLength(0);
   });
 
   it('grants premium credits once per UTC month and adds new grant on next month', async () => {
@@ -521,7 +543,7 @@ describe('AiService credits', () => {
     expect(premium.balance).toBe(50);
 
     // Downgrade (aynı ay): kalan aylık kredi ay sonuna kadar kullanılabilir;
-    // günlük grant (karşılama 3) onu ezmez, max(kalan, günlük).
+    // ücretsiz döngü onu ezmez. Premium başlayan cüzdana karşılama bonusu yok.
     setPremium(false);
     const free = await service.getCredits(USER_ID);
     expect(free.balance).toBe(50);
@@ -610,10 +632,10 @@ describe('AiService credits', () => {
   });
 
   describe('amount parameter (AI Vird Programı, VIRD_PROGRAM_DEBIT)', () => {
-    it('debits amount=3 in one shot from the grant bucket and reports the new balance', async () => {
+    it('debits amount=3 in one shot from the signup bonus and reports the new balance', async () => {
       jest.setSystemTime(new Date('2026-07-08T10:00:00.000Z'));
       const { service, ledger } = createService(false);
-      // Karşılama bonusu: 3 kredi (grantCredits=3).
+      // Karşılama bonusu: 3 kredi (topupCredits=3).
       await service.getCredits(USER_ID);
 
       const result = await (
@@ -637,8 +659,7 @@ describe('AiService credits', () => {
       const { service, seedWallet } = createService(false);
       // grantReason/grantCycleKey bilerek "bugüne" (2026-07-08, UTC dayKey)
       // eşitlenir — aksi halde debitCreditForFlow'un içindeki ensureCreditState
-      // seed'i "eski döngü" sayıp yeni bir FREE_DAILY_GRANT uygulardı ve
-      // bakiyeyi seed'lenen 2'nin üzerine yazardı (bkz. diğer testlerdeki
+      // seed'i "eski döngü" sayıp grant kovasını sıfırlardı (bkz. diğer testlerdeki
       // kasıtlı döngü-değişimi senaryoları).
       seedWallet({
         userId: new Types.ObjectId(USER_ID),
@@ -792,7 +813,7 @@ describe('AiCreditsService ledger invariants (A-08, property)', () => {
     fc.record({ kind: fc.constant('refund' as const) }),
   );
 
-  it('bakiye ≥ 0 ve = grant + topup; toplam kesim ≤ toplam giriş; ay/gün başına tek grant; aynı ay yeniden abonelik bakiyeyi artırmaz', async () => {
+  it('bakiye ≥ 0 ve = grant + topup; toplam kesim ≤ toplam giriş; ay başına tek grant, günlük grant yok, bonus ≤ 1; aynı ay yeniden abonelik bakiyeyi artırmaz', async () => {
     await fc.assert(
       fc.asyncProperty(
         fc.boolean(),
@@ -868,15 +889,16 @@ describe('AiCreditsService ledger invariants (A-08, property)', () => {
                 .reduce((acc, e) => acc + Math.abs(e.delta), 0);
             expect(sum((d) => d < 0)).toBeLessThanOrEqual(sum((d) => d > 0));
 
-            for (const [reason, key] of [
-              ['PREMIUM_MONTHLY_GRANT', 'monthKey'],
-              ['FREE_DAILY_GRANT', 'dayKey'],
-            ] as const) {
-              const keys = ledger
-                .filter((e) => e.reason === reason)
-                .map((e) => e[key]);
-              expect(new Set(keys).size).toBe(keys.length);
-            }
+            const monthKeys = ledger
+              .filter((e) => e.reason === 'PREMIUM_MONTHLY_GRANT')
+              .map((e) => e.monthKey);
+            expect(new Set(monthKeys).size).toBe(monthKeys.length);
+            expect(
+              ledger.filter((e) => e.reason === 'FREE_DAILY_GRANT'),
+            ).toHaveLength(0);
+            expect(
+              ledger.filter((e) => e.reason === 'FREE_SIGNUP_BONUS').length,
+            ).toBeLessThanOrEqual(1);
 
             if (resubscribeSameMonth) {
               expect(after.balance).toBeLessThanOrEqual(before.balance);
@@ -889,7 +911,7 @@ describe('AiCreditsService ledger invariants (A-08, property)', () => {
     );
   });
 
-  it("A-08: ay değişince taşınan aylık kredi biter, günlük grant'e döner", async () => {
+  it('A-08: ay değişince taşınan aylık kredi biter, ücretsiz kredi verilmez', async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2026-07-30T10:00:00.000Z'));
     const { service, setPremium } = createService(true);
@@ -898,8 +920,7 @@ describe('AiCreditsService ledger invariants (A-08, property)', () => {
     jest.setSystemTime(new Date('2026-07-31T10:00:00.000Z'));
     expect((await service.getCredits(USER_ID)).balance).toBe(50);
     jest.setSystemTime(new Date('2026-08-01T10:00:00.000Z'));
-    // Ağustos: taşıma bitti → yalnız günlük grant (ilk ücretsiz grant 31 Tem'de
-    // alındığı için karşılama değil, 1).
-    expect((await service.getCredits(USER_ID)).balance).toBe(1);
+    // Ağustos: taşıma bitti; günlük grant yok, premium başlayan cüzdana bonus yok.
+    expect((await service.getCredits(USER_ID)).balance).toBe(0);
   });
 });

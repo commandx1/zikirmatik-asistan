@@ -175,7 +175,7 @@ Notlar: sayım yalnız ID'li satırlardan (API-*, MOB-*, WEB-*). §25 yetki matr
 - MOB-VSE-10 — V: uçak modu / seans + X / yerel ilerleme korunur; ağ gelince sonraki tetikte gönderilir
 - MOB-VSE-11 — V: misafir / seans / yalnız yerel; ağ isteği yok
 - MOB-VSE-13 — V: /vird/session parametresiz/geçersiz program / açılınca / ana sayfaya yönlenir, çökme yok
-- MOB-VHT-01 — V: ücretsiz / hatırlatma kartı / toggle yok, tek "Premium ile aç"
+- MOB-VHT-01 — V: ücretsiz / hatırlatma kartı / toggle yok, tek "Premium ile aç" **[2026-11-14: GEÇERSİZ — vird hatırlatmaları artık herkese ücretsiz.]**
 - MOB-VHT-03 — V: premium / aç → izin reddedilir / toggle kapalı kalır
 - MOB-VHT-05 — V: "Konumu kullan" reddedilir / olunca / sessizce sabit saat kalır
 - MOB-VAI-01 — V: misafir / "AI ile oluştur" / üye ol modalı
@@ -199,7 +199,7 @@ Notlar: sayım yalnız ID'li satırlardan (API-*, MOB-*, WEB-*). §25 yetki matr
 - MOB-AIM-10 — V: eski konuşma / açılınca / son 50 mesaj; yeni sohbet temizler
 - MOB-AIM-11 — V: akış sürerken başka konuşma açılır / olunca / token'lar diğer konuşmaya karışmaz
 - MOB-AIM-13 — V: misafir / sohbet girişi / üye ol modalı
-- MOB-KRD-01 — V: ücretsiz üye / kredi rozeti / sunucu bakiyesi (günlük 1 + kayıt bonusu); dokununca premium sayfası
+- MOB-KRD-01 — V: ücretsiz üye / kredi rozeti / sunucu bakiyesi (günlük 1 + kayıt bonusu); dokununca premium sayfası **[2026-11-14: GEÇERSİZ — günlük ücretsiz kredi kaldırıldı; ücretsiz hesaba tek seferlik 3 kredi karşılama bonusu, Premium ayda 50.]**
 - MOB-KRD-05 — V: kredi yükleniyor / gönder / "Kredilerin yükleniyor; birkaç saniye içinde…"
 - MOB-PRM-03 — V: Android / sayfa açık / geri tuşu sayfayı kapatır, ekrandan çıkmaz
 - MOB-PRM-04 — V: misafir / "Hemen Başla" / üye ol modalı
@@ -460,12 +460,12 @@ Kaynak sırası: hafıza dosyaları ve `docs/` (ürün kuralı) → kod (rota, h
 
 | ID | Davranış | Tür | Katman | Mevcut test | Durum |
 |---|---|---|---|---|---|
-| API-CRD-01 | Yeni ücretsiz kullanıcı ilk gün 3 kredi (karşılama), sonraki günler 1 | normal | api-e2e | T/ai:177, U/ai-credits.service:410 | ✅ |
+| API-CRD-01 | Yeni ücretsiz kullanıcı ilk gün 3 kredi (karşılama), sonraki günler 1 | normal | api-e2e | T/ai:177, U/ai-credits.service:410 | ✅ **[2026-11-14: GEÇERSİZ — günlük ücretsiz kredi kaldırıldı; ücretsiz hesaba tek seferlik 3 kredi karşılama bonusu, Premium ayda 50.]** |
 | API-CRD-02 | Ücretsiz günlük grant birikmez (yeni günde grant kovası 1'e eşitlenir), topup korunur | zaman | birim | U/ai-credits.service:540 | ✅ |
 | API-CRD-03 | Premium: UTC ay başına 50 kredi; aynı ayda ikinci kez verilmez | zaman | api-e2e | T/ai:198, U/ai-credits.service:432 | ✅ |
 | API-CRD-04 | Premium⇄ücretsiz geçişte aynı ay ikinci aylık grant yok | uç | birim | U/ai-credits.service:516, T/ai:541 | ✅ |
 | API-CRD-05 | Premium bitince kalan aylık kredi ay sonuna kadar kullanılabilir (silinmez); aynı ay yeniden premium olunca kalan hak geri gelir, ikinci aylık grant verilmez (karar A-08) | uç | birim | T/ai:541, U/ai-credits.service:516, :892, :795 | ✅ |
-| API-CRD-06 | Gün/ay sınırı UTC: ücretsiz günlük kredi UTC gece yarısı yenilenir (TR'de 03:00), değişmez (karar A-16) | zaman | birim | U/ai-credits.service:432 (ay sınırı 00:00:01Z), :410 (gün değişimi 10:00Z; gece yarısı anı testsiz) | 🟡 |
+| API-CRD-06 | Gün/ay sınırı UTC: ücretsiz günlük kredi UTC gece yarısı yenilenir (TR'de 03:00), değişmez (karar A-16) | zaman | birim | U/ai-credits.service:432 (ay sınırı 00:00:01Z), :410 (gün değişimi 10:00Z; gece yarısı anı testsiz) | 🟡 **[2026-11-14: GEÇERSİZ — günlük ücretsiz kredi kaldırıldı; ücretsiz hesaba tek seferlik 3 kredi karşılama bonusu, Premium ayda 50.]** |
 | API-CRD-07 | Bakiye < tutar → 403 `AI_CREDIT_INSUFFICIENT`, ajan hiç çalışmaz | normal | api-e2e | T/ai:177, U/ai-vird.service:271, U/ai-credits.service:635 | ✅ |
 | API-CRD-08 | Kesim önce grant, kalan topup kovasından; 3'lük karışık kesim tek atomik adım | normal | birim | U/ai-credits.service:724, :613 | ✅ |
 | API-CRD-09 | Değişmez: bakiye asla negatif olmaz; bakiye = grant + topup; rastgele eşzamanlı kesim dizilerinde toplam kesim ≤ başlangıç bakiye | eşzamanlılık | prop | U/ai-credits.service:795 (fast-check), T/ai:357 | ✅ |
@@ -697,7 +697,7 @@ Kaynak sırası: hafıza dosyaları ve `docs/` (ürün kuralı) → kod (rota, h
 | API-VRD-02 | Ücretsiz manuel: 3 farklı zikir 201, 4. → 403 `VIRD_FREE_LIMIT_DHIKRS` | normal | api-e2e | T/vird:147, U/vird-programs.service:164, :180 | ✅ |
 | API-VRD-03 | Aynı zikir iki dilimde tek sayılır | uç | birim | U/vird-programs.service:197 | ✅ |
 | API-VRD-04 | Premium manuelde zikir sınırı yok | normal | birim | U/vird-programs.service:228 | ✅ |
-| API-VRD-05 | Ücretsiz `reminders.enabled:true` (create/PATCH) → 403 `VIRD_PREMIUM_REQUIRED` | yetki | api-e2e | T/vird:162, U/vird-programs.service:244, :660 | ✅ |
+| API-VRD-05 | Ücretsiz `reminders.enabled:true` (create/PATCH) → 403 `VIRD_PREMIUM_REQUIRED` | yetki | api-e2e | T/vird:162, U/vird-programs.service:244, :660 | ✅ **[2026-11-14: GEÇERSİZ — vird hatırlatmaları artık herkese ücretsiz.]** |
 | API-VRD-06 | Ücretsiz PATCH `reminders.enabled:false` veya kayıtlı `true` ama payload'da yok → izin | uç | birim | U/vird-programs.service:718, :749 | ✅ |
 | API-VRD-07 | Ücretsiz ikinci aktif → 403 `VIRD_FREE_LIMIT_ACTIVE` | normal | api-e2e | T/vird:183, U/vird-programs.service:482 | ✅ |
 | API-VRD-08 | Ücretsiz iki eşzamanlı activate → ≤1 aktif, ≥1 403 (ikisi de geri alınabilir → 0 aktif kabul) | eşzamanlılık | api-e2e | T/vird:206 | ✅ |
@@ -973,7 +973,7 @@ Her soru bir ürün kararıdır; parantez içi **önerilen varsayılan**. Cevap 
 - **A-13** **"Tamamlandı" kim karar verir:** Uygulama sayı hedefin altındayken de "tamamlandı" gönderebiliyor ve seri kazanılıyor. (Öneri: sunucu `count ≥ targetCount` ise tamamlandı sayar; hedef altı "tamamlandı" bayrağını yok sayar.) → KARAR: tamamlandı = sunucuda count ≥ targetCount, hedef altı bayrak yok sayılır.
 - **A-14** **Halka ve vird zikirleri kişisel istatistiğe:** Halka ve vird oturumlarında çekilen zikirler genel seriye, toplam sayıya ve rozetlere sayılıyor; kaynak dağılımında ise halka görünmüyor. (Öneri: hepsi sayılsın — zikir zikirdir — ve kaynak dağılımına "Halka" eklensin.) → KARAR: halka ve vird zikirleri seri/toplam/rozetlere sayılır; kaynak dağılımına "Halka" eklenir.
 - **A-15** **Vird rozetleri kalıcı mı:** Vird gün kayıtları 400 gün sonra silindiği için "100 günlük vird serisi" rozeti zamanla geri gidebilir. (Öneri: kazanılan en uzun seri ayrı saklansın, rozet asla geri alınmasın.) → KARAR: rozetler asla geri alınmaz; kazanılan en uzun seri ayrı saklanır.
-- **A-16** **Ücretsiz AI kredisinin yenilenme saati:** Günlük kredi UTC gece yarısı, yani Türkiye'de 03:00'te yenileniyor. (Öneri: UTC kalsın — tüm dünyada tek kural, basit.) → KARAR: ücretsiz günlük kredi UTC gece yarısı yenilenir (değişmez).
+- **A-16** **Ücretsiz AI kredisinin yenilenme saati:** Günlük kredi UTC gece yarısı, yani Türkiye'de 03:00'te yenileniyor. (Öneri: UTC kalsın — tüm dünyada tek kural, basit.) → KARAR: ücretsiz günlük kredi UTC gece yarısı yenilenir (değişmez). **[2026-11-14: GEÇERSİZ — günlük ücretsiz kredi kaldırıldı; ücretsiz hesaba tek seferlik 3 kredi karşılama bonusu, Premium ayda 50.]**
 - **A-17** **Haftalık özet bildirimini kapatma:** Haftalık özet push'unun ayrı bir kapatma ayarı yok, herkese gidiyor. (Öneri: mevcut "seri hatırlatma" ayarına bağlansın; kapatan almasın.) → KARAR: haftalık özet push'u "seri hatırlatma" tercihine bağlı.
 - **A-18** **Kandil bildirimleri hangi takvime göre:** Kandil günü İstanbul takvimine göre hesaplanıyor; Amerika batısındaki kullanıcıya "yarın kandil" bildirimi aslında iki gün önceden gidebiliyor. (Öneri: kandil arifesi ve günü cihazın yerel gününe göre hesaplansın.) → KARAR: kandil arifesi/günü cihazın kayıtlı saat dilimine göre.
 - **A-19** **Halka bitişinde son gün:** Bitiş tarihi "bugün" seçilirse halka kurucunun saat diliminde bu gece yarısı kapanıyor; diğer saat dilimlerindeki üyeler için daha erken/geç. (Öneri: böyle kalsın — tek ortak an, kurucunun saati.) → KARAR: halka bitişi kurucunun saat dilimi (değişmez).
@@ -1341,15 +1341,15 @@ Amaç: her kullanıcıya görünen davranışı **kural olarak** (normal + uç d
 
 | ID | Davranış | Tür | Katman | Mevcut test | Durum |
 |---|---|---|---|---|---|
-| MOB-VHT-01 | Verilen ücretsiz / hatırlatma kartı / toggle yok, tek "Premium ile aç" | premium | detox | — | ❌ |
-| MOB-VHT-02 | Verilen premium / aç → izin ver / bugün + yarın için hatırlatmalar kurulur | premium | detox | src/features/vird/services/vird-reminder-notifications.test.ts:99; :171 (izin diyaloğu/toggle akışı yok) | 🟡 |
+| MOB-VHT-01 | Verilen ücretsiz / hatırlatma kartı / toggle yok, tek "Premium ile aç" | premium | detox | — | ❌ **[2026-11-14: GEÇERSİZ — vird hatırlatmaları artık herkese ücretsiz.]** |
+| MOB-VHT-02 | Verilen premium / aç → izin ver / bugün + yarın için hatırlatmalar kurulur | premium | detox | src/features/vird/services/vird-reminder-notifications.test.ts:99; :171 (izin diyaloğu/toggle akışı yok) | 🟡 **[2026-11-14: GEÇERSİZ — vird hatırlatmaları artık herkese ücretsiz.]** |
 | MOB-VHT-03 | Verilen premium / aç → izin reddedilir / toggle kapalı kalır | uç | detox | — | ❌ |
 | MOB-VHT-04 | Verilen konum yok / kurulum / sabit 07:00 · 13:00 · 19:00 · 22:00 (+ namaz vakti hatırlatmaları) | zaman | birim | src/features/vird/services/vird-reminder-notifications.test.ts:116 (etiket ↔ gerçek saatler, B-43) | 🟡 (etiket ↔ gerçek saatler, B-43) |
 | MOB-VHT-05 | Verilen "Konumu kullan" reddedilir / olunca / sessizce sabit saat kalır | uç | detox | — | ❌ |
 | MOB-VHT-06 | Verilen dilim bugün tamam / kurulum / bugünkü atlanır, yarınki kurulur; geçmiş saat kurulmaz | zaman | birim | src/features/vird/services/vird-reminder-notifications.test.ts:220; :236; :253 | ✅ |
 | MOB-VHT-07 | Verilen yalnız seçili dilimler / kurulum / yalnız onlar | normal | birim | src/features/vird/services/vird-reminder-notifications.test.ts:268 | ✅ |
 | MOB-VHT-08 | Verilen kapalı veya aktif program yok / kurulum / hepsi iptal; izin yoksa dokunulmaz | uç | birim | src/features/vird/services/vird-reminder-notifications.test.ts:81; :140; :153 | ✅ |
-| MOB-VHT-09 | Verilen premium biter / olunca / vird hatırlatmaları durur, program kalır (karar A-07 + M-13) | premium | birim (çıkar: src/features/vird/hooks/use-vird-reminder-sync.ts) | src/features/vird/services/vird-reminder-notifications.test.ts:99 | ✅ |
+| MOB-VHT-09 | Verilen premium biter / olunca / vird hatırlatmaları durur, program kalır (karar A-07 + M-13) | premium | birim (çıkar: src/features/vird/hooks/use-vird-reminder-sync.ts) | src/features/vird/services/vird-reminder-notifications.test.ts:99 | ✅ **[2026-11-14: GEÇERSİZ — vird hatırlatmaları artık herkese ücretsiz.]** |
 | MOB-VHT-10 | Verilen hatırlatmaya dokunuş / olunca / `/vird?slot=…` hub vurgulu dilim | normal | birim | src/features/notifications/services/notification-tap-routing.test.ts:40; :49 | ✅ |
 
 ### MOB-VAI — AI ile vird programı
@@ -1420,7 +1420,7 @@ Amaç: her kullanıcıya görünen davranışı **kural olarak** (normal + uç d
 | MOB-AIR-05 | Verilen ilerleme soketi bağlanamaz (6 sn) / istek / yine gönderilir, "Hazırlanıyor..." yedek etiket | uç | birim | src/features/ai-shared/hooks/use-ai-progress-steps.test.ts:23; src/features/ai-guide/services/ai-progress-socket.test.ts:35 | ✅ |
 | MOB-AIR-06 | Verilen istek sunucuda takılır (mock: askıda) / 120 sn / dönen gösterge durur, amber "Tekrar dene" | zaman | detox | e2e/09-ai-modes.e2e.js:68; src/features/ai-guide/services/ai-api-client.test.ts:17 (amber "Tekrar dene" rengi doğrulanmıyor) | 🟡 |
 | MOB-AIR-07 | Verilen mock 503 / olunca / "Asistan şu anda yanıt veremiyor. Kredin düşülmedi…", kredi aynı, tekrar dene aynı flowId | uç | detox | e2e/09-ai-modes.e2e.js:60 (hata ekranı + kredi aynı; metin ve aynı flowId doğrulanmıyor) | 🟡 |
-| MOB-AIR-08 | Verilen ücretsiz, günlük kredi bitti (mock/seed) / gönder / premium sayfası; satın alma sonrası istek kendiliğinden sürer | premium | detox | e2e/09-ai-modes.e2e.js:104 (premium sayfası + metin korunur); satın alma sonrası otomatik sürme ⛔ mağaza satın alma UI + M-17 ayrı iş | 🟡 |
+| MOB-AIR-08 | Verilen ücretsiz, günlük kredi bitti (mock/seed) / gönder / premium sayfası; satın alma sonrası istek kendiliğinden sürer | premium | detox | e2e/09-ai-modes.e2e.js:104 (premium sayfası + metin korunur); satın alma sonrası otomatik sürme ⛔ mağaza satın alma UI + M-17 ayrı iş | 🟡 **[2026-11-14: GEÇERSİZ — günlük ücretsiz kredi kaldırıldı; ücretsiz hesaba tek seferlik 3 kredi karşılama bonusu, Premium ayda 50.]** |
 | MOB-AIR-09 | Verilen konu dışı yanıt (mock) / olunca / kırmızı "Konu dışı", sonuç ve girdi temizlenir | uç | detox | — (mock modu yok: yalnız [mock:error503]/[mock:timeout]/[mock:clarify]/[mock:bilgi]) | ❌ |
 | MOB-AIR-10 | Verilen netleştirme yanıtı (mock) / olunca / "Biraz daha netleştirelim", girdi korunur | uç | detox | e2e/09-ai-modes.e2e.js:76 (girdinin korunması doğrulanmıyor) | 🟡 |
 | MOB-AIR-11 | Verilen öneri "Başla" / olunca / ana sayfa, o zikir seçili, AI bağlamı log kaynağı `ai` | normal | detox | src/features/ai-guide/services/recommendation-start.test.ts:54 (seçili zikir); src/features/dhikrs/services/dhikr-log-payload.test.ts:76 (log kaynağı ai); ekran akışı Detox yok | 🟡 |
@@ -1454,7 +1454,7 @@ Amaç: her kullanıcıya görünen davranışı **kural olarak** (normal + uç d
 
 | ID | Davranış | Tür | Katman | Mevcut test | Durum |
 |---|---|---|---|---|---|
-| MOB-KRD-01 | Verilen ücretsiz üye / kredi rozeti / sunucu bakiyesi (günlük 1 + kayıt bonusu); dokununca premium sayfası | premium | detox | — (04:134/10:109 rozeti okur; ücretsiz bakiye ve dokununca premium yok) | ❌ |
+| MOB-KRD-01 | Verilen ücretsiz üye / kredi rozeti / sunucu bakiyesi (günlük 1 + kayıt bonusu); dokununca premium sayfası | premium | detox | — (04:134/10:109 rozeti okur; ücretsiz bakiye ve dokununca premium yok) | ❌ **[2026-11-14: GEÇERSİZ — günlük ücretsiz kredi kaldırıldı; ücretsiz hesaba tek seferlik 3 kredi karşılama bonusu, Premium ayda 50.]** |
 | MOB-KRD-02 | Verilen premium / kredi rozeti / gerçek sunucu bakiyesi (50/ay); sınırsız sayı yok (karar M-07) | premium | birim | src/features/ai-shared/services/ai-credits.test.ts:5; :27; e2e/10-profile-premium.e2e.js:91 (:109-111) | ✅ |
 | MOB-KRD-03 | Verilen kredi eşiği / Rehber/Sohbet 1, Vird 3 / bakiye>0 ve ≥3 | normal | birim | src/features/ai-shared/services/ai-credits.test.ts:19; :23 | ✅ |
 | MOB-KRD-04 | Verilen satın alma sonrası / bakiye / en çok 8 deneme 2 sn arayla yoklanır, ilk deneme beklemesiz | zaman | birim | src/features/ai-shared/services/ai-credits.test.ts:47; :55; :62 | ✅ |

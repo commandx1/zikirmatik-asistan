@@ -189,7 +189,10 @@ describe('AI akış kanalları (e2e)', () => {
       const conversationId = await seedConversation(user.accessToken);
       await t
         .model('AiCreditWallet')
-        .updateOne({ userId }, { $set: { grantCredits: 0, balance: 0 } });
+        .updateOne(
+          { userId },
+          { $set: { grantCredits: 0, topupCredits: 0, balance: 0 } },
+        );
 
       const a = await createStream(user.accessToken, {
         firstMessage: 'kredi yok',
@@ -216,7 +219,10 @@ describe('AI akış kanalları (e2e)', () => {
       await new Promise((r) => setTimeout(r, 300));
       await t
         .model('AiCreditWallet')
-        .updateOne({ userId }, { $set: { grantCredits: 0, balance: 0 } });
+        .updateOne(
+          { userId },
+          { $set: { grantCredits: 0, topupCredits: 0, balance: 0 } },
+        );
       release();
 
       const events = parseSse((await pending).body as string);

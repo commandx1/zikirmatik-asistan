@@ -32,7 +32,7 @@ Katalogdaki ❓ soruların cevapları. Testler bu kararlara göre yazılır.
 - **A-10** İade: abonelikte RevenueCat EXPIRATION beklenir; kredi paketi iadesinde kalan bakiyeden düşülür (min 0).
 - **A-14** Halka ve vird zikirleri seri/toplam/rozetlere sayılır; istatistik kaynak dağılımına "Halka" eklenir.
 - **A-15** Rozetler asla geri alınmaz; kazanılan en uzun seri ayrı saklanır.
-- **A-16** Ücretsiz günlük kredi UTC gece yarısı yenilenir (değişmez).
+- **A-16** Ücretsiz günlük kredi UTC gece yarısı yenilenir (değişmez). **[2026-11-14: GEÇERSİZ — günlük ücretsiz kredi kaldırıldı; ücretsiz hesaba tek seferlik 3 kredi karşılama bonusu, Premium ayda 50.]**
 - **A-17** Haftalık özet push'u "seri hatırlatma" tercihine bağlı.
 - **A-18** Kandil arifesi/günü bildirimi cihazın kayıtlı saat dilimine göre.
 - **A-19** Halka bitişi kurucunun saat dilimi (değişmez).

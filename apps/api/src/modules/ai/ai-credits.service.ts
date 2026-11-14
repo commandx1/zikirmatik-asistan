@@ -28,7 +28,6 @@ import {
   AI_REQUEST_IN_FLIGHT_CODE,
   AI_REQUEST_LEASE_MS,
   type AiCreditReason,
-  FREE_DAILY_CREDIT_AMOUNT,
   FREE_SIGNUP_BONUS_CREDIT_AMOUNT,
   PREMIUM_MONTHLY_CREDIT_AMOUNT,
 } from './credits.constants';
@@ -46,7 +45,7 @@ type CreditState = CreditGrantStatus & {
 
 /**
  * AI kredi cüzdanı (AiCreditWallet) ve defteri (AiCreditLedger) üzerinde
- * çalışan tüm mantık burada toplanır: günlük/aylık grant, top-up satın alma
+ * çalışan tüm mantık burada toplanır: karşılama bonusu, aylık premium grant, top-up satın alma
  * ve flowId bazlı idempotent debit. AiService ve AiChatService bu servisi
  * enjekte ederek kendi akışlarında (öneri / sohbet) kullanır.
  */
@@ -72,15 +71,11 @@ export class AiCreditsService {
       return { used: 0, limit: null, isPremium: true, deprecated: true };
     }
 
-    const grantWindow = Math.max(0, credits.dailyGrant);
-    const used = Math.max(
-      0,
-      grantWindow - Math.min(credits.balance, grantWindow),
-    );
-
+    // Ücretsiz günlük grant yok (2026-11-14): eski istemcilerin bu kotadan
+    // türettiği bakiye (limit - used) gerçek bakiyeye eşit olsun.
     return {
-      used,
-      limit: grantWindow,
+      used: 0,
+      limit: Math.max(0, credits.balance),
       isPremium: false,
       deprecated: true,
     };
@@ -766,29 +761,35 @@ export class AiCreditsService {
     isPremium: boolean,
   ): Promise<CreditState> {
     let wallet = await this.findOrCreateWallet(userId);
-    const grant = await this.resolveGrantStatus(userId, isPremium);
+    if (!isPremium && !wallet.grantReason) {
+      wallet = (await this.applySignupBonus(userId)) ?? wallet;
+    }
+    const grant = resolveGrantStatus(isPremium);
 
     if (
       wallet.grantReason !== grant.reason ||
       wallet.grantCycleKey !== grant.cycleKey
     ) {
       // Grant yalnızca ledger insert'i başarılıysa uygulanır: unique index
-      // (dayKey/monthKey) aynı döngüde ikinci grant'i engeller — premium⇄free
+      // (monthKey) aynı ayda ikinci grant'i engeller — premium⇄free
       // toggle'ında aylık grant tekrar verilmez. Yeni döngüde grantCredits
       // BİRİKMEZ (önceki döngünün artığı sıfırlanır), topupCredits'e dokunulmaz.
-      let grantApplied = false;
-      try {
-        await this.aiCreditLedgerModel.create({
-          userId,
-          reason: grant.reason,
-          delta: grant.amount,
-          ...(grant.dayKey ? { dayKey: grant.dayKey } : {}),
-          ...(grant.monthKey ? { monthKey: grant.monthKey } : {}),
-        });
-        grantApplied = true;
-      } catch (error) {
-        if (!this.isDuplicateKeyError(error)) {
-          throw error;
+      // Ücretsiz günlük döngü 0 kredilik: ledger satırı yok, çift grant riski yok;
+      // yalnız eski grant artığını (ve ay bitince taşınan premium payını) söndürür.
+      let grantApplied = grant.amount === 0;
+      if (!grantApplied) {
+        try {
+          await this.aiCreditLedgerModel.create({
+            userId,
+            reason: grant.reason,
+            delta: grant.amount,
+            ...(grant.monthKey ? { monthKey: grant.monthKey } : {}),
+          });
+          grantApplied = true;
+        } catch (error) {
+          if (!this.isDuplicateKeyError(error)) {
+            throw error;
+          }
         }
       }
 
@@ -798,7 +799,7 @@ export class AiCreditsService {
       }
 
       // A-08: kova bu ayın aylık premium kredisini taşıyorsa, premium bitince
-      // ücretsiz günlük grant onu SİLMEZ (en az günlük miktar kadar kalır);
+      // ücretsiz günlük döngü onu SİLMEZ (ay sonuna kadar kalır);
       // aynı ay yeniden premium olunca (aylık ledger zaten var) kalan hak korunur.
       const monthKey = grant.monthKey ?? grant.cycleKey.slice(0, 7);
       const holdsMonthly =
@@ -888,7 +889,6 @@ export class AiCreditsService {
     grant: {
       reason: AiCreditReason;
       cycleKey: string;
-      dayKey?: string;
       monthKey?: string;
     },
   ): Promise<AiCreditWalletDocument | null> {
@@ -896,7 +896,6 @@ export class AiCreditsService {
       .findOne({
         userId,
         reason: grant.reason,
-        ...(grant.dayKey ? { dayKey: grant.dayKey } : {}),
         ...(grant.monthKey ? { monthKey: grant.monthKey } : {}),
       })
       .lean()
@@ -939,45 +938,47 @@ export class AiCreditsService {
     return wallet;
   }
 
-  private async resolveGrantStatus(
+  /**
+   * Hiç döngüye girmemiş (grantReason'sız) ücretsiz cüzdana tek seferlik
+   * karşılama bonusu. Koşullu tek atomik güncelleme: eşzamanlı ilk istekler
+   * çift bonus vermez. Bonus topup kovasına gider (döngü sıfırlaması silmez);
+   * cüzdan bugünün ücretsiz döngüsüne işaretlenir. Eski cüzdanlarda grantReason
+   * dolu (bonusu FREE_DAILY_GRANT ile almışlardı) → tekrar verilmez. Premium
+   * başlayan cüzdan da grantReason alır; sonradan ücretsize düşünce bonus yok
+   * (eski davranışta da aylık artık karşılamayı yutuyordu).
+   */
+  private async applySignupBonus(
     userId: Types.ObjectId,
-    isPremium: boolean,
-  ): Promise<{
-    reason: AiCreditReason;
-    cycleKey: string;
-    amount: number;
-    dayKey?: string;
-    monthKey?: string;
-  }> {
-    const now = new Date();
-    if (isPremium) {
-      const monthKey = toUtcMonthKey(now);
-      return {
-        reason: AI_CREDIT_REASONS.PREMIUM_MONTHLY_GRANT,
-        cycleKey: monthKey,
-        amount: PREMIUM_MONTHLY_CREDIT_AMOUNT,
-        monthKey,
-      };
+  ): Promise<AiCreditWalletDocument | null> {
+    const amount = FREE_SIGNUP_BONUS_CREDIT_AMOUNT;
+    const wallet = await this.aiCreditWalletModel
+      .findOneAndUpdate(
+        { userId, grantReason: null },
+        {
+          $set: {
+            grantReason: AI_CREDIT_REASONS.FREE_DAILY_GRANT,
+            grantCycleKey: toUtcDayKey(new Date()),
+          },
+          $inc: { topupCredits: amount, balance: amount },
+        },
+        { returnDocument: 'after' },
+      )
+      .exec();
+    if (wallet) {
+      try {
+        await this.aiCreditLedgerModel.create({
+          userId,
+          reason: AI_CREDIT_REASONS.FREE_SIGNUP_BONUS,
+          delta: amount,
+          balanceAfter: wallet.balance,
+        });
+      } catch (error) {
+        this.logger.warn(
+          `Karşılama bonusu ledger satırı yazılamadı: ${this.describeError(error)}`,
+        );
+      }
     }
-
-    const dayKey = toUtcDayKey(now);
-    // Kullanıcı hiç FREE_DAILY_GRANT almamışsa (ilk kez AI'ya dokunduğu gün)
-    // karşılama bonusu olarak FREE_SIGNUP_BONUS_CREDIT_AMOUNT ver; sonraki
-    // her gün normal FREE_DAILY_CREDIT_AMOUNT'a döner.
-    const hasPriorFreeGrant = Boolean(
-      await this.aiCreditLedgerModel
-        .exists({ userId, reason: AI_CREDIT_REASONS.FREE_DAILY_GRANT })
-        .exec(),
-    );
-
-    return {
-      reason: AI_CREDIT_REASONS.FREE_DAILY_GRANT,
-      cycleKey: dayKey,
-      amount: hasPriorFreeGrant
-        ? FREE_DAILY_CREDIT_AMOUNT
-        : FREE_SIGNUP_BONUS_CREDIT_AMOUNT,
-      dayKey,
-    };
+    return wallet;
   }
 
   private resolveTopupCredits(productId: string): number {
@@ -1023,6 +1024,34 @@ export class AiCreditsService {
     if (!Types.ObjectId.isValid(rawId)) throw new NotFoundException(message);
     return new Types.ObjectId(rawId);
   }
+}
+
+/**
+ * Premium: UTC ay döngüsü, aylık grant (ledger monthKey unique). Ücretsiz: UTC
+ * gün döngüsü, 0 kredi — ledger'a yazılmaz; grantReason yalnız cüzdanın döngü
+ * etiketidir (eski cüzdanlarla süreklilik için FREE_DAILY_GRANT adı korunur).
+ */
+function resolveGrantStatus(isPremium: boolean): {
+  reason: AiCreditReason;
+  cycleKey: string;
+  amount: number;
+  monthKey?: string;
+} {
+  const now = new Date();
+  if (isPremium) {
+    const monthKey = toUtcMonthKey(now);
+    return {
+      reason: AI_CREDIT_REASONS.PREMIUM_MONTHLY_GRANT,
+      cycleKey: monthKey,
+      amount: PREMIUM_MONTHLY_CREDIT_AMOUNT,
+      monthKey,
+    };
+  }
+  return {
+    reason: AI_CREDIT_REASONS.FREE_DAILY_GRANT,
+    cycleKey: toUtcDayKey(now),
+    amount: 0,
+  };
 }
 
 // İkinci pipeline aşaması: bakiye = grant + topup (ilk aşamanın YENİ değerleriyle).

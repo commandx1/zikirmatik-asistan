@@ -104,7 +104,7 @@
     "benefits": {
       "vird": {
         "title": "Vird Programı",
-        "description": "Sınırsız program, hazır şablonlar ve namaz vaktine bağlı hatırlatmalar."
+        "description": "10 aktif programa kadar ve tüm hazır şablonlar."
       },
       "circle": {
         "title": "Zikir Halkası kur",
@@ -139,7 +139,6 @@
     "creditsLabel_one": "{{count}} Kredi",
     "creditsLabel_other": "{{count}} Kredi",
     "purchasing": "Alınıyor...",
-    "dailyFreeCreditNote": "Günlük 1 ücretsiz kredin her gün yenilenir.",
     "maybeLater": "Belki Daha Sonra"
   }
 }

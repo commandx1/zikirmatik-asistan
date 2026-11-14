@@ -67,7 +67,7 @@ describe('AI boşlukları (e2e)', () => {
       .model('AiCreditWallet')
       .updateOne(
         { userId: new Types.ObjectId(user.userId) },
-        { $set: { grantCredits: amount, balance: amount } },
+        { $set: { grantCredits: amount, topupCredits: 0, balance: amount } },
       );
   };
   const recommend = (

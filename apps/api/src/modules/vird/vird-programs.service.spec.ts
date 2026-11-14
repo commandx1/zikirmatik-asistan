@@ -241,32 +241,6 @@ describe('VirdProgramsService', () => {
       ).resolves.toEqual({ _id: 'created' });
     });
 
-    it('rejects reminders.enabled for a free user', async () => {
-      mockPremium(false);
-
-      const payload = captureForbidden(
-        service.create(userId, {
-          title: { tr: 't', en: 't' },
-          kind: 'routine',
-          startDate: '2026-01-01',
-          phases: phasesWithDhikrs([dhikrIds[0]]),
-          reminders: {
-            enabled: true,
-            slots: {
-              morning: true,
-              prayer: false,
-              evening: false,
-              night: false,
-            },
-          },
-        } as never),
-      );
-
-      await expect(payload).resolves.toMatchObject({
-        code: VIRD_ERROR_CODE.PREMIUM_REQUIRED,
-      });
-    });
-
     it('rejects a template/ai source for a free user even without reminders', async () => {
       mockPremium(false);
 
@@ -657,7 +631,7 @@ describe('VirdProgramsService', () => {
       });
     });
 
-    it('rejects enabling reminders for a free user via PATCH', async () => {
+    it('allows enabling reminders for a free user via PATCH', async () => {
       mockPremium(false);
       mockExisting({
         source: 'manual',
@@ -666,7 +640,15 @@ describe('VirdProgramsService', () => {
         reminders: { enabled: false },
       });
 
-      const payload = captureForbidden(
+      virdProgramModel.findOneAndUpdate.mockReturnValue({
+        lean: () => ({
+          exec: jest.fn().mockResolvedValue({
+            reminders: { enabled: true },
+          }),
+        }),
+      });
+
+      await expect(
         service.update(userId, userId, {
           reminders: {
             enabled: true,
@@ -678,10 +660,7 @@ describe('VirdProgramsService', () => {
             },
           },
         }),
-      );
-      await expect(payload).resolves.toMatchObject({
-        code: VIRD_ERROR_CODE.PREMIUM_REQUIRED,
-      });
+      ).resolves.toEqual({ reminders: { enabled: true } });
     });
 
     it('allows enabling reminders for a premium user via PATCH', async () => {

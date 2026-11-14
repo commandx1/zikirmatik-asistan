@@ -238,7 +238,10 @@ describe('AI Sohbet (e2e)', () => {
     const userId = new Types.ObjectId(user.userId);
     await t
       .model('AiCreditWallet')
-      .updateOne({ userId }, { $set: { grantCredits: 1, balance: 1 } });
+      .updateOne(
+        { userId },
+        { $set: { grantCredits: 1, topupCredits: 0, balance: 1 } },
+      );
 
     const results = await Promise.all(
       ['birinci', 'ikinci'].map((text) =>

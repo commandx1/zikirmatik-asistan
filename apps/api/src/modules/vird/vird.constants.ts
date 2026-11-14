@@ -43,7 +43,7 @@ export const VIRD_ERROR_MESSAGE: Record<VirdErrorCode, string> = {
   [VIRD_ERROR_CODE.FREE_LIMIT_DHIKRS]: `Ücretsiz planda manuel vird programında en fazla ${VIRD_FREE_LIMIT_DHIKRS} farklı zikir olabilir. Premium'a geçerek sınırsız ekleyebilirsin.`,
   [VIRD_ERROR_CODE.FREE_LIMIT_ACTIVE]: `Ücretsiz planda en fazla ${VIRD_FREE_LIMIT_ACTIVE} aktif vird programın olabilir. Premium'a geçerek daha fazla program aktifleştirebilirsin.`,
   [VIRD_ERROR_CODE.PREMIUM_REQUIRED]:
-    'Bu özellik (hatırlatıcı, şablon veya AI ile program oluşturma) premium üyelik gerektirir.',
+    'Bu özellik (şablon veya AI ile program oluşturma) premium üyelik gerektirir.',
   [VIRD_ERROR_CODE.PREMIUM_MAX_ACTIVE_PROGRAMS]: `En fazla ${PREMIUM_MAX_ACTIVE_PROGRAMS} aktif vird programın olabilir.`,
   [VIRD_ERROR_CODE.NOT_ACTIVATABLE]:
     'Yalnızca taslak veya duraklatılmış bir program aktifleştirilebilir.',

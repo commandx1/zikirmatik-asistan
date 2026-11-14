@@ -9,8 +9,8 @@ describe("resolveCreditsFromQuota", () => {
     expect(resolveCreditsFromQuota({ used: 1, limit: 3, isPremium: false })).toEqual({ balance: 2, isPremium: false });
     expect(resolveCreditsFromQuota({ used: 5, limit: 3, isPremium: false })?.balance).toBe(0);
   });
-  it("limit null → 1 sayılır", () => {
-    expect(resolveCreditsFromQuota({ used: 0, limit: null, isPremium: false })?.balance).toBe(1);
+  it("limit null → 0 sayılır (ücretsiz günlük kredi yok)", () => {
+    expect(resolveCreditsFromQuota({ used: 0, limit: null, isPremium: false })?.balance).toBe(0);
     expect(resolveCreditsFromQuota({ used: 1, limit: null, isPremium: false })?.balance).toBe(0);
   });
 });

@@ -86,7 +86,7 @@
         "description": "Seansta sıradaki zikre siz geçersiniz, sayıyı uygulama tutar."
       }
     ],
-    "note": "Ücretsiz sürümde 1 aktif program ve manuel programda en fazla 3 farklı zikir yer alır; Premium'da 10 aktif program, sınırsız zikir, şablonlar, namaz vaktine bağlı hatırlatmalar ve AI ile program açılır."
+    "note": "Ücretsiz sürümde 1 aktif program ve manuel programda en fazla 3 farklı zikir yer alır; Premium'da 10 aktif program, sınırsız zikir, premium şablonlar ve AI ile program açılır; namaz vaktine bağlı hatırlatmalar herkes için ücretsizdir."
   },
   "aiGuide": {
     "eyebrow": "AI Rehber",
@@ -106,7 +106,7 @@
         "description": "Dini hüküm vermez; sizi ilgili kaynağa yönlendirir."
       }
     ],
-    "note": "Ücretsiz sürümde her gün 1 kredi yenilenir (ilk gün 3 kredi karşılama bonusuyla); Premium'da ayda 50 kredi tanımlanır, kullanılmayan krediler sonraki aya devretmez."
+    "note": "Ücretsiz hesaplara tek seferlik 3 kredi karşılama bonusu tanımlanır. Premium abonelikte her ay 50 kredi yenilenir (kullanılmayan krediler devretmez). Satın alınan kredi paketleri süresizdir."
   },
   "howItWorks": {
     "title": "Zikirmatik Asistan nasıl çalışır",
@@ -172,8 +172,8 @@
         ],
         [
           "Günlük Vird",
-          "1 aktif program, 3 zikir",
-          "10 program, sınırsız zikir, şablonlar, hatırlatmalar, AI ile program"
+          "1 aktif program, 3 zikir, hatırlatmalar",
+          "10 program, sınırsız zikir, premium şablonlar, AI ile program"
         ],
         [
           "Zikir Halkası",
@@ -197,7 +197,7 @@
         ],
         [
           "AI Rehber kredisi",
-          "Günde 1 (ilk gün +3)",
+          "3 kredi (tek seferlik)",
           "Ayda 50 (devretmez)"
         ],
         [
@@ -244,7 +244,7 @@
       },
       {
         "question": "AI Rehber nedir?",
-        "answer": "AI Rehber; niyetinize göre zikir önerir ve sorularınızı kaynak ve sayfa referanslı olarak yanıtlar. Dini hüküm (fetva) vermez, sizi ilgili kaynağa yönlendirir. Ücretsiz sürümde her gün 1 kredi yenilenir, Premium'da ayda 50 kredi tanımlanır."
+        "answer": "AI Rehber; niyetinize göre zikir önerir ve sorularınızı kaynak ve sayfa referanslı olarak yanıtlar. Dini hüküm (fetva) vermez, sizi ilgili kaynağa yönlendirir. Ücretsiz hesaplara tek seferlik 3 kredi karşılama bonusu tanımlanır. Premium abonelikte her ay 50 kredi yenilenir (kullanılmayan krediler devretmez). Satın alınan kredi paketleri süresizdir."
       },
       {
         "question": "Hesap gerekli mi?",
@@ -297,7 +297,7 @@
     "getOnPlay": "Google Play'den İndirin"
   },
   "legal": {
-    "lastUpdated": "Son güncelleme: 28 Eylül 2026",
+    "lastUpdated": "Son güncelleme: 14 Kasım 2026",
     "backHome": "Ana sayfaya dön"
   },
   "privacy": {
@@ -364,7 +364,7 @@
       },
       {
         "heading": "4. Premium Abonelik, Krediler ve Satın Alımlar",
-        "body": "Premium, Google Play üzerinden aylık veya yıllık abonelik olarak satın alınır, otomatik olarak yenilenir ve Google Play uygulamasındaki \"Abonelikler\" bölümünden istediğiniz zaman iptal edilebilir. Uygulama ayrıca AI Rehber özelliği için ücretsiz kullanıcılara günde 1 kredi (ilk gün 3 kredi karşılama bonusuyla), Premium abonelere ise ayda 50 kredi sağlar; ayrıca isteğe bağlı olarak 10, 30 veya 75 kredilik tek seferlik paketler satın alınabilir. Tüm satın alımlar Google Play üzerinden işlenir ve Google Play'in ödeme şartlarına ve politikalarına tabidir. İade talebinde bulunma hakkında ayrıntılar için İade Politikamıza bakın."
+        "body": "Premium, Google Play üzerinden aylık veya yıllık abonelik olarak satın alınır, otomatik olarak yenilenir ve Google Play uygulamasındaki \"Abonelikler\" bölümünden istediğiniz zaman iptal edilebilir. Uygulama ayrıca AI Rehber özelliği için ücretsiz kullanıcılara tek seferlik 3 kredi karşılama bonusu, Premium abonelere ise her ay yenilenen 50 kredi (kullanılmayan krediler devretmez) sağlar; ayrıca isteğe bağlı olarak 10, 30 veya 75 kredilik tek seferlik paketler satın alınabilir. Tüm satın alımlar Google Play üzerinden işlenir ve Google Play'in ödeme şartlarına ve politikalarına tabidir. İade talebinde bulunma hakkında ayrıntılar için İade Politikamıza bakın."
       },
       {
         "heading": "5. Kabul Edilebilir Kullanım",

@@ -76,8 +76,6 @@ export class VirdProgramsService {
     const isPremium = await this.isPremiumUser(objectId);
     const source = payload.source ?? 'manual';
 
-    this.assertRemindersAllowed(isPremium, payload.reminders?.enabled);
-
     // Şablon çözümlemesi: yalnız templateKey fiilen verilmişse bu yola girer
     // (premium kontrolü şablonun KENDİ isPremium'ına göre yapılır — bkz.
     // createFromTemplate). templateKey'siz bir 'template'/'ai' isteği eskisi
@@ -369,8 +367,6 @@ export class VirdProgramsService {
       );
     }
 
-    this.assertRemindersAllowed(isPremium, payload.reminders?.enabled);
-
     const nextPhases = payload.phases
       ? this.normalizePhases(existing.source, payload.phases)
       : undefined;
@@ -546,15 +542,6 @@ export class VirdProgramsService {
       .lean()
       .exec();
     return Boolean(user?.isPremium);
-  }
-
-  private assertRemindersAllowed(isPremium: boolean, enabled?: boolean) {
-    if (!isPremium && enabled === true) {
-      throw new ForbiddenException({
-        code: VIRD_ERROR_CODE.PREMIUM_REQUIRED,
-        message: VIRD_ERROR_MESSAGE[VIRD_ERROR_CODE.PREMIUM_REQUIRED],
-      });
-    }
   }
 
   private assertPremiumFeatureAllowed(isPremium: boolean) {

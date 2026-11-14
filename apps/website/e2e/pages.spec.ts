@@ -81,7 +81,7 @@ test("premium table matches app limits and shows no price (WEB-24)", async ({ pa
   await expect(table).toContainText("10 aktif halka, 200 üye");
   await expect(table).toContainText("8 tema");
   await expect(table).toContainText("22 tema");
-  await expect(table).toContainText("Günde 1");
+  await expect(table).toContainText("3 kredi (tek seferlik)");
   await expect(table).toContainText("Ayda 50");
   expect(await page.locator("#premium").innerText()).not.toMatch(/[$€₺]|\d+[.,]\d{2}\s?(TL|USD)/);
 });

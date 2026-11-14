@@ -104,7 +104,7 @@
     "benefits": {
       "vird": {
         "title": "Vird Program",
-        "description": "Unlimited programs, ready-made templates and prayer-time reminders."
+        "description": "Up to 10 active programs and all ready-made templates."
       },
       "circle": {
         "title": "Start a Dhikr Circle",
@@ -139,7 +139,6 @@
     "creditsLabel_one": "{{count}} Credit",
     "creditsLabel_other": "{{count}} Credits",
     "purchasing": "Purchasing...",
-    "dailyFreeCreditNote": "Your 1 free daily credit renews every day.",
     "maybeLater": "Maybe Later"
   }
 }

@@ -5,7 +5,6 @@ import * as Location from "expo-location";
 import { useThemeTokens } from "@zikirmatik/ui";
 import { ThemedCard } from "../../../components/ui/themed-card";
 import { TogglePill } from "../../../components/ui/toggle-pill";
-import { useProfileStore } from "../../../store/profile-store";
 import { useVirdStore } from "../../../store/vird-store";
 import { requestNotificationPermissionForToggle } from "../../notifications/services/request-notification-permission";
 import { resolvePrayerTimes, type PrayerTimesResult } from "../services/prayer-times";
@@ -26,23 +25,14 @@ function round3(value: number): number {
   return Math.round(value * 1000) / 1000;
 }
 
-type VirdReminderSettingsProps = {
-  /** Premium olmayan bir kullanıcı hatırlatma özelliğine dokunduğunda çağrılır (paywall açar). */
-  onRequirePremium: () => void;
-};
-
 // Global hatırlatma tercihleri (useVirdStore.reminderPrefs — TÜM programlar
 // için tek bir cihaz ayarı, program-özel bir alan DEĞİL) için ayar paneli.
 // Gerçek zamanlama use-vird-reminder-sync.ts (app/_layout.tsx'e zaten mount
 // edilmiş, BURADAN dokunulmuyor) tarafından bu store'u dinleyerek reaktif
 // olarak yapılır — bu bileşen yalnızca setReminderPrefs çağırır.
-//
-// FAZ C: ücretsiz kullanıcı için toggle'lar/konum satırı hiç RENDER EDİLMEZ
-// (eskiden dim + onRequirePremium ile korunuyordu) — yalnızca tek bir "aç" CTA'sı.
-export function VirdReminderSettings({ onRequirePremium }: VirdReminderSettingsProps) {
+export function VirdReminderSettings() {
   const { t } = useTranslation("vird");
   const { tokens } = useThemeTokens();
-  const isPremium = useProfileStore((state) => state.isPremium);
   const reminderPrefs = useVirdStore((state) => state.reminderPrefs);
   const setReminderPrefs = useVirdStore((state) => state.setReminderPrefs);
 
@@ -95,20 +85,6 @@ export function VirdReminderSettings({ onRequirePremium }: VirdReminderSettingsP
       setIsRequestingLocation(false);
     }
   };
-
-  if (!isPremium) {
-    return (
-      <ThemedCard className="mb-4 rounded-2xl p-4">
-        <Text className="mb-1 text-sm font-semibold text-text-primary">{t("vird:reminders.settingsTitle")}</Text>
-        <Text className="mb-3 text-xs leading-4 text-text-muted">{t("vird:reminders.premiumRequiredNote")}</Text>
-        <Pressable onPress={onRequirePremium} className="self-start rounded-full px-4 py-2" style={{ backgroundColor: tokens.accent }}>
-          <Text className="text-xs font-semibold" style={{ color: tokens.bg }}>
-            {t("vird:reminders.unlockCta")}
-          </Text>
-        </Pressable>
-      </ThemedCard>
-    );
-  }
 
   return (
     <ThemedCard testID={TEST_IDS.vird.reminderSettings} className="mb-4 rounded-2xl p-4">

@@ -10,7 +10,9 @@ Bu dosya, AI Rehber kredi modelinin karlilik takibini tek yerden yapmak icin kul
 - Clarification/off-topic/AI hatasi (503 AI_UNAVAILABLE): 0 kredi
 - Cache yolu yok: `recommendation_cache` kaldirildi, her istek canli LLM cagrisidir
 - Premium grant: 50 kredi / UTC ay
-- Free grant: 1 kredi / UTC gun
+- Free grant: YOK (2026-11-14). Yalniz tek seferlik 3 kredilik karsilama
+  bonusu (`FREE_SIGNUP_BONUS` ledger satiri); topup kovasina yazilir, hic
+  sonmez. Eski `FREE_DAILY_GRANT` satirlari tarihsel; artik yazilmaz
 - Top-up: RevenueCat `NON_SUBSCRIPTION_PURCHASE`
 - `ensureCreditAccessForFlow`/`debitCreditForFlow` genel bir `amount`
   parametresi alir (varsayilan 1); cuzdan dusumu grant/topup kovalari

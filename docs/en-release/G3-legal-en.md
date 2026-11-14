@@ -6,7 +6,7 @@
 
 | Yer | Eski EN | Güncel TR (bu taslağın esası) |
 |---|---|---|
-| Son güncelleme | July 22, 2026 | 28 Eylül 2026 |
+| Son güncelleme | July 22, 2026 | 14 Kasım 2026 |
 | Gizlilik §1 | Yalnız Google ile giriş; "vird programları" yok | Google veya Apple; "vird programlarınız" eklendi |
 | Gizlilik §2 | "when you sign in with Google" | Aynı; Apple girişi §3'te ele alınıyor (§2 metni Google diyor) |
 | Gizlilik §3 başlık ve metin | "Google Sign-In"; Google şifresi | "Google veya Apple ile Giriş"; "Şifrenize erişimimiz yoktur"; erişim Google veya Apple ayarlarından iptal edilir |
@@ -15,7 +15,7 @@
 | Şartlar §2 | Sayaç, koleksiyonlar, hatırlatıcılar, seri, Google senkronizasyonu, AI Rehber | Sayaç ve kütüphane, günlük vird, zikir halkası, AI Rehber ve kaynaklı sohbet, özel gün bildirimleri, istatistik ve rozetler, widget'lar, Google/Apple senkronizasyonu, Premium abonelik ve kredi paketleri |
 | Şartlar §3 | Yalnız Google | Google veya Apple |
 | Şartlar §4 başlık ve metin | "Premium Credits and Purchases"; abonelik yok | "Premium Abonelik, Krediler ve Satın Alımlar": aylık veya yıllık otomatik yenilenen abonelik, iptal Google Play "Abonelikler" bölümünden |
-| Şartlar §4 kredi | Ücretsiz günde 1 (+3 bonus), Premium ayda 50 | Aynı |
+| Şartlar §4 kredi | Ücretsiz tek seferlik 3 kredi bonusu, Premium ayda 50 (devretmez), paketler süresiz | Aynı |
 | İade intro | Yalnız kredi satın alımları | Premium abonelik ve kredi satın alımları |
 | İade §1 | Yalnız kredi paketleri; iadeler Google Play politikasına tabi | Abonelikler dahil; abonelik iptali Google Play "Abonelikler"den; iadeler Google Play'in abonelik iade politikasına tabi |
 | Diğer bölümler | — | Anlamca aynı |
@@ -88,7 +88,7 @@ Zikirmatik offers a dhikr counter and library, a daily wird program, dhikr circl
 Signing in with Google or Apple is optional. If you choose to sign in, you are responsible for keeping your account private and for all activity that takes place through your account. You can sign out or revoke access at any time.
 
 **4. Premium Subscription, Credits and Purchases**
-Premium is purchased through Google Play as a monthly or annual subscription, renews automatically, and can be cancelled at any time from the "Subscriptions" section of the Google Play app. For the AI Rehber feature, the App also provides free users with 1 credit per day (with a welcome bonus of 3 credits on the first day) and Premium subscribers with 50 credits per month; in addition, one-time packs of 10, 30 or 75 credits can optionally be purchased. All purchases are processed through Google Play and are subject to Google Play's payment terms and policies. For details on requesting a refund, see our Refund Policy.
+Premium is purchased through Google Play as a monthly or annual subscription, renews automatically, and can be cancelled at any time from the "Subscriptions" section of the Google Play app. For the AI Rehber feature, the App also provides free users with a one-time welcome bonus of 3 credits and Premium subscribers with 50 credits that renew every month (unused credits do not carry over); in addition, one-time packs of 10, 30 or 75 credits can optionally be purchased. All purchases are processed through Google Play and are subject to Google Play's payment terms and policies. For details on requesting a refund, see our Refund Policy.
 
 **5. Acceptable Use**
 You agree to use the App only for lawful purposes and in accordance with these Terms. Except where permitted by applicable law, you may not reverse engineer, decompile or extract the source code of the App, and you may not use the App in a way that could disable, overload or impair its functionality.

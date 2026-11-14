@@ -72,7 +72,7 @@ describe('AI sınırları + iade güvenliği (e2e)', () => {
       .model('AiCreditWallet')
       .updateOne(
         { userId: oid(user) },
-        { $set: { grantCredits: amount, balance: amount } },
+        { $set: { grantCredits: amount, topupCredits: 0, balance: amount } },
       );
   };
   const wallet = (user: User) =>
@@ -517,7 +517,7 @@ describe('AI sınırları + iade güvenliği (e2e)', () => {
             }>();
           const grantRows = () =>
             ledger
-              .find({ userId, reason: 'FREE_DAILY_GRANT' })
+              .find({ userId, reason: 'FREE_SIGNUP_BONUS' })
               .sort({ createdAt: 1, _id: 1 })
               .lean<Array<{ _id: Types.ObjectId; delta: number }>>();
 
@@ -534,7 +534,8 @@ describe('AI sınırları + iade güvenliği (e2e)', () => {
             for (const g of await grantRows()) {
               if (seenGrants.has(g._id.toString())) continue;
               seenGrants.add(g._id.toString());
-              events.push({ type: 'grant', amount: g.delta });
+              // Karşılama bonusu topup kovasına yazılır (sönmez).
+              events.push({ type: 'topup', amount: g.delta });
               added += g.delta;
             }
             return added;

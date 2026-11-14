@@ -154,7 +154,7 @@ export function VirdHubScreen() {
           </Pressable>
         </View>
 
-        <VirdReminderSettings onRequirePremium={premiumSheet.open} />
+        <VirdReminderSettings />
       </PageScrollView>
 
       <ToastBanner message={toastMessage} iconName="circle-check" position="bottom" />
